@@ -17,7 +17,7 @@ from django.template.loader import render_to_string
 from django.urls import resolve
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_time
-from django.utils.formats import localize
+from django.utils.formats import number_format
 from django.utils.translation import gettext, gettext_lazy as _
 
 from celery.result import AsyncResult
@@ -29,7 +29,8 @@ from weasyprint import HTML
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.formatters.service import format_value
+from openforms.contrib.kvk.validators import validate_kvk
+from openforms.formio.formatters.service import filter_printable, format_value
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
@@ -39,7 +40,6 @@ from openforms.utils.validators import (
     validate_bsn,
 )
 
-from ..contrib.kvk.validators import validate_kvk
 from .constants import RegistrationStatuses
 from .pricing import get_submission_price
 from .query import SubmissionManager
@@ -131,15 +131,27 @@ def _get_values(value: Any, filter_func=bool) -> List[Any]:
     """
     Filter a single or multiple value into a list of acceptable values.
     """
+    # TODO using bool() to filter is evil
     # normalize values into a list
     if not isinstance(value, (list, tuple)):
         value = [value]
     return [item for item in value if filter_func(item)]
 
 
-def _join_mapped(formatter: callable, value: Any, seperator: str = ", ") -> str:
+def _not_null_empty(value):
+    return value not in (None, "")
+
+
+def _join_mapped(
+    formatter: callable,
+    value: Any,
+    seperator: str = "; ",
+    filter_func=bool,
+) -> str:
     # filter and map a single or multiple value into a joined string
-    formatted_values = [formatter(x) for x in _get_values(value)]
+    formatted_values = [
+        formatter(x) for x in _get_values(value, filter_func=filter_func)
+    ]
     return seperator.join(formatted_values)
 
 
@@ -496,44 +508,28 @@ class Submission(models.Model):
         )
 
         # first collect data we have in the same order the components are defined in the form
-        for component in self.form.iter_components(recursive=True):
+        for component in filter_printable(self.form.iter_components(recursive=True)):
             key = component["key"]
-            if key in merged_data:
-                if enable_formio_formatters:
-                    component.setdefault("label", key)
-                    ordered_data[key] = (
-                        component,
-                        merged_data[key],
-                    )
-                else:
-                    ordered_data[key] = {
-                        "type": component["type"],
-                        "value": merged_data[key],
-                        "label": component.get("label", key),
-                        "multiple": component.get("multiple", False),
-                        # The select component has the values/labels nested in a 'data' field
-                        "values": component.get("values")
-                        or component.get("data", {}).get("values"),
-                        # appointments stuff...
-                        "appointments": component.get("appointments", {}),
-                    }
-        # now append remaining data that doesn't have a matching component
-        for key, value in merged_data.items():
-            if key not in ordered_data:
-                if enable_formio_formatters:
-                    ordered_data[key] = (
-                        {
-                            "type": "unknown component",
-                            "label": key,
-                        },
-                        merged_data[key],
-                    )
-                else:
-                    ordered_data[key] = {
-                        "type": "unknown component",
-                        "value": merged_data[key],
-                        "label": key,
-                    }
+            value = merged_data.get(key, None)
+            if enable_formio_formatters:
+                component.setdefault("label", key)
+                ordered_data[key] = (
+                    component,
+                    value,
+                )
+            else:
+                ordered_data[key] = {
+                    "type": component["type"],
+                    "value": value,
+                    "label": component.get("label", key),
+                    "multiple": component.get("multiple", False),
+                    # The select component has the values/labels nested in a 'data' field
+                    "values": component.get("values")
+                    or component.get("data", {}).get("values"),
+                    # appointments stuff...
+                    "appointments": component.get("appointments", {}),
+                    "decimalLimit": component.get("decimalLimit"),
+                }
 
         return ordered_data
 
@@ -603,11 +599,15 @@ class Submission(models.Model):
         attachment_data = self.get_merged_attachments()
         merged_data = self.get_merged_data() if use_merged_data_fallback else {}
 
+        enable_formio_formatters = (
+            GlobalConfiguration.get_solo().enable_formio_formatters
+        )
+
         for key, info in self.get_ordered_data_with_component_type().items():
             if limit_keys_to and key not in limit_keys_to:
                 continue
 
-            if GlobalConfiguration.get_solo().enable_formio_formatters:
+            if enable_formio_formatters:
                 info, value = info
                 label = info["label"]
                 printable_data.append((label, format_value(info, value)))
@@ -624,13 +624,13 @@ class Submission(models.Model):
                     files = attachment_data.get(key)
                     if files:
                         value = _("attachment: %s") % (
-                            ", ".join(file.get_display_name() for file in files)
+                            "; ".join(file.get_display_name() for file in files)
                         )
                     # FIXME: ugly workaround to patch the demo, this should be fixed properly
                     elif use_merged_data_fallback:
                         value = merged_data.get(key)
                     else:
-                        value = _("empty")
+                        value = ""
 
                 elif info["type"] == "date" or (
                     info.get("appointments", {}).get("showDates", False)
@@ -654,21 +654,54 @@ class Submission(models.Model):
 
                 elif info["type"] == "selectboxes":
                     selected_values: Dict[str, bool] = info["value"]
-                    selected_labels = [
-                        entry["label"]
-                        for entry in info["values"]
-                        if selected_values.get(entry["value"])
-                    ]
-                    value = ", ".join(selected_labels)
+                    if not selected_values:
+                        value = ""
+                    else:
+                        selected_labels = [
+                            entry["label"]
+                            for entry in info["values"]
+                            if selected_values.get(entry["value"])
+                        ]
+                        value = "; ".join(selected_labels)
 
                 elif info["type"] == "number" or info["type"] == "currency":
-                    if multiple:
-                        value = _join_mapped(lambda v: localize(v), info["value"])
+                    if info["type"] == "currency":
+                        # force currency formatting with 2 decimals even if None
+                        num_decimals = info.get("decimalLimit") or 2
                     else:
-                        value = localize(info["value"])
+                        num_decimals = info.get("decimalLimit")
+
+                    if multiple:
+                        # filtering _not_null_empty is part of fix for legacy issue where empty number/currency field would not be printed
+                        value = _join_mapped(
+                            lambda v: number_format(v, num_decimals),
+                            info["value"],
+                            filter_func=_not_null_empty,
+                        )
+                    else:
+                        if info["value"] is None:
+                            # part of fix for legacy issue where empty number/currency field would not be printed
+                            value = ""
+                        else:
+                            value = number_format(info["value"], num_decimals)
+
+                elif info["type"] == "signature":
+                    if info["value"]:
+                        value = _("signature added")
+                    else:
+                        value = ""
+                elif info["type"] == "map":
+                    if info["value"]:
+                        value = _join_mapped(str, info["value"], ", ")
+                    else:
+                        value = ""
                 elif info["type"] == "checkbox":
-                    value = yesno(info["value"])
+                    if info["value"] is None:
+                        value = ""
+                    else:
+                        value = yesno(info["value"])
                 elif type(info["value"]) is dict:
+                    # TODO what is the use-case for this?
                     printable_value = info["value"]
                     if "name" in printable_value:
                         value = printable_value["name"]
@@ -700,6 +733,7 @@ class Submission(models.Model):
                     value = printable_value
 
                 printable_data.append((label, value))
+
         # finally, check if we have co-sign information to append
         if self.co_sign_data:
             if not (co_signer := self.co_sign_data.get("representation", "")):

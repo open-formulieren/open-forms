@@ -27,6 +27,8 @@ from .factories import (
 
 @temp_private_root()
 class SubmissionTests(TestCase):
+    maxDiff = None
+
     def test_get_merged_data(self):
         submission = SubmissionFactory.create()
         SubmissionStepFactory.create(
@@ -85,7 +87,9 @@ class SubmissionTests(TestCase):
         )
         SubmissionStepFactory.create(
             submission=submission,
-            form_step=FormStepFactory.create(form=submission.form),
+            form_step=FormStepFactory.create(
+                form=submission.form, form_definition=form_definition
+            ),
         )
         actual = submission.get_ordered_data_with_component_type()
         expected = OrderedDict(
@@ -99,6 +103,7 @@ class SubmissionTests(TestCase):
                         "multiple": False,
                         "values": None,
                         "appointments": {},
+                        "decimalLimit": None,
                     },
                 ),
                 (
@@ -110,6 +115,7 @@ class SubmissionTests(TestCase):
                         "multiple": False,
                         "values": None,
                         "appointments": {},
+                        "decimalLimit": None,
                     },
                 ),
                 (
@@ -121,6 +127,7 @@ class SubmissionTests(TestCase):
                         "multiple": False,
                         "values": None,
                         "appointments": {},
+                        "decimalLimit": None,
                     },
                 ),
                 (
@@ -132,6 +139,7 @@ class SubmissionTests(TestCase):
                         "multiple": False,
                         "values": None,
                         "appointments": {},
+                        "decimalLimit": None,
                     },
                 ),
             ]
@@ -162,9 +170,7 @@ class SubmissionTests(TestCase):
         SubmissionStepFactory.create(
             submission=submission,
             data={"key3": True, "key2": "this is text in a text area"},
-            form_step=FormStepFactory.create(
-                form=submission.form, form_definition=form_definition
-            ),
+            form_step__form_definition=form_definition,
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -173,13 +179,11 @@ class SubmissionTests(TestCase):
                 "key": "this is some text",
                 "key2": "this is other text in a text area",
             },
-            form_step=FormStepFactory.create(
-                form=submission.form, form_definition=form_definition
-            ),
+            form_step__form_definition=form_definition,
         )
         SubmissionStepFactory.create(
             submission=submission,
-            form_step=FormStepFactory.create(form=submission.form),
+            form_step__form_definition=form_definition,
         )
         actual = submission.get_ordered_data_with_component_type()
         expected = OrderedDict(
@@ -274,6 +278,7 @@ class SubmissionTests(TestCase):
                     ],
                     "multiple": False,
                     "appointments": {},
+                    "decimalLimit": None,
                 }
             },
         )
@@ -284,7 +289,7 @@ class SubmissionTests(TestCase):
             printable_data[0][0],
         )
         self.assertEqual(
-            "test 1, test 2",
+            "test 1; test 2",
             printable_data[0][1],
         )
 
@@ -343,7 +348,7 @@ class SubmissionTests(TestCase):
             printable_data[0][0],
         )
         self.assertEqual(
-            "test 1, test 2",
+            "test 1; test 2",
             printable_data[0][1],
         )
 

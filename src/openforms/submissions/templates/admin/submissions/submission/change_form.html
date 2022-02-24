@@ -14,7 +14,7 @@
                                 {% with component=info.0 value=info.1 %}
                                 {% if component.type == 'unknown component' %}
                                     <li>{% trans "Unknown component" %}</li>
-                                {% elif component.type in image_components %}
+                                {% elif component.type in image_components and value %}
                                     <li>{{ key }}: <img class='signature-image' src='{{ value }}' alt='{{ key }}'></li>
                                 {% else %}
                                     <li>{{ key }}: {{ value }}</li>
@@ -25,7 +25,7 @@
                             {% for key, value in data.items %}
                                 {% if value.type == 'unknown component' %}
                                     <li>{% trans "Unknown component" %}</li>
-                                {% elif value.type in image_components %}
+                                {% elif value.type in image_components and value.value %}
                                     <li>{{ key }}: <img class='signature-image' src='{{ value.value }}' alt='{{ key }}'></li>
                                 {% else %}
                                     <li>{{ key }}: {{ value.value }}</li>

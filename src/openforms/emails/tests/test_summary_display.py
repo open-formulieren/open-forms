@@ -8,10 +8,12 @@ class SummaryDisplayTest(SimpleTestCase):
         part of a regression test for #990
 
         note this verifies the current situation, which notably does not localise
+
+        note this has been updated for the migration to formatters in #1301
         """
         tests = [
             # single values
-            (None, "None"),
+            (None, ""),
             ("", ""),
             ("abc", "abc"),
             (123, "123"),
@@ -23,20 +25,20 @@ class SummaryDisplayTest(SimpleTestCase):
             (1000000.12, "1000000.12"),  # not localized
             # lists
             ([], ""),
-            ([None], "None"),
-            ([None, None], "None, None"),
-            ([1, 2, 3], "1, 2, 3"),
+            ([None], ""),
+            ([None, None], ""),
+            ([1, 2, 3], "1; 2; 3"),
             # ([1.2, 123.45, 3.14, 1000000.12], f"1,2, 123,45, 3,14, 1000000.12"),# localized
             (
                 [1.2, 123.45, 3.14, 1000000.12],
-                f"1.2, 123.45, 3.14, 1000000.12",
+                "1.2; 123.45; 3.14; 1000000.12",
             ),  # not localized
-            (["", "", ""], ", , "),
-            (["a", "b", "c"], "a, b, c"),
-            ([["a", "b"], "c"], "a, b, c"),
+            (["", "", ""], ""),
+            (["a", "b", "c"], "a; b; c"),
+            ([["a", "b"], "c"], "a; b; c"),
             (
                 [{"originalName": "foo.txt"}, {"originalName": "bar.txt"}],
-                "foo.txt, bar.txt",
+                "foo.txt; bar.txt",
             ),
         ]
         template = Template("{% display_value value %}")

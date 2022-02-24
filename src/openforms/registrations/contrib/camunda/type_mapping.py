@@ -46,9 +46,9 @@ TYPE_MAP = {
     "textarea": to_str,
     "textfield": to_str,
     "iban": to_str,
-    "date": lambda c, value: parser.parse(value).date(),
+    "date": lambda c, value: parser.parse(value).date() if value else None,
     "signature": to_str,  # TODO: file like obj?
-    "time": lambda c, value: parser.parse(value).time(),
+    "time": lambda c, value: parser.parse(value).time() if value else None,
     "number": noop,
     "phoneNumber": to_str,
     "bsn": to_str,
@@ -57,6 +57,7 @@ TYPE_MAP = {
     "select": select,
     "radio": to_str,
     "selectboxes": selectboxes,
+    "checkbox": noop,
     "email": to_str,
     "map": noop,  # list of coordinates (lng, lat) in float format
     "password": to_str,
@@ -65,11 +66,18 @@ TYPE_MAP = {
 }
 
 
+def convert_if_not_none(converter: callable, component: dict, value: Any) -> Any:
+    if value is None:
+        return value
+    else:
+        return converter(component, value)
+
+
 def to_python(component: Dict[str, Any], value: Any) -> Any:
     converter = TYPE_MAP.get(component["type"], to_str)
 
     multiple = component.get("multiple", False)
     if multiple:
-        return [converter(component, x) for x in value]
+        return [convert_if_not_none(converter, component, x) for x in value]
     else:
-        return converter(component, value)
+        return convert_if_not_none(converter, component, value)
