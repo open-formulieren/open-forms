@@ -160,18 +160,18 @@ jobs:
       - name: Build the test Docker image
         run: |
           docker build . \
-            --tag $IMAGE_NAME:$RELEASE_VERSION-test \
+            --tag $IMAGE_NAME:test \
             --build-arg ENVIRONMENT=ci \
             --build-arg COMMIT_HASH=${{ steps.vars.outputs.git_hash }} \
             --build-arg RELEASE=${{ steps.vars.outputs.tag }} \
             --build-arg SDK_RELEASE=${{ steps.vars.outputs.sdk_release }}
 
-      - run: docker image save -o image.tar $IMAGE_NAME:${{ steps.vars.outputs.tag }}-test
+      - run: docker image save -o image-test.tar $IMAGE_NAME:test
       - name: Store image artifact
         uses: actions/upload-artifact@v2
         with:
-          name: docker-image-test
-          path: image.tar
+          name: docker-image
+          path: image-test.tar
           retention-days: 1
 
   oas-up-to-date:
@@ -304,6 +304,4 @@ jobs:
         run: docker push $IMAGE_NAME:$RELEASE_VERSION
 
       - name: Push the Docker image (test)
-        env:
-          RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
-        run: docker push $IMAGE_NAME:$RELEASE_VERSION-test
+        run: docker push $IMAGE_NAME:test

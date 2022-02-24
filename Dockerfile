@@ -4,14 +4,12 @@
 # image minimal in size.
 
 # must be at the top to use it in FROM clauses
-ARG ENVIRONMENT_SETTINGS=production
 ARG SDK_RELEASE=latest
 FROM openformulieren/open-forms-sdk:${SDK_RELEASE} as sdk-image
 
 # Stage 1 - Backend build environment
 # includes compilers and build tooling to create the environment
 FROM python:3.8-slim-buster AS backend-build
-ARG ENVIRONMENT_SETTINGS
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         pkg-config \
@@ -40,7 +38,9 @@ RUN mkdir /app/src
 RUN pip install pip -U
 COPY ./requirements /app/requirements
 RUN pip install -r requirements/setuptools.txt
-RUN pip install -r requirements/${ENVIRONMENT_SETTINGS}.txt
+
+ARG ENVIRONMENT=production
+RUN pip install -r requirements/${ENVIRONMENT}.txt
 
 # Stage 2 - Install frontend deps and build assets
 FROM node:15-buster AS frontend-build
