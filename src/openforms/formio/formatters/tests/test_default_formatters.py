@@ -24,7 +24,6 @@ class DefaultFormatterTestCase(TestCase):
         data = load_json("all_components_data.json")
         expected = {
             "bsn": "123456782",
-            "map": "52.3782943985417; 4.899629917973432",
             "date": "24 december 2021",
             "file": "",
             "iban": "RO09 BCYP 0000 0012 3456 7890",
