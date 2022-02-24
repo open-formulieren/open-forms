@@ -66,7 +66,7 @@ TYPE_MAP = {
 }
 
 
-def convert_if_not_none(converter, component, value):
+def convert_if_not_none(converter: callable, component: dict, value: Any) -> Any:
     if value is None:
         return value
     else:

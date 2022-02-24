@@ -33,12 +33,17 @@ def join_mapped(value: Any, formatter: callable = str, separator: str = ", ") ->
 
 
 class FormioFormatter(AbstractBasePlugin):
-    multiple_separator = "; "  # ", "
+    multiple_separator = "; "
+    """
+    Separator to use for multi-value components.
+
+    Defaults to semi-colon, as formatted numbers already use comma's which hurts
+    readability.
+    """
 
     # there is an interesting open question on what to do for empty values
     # currently we're eating them in normalise_value_to_list()
     empty_values = [None, ""]
-    # empty_display = ""  # _("empty")
 
     def is_empty_value(self, component: dict, value: Any):
         return value in self.empty_values

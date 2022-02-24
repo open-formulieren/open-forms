@@ -29,7 +29,8 @@ from weasyprint import HTML
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.formatters.service import format_value
+from openforms.contrib.kvk.validators import validate_kvk
+from openforms.formio.formatters.service import filter_printable, format_value
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
@@ -39,8 +40,6 @@ from openforms.utils.validators import (
     validate_bsn,
 )
 
-from ..contrib.kvk.validators import validate_kvk
-from ..formio.formatters.printable import filter_printable
 from .constants import RegistrationStatuses
 from .pricing import get_submission_price
 from .query import SubmissionManager

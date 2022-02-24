@@ -1,8 +1,9 @@
+from django.test import SimpleTestCase
+
 from ..printable import filter_printable
-from .mixins import BaseFormatterTestCase
 
 
-class PritableUtilsTest(BaseFormatterTestCase):
+class PrintableUtilsTest(SimpleTestCase):
     def test_filter_printable(self):
         components = [
             # some printable

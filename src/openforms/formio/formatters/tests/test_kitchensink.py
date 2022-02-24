@@ -11,7 +11,8 @@ from openforms.submissions.tests.factories import (
 
 from ...utils import iter_components
 from ..printable import filter_printable
-from .mixins import BaseFormatterTestCase, load_json
+from .mixins import BaseFormatterTestCase
+from .utils import load_json
 
 
 class KitchensinkFormatterTestCase(BaseFormatterTestCase):
@@ -82,8 +83,8 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
         expected_keys.remove("numberEmpty")
         expected_keys.remove("currencyEmpty")
 
-        # self.assertEqual(set(text_printed.keys()), set(expected_labels))
-        # self.assertEqual(set(data.keys()), set(expected_keys))
+        # self.assertEqual(set(text_printed.keys()), expected_labels)
+        # self.assertEqual(set(data.keys()), expected_keys)
 
         submission = SubmissionFactory.from_components(
             configuration["components"], submitted_data=data, completed=True
@@ -115,7 +116,7 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
         printable_data = submission.get_printable_data()
 
         # check if we have something for all components
-        self.assertEqual(set(d[0] for d in printable_data), set(expected_labels))
+        self.assertEqual(set(d[0] for d in printable_data), expected_labels)
 
         text_values = dict()
         for label, value in printable_data:

@@ -170,9 +170,7 @@ class SubmissionTests(TestCase):
         SubmissionStepFactory.create(
             submission=submission,
             data={"key3": True, "key2": "this is text in a text area"},
-            form_step=FormStepFactory.create(
-                form=submission.form, form_definition=form_definition
-            ),
+            form_step__form_definition=form_definition,
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -181,15 +179,11 @@ class SubmissionTests(TestCase):
                 "key": "this is some text",
                 "key2": "this is other text in a text area",
             },
-            form_step=FormStepFactory.create(
-                form=submission.form, form_definition=form_definition
-            ),
+            form_step__form_definition=form_definition,
         )
         SubmissionStepFactory.create(
             submission=submission,
-            form_step=FormStepFactory.create(
-                form=submission.form, form_definition=form_definition
-            ),
+            form_step__form_definition=form_definition,
         )
         actual = submission.get_ordered_data_with_component_type()
         expected = OrderedDict(

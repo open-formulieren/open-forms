@@ -1,19 +1,6 @@
-import json
-import os
-
 from django.test import TestCase
 
 from ...utils import iter_components
-
-FILES_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "files",
-)
-
-
-def load_json(filename: str):
-    with open(os.path.join(FILES_DIR, filename), "r") as infile:
-        return json.load(infile)
 
 
 class BaseFormatterTestCase(TestCase):

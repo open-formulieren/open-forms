@@ -1,6 +1,6 @@
 from typing import Iterable
 
-non_printable_component_types = [
+NON_PRINTABLE_COMPONENT_TYPES = [
     "button",
     "htmlelement",
     "content",
@@ -15,7 +15,7 @@ non_printable_component_types = [
 def is_printable(component: dict) -> bool:
     # for safety, we assume every component type to be printable unless blacklisted
     try:
-        return component["type"] not in non_printable_component_types
+        return component["type"] not in NON_PRINTABLE_COMPONENT_TYPES
     except KeyError:
         return False
 
