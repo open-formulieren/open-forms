@@ -655,12 +655,15 @@ class Submission(models.Model):
 
                 elif info["type"] == "selectboxes":
                     selected_values: Dict[str, bool] = info["value"]
-                    selected_labels = [
-                        entry["label"]
-                        for entry in info["values"]
-                        if selected_values.get(entry["value"])
-                    ]
-                    value = "; ".join(selected_labels)
+                    if not selected_values:
+                        value = ""
+                    else:
+                        selected_labels = [
+                            entry["label"]
+                            for entry in info["values"]
+                            if selected_values.get(entry["value"])
+                        ]
+                        value = "; ".join(selected_labels)
 
                 elif info["type"] == "number" or info["type"] == "currency":
                     if info["type"] == "currency":

@@ -117,8 +117,11 @@ class PhoneNumberFormatter(FormioFormatter):
 @register("file")
 class FileFormatter(FormioFormatter):
     def normalise_value_to_list(self, component: dict, value: Any):
-        # file component is always a list
-        return value
+        if value is None:
+            return []
+        else:
+            # file component is always a list
+            return value
 
     def process_result(self, component: Dict, formatted: str) -> str:
         # prefix joined filenames to match legacy
