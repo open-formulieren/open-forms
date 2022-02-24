@@ -697,7 +697,10 @@ class Submission(models.Model):
                     else:
                         value = ""
                 elif info["type"] == "checkbox":
-                    value = yesno(info["value"])
+                    if info["value"] is None:
+                        value = ""
+                    else:
+                        value = yesno(info["value"])
                 elif type(info["value"]) is dict:
                     # TODO what is the use-case for this?
                     printable_value = info["value"]

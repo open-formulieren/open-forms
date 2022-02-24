@@ -1,7 +1,6 @@
 {
   "bsn": "111222333",
   "bsnEmpty": "",
-  "bsnHidden": "111222333",
   "bsnMulti": [
     "111222333",
     "123456782"
@@ -12,11 +11,8 @@
   "checkbox": true,
   "checkboxDefault": true,
   "checkboxEmpty": false,
-  "checkboxHidden": true,
   "currency": 1234.56,
-  "currencyHidden": 123,
   "currencyDecimal": 1234.56,
-  "currencyDecimalHidden": 123.45,
   "currencyDecimalMulti": [
     1234.56,
     1,
@@ -32,7 +28,6 @@
   ],
   "date": "2022-02-14",
   "dateEmpty": "",
-  "dateHidden": "2022-02-14",
   "dateMulti": [
     "2022-02-14",
     "2022-02-15",
@@ -43,7 +38,6 @@
   ],
   "email": "test@example.com",
   "emailEmpty": "",
-  "emailHidden": "test@example.com",
   "emailMulti": [
     "aaa@aaa.nl",
     "bbb@bbb.nl"
@@ -74,7 +68,6 @@
     }
   ],
   "fileUploadEmpty": [],
-  "fileUploadHidden": [],
   "fileUploadMulti": [
     {
       "data": {
@@ -112,7 +105,6 @@
   "fileUploadMultiEmpty": [],
   "iban": "NL02ABNA0123456789",
   "ibanEmpty": "",
-  "ibanHidden": "NL02ABNA0123456789",
   "ibanMulti": [
     "NL02ABNA0123456789",
     "BE71096123456769"
@@ -121,7 +113,6 @@
     null
   ],
   "licensePlateEmpty": "",
-  "licensePlateHidden": "aa-bb-12",
   "licensePlateMulti": [
     "aa-bb-12",
     "1-aaa-12",
@@ -144,7 +135,6 @@
     4.9020928
   ],
   "number": 1234,
-  "numberHidden": 1234,
   "numberDecimal": 1234.56,
   "numberDecimalMulti": [
     1234.56,
@@ -164,7 +154,6 @@
   ],
   "password": "secret",
   "passwordEmpty": "",
-  "passwordHidden": "secret",
   "passwordMulti": [
     "secret",
     "password"
@@ -174,7 +163,6 @@
   ],
   "phoneNumber": "0123456789",
   "phoneNumberEmpty": "",
-  "phoneNumberHidden": "0123456789",
   "phoneNumberMulti": [
     "0123456789",
     "0123456780"
@@ -184,7 +172,6 @@
   ],
   "postcode": "1234 ab",
   "postcodeEmpty": "",
-  "postcodeHidden": "1234 ab",
   "postcodeMulti": [
     "1234 ab",
     "4321 ba"
@@ -194,7 +181,6 @@
   ],
   "radio": "aaa",
   "radioEmpty": "",
-  "radioHidden": "aaa",
   "select": "aaa",
   "selectBoxes": {
     "aaa": true,
@@ -205,12 +191,7 @@
     "aaa": false,
     "bbb": false
   },
-  "selectBoxesHidden": {
-    "aaa": true,
-    "bbb": false
-  },
   "selectEmpty": "",
-  "selectHidden": "aaa",
   "selectMulti": [
     "aaa",
     "bbb"
@@ -221,7 +202,7 @@
   "signatureHidden": "",
   "textArea": "text with newline\ntext with blank line\n\ntext with newline\ntext with double blank line\n\n\ntext with newline\n",
   "textAreaEmpty": "",
-  "textAreaHidden": "line 1\n\nline 2\n",
+  "textAreaHidden": "line 1\\n\\nline 2\\n",
   "textAreaMulti": [
     "text no newline",
     "single line with newline\n"
@@ -231,7 +212,6 @@
   ],
   "textField": "lower case text",
   "textFieldEmpty": "",
-  "textFieldHidden": "lower case text",
   "textFieldMulti": [
     "lower case text",
     "Upper Case Text"
@@ -245,7 +225,6 @@
   ],
   "time": "12:34:00",
   "timeEmpty": "",
-  "timeHidden": "12:34:00",
   "timeMulti": [
     "12:34:00",
     "21:43:00"
