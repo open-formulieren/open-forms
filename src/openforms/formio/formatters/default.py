@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, Iterable, List, TypedDict, Union
+from typing import Any, Dict, Iterable, List, Union
 
 from django.template.defaultfilters import date as fmt_date, time as fmt_time, yesno
 from django.utils.dateparse import parse_date, parse_time
@@ -11,16 +11,11 @@ from glom import glom
 
 from openforms.plugins.plugin import AbstractBasePlugin
 
+from ..typing import OptionDict
 from .registry import register
 
 
-class ValueLabelDict(TypedDict):
-    # TODO do we want this?
-    value: str
-    label: str
-
-
-def get_value_label(possible_values: List[ValueLabelDict], value: str) -> str:
+def get_value_label(possible_values: List[OptionDict], value: str) -> str:
     for possible_value in possible_values:
         if possible_value["value"] == value:
             return possible_value["label"]
