@@ -2,6 +2,42 @@
 Changelog
 =========
 
+1.0.0-rc.4 (2022-02-25)
+=======================
+
+Release candidate 4.
+
+A couple of fixes in the previous release candidates broke new things, and thanks to
+the extensive testing some more issues were discovered.
+
+Bugfixes
+--------
+
+* [#1337] Made the component key for form fields required
+* [#1348] Fixed restoring a form with multiple steps/logics attached
+* [#1349] Fixed missing admin-index menu in import form and password change template
+* [#1368] Updated translations
+* [#1371] Fixed Digid login by upgrading django-digid-eherkenning package
+
+New features
+------------
+
+* [#1264] Set up and documented the Open Forms versioning policy
+* [#1348] Improved interface for form version history/restore
+* [#1363] User uploads as registration e-mail attachments is now configurable
+* [#1367] Implemented hashing identifying attributes when they are not actively used
+
+Project maintenance
+-------------------
+
+* Ignore some management commands for coverage
+* Add (local development) install instruction
+* Open redirect is fixed in cookie-consent, our monkeypatch is no longer needed
+* Further automation to bundling the correct SDK release in the Open Forms image
+  This simplifies deployment quite a bit.
+* [#1301] Extensive testing of a new approach to display the submitted data, still opt-in.
+* Add more specific Formio component type hints
+
 1.0.0-rc.3 (2022-02-16)
 =======================
 
