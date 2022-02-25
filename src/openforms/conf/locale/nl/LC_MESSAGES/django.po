@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-23 10:30+0100\n"
-"PO-Revision-Date: 2022-02-23 10:35+0020\n"
+"POT-Creation-Date: 2022-02-25 10:19+0100\n"
+"PO-Revision-Date: 2022-02-25 10:23+0020\n"
 "Last-Translator: Sergei Maertens <sergei@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
 "Language: nl\n"
@@ -545,15 +545,15 @@ msgstr ""
 msgid "Optional logo"
 msgstr "Optioneel logo"
 
-#: openforms/authentication/api/views.py:14
+#: openforms/authentication/api/views.py:17
 msgid "List available authentication plugins"
 msgstr "Toon alle beschikbare authenticatieplugins"
 
-#: openforms/authentication/api/views.py:42
+#: openforms/authentication/api/views.py:45
 msgid "Delete session"
 msgstr "Sessie verwijderen"
 
-#: openforms/authentication/api/views.py:44
+#: openforms/authentication/api/views.py:47
 msgid ""
 "Calling this endpoint will clear the current user session and delete the "
 "session cookie."
@@ -565,7 +565,7 @@ msgstr "Authenticatiemodule"
 
 #: openforms/authentication/constants.py:15
 #: openforms/authentication/contrib/demo/plugin.py:34
-#: openforms/submissions/models.py:183 stuf/stuf_bg/constants.py:21
+#: openforms/submissions/models.py:197 stuf/stuf_bg/constants.py:21
 msgid "BSN"
 msgstr "BSN"
 
@@ -573,12 +573,12 @@ msgstr "BSN"
 #: openforms/authentication/contrib/demo/plugin.py:43
 #: openforms/contrib/kvk/validators.py:35
 #: openforms/contrib/kvk/validators.py:80
-#: openforms/contrib/kvk/validators.py:84 openforms/submissions/models.py:190
+#: openforms/contrib/kvk/validators.py:84 openforms/submissions/models.py:204
 msgid "KvK number"
 msgstr "KvK-nummer"
 
 #: openforms/authentication/constants.py:17
-#: openforms/submissions/models.py:197
+#: openforms/submissions/models.py:211
 msgid "Pseudo ID"
 msgstr "Pseudo-ID"
 
@@ -906,8 +906,8 @@ msgstr ""
 "onderwerp worden opgegeven."
 
 #: openforms/config/models.py:65 openforms/emails/models.py:30
-#: openforms/submissions/models.py:797 openforms/submissions/models.py:895
-#: openforms/submissions/models.py:981
+#: openforms/submissions/models.py:856 openforms/submissions/models.py:954
+#: openforms/submissions/models.py:1040
 msgid "content"
 msgstr "inhoud"
 
@@ -1895,10 +1895,16 @@ msgstr ""
 msgid "FormIO formatters"
 msgstr "FormIO veldopmaak"
 
-#: openforms/formio/formatters/default.py:97
-#: openforms/submissions/models.py:608
-msgid "empty"
-msgstr "leeg"
+#: openforms/formio/formatters/default.py:129
+#: openforms/submissions/models.py:626
+#, python-format
+msgid "attachment: %s"
+msgstr "bijlage: %s"
+
+#: openforms/formio/formatters/default.py:213
+#: openforms/submissions/models.py:690
+msgid "signature added"
+msgstr "handtekening toegevoegd"
 
 #: openforms/forms/admin/form.py:43
 msgid "is deleted"
@@ -2501,9 +2507,9 @@ msgstr "U kunt deze hieronder weer bewerken."
 #: openforms/forms/models/form_step.py:17
 #: openforms/forms/models/form_version.py:34
 #: openforms/forms/models/pricing_logic.py:30 openforms/payments/models.py:78
-#: openforms/products/models/product.py:17 openforms/submissions/models.py:159
-#: openforms/submissions/models.py:755 openforms/submissions/models.py:893
-#: openforms/submissions/models.py:961
+#: openforms/products/models/product.py:17 openforms/submissions/models.py:173
+#: openforms/submissions/models.py:814 openforms/submissions/models.py:952
+#: openforms/submissions/models.py:1020
 msgid "UUID"
 msgstr "UUID"
 
@@ -2882,7 +2888,7 @@ msgstr ""
 "JSON-logic expressie die evalueert als \"waar\" om deze prijs toe te passen."
 
 #: openforms/forms/models/pricing_logic.py:43
-#: openforms/products/models/product.py:23 openforms/submissions/models.py:218
+#: openforms/products/models/product.py:23 openforms/submissions/models.py:238
 msgid "price"
 msgstr "prijs"
 
@@ -4251,7 +4257,6 @@ msgstr ""
 "bestandsgrootte onder de maximale e-mailbestandsgrootte blijft."
 
 #: openforms/registrations/contrib/email/models.py:25
-#| msgid "Email security configuration"
 msgid "Email registration configuration"
 msgstr "E-mailregistratieconfiguratie"
 
@@ -4642,53 +4647,53 @@ msgstr "ZGW API's"
 msgid "All"
 msgstr "Alle"
 
-#: openforms/submissions/admin.py:191
+#: openforms/submissions/admin.py:192
 msgid "Succesfully processed"
 msgstr "Successvolle verwerking"
 
-#: openforms/submissions/admin.py:196
+#: openforms/submissions/admin.py:197
 msgid "Registration backend"
 msgstr "registratie backend"
 
-#: openforms/submissions/admin.py:204
+#: openforms/submissions/admin.py:205
 msgid "Appointment status"
 msgstr "Afspraakstatus"
 
-#: openforms/submissions/admin.py:212
+#: openforms/submissions/admin.py:213
 msgid "Appointment Id"
 msgstr "Afspraak ID"
 
-#: openforms/submissions/admin.py:221
+#: openforms/submissions/admin.py:222
 msgid "Appointment error information"
 msgstr "Afspraak foutmelding"
 
-#: openforms/submissions/admin.py:243
+#: openforms/submissions/admin.py:244
 msgid "You can only export the submissions of the same form type."
 msgstr ""
 "Je kan alleen de inzendingen van één enkel formuliertype tegelijk "
 "exporteren."
 
-#: openforms/submissions/admin.py:254
+#: openforms/submissions/admin.py:255
 #, python-format
 msgid "Export selected %(verbose_name_plural)s as CSV-file."
 msgstr "Exporteer geselecteerde %(verbose_name_plural)s als CSV-bestand."
 
-#: openforms/submissions/admin.py:261
+#: openforms/submissions/admin.py:262
 #, python-format
 msgid "Export selected %(verbose_name_plural)s as Excel-file."
 msgstr "Exporteer geselecteerde %(verbose_name_plural)s als Excel-bestand."
 
-#: openforms/submissions/admin.py:268
+#: openforms/submissions/admin.py:269
 #, python-format
 msgid "Export selected %(verbose_name_plural)s as JSON-file."
 msgstr "Exporteer geselecteerde %(verbose_name_plural)s als JSON-bestand."
 
-#: openforms/submissions/admin.py:275
+#: openforms/submissions/admin.py:276
 #, python-format
 msgid "Export selected %(verbose_name_plural)s as XML-file."
 msgstr "Exporteer geselecteerde %(verbose_name_plural)s als XML-bestand."
 
-#: openforms/submissions/admin.py:283
+#: openforms/submissions/admin.py:284
 #, python-brace-format
 msgid "Retrying processing flow for {count} {verbose_name}"
 msgid_plural "Retrying processing flow for {count} {verbose_name_plural}"
@@ -4697,12 +4702,12 @@ msgstr[0] ""
 msgstr[1] ""
 "Nieuwe verwerkingspoging voor {count} {verbose_name_plural} wordt gestart."
 
-#: openforms/submissions/admin.py:296
+#: openforms/submissions/admin.py:297
 #, python-format
 msgid "Retry processing %(verbose_name_plural)s."
 msgstr "Probeer %(verbose_name_plural)s opnieuw te verwerken"
 
-#: openforms/submissions/admin.py:358 openforms/submissions/admin.py:404
+#: openforms/submissions/admin.py:359 openforms/submissions/admin.py:405
 #: openforms/submissions/api/serializers.py:371
 msgid "File size"
 msgstr "Bestandsgrootte"
@@ -4728,7 +4733,7 @@ msgid "Amount (to be) paid"
 msgstr "Het te betalen bedrag"
 
 #: openforms/submissions/api/serializers.py:117
-#: openforms/submissions/models.py:768
+#: openforms/submissions/models.py:827
 msgid "Submission steps"
 msgstr "Inzendingsstappen"
 
@@ -5018,23 +5023,23 @@ msgstr "Haal mede-ondertekeningstatus op"
 msgid "Complete a submission"
 msgstr "Inzending voltooien"
 
-#: openforms/submissions/api/viewsets.py:213
+#: openforms/submissions/api/viewsets.py:214
 msgid "Get the submission processing status"
 msgstr "De verwerkingsstatus van de inzending ophalen"
 
-#: openforms/submissions/api/viewsets.py:225
+#: openforms/submissions/api/viewsets.py:226
 msgid "Time-based authentication token"
 msgstr "Op tijd gebaseerde authenticatietoken"
 
-#: openforms/submissions/api/viewsets.py:254
+#: openforms/submissions/api/viewsets.py:255
 msgid "Suspend a submission"
 msgstr "Inzending onderbreken"
 
-#: openforms/submissions/api/viewsets.py:297
+#: openforms/submissions/api/viewsets.py:298
 msgid "Retrieve step details"
 msgstr "Stap details weergeven"
 
-#: openforms/submissions/api/viewsets.py:299
+#: openforms/submissions/api/viewsets.py:300
 msgid ""
 "The details of a particular submission step always return the related form "
 "step configuration. If there is no data yet for the step, the ID will be "
@@ -5044,15 +5049,15 @@ msgstr ""
 "formulierstap configuratie terug. Indien er nog geen gegevens zijn voor de "
 "stap dan zal het ID `null` zijn."
 
-#: openforms/submissions/api/viewsets.py:353
+#: openforms/submissions/api/viewsets.py:354
 msgid "Store submission step data"
 msgstr "Inzendingsstap gegevens bewaren"
 
-#: openforms/submissions/api/viewsets.py:385
+#: openforms/submissions/api/viewsets.py:386
 msgid "Apply/check form logic"
 msgstr "Pas formulier logica toe"
 
-#: openforms/submissions/api/viewsets.py:386
+#: openforms/submissions/api/viewsets.py:387
 msgid "Apply/check the logic rules specified on the form step."
 msgstr ""
 "Pas de logische regels toe die zijn gespecificeerd in de formulierstap."
@@ -5091,56 +5096,66 @@ msgstr "Mislukt, gebruiker moet terugkeren naar het begin van het formulier. "
 msgid "Success, proceed to confirmation page."
 msgstr "Succes, ga verder naar de bevestigingspagina."
 
-#: openforms/submissions/models.py:164
+#: openforms/submissions/models.py:178
 msgid "form URL"
 msgstr "formulier URL"
 
-#: openforms/submissions/models.py:168
+#: openforms/submissions/models.py:182
 msgid "URL where the user initialized the submission."
 msgstr "URL waar de gebruiker de inzending is gestart."
 
-#: openforms/submissions/models.py:171 openforms/submissions/models.py:759
-#: openforms/submissions/models.py:907 openforms/submissions/models.py:992
+#: openforms/submissions/models.py:185 openforms/submissions/models.py:818
+#: openforms/submissions/models.py:966 openforms/submissions/models.py:1051
 msgid "created on"
 msgstr "aangemaakt op"
 
-#: openforms/submissions/models.py:172
+#: openforms/submissions/models.py:186
 msgid "completed on"
 msgstr "afgerond op"
 
-#: openforms/submissions/models.py:173
+#: openforms/submissions/models.py:187
 msgid "suspended on"
 msgstr "onderbroken op"
 
-#: openforms/submissions/models.py:177
+#: openforms/submissions/models.py:191
 msgid "auth plugin"
 msgstr "authenticatieplugin"
 
-#: openforms/submissions/models.py:180
+#: openforms/submissions/models.py:194
 msgid "The plugin used by the user for authentication."
 msgstr "De plugin die gebruikt is voor authenticatie."
 
-#: openforms/submissions/models.py:200
+#: openforms/submissions/models.py:214
 msgid "Pseudo ID provided by authentication with eIDAS"
 msgstr "Pseudo-ID verkregen vanuit eIDAS"
 
-#: openforms/submissions/models.py:203
+#: openforms/submissions/models.py:217
+#| msgid "Authentication attribute"
+msgid "identifying attributes hashed"
+msgstr "Identificerende attributen gehasht"
+
+#: openforms/submissions/models.py:218
+#| msgid "Provides authentication attributes"
+msgid "are the auth/identifying attributes hashed?"
+msgstr "Zijn de authenticatie-/identificerende gegevens gehasht?"
+
+#: openforms/submissions/models.py:223
 msgid "co-sign data"
 msgstr "Mede-ondertekenaargegevens"
 
-#: openforms/submissions/models.py:207
+#: openforms/submissions/models.py:227
 msgid "Authentication details of a co-signer."
 msgstr "Authenticatiedetails van een mede-ondertekenaar."
 
-#: openforms/submissions/models.py:210
+#: openforms/submissions/models.py:230
 msgid "prefill data"
 msgstr "Prefillgegevens"
 
-#: openforms/submissions/models.py:213
+#: openforms/submissions/models.py:233
 msgid "Data used for prefills."
 msgstr "Gegevens gebruikt in prefill."
 
-#: openforms/submissions/models.py:225
+#: openforms/submissions/models.py:245
 msgid ""
 "Cost of this submission. Either derived from the related product, or "
 "evaluated from price logic rules. The price is calculated and saved on "
@@ -5150,11 +5165,11 @@ msgstr ""
 "of door logicaregels. De prijs wordt berekend en opgeslagen op de inzending "
 "zodra deze is afgerond."
 
-#: openforms/submissions/models.py:233
+#: openforms/submissions/models.py:253
 msgid "last register attempt date"
 msgstr "laatste poging tot doorzetting"
 
-#: openforms/submissions/models.py:237
+#: openforms/submissions/models.py:257
 msgid ""
 "The last time the submission registration was attempted with the backend.  "
 "Note that this date will be updated even if the registration is not "
@@ -5163,11 +5178,11 @@ msgstr ""
 "De laatste poging waarop de inzending is doorgezet naar de registratie "
 "backend. Deze datum wordt ook bijgewerkt als de doorzetting niet is gelukt."
 
-#: openforms/submissions/models.py:242
+#: openforms/submissions/models.py:262
 msgid "registration backend result"
 msgstr "registratie backend resultaat"
 
-#: openforms/submissions/models.py:246
+#: openforms/submissions/models.py:266
 msgid ""
 "Contains data returned by the registration backend while registering the "
 "submission data."
@@ -5175,22 +5190,22 @@ msgstr ""
 "Bevat de gegevens zoals teruggegeven door de registratie backend bij het "
 "versturen van de inzending."
 
-#: openforms/submissions/models.py:250
+#: openforms/submissions/models.py:270
 msgid "registration backend status"
 msgstr "registratie backend status"
 
-#: openforms/submissions/models.py:255
+#: openforms/submissions/models.py:275
 msgid ""
 "Indication whether the registration in the configured backend was "
 "successful."
 msgstr ""
 "Indicatie of de doorzetting naar de registratie backend succesvol was."
 
-#: openforms/submissions/models.py:259
+#: openforms/submissions/models.py:279
 msgid "public registration reference"
 msgstr "publieke referentie"
 
-#: openforms/submissions/models.py:263
+#: openforms/submissions/models.py:283
 msgid ""
 "The registration reference communicated to the end-user completing the form."
 " This reference is intended to be unique and the reference the end-user uses"
@@ -5207,33 +5222,33 @@ msgstr ""
 "deze referentie wordt getoond aan de eindgebruiker en gebruikt als "
 "betalingskenmerk!"
 
-#: openforms/submissions/models.py:273
+#: openforms/submissions/models.py:293
 msgid "confirmation email sent"
 msgstr "Bevestigingse-mail verstuurd"
 
-#: openforms/submissions/models.py:275
+#: openforms/submissions/models.py:295
 msgid "Indicates whether the confirmation email has been sent."
 msgstr "Geeft aan of de bevestigingse-mail al verstuurd is."
 
-#: openforms/submissions/models.py:279
+#: openforms/submissions/models.py:299
 msgid "is cleaned"
 msgstr "is opgeschoond"
 
-#: openforms/submissions/models.py:282
+#: openforms/submissions/models.py:302
 msgid ""
 "Indicates whether sensitive data (if there was any) has been removed from "
 "this submission."
 msgstr "Geeft aan of gevoelige gegevens verwijders zijn van deze inzending."
 
-#: openforms/submissions/models.py:289
+#: openforms/submissions/models.py:309
 msgid "on completion task ID"
 msgstr "bij voltooiing taak-ID"
 
-#: openforms/submissions/models.py:294
+#: openforms/submissions/models.py:314
 msgid "on completion task IDs"
 msgstr "bij voltooiing taak-ID's"
 
-#: openforms/submissions/models.py:297
+#: openforms/submissions/models.py:317
 msgid ""
 "Celery task IDs of the on_completion workflow. Use this to inspect the state"
 " of the async jobs."
@@ -5241,11 +5256,11 @@ msgstr ""
 "Celery-taak-ID's van de on_completion-workflow. Gebruik dit om de status van"
 " de asynchrone taken te inspecteren. "
 
-#: openforms/submissions/models.py:302
+#: openforms/submissions/models.py:322
 msgid "needs on_completion retry"
 msgstr "verwerking opnieuw proberen"
 
-#: openforms/submissions/models.py:305
+#: openforms/submissions/models.py:325
 msgid ""
 "Flag to track if the on_completion_retry chain should be invoked. This is "
 "scheduled via celery-beat."
@@ -5253,70 +5268,65 @@ msgstr ""
 "Vlag die aangeeft of een nieuwe verwerkingspoging nodig is. Dit wordt "
 "automatisch uitgevoerd op de achtergrond."
 
-#: openforms/submissions/models.py:318 openforms/submissions/models.py:806
-#: openforms/submissions/models.py:965
+#: openforms/submissions/models.py:338 openforms/submissions/models.py:865
+#: openforms/submissions/models.py:1024
 msgid "submission"
 msgstr "inzending"
 
-#: openforms/submissions/models.py:319
+#: openforms/submissions/models.py:339
 msgid "submissions"
 msgstr "inzendingen"
 
-#: openforms/submissions/models.py:329
+#: openforms/submissions/models.py:349
 #, python-brace-format
 msgid "{pk} - started on {started}"
 msgstr "{pk} - gestart op {started}"
 
-#: openforms/submissions/models.py:330
+#: openforms/submissions/models.py:350
 msgid "(unsaved)"
 msgstr "(niet bewaard)"
 
-#: openforms/submissions/models.py:331
+#: openforms/submissions/models.py:351
 msgid "(no timestamp yet)"
 msgstr "(nog geen datum)"
 
-#: openforms/submissions/models.py:601
-#, python-format
-msgid "attachment: %s"
-msgstr "bijlage: %s"
-
-#: openforms/submissions/models.py:682
+#: openforms/submissions/models.py:741
 msgid "Co-signed by"
 msgstr "Mede-ondertekend door"
 
-#: openforms/submissions/models.py:758
+#: openforms/submissions/models.py:817
 msgid "data"
 msgstr "gegevens"
 
-#: openforms/submissions/models.py:760
+#: openforms/submissions/models.py:819
 msgid "modified on"
 msgstr "gewijzigd op"
 
-#: openforms/submissions/models.py:767
+#: openforms/submissions/models.py:826
 msgid "Submission step"
 msgstr "Inzendingsstap"
 
-#: openforms/submissions/models.py:792
+#: openforms/submissions/models.py:851
 msgid "title"
 msgstr "titel"
 
-#: openforms/submissions/models.py:794
+#: openforms/submissions/models.py:853
 msgid "Title of the submission report"
 msgstr "Titel van het document"
 
-#: openforms/submissions/models.py:799
+#: openforms/submissions/models.py:858
 msgid "Content of the submission report"
 msgstr "Inhoud van het document"
 
-#: openforms/submissions/models.py:807
+#: openforms/submissions/models.py:866
 msgid "Submission the report is about."
 msgstr "De inzending die hoort bij dit document."
 
-#: openforms/submissions/models.py:811
+#: openforms/submissions/models.py:870
 msgid "last accessed"
 msgstr "laatst gedownload"
 
-#: openforms/submissions/models.py:815
+#: openforms/submissions/models.py:874
 msgid ""
 "When the submission report was last accessed. This value is updated when the"
 " report is downloaded."
@@ -5324,11 +5334,11 @@ msgstr ""
 "Datum waarom het document voor het laatst is opgevraagd. Deze waarde wordt "
 "bijgewerkt zodra het document wordt gedownload."
 
-#: openforms/submissions/models.py:820
+#: openforms/submissions/models.py:879
 msgid "task id"
 msgstr "Taak ID"
 
-#: openforms/submissions/models.py:823
+#: openforms/submissions/models.py:882
 msgid ""
 "ID of the celery task creating the content of the report. This is used to "
 "check the generation status."
@@ -5336,79 +5346,79 @@ msgstr ""
 "ID van de taak die het document genereerd. Dit ID kan worden gebruikt om de "
 "document generatie status te controleren."
 
-#: openforms/submissions/models.py:830
+#: openforms/submissions/models.py:889
 msgid "submission report"
 msgstr "document"
 
-#: openforms/submissions/models.py:831
+#: openforms/submissions/models.py:890
 msgid "submission reports"
 msgstr "documenten"
 
-#: openforms/submissions/models.py:897
+#: openforms/submissions/models.py:956
 msgid "content of the file attachment."
 msgstr "inhoud van de bijlage."
 
-#: openforms/submissions/models.py:899 openforms/submissions/models.py:989
+#: openforms/submissions/models.py:958 openforms/submissions/models.py:1048
 msgid "original name"
 msgstr "originele naam"
 
-#: openforms/submissions/models.py:900 openforms/submissions/models.py:991
+#: openforms/submissions/models.py:959 openforms/submissions/models.py:1050
 msgid "content type"
 msgstr "content type"
 
-#: openforms/submissions/models.py:903
+#: openforms/submissions/models.py:962
 msgid "file size"
 msgstr "Bestandsgrootte"
 
-#: openforms/submissions/models.py:905
+#: openforms/submissions/models.py:964
 msgid "Size in bytes of the uploaded file."
 msgstr "Bestandsgrootte in bytes."
 
-#: openforms/submissions/models.py:912
+#: openforms/submissions/models.py:971
 msgid "temporary file upload"
 msgstr "tijdelijke bestanden"
 
-#: openforms/submissions/models.py:913
+#: openforms/submissions/models.py:972
 msgid "temporary file uploads"
 msgstr "tijdelijk bestand"
 
-#: openforms/submissions/models.py:966
+#: openforms/submissions/models.py:1025
 msgid "Submission step the file is attached to."
 msgstr "Inzendingsstap waar het bestand bij hoort."
 
-#: openforms/submissions/models.py:974
+#: openforms/submissions/models.py:1033
 msgid "temporary file"
 msgstr "tijdelijk bestand"
 
-#: openforms/submissions/models.py:975
+#: openforms/submissions/models.py:1034
 msgid "Temporary upload this file is sourced to."
 msgstr "Tijdelijk bestand waar deze bijlage bij hoort."
 
-#: openforms/submissions/models.py:978
+#: openforms/submissions/models.py:1037
 msgid "form component key"
 msgstr "formulier veld sleutel"
 
-#: openforms/submissions/models.py:983
+#: openforms/submissions/models.py:1042
 msgid "Content of the submission file attachment."
 msgstr "Inhoud van de inzendingsbijlage"
 
-#: openforms/submissions/models.py:986
+#: openforms/submissions/models.py:1045
 msgid "file name"
 msgstr "bestandsnaam"
 
-#: openforms/submissions/models.py:986
+#: openforms/submissions/models.py:1045
 msgid "reformatted file name"
 msgstr "veilige bestandsnaam"
 
-#: openforms/submissions/models.py:989
+#: openforms/submissions/models.py:1048
 msgid "original uploaded file name"
 msgstr "originele bestandsnaam"
 
-#: openforms/submissions/models.py:999
+#: openforms/submissions/models.py:1058
 msgid "submission file attachment"
 msgstr "inzendingsbijlage"
 
-#: openforms/submissions/models.py:1000
+#: openforms/submissions/models.py:1059
 msgid "submission file attachments"
 msgstr "inzendingsbijlagen"
 
@@ -5443,7 +5453,7 @@ msgstr "Formuliergegevens"
 msgid "Total payment required"
 msgstr "Totaalbedrag te voldoen"
 
-#: openforms/submissions/views.py:156 openforms/submissions/views.py:168
+#: openforms/submissions/views.py:171 openforms/submissions/views.py:183
 msgid "File access denied."
 msgstr "Bestandstoegang geblokkeerd."
 
@@ -5599,7 +5609,6 @@ msgid "(use global default)"
 msgstr "(gebruik globale configuratie)"
 
 #: openforms/utils/api/drf_jsonschema.py:54
-#| msgid "Yes"
 msgid "yes"
 msgstr "ja"
 
@@ -5990,6 +5999,9 @@ msgstr "Gemeentecode"
 #: stuf/stuf_zds/models.py:45
 msgid "StUF-ZDS configuration"
 msgstr "StUF-ZDS configuratie"
+
+#~ msgid "empty"
+#~ msgstr "leeg"
 
 #~ msgid ""
 #~ "List the active forms, including the pointers to the form steps. Form steps "
