@@ -455,17 +455,17 @@ class Attributes(DjangoChoices):
         "verblijfplaats.inOnderzoek.postcode",
         _("Verblijfplaats > Inonderzoek > Postcode"),
     )
-    verblijfplaats_inOnderzoek_straatnaam = ChoiceItem(
-        "verblijfplaats.inOnderzoek.straatnaam",
-        _("Verblijfplaats > Inonderzoek > Straatnaam"),
+    verblijfplaats_inOnderzoek_straat = ChoiceItem(
+        "verblijfplaats.inOnderzoek.straat",
+        _("Verblijfplaats > Inonderzoek > Straat"),
     )
     verblijfplaats_inOnderzoek_verblijfBuitenland = ChoiceItem(
         "verblijfplaats.inOnderzoek.verblijfBuitenland",
         _("Verblijfplaats > Inonderzoek > Verblijfbuitenland"),
     )
-    verblijfplaats_inOnderzoek_woonplaatsnaam = ChoiceItem(
-        "verblijfplaats.inOnderzoek.woonplaatsnaam",
-        _("Verblijfplaats > Inonderzoek > Woonplaatsnaam"),
+    verblijfplaats_inOnderzoek_woonplaats = ChoiceItem(
+        "verblijfplaats.inOnderzoek.woonplaats",
+        _("Verblijfplaats > Inonderzoek > Woonplaats"),
     )
     verblijfplaats_indicatieVestigingVanuitBuitenland = ChoiceItem(
         "verblijfplaats.indicatieVestigingVanuitBuitenland",
@@ -487,8 +487,8 @@ class Attributes(DjangoChoices):
     verblijfplaats_postcode = ChoiceItem(
         "verblijfplaats.postcode", _("Verblijfplaats > Postcode")
     )
-    verblijfplaats_straatnaam = ChoiceItem(
-        "verblijfplaats.straatnaam", _("Verblijfplaats > Straatnaam")
+    verblijfplaats_straat = ChoiceItem(
+        "verblijfplaats.straat", _("Verblijfplaats > Straat")
     )
     verblijfplaats_vanuitVertrokkenOnbekendWaarheen = ChoiceItem(
         "verblijfplaats.vanuitVertrokkenOnbekendWaarheen",
@@ -518,8 +518,8 @@ class Attributes(DjangoChoices):
         "verblijfplaats.verblijfBuitenland.vertrokkenOnbekendWaarheen",
         _("Verblijfplaats > Verblijfbuitenland > Vertrokkenonbekendwaarheen"),
     )
-    verblijfplaats_woonplaatsnaam = ChoiceItem(
-        "verblijfplaats.woonplaatsnaam", _("Verblijfplaats > Woonplaatsnaam")
+    verblijfplaats_woonplaats = ChoiceItem(
+        "verblijfplaats.woonplaats", _("Verblijfplaats > Woonplaats")
     )
     verblijfstitel_aanduiding_code = ChoiceItem(
         "verblijfstitel.aanduiding.code", _("Verblijfstitel > Land > Code")
