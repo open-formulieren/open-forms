@@ -1,0 +1,26 @@
+@import '../../../ui/static/ui/scss/settings';
+@import '../../vars';
+
+.openforms-component {
+  padding: $grid-margin-1;
+
+  &--hidden {
+    border-radius: 10px;
+    opacity: 0.5;
+    background: repeating-linear-gradient(
+        -45deg,
+        $django-hijack-yellow,
+        $django-hijack-yellow 10px,
+        $color-tooltip-background 10px,
+        $color-tooltip-background 20px
+    );
+
+    label {
+      color: $color_dark;
+    }
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}
