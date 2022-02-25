@@ -152,6 +152,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         "bsn",
         "kvk",
         "form_url",
+        "public_registration_reference",
     )
     inlines = [
         SubmissionStepInline,
