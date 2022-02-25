@@ -66,9 +66,11 @@ Bugfixes
 * [#1278] Fixed Haal Centraal prefill according to spec
 * [#1269] Added SESSION_EXPIRE_AT_BROWSER_CLOSE configuration option
 * [#807] Implemented a strict Content Security Policy
+
     - allow script/style assets from own source
     - allow script/style assets from SDK base url
     - allow a limited number of inline script/style via nonce
+
 * Allow for configurable DigiD XML signing
 * [#1288] Fixed invalid map component markup
 * Update the NUM_PROXIES configuration option default value to protect against
@@ -81,12 +83,14 @@ Bugfixes
 * [#1280] Fixed reusable definition handling when copying form
 * [#1099] Fixed rendering submission data when duplicate labels exist (PDF, confirmation email)
 * [#1193] Fixed file upload component/handling
+
     - configured and documented webserver upload size limit
     - ensured file uploads are not attached to emails but are instead downloadable from
       the backend. A staff account is required for this.
     - ensured individually configured component file size limits are enforced
     - ensured file uploads are deleted from the storage when submission data is pruned/
       stripped from sensitive data
+
 * [#1272] Hardened XML submission export to handle multiple values
 * [#1299] Updated to celery 5
 * [#1216] Fixed retrieving deleted forms in the API
@@ -119,8 +123,10 @@ Project maintenance
 * Fixed sourcing the build/version information to display in the admin
 * Ensure that the SDK build bundled in the backend image is correctly versioned
 * Upgraded dependencies with security releases
+
     - Django
     - Pillow
+
 * Upgraded frontend dependencies with security releases (dev tooling)
 * Replaced gulp-based frontend dev stack with pure webpack
 * Bumped to django-yubin 1.7, drops pyzmail36 transitive dep
@@ -168,14 +174,19 @@ Features
   end users
 * RESTful JSON API to manage/administer forms AND end-user sessions
 * Javascript SDK to render forms
+
     - Built-in into the backend with pages to host forms
     - Embeddable in third party websites
+
 * Authentication module for forms, with plugins:
+
     - DigiD
     - eHerkenning
     - eIDAS
     - mock/simulation equivalents to try out flows
+
 * Optional Registrations module for forms - form data is sent to a plugin of choice:
+
     - ZGW APIs - REST/JSON binding with Dutch national standard for "Zaakgericht werken"
       (supports Open Zaak out of the box)
     - StUF-ZKN - StUF/SOAP binding with Dutch national standard for "Zaakgericht werken"
@@ -183,30 +194,42 @@ Features
     - Email - send the data and attachments to a backoffice via email.
     - Microsoft Sharepoint file store
     - Objects API - REST/JSON binding with the Dutch national standard
+
 * Payments module
+
     - Connect products and pricing information
     - Ogone payment provider with support for multiple accounts
+
 * Appointments module, with plugins for:
+
     - JCC Afspraken
     - QMatic Appointments
+
 * Prefilling of data through plugins:
+
     - StUF-BG - StUF/SOAP Dutch national standard for retrieving person details
     - KvK - fetch company information from the Chamber of Commerce APIs
     - HaalCentraal - REST/JSON binding to Dutch national standard for retrieving person details
+
 * GDPR/AVG support built-in
+
     - mark data fields as sensitive data
     - automatically scheduled and configurable removal of (privacy-sensitive) data
     - automatic logging of data access events
+
 * NLX support
 * Extensive dynamic and real-time logic options, based on the data the end-user is
   entering.
 * User-administration suitable for your environment
+
     - Local user database
     - Integration with OpenID Connect (ADFS, Azure AD, KeyCloak...)
     - (Optional) Two-Factor authentication via OTP
     - RBAC with default roles
     - Multi-domain/tenant support
+
 * Internationalization and localization support
+
     - Dutch
     - English
 
