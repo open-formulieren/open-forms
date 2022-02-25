@@ -182,9 +182,9 @@
             "locatiebeschrijving": false,
             "naamOpenbareRuimte": true,
             "postcode": true,
-            "straatnaam": true,
+            "straat": true,
             "verblijfBuitenland": true,
-            "woonplaatsnaam": true
+            "woonplaats": true
         },
         "functieAdres": "W",
         "huisletter": "",
@@ -194,11 +194,11 @@
         "identificatiecodeNummeraanduiding": "0518203530058001",
         "naamOpenbareRuimte": "Nieuwe Parklaan",
         "postcode": "2597LD",
-        "woonplaatsnaam": "'s-Gravenhage",
+        "woonplaats": "'s-Gravenhage",
         "identificatiecodeAdresseerbaarObject": "string",
         "indicatieVestigingVanuitBuitenland": true,
         "locatiebeschrijving": "",
-        "straatnaam": "Nieuwe Parklaan",
+        "straat": "Nieuwe Parklaan",
         "vanuitVertrokkenOnbekendWaarheen": true
     },
     "gezagsverhouding": {},
