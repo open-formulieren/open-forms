@@ -25,19 +25,21 @@ An extension must be implemented as a Django package, which is a stricter form o
 regular Python package. They can be developed independently from the open-formulieren Github organisation.
 
 The extensions can be loaded at deployment time through the environment variable ``OPEN_FORMS_EXTENSIONS`` which
-specifies the Python name of the extensions to load. The Open Forms ``base.py`` settings module will extract this
-configuration value and append the list of packages to ``INSTALLED_APPS``, which causes them to be loaded by
-Django. For an extension to be loaded, it needs to be present in the ``PYTHONPATH``.
+specifies the Python name of the extensions to load. Open Forms will extract this configuration value and
+load the referenced extension packages. For an extension to be loaded, it needs to be present in the ``PYTHONPATH``.
 This means that it needs to be either:
 
 * In the ``src/`` directory of Open Forms. It is then automatically picked up.
-* Anywhere on the file path, but the ``PYTHONPATH`` is modified to include the path to the extension.
+* Anywhere on the file path, but the ``PYTHONPATH`` environment variable is modified to include the path to the extension.
 * In the relevant site-packages directory, similarly to when an Open Forms dependency is installed with ``pip install``
    and ``virtualenv``.
 
-To create a Docker image that extends an Open Forms release, a custom ``Dockerfile`` can be created and the extension
-source code can be added to the desired location. Another option is to mount the source code as a volume in a custom
-``docker-compose.yml`` file.
+Building and distributing the extended Open Forms
+-------------------------------------------------
+You can build a custom Docker image extending an Open Forms release with a custom `Dockerfile`, in which the
+extension source code is added to the desired location. Another option is to mount the source code as a volume
+in a custom ``docker-compose.yml`` file or as part of your Kubernetes manifests, depending on how you deploy your
+instance(s).
 
 The `demo extension <https://github.com/open-formulieren/demo-extension>`_ is an example of an extension plugin. It
 implements a demo registration backend that prints the specified configuration variables to the console. It uses
