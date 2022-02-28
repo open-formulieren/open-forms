@@ -170,7 +170,7 @@ jobs:
       - name: Store image artifact
         uses: actions/upload-artifact@v2
         with:
-          name: docker-image
+          name: docker-image-test
           path: image-test.tar
           retention-days: 1
 
@@ -277,6 +277,11 @@ jobs:
         with:
           name: docker-image
 
+      - name: Download built image (test)
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-image-test
+
       - name: Set tag
         id: vars
         run: |
@@ -294,6 +299,7 @@ jobs:
       - name: Load image
         run: |
           docker image load -i image.tar
+          docker image load -i image-test.tar
 
       - name: Log into registry
         run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
