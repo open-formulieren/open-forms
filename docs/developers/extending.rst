@@ -30,20 +30,26 @@ load the referenced extension packages. For an extension to be loaded, it needs 
 This means that it needs to be either:
 
 * In the ``src/`` directory of Open Forms. It is then automatically picked up.
-* Anywhere on the file path, but the ``PYTHONPATH`` environment variable is modified to include the path to the extension.
-* In the relevant site-packages directory, similarly to when an Open Forms dependency is installed with ``pip install``
-   and ``virtualenv``.
+* Anywhere on the file path, but the ``PYTHONPATH`` environment variable is modified to
+  include the path to the extension.
+* In the relevant site-packages directory, similarly to when an Open Forms dependency
+  is installed with ``pip install`` and ``virtualenv``.
 
 Building and distributing the extended Open Forms
 -------------------------------------------------
-You can build a custom Docker image extending an Open Forms release with a custom `Dockerfile`, in which the
-extension source code is added to the desired location. Another option is to mount the source code as a volume
-in a custom ``docker-compose.yml`` file or as part of your Kubernetes manifests, depending on how you deploy your
+
+You can build a custom Docker image extending an Open Forms release with a custom
+``Dockerfile``, in which the extension source code is added to the desired location.
+See :ref:`developers_extending_docker` for more details.
+
+Another option is to mount the source code as a volume in a custom ``docker-compose.yml``
+file or as part of your Kubernetes manifests, depending on how you deploy your
 instance(s).
 
-The `demo extension <https://github.com/open-formulieren/demo-extension>`_ is an example of an extension plugin. It
-implements a demo registration backend that prints the specified configuration variables to the console. It uses
-a custom ``Dockerfile`` to extend the Open Forms latest version.
+The `demo extension`_ is an example
+of an extension plugin. It implements a demo registration backend that prints the
+specified configuration variables to the console. It uses a custom ``Dockerfile``
+to extend the (latest) Open Forms version.
 
 Steps to implement an extension plugin
 --------------------------------------
@@ -51,15 +57,15 @@ Steps to implement an extension plugin
 #. The `default-app`_ can be used as a template for an empty django package.
    Follow the instructions in the ``README.rst`` file to start a new Django project.
 
-#. Implement the plugin in the ``<project_name>`` directory. This will require at least updating/adding the files below.
-   Refer to the :ref:`plugin section<plugins_index>` for further details.
+#. Implement the plugin in the ``<project_name>`` directory. This will require at least
+   updating/adding the files below. Refer to the :ref:`plugin section<plugins_index>` for
+   further details.
 
    * ``apps.py``. See for example `apps.py`_.
 
    * ``plugin.py``. See for example `plugin.py`_. This is where the functionality of the plugin will be implemented.
 
-Extension code is allowed to import from Open Forms' public API, as
-documented :ref:`here<developers_backend_core_index>`.
+Extension code is allowed to import from Open Forms' :ref:`public API<developers_backend_core_index>`.
 
 Any additional initialisation that the extension module might need can be implemented in the
 ``extension.apps.ExtensionConfig.ready`` hook. This hook is called when Django bootstraps and it is the mechanism used
@@ -107,7 +113,7 @@ comma-separated list of valid python identifiers (i.e. the python package names)
 
 .. code-block:: bash
 
-    export OPEN_FORMS_EXTENSIONS=demo_extension
+    export OPEN_FORMS_EXTENSIONS=demo_extension,another_extension
 
 If you need to generate migrations for your package, you can now do it as follows (from within the Open Forms directory):
 
@@ -116,47 +122,77 @@ If you need to generate migrations for your package, you can now do it as follow
     python src/manage.py makemigrations demo_extension
     python src/manage.py migrate
 
-If you created a solo model, you can add the configuration page to the Admin. To do this, log into the Open Forms
-Admin:
+If you created a solo model, the configuration page should be available in the admin
+interface automatically under the "miscellaneous" group. Currently it's not possible to
+configure these groups from an extension as they are reset on every deploy.
 
-#. Go to the **Configuratie** > **Application groups**.
+.. note::
 
-#. Click on **Configuratie**.
+   If your demo-extension is a demo feature (``Plugin.is_demo_plugin = True``), you must
+   ensure that demo plugins are enabled in the admin interface for them to be available.
 
-#. In the **Models** section, look for the name of your configuration model in the left table (for the demo extension, this was  ``demo_extension.Demoextensionconfig``).
-   Then double click on it to add it to the right table.
+   Under **Configuratie** > **Algemene configuratie** scroll to the bottom of the page and
+   click on **Tonen** next to **Feature flags, test- en ontwikkelinstellingen**. Then,
+   check the box **Demo plugins inschakelen** and save the changes.
 
-#. Save the configuration.
+.. _developers_extending_docker:
 
-Now the configuration page for your package will be visible on the main Admin page under **Configuratie**.
+Testing and distributing with Docker
+------------------------------------
 
-Since the demo-extension plugin is a demo feature, the demo plugins need to be enabled in the admin.
-Under **Configuratie** > **Algemene configuratie** scroll to the bottom of the page and click on **Tonen** next to
-**Feature flags, test- en ontwikkelinstellingen**. Then, check the box **Demo plugins inschakelen** and save the changes.
+The recommended way to create a container image is to extend the Open Forms base image,
+and set up a ``docker-compose.yml`` locally to test with this custom image. You can
+find examples of both in the `demo extension`_ repository.
 
-Testing with Docker
--------------------
+**Dockerfile structure**
 
-First, the image for the extension needs to be built. For example, for the demo-extension this can be done as follows.
-From within the demo-extension directory (which contains the ``Dockerfile``), build the image:
+We recommend using a two-stage Dockerfile approach, where the first stage is used to
+install any additional Python dependencies (if relevant). This stage should inherit
+from the same Python base image of Open Forms to keep the Python version identical.
+Open Forms itself also applies this principle, so you can look at the upstream
+``Dockerfile`` for inspiration.
+
+The second stage is meant for the production image and should extend from the Open Forms
+version you are extending, e.g. ``open-formulieren/open-forms:1.0.0``. You can copy
+the dependencies from your build stage and the extension source code into the final
+image here.
+
+**Building and tagging the image**
+
+From within your extension repository, build the image and give it a name and tag of
+your choice, for example:
 
 .. code-block:: bash
 
-    docker build -t demo-extension:tag-name .
+    docker build -t myorg/open-forms:1.0.0 .
 
-This is a multi-stage build, where in the first stage (``demo-extension-build``) the image for the demo extension is build
-from the python:3.8-slim-buster base.
+or use the relevant docker-compose command variants.
 
-In the second stage (``production-build``), the ``openformulieren/open-forms:tag`` is used as base.
-The dependencies for the demo-extension are copied to the ``/usr/local/lib/python3.8`` (they should not overwrite the
-dependencies already present from the Open Forms requirements) and the ``demo_extension`` source code is copied
-to the ``src/`` directory.
+**Running all the services with docker-compose**
 
-Then, once this new 'extended' Open Forms image is built, it can be run with ``docker-compose``
-(again from within the demo-extension directory, which contains the ``docker-compose.yml`` file).
-It is important that the name used in the docker-compose for the image of the demo-extension corresponds to the one used
-when building the image (``demo-extension:tag-name``).
+You can create your own ``docker-compose.yml`` inspired by the Open Forms docker-compose
+configuration, or use the `docker-compose.override.yml <https://docs.docker.com/compose/extends/#understanding-multiple-compose-files>`_
+approach. Typically you will want to modify the image names and any additional
+environment variables your extensions require.
+
 
 .. code-block:: bash
 
     docker-compose up
+
+
+Testing in CI
+-------------
+
+The approach for testing in CI largely follows :ref:`developers_extending_docker`.
+
+Open Forms also publishes an image to Docker Hub including the test dependencies to
+facilitate unit testing in PYthon for your extension. The
+``openformulieren/open-forms:test`` image is always based on the ``latest`` tag and
+includes the upstream ``requirements/ci.txt``.
+
+See also our :ref:`versioning policy<developers_versioning>` to see how and when we
+make breaking changes.
+
+
+.. _demo extension: https://github.com/open-formulieren/demo-extension
