@@ -1,5 +1,4 @@
 from typing import Any, Dict, Optional
-from urllib.parse import urlencode
 
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.templatetags.static import static
@@ -10,11 +9,11 @@ from furl import furl
 from rest_framework.reverse import reverse
 
 from openforms.authentication.base import BasePlugin, LoginLogo
-from openforms.authentication.registry import register
 from openforms.forms.models import Form
 
 from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...exceptions import InvalidCoSignData
+from ...registry import register
 from .constants import DIGID_OIDC_AUTH_SESSION_KEY, EHERKENNING_OIDC_AUTH_SESSION_KEY
 from .models import OpenIDConnectEHerkenningConfig, OpenIDConnectPublicConfig
 
@@ -78,10 +77,14 @@ class OIDCAuthentication(BasePlugin):
         if "oidc_id_token" not in request.session:
             return
 
-        params = urlencode({"id_token_hint": request.session["oidc_id_token"]})
         logout_endpoint = self.config_class.get_solo().oidc_op_logout_endpoint
         if logout_endpoint:
-            requests.get(f"{logout_endpoint}?{params}")
+            logout_url = furl(logout_endpoint).set(
+                {
+                    "id_token_hint": request.session["oidc_id_token"],
+                }
+            )
+            requests.get(str(logout_url))
 
 
 @register("digid_oidc")
