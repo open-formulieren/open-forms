@@ -8,6 +8,7 @@ from typing import List, Optional
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 
+import elasticapm
 import qrcode
 
 from openforms.forms.models import Form, FormStep
@@ -57,6 +58,7 @@ def get_formatted_phone_number(phone_number: Optional[str]) -> Optional[str]:
     return phone_number[:16]
 
 
+@elasticapm.capture_span(span_type="app.appointments.book")
 def book_appointment_for_submission(submission: Submission) -> None:
     try:
         # Delete the previous appointment info if there is one since
@@ -162,6 +164,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
     cancel_previous_submission_appointment(submission)
 
 
+@elasticapm.capture_span(span_type="app.appointments.cancel")
 def cancel_previous_submission_appointment(submission: Submission) -> None:
     """
     Given a submission, check if there's a previous appointment to cancel.
@@ -209,6 +212,7 @@ def cancel_previous_submission_appointment(submission: Submission) -> None:
         )
 
 
+@elasticapm.capture_span(span_type="app.appointments.delete")
 def delete_appointment_for_submission(submission: Submission, client=None) -> None:
     """
     Delete/cancels the appointment for a given submission.

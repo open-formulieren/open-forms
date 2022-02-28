@@ -2,6 +2,7 @@ import logging
 
 from django.utils.translation import gettext_lazy as _
 
+import elasticapm
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework.exceptions import PermissionDenied, ValidationError
@@ -50,7 +51,10 @@ class ProductsListView(ListMixin, APIView):
 
     def get_objects(self):
         client = get_client()
-        return client.get_available_products()
+        with elasticapm.capture_span(
+            name="get-available-products", span_type="app.appointments.get_products"
+        ):
+            return client.get_available_products()
 
 
 # The serializer + @extend_schema approach for querystring params is not ideal, the
@@ -94,7 +98,10 @@ class LocationsListView(ListMixin, APIView):
         )
 
         client = get_client()
-        return client.get_locations([product])
+        with elasticapm.capture_span(
+            name="get-available-locations", span_type="app.appointments.get_locations"
+        ):
+            return client.get_locations([product])
 
 
 @extend_schema(
@@ -146,7 +153,10 @@ class DatesListView(ListMixin, APIView):
         )
 
         client = get_client()
-        dates = client.get_dates([product], location)
+        with elasticapm.capture_span(
+            name="get-available-dates", span_type="app.appointments.get_dates"
+        ):
+            dates = client.get_dates([product], location)
         return [{"date": date} for date in dates]
 
 
@@ -206,7 +216,12 @@ class TimesListView(ListMixin, APIView):
         )
 
         client = get_client()
-        times = client.get_times([product], location, serializer.validated_data["date"])
+        with elasticapm.capture_span(
+            name="get-available-times", span_type="app.appointments.get_times"
+        ):
+            times = client.get_times(
+                [product], location, serializer.validated_data["date"]
+            )
         return [{"time": time} for time in times]
 
 

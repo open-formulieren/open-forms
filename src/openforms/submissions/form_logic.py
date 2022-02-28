@@ -1,11 +1,12 @@
 from typing import TYPE_CHECKING, Any, Dict
 
+import elasticapm
 from json_logic import jsonLogic
 
 from openforms.formio.service import get_dynamic_configuration
-from openforms.formio.utils import get_default_values
+from openforms.formio.utils import get_default_values, iter_components
 from openforms.forms.constants import LogicActionTypes
-from openforms.forms.models import FormDefinition, FormLogic
+from openforms.forms.models import FormLogic
 from openforms.prefill import JSONObject
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -18,14 +19,9 @@ def set_property_value(
     property_name: str,
     property_value: str,
 ) -> JSONObject:
-    # use :class:`FormDefinition` for the iter_components method
-    form_definition = FormDefinition()
-
     # iter over the (nested) components, and when we find the specified key, mutate it and break
     # out of the loop
-    for component in form_definition.iter_components(
-        configuration=configuration, recursive=True
-    ):
+    for component in iter_components(configuration=configuration, recursive=True):
         if component["key"] == component_key:
             component[property_name] = property_value
             break
@@ -33,6 +29,7 @@ def set_property_value(
     return configuration
 
 
+@elasticapm.capture_span(span_type="app.submissions.logic")
 def evaluate_form_logic(
     submission: "Submission",
     step: "SubmissionStep",

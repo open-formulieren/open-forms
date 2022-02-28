@@ -5,6 +5,7 @@ from typing import Callable, Iterable, List, Type, Union
 from django.core.exceptions import ValidationError as DJ_ValidationError
 from django.utils.translation import gettext_lazy as _
 
+import elasticapm
 from rest_framework.exceptions import ValidationError as DRF_ValidationError
 from rest_framework.serializers import as_serializer_error
 
@@ -89,6 +90,7 @@ class Registry(BaseRegistry):
 
         return decorator
 
+    @elasticapm.capture_span("app.valdiations.validate")
     def validate(self, plugin_id: str, value: str) -> ValidationResult:
         try:
             validator = self._registry[plugin_id]

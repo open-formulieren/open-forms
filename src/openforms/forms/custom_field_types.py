@@ -1,5 +1,6 @@
 from typing import Any, Dict
 
+import elasticapm
 from rest_framework.request import Request
 
 from openforms.submissions.models import Submission
@@ -24,6 +25,7 @@ def unregister(custom_type: str):
         del REGISTRY[custom_type]
 
 
+@elasticapm.capture_span(span_type="app.formio")
 def handle_custom_types(
     configuration: Dict[str, Any],
     request: Request,
