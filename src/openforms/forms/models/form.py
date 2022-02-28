@@ -100,6 +100,13 @@ class Form(models.Model):
             "Whether the step progression should be displayed in the UI or not."
         ),
     )
+    display_main_website_link = models.BooleanField(
+        _("display main website link"),
+        default=True,
+        help_text=_(
+            "Display the link to the main website on the submission confirmation page."
+        ),
+    )
     confirmation_email_option = models.CharField(
         _("confirmation email option"),
         choices=ConfirmationEmailOptions,

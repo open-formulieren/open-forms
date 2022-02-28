@@ -475,8 +475,8 @@ class Submission(models.Model):
             "public_reference": self.public_registration_reference,
             **self.data,
         }
-        rendered_content = Template(template).render(Context(context_data))
 
+        rendered_content = Template(template).render(Context(context_data))
         return rendered_content
 
     @property

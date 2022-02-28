@@ -208,6 +208,7 @@ class FormSerializer(serializers.ModelSerializer):
             "submissions_removal_options",
             "confirmation_email_template",
             "confirmation_email_option",
+            "display_main_website_link",
         )
         # allowlist for anonymous users
         public_fields = (
