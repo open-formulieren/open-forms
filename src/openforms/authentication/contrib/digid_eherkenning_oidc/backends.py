@@ -10,6 +10,7 @@ from mozilla_django_oidc_db.backends import (
 
 from .constants import DIGID_OIDC_AUTH_SESSION_KEY, EHERKENNING_OIDC_AUTH_SESSION_KEY
 from .mixins import SoloConfigDigiDMixin, SoloConfigEHerkenningMixin
+from .utils import obfuscate_claim
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +47,12 @@ class OIDCAuthenticationBackend(_OIDCAuthenticationBackend):
 
     def verify_claims(self, claims):
         """Verify the provided claims to decide if authentication should be allowed."""
-        logger.debug("OIDC claims received: %s", claims)
+        # TODO configurable sensitive claims?
+        obfuscated_claims = {
+            k: obfuscate_claim(v) if k == self.config.identifier_claim_name else v
+            for k, v in claims.items()
+        }
+        logger.debug("OIDC claims received: %s", obfuscated_claims)
 
         if (claim_name := self.get_settings(self.claim_name_field)) not in claims:
             logger.error(
