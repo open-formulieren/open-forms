@@ -439,8 +439,6 @@ AUTHENTICATION_BACKENDS = [
     "axes.backends.AxesBackend",
     "openforms.accounts.backends.UserModelEmailBackend",
     "django.contrib.auth.backends.ModelBackend",
-    "openforms.authentication.contrib.digid_eherkenning_oidc.backends.OIDCAuthenticationDigiDBackend",
-    "openforms.authentication.contrib.digid_eherkenning_oidc.backends.OIDCAuthenticationEHerkenningBackend",
     "mozilla_django_oidc_db.backends.OIDCAuthenticationBackend",
 ]
 

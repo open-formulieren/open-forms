@@ -1,7 +1,8 @@
 import logging
 import time
 
-from django.core.exceptions import DisallowedRedirect
+from django.contrib import auth
+from django.core.exceptions import DisallowedRedirect, SuspiciousOperation
 from django.http import HttpResponseRedirect
 
 import requests
@@ -13,6 +14,10 @@ from mozilla_django_oidc.views import (
 )
 
 from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
+from .backends import (
+    OIDCAuthenticationDigiDBackend,
+    OIDCAuthenticationEHerkenningBackend,
+)
 from .mixins import SoloConfigDigiDMixin, SoloConfigEHerkenningMixin
 
 logger = logging.getLogger(__name__)
@@ -56,6 +61,62 @@ class OIDCAuthenticationRequestView(_OIDCAuthenticationRequestView):
 
 
 class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):
+    auth_backend_class = None
+
+    def get(self, request):
+        """
+        Callback handler for OIDC authorization code flow
+
+        Copied from mozilla-django-oidc but modified to directly authenticate using
+        the configured backend class, instead of using Django's default authentication
+        mechanism. This removes the need to include these backends in `settings.AUTHENTICATION_BACKENDS`
+        """
+
+        if request.GET.get("error"):
+            # Ouch! Something important failed.
+            # Make sure the user doesn't get to continue to be logged in
+            # otherwise the refresh middleware will force the user to
+            # redirect to authorize again if the session refresh has
+            # expired.
+            if request.user.is_authenticated:
+                auth.logout(request)
+            assert not request.user.is_authenticated
+        elif "code" in request.GET and "state" in request.GET:
+
+            # Check instead of "oidc_state" check if the "oidc_states" session key exists!
+            if "oidc_states" not in request.session:
+                return self.login_failure()
+
+            # State and Nonce are stored in the session "oidc_states" dictionary.
+            # State is the key, the value is a dictionary with the Nonce in the "nonce" field.
+            state = request.GET.get("state")
+            if state not in request.session["oidc_states"]:
+                msg = "OIDC callback state not found in session `oidc_states`!"
+                raise SuspiciousOperation(msg)
+
+            # Get the nonce from the dictionary for further processing and delete the entry to
+            # prevent replay attacks.
+            nonce = request.session["oidc_states"][state]["nonce"]
+            del request.session["oidc_states"][state]
+
+            # Authenticating is slow, so save the updated oidc_states.
+            request.session.save()
+            # Reset the session. This forces the session to get reloaded from the database after
+            # fetching the token from the OpenID connect provider.
+            # Without this step we would overwrite items that are being added/removed from the
+            # session in parallel browser tabs.
+            request.session = request.session.__class__(request.session.session_key)
+
+            kwargs = {
+                "request": request,
+                "nonce": nonce,
+            }
+            self.user = self.auth_backend_class().authenticate(**kwargs)
+
+            if self.user and self.user.is_active:
+                return self.login_success()
+        return self.login_failure()
+
     def login_success(self):
         """
         Overridden to not actually log the user in, since setting the BSN in
@@ -83,7 +144,7 @@ class DigiDOIDCAuthenticationRequestView(
 class DigiDOIDCAuthenticationCallbackView(
     SoloConfigDigiDMixin, OIDCAuthenticationCallbackView
 ):
-    pass
+    auth_backend_class = OIDCAuthenticationDigiDBackend
 
 
 class eHerkenningOIDCAuthenticationRequestView(
@@ -95,4 +156,4 @@ class eHerkenningOIDCAuthenticationRequestView(
 class eHerkenningOIDCAuthenticationCallbackView(
     SoloConfigEHerkenningMixin, OIDCAuthenticationCallbackView
 ):
-    pass
+    auth_backend_class = OIDCAuthenticationEHerkenningBackend

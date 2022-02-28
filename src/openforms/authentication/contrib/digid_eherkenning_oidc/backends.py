@@ -2,7 +2,6 @@ import logging
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import SuspiciousOperation
-from django.urls import reverse
 
 from mozilla_django_oidc_db.backends import (
     OIDCAuthenticationBackend as _OIDCAuthenticationBackend,
@@ -18,18 +17,6 @@ logger = logging.getLogger(__name__)
 class OIDCAuthenticationBackend(_OIDCAuthenticationBackend):
     session_key = ""
     claim_name_field = "identifier_claim_name"
-
-    def authenticate(self, request, *args, **kwargs):
-        # Differentiate between DigiD/eHerkenning authentication via OIDC and admin login
-        # via OIDC by checking the callback url
-        if (
-            not self.config.enabled
-            or reverse(self.get_settings("OIDC_AUTHENTICATION_CALLBACK_URL"))
-            != request.path
-        ):
-            return None
-
-        return super().authenticate(request, *args, **kwargs)
 
     def get_or_create_user(self, access_token, id_token, payload):
         user_info = self.get_userinfo(access_token, id_token, payload)
