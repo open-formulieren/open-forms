@@ -150,6 +150,7 @@ const FormMetaFields = ({
                     helpText={<FormattedMessage defaultMessage="Whether the form is active or not. Deactivated forms cannot be started." description="Form active field help text" />}
                     checked={active}
                     onChange={(event) => onCheckboxChange(event, active)}
+
                 />
             </FormRow>
             <FormRow>

@@ -1085,6 +1085,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                     <TabPanel>
                         <Confirmation
                             pageTemplate={state.form.submissionConfirmationTemplate}
+                            displayMainWebsiteLink={state.form.displayMainWebsiteLink}
                             emailOption={state.form.confirmationEmailOption}
                             emailTemplate={state.form.confirmationEmailTemplate || {}}
                             onChange={onFieldChange}
