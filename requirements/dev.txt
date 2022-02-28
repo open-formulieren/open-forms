@@ -162,19 +162,14 @@ defusedxml==0.6.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   cairosvg
-    #   digid-eherkenning
     #   django-camunda
+    #   django-digid-eherkenning
     #   python3-saml
-digid-eherkenning @ git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@c9d024647ab8425b082658ff2d591f13f304e54b
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
 django==3.2.12
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   ddt-api-calls
-    #   digid-eherkenning
     #   django-appconf
     #   django-axes
     #   django-camunda
@@ -186,6 +181,7 @@ django==3.2.12
     #   django-csp-reports
     #   django-debug-toolbar
     #   django-decorator-include
+    #   django-digid-eherkenning
     #   django-filter
     #   django-formtools
     #   django-hijack
@@ -248,7 +244,7 @@ django-choices==1.7.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   digid-eherkenning
+    #   django-digid-eherkenning
     #   zgw-consumers
 django-compat==1.0.15
     # via
@@ -274,6 +270,10 @@ django-csp-reports==1.8.1
 django-debug-toolbar==3.2.1
     # via -r requirements/dev.in
 django-decorator-include==3.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+django-digid-eherkenning==0.3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -443,7 +443,7 @@ furl==2.1.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   digid-eherkenning
+    #   django-digid-eherkenning
 gemma-zds-client==1.0.1
     # via
     #   -c requirements/ci.txt
@@ -531,6 +531,7 @@ lxml==4.7.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   django-digid-eherkenning
     #   pyquery
     #   python3-saml
     #   xmlsec

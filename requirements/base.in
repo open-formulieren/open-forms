@@ -35,6 +35,7 @@ django-choices
 django-cookie-consent
 django-cors-headers
 django-decorator-include
+django-digid-eherkenning
 django-hijack ~= 2.3.0
 django-hijack-admin
 django-privates
@@ -43,7 +44,6 @@ django-solo
 django-tinymce
 django-yubin
 mozilla-django-oidc-db
-git+https://bitbucket.org/maykinmedia/django-digid-eherkenning.git@c9d024647ab8425b082658ff2d591f13f304e54b#egg=digid_eherkenning
 git+https://github.com/maykinmedia/python3-saml.git@e000b39ed0ce38270e6351ec6634e6b3a53bbc3d#egg=python3_saml
 git+https://github.com/maykinmedia/drf_jsonschema.git@b7a482670274d11c1849e625a704018f1e9dd852#egg=drf_jsonschema
 pyopenssl
