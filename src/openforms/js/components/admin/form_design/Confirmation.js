@@ -5,7 +5,7 @@ import TinyMCEEditor from './Editor';
 import FormRow from '../forms/FormRow';
 import Field from '../forms/Field';
 import Fieldset from '../forms/Fieldset';
-import {TextInput} from '../forms/Inputs';
+import {Checkbox, TextInput} from '../forms/Inputs';
 import {getTranslatedChoices} from "../../../utils/i18n";
 import Select from "../forms/Select";
 
@@ -35,11 +35,16 @@ const EMAIL_OPTIONS = [
 ];
 
 
-const Confirmation = ({ pageTemplate='', emailOption='global_email', emailTemplate={}, onChange }) => {
+const Confirmation = ({ pageTemplate='', displayMainWebsiteLink=false, emailOption='global_email', emailTemplate={}, onChange }) => {
     const intl = useIntl();
     const emailOptions = getTranslatedChoices(intl, EMAIL_OPTIONS);
 
     const { subject, content } = emailTemplate;
+
+    const onCheckboxChange = (event, currentValue) => {
+        const { target: {name} } = event;
+        onChange({target: {name, value: !currentValue}});
+    };
 
     return (
         <>
@@ -62,6 +67,15 @@ const Confirmation = ({ pageTemplate='', emailOption='global_email', emailTempla
                             )}
                         />
                     </Field>
+                </FormRow>
+                <FormRow>
+                    <Checkbox
+                        name="form.displayMainWebsiteLink"
+                        label={<FormattedMessage defaultMessage="Display main website link" description="Display main website link field label" />}
+                        helpText={<FormattedMessage defaultMessage="Whether to show a link to the main website on the confirmation page." description="Display main website link help text" />}
+                        checked={displayMainWebsiteLink}
+                        onChange={(event) => onCheckboxChange(event, displayMainWebsiteLink)}
+                    />
                 </FormRow>
             </Fieldset>
             <Fieldset title={<FormattedMessage defaultMessage="Submission confirmation email template"
@@ -112,6 +126,7 @@ const Confirmation = ({ pageTemplate='', emailOption='global_email', emailTempla
 
 Confirmation.propTypes = {
     pageTemplate: PropTypes.string,
+    displayMainPage: PropTypes.bool,
     emailOption: PropTypes.string,
     emailTemplate: PropTypes.object,
     onChange: PropTypes.func.isRequired,
