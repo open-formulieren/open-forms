@@ -1,5 +1,6 @@
 import logging
 
+import elasticapm
 from requests import HTTPError, RequestException
 from zds_client import ClientError
 
@@ -17,6 +18,7 @@ class KVKSearchClient:
     # https://api.kvk.nl/test/api/v1/zoeken?x=y
     # docs: https://developers.kvk.nl/apis/zoeken
 
+    @elasticapm.capture_span("app.kvk")
     def query(self, **query_params):
         config = KVKConfig.get_solo()
         if not config.service:
@@ -46,6 +48,7 @@ class KVKProfileClient:
     # https://api.kvk.nl/test/api/v1/basisprofielen/{kvkNummer}/hoofdvestiging
     # docs: https://developers.kvk.nl/apis/basisprofiel
 
+    @elasticapm.capture_span("app.kvk")
     def query(self, kvkNummer):
         config = KVKConfig.get_solo()
         if not config.profiles:

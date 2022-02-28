@@ -33,6 +33,7 @@ from datetime import date, datetime
 from itertools import groupby
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 
+import elasticapm
 from glom import GlomError, Path, assign, glom
 from zgw_consumers.concurrent import parallel
 
@@ -46,6 +47,7 @@ if TYPE_CHECKING:  # pragma: nocover
 logger = logging.getLogger(__name__)
 
 
+@elasticapm.capture_span(span_type="app.prefill")
 def apply_prefill(configuration: JSONObject, submission: "Submission", register=None):
     """
     Takes a Formiojs definition and invokes all the pre-fill plugins.
@@ -142,9 +144,11 @@ def _fetch_prefill_values_cached(
     return results
 
 
+@elasticapm.capture_span(span_type="app.prefill")
 def _fetch_prefill_values(
     grouped_fields: Dict[str, list], submission: "Submission", register
 ) -> Dict[str, Dict[str, Any]]:
+    @elasticapm.capture_span(span_type="app.prefill")
     def invoke_plugin(item: Tuple[str, List[str]]) -> Tuple[str, Dict[str, Any]]:
         plugin_id, fields = item
         plugin = register[plugin_id]

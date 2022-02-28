@@ -1,6 +1,7 @@
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+import elasticapm
 from requests import HTTPError
 from zds_client import ClientError
 
@@ -25,6 +26,7 @@ class BAGClient:
         )
 
     @classmethod
+    @elasticapm.capture_span(span_type="app.bag.query")
     def get_address(cls, postcode, house_number):
         config = BAGConfig.get_solo()
         client = config.bag_service.build_client()

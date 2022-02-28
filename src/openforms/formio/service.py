@@ -1,5 +1,6 @@
 from django.urls import reverse
 
+import elasticapm
 from rest_framework.request import Request
 
 from openforms.formio.utils import iter_components
@@ -10,6 +11,7 @@ from openforms.submissions.models import Submission
 
 # TODO: it might be beneficial to memoize this function if it runs multiple times in
 # the context of the same request
+@elasticapm.capture_span(span_type="app.formio")
 def get_dynamic_configuration(
     configuration: dict, request: Request, submission: Submission
 ) -> dict:
