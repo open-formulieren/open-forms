@@ -38,7 +38,9 @@ RUN mkdir /app/src
 RUN pip install pip -U
 COPY ./requirements /app/requirements
 RUN pip install -r requirements/setuptools.txt
-RUN pip install -r requirements/production.txt
+
+ARG ENVIRONMENT=production
+RUN pip install -r requirements/${ENVIRONMENT}.txt
 
 # Stage 2 - Install frontend deps and build assets
 FROM node:15-buster AS frontend-build

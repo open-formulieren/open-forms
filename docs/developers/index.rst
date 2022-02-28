@@ -25,6 +25,7 @@ familiarize yourself with the design principles.
    backend/index
    sdk/index
    plugins/index
+   extending
    manual_testing
    i18n
    csp
