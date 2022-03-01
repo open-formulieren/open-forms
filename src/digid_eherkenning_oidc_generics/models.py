@@ -1,13 +1,9 @@
-from django.conf import settings
 from django.db import models
-from django.utils.encoding import force_text
 from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
 
-import mozilla_django_oidc_db.settings as oidc_settings
 from django_better_admin_arrayfield.models.fields import ArrayField
 from mozilla_django_oidc_db.models import CachingMixin, OpenIDConnectConfigBase
-from solo.models import SingletonModel, get_cache
 
 from openforms.authentication.constants import AuthAttribute
 
@@ -73,7 +69,10 @@ class OpenIDConnectPublicConfig(OpenIDConnectBaseConfig):
         base_field=models.CharField(_("OpenID Connect scope"), max_length=50),
         default=get_default_scopes_bsn,
         blank=True,
-        help_text=_("OpenID Connect scopes that are requested during login"),
+        help_text=_(
+            "OpenID Connect scopes that are requested during login. "
+            "These scopes are hardcoded and must be supported by the identity provider"
+        ),
     )
 
     @classproperty
@@ -100,7 +99,10 @@ class OpenIDConnectEHerkenningConfig(OpenIDConnectBaseConfig):
         base_field=models.CharField(_("OpenID Connect scope"), max_length=50),
         default=get_default_scopes_kvk,
         blank=True,
-        help_text=_("OpenID Connect scopes that are requested during login"),
+        help_text=_(
+            "OpenID Connect scopes that are requested during login. "
+            "These scopes are hardcoded and must be supported by the identity provider"
+        ),
     )
 
     @classproperty

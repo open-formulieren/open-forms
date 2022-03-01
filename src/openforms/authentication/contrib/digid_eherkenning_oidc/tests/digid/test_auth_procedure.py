@@ -7,9 +7,7 @@ import requests_mock
 from furl import furl
 from rest_framework import status
 
-from openforms.authentication.contrib.digid_eherkenning_oidc.models import (
-    OpenIDConnectPublicConfig,
-)
+from digid_eherkenning_oidc_generics.models import OpenIDConnectPublicConfig
 from openforms.forms.tests.factories import FormFactory
 
 default_config = dict(
@@ -34,7 +32,7 @@ class DigiDOIDCTests(TestCase):
         )
 
     @patch(
-        "openforms.authentication.contrib.digid_eherkenning_oidc.models.OpenIDConnectPublicConfig.get_solo",
+        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
         return_value=OpenIDConnectPublicConfig(**default_config),
     )
     def test_redirect_to_digid_oidc(self, *m):
@@ -104,7 +102,7 @@ class DigiDOIDCTests(TestCase):
         self.assertEqual(query_params["next"], form_url)
 
     @patch(
-        "openforms.authentication.contrib.digid_eherkenning_oidc.models.OpenIDConnectPublicConfig.get_solo",
+        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
         return_value=OpenIDConnectPublicConfig(**default_config),
     )
     def test_redirect_to_digid_oidc_internal_server_error(self, *m):
@@ -136,7 +134,7 @@ class DigiDOIDCTests(TestCase):
 
     @override_settings(CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=[])
     @patch(
-        "openforms.authentication.contrib.digid_eherkenning_oidc.models.OpenIDConnectPublicConfig.get_solo",
+        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
         return_value=OpenIDConnectPublicConfig(**default_config),
     )
     def test_redirect_to_disallowed_domain(self, *m):
@@ -154,7 +152,7 @@ class DigiDOIDCTests(TestCase):
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://example.com"]
     )
     @patch(
-        "openforms.authentication.contrib.digid_eherkenning_oidc.models.OpenIDConnectPublicConfig.get_solo",
+        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
         return_value=OpenIDConnectPublicConfig(
             enabled=True,
             oidc_rp_client_id="testclient",
@@ -221,7 +219,7 @@ class DigiDOIDCTests(TestCase):
         )
 
     @patch(
-        "openforms.authentication.contrib.digid_eherkenning_oidc.models.OpenIDConnectPublicConfig.get_solo",
+        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
         return_value=OpenIDConnectPublicConfig(
             enabled=True,
             oidc_rp_client_id="testclient",

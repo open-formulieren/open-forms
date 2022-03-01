@@ -5,10 +5,8 @@ from django.urls import reverse
 
 from django_webtest import WebTest
 
+from digid_eherkenning_oidc_generics.models import OpenIDConnectEHerkenningConfig
 from openforms.accounts.tests.factories import SuperUserFactory
-from openforms.authentication.contrib.digid_eherkenning_oidc.models import (
-    OpenIDConnectEHerkenningConfig,
-)
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.models import Form
 from openforms.forms.tests.factories import FormFactory
@@ -45,7 +43,7 @@ class eHerkenningOIDCFormAdminTests(WebTest):
         self.addCleanup(_cleanup)
 
     @patch(
-        "openforms.authentication.contrib.digid_eherkenning_oidc.models.OpenIDConnectEHerkenningConfig.get_solo",
+        "digid_eherkenning_oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
         return_value=OpenIDConnectEHerkenningConfig(**default_config),
     )
     def test_eherkenning_oidc_enabled(self, *m):
@@ -67,7 +65,7 @@ class eHerkenningOIDCFormAdminTests(WebTest):
         self.assertEqual(form.authentication_backends, ["eherkenning_oidc"])
 
     @patch(
-        "openforms.authentication.contrib.digid_eherkenning_oidc.models.OpenIDConnectEHerkenningConfig.get_solo",
+        "digid_eherkenning_oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
         return_value=OpenIDConnectEHerkenningConfig(**default_config),
     )
     @patch(
@@ -105,7 +103,7 @@ class eHerkenningOIDCFormAdminTests(WebTest):
 
         response = self.app.get(
             reverse(
-                "admin:digid_eherkenning_oidc_openidconnecteherkenningconfig_change"
+                "admin:digid_eherkenning_oidc_generics_openidconnecteherkenningconfig_change"
             )
         )
 
@@ -125,7 +123,7 @@ class eHerkenningOIDCFormAdminTests(WebTest):
 
         response = self.app.get(
             reverse(
-                "admin:digid_eherkenning_oidc_openidconnecteherkenningconfig_change"
+                "admin:digid_eherkenning_oidc_generics_openidconnecteherkenningconfig_change"
             )
         )
 

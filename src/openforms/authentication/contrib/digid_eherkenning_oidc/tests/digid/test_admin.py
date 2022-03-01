@@ -5,10 +5,8 @@ from django.urls import reverse
 
 from django_webtest import WebTest
 
+from digid_eherkenning_oidc_generics.models import OpenIDConnectPublicConfig
 from openforms.accounts.tests.factories import SuperUserFactory
-from openforms.authentication.contrib.digid_eherkenning_oidc.models import (
-    OpenIDConnectPublicConfig,
-)
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.models import Form
 from openforms.forms.tests.factories import FormFactory
@@ -45,7 +43,7 @@ class DigiDOIDCFormAdminTests(WebTest):
         self.addCleanup(_cleanup)
 
     @patch(
-        "openforms.authentication.contrib.digid_eherkenning_oidc.models.OpenIDConnectPublicConfig.get_solo",
+        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
         return_value=OpenIDConnectPublicConfig(**default_config),
     )
     def test_digid_oidc_enabled(self, *m):
@@ -67,7 +65,7 @@ class DigiDOIDCFormAdminTests(WebTest):
         self.assertEqual(form.authentication_backends, ["digid_oidc"])
 
     @patch(
-        "openforms.authentication.contrib.digid_eherkenning_oidc.models.OpenIDConnectPublicConfig.get_solo",
+        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
         return_value=OpenIDConnectPublicConfig(**default_config),
     )
     @patch(
@@ -104,7 +102,9 @@ class DigiDOIDCFormAdminTests(WebTest):
         FormFactory.create(authentication_backends=["eherkenning_oidc"])
 
         response = self.app.get(
-            reverse("admin:digid_eherkenning_oidc_openidconnectpublicconfig_change")
+            reverse(
+                "admin:digid_eherkenning_oidc_generics_openidconnectpublicconfig_change"
+            )
         )
 
         form = response.form
@@ -122,7 +122,9 @@ class DigiDOIDCFormAdminTests(WebTest):
         FormFactory.create(authentication_backends=["digid_oidc"])
 
         response = self.app.get(
-            reverse("admin:digid_eherkenning_oidc_openidconnectpublicconfig_change")
+            reverse(
+                "admin:digid_eherkenning_oidc_generics_openidconnectpublicconfig_change"
+            )
         )
 
         form = response.form

@@ -1,7 +1,7 @@
 from mozilla_django_oidc_db.mixins import SoloConfigMixin
 
-import openforms.authentication.contrib.digid_eherkenning_oidc.digid_settings as digid_settings
-import openforms.authentication.contrib.digid_eherkenning_oidc.eherkenning_settings as eherkenning_settings
+import digid_eherkenning_oidc_generics.digid_settings as digid_settings
+import digid_eherkenning_oidc_generics.eherkenning_settings as eherkenning_settings
 
 from .models import OpenIDConnectEHerkenningConfig, OpenIDConnectPublicConfig
 

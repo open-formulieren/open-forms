@@ -7,9 +7,7 @@ import requests_mock
 from furl import furl
 from rest_framework import status
 
-from openforms.authentication.contrib.digid_eherkenning_oidc.models import (
-    OpenIDConnectEHerkenningConfig,
-)
+from digid_eherkenning_oidc_generics.models import OpenIDConnectEHerkenningConfig
 from openforms.forms.tests.factories import FormFactory
 
 default_config = dict(
@@ -34,7 +32,7 @@ class eHerkenningOIDCTests(TestCase):
         )
 
     @patch(
-        "openforms.authentication.contrib.digid_eherkenning_oidc.models.OpenIDConnectEHerkenningConfig.get_solo",
+        "digid_eherkenning_oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
         return_value=OpenIDConnectEHerkenningConfig(**default_config),
     )
     def test_redirect_to_eherkenning_oidc(self, *m):
@@ -106,7 +104,7 @@ class eHerkenningOIDCTests(TestCase):
         self.assertEqual(query_params["next"], form_url)
 
     @patch(
-        "openforms.authentication.contrib.digid_eherkenning_oidc.models.OpenIDConnectEHerkenningConfig.get_solo",
+        "digid_eherkenning_oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
         return_value=OpenIDConnectEHerkenningConfig(**default_config),
     )
     def test_redirect_to_eherkenning_oidc_internal_server_error(self, *m):
@@ -138,7 +136,7 @@ class eHerkenningOIDCTests(TestCase):
 
     @override_settings(CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=[])
     @patch(
-        "openforms.authentication.contrib.digid_eherkenning_oidc.models.OpenIDConnectEHerkenningConfig.get_solo",
+        "digid_eherkenning_oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
         return_value=OpenIDConnectEHerkenningConfig(**default_config),
     )
     def test_redirect_to_disallowed_domain(self, *m):
@@ -156,7 +154,7 @@ class eHerkenningOIDCTests(TestCase):
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://example.com"]
     )
     @patch(
-        "openforms.authentication.contrib.digid_eherkenning_oidc.models.OpenIDConnectEHerkenningConfig.get_solo",
+        "digid_eherkenning_oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
         return_value=OpenIDConnectEHerkenningConfig(
             enabled=True,
             oidc_rp_client_id="testclient",
@@ -226,7 +224,7 @@ class eHerkenningOIDCTests(TestCase):
         )
 
     @patch(
-        "openforms.authentication.contrib.digid_eherkenning_oidc.models.OpenIDConnectEHerkenningConfig.get_solo",
+        "digid_eherkenning_oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
         return_value=OpenIDConnectEHerkenningConfig(
             enabled=True,
             oidc_rp_client_id="testclient",

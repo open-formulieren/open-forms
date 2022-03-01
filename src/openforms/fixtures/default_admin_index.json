@@ -151,11 +151,11 @@
                 "blacklist"
             ],
             [
-                "digid_eherkenning_oidc",
+                "digid_eherkenning_oidc_generics",
                 "openidconnectpublicconfig"
             ],
             [
-                "digid_eherkenning_oidc",
+                "digid_eherkenning_oidc_generics",
                 "openidconnecteherkenningconfig"
             ],
             [

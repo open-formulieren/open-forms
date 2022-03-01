@@ -1,6 +1,6 @@
 [
     {
-        "model": "digid_eherkenning_oidc.openidconnectpublicconfig",
+        "model": "digid_eherkenning_oidc_generics.openidconnectpublicconfig",
         "pk": 1,
         "fields": {
             "enabled": true,
@@ -20,7 +20,7 @@
         }
     },
     {
-        "model": "digid_eherkenning_oidc.openidconnecteherkenningconfig",
+        "model": "digid_eherkenning_oidc_generics.openidconnecteherkenningconfig",
         "pk": 1,
         "fields": {
             "enabled": true,

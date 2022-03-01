@@ -8,6 +8,10 @@ import requests
 from furl import furl
 from rest_framework.reverse import reverse
 
+from digid_eherkenning_oidc_generics.models import (
+    OpenIDConnectEHerkenningConfig,
+    OpenIDConnectPublicConfig,
+)
 from openforms.authentication.base import BasePlugin, LoginLogo
 from openforms.forms.models import Form
 
@@ -15,7 +19,6 @@ from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...exceptions import InvalidCoSignData
 from ...registry import register
 from .constants import DIGID_OIDC_AUTH_SESSION_KEY, EHERKENNING_OIDC_AUTH_SESSION_KEY
-from .models import OpenIDConnectEHerkenningConfig, OpenIDConnectPublicConfig
 
 
 class OIDCAuthentication(BasePlugin):
