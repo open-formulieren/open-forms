@@ -334,9 +334,21 @@ class FormAdmin(
     )
 
     def delete_model(self, request, form):
-        # override for soft-delete
-        form._is_deleted = True
-        form.save(update_fields=["_is_deleted"])
+        """
+        Check if we need to soft or hard delete.
+        """
+        if not form._is_deleted:
+            # override for soft-delete
+            form._is_deleted = True
+            form.save(update_fields=["_is_deleted"])
+        else:
+            fds = list(
+                FormDefinition.objects.filter(
+                    formstep__form=form, is_reusable=False
+                ).values_list("id", flat=True)
+            )
+            form.delete()
+            FormDefinition.objects.filter(id__in=fds).delete()
 
     def delete_queryset(self, request, queryset):
         """
