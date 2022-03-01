@@ -1,3 +1,4 @@
+import json
 import shutil
 import tempfile
 from pathlib import Path
@@ -109,6 +110,35 @@ class AdminTests(WebTest):
         self.assertEqual(response.status_code, 302)
         config = GlobalConfiguration.get_solo()
         self.assertEqual(config.logo, "")
+
+    def test_plugin_configuration(self):
+        # mocking the admin/solo machinery is not straightforward here...
+        config = GlobalConfiguration.get_solo()
+        config.plugin_configuration = {
+            "authentication": {
+                "digid": {
+                    "enabled": False,
+                }
+            }
+        }
+        config.save()
+        url = reverse("admin:config_globalconfiguration_change", args=(1,))
+
+        change_page = self.app.get(url)
+
+        custom_widget = change_page.pyquery(".plugin-config-react")
+        self.assertEqual(len(custom_widget), 1)
+        self.assertEqual(custom_widget.attr("data-name"), "plugin_configuration")
+        self.assertEqual(
+            custom_widget.attr("data-value"),
+            '{"authentication": {"digid": {"enabled": false}}}',
+        )
+
+        # introspect registry
+        json_script = custom_widget.find("#plugin_configuration-modules-and-plugins")
+        modules_and_plugins = json.loads(json_script.text())
+        self.assertIn("authentication", modules_and_plugins)
+        self.assertIn("digid", modules_and_plugins["authentication"])
 
 
 class GlobalConfirmationEmailTests(TestCase):
