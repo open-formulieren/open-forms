@@ -381,10 +381,6 @@ class FormAdminActionsTests(WebTest):
         self.assertFalse(self.form.maintenance_mode)
 
 
-from django.test import tag
-
-
-@tag("these")
 @disable_2fa
 class FormEditTests(WebTest):
     """
@@ -744,3 +740,70 @@ class FormChangeTests(WebTest):
                 )
             ),
         )
+
+
+@disable_2fa
+class FormDeleteTests(WebTest):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.user = SuperUserFactory.create()
+
+    def test_initial_changelist_delete_marks_as_deleted(self):
+        form = FormFactory.create(generate_minimal_setup=True)
+        with self.subTest("check test setup"):
+            self.assertFalse(form._is_deleted)
+        changelist = self.app.get(
+            reverse("admin:forms_form_changelist"), user=self.user
+        )
+        html_form = changelist.forms["changelist-form"]
+
+        # mark the form for deletion - there is only one
+        html_form["action"] = "delete_selected"
+        html_form["_selected_action"] = [form.pk]
+        confirm_page = html_form.submit(name="index")
+        confirm_page.form.submit()
+
+        # check that the form is soft deleted
+        form.refresh_from_db()
+        self.assertTrue(form._is_deleted)
+
+    def test_second_changelist_delete_permanently_deleted(self):
+        form = FormFactory.create(generate_minimal_setup=True, deleted_=True)
+        changelist = self.app.get(
+            reverse("admin:forms_form_changelist"), user=self.user
+        ).click(description=_("Deleted forms"))
+        html_form = changelist.forms["changelist-form"]
+
+        # mark the form for deletion - there is only one
+        html_form["action"] = "delete_selected"
+        html_form["_selected_action"] = [form.pk]
+        confirm_page = html_form.submit(name="index")
+        confirm_page.form.submit()
+
+        self.assertFalse(Form.objects.exists())
+        # delete cascades - steps are deleted, and single-use form definitions are
+        # deleted as well
+        self.assertFalse(FormStep.objects.exists())
+        self.assertFalse(FormDefinition.objects.exists())
+
+    def test_second_changelist_delete_permanently_deleted_keep_reusable_formdefs(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            deleted_=True,
+            formstep__form_definition__is_reusable=True,
+        )
+        changelist = self.app.get(
+            reverse("admin:forms_form_changelist"), user=self.user
+        ).click(description=_("Deleted forms"))
+        html_form = changelist.forms["changelist-form"]
+
+        # mark the form for deletion - there is only one
+        html_form["action"] = "delete_selected"
+        html_form["_selected_action"] = [form.pk]
+        confirm_page = html_form.submit(name="index")
+        confirm_page.form.submit()
+
+        self.assertFalse(Form.objects.exists())
+        self.assertFalse(FormStep.objects.exists())
+        self.assertEqual(FormDefinition.objects.count(), 1)
