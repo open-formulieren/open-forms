@@ -2,6 +2,7 @@ import logging
 
 from django.core.exceptions import PermissionDenied
 from django.dispatch import Signal, receiver
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.request import Request
 
@@ -43,6 +44,17 @@ def set_auth_attribute_on_session(
 
     plugin = form_auth["plugin"]
     attribute = form_auth["attribute"]
+
+    plugin_instance = register[plugin]
+    if plugin_instance.is_demo_plugin and not request.user.is_staff:
+        logger.warning(
+            "Demo plugin '%s' auth flow bypassed, blocking attempt to set identifying "
+            "attribute on submission '%s'.",
+            plugin,
+            instance.uuid,
+        )
+        raise PermissionDenied(_("Demo plugins require an active admin session."))
+
     logger.debug(
         "Persisting form auth to submission %s. Plugin: '%s' (setting attribute '%s')",
         instance.uuid,
