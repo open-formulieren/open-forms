@@ -15,7 +15,7 @@ from openforms.registrations.admin import RegistrationBackendFieldMixin
 from ...payments.admin import PaymentBackendChoiceFieldMixin
 from ...utils.expressions import FirstNotBlank
 from ..forms.form import FormImportForm
-from ..models import Form, FormStep
+from ..models import Form, FormDefinition, FormStep
 from ..utils import export_form, get_duplicates_keys_for_form, import_form
 
 
@@ -339,5 +339,21 @@ class FormAdmin(
         form.save(update_fields=["_is_deleted"])
 
     def delete_queryset(self, request, queryset):
-        # override for soft-delete
-        queryset.update(_is_deleted=True)
+        """
+        Split between soft and hard deletes here.
+
+        The admin has mutually exclusive filters, but let's not rely on that assumption.
+        """
+
+        # soft-deletes
+        queryset.filter(_is_deleted=False).update(_is_deleted=True)
+
+        # hard deletes - ensure we cascade delete the single-use form definitions as well
+        soft_deleted = queryset.filter(_is_deleted=True)
+        fds = list(
+            FormDefinition.objects.filter(
+                formstep__form__in=soft_deleted, is_reusable=False
+            ).values_list("id", flat=True)
+        )
+        soft_deleted.delete()
+        FormDefinition.objects.filter(id__in=fds).delete()
