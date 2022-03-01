@@ -189,3 +189,40 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         # Check that the data has not been converted to snake case
         self.assertIn("countryOfResidence", saved_data)
         self.assertNotIn("country_of_residence", saved_data)
+
+    def test_data_not_camelised(self):
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "key": "country_of_residence",  # Snake Case
+                        "type": "textfield",
+                        "label": "Country of residence",
+                    }
+                ]
+            }
+        )
+        form_step = FormStepFactory.create(form_definition=form_definition)
+        submission = SubmissionFactory.create(form=form_step.form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={"country_of_residence": "Netherlands"},
+            form_step=form_step,
+        )
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
+            },
+        )
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()["data"]
+        # Check that the data has not been converted to camel case
+        self.assertIn("country_of_residence", data)
+        self.assertNotIn("countryOfResidence", data)
