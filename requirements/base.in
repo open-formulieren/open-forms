@@ -42,7 +42,7 @@ django-redis
 django-solo
 django-tinymce
 django-yubin
-mozilla-django-oidc-db
+git+https://github.com/maykinmedia/mozilla-django-oidc-db.git@0e8bc4f3d0437eaf01c3e0885f03e28450ced83c#egg=mozilla-django-oidc-db
 git+https://github.com/maykinmedia/python3-saml.git@e000b39ed0ce38270e6351ec6634e6b3a53bbc3d#egg=python3_saml
 git+https://github.com/maykinmedia/drf_jsonschema.git@b7a482670274d11c1849e625a704018f1e9dd852#egg=drf_jsonschema
 pyopenssl
