@@ -1,0 +1,22 @@
+{# instead of usinx a textarea, drop the data in a div and let it be picked up by react #}
+<div
+    class="plugin-config-react"
+    data-name="{{ widget.name }}"
+    data-value="{{ widget.value }}"
+>
+    {% with widget.name|add:'-attrs-react' as id %}
+        {{ widget.attrs|json_script:id }}
+    {% endwith %}
+    {% with widget.name|add:'-modules-and-plugins' as id %}
+        {{ modules_and_plugins|json_script:id }}
+    {% endwith %}
+    <input
+        type="hidden"
+        name="{{ widget.name }}"
+        class="plugin-config-react__input"
+        {% if widget.value != None %}value="{{ widget.value }}"{% endif %}
+    />
+    <div class="plugin-config-react__widget">
+        {# React managed #}
+    </div>
+</div>

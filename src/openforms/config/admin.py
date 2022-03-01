@@ -4,12 +4,14 @@ from django.utils.translation import ugettext_lazy as _
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 from solo.admin import SingletonModelAdmin
 
+from .forms import GlobalConfigurationAdminForm
 from .models import GlobalConfiguration
 
 
 @admin.register(GlobalConfiguration)
 class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
     autocomplete_fields = ("analytics_cookie_consent_group",)
+    form = GlobalConfigurationAdminForm
     fieldsets = (
         (
             _("Email security configuration"),
