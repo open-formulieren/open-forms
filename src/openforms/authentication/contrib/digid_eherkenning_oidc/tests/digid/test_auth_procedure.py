@@ -8,6 +8,7 @@ from furl import furl
 from rest_framework import status
 
 from digid_eherkenning_oidc_generics.models import OpenIDConnectPublicConfig
+from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.forms.tests.factories import FormFactory
 
 default_config = dict(
@@ -131,6 +132,40 @@ class DigiDOIDCTests(TestCase):
         self.assertEqual(parsed.host, "testserver")
         self.assertEqual(parsed.path, form_path)
         self.assertEqual(query_params["of-auth-problem"], "digid_oidc")
+
+    @patch(
+        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
+        return_value=OpenIDConnectPublicConfig(**default_config),
+    )
+    def test_redirect_to_digid_oidc_callback_error(self, *m):
+        form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
+        form_url = f"http://testserver{form_path}"
+        redirect_form_url = furl(form_url).set({"_start": "1"})
+        redirect_url = furl(
+            reverse(
+                "authentication:return",
+                kwargs={"slug": self.form.slug, "plugin_id": "digid_oidc"},
+            )
+        ).set({"next": redirect_form_url})
+
+        session = self.client.session
+        session["oidc_login_next"] = redirect_url.url
+        session.save()
+
+        with patch(
+            "openforms.authentication.contrib.digid_eherkenning_oidc.backends.OIDCAuthenticationDigiDBackend.verify_claims",
+            return_value=False,
+        ):
+            response = self.client.get(reverse("digid_oidc:callback"))
+
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+
+        parsed = furl(response.url)
+        query_params = parsed.query.params
+
+        self.assertEqual(parsed.path, form_path)
+        self.assertEqual(query_params["_start"], "1")
+        self.assertEqual(query_params[BACKEND_OUTAGE_RESPONSE_PARAMETER], "digid_oidc")
 
     @override_settings(CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=[])
     @patch(
