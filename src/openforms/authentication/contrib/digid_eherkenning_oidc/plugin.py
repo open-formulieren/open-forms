@@ -1,7 +1,6 @@
 from typing import Any, Dict, Optional
 
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
-from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
 import requests
@@ -13,6 +12,8 @@ from digid_eherkenning_oidc_generics.models import (
     OpenIDConnectPublicConfig,
 )
 from openforms.authentication.base import BasePlugin, LoginLogo
+from openforms.contrib.digid.utils import get_digid_logo
+from openforms.contrib.eherkenning.utils import get_eherkenning_logo
 from openforms.forms.models import Form
 
 from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
@@ -103,11 +104,7 @@ class DigiDOIDCAuthentication(OIDCAuthentication):
         return "DigiD"
 
     def get_logo(self, request) -> Optional[LoginLogo]:
-        return LoginLogo(
-            title=self.get_label(),
-            image_src=request.build_absolute_uri(static("img/digid-46x46.png")),
-            href="https://www.digid.nl/",
-        )
+        return get_digid_logo(request, self.get_label())
 
 
 @register("eherkenning_oidc")
@@ -123,8 +120,4 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication):
         return "eHerkenning"
 
     def get_logo(self, request) -> Optional[LoginLogo]:
-        return LoginLogo(
-            title=self.get_label(),
-            image_src=request.build_absolute_uri(static("img/eherkenning.png")),
-            href="https://www.eherkenning.nl/",
-        )
+        return get_eherkenning_logo(request, self.get_label())

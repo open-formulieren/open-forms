@@ -1,12 +1,12 @@
 from typing import Any, Dict, Optional
 
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
-from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
 from furl import furl
 from rest_framework.reverse import reverse
 
+from openforms.contrib.digid.utils import get_digid_logo
 from openforms.forms.models import Form
 
 from ...base import BasePlugin, LoginLogo
@@ -81,8 +81,4 @@ class DigidAuthentication(BasePlugin):
         return HttpResponseRedirect(form_url)
 
     def get_logo(self, request) -> Optional[LoginLogo]:
-        return LoginLogo(
-            title=self.get_label(),
-            image_src=request.build_absolute_uri(static("img/digid-46x46.png")),
-            href="https://www.digid.nl/",
-        )
+        return get_digid_logo(request, self.get_label())
