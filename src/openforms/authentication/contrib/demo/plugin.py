@@ -97,15 +97,19 @@ class DemoBaseAuthentication(BasePlugin):
         return HttpResponseRedirect(submitted.cleaned_data["next"])
 
 
+# client requested demo and demo-kvk to no longer be 'demo' (Github #805), but that
+# conflicts with the required admin/staff user check from #1322. This has been
+# overruled, as demo plugins can be enabled via a feature flag and other demo plugins
+# can be disabled in the global configuration if considered annoying (see #1103).
+
+
 @register("demo")
 class DemoBSNAuthentication(DemoBaseAuthentication):
     verbose_name = _("Demo BSN")
     form_class = BSNForm
     provides_auth = AuthAttribute.bsn
     form_field = "bsn"
-
-    # client requested this to no longer be demo (Github #805)
-    is_demo_plugin = False
+    is_demo_plugin = True
 
 
 @register("demo-kvk")
@@ -114,6 +118,4 @@ class DemoKVKAuthentication(DemoBaseAuthentication):
     form_class = KVKForm
     provides_auth = AuthAttribute.kvk
     form_field = "kvk"
-
-    # client requested this to no longer be demo (Github #805)
-    is_demo_plugin = False
+    is_demo_plugin = True

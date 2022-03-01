@@ -1,7 +1,10 @@
+from unittest.mock import patch
 from urllib.parse import quote
 
 from django.test import RequestFactory, TestCase, override_settings
 
+from openforms.accounts.tests.factories import StaffUserFactory
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
@@ -20,6 +23,9 @@ class LoginTests(TestCase):
         )
         form = step.form
         plugin = register["demo"]
+        # demo plugins require staff users, see #1322
+        user = StaffUserFactory.create()
+        self.client.force_login(user=user)
 
         # we need an arbitrary request
         factory = RequestFactory()
@@ -84,6 +90,9 @@ class LoginTests(TestCase):
         )
         form = step.form
         plugin = register["demo-kvk"]
+        # demo plugins require staff users, see #1322
+        user = StaffUserFactory.create()
+        self.client.force_login(user=user)
 
         # we need an arbitrary request
         factory = RequestFactory()
@@ -119,7 +128,11 @@ class LoginTests(TestCase):
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
 class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
-    def test_login_co_sign_bsn(self):
+    @patch(
+        "openforms.plugins.registry.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(enable_demo_plugins=True),
+    )
+    def test_login_co_sign_bsn(self, mock_get_solo):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
@@ -129,6 +142,9 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
         self._add_submission_to_session(submission)
         form = submission.form
         plugin = register["demo"]
+        # demo plugins require staff users, see #1322
+        user = StaffUserFactory.create()
+        self.client.force_login(user=user)
         # we need an arbitrary request
         factory = RequestFactory()
         request = factory.get("/foo")

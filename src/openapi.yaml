@@ -3163,8 +3163,6 @@ components:
       - providesAuth
     AuthenticationBackendsEnum:
       enum:
-      - demo
-      - demo-kvk
       - digid
       - eherkenning
       - eidas
