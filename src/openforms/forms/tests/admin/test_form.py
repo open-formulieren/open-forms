@@ -807,3 +807,39 @@ class FormDeleteTests(WebTest):
         self.assertFalse(Form.objects.exists())
         self.assertFalse(FormStep.objects.exists())
         self.assertEqual(FormDefinition.objects.count(), 1)
+
+    def test_initial_delete_from_detail_page_marks_as_deleted(self):
+        # this is currently not exposed in the React UI, but will be added at some
+        # point
+        form = FormFactory.create(generate_minimal_setup=True)
+        with self.subTest("check test setup"):
+            self.assertFalse(form._is_deleted)
+        delete_page = self.app.get(
+            reverse("admin:forms_form_delete", args=(form.pk,)),
+            user=self.user,
+        )
+        delete_page.form.submit()
+
+        # check that the form is soft deleted
+        form.refresh_from_db()
+        self.assertTrue(form._is_deleted)
+
+    def test_second_delete_from_detail_page_permanently_deleted(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            deleted_=True,
+            formstep__form_definition__is_reusable=True,
+        )
+        FormStepFactory.create(form=form)
+        with self.subTest("check test setup"):
+            self.assertTrue(form._is_deleted)
+        delete_page = self.app.get(
+            reverse("admin:forms_form_delete", args=(form.pk,)),
+            user=self.user,
+        )
+        delete_page.form.submit()
+
+        # check that the form is hard deleted and reusable form definitions are kept
+        self.assertFalse(Form.objects.exists())
+        self.assertFalse(FormStep.objects.exists())
+        self.assertEqual(FormDefinition.objects.count(), 1)
