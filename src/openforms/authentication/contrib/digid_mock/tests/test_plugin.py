@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from furl import furl
 
+from openforms.accounts.tests.factories import StaffUserFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -25,6 +26,9 @@ class LoginTests(TestCase):
         )
         form = step.form
         plugin = register["digid-mock"]
+        # demo plugins require staff users
+        staff_user = StaffUserFactory.create()
+        self.client.force_login(user=staff_user)
 
         # we need an arbitrary request
         factory = RequestFactory()
@@ -85,6 +89,9 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
         self._add_submission_to_session(submission)
         form = submission.form
         plugin = register["digid-mock"]
+        # demo plugins require staff users
+        staff_user = StaffUserFactory.create()
+        self.client.force_login(user=staff_user)
         # we need an arbitrary request
         factory = RequestFactory()
         request = factory.get("/foo")

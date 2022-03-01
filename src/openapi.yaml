@@ -2507,6 +2507,7 @@ paths:
       tags:
       - auth
       security:
+      - cookieAuth: []
       - {}
       responses:
         '302':
@@ -2614,6 +2615,7 @@ paths:
               type: object
               additionalProperties: {}
       security:
+      - cookieAuth: []
       - {}
       responses:
         '200':
@@ -2736,6 +2738,7 @@ paths:
       tags:
       - auth
       security:
+      - cookieAuth: []
       - {}
       responses:
         '200':
