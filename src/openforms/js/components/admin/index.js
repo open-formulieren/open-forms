@@ -7,19 +7,14 @@ import {FormCreationForm} from './form_design/form-creation-form';
 import {TinyMceContext} from './form_design/Context';
 import FormVersionsTable from './form_versions/FormVersionsTable';
 import './sdk-snippet';
+import './plugin_configuration';
 
 import Debug from './debug';
+import {getIntlProviderProps} from './i18n';
 
-const loadLocaleData = (locale) => {
-    switch (locale) {
-        case 'nl':
-            return import('../../compiled-lang/nl.json');
-        default:
-            return import('../../compiled-lang/en.json');
-    }
-};
 
-const mountForm = (locale, messages) => {
+
+const mountForm = (intlProps) => {
     const formCreationFormNodes = document.getElementsByClassName('react-form-create');
     if (!formCreationFormNodes.length) return;
 
@@ -29,7 +24,7 @@ const mountForm = (locale, messages) => {
         ReactModal.setAppElement(formCreationFormNode);
 
         ReactDOM.render(
-            <IntlProvider messages={messages} locale={locale} defaultLocale="en">
+            <IntlProvider {...intlProps}>
                 <TinyMceContext.Provider value={tinymceUrl}>
                     <FormCreationForm csrftoken={csrftoken} formUuid={formUuid} formHistoryUrl={formHistoryUrl} />
                 </TinyMceContext.Provider>
@@ -39,7 +34,7 @@ const mountForm = (locale, messages) => {
     }
 };
 
-const mountFormVersions = (locale, messages) => {
+const mountFormVersions = (intlProps) => {
     const formVersionsNodes = document.getElementsByClassName('react-form-versions-table');
     if (!formVersionsNodes.length) return;
 
@@ -47,7 +42,7 @@ const mountFormVersions = (locale, messages) => {
         const { formUuid, csrftoken } = formVersionsNode.dataset;
 
         ReactDOM.render(
-            <IntlProvider messages={messages} locale={locale} defaultLocale="en">
+            <IntlProvider {...intlProps}>
                 <FormVersionsTable csrftoken={csrftoken} formUuid={formUuid} />
             </IntlProvider>,
             formVersionsNode
@@ -64,11 +59,9 @@ const mountDebugComponent = () => {
 
 
 const bootstrapApplication = async () => {
-    const lang = document.querySelector('html').getAttribute("lang");
-    const messages = await loadLocaleData(lang);
-
-    mountForm(lang, messages);
-    mountFormVersions(lang, messages);
+    const intlProviderProps = await getIntlProviderProps();
+    mountForm(intlProviderProps);
+    mountFormVersions(intlProviderProps);
 };
 
 bootstrapApplication();

@@ -1,0 +1,14 @@
+@import '~microscope-sass/lib/typography';
+
+.plugin-config-react {
+  float: left;
+
+  .plugins-module {
+    @include margin('auto');
+
+    &__module {
+      @include margin('auto', $value-laptop: .5em);
+      font-weight: bold;
+    }
+  }
+}

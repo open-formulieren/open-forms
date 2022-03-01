@@ -121,6 +121,16 @@
       "value": "Birth Date Component"
     }
   ],
+  "5/5LjA": [
+    {
+      "type": 0,
+      "value": "Enable "
+    },
+    {
+      "type": 1,
+      "value": "plugin"
+    }
+  ],
   "5/xPX6": [
     {
       "type": 0,
@@ -377,6 +387,12 @@
     {
       "type": 0,
       "value": "Errored Submissions Removal Limit"
+    }
+  ],
+  "A3uQyR": [
+    {
+      "type": 0,
+      "value": "Display main website link"
     }
   ],
   "AFyQut": [
@@ -1369,6 +1385,12 @@
     {
       "type": 0,
       "value": "Name"
+    }
+  ],
+  "k9CT3p": [
+    {
+      "type": 0,
+      "value": "Whether to show a link to the main website on the confirmation page."
     }
   ],
   "kHn5Yw": [
