@@ -17,6 +17,14 @@ docker-compose -f docker-compose.keycloak.yml up -d
 This brings up Keycloak, the admin interface is accessible at http://localhost:8080/.
 You can log in with `demo:demo`.
 
+In order to allow access to Keycloak via the same hostname via the Open Forms backend
+container and the browser, add the following entry to your `/etc/hosts` file:
+
+```
+127.0.0.1 keycloak.open-forms.local
+```
+
+
 ## Load fixtures
 
 Before the DigiD login via OIDC can be tested, two fixtures need to be loaded.

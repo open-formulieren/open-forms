@@ -12,7 +12,9 @@ services:
     ports:
       - 8080:8080
     networks:
-      - open-forms-dev
+      open-forms-dev:
+        aliases:
+          - keycloak.open-forms.local
 
 networks:
   open-forms-dev:

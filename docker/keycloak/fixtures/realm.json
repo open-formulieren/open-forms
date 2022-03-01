@@ -715,6 +715,9 @@
             "attributes": {
                 "bsn": [
                     "000000000"
+                ],
+                "kvk": [
+                    "012345678"
                 ]
             },
             "credentials": [
@@ -1051,7 +1054,8 @@
             "clientAuthenticatorType": "client-secret",
             "secret": "23a12032-e080-4f65-b733-ad2567ec1605",
             "redirectUris": [
-                "http://127.0.0.1:8000/oidc/callback/"
+                "http://localhost:8000/*",
+                "http://127.0.0.1:8000/*"
             ],
             "webOrigins": [
                 "http://127.0.0.1:8000"
@@ -1163,7 +1167,8 @@
             "clientAuthenticatorType": "client-secret",
             "secret": "23a12032-e080-4f65-b733-ad2567ec1605",
             "redirectUris": [
-                "http://127.0.0.1:8000/digid-oidc/callback/"
+                "http://localhost:8000/*",
+                "http://127.0.0.1:8000/*"
             ],
             "webOrigins": [
                 "http://127.0.0.1:8000"
@@ -1256,6 +1261,7 @@
                 "roles",
                 "profile",
                 "bsn",
+                "kvk",
                 "email"
             ],
             "optionalClientScopes": [
