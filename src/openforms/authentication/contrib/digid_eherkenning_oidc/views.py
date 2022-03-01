@@ -12,7 +12,7 @@ from digid_eherkenning_oidc_generics.mixins import (
     SoloConfigEHerkenningMixin,
 )
 from digid_eherkenning_oidc_generics.views import (
-    OIDCAuthenticationCallbackView,
+    OIDCAuthenticationCallbackView as _OIDCAuthenticationCallbackView,
     OIDCAuthenticationRequestView as _OIDCAuthenticationRequestView,
 )
 
@@ -56,6 +56,18 @@ class OIDCAuthenticationRequestView(_OIDCAuthenticationRequestView):
         return super().get(request)
 
 
+class OIDCAuthenticationCallbackView(_OIDCAuthenticationCallbackView):
+    @property
+    def failure_url(self):
+        """
+        On failure, redirect to the form with an appropriate error message
+        """
+        f = furl(self.success_url)
+        f = furl(f.args["next"])
+        f.args[BACKEND_OUTAGE_RESPONSE_PARAMETER] = self.plugin_identifier
+        return f.url
+
+
 class DigiDOIDCAuthenticationRequestView(
     SoloConfigDigiDMixin, OIDCAuthenticationRequestView
 ):
@@ -65,6 +77,7 @@ class DigiDOIDCAuthenticationRequestView(
 class DigiDOIDCAuthenticationCallbackView(
     SoloConfigDigiDMixin, OIDCAuthenticationCallbackView
 ):
+    plugin_identifier = "digid_oidc"
     auth_backend_class = OIDCAuthenticationDigiDBackend
 
 
@@ -77,4 +90,5 @@ class eHerkenningOIDCAuthenticationRequestView(
 class eHerkenningOIDCAuthenticationCallbackView(
     SoloConfigEHerkenningMixin, OIDCAuthenticationCallbackView
 ):
+    plugin_identifier = "eherkenning_oidc"
     auth_backend_class = OIDCAuthenticationEHerkenningBackend
