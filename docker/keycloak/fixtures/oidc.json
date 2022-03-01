@@ -40,6 +40,33 @@
         }
     },
     {
+        "model": "mozilla_django_oidc_db.openidconnectconfig",
+        "pk": 1,
+        "fields": {
+            "enabled": true,
+            "oidc_rp_client_id": "testid",
+            "oidc_rp_client_secret": "23a12032-e080-4f65-b733-ad2567ec1605",
+            "oidc_rp_sign_algo": "RS256",
+            "oidc_rp_scopes_list": "[\"openid\", \"email\", \"profile\"]",
+            "oidc_op_discovery_endpoint": "http://keycloak.open-forms.local:8080/auth/realms/test/",
+            "oidc_op_jwks_endpoint": "http://keycloak.open-forms.local:8080/auth/realms/test/protocol/openid-connect/certs",
+            "oidc_op_authorization_endpoint": "http://keycloak.open-forms.local:8080/auth/realms/test/protocol/openid-connect/auth",
+            "oidc_op_token_endpoint": "http://keycloak.open-forms.local:8080/auth/realms/test/protocol/openid-connect/token",
+            "oidc_op_user_endpoint": "http://keycloak.open-forms.local:8080/auth/realms/test/protocol/openid-connect/userinfo",
+            "oidc_rp_idp_sign_key": "",
+            "username_claim": "sub",
+            "claim_mapping": {
+                "email": "email",
+                "last_name": "family_name",
+                "first_name": "given_name"
+            },
+            "groups_claim": "roles",
+            "sync_groups": true,
+            "sync_groups_glob_pattern": "*",
+            "make_users_staff": true
+        }
+    },
+    {
         "model": "forms.form",
         "pk": 1,
         "fields": {
