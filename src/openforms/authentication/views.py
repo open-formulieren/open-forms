@@ -297,6 +297,11 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
         if plugin.return_method.upper() != request.method.upper():
             return HttpResponseNotAllowed([plugin.return_method])
 
+        # demo plugins should require admin authentication to protect against random
+        # people spoofing other people's credentials.
+        if plugin.is_demo_plugin and not request.user.is_staff:
+            raise PermissionDenied(_("Demo plugins require an active admin session."))
+
         try:
             self._handle_co_sign(form, plugin)
         except serializers.ValidationError:
