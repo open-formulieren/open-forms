@@ -7,8 +7,9 @@ from furl import furl
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.tests.factories import FormStepFactory
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
@@ -19,7 +20,7 @@ from ..views import (
     AuthenticationReturnView,
     AuthenticationStartView,
 )
-from .mocks import FailingPlugin, Plugin, mock_register
+from .mocks import FailingPlugin, Plugin, RequiresAdminPlugin, mock_register
 
 
 class AuthenticationFlowTests(APITestCase):
@@ -172,6 +173,63 @@ class AuthenticationFlowTests(APITestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.content.decode(), "authentication plugin not enabled")
+
+    @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+    def test_plugin_admin_required_not_logged_in(self):
+        register = Registry()
+        register("plugin1")(RequiresAdminPlugin)
+        FormFactory.create(
+            generate_minimal_setup=True,
+            slug="myform",
+            authentication_backends=["plugin1"],
+            formstep__form_definition__login_required=True,
+        )
+
+        # go through the full client to simulate actual sessions
+        start_url = reverse(
+            "authentication:start",
+            kwargs={"slug": "myform", "plugin_id": "plugin1"},
+        )
+
+        with mock_register(register):
+            response = self.client.get(
+                start_url, {"next": "https://example.com/f/myform/stap/stap-1"}
+            )
+
+        self.assertEqual(response.status_code, 403)
+
+    @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+    def test_plugin_admin_required_users_logged_in(self):
+        register = Registry()
+        register("plugin1")(RequiresAdminPlugin)
+        FormFactory.create(
+            generate_minimal_setup=True,
+            slug="myform",
+            authentication_backends=["plugin1"],
+            formstep__form_definition__login_required=True,
+        )
+
+        # go through the full client to simulate actual sessions
+        start_url = reverse(
+            "authentication:start",
+            kwargs={"slug": "myform", "plugin_id": "plugin1"},
+        )
+
+        expected = (
+            (UserFactory.create(), 403),
+            (StaffUserFactory.create(), 200),
+        )
+
+        with mock_register(register):
+            for user, expected_status in expected:
+                with self.subTest(is_staff=user.is_staff):
+                    self.client.force_authenticate(user)
+
+                    response = self.client.get(
+                        start_url, {"next": "https://example.com/f/myform/stap/stap-1"}
+                    )
+
+                    self.assertEqual(response.status_code, expected_status)
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)

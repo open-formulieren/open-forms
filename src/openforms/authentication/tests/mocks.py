@@ -37,6 +37,26 @@ class FailingPlugin(BasePlugin):
         raise Exception("return")
 
 
+class RequiresAdminPlugin(BasePlugin):
+    verbose_name = "plugin requiring staff user session"
+    is_demo_plugin = True
+
+    def start_login(self, request, form, form_url):
+        return HttpResponse("start")
+
+    def handle_return(self, request, form):
+        return HttpResponseRedirect(request.GET.get("next"))
+
+    def handle_co_sign(self, request, form):
+        return {
+            "identifier": "mock-id",
+            "fields": {
+                "mock_field_1": "field 1",
+                "mock_field_2": "",
+            },
+        }
+
+
 @contextmanager
 def mock_register(register: Registry):
     patcher1 = patch(
