@@ -142,6 +142,8 @@ DISABLE_CSP_RATELIMITING = config("DISABLE_CSP_RATELIMITING", default=False)
 if DISABLE_CSP_RATELIMITING:
     MIDDLEWARE.remove("csp.contrib.rate_limiting.RateLimitedCSPMiddleware")
 
+CSP_EXCLUDE_URL_PREFIXES += ("/dev/",)
+
 
 # THOU SHALT NOT USE NAIVE DATETIMES
 warnings.filterwarnings(

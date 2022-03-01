@@ -3,6 +3,11 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
+from openforms.emails.confirmation_emails import (
+    get_confirmation_email_context_data,
+    get_confirmation_email_templates,
+    render_confirmation_email_template,
+)
 from openforms.emails.context import get_wrapper_context
 from openforms.submissions.models import Submission
 
@@ -21,8 +26,10 @@ class EmailWrapperTestView(TemplateView):
 
         if kwargs.get("submission_id"):
             submission = get_object_or_404(Submission, id=kwargs["submission_id"])
-            email_template = submission.form.confirmation_email_template
-            content = email_template.render(submission)
+
+            content_template = get_confirmation_email_templates(submission)[1]
+            context = get_confirmation_email_context_data(submission)
+            content = render_confirmation_email_template(content_template, context)
 
         ctx.update(get_wrapper_context(content))
         ctx.update(kwargs)
