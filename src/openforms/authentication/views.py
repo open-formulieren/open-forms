@@ -162,6 +162,11 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
         if plugin_id not in form.authentication_backends:
             return HttpResponseBadRequest("plugin not allowed")
 
+        # demo plugins should require admin authentication to protect against random
+        # people spoofing other people's credentials.
+        if plugin.is_demo_plugin and not request.user.is_staff:
+            raise PermissionDenied(_("Demo plugins require an active admin session."))
+
         form_url = request.GET.get("next")
         if not form_url:
             return HttpResponseBadRequest("missing 'next' parameter")
