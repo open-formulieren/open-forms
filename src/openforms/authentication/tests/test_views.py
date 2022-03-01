@@ -231,6 +231,39 @@ class AuthenticationFlowTests(APITestCase):
 
                     self.assertEqual(response.status_code, expected_status)
 
+    @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
+    def test_plugin_admin_required_return_flow(self):
+        register = Registry()
+        register("plugin1")(RequiresAdminPlugin)
+        FormFactory.create(
+            generate_minimal_setup=True,
+            slug="myform",
+            authentication_backends=["plugin1"],
+            formstep__form_definition__login_required=True,
+        )
+        # go through the full client to simulate actual sessions
+        return_url = reverse(
+            "authentication:return",
+            kwargs={"slug": "myform", "plugin_id": "plugin1"},
+        )
+
+        expected = (
+            (None, 403),
+            (UserFactory.create(), 403),
+            (StaffUserFactory.create(), 302),
+        )
+
+        with mock_register(register):
+            for user, expected_status in expected:
+                with self.subTest(is_staff=user.is_staff if user else "anon"):
+                    self.client.force_authenticate(user=user)
+
+                    response = self.client.get(
+                        return_url, {"next": "https://example.com/f/myform/stap/stap-1"}
+                    )
+
+                    self.assertEqual(response.status_code, expected_status)
+
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
 class CoSignAuthenticationFlowTests(SubmissionsMixin, APITestCase):
