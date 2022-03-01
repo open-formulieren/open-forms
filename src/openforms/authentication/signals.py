@@ -1,5 +1,6 @@
 import logging
 
+from django.core.exceptions import PermissionDenied
 from django.dispatch import Signal, receiver
 
 from rest_framework.request import Request
@@ -8,6 +9,7 @@ from openforms.submissions.models import Submission
 from openforms.submissions.signals import submission_complete, submission_start
 
 from .constants import FORM_AUTH_SESSION_KEY
+from .registry import register
 from .utils import store_auth_details
 
 logger = logging.getLogger(__name__)
