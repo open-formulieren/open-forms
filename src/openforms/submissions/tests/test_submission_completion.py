@@ -67,6 +67,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                     {"formStep": f"http://testserver{form_step_url}"},
                 ],
                 "submissionAllowed": SubmissionAllowedChoices.yes,
+                "invalidPrefilledFields": [],
             },
         )
 
@@ -209,6 +210,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             {
                 "incompleteSteps": [],
                 "submissionAllowed": SubmissionAllowedChoices.no_with_overview,
+                "invalidPrefilledFields": [],
             },
         )
 
@@ -228,6 +230,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             {
                 "incompleteSteps": [],
                 "submissionAllowed": SubmissionAllowedChoices.no_without_overview,
+                "invalidPrefilledFields": [],
             },
         )
 
@@ -260,6 +263,42 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                     bool(value), "Expected a hashed value instead of empty value"
                 )
                 self.assertNotEqual(value, "foo")
+
+    def test_prefilled_data_updated(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "surname",
+                        "label": "Surname",
+                        "prefill": {"plugin": "test-prefill", "attribute": "surname"},
+                    }
+                ]
+            },
+        )
+        submission = SubmissionFactory.create(
+            form=form, prefill_data={"test-prefill": {"surname": "Doe"}}
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+            data={"surname": "Doe-MODIFIED"},
+        )
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint)
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        error_data = response.json()
+
+        self.assertEqual(1, len(error_data["invalidPrefilledFields"]))
+        self.assertEqual("Surname", error_data["invalidPrefilledFields"][0])
 
 
 @temp_private_root()
