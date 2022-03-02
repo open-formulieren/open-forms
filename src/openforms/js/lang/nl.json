@@ -94,6 +94,11 @@
     "description": "Birth Date Component field label",
     "originalDefault": "Birth Date Component"
   },
+  "5/5LjA": {
+    "defaultMessage": "{plugin} inschakelen",
+    "description": "Plugin enabled label",
+    "originalDefault": "Enable {plugin}"
+  },
   "5/xPX6": {
     "defaultMessage": "Naam",
     "description": "Form name field label",
@@ -228,6 +233,11 @@
     "defaultMessage": "Bewaartermijn voor niet voltooide inzendingen inzendingen",
     "description": "Errored Submissions Removal Limit field label",
     "originalDefault": "Errored Submissions Removal Limit"
+  },
+  "A3uQyR": {
+    "defaultMessage": "Link naar hoofdwebsite weergeven",
+    "description": "Display main website link field label",
+    "originalDefault": "Display main website link"
   },
   "AFyQut": {
     "defaultMessage": "is groter dan",
@@ -998,6 +1008,11 @@
     "defaultMessage": "Naam",
     "description": "Form list 'name' column header",
     "originalDefault": "Name"
+  },
+  "k9CT3p": {
+    "defaultMessage": "Toon op de formulierbevestigingspagina een link om terug te gaan naar de hoofdwebsite. Deze is enkel zichtbaar als er geen betaling vereist is.",
+    "description": "Display main website link help text",
+    "originalDefault": "Whether to show a link to the main website on the confirmation page."
   },
   "kHn5Yw": {
     "defaultMessage": "Wijzig definitie",

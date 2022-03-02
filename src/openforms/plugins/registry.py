@@ -11,6 +11,14 @@ class BaseRegistry:
     Base registry class for plugin modules.
     """
 
+    module = ""
+    """
+    The name of the 'module' this registry belongs to.
+
+    The module is the logical group of extra functionality in Open Forms on top of the
+    core functionality.
+    """
+
     def __init__(self):
         self._registry = {}
 

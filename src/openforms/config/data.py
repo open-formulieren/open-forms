@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 
