@@ -28,20 +28,17 @@ const FIELDSET_BASIC = {
             label: 'Clear on hide',
             tooltip: 'Remove the value of this field from the submission if it is hidden',
         },
+        {
+            type: 'checkbox',
+            key: 'showHeader',
+            label: 'Show fieldset header',
+            tooltip: 'Whether to show a line with the fieldset label in the form',
+            defaultValue: true,
+        }
     ]
 };
 
 class FieldSet extends FormioFieldSet {
-    constructor(component, options, data) {
-        /* Field sets have both a 'legend' and a 'label' field. The label should be automatically populated to be equal
-        to the legend, but this doesn't seem to work in Formio 4.13.x. Since in open-forms we always use the label, in
-        this custom fieldset the legend is hidden and automatically filled with the value of the label.
-         */
-        if (component.label) {
-            component.legend = component.label;
-        }
-        super(component, options, data);
-    }
 
     static editForm(...extend) {
         const parentEditForm = FormioFieldSet.editForm();
