@@ -9,7 +9,7 @@ const loadLocaleData = (locale) => {
 
 
 const getIntlProviderProps = async () => {
-    const lang = document.querySelector('html').getAttribute("lang");
+    const lang = document.querySelector('html').getAttribute('lang');
     const messages = await loadLocaleData(lang);
     return {
         messages,

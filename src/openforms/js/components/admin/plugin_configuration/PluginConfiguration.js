@@ -6,6 +6,9 @@ import ModulePlugins from './ModulePlugins';
 
 
 const PluginConfiguration = ({ name, modulesAndPlugins, value, onChange }) => {
+    // we must track the config state in the component, since the DOM modifications
+    // do not result in prop changes (this is the root component which is only mounted
+    // once)
     const [currentConfig, setCurrentConfig] = useState(value);
 
     const onPluginChange = (module, identifier, newConfig) => {
@@ -36,7 +39,10 @@ const PluginConfiguration = ({ name, modulesAndPlugins, value, onChange }) => {
 
 PluginConfiguration.propTypes = {
     name: PropTypes.string.isRequired,
-    modulesAndPlugins: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+    modulesAndPlugins: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.shape({
+        identifier: PropTypes.string,
+        label: PropTypes.string,
+    }))).isRequired,
     value: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
 };

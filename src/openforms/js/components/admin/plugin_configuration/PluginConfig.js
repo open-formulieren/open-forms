@@ -5,7 +5,7 @@ import {FormattedMessage} from 'react-intl';
 import {Checkbox} from '../forms/Inputs';
 
 
-const PluginConfig = ({ module, plugin, enabled=true, onChange }) => {
+const PluginConfig = ({ module, plugin, label, enabled=true, onChange }) => {
 
     return (
         <>
@@ -14,7 +14,7 @@ const PluginConfig = ({ module, plugin, enabled=true, onChange }) => {
                 label={<FormattedMessage
                         description="Plugin enabled label"
                         defaultMessage="Enable {plugin}"
-                        values={{plugin: plugin}} />}
+                        values={{plugin: label}} />}
                 checked={enabled}
                 onChange={() => onChange(!enabled)}
             />
@@ -25,6 +25,7 @@ const PluginConfig = ({ module, plugin, enabled=true, onChange }) => {
 PluginConfig.propTypes = {
     module: PropTypes.string.isRequired,
     plugin: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
     enabled: PropTypes.bool,
     onChange: PropTypes.func,
 };

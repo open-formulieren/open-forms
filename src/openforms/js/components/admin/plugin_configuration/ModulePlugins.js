@@ -19,11 +19,12 @@ const ModulePlugins = ({ module, plugins, currentConfiguration={}, onChange }) =
         <div className="plugins-module">
             <div className="plugins-module__module">{module}</div>
             {
-                plugins.map(identifier => (
+                plugins.map(({identifier, label}) => (
                     <PluginConfig
                         key={identifier}
                         module={module}
                         plugin={identifier}
+                        label={label}
                         enabled={currentConfiguration[identifier]?.enabled ?? true}
                         onChange={(enabled) => onPluginToggle(identifier, enabled)}
                     />
@@ -35,7 +36,10 @@ const ModulePlugins = ({ module, plugins, currentConfiguration={}, onChange }) =
 
 ModulePlugins.propTypes = {
     module: PropTypes.string.isRequired,
-    plugins: PropTypes.arrayOf(PropTypes.string),
+    plugins: PropTypes.arrayOf(PropTypes.shape({
+        identifier: PropTypes.string,
+        label: PropTypes.string,
+    })),
     currentConfiguration: PropTypes.objectOf(PropTypes.shape({
         enabled: PropTypes.bool,
     })),

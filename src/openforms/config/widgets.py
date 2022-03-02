@@ -37,7 +37,10 @@ class PluginConfigurationTextAreaReact(Textarea):
             if not register.module:
                 continue
             modules_and_plugins[register.module] = [
-                plugin.identifier
+                {
+                    "identifier": plugin.identifier,
+                    "label": plugin.verbose_name,
+                }
                 for plugin in register
                 if not getattr(plugin, "is_demo_plugin", False) or with_demos
             ]

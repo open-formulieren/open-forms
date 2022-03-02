@@ -138,7 +138,10 @@ class AdminTests(WebTest):
         json_script = custom_widget.find("#plugin_configuration-modules-and-plugins")
         modules_and_plugins = json.loads(json_script.text())
         self.assertIn("authentication", modules_and_plugins)
-        self.assertIn("digid", modules_and_plugins["authentication"])
+        self.assertIn(
+            {"identifier": "digid", "label": _("DigiD")},
+            modules_and_plugins["authentication"],
+        )
 
 
 class GlobalConfirmationEmailTests(TestCase):
