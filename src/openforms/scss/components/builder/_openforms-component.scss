@@ -2,9 +2,9 @@
 @import '../../vars';
 
 .openforms-component {
-  padding: $grid-margin-1;
 
   &--hidden {
+    padding: $grid-margin-1;
     border-radius: 10px;
     opacity: 0.5;
     background: repeating-linear-gradient(
