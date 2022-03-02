@@ -1,63 +1,39 @@
 {% load static i18n %}<!DOCTYPE html>
 {# https://github.com/sergei-maertens/nyvellum/blob/master/src/nyvellum/contrib/bolcom/templates/admin/bolcom/shipment/invoice.html for reference #}
-<html>
-<head>
-    {# TODO make these come from a stylesheet #}
-    <style>
-        th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-            font-size: 12px;
-            padding: 2px;
-            text-align: left;
-            overflow-wrap: break-word;
-        }
-        @page{
-            @bottom-center{
-                content: counter(page) "/" counter(pages);
-            }
-        }
-        body {
-            font-family: Helvetica, Arial, sans-serif;
-        }
-        table {
-            border: 1px solid black;
-            border-collapse: collapse;
-            table-layout: fixed;
-            width: 100%;
-        }
-        .table-cell-key {
-            font-weight: bold;
-        }
-        .contact-details, .help {
-            background: black;
-            color: white;
-        }
-    </style>
-</head>
+<html lang="nl">
+    <head>
+        <meta charset="utf-8">
+        <title>{% block title %}{% trans "Summary PDF" %}{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="{% static 'bundles/pdf-css.css' %}" media="all" rel="stylesheet" />
+        {% block extra_css %}{% endblock %}
+    </head>
 
-<body class="report-body">
-    <h1>{{ form.name }}</h1>
+    <body class="A4">
+        <section class="sheet padding-10mm">
+            <h1>{{ form.name }}</h1>
 
-    <div class="submission-time">
-        {% blocktrans with submission_date=submission.completed_on %}Submitted on: {{ submission_date }} {% endblocktrans %}
-    </div>
+            <div class="submission-time">
+                {% blocktrans with submission_date=submission.completed_on %}Submitted on: {{ submission_date }} {% endblocktrans %}
+            </div>
 
-    <h2>{% trans "Form data" %}</h2>
+            <h2>{% trans "Form data" %}</h2>
 
-    <table class="table">
-        {% for key, value in submission_data %}
-            <tr>
-                <td class="table-cell-key">{{ key }}</td>
-                <td>{% display_value value %}</td>
-            </tr>
-        {% endfor %}
-        {% if submission.payment_required and submission.price %}
-            <tr>
-                <td class="table-cell-key">{% trans "Total payment required" %}</td>
-                <td>&euro; {{ submission.price }}</td>
-            </tr>
-        {% endif %}
-    </table>
-</body>
+            <table class="table">
+                {% for key, value in submission_data %}
+                    <tr>
+                        <td class="table-cell-key">{{ key }}</td>
+                        <td>{% display_value value %}</td>
+                    </tr>
+                {% endfor %}
+                {% if submission.payment_required and submission.price %}
+                    <tr>
+                        <td class="table-cell-key">{% trans "Total payment required" %}</td>
+                        <td>&euro; {{ submission.price }}</td>
+                    </tr>
+                {% endif %}
+            </table>
+
+        </section>
+    </body>
 </html>

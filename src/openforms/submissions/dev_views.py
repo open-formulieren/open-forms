@@ -32,7 +32,7 @@ class SubmissionPDFTestView(DetailView):
         submission = ctx["submission"]
         ctx.update(
             {
-                "form": submission,
+                "form": submission.form,
                 "submission_data": submission.get_printable_data(),
             }
         )

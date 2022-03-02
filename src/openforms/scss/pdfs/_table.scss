@@ -1,0 +1,24 @@
+th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    font-size: 12px;
+    padding: 2px;
+    text-align: left;
+    overflow-wrap: break-word;
+}
+body {
+    font-family: Helvetica, Arial, sans-serif;
+}
+table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+}
+.table-cell-key {
+    font-weight: bold;
+}
+.contact-details, .help {
+    background: black;
+    color: white;
+}
