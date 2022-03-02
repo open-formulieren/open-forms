@@ -30,10 +30,10 @@ const FIELDSET_BASIC = {
         },
         {
             type: 'checkbox',
-            key: 'showHeader',
-            label: 'Show fieldset header',
-            tooltip: 'Show a line and the label above the fieldset in the form',
-            defaultValue: true,
+            key: 'hideHeader',
+            label: 'Hide fieldset header',
+            tooltip: 'Hide the line and the label above the fieldset in the form',
+            defaultValue: false,
         }
     ]
 };

@@ -1,5 +1,5 @@
 <fieldset class="{{ctx.ofPrefix}}fieldset">
-  {% if (ctx.component.label && ctx.component.showHeader) { %}
+  {% if (ctx.component.label && !ctx.component.hideHeader) { %}
   <legend ref="header" class="{{ctx.ofPrefix}}legend">
     {{ctx.t(ctx.component.label, { _userInput: true })}}
     {% if (ctx.component.tooltip) { %}
