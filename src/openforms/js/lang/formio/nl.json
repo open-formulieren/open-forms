@@ -288,5 +288,7 @@
   "Remove the value of this field from the submission if it is hidden. Note: the value of this field is then also not used in logic rules!": "Verwijder de waarde van dit veld van de inzending als dit veld verborgen is. Let op: De waarde van dit veld wordt dan ook niet gebruikt in logica regels!",
   "Column sizes": "Grootte van de kolommen",
   "Specify the size of each column. The sum of all the widths should be 100%.": "Geef de grootte van elke kolom op. De som van alle breedtes moet 100% zijn.",
-  "Hidden component": "Verborgen component"
+  "Hidden component": "Verborgen component",
+  "Show fieldset header": "Toon fieldset header",
+  "Show a line and the label above the fieldset in the form": "Toon de koptekst en een lijn boven de fieldset in het formulier"
 }

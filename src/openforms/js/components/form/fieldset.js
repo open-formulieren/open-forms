@@ -32,7 +32,7 @@ const FIELDSET_BASIC = {
             type: 'checkbox',
             key: 'showHeader',
             label: 'Show fieldset header',
-            tooltip: 'Whether to show a line with the fieldset label in the form',
+            tooltip: 'Show a line and the label above the fieldset in the form',
             defaultValue: true,
         }
     ]
