@@ -72,10 +72,10 @@ class SubmissionReportCoSignTests(TestCase):
         self.assertTrue(report.content.name.endswith(".pdf"))
         expected = format_html(
             """
-            <tr>
-                <td class="table-cell-key">{key}</td>
-                <td>T. Shikari</td>
-            </tr>
+            <div class="submission-step-row">
+                <div class="submission-step-row__label">{key}</div>
+                <div class="submission-step-row__value">T. Shikari</div>
+            </div>
             """,
             key=_("Co-signed by"),
         )

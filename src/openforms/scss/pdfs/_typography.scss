@@ -1,0 +1,9 @@
+@import '~microscope-sass/lib/typography';
+
+.title {
+  @include h1(auto);
+}
+
+.subtitle {
+  @include h2(auto);
+}

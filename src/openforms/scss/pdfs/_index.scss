@@ -1,2 +1,9 @@
-@import './page';
-@import './table';
+// generic 'global' styling
+@import 'page';
+@import 'typography';
+
+// specific content styling
+@import 'metadata';
+@import 'submission-step';
+@import 'submission-step-row';
+@import 'payment-info';

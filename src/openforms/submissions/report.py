@@ -1,15 +1,18 @@
 """
 Utility classes for the submission report rendering.
 """
+import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Iterator
 
-from openforms.formio.formatters.service import filter_printable, format_value
+from openforms.formio.formatters.service import format_value
 from openforms.formio.typing import Component
 from openforms.forms.models import Form
 
 if TYPE_CHECKING:
     from .models import Submission, SubmissionStep
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -23,9 +26,12 @@ class DataItem:
 
     @property
     def layout_modifier(self) -> str:
-        if self.component.get("type") == "fieldset":
+        type = self.component.get("type")
+        if type == "fieldset":
             return "fieldset"
-        return ""
+        elif type == "columns":
+            return "columns"
+        return "root" if self.component.get("_is_root", False) else ""
 
     @property
     def display_value(self) -> str:
@@ -48,8 +54,12 @@ class ReportStep:
         """
         Return the individual 'key-value' items for the data in the step.
         """
-        iter_components = self.step.form_step.iter_components(recursive=True)
-        for component in filter_printable(iter_components):
+        # TODO: find a better mechanism to extract the "root" information instead of
+        # polluting the Formio component schema, preferably without breaking a lot of tests
+        iter_components = self.step.form_step.iter_components(
+            recursive=True, _mark_root=True
+        )
+        for component in iter_components:
             key = component["key"]
             value = self.step.data.get(key)
             yield DataItem(component=component, value=value)
@@ -71,3 +81,15 @@ class Report:
     def steps(self) -> Iterator[ReportStep]:
         for step in self.submission.submissionstep_set.order_by("form_step__order"):
             yield ReportStep(step=step)
+
+    @property
+    def co_signer(self) -> str:
+        if not self.submission.co_sign_data:
+            return ""
+
+        if not (co_signer := self.submission.co_sign_data.get("representation", "")):
+            logger.warning(
+                "Incomplete co-sign data for submission %s", self.submission.uuid
+            )
+
+        return co_signer

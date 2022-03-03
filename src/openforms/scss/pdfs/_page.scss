@@ -1,3 +1,5 @@
+@import '~microscope-sass/lib/typography';
+
 @page {
   size: A4;
 
@@ -8,4 +10,8 @@
 
 * {
   box-sizing: border-box;
+}
+
+body {
+  @include body(auto);
 }

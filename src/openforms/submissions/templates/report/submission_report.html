@@ -38,11 +38,15 @@
                 </div>
             {% endfor %}
 
+            {% if report.co_signer %}
+            <div class="submission-step-row">
+                <div class="submission-step-row__label">{% trans "Co-signed by" %}</div>
+                <div class="submission-step-row__value">{{ report.co_signer }}</div>
+            </div>
+            {% endif %}
 
             {% if report.show_payment_info %}
             <section class="payment-info">
-                <h2 class="subtitle">{% trans "Payment details" %}</h2>
-
                 <div class="submission-step-row">
                     <div class="submission-step-row__label">
                         {% trans "Total payment required" %}

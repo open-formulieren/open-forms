@@ -1,0 +1,34 @@
+@import '~microscope-sass/lib/typography';
+
+.submission-step-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+
+  &:not(&--root) + &--root {
+    padding-top: $grid-margin-1;
+  }
+
+  &#{&}--fieldset {
+    padding-top: $grid-margin-2;
+
+    .submission-step-row__label {
+      font-weight: bolder;
+    }
+  }
+
+  &#{&}--columns {
+    padding-top: $grid-margin-2;
+  }
+
+  &__label {
+    @include body();
+    width: 40%;
+    padding-right: 2em;
+  }
+
+  &__value {
+    @include body();
+    width: 60%;
+  }
+}

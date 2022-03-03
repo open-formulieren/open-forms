@@ -79,5 +79,5 @@ class FormStep(OrderedModel):
         else:
             return super().__str__()
 
-    def iter_components(self, recursive=True):
-        yield from self.form_definition.iter_components(recursive=recursive)
+    def iter_components(self, recursive=True, **kwargs):
+        yield from self.form_definition.iter_components(recursive=recursive, **kwargs)
