@@ -13,7 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from furl import furl
-from rest_framework import permissions, serializers
+from rest_framework import authentication, permissions, serializers
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.renderers import TemplateHTMLRenderer
@@ -38,7 +38,7 @@ BACKEND_OUTAGE_RESPONSE_PARAMETER = "of-auth-problem"
 
 
 class AuthenticationFlowBaseView(RetrieveAPIView):
-    authentication_classes = ()
+    authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.AllowAny,)
     # these 'endpoints' are not meant to take or return JSON
     parser_classes = (FormParser, MultiPartParser)
@@ -161,6 +161,11 @@ class AuthenticationStartView(AuthenticationFlowBaseView):
 
         if plugin_id not in form.authentication_backends:
             return HttpResponseBadRequest("plugin not allowed")
+
+        # demo plugins should require admin authentication to protect against random
+        # people spoofing other people's credentials.
+        if plugin.is_demo_plugin and not request.user.is_staff:
+            raise PermissionDenied(_("Demo plugins require an active admin session."))
 
         form_url = request.GET.get("next")
         if not form_url:
@@ -291,6 +296,11 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
 
         if plugin.return_method.upper() != request.method.upper():
             return HttpResponseNotAllowed([plugin.return_method])
+
+        # demo plugins should require admin authentication to protect against random
+        # people spoofing other people's credentials.
+        if plugin.is_demo_plugin and not request.user.is_staff:
+            raise PermissionDenied(_("Demo plugins require an active admin session."))
 
         try:
             self._handle_co_sign(form, plugin)

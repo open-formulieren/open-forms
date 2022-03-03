@@ -4,6 +4,7 @@ from unittest.mock import PropertyMock, patch
 from django.http import HttpResponse, HttpResponseRedirect
 
 from ..base import BasePlugin
+from ..constants import AuthAttribute
 from ..registry import Registry
 
 
@@ -37,6 +38,27 @@ class FailingPlugin(BasePlugin):
         raise Exception("return")
 
 
+class RequiresAdminPlugin(BasePlugin):
+    verbose_name = "plugin requiring staff user session"
+    provides_auth = AuthAttribute.bsn
+    is_demo_plugin = True
+
+    def start_login(self, request, form, form_url):
+        return HttpResponse("start")
+
+    def handle_return(self, request, form):
+        return HttpResponseRedirect(request.GET.get("next"))
+
+    def handle_co_sign(self, request, form):
+        return {
+            "identifier": "mock-id",
+            "fields": {
+                "mock_field_1": "field 1",
+                "mock_field_2": "",
+            },
+        }
+
+
 @contextmanager
 def mock_register(register: Registry):
     patcher1 = patch(
@@ -50,5 +72,6 @@ def mock_register(register: Registry):
         return_value=register,
     )
     patcher3 = patch("openforms.submissions.serializers.register", new=register)
-    with patcher1, patcher2, patcher3:
+    patcher4 = patch("openforms.authentication.signals.register", new=register)
+    with patcher1, patcher2, patcher3, patcher4:
         yield
