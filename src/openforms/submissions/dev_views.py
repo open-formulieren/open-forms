@@ -4,6 +4,8 @@ from django.views.generic import DetailView
 
 from openforms.submissions.models import Submission
 
+from .report import Report
+
 
 class SubmissionPDFTestView(DetailView):
     """
@@ -30,10 +32,6 @@ class SubmissionPDFTestView(DetailView):
         ctx = super().get_context_data()
 
         submission = ctx["submission"]
-        ctx.update(
-            {
-                "form": submission.form,
-                "submission_data": submission.get_printable_data(),
-            }
-        )
+        ctx["report"] = Report(submission)
+
         return ctx

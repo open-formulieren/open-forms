@@ -43,6 +43,7 @@ from openforms.utils.validators import (
 from .constants import RegistrationStatuses
 from .pricing import get_submission_price
 from .query import SubmissionManager
+from .report import Report
 from .serializers import CoSignDataSerializer
 
 logger = logging.getLogger(__name__)
@@ -902,15 +903,8 @@ class SubmissionReport(models.Model):
           can be tested.
         """
         form = self.submission.form
-        printable_data = self.submission.get_printable_data()
-
         html_report = render_to_string(
-            "report/submission_report.html",
-            context={
-                "form": form,
-                "submission_data": printable_data,
-                "submission": self.submission,
-            },
+            "report/submission_report.html", context={"report": Report(self.submission)}
         )
 
         html_object = HTML(string=html_report)
