@@ -107,3 +107,17 @@ class DefaultFormatterTestCase(TestCase):
             ([1234.56, 1, 0], "1.234,56; 1,00; 0,00"),
         ]
         self.run_test_cases(component, expected)
+
+    def test_signature_as_html(self):
+        component = {
+            "type": "signature",
+            "multiple": False,
+            "key": "signature",
+        }
+        value = "data:image/png;base64,iVBO[truncated]"
+
+        formatted_html = format_value(component, value, as_html=True)
+
+        self.assertHTMLEqual(
+            formatted_html, f"""<img src="{value}" alt="{_('signature added')}" />"""
+        )
