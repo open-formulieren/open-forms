@@ -9,6 +9,7 @@ The backend should perform total-form validation as part of this action.
 from decimal import Decimal
 from unittest.mock import patch
 
+from django.test import override_settings
 from django.utils import timezone
 
 from django_capture_on_commit_callbacks import capture_on_commit_callbacks
@@ -243,9 +244,11 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         session.save()
 
         # The auth details are cleaned by the signal handler
-        self.client.post(endpoint)
-        cleaned_session = self.client.session
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            with capture_on_commit_callbacks(execute=True):
+                self.client.post(endpoint)
 
+        cleaned_session = self.client.session
         self.assertNotIn(FORM_AUTH_SESSION_KEY, cleaned_session)
 
         # assert that identifying attributs are hashed on completion

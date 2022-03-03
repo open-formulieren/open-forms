@@ -8,11 +8,16 @@ from rest_framework.request import Request
 
 from openforms.celery import app
 
+from ..constants import RegistrationStatuses
 from ..models import Submission
 from ..status import SubmissionProcessingStatus
 from ..tokens import submission_status_token_generator
 
-__all__ = ["cleanup_on_completion_results", "finalize_completion_retry"]
+__all__ = [
+    "cleanup_on_completion_results",
+    "finalize_completion_retry",
+    "maybe_hash_identifying_attributes",
+]
 
 
 # sync this with the token generator - after this number of days tokens are invalidated
@@ -73,3 +78,25 @@ def finalize_completion_retry(submission_id: int):
     submission = Submission.objects.get(id=submission_id)
     submission.needs_on_completion_retry = False
     submission.save(update_fields=["needs_on_completion_retry"])
+
+
+@app.task(ignore_result=True)
+def maybe_hash_identifying_attributes(submission_id: int):
+    """
+    If the registration was successful or not relevant, hash the identifying attributes.
+
+    The identifying attributes are used in registration backends which run
+    asynchronously, so hashing them can only be done once registration succeeded.
+    See #1395 and #1367.
+    """
+    submission = Submission.objects.get(id=submission_id)
+    assert submission.completed_on is not None, "Submission must be completed first"
+
+    # success is set if it succeeded or there was no registration backend configured
+    if submission.registration_status != RegistrationStatuses.success:
+        return
+
+    if submission.auth_attributes_hashed:
+        return
+
+    submission.hash_identifying_attributes(save=True)

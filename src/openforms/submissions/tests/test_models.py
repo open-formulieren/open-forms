@@ -722,7 +722,11 @@ class SubmissionTests(TestCase):
             "kvk": "123455789",
             "pseudo": "some-pseudo",
         }
-        submission = SubmissionFactory.create(**attrs, completed=True)
+        submission = SubmissionFactory.create(
+            **attrs,
+            completed=True,
+            with_hashed_identifying_attributes=True,
+        )
 
         submission.refresh_from_db()
 

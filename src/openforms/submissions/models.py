@@ -404,7 +404,7 @@ class Submission(models.Model):
 
         self.save()
 
-    def hash_identifying_attributes(self):
+    def hash_identifying_attributes(self, save=False):
         """
         Generate a salted hash for each of the identifying attributes.
 
@@ -420,6 +420,8 @@ class Submission(models.Model):
             hashed = get_salted_hash(getattr(self, attr))
             setattr(self, attr, hashed)
         self.auth_attributes_hashed = True
+        if save:
+            self.save(update_fields=["auth_attributes_hashed", *attrs])
 
     def load_execution_state(self) -> SubmissionState:
         """

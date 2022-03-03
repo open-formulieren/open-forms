@@ -35,9 +35,6 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
                 lambda s: s.completed_on - timedelta(hours=4)
             ),
             price=factory.PostGenerationMethodCall("calculate_price"),
-            _hashed_id_attrs=factory.PostGenerationMethodCall(
-                "hash_identifying_attributes"
-            ),
         )
         registration_failed = factory.Trait(
             completed=True,
@@ -70,6 +67,11 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
                 "openforms.submissions.tests.factories.SubmissionReportFactory",
                 factory_related_name="submission",
             )
+        )
+        with_hashed_identifying_attributes = factory.Trait(
+            _hashed_id_attrs=factory.PostGenerationMethodCall(
+                "hash_identifying_attributes"
+            ),
         )
 
     @classmethod
