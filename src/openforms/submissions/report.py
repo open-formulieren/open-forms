@@ -37,7 +37,7 @@ class DataItem:
 
     @property
     def display_value(self) -> str:
-        return format_value(self.component, self.value)
+        return format_value(self.component, self.value, as_html=True)
 
 
 @dataclass

@@ -10,11 +10,11 @@ class Registry(BaseRegistry):
     A registry for the FormIO formatters.
     """
 
-    def format(self, info: Component, value: Any):
+    def format(self, info: Component, value: Any, as_html=False):
         formatter = (
             register[info["type"]] if info["type"] in register else register["default"]
         )
-        return formatter(info, value)
+        return formatter(info, value, as_html=as_html)
 
 
 # Sentinel to provide the default registry. You an easily instantiate another
