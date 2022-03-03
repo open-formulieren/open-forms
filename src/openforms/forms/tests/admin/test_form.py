@@ -3,21 +3,20 @@ from io import BytesIO
 from unittest.mock import patch
 from zipfile import ZipFile
 
-from django.test import TestCase
+from django.contrib import admin
+from django.test import RequestFactory, TestCase
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
-from openforms.forms.models import Form, FormDefinition, FormStep
-from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
-    FormFactory,
-    FormStepFactory,
-)
 from openforms.tests.utils import disable_2fa
 from openforms.utils.admin import SubmitActions
+
+from ...admin.form import FormAdmin
+from ...models import Form, FormDefinition, FormStep
+from ...tests.factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
 
 @disable_2fa
@@ -843,3 +842,20 @@ class FormDeleteTests(WebTest):
         self.assertFalse(Form.objects.exists())
         self.assertFalse(FormStep.objects.exists())
         self.assertEqual(FormDefinition.objects.count(), 1)
+
+    def test_admin_filter_bypass_delete_does_both_soft_and_hard_delete(self):
+        """
+        Edge case - if the admin list filter is somehow bypassed, active forms must be
+        soft-deleted and already soft-deleted forms must be permanently deleted.
+        """
+        form1 = FormFactory.create(generate_minimal_setup=True, deleted_=True)
+        form2 = FormFactory.create(generate_minimal_setup=True, deleted_=False)
+        modeladmin = FormAdmin(model=Form, admin_site=admin.site)
+        request = RequestFactory().post("/delete")
+
+        modeladmin.delete_queryset(request, Form.objects.all())
+
+        self.assertEqual(Form.objects.count(), 1)
+        form2.refresh_from_db()
+        self.assertTrue(form2._is_deleted)
+        self.assertFalse(Form.objects.filter(pk=form1.pk).exists())
