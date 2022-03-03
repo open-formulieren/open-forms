@@ -5,6 +5,8 @@ import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Iterator
 
+from django.utils.safestring import SafeString
+
 from openforms.formio.formatters.service import format_value
 from openforms.formio.typing import Component
 from openforms.forms.models import Form
@@ -93,3 +95,10 @@ class Report:
             )
 
         return co_signer
+
+    @property
+    def confirmation_page_content(self) -> SafeString:
+        # the content is already escaped by Django's rendering engine and mark_safe
+        # has been applied by ``Template.render``
+        content = self.submission.render_confirmation_page()
+        return content
