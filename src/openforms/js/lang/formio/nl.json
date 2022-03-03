@@ -291,5 +291,7 @@
   "Hidden component": "Verborgen component",
   "Hide fieldset header": "Verberg veldengroepheader",
   "Hide the line and the label above the fieldset in the form": "Verberg de koptekst en de lijn boven de veldengroep in het formulier",
-  "Please specify an integer file size (e.g. 50 MB)": "Gebruik een gehele bestandsgrootte (bijvoorbeeld 50 MB)"
+  "Please specify an integer file size (e.g. 50 MB)": "Gebruik een gehele bestandsgrootte (bijvoorbeeld 50 MB)",
+  "Read only": "Alleen lezen",
+  "Make this component read only": "Maak dit component alleen-lezen"
 }
