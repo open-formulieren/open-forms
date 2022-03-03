@@ -186,7 +186,6 @@ class SubmissionViewSet(
 
         submission.calculate_price(save=False)
         submission.completed_on = timezone.now()
-        submission.hash_identifying_attributes()
         submission.save()
 
         logevent.form_submit_success(submission)

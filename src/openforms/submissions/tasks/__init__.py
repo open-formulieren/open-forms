@@ -94,6 +94,11 @@ def finalize_completion(submission_id: int) -> None:
     send_confirmation_email_task = maybe_send_confirmation_email.si(submission_id)
     send_confirmation_email_task.delay()
 
+    hash_identifying_attributes_task = maybe_hash_identifying_attributes.si(
+        submission_id
+    )
+    hash_identifying_attributes_task.delay()
+
 
 def on_completion_retry(submission_id: int) -> chain:
     """
