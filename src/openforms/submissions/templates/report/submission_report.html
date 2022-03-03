@@ -15,7 +15,12 @@
             <h1 class="title">{{ report.form.name }}</h1>
 
             <section class="metadata">
-                {% blocktrans with submission_date=report.submission.completed_on %}Submitted on: {{ submission_date }} {% endblocktrans %}
+                <p>{% blocktrans with submission_date=report.submission.completed_on trimmed %}
+                    Submitted on: {{ submission_date }}
+                {% endblocktrans %}</p>
+                <p>{% blocktrans with ref=report.submission.public_reference trimmed %}
+                    Your reference is: {{ ref }}
+                {% endblocktrans %}</p>
             </section>
 
             {% for step in report.steps %}
