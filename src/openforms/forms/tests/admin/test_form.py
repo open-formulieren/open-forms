@@ -3,21 +3,20 @@ from io import BytesIO
 from unittest.mock import patch
 from zipfile import ZipFile
 
-from django.test import TestCase
+from django.contrib import admin
+from django.test import RequestFactory, TestCase
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
-from openforms.forms.models import Form, FormDefinition, FormStep
-from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
-    FormFactory,
-    FormStepFactory,
-)
 from openforms.tests.utils import disable_2fa
 from openforms.utils.admin import SubmitActions
+
+from ...admin.form import FormAdmin
+from ...models import Form, FormDefinition, FormStep
+from ...tests.factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
 
 @disable_2fa
@@ -381,10 +380,6 @@ class FormAdminActionsTests(WebTest):
         self.assertFalse(self.form.maintenance_mode)
 
 
-from django.test import tag
-
-
-@tag("these")
 @disable_2fa
 class FormEditTests(WebTest):
     """
@@ -744,3 +739,123 @@ class FormChangeTests(WebTest):
                 )
             ),
         )
+
+
+@disable_2fa
+class FormDeleteTests(WebTest):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.user = SuperUserFactory.create()
+
+    def test_initial_changelist_delete_marks_as_deleted(self):
+        form = FormFactory.create(generate_minimal_setup=True)
+        with self.subTest("check test setup"):
+            self.assertFalse(form._is_deleted)
+        changelist = self.app.get(
+            reverse("admin:forms_form_changelist"), user=self.user
+        )
+        html_form = changelist.forms["changelist-form"]
+
+        # mark the form for deletion - there is only one
+        html_form["action"] = "delete_selected"
+        html_form["_selected_action"] = [form.pk]
+        confirm_page = html_form.submit(name="index")
+        confirm_page.form.submit()
+
+        # check that the form is soft deleted
+        form.refresh_from_db()
+        self.assertTrue(form._is_deleted)
+
+    def test_second_changelist_delete_permanently_deleted(self):
+        form = FormFactory.create(generate_minimal_setup=True, deleted_=True)
+        changelist = self.app.get(
+            reverse("admin:forms_form_changelist"), user=self.user
+        ).click(description=_("Deleted forms"))
+        html_form = changelist.forms["changelist-form"]
+
+        # mark the form for deletion - there is only one
+        html_form["action"] = "delete_selected"
+        html_form["_selected_action"] = [form.pk]
+        confirm_page = html_form.submit(name="index")
+        confirm_page.form.submit()
+
+        self.assertFalse(Form.objects.exists())
+        # delete cascades - steps are deleted, and single-use form definitions are
+        # deleted as well
+        self.assertFalse(FormStep.objects.exists())
+        self.assertFalse(FormDefinition.objects.exists())
+
+    def test_second_changelist_delete_permanently_deleted_keep_reusable_formdefs(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            deleted_=True,
+            formstep__form_definition__is_reusable=True,
+        )
+        changelist = self.app.get(
+            reverse("admin:forms_form_changelist"), user=self.user
+        ).click(description=_("Deleted forms"))
+        html_form = changelist.forms["changelist-form"]
+
+        # mark the form for deletion - there is only one
+        html_form["action"] = "delete_selected"
+        html_form["_selected_action"] = [form.pk]
+        confirm_page = html_form.submit(name="index")
+        confirm_page.form.submit()
+
+        self.assertFalse(Form.objects.exists())
+        self.assertFalse(FormStep.objects.exists())
+        self.assertEqual(FormDefinition.objects.count(), 1)
+
+    def test_initial_delete_from_detail_page_marks_as_deleted(self):
+        # this is currently not exposed in the React UI, but will be added at some
+        # point
+        form = FormFactory.create(generate_minimal_setup=True)
+        with self.subTest("check test setup"):
+            self.assertFalse(form._is_deleted)
+        delete_page = self.app.get(
+            reverse("admin:forms_form_delete", args=(form.pk,)),
+            user=self.user,
+        )
+        delete_page.form.submit()
+
+        # check that the form is soft deleted
+        form.refresh_from_db()
+        self.assertTrue(form._is_deleted)
+
+    def test_second_delete_from_detail_page_permanently_deleted(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            deleted_=True,
+            formstep__form_definition__is_reusable=True,
+        )
+        FormStepFactory.create(form=form)
+        with self.subTest("check test setup"):
+            self.assertTrue(form._is_deleted)
+        delete_page = self.app.get(
+            reverse("admin:forms_form_delete", args=(form.pk,)),
+            user=self.user,
+        )
+        delete_page.form.submit()
+
+        # check that the form is hard deleted and reusable form definitions are kept
+        self.assertFalse(Form.objects.exists())
+        self.assertFalse(FormStep.objects.exists())
+        self.assertEqual(FormDefinition.objects.count(), 1)
+
+    def test_admin_filter_bypass_delete_does_both_soft_and_hard_delete(self):
+        """
+        Edge case - if the admin list filter is somehow bypassed, active forms must be
+        soft-deleted and already soft-deleted forms must be permanently deleted.
+        """
+        form1 = FormFactory.create(generate_minimal_setup=True, deleted_=True)
+        form2 = FormFactory.create(generate_minimal_setup=True, deleted_=False)
+        modeladmin = FormAdmin(model=Form, admin_site=admin.site)
+        request = RequestFactory().post("/delete")
+
+        modeladmin.delete_queryset(request, Form.objects.all())
+
+        self.assertEqual(Form.objects.count(), 1)
+        form2.refresh_from_db()
+        self.assertTrue(form2._is_deleted)
+        self.assertFalse(Form.objects.filter(pk=form1.pk).exists())

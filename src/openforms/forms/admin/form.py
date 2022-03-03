@@ -15,7 +15,7 @@ from openforms.registrations.admin import RegistrationBackendFieldMixin
 from ...payments.admin import PaymentBackendChoiceFieldMixin
 from ...utils.expressions import FirstNotBlank
 from ..forms.form import FormImportForm
-from ..models import Form, FormStep
+from ..models import Form, FormDefinition, FormStep
 from ..utils import export_form, get_duplicates_keys_for_form, import_form
 
 
@@ -334,10 +334,40 @@ class FormAdmin(
     )
 
     def delete_model(self, request, form):
-        # override for soft-delete
-        form._is_deleted = True
-        form.save(update_fields=["_is_deleted"])
+        """
+        Check if we need to soft or hard delete.
+        """
+        if not form._is_deleted:
+            # override for soft-delete
+            form._is_deleted = True
+            form.save(update_fields=["_is_deleted"])
+        else:
+            fds = list(
+                FormDefinition.objects.filter(
+                    formstep__form=form, is_reusable=False
+                ).values_list("id", flat=True)
+            )
+            form.delete()
+            FormDefinition.objects.filter(id__in=fds).delete()
 
     def delete_queryset(self, request, queryset):
-        # override for soft-delete
-        queryset.update(_is_deleted=True)
+        """
+        Split between soft and hard deletes here.
+
+        The admin has mutually exclusive filters, but let's not rely on that assumption.
+        Hard deletes need to be performed first, otherwise non-deleted forms get
+        soft-deleted and in the next steps _all_ (including the just created) soft-
+        deletes get hard-deleted.
+        """
+        # hard deletes - ensure we cascade delete the single-use form definitions as well
+        soft_deleted = queryset.filter(_is_deleted=True)
+        fds = list(
+            FormDefinition.objects.filter(
+                formstep__form__in=soft_deleted, is_reusable=False
+            ).values_list("id", flat=True)
+        )
+        soft_deleted.delete()
+        FormDefinition.objects.filter(id__in=fds).delete()
+
+        # soft-deletes
+        queryset.filter(_is_deleted=False).update(_is_deleted=True)
