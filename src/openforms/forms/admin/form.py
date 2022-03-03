@@ -355,11 +355,10 @@ class FormAdmin(
         Split between soft and hard deletes here.
 
         The admin has mutually exclusive filters, but let's not rely on that assumption.
+        Hard deletes need to be performed first, otherwise non-deleted forms get
+        soft-deleted and in the next steps _all_ (including the just created) soft-
+        deletes get hard-deleted.
         """
-
-        # soft-deletes
-        queryset.filter(_is_deleted=False).update(_is_deleted=True)
-
         # hard deletes - ensure we cascade delete the single-use form definitions as well
         soft_deleted = queryset.filter(_is_deleted=True)
         fds = list(
@@ -369,3 +368,6 @@ class FormAdmin(
         )
         soft_deleted.delete()
         FormDefinition.objects.filter(id__in=fds).delete()
+
+        # soft-deletes
+        queryset.filter(_is_deleted=False).update(_is_deleted=True)
