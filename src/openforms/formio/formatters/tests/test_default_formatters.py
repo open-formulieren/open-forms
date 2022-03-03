@@ -119,5 +119,6 @@ class DefaultFormatterTestCase(TestCase):
         formatted_html = format_value(component, value, as_html=True)
 
         self.assertHTMLEqual(
-            formatted_html, f"""<img src="{value}" alt="{_('signature added')}" />"""
+            formatted_html,
+            f"""<img src="{value}" alt="{_('signature added')}" style="max-width: 100%;" />""",
         )

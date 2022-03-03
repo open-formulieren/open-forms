@@ -232,7 +232,12 @@ class SignatureFormatter(FormioFormatter):
             "data:image/"
         ), "Expected 'data:' URI with image mime type"
 
-        return format_html("""<img src="{src}" alt="{alt}" />""", src=value, alt=text)
+        # max-width is required for e-mail styling where it may overflow a table cell
+        return format_html(
+            """<img src="{src}" alt="{alt}" style="max-width: 100%;" />""",
+            src=value,
+            alt=text,
+        )
 
 
 @register("map")

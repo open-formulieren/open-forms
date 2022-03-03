@@ -2,6 +2,7 @@ from typing import Any
 
 from django import template
 from django.template.loader import get_template
+from django.utils.encoding import force_str
 
 from openforms.forms.models import FormDefinition
 
@@ -23,6 +24,7 @@ def filter_data_to_show_in_email(context: dict) -> dict:
     :param context: dict, contains the submitted data as well as the form object
     :return: dict, with filtered data
     """
+    _is_html = not context.get("rendering_text", False)
     form = context["_form"]
     submission = context["_submission"]
 
@@ -33,7 +35,9 @@ def filter_data_to_show_in_email(context: dict) -> dict:
         data_to_show_in_email += keys
 
     filtered_data = submission.get_printable_data(
-        limit_keys_to=data_to_show_in_email, use_merged_data_fallback=True
+        limit_keys_to=data_to_show_in_email,
+        use_merged_data_fallback=True,
+        as_html=_is_html,
     )
     return {"submitted_data": filtered_data}
 
@@ -57,4 +61,4 @@ def display_value(context, value: Any):
         return ""
     else:
         # fall back to default of string representation
-        return str(value)
+        return force_str(value)
