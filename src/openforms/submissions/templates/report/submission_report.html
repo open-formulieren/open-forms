@@ -1,4 +1,4 @@
-{% load static i18n %}<!DOCTYPE html>
+{% load static i18n solo_tags style_dictionary %}<!DOCTYPE html>
 {# https://github.com/sergei-maertens/nyvellum/blob/master/src/nyvellum/contrib/bolcom/templates/admin/bolcom/shipment/invoice.html for reference #}
 <html lang="nl">
     <head>
@@ -7,10 +7,24 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="{% static 'bundles/pdf-css.css' %}" media="all" rel="stylesheet" />
         {% block extra_css %}{% endblock %}
+
+        {# Inject design tokens for theming #}
+        {% get_solo 'config.GlobalConfiguration' as config %}
+        {% style_dictionary config.design_token_values prefix="of" as design_tokens %}
+        {# This goes through WeasyPrint normally, so excluded from CSP #}
+        <style>
+        :root {{% for token, value in design_tokens.items %}
+          {{ token }}: {{ value }};{% endfor %}
+        }
+        </style>
     </head>
 
     <body class="A4">
+
         <section class="sheet padding-10mm">
+            <header class="header {% if config.logo %}header--has-logo{% endif %}">
+                {% if config.logo %}<img class="header__logo" src="{{ config.logo.url }}" />{% endif %}
+            </header>
 
             <h1 class="title">{{ report.form.name }}</h1>
 
