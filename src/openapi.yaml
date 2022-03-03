@@ -3201,8 +3201,13 @@ components:
           allOf:
           - $ref: '#/components/schemas/SubmissionAllowedEnum'
           readOnly: true
+        invalidPrefilledFields:
+          type: array
+          items:
+            type: string
       required:
       - incompleteSteps
+      - invalidPrefilledFields
       - submissionAllowed
       x-experimental: true
     ComponentProperty:
