@@ -66,12 +66,24 @@ class KVK_KVKNumberPrefill(BasePlugin):
         return values
 
     @classmethod
-    def modify_result(cls, result):
+    def modify_result(cls, result: dict):
+        # first try getting the addresses from the embedded 'hoofdvestiging'. Note that
+        # this may be absent or empty depending on the type of company (see #1299).
+        # If there are no addresses found, we try to get them from 'eigenaar' instead.
+        addresses = glom(result, "_embedded.hoofdvestiging.adressen", default=None)
+        if addresses is None:
+            addresses = glom(result, "_embedded.eigenaar.adressen", default=None)
+
+        # not a required field, meaning the key may be absent. If that's the case,
+        # do nothing (it's better than crashing!)
+        if addresses is None:
+            return
         # Move the desired item from the unordered list to a known place
-        address = _select_address(result["adressen"], "bezoekadres")
+        address = _select_address(addresses, "bezoekadres")
         if address:
             result["bezoekadres"] = address
-        address = _select_address(result["adressen"], "correspondentieadres")
+
+        address = _select_address(addresses, "correspondentieadres")
         if address:
             result["correspondentieadres"] = address
 

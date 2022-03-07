@@ -21,7 +21,7 @@ class KVKTestMixin:
             oas="https://companies/api/schema/openapi.yaml",
         )
         config._profiles = ServiceFactory(
-            api_root="https://hoofdvestiging/",
-            oas="https://hoofdvestiging/schema/openapi.yaml",
+            api_root="https://basisprofiel/",
+            oas="https://basisprofiel/schema/openapi.yaml",
         )
         config.save()

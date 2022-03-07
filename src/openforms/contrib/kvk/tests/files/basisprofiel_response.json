@@ -1,0 +1,109 @@
+{
+  "kvkNummer": "69599084",
+  "indNonMailing": "Ja",
+  "naam": "Test EMZ Dagobert",
+  "formeleRegistratiedatum": "20170710",
+  "materieleRegistratie": {
+    "datumAanvang": "20170108"
+  },
+  "totaalWerkzamePersonen": 1,
+  "handelsnamen": [
+    {
+      "naam": "Test EMZ Dagobert",
+      "volgorde": 0
+    },
+    {
+      "naam": "Tweede handelsnaam 1MZ",
+      "volgorde": 1
+    },
+    {
+      "naam": "Derde handelsnaam 1MZ",
+      "volgorde": 2
+    },
+    {
+      "naam": "Vierde handelsnaam 1MZ",
+      "volgorde": 3
+    }
+  ],
+  "sbiActiviteiten": [
+    {
+      "sbiCode": "1011",
+      "sbiOmschrijving": "Slachterijen (geen pluimvee-)",
+      "indHoofdactiviteit": "Ja"
+    },
+    {
+      "sbiCode": "1012",
+      "sbiOmschrijving": "Pluimveeslachterijen",
+      "indHoofdactiviteit": "Nee"
+    },
+    {
+      "sbiCode": "1013",
+      "sbiOmschrijving": "Vleesverwerking (niet tot maaltijden)",
+      "indHoofdactiviteit": "Nee"
+    }
+  ],
+  "links": [
+    {
+      "rel": "self",
+      "href": "https://api.kvk.nl/test/api/v1/basisprofielen/69599084"
+    },
+    {
+      "rel": "vestigingen",
+      "href": "https://api.kvk.nl/test/api/v1/basisprofielen/69599084/vestigingen"
+    }
+  ],
+  "_embedded": {
+    "hoofdvestiging": {
+      "vestigingsnummer": "000038509504",
+      "kvkNummer": "69599084",
+      "eersteHandelsnaam": "Test EMZ Dagobert",
+      "indHoofdvestiging": "Ja",
+      "indCommercieleVestiging": "Ja",
+      "totaalWerkzamePersonen": 1,
+      "adressen": [
+        {
+          "type": "bezoekadres",
+          "indAfgeschermd": "Nee",
+          "volledigAdres": "Abebe Bikilalaan 17                                 1034WL Amsterdam",
+          "straatnaam": "Abebe Bikilalaan",
+          "huisnummer": 17,
+          "postcode": "1034WL",
+          "plaats": "Amsterdam",
+          "land": "Nederland"
+        }
+      ],
+      "links": [
+        {
+          "rel": "self",
+          "href": "https://api.kvk.nl/test/api/v1/basisprofielen/69599084/hoofdvestiging"
+        },
+        {
+          "rel": "vestigingen",
+          "href": "https://api.kvk.nl/test/api/v1/basisprofielen/69599084/vestigingen"
+        },
+        {
+          "rel": "basisprofiel",
+          "href": "https://api.kvk.nl/test/api/v1/basisprofielen/69599084"
+        },
+        {
+          "rel": "vestigingsprofiel",
+          "href": "https://api.kvk.nl/test/api/v1/vestigingsprofielen/000038509504"
+        }
+      ]
+    },
+    "eigenaar": {
+      "rechtsvorm": "Eenmanszaak",
+      "uitgebreideRechtsvorm": "Eenmanszaak",
+      "links": [
+        {
+          "rel": "self",
+          "href": "https://api.kvk.nl/test/api/v1/basisprofielen/69599084/eigenaar"
+        },
+        {
+          "rel": "basisprofiel",
+          "href": "https://api.kvk.nl/test/api/v1/basisprofielen/69599084"
+        }
+      ]
+    }
+  }
+}

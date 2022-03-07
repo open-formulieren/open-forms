@@ -36,7 +36,7 @@ class KVKSearchClientTestCase(KVKTestMixin, TestCase):
         )
         client = KVKSearchClient()
         with self.assertRaises(ClientError):
-            res = client.query(kvkNummer=69599084)
+            client.query(kvkNummer=69599084)
 
     @requests_mock.Mocker()
     def test_client_500(self, m):
@@ -47,19 +47,17 @@ class KVKSearchClientTestCase(KVKTestMixin, TestCase):
         )
         client = KVKSearchClient()
         with self.assertRaises(RequestException):
-            res = client.query(kvkNummer=69599084)
+            client.query(kvkNummer=69599084)
 
 
 class KVKProfilesClientTestCase(KVKTestMixin, TestCase):
     @requests_mock.Mocker()
     def test_client(self, m):
-        mock_service_oas_get(
-            m, "https://hoofdvestiging/", service="basisprofiel_openapi"
-        )
+        mock_service_oas_get(m, "https://basisprofiel/", service="basisprofiel_openapi")
         m.get(
-            "https://hoofdvestiging/v1/basisprofielen/69599084/hoofdvestiging",
+            "https://basisprofiel/v1/basisprofielen/69599084",
             status_code=200,
-            json=self.load_json_mock("basisprofiel_hoofdvestiging_response.json"),
+            json=self.load_json_mock("basisprofiel_response.json"),
         )
 
         client = KVKProfileClient()
@@ -69,27 +67,44 @@ class KVKProfilesClientTestCase(KVKTestMixin, TestCase):
         self.assertEqual(res["kvkNummer"], "69599084")
 
     @requests_mock.Mocker()
-    def test_client_404(self, m):
-        mock_service_oas_get(
-            m, "https://hoofdvestiging/", service="basisprofiel_openapi"
-        )
+    def test_client_vve(self, m):
+        """
+        Test response for a VVE-type company.
+
+        Regression for #1299 where no "hoofdvestiging" data is present and address
+        information must be sourced elsewhere.
+        """
+        mock_service_oas_get(m, "https://basisprofiel/", service="basisprofiel_openapi")
         m.get(
-            "https://hoofdvestiging/v1/basisprofielen/69599084/hoofdvestiging",
+            "https://basisprofiel/v1/basisprofielen/90000749",
+            status_code=200,
+            json=self.load_json_mock("basisprofiel_response_vve.json"),
+        )
+
+        client = KVKProfileClient()
+        # exists
+        res = client.query(90000749)
+        self.assertIsNotNone(res)
+        self.assertEqual(res["kvkNummer"], "90000749")
+
+    @requests_mock.Mocker()
+    def test_client_404(self, m):
+        mock_service_oas_get(m, "https://basisprofiel/", service="basisprofiel_openapi")
+        m.get(
+            "https://basisprofiel/v1/basisprofielen/69599084",
             status_code=404,
         )
         client = KVKProfileClient()
         with self.assertRaises(ClientError):
-            res = client.query(kvkNummer=69599084)
+            client.query(kvkNummer=69599084)
 
     @requests_mock.Mocker()
     def test_client_500(self, m):
-        mock_service_oas_get(
-            m, "https://hoofdvestiging/", service="basisprofiel_openapi"
-        )
+        mock_service_oas_get(m, "https://basisprofiel/", service="basisprofiel_openapi")
         m.get(
-            "https://hoofdvestiging/v1/basisprofielen/69599084/hoofdvestiging",
+            "https://basisprofiel/v1/basisprofielen/69599084",
             status_code=500,
         )
         client = KVKProfileClient()
         with self.assertRaises(RequestException):
-            res = client.query(kvkNummer=69599084)
+            client.query(kvkNummer=69599084)
