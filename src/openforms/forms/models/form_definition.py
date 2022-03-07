@@ -120,10 +120,12 @@ class FormDefinition(models.Model):
 
         return super().delete(using=using, keep_parents=keep_parents)
 
-    def iter_components(self, configuration=None, recursive=True):
+    def iter_components(self, configuration=None, recursive=True, **kwargs):
         if configuration is None:
             configuration = self.configuration
-        return iter_components(configuration=configuration, recursive=recursive)
+        return iter_components(
+            configuration=configuration, recursive=recursive, **kwargs
+        )
 
     def get_all_keys(self) -> List[str]:
         keys = [field["key"] for field in self.iter_components(recursive=True)]

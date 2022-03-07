@@ -23,6 +23,7 @@ module.exports = {
         [`admin_overrides`]:  `${__dirname}/${paths.sourcesRoot}scss/admin/admin_overrides.scss`,
         [`core-css`]:  `${__dirname}/${paths.sourcesRoot}scss/screen.scss`,
         [`core-js`]:  `${__dirname}/${paths.sourcesRoot}js/index.js`,
+        'pdf-css': `${__dirname}/${paths.pdfScssEntry}`,
     },
 
     // (Output) bundle locations.

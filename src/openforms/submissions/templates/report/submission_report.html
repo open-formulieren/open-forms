@@ -1,62 +1,85 @@
-{% load static i18n %}<!DOCTYPE html>
-<html>
-<head>
-    {# TODO make these come from a stylesheet #}
-    <style>
-        th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-            font-size: 12px;
-            padding: 2px;
-            text-align: left;
-            overflow-wrap: break-word;
-        }
-        @page{
-            @bottom-center{
-                content: counter(page) "/" counter(pages);
-            }
-        }
-        body {
-            font-family: Helvetica, Arial, sans-serif;
-        }
-        table {
-            border: 1px solid black;
-            border-collapse: collapse;
-            table-layout: fixed;
-            width: 100%;
-        }
-        .table-cell-key {
-            font-weight: bold;
-        }
-        .contact-details, .help {
-            background: black;
-            color: white;
-        }
-    </style>
-</head>
+{% load static i18n solo_tags style_dictionary %}<!DOCTYPE html>
+<html lang="nl">
+    <head>
+        <meta charset="utf-8">
+        <title>{% block title %}{% trans "Summary PDF" %}{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="{% static 'bundles/pdf-css.css' %}" media="all" rel="stylesheet" />
+        {% block extra_css %}{% endblock %}
 
-<body class="report-body">
-    <h1>{{ form.name }}</h1>
+        {# Inject design tokens for theming #}
+        {% get_solo 'config.GlobalConfiguration' as config %}
+        {% style_dictionary config.design_token_values prefix="of" as design_tokens %}
+        {# This goes through WeasyPrint normally, so excluded from CSP #}
+        <style>
+        :root {{% for token, value in design_tokens.items %}
+          {{ token }}: {{ value }};{% endfor %}
+        }
+        </style>
+    </head>
 
-    <div class="submission-time">
-        {% blocktrans with submission_date=submission.completed_on %}Submitted on: {{ submission_date }} {% endblocktrans %}
-    </div>
+    <body class="A4">
 
-    <h2>{% trans "Form data" %}</h2>
+        <section class="sheet padding-10mm">
+            <header class="header {% if config.logo %}header--has-logo{% endif %}">
+                {% if config.logo %}<img class="header__logo" src="{{ config.logo.url }}" />{% endif %}
+            </header>
 
-    <table class="table">
-        {% for key, value in submission_data %}
-            <tr>
-                <td class="table-cell-key">{{ key }}</td>
-                <td>{% display_value value %}</td>
-            </tr>
-        {% endfor %}
-        {% if submission.payment_required and submission.price %}
-            <tr>
-                <td class="table-cell-key">{% trans "Total payment required" %}</td>
-                <td>&euro; {{ submission.price }}</td>
-            </tr>
-        {% endif %}
-    </table>
-</body>
+            <h1 class="title">{{ report.form.name }}</h1>
+
+            <section class="metadata">
+                <p>{% blocktrans with submission_date=report.submission.completed_on trimmed %}
+                    Submitted on: {{ submission_date }}
+                {% endblocktrans %}</p>
+                <p>{% blocktrans with ref=report.submission.public_reference trimmed %}
+                    Your reference is: {{ ref }}
+                {% endblocktrans %}</p>
+            </section>
+
+            {% for step in report.steps %}
+                <div class="submission-step">
+                    <h2 class="subtitle">{{ step.title }}</h2>
+
+                    {% for item in step %}
+                        <div class="submission-step-row {% if item.layout_modifier %}submission-step-row--{{ item.layout_modifier }}{% endif %}">
+
+                            <div class="submission-step-row__label">
+                                {{ item.label }}
+                            </div>
+
+                            <div class="submission-step-row__value">
+                                {{ item.display_value }}
+                            </div>
+
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            {% if report.co_signer %}
+            <div class="submission-step-row">
+                <div class="submission-step-row__label">{% trans "Co-signed by" %}</div>
+                <div class="submission-step-row__value">{{ report.co_signer }}</div>
+            </div>
+            {% endif %}
+
+            {% if report.show_payment_info %}
+            <section class="payment-info">
+                <div class="submission-step-row">
+                    <div class="submission-step-row__label">
+                        {% trans "Total payment required" %}
+                    </div>
+                    <div class="submission-step-row__value">
+                        &euro; {{ report.submission.price }}
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+
+            <section>
+                {{ report.confirmation_page_content }}
+            </section>
+
+        </section>
+    </body>
 </html>

@@ -1,0 +1,17 @@
+@import '~microscope-sass/lib/typography';
+
+@page {
+  size: A4;
+
+  @bottom-center {
+    content: counter(page) "/" counter(pages);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  @include body(auto);
+}

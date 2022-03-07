@@ -1,0 +1,5 @@
+@import '~microscope-sass/lib/typography';
+
+.submission-step {
+  @include margin(auto);
+}

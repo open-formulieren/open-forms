@@ -1,8 +1,11 @@
+import logging
+
 from django.test import TestCase
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from privates.test import temp_private_root
+from testfixtures import LogCapture
 
 from ..models import SubmissionReport
 from ..tasks.pdf import generate_submission_report
@@ -48,6 +51,22 @@ class SubmissionReportGenerationTests(TestCase):
         report = SubmissionReport.objects.get()
         self.assertEqual(submission, report.submission)
 
+    def test_pdf_renders_without_errors(self):
+        """
+        Assert that no error logs are emitted while rendering the PDF.
+
+        This turned up as part of #949 - the PDF restyling which now uses "external"
+        stylesheets and fonts for the layout. Using STATIC_URL=/static/ led to relative
+        URLs without base URI and thus making it impossible to fetch the actual
+        resources. This manifested in WeasyPrint as log records with log level ERROR.
+        """
+        report = SubmissionReportFactory.create(content="", submission__completed=True)
+
+        with LogCapture(level=logging.ERROR) as capture:
+            report.generate_submission_report_pdf()
+
+        capture.check()
+
 
 @temp_private_root()
 class SubmissionReportCoSignTests(TestCase):
@@ -72,10 +91,10 @@ class SubmissionReportCoSignTests(TestCase):
         self.assertTrue(report.content.name.endswith(".pdf"))
         expected = format_html(
             """
-            <tr>
-                <td class="table-cell-key">{key}</td>
-                <td>T. Shikari</td>
-            </tr>
+            <div class="submission-step-row">
+                <div class="submission-step-row__label">{key}</div>
+                <div class="submission-step-row__value">T. Shikari</div>
+            </div>
             """,
             key=_("Co-signed by"),
         )

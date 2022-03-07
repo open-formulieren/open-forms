@@ -1,0 +1,8 @@
+@import '~microscope-sass/lib/typography';
+
+.payment-info {
+  @include margin(auto);
+
+  padding-top: $grid-container-padding;
+  border-top: thin solid #767676;
+}

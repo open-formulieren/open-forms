@@ -27,6 +27,9 @@ module.exports = {
     // Path to the scss entry point
     scssEntry: sourcesRoot + 'ui/static/ui/scss/screen.scss',
 
+    // Path to PDF styling entry point
+    pdfScssEntry: sourcesRoot + 'scss/pdf.scss',
+
     // Path to the scss (sources) directory
     scssSrcDir: sourcesRoot + 'ui/static/ui/scss/',
 

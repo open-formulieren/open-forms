@@ -1,0 +1,10 @@
+// generic 'global' styling
+@import 'page';
+@import 'typography';
+
+// specific content styling
+@import 'header';
+@import 'metadata';
+@import 'submission-step';
+@import 'submission-step-row';
+@import 'payment-info';
