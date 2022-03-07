@@ -1,12 +1,14 @@
 import mimetypes
 from io import BytesIO
 from pathlib import PurePosixPath
+from typing import Tuple
 from urllib.parse import urljoin, urlparse
 
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.files.storage import FileSystemStorage
+from django.template.loader import render_to_string
 
 import weasyprint
 
@@ -58,3 +60,17 @@ class UrlFetcher:
                 result["file_obj"] = BytesIO(f.read())
             return result
         return self.fallback(orig_url)
+
+
+def render_to_pdf(template_name: str, context: dict) -> Tuple[str, bytes]:
+    """
+    Render a (HTML) template to PDF with the given context.
+    """
+    rendered_html = render_to_string(template_name, context=context)
+    html_object = weasyprint.HTML(
+        string=rendered_html,
+        url_fetcher=UrlFetcher(),
+        base_url=MOCK_BASE_URL,
+    )
+    pdf: bytes = html_object.write_pdf()
+    return rendered_html, pdf

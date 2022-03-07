@@ -13,7 +13,6 @@ from django.core.files.base import ContentFile, File
 from django.db import models, transaction
 from django.template import Context, Template
 from django.template.defaultfilters import date as fmt_date, time as fmt_time, yesno
-from django.template.loader import render_to_string
 from django.urls import resolve
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_time
@@ -25,7 +24,6 @@ from django_better_admin_arrayfield.models.fields import ArrayField
 from furl import furl
 from glom import glom
 from privates.fields import PrivateMediaFileField
-from weasyprint import HTML
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
@@ -34,7 +32,7 @@ from openforms.formio.formatters.service import filter_printable, format_value
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
-from openforms.utils.pdf import MOCK_BASE_URL, UrlFetcher
+from openforms.utils.pdf import render_to_pdf
 from openforms.utils.validators import (
     AllowedRedirectValidator,
     SerializerValidator,
@@ -904,17 +902,10 @@ class SubmissionReport(models.Model):
           can be tested.
         """
         form = self.submission.form
-        html_report = render_to_string(
-            "report/submission_report.html", context={"report": Report(self.submission)}
+        html_report, pdf_report = render_to_pdf(
+            "report/submission_report.html",
+            context={"report": Report(self.submission)},
         )
-
-        html_object = HTML(
-            string=html_report,
-            url_fetcher=UrlFetcher(),
-            base_url=MOCK_BASE_URL,
-        )
-        pdf_report = html_object.write_pdf()
-
         self.content = ContentFile(
             content=pdf_report,
             name=f"{form.name}.pdf",  # Takes care of replacing spaces with underscores
