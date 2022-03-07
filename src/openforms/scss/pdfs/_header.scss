@@ -5,6 +5,7 @@
 $padding-size: 10mm;
 
 .header {
+  @include margin('auto');
   // offset the container padding
   margin-top: -$padding-size;
   margin-left: -$padding-size;
@@ -13,7 +14,7 @@ $padding-size: 10mm;
   // deterministic output
   padding: math.div($padding-size, 2) $padding-size;
 
-  background: var(--of-page-header-background, $color-white);
+  background-color: var(--of-page-header-background, $color-white);
 
   &:not(&--has-logo) {
     display: none;

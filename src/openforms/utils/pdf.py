@@ -12,9 +12,6 @@ from django.template.loader import render_to_string
 
 import weasyprint
 
-MOCK_BASE_URL = "https://open-forms.dev"
-# we just need any real looking URL for WeasyPrint to be able to apply it's join stuff
-
 
 class UrlFetcher:
 
@@ -22,12 +19,10 @@ class UrlFetcher:
     URL fetcher that skips the network for /static/* files.
     """
 
-    fallback = weasyprint.default_url_fetcher
-
     def __init__(self):
         static_url = settings.STATIC_URL
         if not urlparse(static_url).netloc:
-            static_url = urljoin(MOCK_BASE_URL, settings.STATIC_URL)
+            static_url = urljoin(settings.BASE_URL, settings.STATIC_URL)
         self.static_url = urlparse(static_url)
         self.local_storage = issubclass(
             staticfiles_storage.__class__, FileSystemStorage
@@ -48,7 +43,7 @@ class UrlFetcher:
             path = PurePosixPath(url.path).relative_to(self.static_url.path)
             # use finders so that it works in dev too, we already check that it's
             # using filesystem storage earlier
-            absolute_path = finders.find(path)
+            absolute_path = finders.find(str(path))
             content_type, encoding = mimetypes.guess_type(absolute_path)
             result = dict(
                 mime_type=content_type,
@@ -59,7 +54,7 @@ class UrlFetcher:
             with open(absolute_path, "rb") as f:
                 result["file_obj"] = BytesIO(f.read())
             return result
-        return self.fallback(orig_url)
+        return weasyprint.default_url_fetcher(orig_url)
 
 
 def render_to_pdf(template_name: str, context: dict) -> Tuple[str, bytes]:
@@ -70,7 +65,7 @@ def render_to_pdf(template_name: str, context: dict) -> Tuple[str, bytes]:
     html_object = weasyprint.HTML(
         string=rendered_html,
         url_fetcher=UrlFetcher(),
-        base_url=MOCK_BASE_URL,
+        base_url=settings.BASE_URL,
     )
     pdf: bytes = html_object.write_pdf()
     return rendered_html, pdf
