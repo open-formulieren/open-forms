@@ -1,19 +1,7 @@
 from django.conf import settings
 from django.core.management import BaseCommand, CommandError
-from django.test import override_settings
 
 from ...models import Submission, SubmissionReport
-
-WEASYPRINT_LOGGING = {
-    **settings.LOGGING,
-    "loggers": {
-        "weasyprint": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-            "propagate": True,
-        }
-    },
-}
 
 
 class Command(BaseCommand):
@@ -33,5 +21,4 @@ class Command(BaseCommand):
         submission = Submission.objects.get(pk=options["submission_id"])
         report, _ = SubmissionReport.objects.get_or_create(submission=submission)
 
-        with override_settings(LOGGING=WEASYPRINT_LOGGING):
-            report.generate_submission_report_pdf()
+        report.generate_submission_report_pdf()

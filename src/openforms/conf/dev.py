@@ -68,6 +68,11 @@ LOGGING["loggers"].update(
             "level": "INFO",
             "propagate": False,
         },
+        "weasyprint": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
     }
 )
 
