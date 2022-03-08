@@ -596,6 +596,7 @@ class Submission(models.Model):
         self,
         limit_keys_to: Optional[List[str]] = None,
         use_merged_data_fallback=False,
+        as_html=False,
     ) -> List[Tuple[str, str]]:
         printable_data = []
         attachment_data = self.get_merged_attachments()
@@ -612,7 +613,9 @@ class Submission(models.Model):
             if enable_formio_formatters:
                 info, value = info
                 label = info["label"]
-                printable_data.append((label, format_value(info, value)))
+                printable_data.append(
+                    (label, format_value(info, value, as_html=as_html))
+                )
             else:
                 warnings.warn(
                     "Formatting without using the formio formatters registry is deprecated. "

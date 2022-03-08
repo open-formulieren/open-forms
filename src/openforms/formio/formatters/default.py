@@ -5,6 +5,7 @@ from django.template.defaultfilters import date as fmt_date, time as fmt_time, y
 from django.utils.dateparse import parse_date, parse_time
 from django.utils.encoding import force_str
 from django.utils.formats import number_format
+from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext_lazy as _
 
 from glom import glom
@@ -40,6 +41,13 @@ class FormioFormatter(AbstractBasePlugin):
     Defaults to semi-colon, as formatted numbers already use comma's which hurts
     readability.
     """
+    as_html = False
+    """
+    Format for HTML output or not.
+
+    The default is to format for plain text output, but toggling this will emit
+    HTML where relevant.
+    """
 
     # there is an interesting open question on what to do for empty values
     # currently we're eating them in normalise_value_to_list()
@@ -57,14 +65,20 @@ class FormioFormatter(AbstractBasePlugin):
     def join_formatted_values(
         self, component: Component, formatted_values: Iterable[str]
     ) -> str:
-        return self.multiple_separator.join(formatted_values)
+        if self.as_html:
+            args_generator = ((formatted,) for formatted in formatted_values)
+            return format_html_join(self.multiple_separator, "{}", args_generator)
+        else:
+            return self.multiple_separator.join(formatted_values)
 
     def process_result(self, component: Component, formatted: str) -> str:
         return formatted
 
-    def __call__(self, component: Component, value: Any) -> str:
+    def __call__(self, component: Component, value: Any, as_html=False) -> str:
+        self.as_html = as_html
         # note all this depends on value not being unexpected type or shape
         values = self.normalise_value_to_list(component, value)
+
         formatted_values = (
             force_str(self.format(component, value)) for value in values
         )
@@ -210,7 +224,20 @@ class RadioFormatter(FormioFormatter):
 @register("signature")
 class SignatureFormatter(FormioFormatter):
     def format(self, component: Component, value: str) -> str:
-        return _("signature added")
+        text = _("signature added")
+        if not self.as_html:
+            return text
+
+        assert value.startswith(
+            "data:image/"
+        ), "Expected 'data:' URI with image mime type"
+
+        # max-width is required for e-mail styling where it may overflow a table cell
+        return format_html(
+            """<img src="{src}" alt="{alt}" style="max-width: 100%;" />""",
+            src=value,
+            alt=text,
+        )
 
 
 @register("map")

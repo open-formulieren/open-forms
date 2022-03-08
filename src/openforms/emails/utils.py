@@ -117,6 +117,8 @@ def strip_tags_plus(text: str) -> str:
     copied and modified from https://bitbucket.org/maykinmedia/werkbezoek/src/develop/src/werkbezoek/utils/email.py
     """
     text = unwrap_anchors(text)
+    # <br> is eaten completely by strip_tags, so replace them by newlines
+    text = text.replace("<br>", "\n")
     text = django_strip_tags(text)
     lines = text.splitlines()
     transformed_lines = transform_lines(lines)
