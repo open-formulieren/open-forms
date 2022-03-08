@@ -36,8 +36,7 @@ django-cookie-consent
 django-cors-headers
 django-decorator-include
 django-digid-eherkenning
-django-hijack ~= 2.3.0
-django-hijack-admin
+django-hijack
 django-privates
 django-redis
 django-solo

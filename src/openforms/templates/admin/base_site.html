@@ -1,5 +1,5 @@
 {% extends "admin/base.html" %}
-{% load i18n static hijack_tags multidomain %}
+{% load i18n static multidomain %}
 
 {% block title %}{{ title }} | {{ settings.PROJECT_NAME }}{% endblock %}
 
@@ -54,7 +54,6 @@
 {% block nav-global %}{% endblock %}
 
 {% block messages %}
-    {% hijack_notification %}
     {% if settings.ENVIRONMENT_SHOWN_IN_ADMIN %}
         <div class="env env-{{ settings.ENVIRONMENT }}">{{ settings.ENVIRONMENT }}</div>
     {% endif %}

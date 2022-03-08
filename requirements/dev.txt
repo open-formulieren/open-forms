@@ -246,11 +246,6 @@ django-choices==1.7.1
     #   -r requirements/ci.txt
     #   django-digid-eherkenning
     #   zgw-consumers
-django-compat==1.0.15
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   django-hijack-admin
 django-cookie-consent==0.3.1
     # via
     #   -c requirements/ci.txt
@@ -288,12 +283,7 @@ django-formtools==2.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   maykin-django-two-factor-auth
-django-hijack==2.3.0
-    # via
-    #   -c requirements/ci.txt
-    #   -r requirements/ci.txt
-    #   django-hijack-admin
-django-hijack-admin==2.1.10
+django-hijack==3.1.6
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -849,7 +839,6 @@ six==1.15.0
     #   -r requirements/ci.txt
     #   click-repl
     #   django-choices
-    #   django-compat
     #   freezegun
     #   furl
     #   html5lib

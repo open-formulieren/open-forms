@@ -217,11 +217,6 @@ django-choices==1.7.1
     #   -r requirements/base.txt
     #   django-digid-eherkenning
     #   zgw-consumers
-django-compat==1.0.15
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   django-hijack-admin
 django-cookie-consent==0.3.1
     # via
     #   -c requirements/base.txt
@@ -255,12 +250,7 @@ django-formtools==2.3
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   maykin-django-two-factor-auth
-django-hijack==2.3.0
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   django-hijack-admin
-django-hijack-admin==2.1.10
+django-hijack==3.1.6
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -725,7 +715,6 @@ six==1.15.0
     #   -r requirements/base.txt
     #   click-repl
     #   django-choices
-    #   django-compat
     #   freezegun
     #   furl
     #   html5lib
