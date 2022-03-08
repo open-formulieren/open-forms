@@ -1023,6 +1023,13 @@ with open(os.path.join(os.path.dirname(__file__), "tinymce_config.json")) as f:
     TINYMCE_DEFAULT_CONFIG = json.load(f)
 
 #
+# Django Hijack
+#
+HIJACK_INSERT_BEFORE = (
+    '<div class="content">'  # note that this only applies to the admin
+)
+
+#
 # Open Forms extensions
 #
 
