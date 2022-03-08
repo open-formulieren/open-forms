@@ -1,7 +1,6 @@
 import {Utils} from 'formiojs';
 
 import {getFullyQualifiedUrl} from '../../../utils/urls';
-
 import {
     LABEL,
     KEY,
@@ -12,6 +11,7 @@ import {
     CLEAR_ON_HIDE,
     IS_SENSITIVE_DATA,
     DEFAULT_VALUE,
+    READ_ONLY,
 } from './options';
 
 /**
@@ -51,6 +51,7 @@ const TEXT_BASIC = {
     label: 'Basic',
     components: [
         ...BASIC.components,
+        READ_ONLY,
         {
             weight: 100,
             type: 'textfield',

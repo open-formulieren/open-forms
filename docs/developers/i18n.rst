@@ -9,6 +9,13 @@ Backend
 
 For the backend, see the Django `i18n documentation`_.
 
+.. note::
+
+    When re-generating the OAS with the ``generate_oas.sh`` script, the language option is not always respected.
+    Therefore, if some fields in the OAS change language after the generation, make sure to run ``python src/manage.py compilemessages``
+    before re-generating.
+
+
 .. _i18n documentation: https://docs.djangoproject.com/en/2.2/topics/i18n/translation/
 
 .. _`Forms Admin`:
