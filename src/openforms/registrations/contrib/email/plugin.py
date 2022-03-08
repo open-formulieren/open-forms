@@ -8,7 +8,6 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import send_mail_html, strip_tags_plus
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
@@ -68,18 +67,11 @@ class EmailRegistration(BasePlugin):
         # download the files.
         display_data = []
 
-        enable_formio_formatters = (
-            GlobalConfiguration.get_solo().enable_formio_formatters
-        )
-
         # get_printable_data relies on ``get_ordered_data_with_component_type``
-        for (key, info), (label, display) in zip(
+        for (key, (component, value)), (label, display) in zip(
             submission.get_ordered_data_with_component_type().items(), printable_data
         ):
-            # different data structure when using Formio formatters
-            if enable_formio_formatters:
-                info, _value = info
-            is_file = info.get("type") == "file"
+            is_file = component.get("type") == "file"
             if is_file:
                 files = attachments.get(key, [])
                 display = SubmittedDataWrapper(is_file=True, value=files)

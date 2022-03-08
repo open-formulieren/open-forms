@@ -346,14 +346,6 @@ class GlobalConfiguration(SingletonModel):
         default=False,
         help_text=_("If enabled, the admin allows selection of demo backend plugins."),
     )
-    enable_formio_formatters = models.BooleanField(
-        _("enable FormIO formatters"),
-        default=False,
-        help_text=_(
-            "If enabled, the FormIO specific formatters will be used "
-            "when formatting submission data."
-        ),
-    )
 
     default_test_bsn = models.CharField(
         _("default test BSN"),

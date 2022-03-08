@@ -146,11 +146,7 @@ class SubmissionTests(TestCase):
         )
         self.assertEqual(actual, expected)
 
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
-    def test_get_ordered_data_with_component_type_formio_formatters(
-        self, mock_get_solo
-    ):
-        mock_get_solo.return_value = GlobalConfiguration(enable_formio_formatters=True)
+    def test_get_ordered_data_with_component_type_formio_formatters(self):
         form_definition = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
@@ -293,9 +289,7 @@ class SubmissionTests(TestCase):
             printable_data[0][1],
         )
 
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
-    def test_get_printable_data_with_selectboxes_formio_formatters(self, mock_get_solo):
-        mock_get_solo.return_value = GlobalConfiguration(enable_formio_formatters=True)
+    def test_get_printable_data_with_selectboxes_formio_formatters(self):
         form_definition = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
