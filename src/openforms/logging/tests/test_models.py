@@ -170,6 +170,48 @@ class TimelineLogProxyTests(TestCase):
         with self.subTest("unknown plugin"):
             self.assertEqual(_("(unknown)"), log.fmt_plugin)
 
+    @freeze_time("2020-01-02 12:34:00")
+    def test_non_existing_object(self):
+        # Github issue #1408: object has a .content_type (and presumably .object_id) but object could not be retrieved
+
+        with self.subTest("form"):
+            # create unexisting id
+            form = FormFactory.create()
+            unexisting_id = form.id
+            Form.objects.filter(id=unexisting_id).delete()
+
+            content_type = ContentType.objects.get_for_model(Form)
+
+            log = TimelineLogProxyFactory.create(
+                object_id=unexisting_id, content_type=content_type
+            )
+            self.assertEqual(
+                f"[2020-01-02 13:34:00 CET] ({content_type.name} {unexisting_id})",
+                log.fmt_lead,
+            )
+
+            # this returns false because it checks the actual instance (and not just .content_type)
+            self.assertFalse(log.is_form)
+
+        with self.subTest("submission"):
+            # create unexisting id
+            submission = SubmissionFactory.create()
+            unexisting_id = submission.id
+            Submission.objects.filter(id=unexisting_id).delete()
+
+            content_type = ContentType.objects.get_for_model(Submission)
+
+            log = TimelineLogProxyFactory.create(
+                object_id=unexisting_id, content_type=content_type
+            )
+            self.assertEqual(
+                f"[2020-01-02 13:34:00 CET] ({content_type.name} {unexisting_id})",
+                log.fmt_lead,
+            )
+
+            # this returns false because it checks the actual instance (and not just .content_type)
+            self.assertFalse(log.is_submission)
+
 
 class AVGProxyModelTest(LoggingTestMixin, TestCase):
     def test_model_and_proxy(self):
