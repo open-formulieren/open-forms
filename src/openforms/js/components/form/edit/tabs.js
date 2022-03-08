@@ -1,7 +1,6 @@
 import {Utils} from 'formiojs';
 
 import {getFullyQualifiedUrl} from '../../../utils/urls';
-
 import {
     LABEL,
     KEY,
@@ -12,6 +11,7 @@ import {
     CLEAR_ON_HIDE,
     IS_SENSITIVE_DATA,
     DEFAULT_VALUE,
+    READ_ONLY,
 } from './options';
 
 /**
@@ -31,15 +31,6 @@ const BASIC = {
         CLEAR_ON_HIDE,
         IS_SENSITIVE_DATA,
         DEFAULT_VALUE,
-        {
-            // This doesn't work as in native HTML forms. Marking a field as 'disabled' only makes it read-only in the
-            // UI, but the data is still sent to the backend.
-            type: 'checkbox',
-            label: 'Read only',
-            tooltip: 'Make this component read only',
-            key: 'disabled',
-            input: true
-        },
     ]
 };
 
@@ -60,6 +51,7 @@ const TEXT_BASIC = {
     label: 'Basic',
     components: [
         ...BASIC.components,
+        READ_ONLY,
         {
             weight: 100,
             type: 'textfield',

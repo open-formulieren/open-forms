@@ -275,6 +275,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                         "key": "surname",
                         "label": "Surname",
                         "prefill": {"plugin": "test-prefill", "attribute": "surname"},
+                        "disabled": True,
                     }
                 ]
             },
@@ -299,6 +300,39 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(1, len(error_data["invalidPrefilledFields"]))
         self.assertEqual("Surname", error_data["invalidPrefilledFields"][0])
+
+    def test_prefilled_data_updated_not_disabled(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "surname",
+                        "label": "Surname",
+                        "prefill": {"plugin": "test-prefill", "attribute": "surname"},
+                        "disabled": False,
+                    }
+                ]
+            },
+        )
+        submission = SubmissionFactory.create(
+            form=form, prefill_data={"test-prefill": {"surname": "Doe"}}
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+            data={"surname": "Doe-MODIFIED"},
+        )
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint)
+
+        # Since the prefilled field was not disabled, it is possible to modify it and the submission is valid
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
 
 
 @temp_private_root()

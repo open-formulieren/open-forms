@@ -61,6 +61,16 @@ const DEFAULT_VALUE = {
     input: true
 };
 
+const READ_ONLY = {
+    // This doesn't work as in native HTML forms. Marking a field as 'disabled' only makes it read-only in the
+    // UI, but the data is still sent to the backend.
+    type: 'checkbox',
+    label: 'Read only',
+    tooltip: 'Make this component read only',
+    key: 'disabled',
+    input: true
+};
+
 export {
     LABEL,
     KEY,
@@ -71,4 +81,5 @@ export {
     CLEAR_ON_HIDE,
     IS_SENSITIVE_DATA,
     DEFAULT_VALUE,
+    READ_ONLY,
 };

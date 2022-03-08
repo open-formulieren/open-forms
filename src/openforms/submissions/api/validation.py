@@ -100,10 +100,13 @@ def get_invalid_prefilled_fields(
         if "prefill" not in component or component["prefill"]["plugin"] == "":
             continue
 
+        if not component["disabled"]:
+            continue
+
         plugin_name = component["prefill"]["plugin"]
         attribute_name = component["prefill"]["attribute"]
         if (
-            submission.data[component["key"]]
+            submission_step.data[component["key"]]
             != submission.prefill_data[plugin_name][attribute_name]
         ):
             invalid_prefilled_fields.append(component["label"])
