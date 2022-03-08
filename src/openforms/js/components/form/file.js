@@ -181,7 +181,11 @@ const FILE_TAB = {
             placeholder: '10MB',
             tooltip: 'See <a href=\'https://github.com/danialfarid/ng-file-upload#full-reference\' target=\'_blank\'>https://github.com/danialfarid/ng-file-upload#full-reference</a> for how to specify file sizes.',
             weight: 70,
-            description: 'Note that the server upload limit is {{serverUploadLimit}}.'
+            description: 'Note that the server upload limit is {{serverUploadLimit}}.',
+            validate: {
+                pattern: '[a-zA-Z0-9\\s]*',  // Bandaid to prevent users from using a file size with decimals (Issue #1398)
+                customMessage: 'Please specify an integer file size (e.g. 50 MB)',
+            },
         },
         // {
         //     // used by the formio widget
