@@ -2,6 +2,18 @@ import {Utils} from 'formiojs';
 
 import {getFullyQualifiedUrl} from '../../../utils/urls';
 
+import {
+    LABEL,
+    KEY,
+    DESCRIPTION,
+    SHOW_IN_EMAIL,
+    MULTIPLE,
+    HIDDEN,
+    CLEAR_ON_HIDE,
+    IS_SENSITIVE_DATA,
+    DEFAULT_VALUE,
+} from './options';
+
 /**
  * Define the tabs available when editing components in the form builder.
  */
@@ -10,76 +22,27 @@ const BASIC = {
     key: 'basic',
     label: 'Basic',
     components: [
-        {
-            type: 'textfield',
-            key: 'label',
-            label: 'Label'
-        },
-        {
-            type: 'textfield',
-            key: 'key',
-            label: 'Property Name',
-            validate: {
-                required: true
-            }
-        },
-        {
-            type: 'textfield',
-            key: 'description',
-            label: 'Description'
-        },
-        {
-            type: 'checkbox',
-            key: 'showInEmail',
-            label: 'Show in email',
-            tooltip: 'Whether to show this value in the confirmation email'
-        },
-        {
-            type: 'checkbox',
-            key: 'multiple',
-            label: 'Multiple values',
-            tooltip: 'Are there multiple values possible for this field?'
-        },
-        {
-            type: 'checkbox',
-            key: 'hidden',
-            label: 'Hidden',
-            tooltip: 'Hide a field from the form.'
-        },
-        {
-            type: 'checkbox',
-            key: 'clearOnHide',
-            label: 'Clear on hide',
-            tooltip: 'Remove the value of this field from the submission if it is hidden. Note: the value of this field is then also not used in logic rules!',
-        },
-        {
-            type: 'checkbox',
-            key: 'isSensitiveData',
-            label: 'Is Sensitive Data',
-            tooltip: 'The data entered in this component will be removed in accordance with the privacy settings.'
-        },
-        {
-            label: 'Default Value',
-            key: 'defaultValue',
-            tooltip: 'This will be the initial value for this field, before user interaction.',
-            input: true
-        },
+        LABEL,
+        KEY,
+        DESCRIPTION,
+        SHOW_IN_EMAIL,
+        MULTIPLE,
+        HIDDEN,
+        CLEAR_ON_HIDE,
+        IS_SENSITIVE_DATA,
+        DEFAULT_VALUE,
     ]
 };
 
 const SENSITIVE_BASIC = {
     key: 'basic',
     label: 'Basic',
-    components: [
-        ...BASIC.components.filter(component => component.key !== 'isSensitiveData'),
-        {
-            type: 'checkbox',
-            key: 'isSensitiveData',
-            label: 'Is Sensitive Data',
-            tooltip: 'The data entered in this component will be removed in accordance with the privacy settings.',
-            defaultValue: true,
-        },
-    ]
+    components: BASIC.components.map(option => {
+        if (option === IS_SENSITIVE_DATA) {
+            return {...IS_SENSITIVE_DATA, defaultValue: true};
+        }
+        return option;
+    }),
 };
 
 

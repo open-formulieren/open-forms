@@ -1,2 +1,1 @@
-import './checkbox';
 import './currency';

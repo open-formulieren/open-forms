@@ -1,6 +1,7 @@
 import TextArea from './components/form/textarea';
 import TextField from './components/form/textfield';
 import IbanField from './components/form/iban';
+import CheckboxField from './components/form/checkbox';
 import DateField from './components/form/date';
 import TimeField from './components/form/time';
 import SignatureField from './components/form/signature';
@@ -25,6 +26,7 @@ const FormIOModule = {
   components: {
     textarea: TextArea,
     textfield: TextField,
+    checkbox: CheckboxField,
     iban: IbanField,
     date: DateField,
     signature: SignatureField,

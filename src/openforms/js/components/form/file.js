@@ -1,5 +1,6 @@
 import {Formio} from 'formiojs';
 import {ADVANCED, SENSITIVE_BASIC, VALIDATION_BASIC} from './edit/tabs';
+import {DEFAULT_VALUE} from './edit/options';
 import {getFullyQualifiedUrl} from '../../utils/urls';
 
 const BaseFileField = Formio.Components.components.file;
@@ -232,7 +233,10 @@ class FileField extends BaseFileField {
             type: 'tabs',
             key: 'file',
             components: [
-                SENSITIVE_BASIC,
+                {
+                    ...SENSITIVE_BASIC,
+                    components: SENSITIVE_BASIC.components.filter(option => option.key !== DEFAULT_VALUE.key)
+                },
                 ADVANCED,
                 VALIDATION_BASIC,
                 FILE_TAB,

@@ -1,4 +1,33 @@
 import {Formio} from 'formiojs';
-import {defineCommonEditFormTabs} from './abstract';
 
-defineCommonEditFormTabs(Formio.Components.components.checkbox, []);
+import {MULTIPLE} from './edit/options';
+import {
+    DEFAULT_TABS,
+    BASIC,
+    ADVANCED,
+    VALIDATION,
+    REGISTRATION,
+} from './edit/tabs';
+
+
+class CheckboxField extends Formio.Components.components.checkbox {
+    static editForm() {
+        return {components: [
+            {
+                ...DEFAULT_TABS,
+                components: [
+                    {
+                        ...BASIC,
+                        components: BASIC.components.filter(option => option.key !== MULTIPLE.key),
+                    },
+                    ADVANCED,
+                    VALIDATION,
+                    REGISTRATION,
+                ]
+            }
+        ]};
+    }
+}
+
+
+export default CheckboxField;
