@@ -56,10 +56,7 @@ class TestSubmissionAdmin(WebTest):
 
         self.assertContains(response, expected, html=True)
 
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
-    def test_displaying_merged_data_displays_signature_as_image_formio_formatters(
-        self, mock_get_solo
-    ):
+    def test_displaying_merged_data_displays_signature_as_image_formio_formatters(self):
         self.submission_step_1.data["signature"] = "data:image/png;base64,iVBOR"
         self.submission_step_1.save()
 
