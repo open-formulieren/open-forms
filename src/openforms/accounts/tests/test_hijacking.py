@@ -7,6 +7,8 @@ from django.urls import reverse
 
 from django_webtest import WebTest
 
+from openforms.logging.models import TimelineLogProxy
+
 from .factories import StaffUserFactory, SuperUserFactory
 
 
@@ -68,4 +70,55 @@ class HijackTests(WebTest):
                 self.app.session[SESSION_KEY],
                 str(superuser.id),
                 "Superuser is not restored after release",
+            )
+
+    def test_auditlog_entries_on_hijack_and_release(self):
+        staff_user = StaffUserFactory.create(app=self.app)
+        superuser = SuperUserFactory.create(app=self.app)
+
+        with self.subTest("hijack user"):
+            self.app.get(reverse("admin:index"), user=superuser)
+
+            admin_dashboard = self._hijack_user(staff_user).follow()
+
+            self.assertEqual(TimelineLogProxy.objects.count(), 1)
+            log_hijack = TimelineLogProxy.objects.get()
+            self.assertEqual(
+                log_hijack.extra_data["hijacker"],
+                {
+                    "id": superuser.id,
+                    "full_name": superuser.get_full_name(),
+                    "username": superuser.username,
+                },
+            )
+            self.assertEqual(
+                log_hijack.extra_data["hijacked"],
+                {
+                    "id": staff_user.id,
+                    "full_name": staff_user.get_full_name(),
+                    "username": staff_user.username,
+                },
+            )
+
+        with self.subTest("release user"):
+            release_form = admin_dashboard.form
+            release_form.submit()
+
+            self.assertEqual(TimelineLogProxy.objects.count(), 2)
+            log_release = TimelineLogProxy.objects.order_by("-id").first()
+            self.assertEqual(
+                log_release.extra_data["hijacker"],
+                {
+                    "id": superuser.id,
+                    "full_name": superuser.get_full_name(),
+                    "username": superuser.username,
+                },
+            )
+            self.assertEqual(
+                log_release.extra_data["hijacked"],
+                {
+                    "id": staff_user.id,
+                    "full_name": staff_user.get_full_name(),
+                    "username": staff_user.username,
+                },
             )

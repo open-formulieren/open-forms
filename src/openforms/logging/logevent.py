@@ -472,3 +472,14 @@ def stuf_bg_response(service: "StufService", url):
         "stuf_bg_response",
         extra_data={"url": url},
     )
+
+
+# - - -
+
+
+def hijack_started(hijacker, hijacked):
+    pass
+
+
+def hijack_ended(hijacker, hijacked):
+    pass
