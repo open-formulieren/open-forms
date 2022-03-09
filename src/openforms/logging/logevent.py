@@ -478,8 +478,42 @@ def stuf_bg_response(service: "StufService", url):
 
 
 def hijack_started(hijacker, hijacked):
-    pass
+    _create_log(
+        hijacked,
+        "hijack_started",
+        user=hijacker,
+        extra_data={
+            "hijacker": {
+                "id": hijacker.id,
+                "full_name": hijacker.get_full_name(),
+                "username": hijacker.username,
+            },
+            "hijacked": {
+                "id": hijacked.id,
+                "full_name": hijacked.get_full_name(),
+                "username": hijacked.username,
+            },
+        },
+        tags=[TimelineLogTags.hijack],
+    )
 
 
 def hijack_ended(hijacker, hijacked):
-    pass
+    _create_log(
+        hijacked,
+        "hijack_ended",
+        user=hijacker,
+        extra_data={
+            "hijacker": {
+                "id": hijacker.id,
+                "full_name": hijacker.get_full_name(),
+                "username": hijacker.username,
+            },
+            "hijacked": {
+                "id": hijacked.id,
+                "full_name": hijacked.get_full_name(),
+                "username": hijacked.username,
+            },
+        },
+        tags=[TimelineLogTags.hijack],
+    )

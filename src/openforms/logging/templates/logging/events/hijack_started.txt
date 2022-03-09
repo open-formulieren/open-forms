@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_lead user=log.fmt_user hijacked=log.extra_data.hijacked.username %}
+   {{ lead }}: User {{ user }} hijacked user {{ hijacked }}
+{% endblocktrans %}
