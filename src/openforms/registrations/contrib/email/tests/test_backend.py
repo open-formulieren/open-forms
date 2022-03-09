@@ -135,12 +135,12 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertIn(detail_line, message_text)
 
         self.assertIn("foo: bar", message_text)
-        self.assertIn("some_list: value1, value2", message_text)
+        self.assertIn("some_list: value1; value2", message_text)
 
         self.assertTagWithTextIn("td", "foo", message_html)
         self.assertTagWithTextIn("td", "bar", message_html)
         self.assertTagWithTextIn("td", "some_list", message_html)
-        self.assertTagWithTextIn("td", "value1, value2", message_html)
+        self.assertTagWithTextIn("td", "value1; value2", message_html)
 
         # files are no longer attached to the e-mail, but links are included instead
         self.assertEqual(len(message.attachments), 0)

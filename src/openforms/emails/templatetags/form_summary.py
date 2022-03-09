@@ -36,7 +36,6 @@ def filter_data_to_show_in_email(context: dict) -> dict:
 
     filtered_data = submission.get_printable_data(
         limit_keys_to=data_to_show_in_email,
-        use_merged_data_fallback=True,
         as_html=_is_html,
     )
     return {"submitted_data": filtered_data}

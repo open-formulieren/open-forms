@@ -219,7 +219,9 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         self.assertTagWithTextIn("td", "Last name", rendered_content)
         self.assertTagWithTextIn("td", "Doe", rendered_content)
         self.assertTagWithTextIn("td", "File", rendered_content)
-        self.assertTagWithTextIn("td", "my-image.jpg", rendered_content)
+        self.assertTagWithTextIn(
+            "td", _("attachment: %s") % "my-image.jpg", rendered_content
+        )
 
     @patch(
         "openforms.emails.templatetags.appointments.get_client",
@@ -533,7 +535,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
 
             - Name: Foo
             - Last name: de Bar & de Baas
-            - File: my-image.jpg
+            - File: {_("attachment: %s") % "my-image.jpg"}
             - {_("Co-signed by")}: T. Shikari
 
             {_("Appointment information")}

@@ -2,21 +2,17 @@ import hashlib
 import logging
 import os.path
 import uuid
-import warnings
 from collections import OrderedDict, defaultdict
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
 
 from django.contrib.auth.hashers import make_password as get_salted_hash
 from django.core.files.base import ContentFile, File
 from django.db import models, transaction
 from django.template import Context, Template
-from django.template.defaultfilters import date as fmt_date, time as fmt_time, yesno
 from django.urls import resolve
 from django.utils import timezone
-from django.utils.dateparse import parse_date, parse_time
-from django.utils.formats import number_format
 from django.utils.translation import gettext, gettext_lazy as _
 
 from celery.result import AsyncResult
@@ -505,33 +501,15 @@ class Submission(models.Model):
         ordered_data = OrderedDict()
         merged_data = self.get_merged_data()
 
-        enable_formio_formatters = (
-            GlobalConfiguration.get_solo().enable_formio_formatters
-        )
-
         # first collect data we have in the same order the components are defined in the form
         for component in filter_printable(self.form.iter_components(recursive=True)):
             key = component["key"]
             value = merged_data.get(key, None)
-            if enable_formio_formatters:
-                component.setdefault("label", key)
-                ordered_data[key] = (
-                    component,
-                    value,
-                )
-            else:
-                ordered_data[key] = {
-                    "type": component["type"],
-                    "value": value,
-                    "label": component.get("label", key),
-                    "multiple": component.get("multiple", False),
-                    # The select component has the values/labels nested in a 'data' field
-                    "values": component.get("values")
-                    or component.get("data", {}).get("values"),
-                    # appointments stuff...
-                    "appointments": component.get("appointments", {}),
-                    "decimalLimit": component.get("decimalLimit"),
-                }
+            component.setdefault("label", key)
+            ordered_data[key] = (
+                component,
+                value,
+            )
 
         return ordered_data
 
@@ -595,149 +573,20 @@ class Submission(models.Model):
     def get_printable_data(
         self,
         limit_keys_to: Optional[List[str]] = None,
-        use_merged_data_fallback=False,
         as_html=False,
     ) -> List[Tuple[str, str]]:
         printable_data = []
-        attachment_data = self.get_merged_attachments()
-        merged_data = self.get_merged_data() if use_merged_data_fallback else {}
 
-        enable_formio_formatters = (
-            GlobalConfiguration.get_solo().enable_formio_formatters
-        )
-
-        for key, info in self.get_ordered_data_with_component_type().items():
+        for key, (
+            component,
+            value,
+        ) in self.get_ordered_data_with_component_type().items():
             if limit_keys_to and key not in limit_keys_to:
                 continue
 
-            if enable_formio_formatters:
-                info, value = info
-                label = info["label"]
-                printable_data.append(
-                    (label, format_value(info, value, as_html=as_html))
-                )
-            else:
-                warnings.warn(
-                    "Formatting without using the formio formatters registry is deprecated. "
-                    "Please consider concentrating all future improvements/fixes there.",
-                    DeprecationWarning,
-                )
-
-                label = info["label"]
-                multiple = info.get("multiple", False)
-                if info["type"] == "file":
-                    files = attachment_data.get(key)
-                    if files:
-                        value = _("attachment: %s") % (
-                            "; ".join(file.get_display_name() for file in files)
-                        )
-                    # FIXME: ugly workaround to patch the demo, this should be fixed properly
-                    elif use_merged_data_fallback:
-                        value = merged_data.get(key)
-                    else:
-                        value = ""
-
-                elif info["type"] == "date" or (
-                    info.get("appointments", {}).get("showDates", False)
-                ):
-                    value = _join_mapped(
-                        lambda v: fmt_date(parse_date(v)), info["value"]
-                    )
-
-                elif info["type"] == "time" or (
-                    appointment_time := info.get("appointments", {}).get(
-                        "showTimes", False
-                    )
-                ):
-                    _parse_time = (
-                        datetime.fromisoformat if appointment_time else parse_time
-                    )
-                    # strip off the seconds
-                    value = _join_mapped(
-                        lambda v: fmt_time(_parse_time(v)), info["value"]
-                    )
-
-                elif info["type"] == "selectboxes":
-                    selected_values: Dict[str, bool] = info["value"]
-                    if not selected_values:
-                        value = ""
-                    else:
-                        selected_labels = [
-                            entry["label"]
-                            for entry in info["values"]
-                            if selected_values.get(entry["value"])
-                        ]
-                        value = "; ".join(selected_labels)
-
-                elif info["type"] == "number" or info["type"] == "currency":
-                    if info["type"] == "currency":
-                        # force currency formatting with 2 decimals even if None
-                        num_decimals = info.get("decimalLimit") or 2
-                    else:
-                        num_decimals = info.get("decimalLimit")
-
-                    if multiple:
-                        # filtering _not_null_empty is part of fix for legacy issue where empty number/currency field would not be printed
-                        value = _join_mapped(
-                            lambda v: number_format(v, num_decimals),
-                            info["value"],
-                            filter_func=_not_null_empty,
-                        )
-                    else:
-                        if info["value"] is None:
-                            # part of fix for legacy issue where empty number/currency field would not be printed
-                            value = ""
-                        else:
-                            value = number_format(info["value"], num_decimals)
-
-                elif info["type"] == "signature":
-                    if info["value"]:
-                        value = _("signature added")
-                    else:
-                        value = ""
-                elif info["type"] == "map":
-                    if info["value"]:
-                        value = _join_mapped(str, info["value"], ", ")
-                    else:
-                        value = ""
-                elif info["type"] == "checkbox":
-                    if info["value"] is None:
-                        value = ""
-                    else:
-                        value = yesno(info["value"])
-                elif type(info["value"]) is dict:
-                    # TODO what is the use-case for this?
-                    printable_value = info["value"]
-                    if "name" in printable_value:
-                        value = printable_value["name"]
-                    else:
-                        printable_value = list(printable_value.values())[0]
-                        logger.warning(
-                            'Key "%s" is a dict with unknown values (%s). The first value "%s" was stored.',
-                            key,
-                            info["value"],
-                            printable_value,
-                        )
-                        value = printable_value["name"]
-                else:
-                    printable_value = info["value"]
-                    if values := info.get("values"):
-                        value = printable_value
-                        if not multiple:
-                            value = [value]
-
-                        def _format(val):
-                            return self._get_value_label(values, val)
-
-                        # Case in which each value has a label (for example select and radio components)
-                        printable_value = _join_mapped(
-                            lambda v: self._get_value_label(values, v), value
-                        )
-
-                    # more here? like getComponentValue() in the SDK?
-                    value = printable_value
-
-                printable_data.append((label, value))
+            printable_data.append(
+                (component["label"], format_value(component, value, as_html=as_html))
+            )
 
         # finally, check if we have co-sign information to append
         if self.co_sign_data:

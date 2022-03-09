@@ -1,8 +1,5 @@
-from unittest.mock import patch
-
 from django.utils.translation import gettext as _
 
-from openforms.config.models import GlobalConfiguration
 from openforms.emails.templatetags.form_summary import display_value
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
@@ -16,45 +13,16 @@ from .utils import load_json
 
 
 class KitchensinkFormatterTestCase(BaseFormatterTestCase):
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
-    def test_kitchensink_legacy(self, mock_get_solo):
-        self.run_kitchensink_test(
-            mock_get_solo, False, "kitchensink_data", "kitchensink_printable_text"
-        )
+    def test_kitchensink_formio(self):
+        self.run_kitchensink_test("kitchensink_data", "kitchensink_printable_text")
 
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
-    def test_kitchensink_formio(self, mock_get_solo):
-        self.run_kitchensink_test(
-            mock_get_solo, True, "kitchensink_data", "kitchensink_printable_text"
-        )
-
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
-    def test_kitchensink_legacy_with_hidden(self, mock_get_solo):
+    def test_kitchensink_formio_with_hidden(self):
         # when hidden fields are submitted with their defaults
         self.run_kitchensink_test(
-            mock_get_solo,
-            False,
-            "kitchensink_data_with_hidden",
-            "kitchensink_printable_text_with_hidden",
+            "kitchensink_data_with_hidden", "kitchensink_printable_text_with_hidden"
         )
 
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
-    def test_kitchensink_formio_with_hidden(self, mock_get_solo):
-        # when hidden fields are submitted with their defaults
-        self.run_kitchensink_test(
-            mock_get_solo,
-            True,
-            "kitchensink_data_with_hidden",
-            "kitchensink_printable_text_with_hidden",
-        )
-
-    def run_kitchensink_test(
-        self, mock_get_solo, formio_enabled, name_data, name_printable
-    ):
-        mock_get_solo.return_value = GlobalConfiguration(
-            enable_formio_formatters=formio_enabled
-        )
-
+    def run_kitchensink_test(self, name_data, name_printable):
         configuration = load_json("kitchensink_components.json")
         data = load_json(f"{name_data}.json")
         text_printed = load_json(f"{name_printable}.json")
@@ -133,19 +101,7 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
             with self.subTest(f"{label} -> '{value}'"):
                 self.assertEqual(value, text_values[label])
 
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
-    def test_appointments_legacy(self, mock_get_solo):
-        self.run_appointments_test(mock_get_solo, False)
-
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
-    def test_appointments_formio(self, mock_get_solo):
-        self.run_appointments_test(mock_get_solo, True)
-
-    def run_appointments_test(self, mock_get_solo, formio_enabled):
-        mock_get_solo.return_value = GlobalConfiguration(
-            enable_formio_formatters=formio_enabled
-        )
-
+    def test_appointments_formio(self):
         configuration = load_json("appointments_components.json")
         data = load_json("appointments_data.json")
         text_printed = load_json("appointments_printable_text.json")
