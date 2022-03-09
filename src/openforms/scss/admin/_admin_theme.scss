@@ -309,29 +309,6 @@ body.login {
  * this theme.
  */
 .dynamic-array-widget {
-  button {
-    background: $color_primary !important;
-    color: $color_lightest !important;
-    &:hover {
-      background: $color_primary_dark !important;
-      /* border: 2px solid $color_dark !important; */
-    }
-
-    /* Substitute theme style above with icon. Solves translation string as well. */
-    &.add-array-item {
-      background: url('../img/admin/plus-square-regular.svg') 0 0/14px 14px no-repeat !important;
-      width: 14px;
-      line-height: 16px;
-      text-indent: -9999px;
-      white-space: nowrap;
-      margin: 0 0 5px 170px;
-      display: block;
-
-      &:focus {
-        outline-width: 0;
-      }
-    }
-  }
 
   /* Substitute with icon */
   .remove {
