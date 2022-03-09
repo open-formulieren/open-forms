@@ -202,9 +202,9 @@ div.breadcrumbs {
  */
 
 @mixin admin-index-link(
-  $background-color--active: $color_secondary,
-  $color--active: $color-primary,
-  $color-link: $color_lightest,
+  $background-color--active: var(--accent),
+  $color--active: var(--primary),
+  $color-link: var(--primary-fg),
 ) {
 
   @each $sel in & {
@@ -220,7 +220,7 @@ div.breadcrumbs {
       }
 
       &:hover {
-        color: $color-lightest;
+        color: var(--primary-fg);
       }
     }
   }
@@ -229,7 +229,7 @@ div.breadcrumbs {
     color: $color-link;
 
     &:hover {
-      background-color: $color_primary_dark;
+      background-color: var(--button-hover-bg);
     }
   }
 
@@ -257,7 +257,7 @@ div#container {
     left: auto;
     display: block;
     float: initial;
-    background-color: $color_primary;
+    background-color: var(--primary);
     border: none;
     border-radius: 0;
     padding: 0;
@@ -266,12 +266,12 @@ div#container {
     line-height: normal;
 
     &__item {
-      @include admin-index-link($color--active: $color_primary);
-      background-color: $color_primary;
+      @include admin-index-link($color--active: var(--primary));
+      background-color: var(--primary);
     }
 
     &__drop {
-      background-color: $color_primary;
+      background-color: var(--primary);
       box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
                   0 6px 20px 0 rgba(0, 0, 0, 0.2);
       /* Override for wider dropdown */
@@ -280,8 +280,8 @@ div#container {
 
     &__link {
       @include admin-index-link(
-        $background-color--active: $color_primary_dark,
-        $color--active: $color_lightest,
+        $background-color--active: var(--button-hover-bg),
+        $color--active: var(--primary-fg),
       );
     }
   }
