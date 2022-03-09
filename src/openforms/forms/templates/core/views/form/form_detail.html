@@ -9,4 +9,17 @@
 {% block card %}
     {% sdk_info_banner %}
     {% include "forms/sdk_snippet.html" %}
+
+    {% if request.user.is_staff %}
+        {% comment %}
+        Additional call for admin support, we need to set the CSRF Token in case admin users
+        are authenticated and use demo auth plugins. See Github issue 1410
+        {% endcomment %}
+        {{ csrf_token|cut:''|json_script:'csrftoken' }}
+        <script nonce="{{ request.csp_nonce }}">
+            var csrfToken = JSON.parse(document.getElementById('csrftoken').innerText);
+            OpenForms.setCSRFToken(csrfToken);
+        </script>
+    {% endif %}
+
 {% endblock %}
