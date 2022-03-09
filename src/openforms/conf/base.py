@@ -143,8 +143,7 @@ INSTALLED_APPS = [
     "django_better_admin_arrayfield",
     "django_yubin",
     "hijack",
-    "hijack_admin",
-    "compat",  # Part of hijack
+    "hijack.contrib.admin",
     "rest_framework",
     "rest_framework.authtoken",
     "drf_spectacular",
@@ -220,6 +219,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "hijack.middleware.HijackUserMiddleware",
     "openforms.middleware.SessionTimeoutMiddleware",
     "mozilla_django_oidc_db.middleware.SessionRefresh",
     "django_otp.middleware.OTPMiddleware",
@@ -631,16 +631,6 @@ CELERY_TASK_ACKS_LATE = True
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 
 #
-# DJANGO-HIJACK
-#
-HIJACK_LOGIN_REDIRECT_URL = reverse_lazy("admin:index")
-HIJACK_LOGOUT_REDIRECT_URL = reverse_lazy("admin:accounts_user_changelist")
-HIJACK_REGISTER_ADMIN = False
-# This is a CSRF-security risk.
-# See: http://django-hijack.readthedocs.io/en/latest/configuration/#allowing-get-method-for-hijack-views
-HIJACK_ALLOW_GET_REQUESTS = True
-
-#
 # DJANGO-CORS-MIDDLEWARE
 #
 # CORS requests are required if the SDK is used in another domain. When developing
@@ -1031,6 +1021,13 @@ CSP_REPORTS_FILTER_FUNCTION = "cspreports.filters.filter_browser_extensions"
 with open(os.path.join(os.path.dirname(__file__), "tinymce_config.json")) as f:
     # NOTE django-tinymce will add locale/language settings automatically
     TINYMCE_DEFAULT_CONFIG = json.load(f)
+
+#
+# Django Hijack
+#
+HIJACK_INSERT_BEFORE = (
+    '<div class="content">'  # note that this only applies to the admin
+)
 
 #
 # Open Forms extensions

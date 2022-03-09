@@ -133,8 +133,6 @@ django-choices==1.7.1
     #   -r requirements/base.in
     #   django-digid-eherkenning
     #   zgw-consumers
-django-compat==1.0.15
-    # via django-hijack-admin
 django-cookie-consent==0.3.1
     # via -r requirements/base.in
 django-cors-headers==3.11.0
@@ -151,11 +149,7 @@ django-filter==2.4.0
     # via -r requirements/base.in
 django-formtools==2.3
     # via maykin-django-two-factor-auth
-django-hijack==2.3.0
-    # via
-    #   -r requirements/base.in
-    #   django-hijack-admin
-django-hijack-admin==2.1.10
+django-hijack==3.1.6
     # via -r requirements/base.in
 django-ipware==3.0.1
     # via django-axes
@@ -372,7 +366,6 @@ six==1.15.0
     # via
     #   click-repl
     #   django-choices
-    #   django-compat
     #   furl
     #   html5lib
     #   isodate

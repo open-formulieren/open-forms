@@ -76,6 +76,7 @@ div.breadcrumbs {
   color: $color_primary;
   position: relative; // scrolling makes it hide behind the header
   top: 94px; // #header height
+  width: auto;
 
 
   // top: (94px - 4px) !important;
@@ -470,34 +471,6 @@ div.help {
 .aligned label + ul {
   display: inline-block;
   margin-left: inherit !important;
-}
-
-/**
- * django-hijack
- *
- * The default styling overlaps with the menu from admin-index.
- */
-#hijacked-warning-wrapper {
-
-  // default there's some 50px of nothingness
-  &:after {
-    display: none;
-  }
-
-  &, & * {
-    box-sizing: content-box; // some pages load bootstrap CSS which force the border-box
-  }
-
-  #hijacked-warning {
-    position: sticky;  // instead of fixed
-    min-height: 20px; // instead of 50px which had a lot of dead white-space
-    border-top: 2px solid #ae9e49;  // same as border-bottom, absent by default
-    z-index: auto;
-    top: auto;
-    left: auto;
-    right: auto;
-    width: calc(100% - 2 * 7px);  // instead of 100% - the padding is subtracted because of the box-sizing
-  }
 }
 
 /**

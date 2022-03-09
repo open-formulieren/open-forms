@@ -37,5 +37,8 @@ class AccountsConfig(AppConfig):
     name = "openforms.accounts"
 
     def ready(self):
+        from . import signals  # noqa
+
+        # enforce some fixtures after migrating
         post_migrate.connect(update_admin_index, sender=self)
         post_migrate.connect(update_groups, sender=self)

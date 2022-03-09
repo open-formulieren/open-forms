@@ -1,0 +1,72 @@
+/**
+ * django-hijack
+ *
+ * The default styling is a flexbox victim.
+ */
+
+@import "../vars";
+
+.djhj {
+  // parent container needs to wrap the flex items. See also HIJACK_INSERT_BEFORE
+  // django setting.
+  @at-root div.main.shifted {
+    flex-wrap: wrap;
+
+    // this may mess with the container sidebar if re-enabled, see original commit:
+    // https://github.com/django/django/commit/d24ba1be7a53a113d19e2860c03aff9922efec24
+    // We revert this to the flexbox default, otherwise on pages without vertical scrollbar
+    // there is blank space between the notification and actual content because the
+    // main div is growing to the available space.
+    flex: 0 1 auto !important;
+  }
+
+  // main notification container(s)
+  flex-basis: 100%;
+  position: sticky;
+  top: 102px; // header height
+  z-index: 1;
+  margin-bottom: 8px; // 4px from grey bar django-admin-index + 2x 2px border
+
+  &-notification {
+    padding: 4px 40px;
+    border-top: 2px solid #ae9e49;
+    border-bottom: 2px solid #ae9e49;
+
+    // keep the yellow/grey striped colors
+    background-size: 50px 50px;
+    background-color: $django-hijack-yellow;
+    color: #000;
+    background-image: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, .04) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(0, 0, 0, .04) 50%,
+      rgba(0, 0, 0, .04) 75%,
+      transparent 75%,
+      transparent
+    );
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &-message {
+    font-weight: bold;
+  }
+
+  &-button {
+    box-shadow:inset 0px 1px 0px 0px $color_lightest;
+    background: linear-gradient(to bottom, $color_lightest 5%, #f6f6f6 100%);
+    background-color: $color_lightest;
+    border-radius: 6px;
+    border: 1px solid #dcdcdc;
+    cursor: pointer;
+    color: $color_dark;
+    font-weight: bold;
+    padding: 6px 12px;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px $color_lightest;
+  }
+}

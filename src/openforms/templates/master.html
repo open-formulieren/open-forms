@@ -1,4 +1,4 @@
-{% load static hijack_tags cookie_consent_tags solo_tags %}<!DOCTYPE html>
+{% load static cookie_consent_tags solo_tags %}<!DOCTYPE html>
 
 {% get_solo 'config.GlobalConfiguration' as config %}
 {% firstof config.analytics_cookie_consent_group.varname '_dummy' as analytics_varname %}
@@ -12,7 +12,6 @@
     <link href="{% static 'ico/favicon.png' %}" rel="shortcut icon">
     <link href="{% static 'bundles/openforms-css.css' %}" media="all" rel="stylesheet"/>
     <link href="{% static 'bundles/core-css.css' %}" media="all" rel="stylesheet"/>
-    <link href="{% static 'hijack/hijack-styles.css' %}" rel="stylesheet" type="text/css"/>
     {% block extra_css %}{% endblock %}
     {% if enable_analytics %}
         {# Load the various supported analytics provider snippets #}
@@ -21,8 +20,6 @@
 </head>
 
 <body class="view__body">
-    {% hijack_notification %}
-
     {% block content %}
         Override <code>{% verbatim %}{% block content %}{% endverbatim %}</code>
         to get some actual content.

@@ -2,17 +2,14 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
 
-from hijack_admin.admin import HijackUserAdminMixin
-
 from .models import User
 
 
 @admin.register(User)
-class _UserAdmin(UserAdmin, HijackUserAdminMixin):
+class _UserAdmin(UserAdmin):
     list_display = UserAdmin.list_display + (
         "is_superuser",
         "get_groups",
-        "hijack_field",
     )
 
     def get_queryset(self, request):
