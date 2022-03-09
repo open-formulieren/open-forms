@@ -1903,6 +1903,8 @@ paths:
           type: integer
       tags:
       - submissions
+      security:
+      - cookieAuth: []
       responses:
         '200':
           content:
@@ -1932,6 +1934,8 @@ paths:
             schema:
               $ref: '#/components/schemas/Submission'
         required: true
+      security:
+      - cookieAuth: []
       responses:
         '201':
           content:
@@ -2096,6 +2100,8 @@ paths:
         required: true
       tags:
       - submissions
+      security:
+      - cookieAuth: []
       responses:
         '200':
           content:
@@ -2130,6 +2136,8 @@ paths:
         required: true
       tags:
       - submissions
+      security:
+      - cookieAuth: []
       responses:
         '200':
           content:
@@ -2199,6 +2207,8 @@ paths:
         required: true
       tags:
       - submissions
+      security:
+      - cookieAuth: []
       responses:
         '200':
           content:
@@ -2248,6 +2258,8 @@ paths:
             schema:
               $ref: '#/components/schemas/SubmissionSuspension'
         required: true
+      security:
+      - cookieAuth: []
       responses:
         '201':
           content:
@@ -2272,6 +2284,8 @@ paths:
         required: true
       tags:
       - submissions
+      security:
+      - cookieAuth: []
       responses:
         '200':
           content:
