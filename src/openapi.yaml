@@ -1324,7 +1324,7 @@ paths:
         schema:
           type: string
           format: uuid
-        description: De UUID van het formulier gekoppeld aan deze logica regels.
+        description: De UUID van het formulier gekoppeld aan deze logicaregels.
       tags:
       - logic-rules
       security:
@@ -1576,7 +1576,7 @@ paths:
         schema:
           type: string
           format: uuid
-        description: De UUID van het formulier gekoppeld aan deze logica regels.
+        description: De UUID van het formulier gekoppeld aan deze logicaregels.
       tags:
       - logic-rules
       security:
