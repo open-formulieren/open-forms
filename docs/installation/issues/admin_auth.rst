@@ -6,7 +6,7 @@ Admin authentication issues
 OpenID Connect login shows errors related to unique email addresses
 -------------------------------------------------------------------
 
-If you enabled :ref:`configuration_authentication_oidc` (OIDC) authentication, there are
+If you enabled :ref:`configuration_authentication_oidc_admin` (OIDC) authentication, there are
 multiple authentication paths into the admin that may conflict with each other.
 
 If a local user (as opposed to OIDC created user) exists with their email address and
