@@ -1,6 +1,5 @@
 from typing import List
 
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.template.defaultfilters import capfirst
 from django.urls import reverse
@@ -38,10 +37,8 @@ class TimelineLogProxy(TimelineLog):
     def fmt_lead(self) -> str:
         if self.is_submission:
             return f"[{self.fmt_time}] ({self.fmt_sub})"
-        elif self.content_type_id:
-            return (
-                f"[{self.fmt_time}] ({self.content_type.name} {self.content_object.id})"
-            )
+        elif self.content_type_id and self.object_id:
+            return f"[{self.fmt_time}] ({self.content_type.name} {self.object_id})"
         else:
             return f"[{self.fmt_time}]"
 
@@ -55,7 +52,7 @@ class TimelineLogProxy(TimelineLog):
         if not self.is_submission:
             return ""
         prefix = capfirst(Submission._meta.verbose_name)
-        return f"{prefix} {self.content_object.id}"
+        return f"{prefix} {self.object_id}"
 
     @property
     def fmt_user(self) -> str:
@@ -74,7 +71,7 @@ class TimelineLogProxy(TimelineLog):
         if self.is_submission:
             return f'"{self.content_object.form}" (ID: {self.content_object.form_id})'
         elif self.is_form:
-            return f'"{self.content_object}" (ID: {self.content_object.id})'
+            return f'"{self.content_object}" (ID: {self.object_id})'
         return ""
 
     @property
