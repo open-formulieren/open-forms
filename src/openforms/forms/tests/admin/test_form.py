@@ -11,6 +11,7 @@ from django.utils.translation import ugettext as _
 from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
+from openforms.config.models import GlobalConfiguration
 from openforms.tests.utils import disable_2fa
 from openforms.utils.admin import SubmitActions
 
@@ -634,6 +635,23 @@ class FormEditTests(WebTest):
                 obj=self.form.name,
             ),
         )
+
+    @patch("openforms.forms.admin.form.GlobalConfiguration.get_solo")
+    def test_required_field_configuration(self, m_solo):
+        m_solo.return_value = GlobalConfiguration(form_fields_required_default=True)
+
+        change_page = self.app.get(
+            reverse("admin:forms_form_change", args=(self.form.pk,)),
+            user=self.admin_user,
+        )
+
+        required_default_nodes = change_page.html.find_all(id="config-REQUIRED_DEFAULT")
+
+        self.assertEqual(1, len(required_default_nodes))
+
+        required_default = required_default_nodes[0].text
+
+        self.assertEqual("true", required_default)
 
 
 @disable_2fa
