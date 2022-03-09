@@ -3431,12 +3431,16 @@ components:
           type: boolean
           description: Display the link to the main website on the submission confirmation
             page.
+        requiredFieldsWithAsterisk:
+          type: boolean
+          readOnly: true
       required:
       - loginOptions
       - loginRequired
       - name
       - paymentOptions
       - paymentRequired
+      - requiredFieldsWithAsterisk
       - slug
       - steps
       - url
@@ -4174,6 +4178,9 @@ components:
           type: boolean
           description: Display the link to the main website on the submission confirmation
             page.
+        requiredFieldsWithAsterisk:
+          type: boolean
+          readOnly: true
     PatchedFormDefinition:
       type: object
       properties:
