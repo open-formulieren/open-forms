@@ -1,6 +1,11 @@
 {% extends 'admin/change_form.html' %}
 {% load i18n static openforms admin_urls %}
 
+{% block extrahead %}
+    {{ block.super }}
+    {{ required_default|json_script:'config-REQUIRED_DEFAULT' }}
+{% endblock extrahead %}
+
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />

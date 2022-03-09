@@ -49,6 +49,15 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
             },
         ),
         (
+            _("General form options"),
+            {
+                "fields": (
+                    "form_fields_required_default",
+                    "form_display_required_with_asterisk",
+                )
+            },
+        ),
+        (
             _("Organization configuration"),
             {
                 "fields": (

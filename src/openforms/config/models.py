@@ -149,6 +149,21 @@ class GlobalConfiguration(SingletonModel):
             "The text that will be displayed in the form step to go to the next step"
         ),
     )
+    form_fields_required_default = models.BooleanField(
+        verbose_name=_("form fields required default"),
+        default=False,
+        help_text=_(
+            "Whether the checkbox 'required' on form fields should be checked by default."
+        ),
+    )
+    form_display_required_with_asterisk = models.BooleanField(
+        verbose_name=_("form display required with asterisk"),
+        default=True,
+        help_text=_(
+            "Whether required fields should be displayed with an asterisk. "
+            "If unchecked, optional fields will be marked with '(optional)'."
+        ),
+    )
 
     # 'subdomain' styling & content configuration
     # FIXME: do not expose this field via the API to non-admin users! There is not
