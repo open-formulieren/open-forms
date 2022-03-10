@@ -2,6 +2,61 @@
 Changelog
 =========
 
+1.0.0 (2022-03-10)
+==================
+
+Final fixes/improvements for the 1.0.0 release
+
+This release pins the formal API v1.0 definition and includes the 1.0.0 version of the
+SDK. v1.0.0 is subject to our
+`versioning policy <https://open-forms.readthedocs.io/en/latest/developers/versioning.html>`_.
+
+Bugfixes
+--------
+
+* [#1376] Fixed straat/woonplaats attributes in Haal Centraal prefill plugin
+* [#1385] Avoid changing case in form data
+* [#1322] Demo authentication plugins can now only be used by staff users
+* [#1395, #1367] Moved identifying attributes hashing to on_completion cleanup stage,
+  registrations backends now no longer receive hashed values
+* Fixed bug in e-mail registration backend when using new formio formatters
+* [#1293, #1179] "signature" components are now proper images in PDF/confirmation e-mail
+* Fixed missing newlines in HTML-mail-to-plain-text conversion
+* [#1333] Removed 'multiple'/'default value' component options where they don't make sense
+* [#1398] File upload size limit is now restricted to integer values due to broken
+  localized number parsing in Formio
+* [#1393] Prefill data is now validated against tampering if marked as "readonly"
+* [#1399] Fixed KVK (prefill) integration by fetching the "basisprofiel" information
+* [#1410] Fixed admin session not being recognized by SDK/API for demo auth plugins
+* [#840] Fixed hijack functionality in combination with 2FA
+
+  - Hijack and enforced 2FA can now be used together (again)
+  - Hijacking and releasing users is now logged in the audit log
+
+* [#1408] Hardened TimelineLogProxy against disappeared content object
+
+New features/improvements
+-------------------------
+
+* [#1336] Defined and implemented backend extension mechanism
+* [#1378] Hidden components are now easily identifiable in the form builder
+* [#940] added option to display 'back to main website' link
+* [#1103] Plugin options can now be managed from a friendly user interface in the
+  global configuration page
+* [#1391] Added option to hide the fieldset header
+* [#988] implemented permanently deleting forms after soft-delete
+* [#949] Redesigned/styled the confirmation/summary PDF - this now applies the
+  configured organization theming
+
+Project maintenance
+-------------------
+
+* [#478] Published django-digid-eherkenning to PyPI and replaced the Github dependency.
+* [#1381] added targeted elasticapm instrumentation to get better insights in
+  performance bottlenecks
+* Cleaned up admin overrides CSS in preparation for dark-theme support
+* [#1403] Removed the legacy formio formatting feature flag and behaviour
+
 1.0.0-rc.4 (2022-02-25)
 =======================
 

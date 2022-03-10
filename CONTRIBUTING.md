@@ -63,6 +63,11 @@ repository and create a pull request to the `master` branch of this project's
 repository. Your pull request will be reviewed, if applicable, feedback will be 
 given and if everything is approved, it will be merged.
 
+Pull requests should always be made to the `master` branch, even if they are bugfixes
+for any of the `stable/*` branches. If they are relevant for older versions, please add
+the *needs-backport* label to the pull request and/or issue. Release managers will then
+ensure the fix also lands in the supported older versions.
+
 ### Reviews on releases
 
 Open Forms community support is provided by [Maykin Media][Maykin_Media]. 
