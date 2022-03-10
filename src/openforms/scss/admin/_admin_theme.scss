@@ -35,7 +35,7 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
   --button-hover-bg: #{$color_primary_dark};
   --default-button-bg: #{$color_primary_dark};
   --default-button-hover-bg: #{$color_darkest};
-  --close-button-bg: #{$color_primary_light};
+  --close-button-bg: #{$color_dark_light};
   --close-button-hover-bg: #{$color_dark};
 
   --object-tools-bg: #888;
@@ -65,7 +65,9 @@ div#header {
     box-sizing: content-box;
   }
 
-  height: auto;
+  // We can't have the dynamic height (only margins) based on font rendering, 
+  // due to admin-index menubar being positioned from the top.
+  height: 74px;
   line-height: normal;
 }
 
@@ -253,9 +255,10 @@ div#container {
 
   .dropdown-menu {
 
-    // 42px from admin index, 8px to add more vertical spacing again between branding and dropdown
-    // which are now both child elements of the header
-    top: 42px + 16px;
+    height: 37px;
+    // The .dropdown-menu 37px in height. With the div#header.height of 
+    // 74px, we need to position the menu 74px - 37px = 57px from the top.
+    top: 57px;
 
     left: auto;
     display: block;
@@ -302,6 +305,14 @@ body.login {
 
     #main {
       padding-top: 0;
+    }
+  }
+}
+
+body.popup {
+  #container {
+    #main {
+      padding-top: 0; // popup menu's have no header
     }
   }
 }
