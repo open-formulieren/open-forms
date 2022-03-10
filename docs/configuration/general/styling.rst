@@ -97,23 +97,6 @@ The configuration in the admin requires this to be provided as JSON, for example
 
 .. _style dictionary: https://amzn.github.io/style-dictionary/
 
-**Style of required fields in forms**
-
-When building a form, fields are not marked as required by default. In order to turn a field into a required field,
-one has to check the checkbox 'required' in the edit form of the component. Any fields in a form that are marked as
-required are then shown in the UI with a red asterisk on the right of the label.
-
-This default behaviour can be changed. Under **Admin** > **Configuratie** > **Algemene configuratie**, there are two
-options:
-
-* **Form fields required default**
-   If this checkbox is checked, fields will be required by default.
-   This means that to make them optional, one will have to uncheck the 'required' checkbox in the edit form of the
-   component.
-* **Form display required with asterisk**
-   If this checkbox is unchecked, required fields will no longer have an asterisk
-   next to the label. Optional fields will instead have '(optional)' next to the label.
-
 
 Additional design token values examples
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
