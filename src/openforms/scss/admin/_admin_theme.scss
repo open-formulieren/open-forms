@@ -8,6 +8,37 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
 
 @import "../vars";
 
+// override django CSS variables
+// see admin/static/admin/css/base.css for a reference
+:root {
+  --primary: #{$color_primary};
+  --accent: #{$color_secondary};
+  --secondary: #{$color_primary};
+  --primary-fg: #{$color_lightest};
+
+  --header-color: #{$color_secondary_light};
+
+  --breadcrumbs-fg: #{$color_primary};
+  --breadcrumbs-link-fg: var(--body-fg);
+  --breadcrumbs-bg: #{$color_secondary};
+
+  --link-fg: #{$color_link};
+  --link-hover-color: #{$color_link_hover};
+  --link-selected-fg: #5b80b2;
+
+  // #748 client requested increased contrast for form-row borders
+  // here we override a django admin style
+  --hairline-color: #e5e5e5;
+
+  // --button-bg: var(--primary);
+  --button-fg: #{$color_lightest};
+  --button-hover-bg: #{$color_primary_dark};
+  --default-button-bg: #{$color_primary_dark};
+  --default-button-hover-bg: #{$color_darkest};
+  --close-button-bg: #{$color_primary_light};
+  --close-button-hover-bg: #{$color_dark};
+}
+
 /* Overrides */
 body {
   overflow-y: scroll;
@@ -17,24 +48,12 @@ body {
   }
 }
 
-a:link, a:visited {
-  color: $color_link;
-}
-a:focus, a:hover {
-  color: $color_link_hover;
-}
-
 div#header {
-  color: $color_secondary_light;
-  background: $color_primary;
   // padding of 40px by django, fixed position pulls it out of the document so
   // we need to compensate for the padding manually.
   width: calc(100% - 2 * 40px);
   /* Added to attach body */
-  border-bottom: 8px solid $color_secondary;
-  a:link, a:visited {
-    color: $color_lightest;
-  }
+  border-bottom: 8px solid var(--accent);
 
   // some admin pages (form definitions, form designer) include bootstrap which is
   // just a massive PITA and we need these overrides because of the CSS reset that's
@@ -42,9 +61,9 @@ div#header {
   &, * {
     box-sizing: content-box;
   }
+
   height: auto;
   line-height: normal;
-
 }
 
 #user-tools {
@@ -55,8 +74,9 @@ div#header {
     border-bottom: none;
     text-decoration: underline;
 
-    &:focus, &:hover {
-      color: $color_darkest;
+    &:hover,
+    &:focus {
+      color: var(--header-link-color);
     }
   }
 
@@ -67,26 +87,12 @@ div#header {
   }
 }
 
-.module h2, .module caption, .inline-group h2 {
-  background: $color_primary;
-}
-
 div.breadcrumbs {
-  background: $color_secondary;
-  color: $color_primary;
   position: relative; // scrolling makes it hide behind the header
   top: 94px; // #header height
   width: auto;
 
-
-  // top: (94px - 4px) !important;
-  // position: sticky;
-  // top: 60px;
-  // z-index: 100000;
-
   a {
-    color: $color_dark;
-
     &:focus,
     &:hover {
       color: $color_darkest;
@@ -96,99 +102,37 @@ div.breadcrumbs {
 
 /* Important is used because Django templates include their own style, after ours */
 #changelist-filter {
-  a:focus, a:hover {
-    color: $color_link !important;
+  a:focus,
+  a:hover {
+    color: var(--link-fg) !important;
   }
+
   li.selected a {
-    color: $color_link !important;
-    &:focus, &:hover {
-      color: $color_primary !important;
+    color: var(--link-fg) !important;
+
+    &:focus,
+    &:hover {
+      color: var(--primary) !important;
     }
   }
 }
 
-.form-row {
-  // #748 client requested increased contrast for this element
-  // here we override a django admin style
-  border-bottom-color: #e5e5e5 !important;
-}
-
-.object-tools {
-  a:focus, a:hover {
-    background-color: $color_dark;
-  }
-}
-
-.button, input[type=submit], input[type=button], .submit-row input, a.button {
-  background: $color_primary;
-  color: $color_lightest;
-  /* border: 2px solid $color_dark; */
-}
-.button:active, input[type=submit]:active, input[type=button]:active, .button:focus, input[type=submit]:focus, input[type=button]:focus, .button:hover, input[type=submit]:hover, input[type=button]:hover {
-  background: $color_primary_dark;
-}
-.button.default, input[type=submit].default, .submit-row input.default {
-  background: $color_primary_dark;
-}
-.button.default:active, input[type=submit].default:active, .button.default:focus, input[type=submit].default:focus, .button.default:hover, input[type=submit].default:hover {
-  background: $color_darkest;
-}
-
-.delete-confirmation {
-  form {
-    input[type=submit] {
-    }
-    .cancel-link {
-      background: $color_primary_light;
-      color: $color_lightest;
-      &:active, &:focus, &:hover {
-        background: $color_dark;
-      }
-    }
-  }
-}
-
-/* Many to many selector */
-.selector-chosen h2 {
-  background: $color_primary !important;
-}
-
-/* Calendar widget */
-.calendar {
-  caption {
-    background: $color_secondary_dark !important;
-    color: $color_dark !important;
-  }
-
-  td {
-    a {
-      &:active {
-        background: $color_primary !important;
-      }
-      &:focus, &:hover {
-        background: $color_primary_dark !important;
-      }
-    }
-
-    &.selected a {
-      background: $color_primary !important;
-    }
-  }
-}
+/* Calendar & time widget */
+.calendar caption,
 .calendarbox h2 {
   background: $color_secondary_dark !important;
   color: $color_dark !important;
 }
 
-/* Time widget */
+.calendar td,
 .timelist {
-  a:active {
-   background: $color_primary !important;
-  }
-  a:focus, a:hover {
-    background: $color_primary_dark !important;
+  a {
+    &:focus, &:hover {
+      background: $color_primary_dark !important;
+    }
   }
 }
+
 .module.clockbox h2 {
   /* Match the clock widget with the calendar widget */
   background: $color_secondary_dark !important;
@@ -218,6 +162,7 @@ div.breadcrumbs {
   text-align: center;
 }
 .version {
+  padding: 0 30px;
   color: $color_secondary_dark;
   font-size: smaller;
 }
@@ -257,9 +202,9 @@ div.breadcrumbs {
  */
 
 @mixin admin-index-link(
-  $background-color--active: $color_secondary,
-  $color--active: $color-primary,
-  $color-link: $color_lightest,
+  $background-color--active: var(--accent),
+  $color--active: var(--primary),
+  $color-link: var(--primary-fg),
 ) {
 
   @each $sel in & {
@@ -275,7 +220,7 @@ div.breadcrumbs {
       }
 
       &:hover {
-        color: $color-lightest;
+        color: var(--primary-fg);
       }
     }
   }
@@ -284,7 +229,7 @@ div.breadcrumbs {
     color: $color-link;
 
     &:hover {
-      background-color: $color_primary_dark;
+      background-color: var(--button-hover-bg);
     }
   }
 
@@ -312,7 +257,7 @@ div#container {
     left: auto;
     display: block;
     float: initial;
-    background-color: $color_primary;
+    background-color: var(--primary);
     border: none;
     border-radius: 0;
     padding: 0;
@@ -321,12 +266,12 @@ div#container {
     line-height: normal;
 
     &__item {
-      @include admin-index-link($color--active: $color_primary);
-      background-color: $color_primary;
+      @include admin-index-link($color--active: var(--primary));
+      background-color: var(--primary);
     }
 
     &__drop {
-      background-color: $color_primary;
+      background-color: var(--primary);
       box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
                   0 6px 20px 0 rgba(0, 0, 0, 0.2);
       /* Override for wider dropdown */
@@ -335,8 +280,8 @@ div#container {
 
     &__link {
       @include admin-index-link(
-        $background-color--active: $color_primary_dark,
-        $color--active: $color_lightest,
+        $background-color--active: var(--button-hover-bg),
+        $color--active: var(--primary-fg),
       );
     }
   }
@@ -364,29 +309,6 @@ body.login {
  * this theme.
  */
 .dynamic-array-widget {
-  button {
-    background: $color_primary !important;
-    color: $color_lightest !important;
-    &:hover {
-      background: $color_primary_dark !important;
-      /* border: 2px solid $color_dark !important; */
-    }
-
-    /* Substitute theme style above with icon. Solves translation string as well. */
-    &.add-array-item {
-      background: url('../img/admin/plus-square-regular.svg') 0 0/14px 14px no-repeat !important;
-      width: 14px;
-      line-height: 16px;
-      text-indent: -9999px;
-      white-space: nowrap;
-      margin: 0 0 5px 170px;
-      display: block;
-
-      &:focus {
-        outline-width: 0;
-      }
-    }
-  }
 
   /* Substitute with icon */
   .remove {
@@ -415,15 +337,10 @@ body.login {
  // loaded.
 #branding {
   h1 {
-    color: $color_secondary;
     // bootstrap mess
     line-height: normal;
-
-    a:link,
-    a:visited {
-      color: $color_secondary;
-      font-weight: bold;
-    }
+    // admin override
+    font-weight: bold;
   }
 }
 
@@ -486,9 +403,9 @@ div.help {
     color: inherit;
 
     &:hover {
-      background-color: $color-primary;
-      border-color: $color-primary;
-      color: $color-lightest;
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: var(--primary-fg);
     }
   }
 }
