@@ -8,12 +8,17 @@ class Attributes(DjangoChoices):
     this code was (at some point) generated from an API-spec, so names and labels are in Dutch if the spec was Dutch
 
     spec:    https://developers.kvk.nl/cms/api/uploads/api_basisprofiel_widget_aa888449ed.yaml
-    schema:  Vestiging
-    command: manage.py generate_prefill_from_spec --schema Vestiging --url https://developers.kvk.nl/cms/api/uploads/api_basisprofiel_widget_aa888449ed.yaml
+    schema:  Basisprofiel
+    command: manage.py generate_prefill_from_spec --schema Basisprofiel \
+        --url https://developers.kvk.nl/cms/api/uploads/api_basisprofiel_widget_aa888449ed.yaml
+
+    Post-processed by hand by commenting out all the array items and deleting all the
+    HAL 'links' constructs.
     """
 
-    # NOTE the plugin manipulates the data to finds and attach the 'bezoekadres' and 'correspondentieadres' from 'adressen' list
-    # so to make these 'bezoekadres_xx' and 'correspondentieadres_xx' attributes we did some manual copy/paste/replace on the generated attrutes
+    # NOTE the plugin manipulates the data to finds and attach the 'bezoekadres' and
+    # 'correspondentieadres' from 'adressen' list so to make these 'bezoekadres_xx'
+    # and 'correspondentieadres_xx' attributes we did some manual copy/paste/replace on the generated attrutes
     bezoekadres_aanduidingBijHuisnummer = ChoiceItem(
         "bezoekadres.aanduidingBijHuisnummer",
         _("bezoekadres > aanduidingBijHuisnummer"),
@@ -158,27 +163,101 @@ class Attributes(DjangoChoices):
     correspondentieadres_type = ChoiceItem(
         "correspondentieadres.type", _("correspondentieadres > type")
     )
-
-    deeltijdWerkzamePersonen = ChoiceItem(
-        "deeltijdWerkzamePersonen", _("deeltijdWerkzamePersonen")
+    eigenaar_rechtsvorm = ChoiceItem(
+        "_embedded.eigenaar.rechtsvorm", _("_embedded > eigenaar > rechtsvorm")
     )
-    eersteHandelsnaam = ChoiceItem("eersteHandelsnaam", _("eersteHandelsnaam"))
+    eigenaar_rsin = ChoiceItem(
+        "_embedded.eigenaar.rsin", _("_embedded > eigenaar > rsin")
+    )
+    eigenaar_uitgebreideRechtsvorm = ChoiceItem(
+        "_embedded.eigenaar.uitgebreideRechtsvorm",
+        _("_embedded > eigenaar > uitgebreideRechtsvorm"),
+    )
     formeleRegistratiedatum = ChoiceItem(
         "formeleRegistratiedatum", _("formeleRegistratiedatum")
     )
-    indCommercieleVestiging = ChoiceItem(
-        "indCommercieleVestiging", _("indCommercieleVestiging")
+    # handelsnamen_i_naam = ChoiceItem(
+    #     "handelsnamen[].naam", _("handelsnamen > [] > naam")
+    # )
+    # handelsnamen_i_volgorde = ChoiceItem(
+    #     "handelsnamen[].volgorde", _("handelsnamen > [] > volgorde")
+    # )
+    hoofdvestiging_deeltijdWerkzamePersonen = ChoiceItem(
+        "_embedded.hoofdvestiging.deeltijdWerkzamePersonen",
+        _("_embedded > hoofdvestiging > deeltijdWerkzamePersonen"),
     )
-    indHoofdvestiging = ChoiceItem("indHoofdvestiging", _("indHoofdvestiging"))
+    hoofdvestiging_eersteHandelsnaam = ChoiceItem(
+        "_embedded.hoofdvestiging.eersteHandelsnaam",
+        _("_embedded > hoofdvestiging > eersteHandelsnaam"),
+    )
+    hoofdvestiging_formeleRegistratiedatum = ChoiceItem(
+        "_embedded.hoofdvestiging.formeleRegistratiedatum",
+        _("_embedded > hoofdvestiging > formeleRegistratiedatum"),
+    )
+    hoofdvestiging_indCommercieleVestiging = ChoiceItem(
+        "_embedded.hoofdvestiging.indCommercieleVestiging",
+        _("_embedded > hoofdvestiging > indCommercieleVestiging"),
+    )
+    hoofdvestiging_indHoofdvestiging = ChoiceItem(
+        "_embedded.hoofdvestiging.indHoofdvestiging",
+        _("_embedded > hoofdvestiging > indHoofdvestiging"),
+    )
+    hoofdvestiging_indNonMailing = ChoiceItem(
+        "_embedded.hoofdvestiging.indNonMailing",
+        _("_embedded > hoofdvestiging > indNonMailing"),
+    )
+    hoofdvestiging_kvkNummer = ChoiceItem(
+        "_embedded.hoofdvestiging.kvkNummer",
+        _("_embedded > hoofdvestiging > kvkNummer"),
+    )
+    hoofdvestiging_materieleRegistratie_datumAanvang = ChoiceItem(
+        "_embedded.hoofdvestiging.materieleRegistratie.datumAanvang",
+        _("_embedded > hoofdvestiging > materieleRegistratie > datumAanvang"),
+    )
+    hoofdvestiging_materieleRegistratie_datumEinde = ChoiceItem(
+        "_embedded.hoofdvestiging.materieleRegistratie.datumEinde",
+        _("_embedded > hoofdvestiging > materieleRegistratie > datumEinde"),
+    )
+    hoofdvestiging_rsin = ChoiceItem(
+        "_embedded.hoofdvestiging.rsin", _("_embedded > hoofdvestiging > rsin")
+    )
+    # hoofdvestiging_sbiActiviteiten_i_indHoofdactiviteit = ChoiceItem(
+    #     "_embedded.hoofdvestiging.sbiActiviteiten[].indHoofdactiviteit",
+    #     _("_embedded > hoofdvestiging > sbiActiviteiten > [] > indHoofdactiviteit"),
+    # )
+    # hoofdvestiging_sbiActiviteiten_i_sbiCode = ChoiceItem(
+    #     "_embedded.hoofdvestiging.sbiActiviteiten[].sbiCode",
+    #     _("_embedded > hoofdvestiging > sbiActiviteiten > [] > sbiCode"),
+    # )
+    # hoofdvestiging_sbiActiviteiten_i_sbiOmschrijving = ChoiceItem(
+    #     "_embedded.hoofdvestiging.sbiActiviteiten[].sbiOmschrijving",
+    #     _("_embedded > hoofdvestiging > sbiActiviteiten > [] > sbiOmschrijving"),
+    # )
+    hoofdvestiging_totaalWerkzamePersonen = ChoiceItem(
+        "_embedded.hoofdvestiging.totaalWerkzamePersonen",
+        _("_embedded > hoofdvestiging > totaalWerkzamePersonen"),
+    )
+    hoofdvestiging_vestigingsnummer = ChoiceItem(
+        "_embedded.hoofdvestiging.vestigingsnummer",
+        _("_embedded > hoofdvestiging > vestigingsnummer"),
+    )
+    hoofdvestiging_voltijdWerkzamePersonen = ChoiceItem(
+        "_embedded.hoofdvestiging.voltijdWerkzamePersonen",
+        _("_embedded > hoofdvestiging > voltijdWerkzamePersonen"),
+    )
+    # hoofdvestiging_websites_i = ChoiceItem(
+    #     "_embedded.hoofdvestiging.websites[]",
+    #     _("_embedded > hoofdvestiging > websites > []"),
+    # )
     indNonMailing = ChoiceItem("indNonMailing", _("indNonMailing"))
     kvkNummer = ChoiceItem("kvkNummer", _("kvkNummer"))
-
     materieleRegistratie_datumAanvang = ChoiceItem(
         "materieleRegistratie.datumAanvang", _("materieleRegistratie > datumAanvang")
     )
     materieleRegistratie_datumEinde = ChoiceItem(
         "materieleRegistratie.datumEinde", _("materieleRegistratie > datumEinde")
     )
+    naam = ChoiceItem("naam", _("naam"))
     # sbiActiviteiten_i_indHoofdactiviteit = ChoiceItem(
     #     "sbiActiviteiten[].indHoofdactiviteit",
     #     _("sbiActiviteiten > [] > indHoofdactiviteit"),
@@ -189,11 +268,7 @@ class Attributes(DjangoChoices):
     # sbiActiviteiten_i_sbiOmschrijving = ChoiceItem(
     #     "sbiActiviteiten[].sbiOmschrijving", _("sbiActiviteiten > [] > sbiOmschrijving")
     # )
+    statutaireNaam = ChoiceItem("statutaireNaam", _("statutaireNaam"))
     totaalWerkzamePersonen = ChoiceItem(
         "totaalWerkzamePersonen", _("totaalWerkzamePersonen")
     )
-    vestigingsnummer = ChoiceItem("vestigingsnummer", _("vestigingsnummer"))
-    voltijdWerkzamePersonen = ChoiceItem(
-        "voltijdWerkzamePersonen", _("voltijdWerkzamePersonen")
-    )
-    # websites_i = ChoiceItem("websites[]", _("websites > []"))

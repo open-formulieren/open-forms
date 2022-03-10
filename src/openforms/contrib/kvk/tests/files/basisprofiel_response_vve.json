@@ -1,0 +1,52 @@
+{
+  "kvkNummer": "90000749",
+  "indNonMailing": "Ja",
+  "naam": "Global Conron",
+  "formeleRegistratiedatum": "20100208",
+  "materieleRegistratie": {
+    "datumAanvang": "19991103"
+  },
+  "statutaireNaam": "Global Conron",
+  "sbiActiviteiten": [
+    {
+      "sbiCode": "94997",
+      "sbiOmschrijving": "Overige belangenbehartiging (rest)",
+      "indHoofdactiviteit": "Ja"
+    }
+  ],
+  "links": [
+    {
+      "rel": "self",
+      "href": "https://api.kvk.nl/test/api/v1/basisprofielen/90000749"
+    }
+  ],
+  "_embedded": {
+    "eigenaar": {
+      "rsin": "992340594",
+      "rechtsvorm": "Vereniging van Eigenaars",
+      "uitgebreideRechtsvorm": "Vereniging van Eigenaars",
+      "adressen": [
+        {
+          "type": "bezoekadres",
+          "indAfgeschermd": "Nee",
+          "volledigAdres": "Blaauwweg 163 3328XD Dordrecht",
+          "straatnaam": "Blaauwweg",
+          "huisnummer": 163,
+          "postcode": "3328XD",
+          "plaats": "Dordrecht",
+          "land": "Nederland"
+        }
+      ],
+      "links": [
+        {
+          "rel": "self",
+          "href": "https://api.kvk.nl/test/api/v1/basisprofielen/90000749/eigenaar"
+        },
+        {
+          "rel": "basisprofiel",
+          "href": "https://api.kvk.nl/test/api/v1/basisprofielen/90000749"
+        }
+      ]
+    }
+  }
+}

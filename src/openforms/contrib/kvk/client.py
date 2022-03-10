@@ -59,7 +59,7 @@ class KVKProfileClient:
 
         try:
             results = client.operation(
-                "getHoofdvestiging",
+                "getBasisprofielByKvkNummer",
                 method="GET",
                 data=None,
                 kvkNummer=kvkNummer,
