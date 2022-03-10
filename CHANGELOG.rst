@@ -2,7 +2,7 @@
 Changelog
 =========
 
-1.0.0 (2022-03-??)
+1.0.0 (2022-03-10)
 ==================
 
 Final fixes/improvements for the 1.0.0 release

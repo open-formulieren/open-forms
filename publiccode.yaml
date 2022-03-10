@@ -8,7 +8,7 @@ name: Open Forms Builder and API
 url: 'http://github.com/open-formulieren/open-forms.git'
 softwareType: standalone/backend
 softwareVersion: 1.0.0
-releaseDate: 't.b.d.'
+releaseDate: '2022-03-10'
 logo: 'https://github.com/open-formulieren/open-forms/blob/master/docs/logo.svg'
 platforms:
   - web
