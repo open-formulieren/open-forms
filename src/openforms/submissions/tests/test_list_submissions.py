@@ -97,6 +97,7 @@ class SubmissionListTests(SubmissionsMixin, APITestCase):
                 "hasPaid": False,
                 "amount": None,
             },
+            "isAuthenticated": False,
         }
 
         self.assertEqual(

@@ -364,6 +364,10 @@ class Submission(models.Model):
         self.save(update_fields=update_fields)
 
     @property
+    def is_authenticated(self):
+        return bool(self.auth_plugin)
+
+    @property
     def is_completed(self):
         return bool(self.completed_on)
 
