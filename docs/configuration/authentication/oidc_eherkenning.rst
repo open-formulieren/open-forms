@@ -9,9 +9,9 @@ Open Formulieren ondersteunt eHerkenning login voor ondernemers via het OpenID C
 Ondernemers kunnen op die manier inloggen op Open Formulieren met hun eHerkenning account. In deze
 flow:
 
-1. Klikt een gebruiker in een formulier op de knop *Inloggen met eHerkenning via OpenID Connect*
+1. Klikt een gebruiker in een formulier op de knop *Inloggen met eHerkenning*
 2. De gebruiker wordt via de omgeving van de OpenID Connect provider (bijv. Keycloak) naar eHerkenning geleid,
-   waar de gebruiker kan inloggen (met eventuele Multi Factor Authentication)
+   waar de gebruiker kan inloggen
 3. eHerkenning stuurt de gebruiker terug naar de OIDC omgeving, die op zijn beurt de gebruiker weer terugstuurt naar Open Formulieren
 4. De gebruiker is ingelogd en kan verder met het invullen van het formulier
 
@@ -26,7 +26,7 @@ maken in de omgeving van de OpenID Connect provider.
 Voor de **Redirect URI** vul je ``https://open-formulieren.gemeente.nl/eherkenning-oidc/callback/`` in,
 waarbij je ``open-formulieren.gemeente.nl`` vervangt door het relevante domein.
 
-Aan het eind van dit proces moet je de volgende gegevens hebben (on premise):
+Aan het eind van dit proces moet je de volgende gegevens hebben:
 
 * Server adres, bijvoorbeeld ``login.gemeente.nl``
 * Client ID, bijvoorbeeld ``a7d14516-8b20-418f-b34e-25f53c930948``

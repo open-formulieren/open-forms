@@ -27,7 +27,7 @@ container and the browser, add the following entry to your `/etc/hosts` file:
 
 ## Load fixtures
 
-Before the DigiD login via OIDC can be tested, two fixtures need to be loaded.
+Before the DigiD login via OIDC can be tested, a fixture needs to be loaded.
 Assuming the docker containers specified in `docker-compose.yml` in the root directory
 are running, run the following commands:
 

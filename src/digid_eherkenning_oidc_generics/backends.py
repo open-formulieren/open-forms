@@ -41,9 +41,8 @@ class OIDCAuthenticationBackend(_OIDCAuthenticationBackend):
 
         if (claim_name := self.get_settings(self.claim_name_field)) not in claims:
             logger.error(
-                "`identifier_claim_name={claim_name}` not in OIDC claims, cannot proceed with authentication".format(
-                    claim_name=claim_name
-                )
+                "`identifier_claim_name=%s` not in OIDC claims, cannot proceed with authentication",
+                claim_name,
             )
             return False
         return True

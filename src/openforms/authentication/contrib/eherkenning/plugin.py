@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from furl import furl
 from rest_framework.reverse import reverse
 
-from openforms.contrib.eherkenning.utils import get_eherkenning_logo
+from openforms.contrib.digid_eherkenning.utils import get_eherkenning_logo
 from openforms.forms.models import Form
 
 from ...base import BasePlugin, LoginLogo
@@ -101,7 +101,7 @@ class EHerkenningAuthentication(AuthenticationBasePlugin):
     session_key = EHERKENNING_AUTH_SESSION_KEY
 
     def get_logo(self, request) -> Optional[LoginLogo]:
-        return get_eherkenning_logo(request, self.get_label())
+        return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))
 
 
 @register("eidas")

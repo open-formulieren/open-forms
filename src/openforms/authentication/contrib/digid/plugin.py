@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from furl import furl
 from rest_framework.reverse import reverse
 
-from openforms.contrib.digid.utils import get_digid_logo
+from openforms.contrib.digid_eherkenning.utils import get_digid_logo
 from openforms.forms.models import Form
 
 from ...base import BasePlugin, LoginLogo
@@ -81,4 +81,4 @@ class DigidAuthentication(BasePlugin):
         return HttpResponseRedirect(form_url)
 
     def get_logo(self, request) -> Optional[LoginLogo]:
-        return get_digid_logo(request, self.get_label())
+        return LoginLogo(title=self.get_label(), **get_digid_logo(request))

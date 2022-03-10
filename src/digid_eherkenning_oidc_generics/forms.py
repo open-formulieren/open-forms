@@ -37,7 +37,7 @@ class OpenIDConnectBaseConfigForm(OpenIDConnectConfigForm):
                 raise ValidationError(
                     _(
                         "{plugin_identifier} is selected as authentication backend "
-                        "for one or more Forms, please remove this backend from these "
+                        "for one or more forms, please remove this backend from these "
                         "forms before disabling this authentication backend."
                     ).format(plugin_identifier=self.plugin_identifier)
                 )

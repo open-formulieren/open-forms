@@ -11,11 +11,13 @@ from digid_eherkenning_oidc_generics.models import (
     OpenIDConnectEHerkenningConfig,
     OpenIDConnectPublicConfig,
 )
-from openforms.authentication.base import BasePlugin, LoginLogo
-from openforms.contrib.digid.utils import get_digid_logo
-from openforms.contrib.eherkenning.utils import get_eherkenning_logo
+from openforms.contrib.digid_eherkenning.utils import (
+    get_digid_logo,
+    get_eherkenning_logo,
+)
 from openforms.forms.models import Form
 
+from ...base import BasePlugin, LoginLogo
 from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...exceptions import InvalidCoSignData
 from ...registry import register
@@ -104,7 +106,7 @@ class DigiDOIDCAuthentication(OIDCAuthentication):
         return "DigiD"
 
     def get_logo(self, request) -> Optional[LoginLogo]:
-        return get_digid_logo(request, self.get_label())
+        return LoginLogo(title=self.get_label(), **get_digid_logo(request))
 
 
 @register("eherkenning_oidc")
@@ -120,4 +122,4 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication):
         return "eHerkenning"
 
     def get_logo(self, request) -> Optional[LoginLogo]:
-        return get_eherkenning_logo(request, self.get_label())
+        return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))
