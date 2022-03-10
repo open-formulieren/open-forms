@@ -334,13 +334,6 @@ class GlobalConfiguration(SingletonModel):
     )
 
     # debug/feature flags
-    enable_react_form = models.BooleanField(
-        _("enable React form page"),
-        default=True,
-        help_text=_(
-            "If enabled, the admin page to create forms will use the new React page."
-        ),
-    )
     enable_demo_plugins = models.BooleanField(
         _("enable demo plugins"),
         default=False,
