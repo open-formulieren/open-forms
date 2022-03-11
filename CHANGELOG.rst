@@ -2,6 +2,16 @@
 Changelog
 =========
 
+1.0.2 (2022-03-11)
+==================
+
+Fixed some issues with the confirmation PDF generation
+
+* [#1423] The registration reference is not available yet at PDF generation time,
+  removed it from the template
+* [#1423] Fixed an issue with static file resolution while rendering PDFs, causing the
+  styling to be absent
+
 1.0.1 (2022-03-11)
 ==================
 
