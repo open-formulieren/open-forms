@@ -2,11 +2,11 @@
 {% load i18n static openforms admin_urls %}
 
 {% block extrastyle %}
-    {{ block.super }}
     {% if use_react %}
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" href="{% static 'bundles/core-css.css' %}">
     {% endif %}
+    {{ block.super }}
 {% endblock %}
 
 {% block content_title %}{% endblock %}
