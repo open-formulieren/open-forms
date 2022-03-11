@@ -37,6 +37,9 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
   --default-button-hover-bg: #{$color_darkest};
   --close-button-bg: #{$color_primary_light};
   --close-button-hover-bg: #{$color_dark};
+
+  --object-tools-bg: #888;
+  --object-tools-hover-bg: #{$color_dark};
 }
 
 /* Overrides */
