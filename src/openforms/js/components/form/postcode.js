@@ -11,7 +11,8 @@ class PostcodeField extends TextField {
             inputMask: '9999 AA',
             validateOn: 'blur',
             validate: {
-              customMessage: 'Invalid Postcode'
+              customMessage: 'Invalid Postcode',
+              pattern: '^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$',
             }
         }, ...extend);
     }
