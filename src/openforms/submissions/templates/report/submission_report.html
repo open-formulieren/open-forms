@@ -31,9 +31,13 @@
                 <p>{% blocktrans with submission_date=report.submission.completed_on trimmed %}
                     Submitted on: {{ submission_date }}
                 {% endblocktrans %}</p>
+                {% comment %}
+                Disabled - PDF generation runs before registration, so there is no reference yet.
+                See #1424 for the open issue.
                 <p>{% blocktrans with ref=report.submission.public_reference trimmed %}
                     Your reference is: {{ ref }}
                 {% endblocktrans %}</p>
+                {% endcomment %}
             </section>
 
             {% for step in report.steps %}
