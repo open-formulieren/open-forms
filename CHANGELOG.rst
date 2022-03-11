@@ -2,6 +2,11 @@
 Changelog
 =========
 
+1.0.1 (2022-03-11)
+==================
+
+Fixed some unintended CSS style overrides in the admin.
+
 1.0.0 (2022-03-10)
 ==================
 
