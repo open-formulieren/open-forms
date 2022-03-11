@@ -9,6 +9,7 @@ import customTemplates from './customTemplates';
 Templates.current = customTemplates;
 
 const maxFileUploadSize = JSON.parse(document.getElementById('setting-MAX_FILE_UPLOAD_SIZE').textContent);
+const formFieldsRequiredDefault = JSON.parse(document.getElementById('config-REQUIRED_DEFAULT').textContent);
 
 const BUILDER_OPTIONS = {
     builder: {
@@ -70,6 +71,7 @@ const BUILDER_OPTIONS = {
     },
     evalContext: {
         serverUploadLimit: maxFileUploadSize,
+        requiredDefault: formFieldsRequiredDefault,
     },
 };
 

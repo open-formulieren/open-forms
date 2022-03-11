@@ -31,6 +31,7 @@ from openforms.registrations.registry import register as registration_register
 from openforms.submissions.api.fields import URLRelatedField
 from openforms.utils.admin import SubmitActions
 
+from ...config.models import GlobalConfiguration
 from ..constants import ConfirmationEmailOptions, LogicActionTypes, PropertyTypes
 from ..models import (
     Form,
@@ -177,6 +178,7 @@ class FormSerializer(serializers.ModelSerializer):
         required=False, allow_null=True
     )
     is_deleted = serializers.BooleanField(source="_is_deleted", required=False)
+    required_fields_with_asterisk = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Form
@@ -209,6 +211,7 @@ class FormSerializer(serializers.ModelSerializer):
             "confirmation_email_template",
             "confirmation_email_option",
             "display_main_website_link",
+            "required_fields_with_asterisk",
         )
         # allowlist for anonymous users
         public_fields = (
@@ -227,6 +230,7 @@ class FormSerializer(serializers.ModelSerializer):
             "show_progress_indicator",
             "maintenance_mode",
             "active",
+            "required_fields_with_asterisk",
         )
         extra_kwargs = {
             "uuid": {
@@ -362,6 +366,10 @@ class FormSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(detail) from e
         # serializer does some normalization, so make sure to update the data
         attrs[options_field] = serializer.data
+
+    def get_required_fields_with_asterisk(self, obj) -> bool:
+        config = GlobalConfiguration.get_solo()
+        return config.form_display_required_with_asterisk
 
 
 FormSerializer.__doc__ = FormSerializer.__doc__.format(

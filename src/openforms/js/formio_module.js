@@ -21,6 +21,7 @@ import LicensePlate from './components/form/licenseplate';
 import CoSignField from './components/form/coSign';
 import NpFamilyMembers from './components/form/np-family-members';
 import ColumnField from './components/form/columns';
+import WebformBuilder from './components/formio_builder/WebformBuilder';
 
 const FormIOModule = {
   components: {
@@ -48,6 +49,9 @@ const FormIOModule = {
     npFamilyMembers: NpFamilyMembers,
     columns: ColumnField,
   },
+  builders: {
+    webform: WebformBuilder,
+  }
 };
 
 export default FormIOModule;
