@@ -123,7 +123,6 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
                 "classes": ("collapse",),
                 "fields": (
                     "display_sdk_information",
-                    "enable_react_form",
                     "enable_demo_plugins",
                     "default_test_bsn",
                     "default_test_kvk",

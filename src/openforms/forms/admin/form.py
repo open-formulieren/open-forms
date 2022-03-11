@@ -9,7 +9,6 @@ from django.utils.translation import ngettext, ugettext_lazy as _
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 from rest_framework.exceptions import ValidationError
 
-from openforms.config.models import GlobalConfiguration
 from openforms.registrations.admin import RegistrationBackendFieldMixin
 
 from ...payments.admin import PaymentBackendChoiceFieldMixin
@@ -106,25 +105,12 @@ class FormAdmin(
         "get_registration_backend_display",
         "get_object_actions",
     )
-    inlines = (FormStepInline,)
     prepopulated_fields = {"slug": ("name",)}
     actions = ["make_copies", "set_to_maintenance_mode", "remove_from_maintenance_mode"]
     list_filter = ("active", "maintenance_mode", FormDeletedListFilter)
     search_fields = ("name", "internal_name")
 
     change_list_template = "admin/forms/form/change_list.html"
-
-    def use_react(self, request):
-        if not hasattr(request, "_use_react_form_crud"):
-            config = GlobalConfiguration.get_solo()
-            request._use_react_form_crud = config.enable_react_form
-        return request._use_react_form_crud
-
-    def render_change_form(
-        self, request, context, add=False, change=False, form_url="", obj=None
-    ):
-        context.update({"use_react": self.use_react(request)})
-        return super().render_change_form(request, context, add, change, form_url, obj)
 
     def changelist_view(self, request, extra_context=None):
         context = {
@@ -153,11 +139,6 @@ class FormAdmin(
     anno_name.admin_order_field = "anno_name"
     anno_name.short_description = _("name")
 
-    def get_inline_instances(self, request, *args, **kwargs):
-        if self.use_react(request):
-            return []
-        return super().get_inline_instances(request, *args, **kwargs)
-
     def get_form(self, request, *args, **kwargs):
         if kwargs.get("change"):
             # Display a warning if duplicate keys are used in form definitions
@@ -180,16 +161,13 @@ class FormAdmin(
                     level=messages.WARNING,
                 )
 
-        if self.use_react(request):
-            # no actual changes to the fields are triggered, we're only ending up here
-            # because of the copy/export actions.
-            kwargs["fields"] = ()
+        # no actual changes to the fields are triggered, we're only ending up here
+        # because of the copy/export actions.
+        kwargs["fields"] = ()
         return super().get_form(request, *args, **kwargs)
 
     def get_prepopulated_fields(self, request, obj=None):
-        if self.use_react(request):
-            return {}
-        return super().get_prepopulated_fields(request, obj=obj)
+        return {}
 
     def response_post_save_change(self, request, obj):
         if "_copy" in request.POST:
