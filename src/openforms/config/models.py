@@ -150,18 +150,19 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
     form_fields_required_default = models.BooleanField(
-        verbose_name=_("form fields required default"),
+        verbose_name=_("Mark form fields 'required' by default"),
         default=False,
         help_text=_(
             "Whether the checkbox 'required' on form fields should be checked by default."
         ),
     )
     form_display_required_with_asterisk = models.BooleanField(
-        verbose_name=_("form display required with asterisk"),
+        verbose_name=_("Mark required fields with asterisks"),
         default=True,
         help_text=_(
-            "Whether required fields should be displayed with an asterisk. "
-            "If unchecked, optional fields will be marked with '(optional)'."
+            "If checked, required fields are marked with an asterisk and optional "
+            "fields are unmarked. If unchecked, optional fields will be marked with "
+            "'(optional)' and required fields are unmarked."
         ),
     )
 

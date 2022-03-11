@@ -62,6 +62,8 @@ alleen zichtbaar wordt indien als ``Stelling`` de waarde ``anders`` is gekozen.
     :width: 49%
 
 
+.. _manual_form_fields_validation:
+
 Validatie
 ---------
 
@@ -72,31 +74,36 @@ Validatie
   valideren. De waarde van het veld wordt naar de plugin gestuurd en 
   gevalideerd.
 
-**Stijl van verplichte velden in formulieren**
-
-Bij het aanmaken van een formulier worden velden standaard niet als verplicht gemarkeerd.
-Om een veld verplicht te maken, moet je het checkbox 'verplicht' in de editor van de component aanvinken.
-Alle velden in een formulier die zijn gemarkeerd als verplicht, worden in de UI weergegeven met een rood asterisk
-rechts van het label.
-
-Dit standaardgedrag kan worden gewijzigd. Onder **Admin** > **Configuratie** > **Algemene configuratie** staan er twee
-opties:
-
-* **Formuliervelden verplicht standaard**
-    Als dit checkbox is aangevinkt, zijn velden standaard verplicht.
-    Dit betekent dat om ze optioneel te maken, moet je de checkbox 'verplicht' uitvinken.
-
-* **Formulierweergave verplicht met asterisk**
-    Als dit checkbox niet is aangevinkt, hebben verplichte velden geen asterisk meer
-    naast het label. Optionele velden hebben dan '(optioneel)' naast het label.
-
-
 Registratie
 -----------
 
-* **Registration attribute**: Indien u de waarde van dit veld wilt doorzetten 
-  naar het achterliggende registratie systeem, dan kunt u hier een attribuut 
+* **Registration attribute**: Indien u de waarde van dit veld wilt doorzetten
+  naar het achterliggende registratie systeem, dan kunt u hier een attribuut
   kiezen dat beschikbaar is in het achterliggende registratie systeem.
+
+
+Globale configuratieopties
+==========================
+
+Stijl van verplichte velden in formulieren
+------------------------------------------
+
+Bij het aanmaken van een formulier zijn velden standaard "optioneel" (in tegenstelling
+tot "verplicht"), zie :ref:`manual_form_fields_validation`. Standaard worden verplichte
+velden weergegeven met een asterisk in de frontend.
+
+U kunt dit standaardgedrag aanpassen. Onder **Admin** > **Configuratie** >
+**Algemene configuratie** > *Standaardformulieropties* vindt u:
+
+* **Formulierenvelden zijn standaard 'verplicht'**
+
+  Als dit checkbox is aangevinkt, zijn velden standaard verplicht. Om ze dan optioneel
+  te maken, moet u de checkbox 'verplicht' uitvinken.
+
+* **Markeer verplichte velden met een asterisk**
+
+  Als deze checkbox uitgevinkt is, dan hebben verplichte velden geen asterisk meer
+  naast het label. Optionele velden hebben dan wel '(optioneel)' naast het label.
 
 
 Tekstveld
