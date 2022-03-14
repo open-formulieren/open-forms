@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 from django.test import override_settings
 from django.urls import reverse
 
@@ -8,7 +6,6 @@ from django_webtest import WebTest
 from digid_eherkenning_oidc_generics.models import OpenIDConnectPublicConfig
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.models import Form
 from openforms.forms.tests.factories import FormFactory
 
 default_config = dict(
@@ -41,58 +38,6 @@ class DigiDOIDCFormAdminTests(WebTest):
             GlobalConfiguration.get_solo().delete()
 
         self.addCleanup(_cleanup)
-
-    @patch(
-        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
-        return_value=OpenIDConnectPublicConfig(**default_config),
-    )
-    def test_digid_oidc_enabled(self, *m):
-        response = self.app.get(reverse("admin:forms_form_add"))
-
-        form = response.form
-
-        form["name"] = "testform"
-        form["slug"] = "testform"
-        form["authentication_backends"] = "digid_oidc"
-
-        response = form.submit()
-
-        self.assertEqual(response.status_code, 302)
-
-        self.assertTrue(Form.objects.exists())
-
-        form = Form.objects.get()
-        self.assertEqual(form.authentication_backends, ["digid_oidc"])
-
-    @patch(
-        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
-        return_value=OpenIDConnectPublicConfig(**default_config),
-    )
-    @patch(
-        "openforms.plugins.registry.GlobalConfiguration.get_solo",
-        return_value=GlobalConfiguration(
-            plugin_configuration={
-                "authentication": {
-                    "digid_oidc": {"enabled": False},
-                },
-            },
-            enable_react_form=False,
-        ),
-    )
-    def test_digid_oidc_not_enabled(self, *m):
-        response = self.app.get(reverse("admin:forms_form_add"))
-
-        form = response.form
-
-        form["name"] = "testform"
-        form["slug"] = "testform"
-        form["authentication_backends"] = "digid_oidc"
-
-        response = form.submit()
-
-        self.assertEqual(response.status_code, 200)
-
-        self.assertFalse(Form.objects.exists())
 
     def test_digid_oidc_disable_allowed(self):
         # Patching `get_solo()` doesn't seem to work when retrieving the change_form
