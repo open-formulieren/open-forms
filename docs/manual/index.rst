@@ -5,7 +5,7 @@ Manual
 ======
 
 This part of the documentation is for meant for editors. Are you looking for
-more technical configuration of Open Forms? Check out the 
+more technical configuration of Open Forms? Check out the
 :ref:`configuration_index`.
 
 .. toctree::
@@ -16,3 +16,4 @@ more technical configuration of Open Forms? Check out the
    forms/index
    submissions
    templates
+   mtls
