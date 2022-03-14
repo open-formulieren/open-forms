@@ -169,6 +169,10 @@
             [
                 "zgw_consumers",
                 "service"
+            ],
+            [
+                "zgw_consumers",
+                "certificate"
             ]
         ]
     }
