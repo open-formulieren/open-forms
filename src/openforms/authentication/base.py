@@ -65,6 +65,12 @@ class BasePlugin(AbstractBasePlugin):
             request=request,
         )
 
+    def logout(self, request: HttpRequest):
+        """
+        Can be overridden to implement custom logout behaviour
+        """
+        pass
+
     def get_login_info(self, request: HttpRequest, form: Form) -> LoginInfo:
         info = LoginInfo(
             self.identifier,

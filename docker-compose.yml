@@ -8,14 +8,20 @@ services:
     volumes:
       - ./docker-init-db.sql:/docker-entrypoint-initdb.d/init_db.sql
       - db:/var/lib/postgresql/data
+    networks:
+      - open-forms-dev
 
   redis:
     image: redis:6
+    networks:
+      - open-forms-dev
 
   sdk:
     image: openformulieren/open-forms-sdk
     ports:
     - 8001:8080
+    networks:
+      - open-forms-dev
 
   busybox:
     image: busybox
@@ -48,9 +54,11 @@ services:
       - OPENFORMS_LOCATION_CLIENT=${OPENFORMS_LOCATION_CLIENT:-openforms.contrib.bag.client.BAGClient}
       - TWO_FACTOR_FORCE_OTP_ADMIN=0
       - TWO_FACTOR_PATCH_ADMIN=0
+      - CORS_ALLOW_ALL_ORIGINS=${CORS_ALLOW_ALL_ORIGINS:-false}
       # Needed for Celery Flower to match the TIME_ZONE configured in the
       # settings used by workers and beat containers.
       - TZ=Europe/Amsterdam
+      - CSP_REPORT_ONLY=yes
     volumes:
       - private_media:/app/private-media
     ports:
@@ -58,6 +66,8 @@ services:
     depends_on:
       - db
       - sdk
+    networks:
+      - open-forms-dev
 
   nginx:
     image: nginx
@@ -68,6 +78,8 @@ services:
       - "9000:80"
     depends_on:
       - web
+    networks:
+      - open-forms-dev
 
   celery:
     build: *web_build
@@ -77,6 +89,8 @@ services:
     depends_on:
       - db
       - redis
+    networks:
+      - open-forms-dev
 
   celery-beat:
     build: *web_build
@@ -86,6 +100,8 @@ services:
     depends_on:
       - db
       - redis
+    networks:
+      - open-forms-dev
 
   celery-flower:
     build: *web_build
@@ -97,7 +113,13 @@ services:
     depends_on:
       - redis
       - celery
+    networks:
+      - open-forms-dev
 
 volumes:
   db:
   private_media:
+
+networks:
+  open-forms-dev:
+    name: open-forms-dev

@@ -9,6 +9,8 @@ services:
     volumes:
       - ./camunda/0001-init-db.sh:/docker-entrypoint-initdb.d/0001-init-db.sh
       - postgres-data:/var/lib/postgresql/data
+    networks:
+      - open-forms-dev
 
   camunda:
     build:
@@ -25,8 +27,14 @@ services:
       - WAIT_FOR=postgres:5432
     ports:
       - "${CAMUNDA_PORT:-8080}:8080"
+    networks:
+      - open-forms-dev
     depends_on:
       - postgres
 
 volumes:
   postgres-data:
+
+networks:
+  open-forms-dev:
+    name: open-forms-dev

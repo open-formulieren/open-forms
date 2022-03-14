@@ -257,7 +257,7 @@ maykin-json-logic-py @ git+https://github.com/maykinmedia/json-logic-py.git@1ceb
     # via -r requirements/base.in
 mozilla-django-oidc==1.2.4
     # via mozilla-django-oidc-db
-mozilla-django-oidc-db==0.7.2
+mozilla-django-oidc-db @ git+https://github.com/maykinmedia/mozilla-django-oidc-db.git@0e8bc4f3d0437eaf01c3e0885f03e28450ced83c
     # via -r requirements/base.in
 o365==2.0.16
     # via -r requirements/base.in

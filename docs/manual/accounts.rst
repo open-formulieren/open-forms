@@ -79,7 +79,7 @@ Nieuwe gebruiker aanmaken
 Tweestapsauthenticatie herstellen
 ---------------------------------
 
-Als beheerder kunt u de tweestapsauthenticatie van een andere gebruiker opnieuw 
+Als beheerder kunt u de tweestapsauthenticatie van een andere gebruiker opnieuw
 instellen.
 
 1. Navigeer naar **Accounts** > **TOTP devices**.

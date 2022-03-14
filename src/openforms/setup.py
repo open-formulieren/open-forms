@@ -22,6 +22,7 @@ import portalocker
 import redis
 from django_redis import get_redis_connection
 from dotenv import load_dotenv
+from mozilla_django_oidc import views
 from requests import Session
 from self_certifi import load_self_signed_certs as _load_self_signed_certs
 
@@ -41,6 +42,7 @@ def setup_env():
 
     load_self_signed_certs()
     monkeypatch_requests()
+    monkeypatch_mozilla_django_oidc_get_from_settings()
 
 
 def load_self_signed_certs() -> None:
@@ -87,6 +89,25 @@ def load_self_signed_certs() -> None:
         sys.exit(1)
 
     _certs_initialized = True
+
+
+def monkeypatch_mozilla_django_oidc_get_from_settings():
+    def get_next_url(request, redirect_field_name):
+        """
+        `mozilla-django-oidc` uses `OIDC_REDIRECT_ALLOWED_HOSTS` to determine
+        whether a redirect is allowed. This is monkeypatched to bring it in line
+        with the CORS policy
+        """
+        from openforms.utils.redirect import allow_redirect_url
+
+        next_url = request.GET.get(redirect_field_name)
+        if next_url:
+            # Check if redirect is allowed with CORS policy, ignore for relative URLs
+            if allow_redirect_url(next_url) or next_url.startswith("/"):
+                return next_url
+        return None
+
+    views.get_next_url = get_next_url
 
 
 def monkeypatch_requests():

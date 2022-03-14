@@ -159,6 +159,7 @@ INSTALLED_APPS = [
     "stuf.stuf_zds",
     "mozilla_django_oidc",
     "mozilla_django_oidc_db",
+    "digid_eherkenning_oidc_generics",
     "django_filters",
     "csp",
     "cspreports",
@@ -202,6 +203,7 @@ INSTALLED_APPS = [
     "openforms.authentication.contrib.digid_mock.apps.DigidMockApp",
     "openforms.authentication.contrib.digid.apps.DigidApp",
     "openforms.authentication.contrib.eherkenning.apps.EHerkenningApp",
+    "openforms.authentication.contrib.digid_eherkenning_oidc.apps.DigiDEHerkenningOIDCApp",
     "openforms.payments.apps.PaymentsConfig",
     "openforms.payments.contrib.demo.apps.DemoApp",
     "openforms.payments.contrib.ogone.apps.OgoneApp",
@@ -940,6 +942,9 @@ OIDC_AUTHENTICATE_CLASS = "mozilla_django_oidc_db.views.OIDCAuthenticationReques
 OIDC_CALLBACK_CLASS = "openforms.accounts.oidc.views.OIDCCallbackView"
 MOZILLA_DJANGO_OIDC_DB_CACHE = "oidc"
 MOZILLA_DJANGO_OIDC_DB_CACHE_TIMEOUT = 5 * 60
+
+# ID token is required to enable OIDC logout
+OIDC_STORE_ID_TOKEN = True
 
 #
 # Email / payment

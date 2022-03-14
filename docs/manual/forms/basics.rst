@@ -1,3 +1,5 @@
+.. _manual_forms_basics:
+
 ===================
 Formulieren beheren
 ===================
