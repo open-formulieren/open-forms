@@ -367,6 +367,31 @@ class SubmissionTests(TestCase):
         )
         self.assertFalse(attachment.content.storage.exists(attachment.content.path))
 
+    def test_printable_data_with_empty_keys_to_include(self):
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "testField",
+                        "type": "textfield",
+                        "label": "Label",
+                        "showInEmail": False,
+                    },
+                ],
+            }
+        )
+        submission = SubmissionFactory.create()
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={"testField": "this is text in a text area"},
+            form_step__form_definition=form_definition,
+        )
+
+        printable_data = submission.get_printable_data(keys_to_include=[])
+
+        self.assertEqual(0, len(printable_data))
+
     def test_get_merged_appointment_data(self):
         form = FormFactory.create()
         form_definition_1 = FormDefinitionFactory.create(

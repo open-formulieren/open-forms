@@ -576,7 +576,7 @@ class Submission(models.Model):
 
     def get_printable_data(
         self,
-        limit_keys_to: Optional[List[str]] = None,
+        keys_to_include: Optional[List[str]] = None,
         as_html=False,
     ) -> List[Tuple[str, str]]:
         printable_data = []
@@ -585,7 +585,7 @@ class Submission(models.Model):
             component,
             value,
         ) in self.get_ordered_data_with_component_type().items():
-            if limit_keys_to and key not in limit_keys_to:
+            if keys_to_include is not None and key not in keys_to_include:
                 continue
 
             printable_data.append(
