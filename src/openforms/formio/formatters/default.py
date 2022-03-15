@@ -58,8 +58,14 @@ class FormioFormatter(AbstractBasePlugin):
 
     def normalise_value_to_list(self, component: Component, value: Any):
         multiple = component.get("multiple", False)
-        # note this breaks if multiple is true and value not a list
-        value = value if multiple else [value]
+        # this breaks if multiple is true and value not a list
+        if multiple:
+            if not isinstance(value, (tuple, list)):
+                # this happens if value is None
+                value = [value]
+        else:
+            value = [value]
+        # convert to list of useful values
         return [v for v in value if not self.is_empty_value(component, v)]
 
     def join_formatted_values(
