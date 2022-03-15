@@ -610,7 +610,7 @@ phonenumbers==8.12.29
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   maykin-django-two-factor-auth
-pillow==9.0.0
+pillow==9.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
