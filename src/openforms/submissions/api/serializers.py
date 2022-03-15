@@ -150,6 +150,14 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
         read_only=True,
     )
 
+    is_authenticated = serializers.BooleanField(
+        label=_("is authenticated"),
+        help_text=_(
+            "Whether the user was authenticated when creating this submission."
+        ),
+        read_only=True,
+    )
+
     class Meta:
         model = Submission
         fields = (
@@ -159,6 +167,7 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "steps",
             "next_step",
             "submission_allowed",
+            "is_authenticated",
             "payment",
             "form_url",
         )

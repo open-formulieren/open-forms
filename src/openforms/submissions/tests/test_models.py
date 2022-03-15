@@ -551,6 +551,15 @@ class SubmissionTests(TestCase):
 
         self.assertEqual(submission.get_auth_mode_display(), "digid (bsn,kvk)")
 
+    def test_is_authenticated(self):
+        with self.subTest("yes"):
+            submission = SubmissionFactory.build(auth_plugin="digid")
+            self.assertTrue(submission.is_authenticated)
+
+        with self.subTest("no"):
+            submission = SubmissionFactory.build(auth_plugin="")
+            self.assertFalse(submission.is_authenticated)
+
     @override_settings(
         PASSWORD_HASHERS=["django.contrib.auth.hashers.PBKDF2PasswordHasher"]
     )

@@ -97,6 +97,7 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
                     "hasPaid": False,
                     "amount": None,
                 },
+                "isAuthenticated": False,
             },
         )
         self.assertEqual(
@@ -122,6 +123,24 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
             ).count(),
             1,
         )
+
+    def test_submission_is_authenticated(self):
+        self._add_submission_to_session(self.submission)
+
+        with self.subTest("no"):
+            response = self.client.get(self.endpoint)
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertFalse(response.json()["isAuthenticated"])
+
+        with self.subTest("yes"):
+            self.submission.auth_plugin = "digid"
+            self.submission.save()
+
+            response = self.client.get(self.endpoint)
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertTrue(response.json()["isAuthenticated"])
 
 
 class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):

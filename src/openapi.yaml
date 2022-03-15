@@ -4541,6 +4541,10 @@ components:
           readOnly: true
           description: Whether the user is allowed to submit this form and whether
             the user should see the overview page.
+        isAuthenticated:
+          type: boolean
+          readOnly: true
+          description: Whether the user was authenticated when creating this submission.
         payment:
           allOf:
           - $ref: '#/components/schemas/NestedSubmissionPaymentDetail'
@@ -4555,6 +4559,7 @@ components:
       - form
       - formUrl
       - id
+      - isAuthenticated
       - nextStep
       - payment
       - steps
