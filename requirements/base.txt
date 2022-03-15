@@ -269,7 +269,7 @@ orderedmultidict==1.0.1
     # via furl
 phonenumbers==8.12.29
     # via maykin-django-two-factor-auth
-pillow==9.0.0
+pillow==9.0.1
     # via
     #   -r requirements/base.in
     #   cairosvg
