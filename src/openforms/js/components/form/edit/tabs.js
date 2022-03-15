@@ -93,6 +93,9 @@ const CHOICES_BASIC = {
                     key: 'label',
                     input: true,
                     type: 'textfield',
+                    // Needed to distinguish from the label of the component, since both have key 'label'.
+                    // Issue #1422
+                    isOptionLabel: true,
                 },
                 {
                     label: 'Value',
