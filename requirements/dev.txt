@@ -689,6 +689,7 @@ pyopenssl==19.1.0
     #   -r requirements/ci.txt
     #   josepy
     #   python3-saml
+    #   zgw-consumers
 pyparsing==2.4.7
     # via
     #   -c requirements/ci.txt
@@ -1051,7 +1052,7 @@ zeep==4.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-zgw-consumers==0.17.0
+zgw-consumers==0.18.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

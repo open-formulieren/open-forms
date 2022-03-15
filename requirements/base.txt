@@ -295,6 +295,7 @@ pyopenssl==19.1.0
     #   -r requirements/base.in
     #   josepy
     #   python3-saml
+    #   zgw-consumers
 pyphen==0.10.0
     # via weasyprint
 pyrsistent==0.17.3
@@ -428,7 +429,7 @@ xmltodict==0.12.0
     # via -r requirements/base.in
 zeep==4.1.0
     # via -r requirements/base.in
-zgw-consumers==0.17.0
+zgw-consumers==0.18.0
     # via -r requirements/base.in
 
 # The following packages are considered to be unsafe in a requirements file:
