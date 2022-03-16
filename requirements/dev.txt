@@ -170,6 +170,7 @@ django==3.2.12
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   ddt-api-calls
+    #   django-admin-index
     #   django-appconf
     #   django-axes
     #   django-camunda
@@ -205,7 +206,7 @@ django==3.2.12
     #   mozilla-django-oidc
     #   mozilla-django-oidc-db
     #   zgw-consumers
-django-admin-index==1.6.0
+django-admin-index==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
