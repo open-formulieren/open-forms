@@ -1,9 +1,10 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db.models.fields import CharField
 
-from ..plugins.constants import UNIQUE_ID_MAX_LENGTH
-from ..plugins.validators import PluginExistsValidator
-from ..utils.validators import UniqueValuesValidator
+from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
+from openforms.plugins.validators import PluginExistsValidator
+from openforms.utils.validators import UniqueValuesValidator
+
 from .registry import register
 
 
@@ -28,16 +29,3 @@ class BackendChoiceField(CharField):
         super().__init__(*args, **kwargs)
 
         self.validators.append(PluginExistsValidator(self.registry))
-
-    def formfield(self, **kwargs):
-        """
-        Force this into a choices field.
-        """
-        monkeypatch = not self.choices
-        if monkeypatch:
-            _old = self.choices
-            self.choices = self.registry.get_choices()
-        field = super().formfield(**kwargs)
-        if monkeypatch:
-            self.choices = _old
-        return field
