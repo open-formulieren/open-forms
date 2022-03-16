@@ -146,6 +146,7 @@ django==3.2.12
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   django-admin-index
     #   django-appconf
     #   django-axes
     #   django-camunda
@@ -178,7 +179,7 @@ django==3.2.12
     #   mozilla-django-oidc
     #   mozilla-django-oidc-db
     #   zgw-consumers
-django-admin-index==1.6.0
+django-admin-index==2.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
