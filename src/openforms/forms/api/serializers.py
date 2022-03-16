@@ -231,6 +231,7 @@ class FormSerializer(serializers.ModelSerializer):
             "maintenance_mode",
             "active",
             "required_fields_with_asterisk",
+            "submission_allowed",
         )
         extra_kwargs = {
             "uuid": {
