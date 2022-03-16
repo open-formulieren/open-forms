@@ -2,6 +2,17 @@
 Changelog
 =========
 
+1.0.3 (2022-03-16)
+==================
+
+Fixed some more bugs discovered during acceptance testing
+
+* [#1076] Fixed missing regex pattern validation for postcode component
+* [#1433] Fixed inclusion/exclusion of components in confirmation emails
+* [#1428] Fixed edge case in data processing for email registration backend
+* Updated Pillow dependency with CVE-2022-22817 fix
+* Bump required SDK release to 1.0.1
+
 1.0.2 (2022-03-11)
 ==================
 
