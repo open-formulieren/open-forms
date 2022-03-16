@@ -11,9 +11,9 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
 // override django CSS variables
 // see admin/static/admin/css/base.css for a reference
 :root {
-  --primary: #{$color_primary};
+  --primary: #{$color_primary} !important;
   --accent: #{$color_secondary};
-  --secondary: #{$color_primary};
+  --secondary: #{$color_primary} !important;
   --primary-fg: #{$color_lightest};
 
   --header-color: #{$color_secondary_light};
