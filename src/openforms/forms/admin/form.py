@@ -9,7 +9,6 @@ from django.utils.translation import ngettext, ugettext_lazy as _
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 from rest_framework.exceptions import ValidationError
 
-from openforms.config.models import GlobalConfiguration
 from openforms.registrations.admin import RegistrationBackendFieldMixin
 
 from ...payments.admin import PaymentBackendChoiceFieldMixin
@@ -17,6 +16,7 @@ from ...utils.expressions import FirstNotBlank
 from ..forms.form import FormImportForm
 from ..models import Form, FormDefinition, FormStep
 from ..utils import export_form, get_duplicates_keys_for_form, import_form
+from .mixins import FormioConfigMixin
 
 
 class FormStepInline(OrderedTabularInline):
@@ -92,6 +92,7 @@ class FormDeletedListFilter(admin.ListFilter):
 
 @admin.register(Form)
 class FormAdmin(
+    FormioConfigMixin,
     RegistrationBackendFieldMixin,
     PaymentBackendChoiceFieldMixin,
     OrderedInlineModelAdminMixin,
@@ -112,17 +113,6 @@ class FormAdmin(
     search_fields = ("name", "internal_name")
 
     change_list_template = "admin/forms/form/change_list.html"
-
-    def render_change_form(
-        self, request, context, add=False, change=False, form_url="", obj=None
-    ):
-        config = GlobalConfiguration.get_solo()
-        context.update(
-            {
-                "required_default": config.form_fields_required_default,
-            }
-        )
-        return super().render_change_form(request, context, add, change, form_url, obj)
 
     def changelist_view(self, request, extra_context=None):
         context = {

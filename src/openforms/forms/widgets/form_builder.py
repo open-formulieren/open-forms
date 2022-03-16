@@ -7,8 +7,8 @@ class FormBuilderWidget(Widget):
     class Media:
         css = {
             "all": (
-                "bundles/core-css.css",
                 "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css",
+                "bundles/core-css.css",
             ),
         }
         js = ("bundles/core-js.js",)

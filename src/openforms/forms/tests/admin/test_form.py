@@ -636,7 +636,7 @@ class FormEditTests(WebTest):
             ),
         )
 
-    @patch("openforms.forms.admin.form.GlobalConfiguration.get_solo")
+    @patch("openforms.forms.admin.mixins.GlobalConfiguration.get_solo")
     def test_required_field_configuration(self, m_solo):
         m_solo.return_value = GlobalConfiguration(form_fields_required_default=True)
 

@@ -8,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from ...utils.expressions import FirstNotBlank
 from ..forms import FormDefinitionForm
 from ..models import FormDefinition, FormStep
+from .mixins import FormioConfigMixin
 
 
 def delete_selected(modeladmin, request, queryset):
@@ -30,7 +31,7 @@ delete_selected.short_description = _("Delete selected %(verbose_name_plural)s")
 
 
 @admin.register(FormDefinition)
-class FormDefinitionAdmin(admin.ModelAdmin):
+class FormDefinitionAdmin(FormioConfigMixin, admin.ModelAdmin):
     form = FormDefinitionForm
     prepopulated_fields = {"slug": ("name",)}
     list_display = ("anno_name", "used_in_forms", "is_reusable")

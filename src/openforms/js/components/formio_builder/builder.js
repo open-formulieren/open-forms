@@ -3,95 +3,100 @@ import React, {useRef, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {FormBuilder, Templates} from 'react-formio';
 
+import jsonScriptToVar from '../../utils/json-script';
 import nlStrings from './translation';
 import customTemplates from './customTemplates';
 
 Templates.current = customTemplates;
 
-const maxFileUploadSize = JSON.parse(document.getElementById('setting-MAX_FILE_UPLOAD_SIZE').textContent);
-const formFieldsRequiredDefault = JSON.parse(document.getElementById('config-REQUIRED_DEFAULT').textContent);
 
-const BUILDER_OPTIONS = {
-    builder: {
-        basic: false,
-        advanced: false,
-        data: false,
-        layout: false,
-        premium: false,
+const getBuilderOptions = () => {
 
-        custom: {
-            default: true,
-            title: 'Formuliervelden',
-            weight: 0,
-            components: {
-                textfield: true,
-                textarea: true,
-                checkbox: true,
-                selectboxes: true,
-                select: true,
-                radio: true,
-                number: true,
-                currency: true,
-                email: true,
-                date: true,
-                time: true,
-                phoneNumber: true,
-                postcode: true,
-                file: true,
-                password: true,
+    const maxFileUploadSize = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE');
+    const formFieldsRequiredDefault = jsonScriptToVar('config-REQUIRED_DEFAULT');
+
+    return {
+        builder: {
+            basic: false,
+            advanced: false,
+            data: false,
+            layout: false,
+            premium: false,
+
+            custom: {
+                default: true,
+                title: 'Formuliervelden',
+                weight: 0,
+                components: {
+                    textfield: true,
+                    textarea: true,
+                    checkbox: true,
+                    selectboxes: true,
+                    select: true,
+                    radio: true,
+                    number: true,
+                    currency: true,
+                    email: true,
+                    date: true,
+                    time: true,
+                    phoneNumber: true,
+                    postcode: true,
+                    file: true,
+                    password: true,
+                }
+            },
+            custom_special: {
+                title: 'Special fields',
+                weight: 5,
+                components: {
+                    iban: true,
+                    licenseplate: true,
+                    bsn: true,
+                    npFamilyMembers: true,
+                    signature: true,
+                    coSign: true,
+                    map: true,
+                },
+            },
+            custom_layout: {
+                title: 'Opmaak',
+                weight: 5,
+                components: {
+                    content: true,
+                    fieldset: true,
+                    columns: true,
+                },
             }
         },
-        custom_special: {
-            title: 'Special fields',
-            weight: 5,
-            components: {
-                iban: true,
-                licenseplate: true,
-                bsn: true,
-                npFamilyMembers: true,
-                signature: true,
-                coSign: true,
-                map: true,
-            },
+        noDefaultSubmitButton: true,
+        language: 'nl',
+        i18n: {
+            nl: nlStrings
         },
-        custom_layout: {
-            title: 'Opmaak',
-            weight: 5,
-            components: {
-                content: true,
-                fieldset: true,
-                columns: true,
-            },
-        }
-    },
-    noDefaultSubmitButton: true,
-    language: 'nl',
-    i18n: {
-        nl: nlStrings
-    },
-    evalContext: {
-        serverUploadLimit: maxFileUploadSize,
-        requiredDefault: formFieldsRequiredDefault,
-    },
-    editors: {
-        ckeditor: {
-            settings: {
-                link: {
-                    decorators: {
-                        openInNewTab: {
-                            mode: 'manual',
-                            label: 'Open in a new tab',
-                            defaultValue: true,			// This option will be selected by default.
-                            attributes: {
-                                target: '_blank',
-                                rel: 'noopener noreferrer'
+        evalContext: {
+            serverUploadLimit: maxFileUploadSize,
+            requiredDefault: formFieldsRequiredDefault,
+        },
+        editors: {
+            ckeditor: {
+                settings: {
+                    link: {
+                        decorators: {
+                            openInNewTab: {
+                                mode: 'manual',
+                                label: 'Open in a new tab',
+                                defaultValue: true,			// This option will be selected by default.
+                                attributes: {
+                                    target: '_blank',
+                                    rel: 'noopener noreferrer'
+                                }
                             }
                         }
                     }
                 }
             }
         }
-    }
+    };
 };
 
 
@@ -113,6 +118,9 @@ const FormIOBuilder = ({ configuration, onChange, onComponentMutated, forceUpdat
     // re-renders that way for debugging purposes.
     const [rerenders, setRerenders] = useState(0);
 
+    // props need to be immutable to not end up in infinite loops
+    const [builderOptions] = useState(getBuilderOptions());
+
     // if an update must be forced, we mutate the ref state to point to the new
     // configuration, which causes the form builder to re-render the new configuration.
     useEffect(
@@ -124,23 +132,19 @@ const FormIOBuilder = ({ configuration, onChange, onComponentMutated, forceUpdat
         }
     );
 
+    const extraProps = {};
+
     if (onComponentMutated) {
-        return (
-            <FormBuilder
-                form={formRef.current}
-                options={BUILDER_OPTIONS}
-                onChange={formSchema => onChange(cloneDeep(formSchema))}
-                onSaveComponent={onComponentMutated.bind(null, 'changed')}
-                onDeleteComponent={onComponentMutated.bind(null, 'removed')}
-            />
-        );
+        extraProps.onSaveComponent = onComponentMutated.bind(null, 'changed');
+        extraProps.onDeleteComponent = onComponentMutated.bind(null, 'removed');
     }
 
     return (
         <FormBuilder
             form={formRef.current}
-            options={BUILDER_OPTIONS}
+            options={builderOptions}
             onChange={formSchema => onChange(cloneDeep(formSchema))}
+            {...extraProps}
         />
     );
 };
