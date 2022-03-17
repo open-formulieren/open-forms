@@ -1,5 +1,5 @@
 import uuid
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from django.contrib.auth import SESSION_KEY
 from django.urls import reverse
@@ -37,7 +37,7 @@ class LogoutTest(SubmissionsMixin, APITestCase):
         self.assertIn(AuthAttribute.bsn, self.client.session)
         self.assertIn(AuthAttribute.kvk, self.client.session)
 
-        with patch("openforms.authentication.views.register", register):
+        with patch("openforms.authentication.api.views.register", register):
             response = self.client.delete(reverse("api:logout"))
 
         self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
@@ -79,6 +79,14 @@ class SubmissionLogoutTest(SubmissionsMixin, APITestCase):
             self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
 
     def test_logout(self):
+        register = Registry()
+
+        register("plugin1")(Plugin)
+        plugin1 = register["plugin1"]
+        plugin1.provides_auth = AuthAttribute.bsn
+        logout_mock = Mock()
+        plugin1.logout = logout_mock
+
         # login admin user
         user = StaffUserFactory.create()
         self.client.force_login(user=user)
@@ -92,15 +100,20 @@ class SubmissionLogoutTest(SubmissionsMixin, APITestCase):
         }
         session.save()
 
-        login_submission = SubmissionFactory.create(completed=False, bsn="000000000")
-        other_submission = SubmissionFactory.create(completed=False, bsn="000000000")
+        login_submission = SubmissionFactory.create(
+            completed=False, bsn="000000000", auth_plugin="plugin1"
+        )
+        other_submission = SubmissionFactory.create(
+            completed=False, bsn="000000000", auth_plugin="plugin1"
+        )
 
         self._add_submission_to_session(login_submission)
         self._add_submission_to_session(other_submission)
 
         # call the endpoint
         url = reverse("api:submission-logout", kwargs={"uuid": login_submission.uuid})
-        response = self.client.delete(url)
+        with patch("openforms.authentication.api.views.register", register):
+            response = self.client.delete(url)
 
         self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
 
@@ -118,6 +131,9 @@ class SubmissionLogoutTest(SubmissionsMixin, APITestCase):
         self.assertTrue(login_submission.auth_attributes_hashed)
 
         self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)
+
+        # called logout() on the plugins
+        logout_mock.assert_called()
 
         # admin user still authenticated
         self.assertIn(SESSION_KEY, session)
