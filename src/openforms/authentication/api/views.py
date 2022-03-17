@@ -82,6 +82,7 @@ class SubmissionLogoutView(GenericAPIView):
     lookup_field = "uuid"
 
     @extend_schema(
+        operation_id="submission_session_destroy",
         summary=_("Delete session"),
         description=_(
             "Calling this endpoint will clear the current form and submission from the session."
