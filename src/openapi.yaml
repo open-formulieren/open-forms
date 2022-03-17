@@ -200,6 +200,27 @@ paths:
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
+  /api/v1/authentication/{uuid}/session:
+    delete:
+      operationId: submission_session_destroy
+      description: Calling this endpoint will clear the current form and submission
+        from the session.
+      summary: Delete session
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - authentication
+      responses:
+        '204':
+          description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/authentication/plugins:
     get:
       operationId: authentication_plugins_list
