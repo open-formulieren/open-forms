@@ -3,11 +3,17 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import authentication, permissions, serializers, status
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from openforms.submissions.utils import get_submissions_from_session
+from openforms.submissions.utils import (
+    get_submissions_from_session,
+    remove_submission_from_session,
+)
 
+from ...submissions.api.permissions import ActiveSubmissionPermission
+from ...submissions.models import Submission
 from ...utils.api.views import ListMixin
 from ..registry import register
 from .serializers import AuthPluginSerializer
@@ -61,4 +67,38 @@ class AuthenticationLogoutView(APIView):
             plugin.logout(request)
 
         request.session.flush()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class SubmissionLogoutView(GenericAPIView):
+    authentication_classes = ()
+    permission_classes = (ActiveSubmissionPermission,)
+    serializer_class = (
+        serializers.Serializer
+    )  # just to shut up some warnings in drf-spectacular
+
+    queryset = Submission.objects.all()
+    lookup_field = "uuid"
+
+    @extend_schema(
+        summary=_("Delete session"),
+        description=_(
+            "Calling this endpoint will clear the current form and submission from the session."
+        ),
+    )
+    @transaction.atomic()
+    def delete(self, request, *args, **kwargs):
+        submission = self.get_object()
+
+        remove_submission_from_session(submission, request.session)
+
+        # submissions = get_submissions_from_session(request.session)
+        # for submission in submissions:
+        #     submission.hash_identifying_attributes()
+        #     submission.save()
+        #
+        # for plugin in register.iter_enabled_plugins():
+        #     plugin.logout(request)
+
+        # request.session.flush()
         return Response(status=status.HTTP_204_NO_CONTENT)

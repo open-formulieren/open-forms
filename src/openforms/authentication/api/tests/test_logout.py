@@ -1,3 +1,4 @@
+import uuid
 from unittest.mock import patch
 
 from django.urls import reverse
@@ -5,6 +6,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
@@ -53,3 +55,43 @@ class LogoutTest(SubmissionsMixin, APITestCase):
         self.assertNotEqual(submission.bsn, "")
         # check that the submission is hashed
         self.assertNotEqual(submission.bsn, "000000000")
+
+
+class SubmissionLogoutTest(SubmissionsMixin, APITestCase):
+    def test_logout_requires_submission_in_session(self):
+        with self.subTest("fails when submission does not exist"):
+            url = reverse("api:submission-logout", kwargs={"uuid": uuid.uuid4()})
+            response = self.client.delete(url)
+            self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+        submission = SubmissionFactory.create(completed=False, bsn="000000000")
+        url = reverse("api:submission-logout", kwargs={"uuid": submission.uuid})
+
+        with self.subTest("fails when submission not in session"):
+            response = self.client.delete(url)
+            self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+        with self.subTest("success when submission in session"):
+            # now add it
+            self._add_submission_to_session(submission)
+            response = self.client.delete(url)
+            self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+
+    def test_logout(self):
+        submission = SubmissionFactory.create(completed=False, bsn="000000000")
+        url = reverse("api:submission-logout", kwargs={"uuid": submission.uuid})
+
+        self._add_submission_to_session(submission)
+
+        # call the endpoint
+        response = self.client.delete(url)
+
+        # not actually deleted
+        self.assertTrue(Submission.objects.filter(uuid=submission.uuid).exists())
+
+        self.assertNotIn(str(submission.uuid), self._get_session_submission_uuids())
+
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+        self.assertNotIn(AuthAttribute.bsn, self.client.session)
+        self.assertNotIn(AuthAttribute.kvk, self.client.session)
+        self.assertNotIn(AuthAttribute.pseudo, self.client.session)

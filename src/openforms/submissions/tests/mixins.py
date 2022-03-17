@@ -22,3 +22,7 @@ class SubmissionsMixin:
         session[SUBMISSIONS_SESSION_KEY] = []
         session[UPLOADS_SESSION_KEY] = []
         session.save()
+
+    def _get_session_submission_uuids(self):
+        session = self.client.session
+        return session.get(SUBMISSIONS_SESSION_KEY, [])
