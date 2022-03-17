@@ -15,6 +15,7 @@ from openforms.submissions.utils import (
 from ...submissions.api.permissions import ActiveSubmissionPermission
 from ...submissions.models import Submission
 from ...utils.api.views import ListMixin
+from ..constants import FORM_AUTH_SESSION_KEY
 from ..registry import register
 from .serializers import AuthPluginSerializer
 
@@ -92,13 +93,14 @@ class SubmissionLogoutView(GenericAPIView):
 
         remove_submission_from_session(submission, request.session)
 
-        # submissions = get_submissions_from_session(request.session)
-        # for submission in submissions:
-        #     submission.hash_identifying_attributes()
-        #     submission.save()
-        #
-        # for plugin in register.iter_enabled_plugins():
-        #     plugin.logout(request)
+        if FORM_AUTH_SESSION_KEY in request.session:
+            del request.session[FORM_AUTH_SESSION_KEY]
+
+        if not submission.auth_attributes_hashed:
+            submission.hash_identifying_attributes(save=True)
+
+        for plugin in register.iter_enabled_plugins():
+            plugin.logout(request)
 
         # request.session.flush()
         return Response(status=status.HTTP_204_NO_CONTENT)

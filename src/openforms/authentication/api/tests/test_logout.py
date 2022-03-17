@@ -1,16 +1,17 @@
 import uuid
 from unittest.mock import patch
 
+from django.contrib.auth import SESSION_KEY
 from django.urls import reverse
 
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from openforms.submissions.models import Submission
+from openforms.accounts.tests.factories import StaffUserFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
-from ...constants import AuthAttribute
+from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...registry import Registry
 from ...tests.test_registry import Plugin
 
@@ -78,20 +79,45 @@ class SubmissionLogoutTest(SubmissionsMixin, APITestCase):
             self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
 
     def test_logout(self):
-        submission = SubmissionFactory.create(completed=False, bsn="000000000")
-        url = reverse("api:submission-logout", kwargs={"uuid": submission.uuid})
+        # login admin user
+        user = StaffUserFactory.create()
+        self.client.force_login(user=user)
 
-        self._add_submission_to_session(submission)
+        # login form user
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "test",
+            "attribute": AuthAttribute.bsn,
+            "value": "000000000",
+        }
+        session.save()
+
+        login_submission = SubmissionFactory.create(completed=False, bsn="000000000")
+        other_submission = SubmissionFactory.create(completed=False, bsn="000000000")
+
+        self._add_submission_to_session(login_submission)
+        self._add_submission_to_session(other_submission)
 
         # call the endpoint
+        url = reverse("api:submission-logout", kwargs={"uuid": login_submission.uuid})
         response = self.client.delete(url)
 
-        # not actually deleted
-        self.assertTrue(Submission.objects.filter(uuid=submission.uuid).exists())
-
-        self.assertNotIn(str(submission.uuid), self._get_session_submission_uuids())
-
         self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
-        self.assertNotIn(AuthAttribute.bsn, self.client.session)
-        self.assertNotIn(AuthAttribute.kvk, self.client.session)
-        self.assertNotIn(AuthAttribute.pseudo, self.client.session)
+
+        login_submission.refresh_from_db()
+        other_submission.refresh_from_db()
+
+        # only login_submission is removed
+        uuids = self._get_session_submission_uuids()
+        self.assertNotIn(str(login_submission.uuid), uuids)
+        self.assertIn(str(other_submission.uuid), uuids)
+
+        # check that the submission is hashed
+        self.assertNotEqual(login_submission.bsn, "")
+        self.assertNotEqual(login_submission.bsn, "000000000")
+        self.assertTrue(login_submission.auth_attributes_hashed)
+
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)
+
+        # admin user still authenticated
+        self.assertIn(SESSION_KEY, session)
