@@ -103,5 +103,4 @@ class SubmissionLogoutView(GenericAPIView):
         for plugin in register.iter_enabled_plugins():
             plugin.logout(request)
 
-        # request.session.flush()
         return Response(status=status.HTTP_204_NO_CONTENT)
