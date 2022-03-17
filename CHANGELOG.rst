@@ -2,6 +2,18 @@
 Changelog
 =========
 
+1.0.4 (2022-03-17)
+==================
+
+Fixed a broken build and security vulnerabilities
+
+* [#1445] ``libexpat`` had some security vulnerabilities patched in Debian which lead to broken
+  XML parsing in the StUF-BG prefill plugin. This affected version 1.0.1 through 1.0.3, possibly
+  also 1.0.0.
+
+There are no Open Forms code changes, but this release and version bump includes the
+newer versions of the fixed OS-level dependencies and updates to Python 3.8.13.
+
 1.0.3 (2022-03-16)
 ==================
 
