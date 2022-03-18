@@ -61,6 +61,10 @@ $djai-border-width: 8px;
       }
     }
   }
+  
+  @at-root body.login #header {
+    padding-bottom: 15px !important;
+  }
 }
 
 /* Secondary submit row */
