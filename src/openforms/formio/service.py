@@ -40,5 +40,5 @@ def update_urls_in_place(configuration: dict, request: Request):
     for component in iter_components(configuration):
         if component.get("type") == "file":
             component["url"] = request.build_absolute_uri(
-                reverse("api:submissions:temporary-file-upload")
+                reverse("api:formio:temporary-file-upload")
             )

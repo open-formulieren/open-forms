@@ -459,6 +459,45 @@ paths:
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
+  /api/v1/formio/fileupload:
+    post:
+      operationId: formio_fileupload_create
+      description: |-
+        Bestandsuploadhandler voor het Form.io bestandsupload opslagtype 'url'.
+
+        Bestandsuploads worden tijdelijke opgeslagen en moeten gekoppeld worden aan een inzending.
+
+        Toegang tot dit endpoint vereist een actieve formulier inzending. Niet gekoppelde bestanden worden automatisch verwijderd na 2 dag(en).
+
+        De maximale toegestane upload-bestandsgrootte is `50,0 MB` voor deze instantie. Merk op dat dit inclusief multipart-metadata en boundaries is. De daadwerkelijke maximale bestandsgrootte is dus iets lager dan deze waarde.
+      summary: Create temporary file upload
+      tags:
+      - formio
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TemporaryFileUpload'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemporaryFileUpload'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+        '400':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/forms:
     get:
       operationId: forms_list
@@ -2395,6 +2434,7 @@ paths:
             schema:
               $ref: '#/components/schemas/TemporaryFileUpload'
         required: true
+      deprecated: true
       responses:
         '200':
           content:

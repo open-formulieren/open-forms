@@ -86,6 +86,7 @@ urlpatterns = [
                     "appointments/",
                     include("openforms.appointments.api.urls"),
                 ),
+                path("formio/", include("openforms.formio.api.urls")),
                 path("", include(router.urls)),
                 path("", include(forms_router.urls)),
                 path("", include(submissions_router.urls)),
