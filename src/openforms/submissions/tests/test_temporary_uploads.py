@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import RequestFactory, override_settings
+from django.utils.translation import gettext as _
 
 from django_capture_on_commit_callbacks import capture_on_commit_callbacks
 from freezegun import freeze_time
@@ -122,6 +123,24 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
         # added to session
         self.assertEqual([str(upload.uuid)], self.client.session[UPLOADS_SESSION_KEY])
+
+    def test_upload_empty(self):
+        self._add_submission_to_session(self.submission)
+
+        url = reverse("api:submissions:temporary-file-upload")
+        file = SimpleUploadedFile("my-file.txt", b"", content_type="text/plain")
+
+        response = self.client.post(
+            url,
+            {"file": file},
+            format="multipart",
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+        # NOTE formio displays the whole response text as message
+        self.assertEqual(response.content_type, "text/plain")
+        self.assertEqual(response.data, _("The submitted file is empty."))
 
     @override_settings(MAX_FILE_UPLOAD_SIZE=10)  # only allow 10 bytes upload size
     def test_upload_too_large(self):

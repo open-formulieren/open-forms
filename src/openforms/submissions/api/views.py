@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from django_sendfile import sendfile
 from drf_spectacular.utils import extend_schema, extend_schema_view
+from rest_framework import status
 from rest_framework.generics import DestroyAPIView, GenericAPIView
 from rest_framework.response import Response
 
@@ -20,7 +21,7 @@ from .permissions import (
     DownloadSubmissionReportPermission,
     OwnsTemporaryUploadPermission,
 )
-from .renderers import FileRenderer, PDFRenderer
+from .renderers import FileRenderer, JSONOrPlainTextRenderer, PDFRenderer
 from .serializers import TemporaryFileUploadSerializer
 
 
@@ -81,12 +82,23 @@ class TemporaryFileUploadView(GenericAPIView):
     serializer_class = TemporaryFileUploadSerializer
     authentication_classes = []
     permission_classes = [AnyActiveSubmissionPermission]
+    renderer_classes = [JSONOrPlainTextRenderer]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(
             data=request.data,
         )
-        serializer.is_valid(raise_exception=True)
+        if not serializer.is_valid():
+            messages = []
+            for sub_errors in serializer.errors.values():
+                messages.extend(sub_errors)
+            data = " ".join(messages)
+
+            # NOTE formio displays the whole response text as message
+            return Response(
+                data, status=status.HTTP_400_BAD_REQUEST, content_type="text/plain"
+            )
+
         file = serializer.validated_data["file"]
 
         # trim name part if necessary but keep the extension

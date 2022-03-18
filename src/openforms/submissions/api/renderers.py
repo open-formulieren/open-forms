@@ -21,3 +21,13 @@ class FileRenderer(renderers.BaseRenderer):
 
     def render(self, data, media_type=None, renderer_context=None):
         return data
+
+
+class JSONOrPlainTextRenderer(renderers.JSONRenderer):
+    def render(self, data, media_type=None, renderer_context=None):
+        if isinstance(data, str):
+            return data.encode("utf8")
+        else:
+            return super().render(
+                data, accepted_media_type=media_type, renderer_context=renderer_context
+            )
