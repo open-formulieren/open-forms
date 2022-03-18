@@ -82,3 +82,7 @@ class DigidAuthentication(BasePlugin):
 
     def get_logo(self, request) -> Optional[LoginLogo]:
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
+
+    def logout(self, request: HttpRequest):
+        if DIGID_AUTH_SESSION_KEY in request.session:
+            del request.session[DIGID_AUTH_SESSION_KEY]
