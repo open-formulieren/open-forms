@@ -53,6 +53,7 @@ class AuthenticationLogoutView(APIView):
         description=_(
             "Calling this endpoint will clear the current user session and delete the session cookie."
         ),
+        deprecated=True,  # replaced with the submission specific SubmissionLogoutView
     )
     @transaction.atomic()
     def delete(self, request, *args, **kwargs):

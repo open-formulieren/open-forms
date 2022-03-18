@@ -258,6 +258,7 @@ paths:
       - authentication
       security:
       - {}
+      deprecated: true
       responses:
         '204':
           description: No response body
