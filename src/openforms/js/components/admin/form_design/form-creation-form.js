@@ -94,7 +94,7 @@ const initialFormState = {
     availableAuthPlugins: [],
     availablePrefillPlugins: [],
     selectedAuthPlugins: [],
-    selectedAuthPluginAutoLogin: "",
+    autoLoginAuthenticationBackend: "",
     availablePaymentBackends: [],
     stepsToDelete: [],
     submitting: false,
@@ -183,6 +183,14 @@ function reducer(draft, action) {
                     draft.literals[fieldName].value = value;
                     break;
                 }
+                case 'autoLoginAuthenticationBackend': {
+                    if (draft.autoLoginAuthenticationBackend === value) {
+                        draft.autoLoginAuthenticationBackend = "";
+                    } else {
+                        draft.autoLoginAuthenticationBackend = value;
+                    }
+                    break;
+                }
                 default: {
                     throw new Error(`Unknown prefix: ${prefix}`);
                 }
@@ -217,15 +225,6 @@ function reducer(draft, action) {
                 draft.selectedAuthPlugins = draft.selectedAuthPlugins.filter(id => id !== pluginId);
             } else {
                 draft.selectedAuthPlugins = [...draft.selectedAuthPlugins, pluginId];
-            }
-            break;
-        }
-        case 'TOGGLE_AUTH_PLUGIN_AUTO_LOGIN': {
-            const pluginId = action.payload;
-            if (draft.selectedAuthPluginAutoLogin === pluginId) {
-                draft.selectedAuthPluginAutoLogin = "";
-            } else {
-                draft.selectedAuthPluginAutoLogin = pluginId;
             }
             break;
         }
@@ -628,7 +627,7 @@ const getFormData = async (formUuid, dispatch) => {
             type: 'FORM_LOADED',
             payload: {
                 selectedAuthPlugins: form.loginOptions.map((plugin, index) => plugin.identifier),
-                selectedAuthPluginAutoLogin: form.autoLoginAuthenticationBackend,
+                autoLoginAuthenticationBackend: form.autoLoginAuthenticationBackend,
                 form: form,
                 literals: literals,
             },
@@ -850,7 +849,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 }
             },
             authenticationBackends: state.selectedAuthPlugins,
-            autoLoginAuthenticationBackend: state.selectedAuthPluginAutoLogin,
+            autoLoginAuthenticationBackend: state.autoLoginAuthenticationBackend,
         };
 
         const createOrUpdate = state.newForm ? post : put;
@@ -997,14 +996,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         })
     };
 
-    const onAuthPluginAutoLoginChange = (event) => {
-        const pluginId = event.target.value;
-        dispatch({
-            type: 'TOGGLE_AUTH_PLUGIN_AUTO_LOGIN',
-            payload: pluginId,
-        })
-    };
-
     if (loading || state.submitting) {
         return (<Loader />);
     }
@@ -1068,8 +1059,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                             availableAuthPlugins={state.availableAuthPlugins}
                             selectedAuthPlugins={state.selectedAuthPlugins}
                             onAuthPluginChange={onAuthPluginChange}
-                            selectedAuthPluginAutoLogin={state.selectedAuthPluginAutoLogin}
-                            onAuthPluginAutoLoginChange={onAuthPluginAutoLoginChange}
+                            autoLoginAuthenticationBackend={state.autoLoginAuthenticationBackend}
                         />
                     </TabPanel>
 

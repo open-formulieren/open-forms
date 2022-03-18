@@ -50,8 +50,7 @@ const FormMetaFields = ({
     availableAuthPlugins,
     selectedAuthPlugins,
     onAuthPluginChange,
-    selectedAuthPluginAutoLogin,
-    onAuthPluginAutoLoginChange,
+    autoLoginAuthenticationBackend,
 }) => {
     const {
         uuid,
@@ -139,10 +138,11 @@ const FormMetaFields = ({
 
             <FormRow>
                 <AuthPluginAutoLoginField
-                    availableAuthPlugins={availableAuthPlugins}
-                    selectedAuthPlugins={selectedAuthPlugins}
-                    selectedAuthPlugin={selectedAuthPluginAutoLogin}
-                    onChange={onAuthPluginAutoLoginChange}
+                    availablePlugins={availableAuthPlugins}
+                    selectedPlugins={selectedAuthPlugins}
+                    selectedPlugin={autoLoginAuthenticationBackend}
+                    onChange={onChange}
+                    name="form.autoLoginAuthenticationBackend"
                 />
             </FormRow>
 

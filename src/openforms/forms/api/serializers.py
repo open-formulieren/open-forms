@@ -156,6 +156,10 @@ class FormSerializer(serializers.ModelSerializer):
     auto_login_authentication_backend = serializers.CharField(
         required=False,
         allow_blank=True,
+        help_text=_(
+            "The authentication backend to which the user will be automatically "
+            "redirected upon starting the form. The chosen backend must be present in `authentication_backends`"
+        ),
     )
 
     product = serializers.HyperlinkedRelatedField(
@@ -320,6 +324,8 @@ class FormSerializer(serializers.ModelSerializer):
             attrs, "payment_backend", "payment_backend_options", payment_register
         )
 
+        self.validate_auto_login_backend(attrs)
+
         confirmation_email_option = get_from_serializer_data_or_instance(
             "confirmation_email_option", attrs, self
         )
@@ -373,6 +379,26 @@ class FormSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(detail) from e
         # serializer does some normalization, so make sure to update the data
         attrs[options_field] = serializer.data
+
+    def validate_auto_login_backend(self, attrs):
+        field_name = "auto_login_authentication_backend"
+
+        # If an auto login backend is supplied, it must be present in `authentication_backends`
+        if (
+            attrs.get(field_name)
+            and attrs[field_name] not in attrs["authentication_backends"]
+        ):
+            raise serializers.ValidationError(
+                {
+                    field_name: ErrorDetail(
+                        _(
+                            "The `{auto_login_authentication_backend}` must be one of the selected backends "
+                            "from `authentication_backends`"
+                        ).format(auto_login_authentication_backend=field_name),
+                        code="invalid",
+                    )
+                }
+            )
 
     def get_required_fields_with_asterisk(self, obj) -> bool:
         config = GlobalConfiguration.get_solo()

@@ -51,6 +51,56 @@ class FormSerializerTests(APITestCase):
             with self.subTest(field=field):
                 self.assertIn(field, FormSerializer.Meta.fields)
 
+    def test_auto_login_authentication_backend_validation_fails(self):
+        request = RequestFactory().get("/")
+        request.user = StaffUserFactory()
+
+        serializer = FormSerializer(
+            data={
+                "name": "form",
+                "slug": "form",
+                "authentication_backends": ["digid"],
+                "auto_login_authentication_backend": "eherkenning",
+            },
+            context={"request": request},
+        )
+
+        self.assertFalse(serializer.is_valid())
+
+        errors = serializer.errors["auto_login_authentication_backend"]
+
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(errors[0].code, "invalid")
+
+    def test_auto_login_authentication_backend_validation_succeeds(self):
+        request = RequestFactory().get("/")
+        request.user = StaffUserFactory()
+
+        serializer = FormSerializer(
+            data={
+                "name": "form",
+                "slug": "form",
+                "authentication_backends": ["eherkenning", "digid"],
+                "auto_login_authentication_backend": "digid",
+            },
+            context={"request": request},
+        )
+
+        self.assertTrue(serializer.is_valid())
+
+        # Should succeed for no auto login backend as well
+        serializer = FormSerializer(
+            data={
+                "name": "form",
+                "slug": "form",
+                "authentication_backends": ["eherkenning", "digid"],
+                "auto_login_authentication_backend": "",
+            },
+            context={"request": request},
+        )
+
+        self.assertTrue(serializer.is_valid())
+
 
 class FormsAPITests(APITestCase):
     def setUp(self):

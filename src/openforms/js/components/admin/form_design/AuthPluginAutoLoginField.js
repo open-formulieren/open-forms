@@ -5,31 +5,17 @@ import {FormattedMessage} from 'react-intl';
 import Field from '../forms/Field';
 import {Checkbox} from '../forms/Inputs';
 
-const AuthPluginAutoLoginField = ({availableAuthPlugins, selectedAuthPlugins, selectedAuthPlugin, onChange, errors}) => {
-    let filteredPlugins = availableAuthPlugins.filter(plugin => selectedAuthPlugins.includes(plugin.id))
+const AuthPluginAutoLoginField = ({availablePlugins, selectedPlugins, selectedPlugin, onChange, errors}) => {
+    let filteredPlugins = availablePlugins.filter(plugin => selectedPlugins.includes(plugin.id))
     const authCheckboxes = filteredPlugins.map(plugin => {
-        const providedAttributes = (
-            <FormattedMessage
-                description="Auth plugin provided attributes suffix"
-                defaultMessage="(provides {attrs})"
-                values={{attrs: plugin.providesAuth.join(', ')}}
-            />
-        );
-        const label = (
-            <>
-                {plugin.label}
-                {plugin.providesAuth.length ? (<>{' '}{providedAttributes}</>) : null}
-            </>
-        );
-
         return (
             <li key={plugin.id}>
                 <Checkbox
-                    name={`${plugin.label}_autologin`}
+                    name={`autoLoginAuthenticationBackend.${plugin.id}`}
                     value={plugin.id}
-                    label={label}
+                    label={plugin.label}
                     onChange={onChange}
-                    checked={selectedAuthPlugin === plugin.id}
+                    checked={selectedPlugin === plugin.id}
                 />
             </li>
         );
@@ -38,8 +24,8 @@ const AuthPluginAutoLoginField = ({availableAuthPlugins, selectedAuthPlugins, se
     return (
         <Field
             name="formAuthPluginAutoLogin"
-            label={<FormattedMessage defaultMessage="Authentication automatic login" description="Auth plugin field label" />}
-            helpText={<FormattedMessage defaultMessage="Select which authentication backend is automatically redirected to." description="Auth plugin field help text" />}
+            label={<FormattedMessage defaultMessage="Authentication automatic login" description="Auto-login field label" />}
+            helpText={<FormattedMessage defaultMessage="Select which authentication backend is automatically redirected to." description="Auto-login field help text" />}
             errors={errors}
             required
         >
@@ -49,14 +35,13 @@ const AuthPluginAutoLoginField = ({availableAuthPlugins, selectedAuthPlugins, se
 };
 
 AuthPluginAutoLoginField.propTypes = {
-    availableAuthPlugins: PropTypes.arrayOf(PropTypes.shape({
+    availablePlugins: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.string,
         label: PropTypes.string,
         providesAuth: PropTypes.arrayOf(PropTypes.string)
     })),
-    selectedAuthPlugin: PropTypes.string,
+    selectedPlugin: PropTypes.string,
     onChange: PropTypes.func,
-    required: PropTypes.bool,
     errors: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.string),
         PropTypes.string,
