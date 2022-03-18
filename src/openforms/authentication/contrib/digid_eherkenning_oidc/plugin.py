@@ -80,17 +80,23 @@ class OIDCAuthentication(BasePlugin):
         return HttpResponseRedirect(form_url)
 
     def logout(self, request: HttpRequest):
-        if "oidc_id_token" not in request.session:
-            return
+        if "oidc_id_token" in request.session:
+            logout_endpoint = self.config_class.get_solo().oidc_op_logout_endpoint
+            if logout_endpoint:
+                logout_url = furl(logout_endpoint).set(
+                    {
+                        "id_token_hint": request.session["oidc_id_token"],
+                    }
+                )
+                requests.get(str(logout_url))
 
-        logout_endpoint = self.config_class.get_solo().oidc_op_logout_endpoint
-        if logout_endpoint:
-            logout_url = furl(logout_endpoint).set(
-                {
-                    "id_token_hint": request.session["oidc_id_token"],
-                }
-            )
-            requests.get(str(logout_url))
+            del request.session["oidc_id_token"]
+
+        if "oidc_login_next" in request.session:
+            del request.session["oidc_login_next"]
+
+        if self.session_key in request.session:
+            del request.session[self.session_key]
 
 
 @register("digid_oidc")
