@@ -187,6 +187,16 @@ const FILE_TAB = {
                 customMessage: 'Please specify an integer file size (e.g. 50 MB)',
             },
         },
+        {
+            type: 'number',
+            input: true,
+            label: 'Maximum number of files',
+            key: 'maxNumberOfFiles',
+            tooltip: 'The maximum number of files that can be uploaded',
+            validate: {
+                'min': 1,
+            }
+        }
         // {
         //     // used by the formio widget
         //     type: 'checkbox',
