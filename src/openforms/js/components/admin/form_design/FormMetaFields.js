@@ -50,7 +50,6 @@ const FormMetaFields = ({
     availableAuthPlugins,
     selectedAuthPlugins,
     onAuthPluginChange,
-    autoLoginAuthenticationBackend,
 }) => {
     const {
         uuid,
@@ -137,13 +136,29 @@ const FormMetaFields = ({
             </FormRow>
 
             <FormRow>
-                <AuthPluginAutoLoginField
-                    availablePlugins={availableAuthPlugins}
-                    selectedPlugins={selectedAuthPlugins}
-                    selectedPlugin={autoLoginAuthenticationBackend}
-                    onChange={onChange}
+                <Field
                     name="form.autoLoginAuthenticationBackend"
-                />
+                    label={
+                        <FormattedMessage
+                            defaultMessage="Authentication automatic login"
+                            description="Auto-login field label"
+                        />
+                    }
+                    helpText={
+                        <FormattedMessage
+                            defaultMessage="Select which authentication backend is automatically redirected to."
+                            description="Auto-login field help text"
+                        />
+                    }
+                >
+                    <AuthPluginAutoLoginField
+                        name="form.autoLoginAuthenticationBackend"
+                        availablePlugins={availableAuthPlugins}
+                        selectedPlugins={selectedAuthPlugins}
+                        selectedPlugin={form.autoLoginAuthenticationBackend}
+                        onChange={onChange}
+                    ></AuthPluginAutoLoginField>
+                </Field>
             </FormRow>
 
             <FormRow>

@@ -71,6 +71,7 @@ const initialFormState = {
         confirmationEmailTemplate: null,
         confirmationEmailOption: 'global_email',
         explanationTemplate: '',
+        autoLoginAuthenticationBackend: '',
     },
     literals: {
         beginText: {
@@ -94,7 +95,6 @@ const initialFormState = {
     availableAuthPlugins: [],
     availablePrefillPlugins: [],
     selectedAuthPlugins: [],
-    autoLoginAuthenticationBackend: "",
     availablePaymentBackends: [],
     stepsToDelete: [],
     submitting: false,
@@ -181,14 +181,6 @@ function reducer(draft, action) {
                 }
                 case 'literals': {
                     draft.literals[fieldName].value = value;
-                    break;
-                }
-                case 'autoLoginAuthenticationBackend': {
-                    if (draft.autoLoginAuthenticationBackend === value) {
-                        draft.autoLoginAuthenticationBackend = "";
-                    } else {
-                        draft.autoLoginAuthenticationBackend = value;
-                    }
                     break;
                 }
                 default: {
@@ -627,7 +619,6 @@ const getFormData = async (formUuid, dispatch) => {
             type: 'FORM_LOADED',
             payload: {
                 selectedAuthPlugins: form.loginOptions.map((plugin, index) => plugin.identifier),
-                autoLoginAuthenticationBackend: form.autoLoginAuthenticationBackend,
                 form: form,
                 literals: literals,
             },
@@ -849,7 +840,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                 }
             },
             authenticationBackends: state.selectedAuthPlugins,
-            autoLoginAuthenticationBackend: state.autoLoginAuthenticationBackend,
         };
 
         const createOrUpdate = state.newForm ? post : put;
@@ -1059,7 +1049,6 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                             availableAuthPlugins={state.availableAuthPlugins}
                             selectedAuthPlugins={state.selectedAuthPlugins}
                             onAuthPluginChange={onAuthPluginChange}
-                            autoLoginAuthenticationBackend={state.autoLoginAuthenticationBackend}
                         />
                     </TabPanel>
 

@@ -3,12 +3,11 @@ import uuid
 from unittest.mock import patch
 
 from django.contrib.auth.models import Permission
-from django.test import RequestFactory
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APIRequestFactory, APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.config.models import GlobalConfiguration
@@ -28,7 +27,7 @@ class FormSerializerTests(APITestCase):
                 self.assertIn(field, FormSerializer.Meta.fields)
 
     def test_get_fields_is_filtered_for_non_staff(self):
-        request = RequestFactory().get("/")
+        request = APIRequestFactory().get("/")
         request.user = UserFactory()
 
         serializer = FormSerializer(context={"request": request})
@@ -40,7 +39,7 @@ class FormSerializerTests(APITestCase):
                 self.assertIn(field, FormSerializer.Meta.public_fields)
 
     def test_get_fields_is_not_filtered_for_staff(self):
-        request = RequestFactory().get("/")
+        request = APIRequestFactory().get("/")
         request.user = StaffUserFactory()
 
         serializer = FormSerializer(context={"request": request})
@@ -50,56 +49,6 @@ class FormSerializerTests(APITestCase):
         for field in fields.keys():
             with self.subTest(field=field):
                 self.assertIn(field, FormSerializer.Meta.fields)
-
-    def test_auto_login_authentication_backend_validation_fails(self):
-        request = RequestFactory().get("/")
-        request.user = StaffUserFactory()
-
-        serializer = FormSerializer(
-            data={
-                "name": "form",
-                "slug": "form",
-                "authentication_backends": ["digid"],
-                "auto_login_authentication_backend": "eherkenning",
-            },
-            context={"request": request},
-        )
-
-        self.assertFalse(serializer.is_valid())
-
-        errors = serializer.errors["auto_login_authentication_backend"]
-
-        self.assertEqual(len(errors), 1)
-        self.assertEqual(errors[0].code, "invalid")
-
-    def test_auto_login_authentication_backend_validation_succeeds(self):
-        request = RequestFactory().get("/")
-        request.user = StaffUserFactory()
-
-        serializer = FormSerializer(
-            data={
-                "name": "form",
-                "slug": "form",
-                "authentication_backends": ["eherkenning", "digid"],
-                "auto_login_authentication_backend": "digid",
-            },
-            context={"request": request},
-        )
-
-        self.assertTrue(serializer.is_valid())
-
-        # Should succeed for no auto login backend as well
-        serializer = FormSerializer(
-            data={
-                "name": "form",
-                "slug": "form",
-                "authentication_backends": ["eherkenning", "digid"],
-                "auto_login_authentication_backend": "",
-            },
-            context={"request": request},
-        )
-
-        self.assertTrue(serializer.is_valid())
 
 
 class FormsAPITests(APITestCase):
@@ -1003,3 +952,116 @@ class FormsAPITests(APITestCase):
         error = response.json()["invalidParams"][0]
         self.assertEqual(error["name"], "submissionConfirmationTemplate")
         self.assertEqual(error["code"], "syntax_error")
+
+    def test_create_form_auto_login_authentication_backend_validation_fails(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-list")
+        data = {
+            "name": "Test Put Form",
+            "slug": "test-put-form",
+            "authentication_backends": ["digid"],
+            "auto_login_authentication_backend": "eherkenning",
+        }
+
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        error = response.json()["invalidParams"][0]
+
+        self.assertEqual(error["name"], "autoLoginAuthenticationBackend")
+        self.assertEqual(error["code"], "invalid")
+
+    def test_update_form_auto_login_authentication_backend_validation_fails(self):
+        form = FormFactory.create()
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {
+            "name": "Test Put Form",
+            "slug": "test-put-form",
+            "authentication_backends": ["digid"],
+            "auto_login_authentication_backend": "eherkenning",
+        }
+
+        for verb in ["put", "patch"]:
+            with self.subTest(verb=verb):
+                response = getattr(self.client, verb)(url, data=data)
+
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+                error = response.json()["invalidParams"][0]
+
+                self.assertEqual(error["name"], "autoLoginAuthenticationBackend")
+                self.assertEqual(error["code"], "invalid")
+
+    def test_partial_update_form_auto_login_authentication_backend_validation_fails(
+        self,
+    ):
+        """
+        When altering `authentication_backends` on an existing form that has a
+        `auto_login_authentication_backend` configured, validation should check whether
+        this auto login backend is still allowed
+        """
+        form = FormFactory.create(
+            authentication_backends=["digid"], auto_login_authentication_backend="digid"
+        )
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {
+            "authentication_backends": ["eherkenning"],
+        }
+
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        error = response.json()["invalidParams"][0]
+
+        self.assertEqual(error["name"], "autoLoginAuthenticationBackend")
+        self.assertEqual(error["code"], "invalid")
+
+    def test_create_form_auto_login_authentication_backend_validation_succeeds(self):
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-list")
+        data = {
+            "name": "Test Put Form",
+            "slug": "test-put-form",
+            "authentication_backends": ["eherkenning", "digid"],
+            "auto_login_authentication_backend": "digid",
+        }
+
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_update_form_auto_login_authentication_backend_validation_succeeds(self):
+        form = FormFactory.create()
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {
+            "name": "Test Put Form",
+            "slug": "test-put-form",
+            "authentication_backends": ["eherkenning", "digid"],
+            "auto_login_authentication_backend": "digid",
+        }
+
+        for verb in ["put", "patch"]:
+            with self.subTest(verb=verb):
+                response = getattr(self.client, verb)(url, data=data)
+
+                self.assertEqual(response.status_code, status.HTTP_200_OK)

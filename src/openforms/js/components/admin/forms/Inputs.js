@@ -56,4 +56,28 @@ Checkbox.propTypes = {
     helpText: PropTypes.node,
 };
 
-export { Input, TextInput, TextArea, NumberInput, DateInput, Checkbox };
+const Radio = ({ name, idFor, label, helpText, ...extraProps }) => {
+    const prefix = useContext(PrefixContext);
+    name = prefix ? `${prefix}-${name}` : name;
+    idFor = idFor ? idFor : `id_${name}`;
+    extraProps.id = idFor;  // Override possibly propagated id
+    return (
+        <div className="radio-row">
+            <input
+                type="radio"
+                name={name}
+                {...extraProps}
+            />
+            <label className="vRadioLabel inline" htmlFor={idFor}>{label}</label>
+            { helpText ? <div className="help">{helpText}</div> : null }
+        </div>
+    );
+};
+
+Radio.propTypes = {
+    name: PropTypes.string.isRequired,
+    label: PropTypes.node.isRequired,
+    helpText: PropTypes.node,
+};
+
+export { Input, TextInput, TextArea, NumberInput, DateInput, Checkbox, Radio };

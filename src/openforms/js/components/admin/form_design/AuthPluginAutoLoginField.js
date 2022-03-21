@@ -3,34 +3,33 @@ import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
 import Field from '../forms/Field';
-import {Checkbox} from '../forms/Inputs';
+import {Radio} from '../forms/Inputs';
 
-const AuthPluginAutoLoginField = ({availablePlugins, selectedPlugins, selectedPlugin, onChange, errors}) => {
+const AuthPluginAutoLoginField = ({name, availablePlugins, selectedPlugins, selectedPlugin, onChange}) => {
     let filteredPlugins = availablePlugins.filter(plugin => selectedPlugins.includes(plugin.id))
-    const authCheckboxes = filteredPlugins.map(plugin => {
-        return (
-            <li key={plugin.id}>
-                <Checkbox
-                    name={`autoLoginAuthenticationBackend.${plugin.id}`}
-                    value={plugin.id}
-                    label={plugin.label}
-                    onChange={onChange}
-                    checked={selectedPlugin === plugin.id}
-                />
-            </li>
-        );
-    });
+    filteredPlugins.unshift({
+        id: "",
+        label: <FormattedMessage defaultMessage="(none)" description="Label for option to disable autoLoginAuthenticationBackend" />}
+    )  // Add empty option
 
+    const AuthPluginAutoLoginFieldOptions = ({name, ...radioProps}) => (
+        <ul>
+            {filteredPlugins.map(plugin => (
+                <li key={plugin.id}>
+                    <Radio
+                        name={name}
+                        idFor={`id_${name}.${plugin.id ? plugin.id : "empty"}`}  // ensure idFor is unique
+                        value={plugin.id}
+                        label={plugin.label}
+                        checked={selectedPlugin === plugin.id}
+                        {...radioProps}
+                    />
+                </li>
+            ))}
+        </ul>
+    );
     return (
-        <Field
-            name="formAuthPluginAutoLogin"
-            label={<FormattedMessage defaultMessage="Authentication automatic login" description="Auto-login field label" />}
-            helpText={<FormattedMessage defaultMessage="Select which authentication backend is automatically redirected to." description="Auto-login field help text" />}
-            errors={errors}
-            required
-        >
-            <ul>{authCheckboxes}</ul>
-        </Field>
+        <AuthPluginAutoLoginFieldOptions name={name} onChange={onChange}></AuthPluginAutoLoginFieldOptions>
     );
 };
 
@@ -42,10 +41,6 @@ AuthPluginAutoLoginField.propTypes = {
     })),
     selectedPlugin: PropTypes.string,
     onChange: PropTypes.func,
-    errors: PropTypes.oneOfType([
-        PropTypes.arrayOf(PropTypes.string),
-        PropTypes.string,
-    ]),
 };
 
 export default AuthPluginAutoLoginField;
