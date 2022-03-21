@@ -31,6 +31,9 @@ Open Formulieren is ontwikkeld volgens de `Common Ground`_ principes, met veel
 plugins voor overheidsgebruik en met focus op gebruiksgemak voor zowel 
 eindgebruikers als beheerders.
 
+.. image:: docs/introduction/_assets/open-forms-from-designer-to-form.png
+    :width: 100%
+
 .. _`SDK`: https://github.com/open-formuliere/open-forms-sdk/
 .. _`Common Ground`: https://commonground.nl/
 .. _`Open Zaak`: https://open-zaak.readthedocs.io/
