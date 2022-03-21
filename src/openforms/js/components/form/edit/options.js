@@ -71,6 +71,16 @@ const READ_ONLY = {
     input: true
 };
 
+const REGEX_VALIDATION = {
+    weight: 130,
+    key: 'validate.pattern',
+    label: 'Regular Expression Pattern',
+    placeholder: 'Regular Expression Pattern',
+    type: 'textfield',
+    tooltip: 'The regular expression pattern test that the field value must pass before the form can be submitted.',
+    input: true
+};
+
 export {
     LABEL,
     KEY,
@@ -82,4 +92,5 @@ export {
     IS_SENSITIVE_DATA,
     DEFAULT_VALUE,
     READ_ONLY,
+    REGEX_VALIDATION,
 };
