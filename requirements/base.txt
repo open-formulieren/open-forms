@@ -269,7 +269,9 @@ openpyxl==3.0.7
 orderedmultidict==1.0.1
     # via furl
 phonenumbers==8.12.29
-    # via maykin-django-two-factor-auth
+    # via
+    #   -r requirements/base.in
+    #   maykin-django-two-factor-auth
 pillow==9.0.1
     # via
     #   -r requirements/base.in
