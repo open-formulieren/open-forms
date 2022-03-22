@@ -439,6 +439,11 @@
     "description": "Camunda 'process definition version' help text",
     "originalDefault": "Which version of the process definition to start. The latest version is used if not specified."
   },
+  "HhZc5C": {
+    "defaultMessage": "(geen)",
+    "description": "Label for option to disable autoLoginAuthenticationBackend",
+    "originalDefault": "(none)"
+  },
   "HqVHBq": {
     "defaultMessage": "Gebruikt het bevestigingsmailsjabloon zoals hier is opgegeven.",
     "description": "Form confirmation email help text",
@@ -758,6 +763,11 @@
     "defaultMessage": "Actief",
     "description": "Form list 'active' column header",
     "originalDefault": "Active"
+  },
+  "XAKzo5": {
+    "defaultMessage": "Authenticatie automatische login",
+    "description": "Auto-login field label",
+    "originalDefault": "Authentication automatic login"
   },
   "XNqV97": {
     "defaultMessage": "Onderwerp",
@@ -1188,6 +1198,11 @@
     "defaultMessage": "Aantal dagen dat een voltooide inzending bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken.",
     "description": "Successful Submissions Removal Limit help text",
     "originalDefault": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+  },
+  "ukFB7B": {
+    "defaultMessage": "Selecteer naar welke authenticatiemethode de gebruiker automatisch doorgestuurd moet worden.",
+    "description": "Auto-login field help text",
+    "originalDefault": "Select which authentication backend is automatically redirected to."
   },
   "uleYj3": {
     "defaultMessage": "Geschiedenis",

@@ -153,6 +153,15 @@ class FormSerializer(serializers.ModelSerializer):
         default=list,
     )
     login_options = LoginOptionsReadOnlyField()
+    auto_login_authentication_backend = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        help_text=_(
+            "The authentication backend to which the user will be automatically "
+            "redirected upon starting the form. The chosen backend must be present in "
+            "`authentication_backends`"
+        ),
+    )
 
     product = serializers.HyperlinkedRelatedField(
         label=_("product"),
@@ -191,6 +200,7 @@ class FormSerializer(serializers.ModelSerializer):
             "registration_backend_options",
             "authentication_backends",
             "login_options",
+            "auto_login_authentication_backend",
             "payment_required",
             "payment_backend",
             "payment_backend_options",
@@ -220,6 +230,7 @@ class FormSerializer(serializers.ModelSerializer):
             "explanation_template",
             "login_required",
             "authentication_backends",
+            "auto_login_authentication_backend",
             "login_options",
             "payment_required",
             "payment_options",
@@ -314,6 +325,8 @@ class FormSerializer(serializers.ModelSerializer):
             attrs, "payment_backend", "payment_backend_options", payment_register
         )
 
+        self.validate_auto_login_backend(attrs)
+
         confirmation_email_option = get_from_serializer_data_or_instance(
             "confirmation_email_option", attrs, self
         )
@@ -367,6 +380,31 @@ class FormSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(detail) from e
         # serializer does some normalization, so make sure to update the data
         attrs[options_field] = serializer.data
+
+    def validate_auto_login_backend(self, attrs):
+        field_name = "auto_login_authentication_backend"
+
+        auto_login_backend = get_from_serializer_data_or_instance(
+            field_name, attrs, self
+        )
+        authentication_backends = get_from_serializer_data_or_instance(
+            "authentication_backends", attrs, self
+        )
+
+        # If an auto login backend is supplied, it must be present in
+        # `authentication_backends`
+        if auto_login_backend and auto_login_backend not in authentication_backends:
+            raise serializers.ValidationError(
+                {
+                    field_name: ErrorDetail(
+                        _(
+                            "The `auto_login_authentication_backend` must be one of "
+                            "the selected backends from `authentication_backends`"
+                        ),
+                        code="invalid",
+                    )
+                }
+            )
 
     def get_required_fields_with_asterisk(self, obj) -> bool:
         config = GlobalConfiguration.get_solo()

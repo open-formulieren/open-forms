@@ -5,6 +5,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {defineMessage, FormattedMessage, useIntl} from 'react-intl';
 
+import {getTranslatedChoices} from '../../../utils/i18n';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
@@ -12,7 +13,7 @@ import {TextInput, Checkbox} from '../forms/Inputs';
 import Select from '../forms/Select';
 import AuthPluginField from './AuthPluginField';
 import TinyMCEEditor from './Editor';
-import {getTranslatedChoices} from '../../../utils/i18n';
+import AuthPluginAutoLoginField from './AuthPluginAutoLoginField';
 
 
 export const SUMBISSION_ALLOWED_CHOICES = [
@@ -48,7 +49,7 @@ const FormMetaFields = ({
     onChange,
     availableAuthPlugins,
     selectedAuthPlugins,
-    onAuthPluginChange
+    onAuthPluginChange,
 }) => {
     const {
         uuid,
@@ -132,6 +133,30 @@ const FormMetaFields = ({
                     selectedAuthPlugins={selectedAuthPlugins}
                     onChange={onAuthPluginChange}
                 />
+            </FormRow>
+
+            <FormRow>
+                <Field
+                    name="form.autoLoginAuthenticationBackend"
+                    label={
+                        <FormattedMessage
+                            defaultMessage="Authentication automatic login"
+                            description="Auto-login field label"
+                        />
+                    }
+                    helpText={
+                        <FormattedMessage
+                            defaultMessage="Select which authentication backend is automatically redirected to."
+                            description="Auto-login field help text"
+                        />
+                    }
+                >
+                    <AuthPluginAutoLoginField
+                        eligiblePlugins={availableAuthPlugins.filter(plugin => selectedAuthPlugins.includes(plugin.id))}
+                        value={form.autoLoginAuthenticationBackend}
+                        onChange={onChange}
+                    ></AuthPluginAutoLoginField>
+                </Field>
             </FormRow>
 
             <FormRow>

@@ -667,6 +667,12 @@
       "value": "Which version of the process definition to start. The latest version is used if not specified."
     }
   ],
+  "HhZc5C": [
+    {
+      "type": 0,
+      "value": "(none)"
+    }
+  ],
   "HqVHBq": [
     {
       "type": 0,
@@ -1081,6 +1087,12 @@
     {
       "type": 0,
       "value": "Active"
+    }
+  ],
+  "XAKzo5": [
+    {
+      "type": 0,
+      "value": "Authentication automatic login"
     }
   ],
   "XNqV97": [
@@ -1601,6 +1613,12 @@
     {
       "type": 0,
       "value": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+    }
+  ],
+  "ukFB7B": [
+    {
+      "type": 0,
+      "value": "Select which authentication backend is automatically redirected to."
     }
   ],
   "uleYj3": [

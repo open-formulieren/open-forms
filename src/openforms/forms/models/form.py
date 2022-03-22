@@ -19,6 +19,7 @@ from openforms.authentication.registry import register as authentication_registe
 from openforms.data_removal.constants import RemovalMethods
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
+from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
 from openforms.utils.validators import DjangoTemplateValidator
@@ -73,6 +74,9 @@ class Form(models.Model):
 
     authentication_backends = AuthenticationBackendMultiSelectField(
         _("authentication backend(s)"), blank=True
+    )
+    auto_login_authentication_backend = models.CharField(
+        _("automatic login"), max_length=UNIQUE_ID_MAX_LENGTH, blank=True
     )
     submission_confirmation_template = HTMLField(
         _("submission confirmation template"),

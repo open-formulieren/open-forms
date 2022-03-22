@@ -71,6 +71,7 @@ const initialFormState = {
         confirmationEmailTemplate: null,
         confirmationEmailOption: 'global_email',
         explanationTemplate: '',
+        autoLoginAuthenticationBackend: '',
     },
     literals: {
         beginText: {

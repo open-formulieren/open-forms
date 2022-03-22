@@ -671,6 +671,12 @@
       "value": "Welke versie van de procesdefinitie moet gebruikt worden. Indien niet opgegeven dan wordt altijd de laatste versie gebruikt."
     }
   ],
+  "HhZc5C": [
+    {
+      "type": 0,
+      "value": "(geen)"
+    }
+  ],
   "HqVHBq": [
     {
       "type": 0,
@@ -1085,6 +1091,12 @@
     {
       "type": 0,
       "value": "Actief"
+    }
+  ],
+  "XAKzo5": [
+    {
+      "type": 0,
+      "value": "Authenticatie automatische login"
     }
   ],
   "XNqV97": [
@@ -1605,6 +1617,12 @@
     {
       "type": 0,
       "value": "Aantal dagen dat een voltooide inzending bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
+    }
+  ],
+  "ukFB7B": [
+    {
+      "type": 0,
+      "value": "Selecteer naar welke authenticatiemethode de gebruiker automatisch doorgestuurd moet worden."
     }
   ],
   "uleYj3": [

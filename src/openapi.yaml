@@ -3353,6 +3353,11 @@ components:
           items:
             $ref: '#/components/schemas/LoginOption'
           readOnly: true
+        autoLoginAuthenticationBackend:
+          type: string
+          description: The authentication backend to which the user will be automatically
+            redirected upon starting the form. The chosen backend must be present
+            in `authentication_backends`
         paymentRequired:
           type: boolean
           readOnly: true
@@ -4100,6 +4105,11 @@ components:
           items:
             $ref: '#/components/schemas/LoginOption'
           readOnly: true
+        autoLoginAuthenticationBackend:
+          type: string
+          description: The authentication backend to which the user will be automatically
+            redirected upon starting the form. The chosen backend must be present
+            in `authentication_backends`
         paymentRequired:
           type: boolean
           readOnly: true
