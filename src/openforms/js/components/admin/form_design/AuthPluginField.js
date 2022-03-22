@@ -4,6 +4,8 @@ import {FormattedMessage} from 'react-intl';
 
 import Field from '../forms/Field';
 import {Checkbox} from '../forms/Inputs';
+import TYPES from './types';
+
 
 const AuthPluginField = ({availableAuthPlugins, selectedAuthPlugins, onChange, errors}) => {
     const authCheckboxes = availableAuthPlugins.map(plugin => {
@@ -48,11 +50,7 @@ const AuthPluginField = ({availableAuthPlugins, selectedAuthPlugins, onChange, e
 };
 
 AuthPluginField.propTypes = {
-    availableAuthPlugins: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string,
-        label: PropTypes.string,
-        providesAuth: PropTypes.arrayOf(PropTypes.string)
-    })),
+    availableAuthPlugins: PropTypes.arrayOf(TYPES.AuthPlugin).isRequired,
     selectedAuthPlugins: PropTypes.arrayOf(PropTypes.string).isRequired,
     onChange: PropTypes.func,
     required: PropTypes.bool,

@@ -5,6 +5,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {defineMessage, FormattedMessage, useIntl} from 'react-intl';
 
+import {getTranslatedChoices} from '../../../utils/i18n';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
@@ -12,7 +13,6 @@ import {TextInput, Checkbox} from '../forms/Inputs';
 import Select from '../forms/Select';
 import AuthPluginField from './AuthPluginField';
 import TinyMCEEditor from './Editor';
-import {getTranslatedChoices} from '../../../utils/i18n';
 import AuthPluginAutoLoginField from './AuthPluginAutoLoginField';
 
 
@@ -152,10 +152,8 @@ const FormMetaFields = ({
                     }
                 >
                     <AuthPluginAutoLoginField
-                        name="form.autoLoginAuthenticationBackend"
-                        availablePlugins={availableAuthPlugins}
-                        selectedPlugins={selectedAuthPlugins}
-                        selectedPlugin={form.autoLoginAuthenticationBackend}
+                        eligiblePlugins={availableAuthPlugins.filter(plugin => selectedAuthPlugins.includes(plugin.id))}
+                        value={form.autoLoginAuthenticationBackend}
                         onChange={onChange}
                     ></AuthPluginAutoLoginField>
                 </Field>

@@ -4,43 +4,54 @@ import {FormattedMessage} from 'react-intl';
 
 import Field from '../forms/Field';
 import {Radio} from '../forms/Inputs';
+import TYPES from './types';
 
-const AuthPluginAutoLoginField = ({name, availablePlugins, selectedPlugins, selectedPlugin, onChange}) => {
-    let filteredPlugins = availablePlugins.filter(plugin => selectedPlugins.includes(plugin.id))
-    filteredPlugins.unshift({
-        id: "",
-        label: <FormattedMessage defaultMessage="(none)" description="Label for option to disable autoLoginAuthenticationBackend" />}
-    )  // Add empty option
 
-    const AuthPluginAutoLoginFieldOptions = ({name, ...radioProps}) => (
+const AuthPluginRadio = ({ name, plugin, checked=false, onChange }) => (
+    <Radio
+        name={name}
+        idFor={`id_${name}.${plugin.id ? plugin.id : "empty"}`}  // ensure idFor is unique
+        value={plugin.id}
+        label={plugin.label}
+        checked={checked}
+        onChange={onChange}
+    />
+);
+
+AuthPluginRadio.propTypes = {
+    name: PropTypes.string.isRequired,
+    plugin: TYPES.AuthPlugin.isRequired,
+    checked: PropTypes.bool,
+};
+
+
+const AuthPluginAutoLoginField = ({name, eligiblePlugins, value, onChange}) => {
+    // Add empty/reset option
+    const emptyOption = {
+        id: '',
+        label: <FormattedMessage defaultMessage="(none)" description="Label for option to disable autoLoginAuthenticationBackend" />,
+    };
+    return (
         <ul>
-            {filteredPlugins.map(plugin => (
+            {[emptyOption, ...eligiblePlugins].map(plugin => (
                 <li key={plugin.id}>
-                    <Radio
+                    <AuthPluginRadio
                         name={name}
-                        idFor={`id_${name}.${plugin.id ? plugin.id : "empty"}`}  // ensure idFor is unique
-                        value={plugin.id}
-                        label={plugin.label}
-                        checked={selectedPlugin === plugin.id}
-                        {...radioProps}
+                        plugin={plugin}
+                        checked={plugin.id === value}
+                        onChange={onChange}
                     />
                 </li>
             ))}
         </ul>
     );
-    return (
-        <AuthPluginAutoLoginFieldOptions name={name} onChange={onChange}></AuthPluginAutoLoginFieldOptions>
-    );
 };
 
 AuthPluginAutoLoginField.propTypes = {
-    availablePlugins: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string,
-        label: PropTypes.string,
-        providesAuth: PropTypes.arrayOf(PropTypes.string)
-    })),
-    selectedPlugin: PropTypes.string,
-    onChange: PropTypes.func,
+    name: PropTypes.string,  // usually injected by parent Field component
+    eligiblePlugins: PropTypes.arrayOf(TYPES.AuthPlugin),
+    value: PropTypes.string,
+    onChange: PropTypes.func.isRequired,
 };
 
 export default AuthPluginAutoLoginField;
