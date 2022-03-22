@@ -1007,7 +1007,7 @@ vine==5.0.0
     #   amqp
     #   celery
     #   kombu
-waitress==1.4.4
+waitress==2.1.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
