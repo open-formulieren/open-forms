@@ -15,13 +15,14 @@ Backend toolchain
 =================
 
 In the backend project, we use Node and NPM for the admin interface UI (React-based)
-and the stylesheets. Because of incompatibilities with node-sass, we can't update yet
-to Node 16+. node-sass is pulled in through github dependencies, even though we use
-Dart sass ourselves.
+and the stylesheets. You should use nvm_ to manage your local Node and npm versions.
 
-On this older version of node, we also still support the v1 format of
-``package-lock.json``. You should use nvm_ to manage your local Node and npm versions.
-NPM v6.x still uses the v1 lock format.
+From the root of the project:
+
+.. code-block:: bash
+
+    nvm install  # one time only
+    nvm use  # to use the configured node version in .nvmrc
 
 SDK toolchain
 =============
