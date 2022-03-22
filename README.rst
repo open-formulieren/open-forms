@@ -31,6 +31,9 @@ Open Forms is developed in line with the `Common Ground`_ principles,
 with many plugins for government usage and with a strong focus on usability for 
 both end users and administrators.
 
+.. image:: docs/introduction/_assets/open-forms-from-designer-to-form.png
+    :width: 100%
+
 .. _`SDK`: https://github.com/open-formuliere/open-forms-sdk/
 .. _`Common Ground`: https://commonground.nl/
 .. _`Open Zaak`: https://open-zaak.readthedocs.io/
