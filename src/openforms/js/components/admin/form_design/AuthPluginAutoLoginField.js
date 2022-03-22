@@ -4,13 +4,14 @@ import {FormattedMessage} from 'react-intl';
 
 import Field from '../forms/Field';
 import {Radio} from '../forms/Inputs';
+import RadioList from '../forms/RadioList';
 import TYPES from './types';
 
 
-const AuthPluginRadio = ({ name, plugin, checked=false, onChange }) => (
+const AuthPluginRadio = ({ name, index, plugin, checked=false, onChange }) => (
     <Radio
         name={name}
-        idFor={`id_${name}.${plugin.id ? plugin.id : "empty"}`}  // ensure idFor is unique
+        idFor={`id_${name}_${index}`}  // ensure idFor is unique
         value={plugin.id}
         label={plugin.label}
         checked={checked}
@@ -20,6 +21,7 @@ const AuthPluginRadio = ({ name, plugin, checked=false, onChange }) => (
 
 AuthPluginRadio.propTypes = {
     name: PropTypes.string.isRequired,
+    index: PropTypes.number.isRequired,
     plugin: TYPES.AuthPlugin.isRequired,
     checked: PropTypes.bool,
 };
@@ -32,18 +34,18 @@ const AuthPluginAutoLoginField = ({name, eligiblePlugins, value, onChange}) => {
         label: <FormattedMessage defaultMessage="(none)" description="Label for option to disable autoLoginAuthenticationBackend" />,
     };
     return (
-        <ul>
-            {[emptyOption, ...eligiblePlugins].map(plugin => (
-                <li key={plugin.id}>
-                    <AuthPluginRadio
-                        name={name}
-                        plugin={plugin}
-                        checked={plugin.id === value}
-                        onChange={onChange}
-                    />
-                </li>
+        <RadioList keyProp="plugin.id">
+            {[emptyOption, ...eligiblePlugins].map((plugin, index) => (
+                <AuthPluginRadio
+                    key={plugin.id}
+                    name={name}
+                    index={index}
+                    plugin={plugin}
+                    checked={plugin.id === value}
+                    onChange={onChange}
+                />
             ))}
-        </ul>
+        </RadioList>
     );
 };
 

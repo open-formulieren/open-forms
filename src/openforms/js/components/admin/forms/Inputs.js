@@ -62,16 +62,16 @@ const Radio = ({ name, idFor, label, helpText, ...extraProps }) => {
     idFor = idFor ? idFor : `id_${name}`;
     extraProps.id = idFor;  // Override possibly propagated id
     return (
-        <div className="radio-row">
+        <label htmlFor={idFor}>
             <input
                 type="radio"
                 name={name}
+                className="radiolist"
                 {...extraProps}
             />
-            <label className="vRadioLabel inline" htmlFor={idFor}>{label}</label>
-            { helpText ? <div className="help">{helpText}</div> : null }
-        </div>
-    );
+            {label}
+        </label>
+    )
 };
 
 Radio.propTypes = {
