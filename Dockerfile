@@ -43,7 +43,7 @@ ARG ENVIRONMENT=production
 RUN pip install -r requirements/${ENVIRONMENT}.txt
 
 # Stage 2 - Install frontend deps and build assets
-FROM node:15-buster AS frontend-build
+FROM node:16-buster AS frontend-build
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
