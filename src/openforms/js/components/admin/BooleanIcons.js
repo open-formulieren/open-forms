@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {STATIC_URL} from './constants';
-
 
 const BooleanIcon = ({ icon, ...props }) => {
     const fullUrl = `${STATIC_URL}admin/img/icon-${icon}.svg`;

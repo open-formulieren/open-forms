@@ -37,6 +37,9 @@ module.exports = {
     // Plugins
     plugins: [
         new MiniCssExtractPlugin(),
+        new webpack.DefinePlugin({
+            STATIC_URL: JSON.stringify(process.env.STATIC_URL ?? '/static/'),
+        }),
         new webpack.ProvidePlugin({
             _: 'lodash',
         }),
