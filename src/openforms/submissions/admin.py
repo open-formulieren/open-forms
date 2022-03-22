@@ -177,7 +177,6 @@ class SubmissionAdmin(admin.ModelAdmin):
         "export_xml",
         "retry_processing_submissions",
     ]
-    radio_fields = {"registration_status": admin.VERTICAL}
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
