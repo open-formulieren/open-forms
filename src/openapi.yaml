@@ -203,9 +203,10 @@ paths:
   /api/v1/authentication/{uuid}/session:
     delete:
       operationId: submission_session_destroy
-      description: Calling this endpoint will clear the current form and submission
-        from the session.
-      summary: Delete session
+      description: 'Calling this endpoint will clear the current form and submission
+        from the session. This also clears the form authentication state and calls
+        the authentication plugin logout handler, if authenticated. '
+      summary: Delete form session
       parameters:
       - in: path
         name: uuid
@@ -251,8 +252,9 @@ paths:
   /api/v1/authentication/session:
     delete:
       operationId: authentication_session_destroy
-      description: Calling this endpoint will clear the current user session and delete
-        the session cookie.
+      description: 'Calling this endpoint will clear the current user session and
+        delete the session cookie. This endpoint is deprecated, instead use the submission-specific
+        endpoint. '
       summary: Delete session
       tags:
       - authentication
