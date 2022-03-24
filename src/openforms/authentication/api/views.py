@@ -7,14 +7,14 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from openforms.submissions.api.permissions import ActiveSubmissionPermission
+from openforms.submissions.models import Submission
 from openforms.submissions.utils import (
     get_submissions_from_session,
     remove_submission_from_session,
 )
+from openforms.utils.api.views import ListMixin
 
-from ...submissions.api.permissions import ActiveSubmissionPermission
-from ...submissions.models import Submission
-from ...utils.api.views import ListMixin
 from ..constants import FORM_AUTH_SESSION_KEY
 from ..registry import register
 from .serializers import AuthPluginSerializer
@@ -51,7 +51,8 @@ class AuthenticationLogoutView(APIView):
     @extend_schema(
         summary=_("Delete session"),
         description=_(
-            "Calling this endpoint will clear the current user session and delete the session cookie."
+            "Calling this endpoint will clear the current user session and delete the session cookie. "
+            "This endpoint is deprecated, instead use the submission-specific endpoint. "
         ),
         deprecated=True,  # replaced with the submission specific SubmissionLogoutView
     )
@@ -84,9 +85,10 @@ class SubmissionLogoutView(GenericAPIView):
 
     @extend_schema(
         operation_id="submission_session_destroy",
-        summary=_("Delete session"),
+        summary=_("Delete form session"),
         description=_(
-            "Calling this endpoint will clear the current form and submission from the session."
+            "Calling this endpoint will clear the current form and submission from the session. "
+            "This also clears the form authentication state and calls the authentication plugin logout handler, if authenticated. "
         ),
     )
     @transaction.atomic()
