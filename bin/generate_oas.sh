@@ -11,6 +11,8 @@
 
 outfile=${1:-src/openapi.yaml}
 
+src/manage.py disable_demo_plugins
+
 src/manage.py spectacular \
     --validate \
     --fail-on-warn \
