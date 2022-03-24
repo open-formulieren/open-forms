@@ -436,6 +436,15 @@ class GlobalConfiguration(SingletonModel):
         help_text=_("Amount of days when all submissions will be permanently deleted"),
     )
 
+    registration_attempt_limit = models.PositiveIntegerField(
+        _("default registration backend attempt limit"),
+        default=5,
+        validators=[MinValueValidator(1)],
+        help_text=_(
+            "How often we attempt to register the submission at the registration backend before giving up"
+        ),
+    )
+
     plugin_configuration = models.JSONField(
         _("plugin configuration"),
         blank=True,

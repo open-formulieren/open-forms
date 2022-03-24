@@ -254,6 +254,13 @@ class Submission(models.Model):
             "Note that this date will be updated even if the registration is not successful."
         ),
     )
+    registration_attempts = models.PositiveIntegerField(
+        _("registration backend retry counter"),
+        default=0,
+        help_text=_(
+            "Counter to track how often we tried calling the registration backend. "
+        ),
+    )
     registration_result = models.JSONField(
         _("registration backend result"),
         blank=True,
@@ -352,16 +359,22 @@ class Submission(models.Model):
         if hasattr(self, "_execution_state"):
             del self._execution_state
 
-    def save_registration_status(self, status, result):
+    def save_registration_status(self, status, result, retry_on_failed=True):
         self.registration_status = status
         self.registration_result = result
-        update_fields = ["registration_status", "registration_result"]
 
-        if status == RegistrationStatuses.failed:
+        if retry_on_failed and status == RegistrationStatuses.failed:
             self.needs_on_completion_retry = True
-            update_fields += ["needs_on_completion_retry"]
+        else:
+            self.needs_on_completion_retry = False
 
-        self.save(update_fields=update_fields)
+        self.save(
+            update_fields=[
+                "registration_status",
+                "registration_result",
+                "needs_on_completion_retry",
+            ]
+        )
 
     @property
     def is_authenticated(self):

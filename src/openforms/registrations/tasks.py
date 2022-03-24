@@ -11,6 +11,7 @@ from openforms.logging import logevent
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
 
+from ..config.models import GlobalConfiguration
 from .exceptions import RegistrationFailed
 
 logger = logging.getLogger(__name__)
@@ -47,6 +48,20 @@ def register_submission(submission_id: int) -> Optional[dict]:
     if submission.registration_status == RegistrationStatuses.success:
         # if it's already succesfully registered, do not overwrite that.
         return
+
+    config = GlobalConfiguration.get_solo()
+    if submission.registration_attempts >= config.registration_attempt_limit:
+        # if it fails after this many attempts we give up
+        submission.save_registration_status(
+            RegistrationStatuses.failed,
+            None,
+            retry_on_failed=False,
+        )
+        logevent.registration_attempts_limited(submission)
+        return
+    else:
+        submission.registration_attempts += 1
+        submission.save(update_fields=["registration_attempts"])
 
     logevent.registration_start(submission)
 
