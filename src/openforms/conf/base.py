@@ -209,6 +209,7 @@ INSTALLED_APPS = [
     "openforms.payments.contrib.ogone.apps.OgoneApp",
     "openforms.data_removal",
     "openforms.utils",
+    "openforms.plugins",
     "openforms.custom_field_types",
 ]
 
