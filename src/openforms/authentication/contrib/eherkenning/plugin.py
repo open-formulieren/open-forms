@@ -93,6 +93,10 @@ class AuthenticationBasePlugin(BasePlugin):
 
         return HttpResponseRedirect(form_url)
 
+    def logout(self, request: HttpRequest):
+        if self.session_key in request.session:
+            del request.session[self.session_key]
+
 
 @register("eherkenning")
 class EHerkenningAuthentication(AuthenticationBasePlugin):

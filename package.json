@@ -9,6 +9,7 @@
   "scripts": {
     "test": "echo 'no tests set up yet'; exit 1",
     "build": "NODE_ENV=production webpack",
+    "builddev": "NODE_ENV=development webpack",
     "watch": "webpack -w",
     "start": "webpack -w",
     "makemessages-en": "formatjs extract 'src/openforms/js/**/*.js' --format src/openforms/js/i18n-formatter.js --out-file src/openforms/js/lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",

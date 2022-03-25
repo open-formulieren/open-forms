@@ -43,6 +43,7 @@ experimental feature changes (see :ref:`developers_versioning_api`).
    SDK version minimum API version maximum API version
    =========== =================== ===================
    1.0.x       1.0.y               n/a
+   1.1.x       1.1.y               n/a
    =========== =================== ===================
 
 .. _developers_versioning_api:
@@ -91,4 +92,5 @@ backend version.
    Backend version API version
    =============== ===========
    1.0.x           1.0.y
+   1.1.x           1.1.y
    =============== ===========

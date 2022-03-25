@@ -3,12 +3,19 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import authentication, permissions, serializers, status
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from openforms.submissions.utils import get_submissions_from_session
+from openforms.submissions.api.permissions import ActiveSubmissionPermission
+from openforms.submissions.models import Submission
+from openforms.submissions.utils import (
+    get_submissions_from_session,
+    remove_submission_from_session,
+)
+from openforms.utils.api.views import ListMixin
 
-from ...utils.api.views import ListMixin
+from ..constants import FORM_AUTH_SESSION_KEY
 from ..registry import register
 from .serializers import AuthPluginSerializer
 
@@ -44,8 +51,10 @@ class AuthenticationLogoutView(APIView):
     @extend_schema(
         summary=_("Delete session"),
         description=_(
-            "Calling this endpoint will clear the current user session and delete the session cookie."
+            "Calling this endpoint will clear the current user session and delete the session cookie. "
+            "This endpoint is deprecated, instead use the submission-specific endpoint. "
         ),
+        deprecated=True,  # replaced with the submission specific SubmissionLogoutView
     )
     @transaction.atomic()
     def delete(self, request, *args, **kwargs):
@@ -61,4 +70,40 @@ class AuthenticationLogoutView(APIView):
             plugin.logout(request)
 
         request.session.flush()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class SubmissionLogoutView(GenericAPIView):
+    authentication_classes = ()
+    permission_classes = (ActiveSubmissionPermission,)
+    serializer_class = (
+        serializers.Serializer
+    )  # just to shut up some warnings in drf-spectacular
+
+    queryset = Submission.objects.all()
+    lookup_field = "uuid"
+
+    @extend_schema(
+        operation_id="submission_session_destroy",
+        summary=_("Delete form session"),
+        description=_(
+            "Calling this endpoint will clear the current form and submission from the session. "
+            "This also clears the form authentication state and calls the authentication plugin logout handler, if authenticated. "
+        ),
+    )
+    @transaction.atomic()
+    def delete(self, request, *args, **kwargs):
+        submission = self.get_object()
+
+        remove_submission_from_session(submission, request.session)
+
+        if FORM_AUTH_SESSION_KEY in request.session:
+            del request.session[FORM_AUTH_SESSION_KEY]
+
+        if not submission.auth_attributes_hashed:
+            submission.hash_identifying_attributes(save=True)
+
+        for plugin in register.iter_enabled_plugins():
+            plugin.logout(request)
+
         return Response(status=status.HTTP_204_NO_CONTENT)
