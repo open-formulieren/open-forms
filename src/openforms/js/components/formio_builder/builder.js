@@ -56,6 +56,7 @@ const getBuilderOptions = () => {
                     signature: true,
                     coSign: true,
                     map: true,
+                    'camunda:dmn': true,
                 },
             },
             custom_layout: {

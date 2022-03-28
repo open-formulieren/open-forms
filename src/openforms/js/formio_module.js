@@ -21,6 +21,7 @@ import LicensePlate from './components/form/licenseplate';
 import CoSignField from './components/form/coSign';
 import NpFamilyMembers from './components/form/np-family-members';
 import ColumnField from './components/form/columns';
+import DMNEvaluation from './components/form/dmn';
 import WebformBuilder from './components/formio_builder/WebformBuilder';
 
 const FormIOModule = {
@@ -48,6 +49,7 @@ const FormIOModule = {
     coSign: CoSignField,
     npFamilyMembers: NpFamilyMembers,
     columns: ColumnField,
+    'camunda:dmn': DMNEvaluation,
   },
   builders: {
     webform: WebformBuilder,
