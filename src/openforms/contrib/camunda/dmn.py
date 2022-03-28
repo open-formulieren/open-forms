@@ -31,6 +31,7 @@ def evaluate_dmn(
     result = client.post(
         f"decision-definition/key/{dmn_key}/evaluate",
         json={"variables": serialized},
+        underscoreize=False,
     )
 
     output_variables = {}

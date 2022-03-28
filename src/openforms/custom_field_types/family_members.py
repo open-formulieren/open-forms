@@ -1,10 +1,10 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from rest_framework.request import Request
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.forms.custom_field_types import register
-from openforms.submissions.models import Submission
+from openforms.submissions.models import Submission, SubmissionStep
 
 from .constants import FamilyMembersDataAPIChoices
 from .handlers.haal_centraal import get_np_children_haal_centraal
@@ -14,7 +14,10 @@ from .models import FamilyMembersTypeConfig
 
 @register("npFamilyMembers")
 def fill_out_family_members(
-    component: Dict[str, Any], request: Request, submission: Submission
+    component: Dict[str, Any],
+    request: Request,
+    submission: Submission,
+    step: Optional[SubmissionStep],
 ) -> Dict[str, Any]:
 
     # Check authentication details

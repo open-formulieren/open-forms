@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.urls import reverse
 
 import elasticapm
@@ -6,14 +8,17 @@ from rest_framework.request import Request
 from openforms.formio.utils import iter_components
 from openforms.forms.custom_field_types import handle_custom_types
 from openforms.prefill import apply_prefill
-from openforms.submissions.models import Submission
+from openforms.submissions.models import Submission, SubmissionStep
 
 
 # TODO: it might be beneficial to memoize this function if it runs multiple times in
 # the context of the same request
 @elasticapm.capture_span(span_type="app.formio")
 def get_dynamic_configuration(
-    configuration: dict, request: Request, submission: Submission
+    configuration: dict,
+    request: Request,
+    submission: Submission,
+    step: Optional[SubmissionStep] = None,
 ) -> dict:
     """
     Given a static Formio configuration, apply the hooks to dynamically transform this.
@@ -21,7 +26,10 @@ def get_dynamic_configuration(
     The configuration is modified in the context of the provided :arg:`submission`.
     """
     configuration = handle_custom_types(
-        configuration, request=request, submission=submission
+        configuration,
+        request=request,
+        submission=submission,
+        step=step,
     )
     configuration = apply_prefill(configuration, submission=submission)
     return configuration

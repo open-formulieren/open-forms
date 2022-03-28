@@ -54,6 +54,7 @@ def evaluate_form_logic(
         # already.
         request=context.get("request"),
         submission=submission,
+        step=step,
     )
 
     # check what the default data values are

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.template import Context, Template
 
 from rest_framework.request import Request
@@ -5,7 +7,7 @@ from rest_framework.request import Request
 from openforms.contrib.camunda.dmn import evaluate_dmn
 from openforms.formio.typing import Component
 from openforms.forms.custom_field_types import register
-from openforms.submissions.models import Submission
+from openforms.submissions.models import Submission, SubmissionStep
 
 
 @register("camunda:dmn")
@@ -13,6 +15,7 @@ def evaluate_camunda_dmn(
     component: Component,
     request: Request,
     submission: Submission,
+    step: Optional[SubmissionStep] = None,
 ) -> Component:
     # TODO: possibly cache (functools.lrucache?) based on component ID & input variables
     # to avoid repeated calls to the Camunda API?W
@@ -25,7 +28,13 @@ def evaluate_camunda_dmn(
     input_values = submission.data
     result = evaluate_dmn(component["decisionTableKey"], input_values=input_values)
 
-    # TODO: how to make sure the result is also stored on the submission?
+    # persist the evaluation result as a value on the submission step
+    if step is not None:
+        if step.data is None:
+            step.data = {}
+        if (key := component["key"]) not in step.data or step.data[key] != result:
+            step.data[key] = result
+            step.save(update_fields=["data"])
 
     context_data = {
         "result": result,
