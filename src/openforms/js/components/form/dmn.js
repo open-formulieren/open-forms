@@ -19,6 +19,8 @@ export default class DMNEvaluation extends Field {
             label: 'DMN Evaluation',
             key: 'dmn',
             input: false,
+            decisionTableKey: '',
+            resultDisplayTemplate: '',
         }, ...extend);
     }
 
@@ -65,13 +67,31 @@ export default class DMNEvaluation extends Field {
                                     defaultValue: '',
                                     description: 'Decision table to evaluate, must exist in the API',
                                     placeholder: 'myDecisionTable'
-                                }
+                                },
+                                {
+                                    type: 'textarea',
+                                    key: 'resultDisplayTemplate',
+                                    label: 'Result display template',
+                                    description: `Accepts Django template language syntax. The evaluation result is
+                                        available under the "result" context variable, while the rest of the submission
+                                        data is available as "submission_data".`,
+                                    defaultValue: '{% for key, value in result.items %}{{ key }}: {{ value }}{% endfor %}',
+                                },
                             ]
-                        }
-
+                        },
                     ]
                 }
             ]
         };
+    }
+
+    render() {
+        const dmnConfig = this.t(
+            'Will evaluate DMN table "{{ decisionTableKey }}"',
+            {decisionTableKey: this.component.decisionTableKey}
+        );
+        return super.render(this.renderTemplate('dmn', {
+            dmnConfig: dmnConfig,
+        }));
     }
 }
