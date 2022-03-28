@@ -21,6 +21,7 @@ export default class DMNEvaluation extends Field {
             input: false,
             decisionTableKey: '',
             resultDisplayTemplate: '',
+            resultDisplay: '',
         }, ...extend);
     }
 
