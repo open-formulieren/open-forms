@@ -3,6 +3,8 @@
 
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}">{% endblock %}
 
+{% block nav-global %}{% include "includes/app_list.html" %}{% endblock nav-global %}
+
 {% block title %} {% trans "Configuration" %} {{ block.super }} {% endblock %}
 
 {% block breadcrumbs %}
