@@ -26,15 +26,21 @@ def evaluate_camunda_dmn(
     # TODO: right now, the component key must match the inputData key in the DMN model,
     # it should be possible to apply a mapping for this.
     input_values = submission.data
+    if not input_values:
+        return component
+
     result = evaluate_dmn(component["decisionTableKey"], input_values=input_values)
 
-    # persist the evaluation result as a value on the submission step
-    if step is not None:
-        if step.data is None:
-            step.data = {}
-        if (key := component["key"]) not in step.data or step.data[key] != result:
-            step.data[key] = result
-            step.save(update_fields=["data"])
+    # # persist the evaluation result as a value on the submission step
+    # if step is not None:
+    #     if step.data is None:
+    #         step.data = {}
+    #     if (key := component["key"]) not in step.data or step.data[key] != result:
+    #         step.data[key] = result
+    #         if not step.pk:
+    #             step.save()
+    #         else:
+    #             step.save(update_fields=["data"])
 
     context_data = {
         "result": result,
