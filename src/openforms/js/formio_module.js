@@ -49,7 +49,7 @@ const FormIOModule = {
     coSign: CoSignField,
     npFamilyMembers: NpFamilyMembers,
     columns: ColumnField,
-    'camunda:dmn': DMNEvaluation,
+    dmn: DMNEvaluation,
   },
   builders: {
     webform: WebformBuilder,
