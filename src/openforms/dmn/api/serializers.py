@@ -19,5 +19,18 @@ class DecisionDefinitionPlugin(serializers.Serializer):
     )
     label = serializers.CharField(
         label=_("Label"),
-        help_text=_("Human readable name/label identifying the decision definition"),
+        help_text=_("Human readable name/label identifying the decision definition."),
+    )
+
+
+class DecisionDefinitionVersionPlugin(serializers.Serializer):
+    id = serializers.CharField(
+        label=_("version identifier"),
+        help_text=_(
+            "The (unique) identifier pointing to a particular decision definition version."
+        ),
+    )
+    label = serializers.CharField(
+        label=_("Label"),
+        help_text=_("Textual representation of the definition version."),
     )
