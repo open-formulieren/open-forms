@@ -1,5 +1,6 @@
-import {DEFAULT_SENSITIVE_TABS, PREFILL} from './edit/tabs';
+import {ADVANCED, PREFILL, REGISTRATION, SENSITIVE_BASIC, VALIDATION} from './edit/tabs';
 import TextField from './textfield';
+import {READ_ONLY} from './edit/options';
 
 
 class BsnField extends TextField {
@@ -23,12 +24,24 @@ class BsnField extends TextField {
     }
 
     static editForm() {
-        const tabs = {
-            ...DEFAULT_SENSITIVE_TABS,
+        const updatedSensitiveBasicTab = {
+            ...SENSITIVE_BASIC,
             components: [
-                ...DEFAULT_SENSITIVE_TABS.components,
+                ...SENSITIVE_BASIC.components,
+                READ_ONLY
+            ]
+        };
+
+        const tabs = {
+            type: 'tabs',
+            key: 'tabs',
+            components: [
+                updatedSensitiveBasicTab,
+                ADVANCED,
+                VALIDATION,
+                REGISTRATION,
                 PREFILL,
-            ],
+            ]
         };
         return {components: [tabs]};
     }
