@@ -7,18 +7,7 @@
     padding-bottom: 1em;
   }
 
-  .view-drd {
-    display: none;
-  }
-
-  th {
-    text-transform: inherit;
-    line-height: inherit;
-  }
-
-  td {
-    font-size: inherit;
-    line-height: inherit;
-    vertical-align: inherit;
+  &__definition {
+    padding-top: 1em;
   }
 }

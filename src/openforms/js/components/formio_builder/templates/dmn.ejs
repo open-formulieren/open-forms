@@ -1,6 +1,10 @@
 <div ref="dmnPreview" class="dmn-preview">
     <div class="dmn-preview__engine">
-        {{ ctx.t('Engine:') }} {{ ctx.component.dmn.engine.label }}
+        {{ ctx.t('Engine:') }} <em>{{ ctx.component.dmn.engine.label }}</em>
+    </div>
+    <div class="dmn-preview__definition">
+        <strong>{{ ctx.component.dmn.decisionDefinition.label }}</strong>{% if (ctx.component.dmn.decisionDefinitionVersion) { %}, {{ ctx.component.dmn.decisionDefinitionVersion.label }}
+        {% } %}
     </div>
     <div ref="dmnViewer" class="dmn-preview__viewer"></div>
 </div>

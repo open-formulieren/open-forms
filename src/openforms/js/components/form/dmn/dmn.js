@@ -48,13 +48,7 @@ export default class DMNEvaluation extends Field {
     }
 
     render() {
-        const dmnConfig = this.t(
-            'Will evaluate DMN table "{{ decisionTableKey }}"',
-            {decisionTableKey: this.component.decisionTableKey}
-        );
-        return super.render(this.renderTemplate('dmn', {
-            dmnConfig: dmnConfig,
-        }));
+        return super.render(this.renderTemplate('dmn'));
     }
 
     attach(element) {

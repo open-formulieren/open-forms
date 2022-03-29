@@ -65,6 +65,7 @@ const editForm = [
                         },
                         clearOnHide: true,
                         dataSrc: 'url',
+                        refreshOn: ['dmn.engine', 'dmn.decisionDefinition'],
                         conditional: {
                             // only display the version dropdown if a decision definition has been selected.
                             json: { '!!': {var: 'row.dmn.decisionDefinition'} },
