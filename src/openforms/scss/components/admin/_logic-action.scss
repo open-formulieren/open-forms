@@ -1,10 +1,14 @@
-@import '~microscope-sass/lib/responsive';
+@import "~microscope-sass/lib/responsive";
+@import "../../vars";
 
 $logic-line-breakpoint: 1800px !default;
 
 .logic-action {
-  display: flex;
   padding: 1em;
+
+  &__row {
+    display: flex;
+  }
 
   &__actions {
     padding: 0.5em;
@@ -24,5 +28,11 @@ $logic-line-breakpoint: 1800px !default;
     max-width: 800px;
     padding-top: 7px;
     flex-grow: 0;
+  }
+
+  &__errors {
+    margin: 0 !important;
+    padding: 0 !important;
+    color: $color-error;
   }
 }
