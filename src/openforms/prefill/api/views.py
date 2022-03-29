@@ -5,7 +5,8 @@ from rest_framework import authentication, permissions
 from rest_framework.exceptions import NotFound
 from rest_framework.views import APIView
 
-from ...utils.api.views import ListMixin
+from openforms.utils.api.views import ListMixin
+
 from ..registry import register
 from .serializers import (
     ChoiceWrapper,

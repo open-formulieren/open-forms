@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import List, NoReturn
 
 from openforms.formio.typing import Component
-from openforms.forms import Form
+from openforms.forms.models import Form
 from openforms.plugins.plugin import AbstractBasePlugin
 
 

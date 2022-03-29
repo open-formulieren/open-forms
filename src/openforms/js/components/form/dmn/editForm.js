@@ -64,7 +64,7 @@ const editForm = [
                         label: 'Decision table',
                         key: 'dmn.camunda.decisionDefinition',
                         data: {
-                            url: getFullyQualifiedUrl('/api/v1/decision-definitions?engine={{ row.dmn.engine }}'),
+                            url: getFullyQualifiedUrl('/api/v1/dmn/decision-definitions?engine={{ row.dmn.engine }}'),
                         },
                         dataSrc: 'url',
                         validate: {
@@ -79,7 +79,7 @@ const editForm = [
                         label: 'Decision table version',
                         key: 'dmn.camunda.decisionDefinitionVersion',
                         data: {
-                            url: getFullyQualifiedUrl('/api/v1/decision-definitions/versions?engine={{ row.dmn.engine }}&definition={{ row.dmn.camunda.decisionDefinition }}'),
+                            url: getFullyQualifiedUrl('/api/v1/dmn/decision-definitions/versions?engine={{ row.dmn.engine }}&definition={{ row.dmn.camunda.decisionDefinition }}'),
                         },
                         clearOnHide: true,
                         dataSrc: 'url',
