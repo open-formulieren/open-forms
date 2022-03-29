@@ -14,7 +14,7 @@ import DataPreview from './DataPreview';
 import StepSelection from './StepSelection';
 import ErrorList from '../../forms/ErrorList';
 import {normalizeErrors} from '../../forms/Field';
-import classNames from "classnames";
+import classNames from 'classnames';
 
 
 

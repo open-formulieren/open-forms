@@ -21,8 +21,7 @@ const emptyAction = {
 };
 
 const initialState = {
-    actions: [],
-    errors: [],
+    actions: []
 };
 
 const ACTION_SELECTION_ORDER = [
@@ -128,8 +127,7 @@ const parseJsonAction = (jsonAction) => {
 const ActionSet = ({name, actions, onChange, errors}) => {
     const [state, dispatch] = useImmerReducer(reducer, {
         ...initialState,
-        actions: actions.map(action => parseJsonAction(action)) || [],
-        errors: errors || [],
+        actions: actions.map(action => parseJsonAction(action)) || []
     });
 
     const jsonActions = state.actions.map(action => convertActionToJson(action));
@@ -161,7 +159,7 @@ const ActionSet = ({name, actions, onChange, errors}) => {
                     action={action}
                     onChange={onActionChange.bind(null, index)}
                     onDelete={() => dispatch({type: 'ACTION_DELETED', payload: {index}})}
-                    errors={state.errors[index]?.action}
+                    errors={errors ? errors[index]?.action : {}}
                 />
             ))}
             <ButtonContainer onClick={ () => dispatch({type: 'ACTION_ADDED'}) }>
