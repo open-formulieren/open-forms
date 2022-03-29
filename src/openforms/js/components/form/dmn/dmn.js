@@ -13,11 +13,9 @@ export default class DMNEvaluation extends Field {
             key: 'dmn',
             input: false,
             dmn: {
-                engine: 'camunda',
-                camunda: {
-                    decisionDefinition: '',
-                    decisionDefinitionVersion: '',
-                },
+                engine: '',
+                decisionDefinition: '',
+                decisionDefinitionVersion: '',
                 resultDisplayTemplate: '{% for key, value in result.items %}{{ key }}: {{ value }}{% endfor %}',
                 resultDisplay: '',  // evaluated resultDisplayTemplate after the DMN table was evaluated
             },

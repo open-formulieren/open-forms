@@ -10,17 +10,6 @@ import {
 } from '../edit/options';
 
 
-const whenEngineEqualsJSONLogic = (engine) => {
-    return {'==': [
-        { var: 'data.dmn.engine' },
-        engine,
-    ]};
-};
-
-
-const whenEngineCamunda = whenEngineEqualsJSONLogic('camunda');
-
-
 const editForm = [
     {
         type: 'tabs',
@@ -47,14 +36,9 @@ const editForm = [
                         label: 'Engine',
                         key: 'dmn.engine',
                         tooltip: 'DMN integration is implemented through supported engines.',
-                        data: {
-                            values: [
-                                {value: 'camunda', label: 'Camunda'},
-                                // TODO: #regels-overheid-nl support if it gets its own format?
-                            ]
-                        },
-                        dataSrc: 'values',
-                        defaultValue: 'camunda',
+                        data: {url: getFullyQualifiedUrl('/api/v1/dmn/plugins')},
+                        dataSrc: 'url',
+                        lazyLoad: false,
                         validate: {
                             required: true,
                         },
@@ -62,36 +46,28 @@ const editForm = [
                     {
                         type: 'select',
                         label: 'Decision table',
-                        key: 'dmn.camunda.decisionDefinition',
+                        key: 'dmn.decisionDefinition',
                         data: {
-                            url: getFullyQualifiedUrl('/api/v1/dmn/decision-definitions?engine={{ row.dmn.engine }}'),
+                            url: getFullyQualifiedUrl('/api/v1/dmn/decision-definitions?engine={{ row.dmn.engine.id }}'),
                         },
                         dataSrc: 'url',
+                        refreshOn: 'dmn.engine',
                         validate: {
                             required: true,
-                        },
-                        conditional: {
-                            json: whenEngineCamunda,
                         },
                     },
                     {
                         type: 'select',
                         label: 'Decision table version',
-                        key: 'dmn.camunda.decisionDefinitionVersion',
+                        key: 'dmn.decisionDefinitionVersion',
                         data: {
-                            url: getFullyQualifiedUrl('/api/v1/dmn/decision-definitions/versions?engine={{ row.dmn.engine }}&definition={{ row.dmn.camunda.decisionDefinition }}'),
+                            url: getFullyQualifiedUrl('/api/v1/dmn/decision-definitions/versions?engine={{ row.dmn.engine.id }}&definition={{ row.dmn.decisionDefinition.id }}'),
                         },
                         clearOnHide: true,
                         dataSrc: 'url',
                         conditional: {
-                            // only display the version dropdown if the engine is camunda and a decision
-                            // definition has been selected.
-                            json: {
-                                'and': [
-                                    whenEngineCamunda,
-                                    { '!!': {var: 'data.dmn.camunda.decisionDefinition'} }
-                                ]
-                            },
+                            // only display the version dropdown if a decision definition has been selected.
+                            json: { '!!': {var: 'row.dmn.decisionDefinition'} },
                         },
                     }
                 ]
