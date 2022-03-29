@@ -1,0 +1,24 @@
+.dmn-preview {
+  padding: 1em;
+  background-color: rgba(0, 0, 0, .03);
+
+  &__engine {
+    border-bottom: solid 1px var(--hairline-color);
+    padding-bottom: 1em;
+  }
+
+  .view-drd {
+    display: none;
+  }
+
+  th {
+    text-transform: inherit;
+    line-height: inherit;
+  }
+
+  td {
+    font-size: inherit;
+    line-height: inherit;
+    vertical-align: inherit;
+  }
+}

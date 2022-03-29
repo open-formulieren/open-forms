@@ -9,7 +9,7 @@ class DecisionPluginSerializer(PluginBaseSerializer):
     pass
 
 
-class DecisionDefinitionPlugin(serializers.Serializer):
+class DecisionDefinitionSerializer(serializers.Serializer):
     id = serializers.CharField(
         source="identifier",
         label=_("Identifier"),
@@ -23,7 +23,7 @@ class DecisionDefinitionPlugin(serializers.Serializer):
     )
 
 
-class DecisionDefinitionVersionPlugin(serializers.Serializer):
+class DecisionDefinitionVersionSerializer(serializers.Serializer):
     id = serializers.CharField(
         label=_("version identifier"),
         help_text=_(
@@ -33,4 +33,11 @@ class DecisionDefinitionVersionPlugin(serializers.Serializer):
     label = serializers.CharField(
         label=_("Label"),
         help_text=_("Textual representation of the definition version."),
+    )
+
+
+class DecisionDefinitionXMLSerializer(serializers.Serializer):
+    xml = serializers.CharField(
+        label=_("DMN XML"),
+        help_text=_("If no XML can be obtained, the value will be an empty string."),
     )

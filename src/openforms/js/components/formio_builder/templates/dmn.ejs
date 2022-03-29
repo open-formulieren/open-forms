@@ -1,7 +1,6 @@
-<div ref="dmn" class="dmn-preview">
-    <div class="dmn-preview__configuration">{{ ctx.dmnConfig }}</div>
-    <div class="dmn-preview__display">
-        {{ ctx.t('Result will be rendered as:') }}
-        <code><pre>{{ ctx.component.resultDisplayTemplate }}</pre></code>
+<div ref="dmnPreview" class="dmn-preview">
+    <div class="dmn-preview__engine">
+        {{ ctx.t('Engine:') }} {{ ctx.component.dmn.engine.label }}
     </div>
+    <div ref="dmnViewer" class="dmn-preview__viewer"></div>
 </div>

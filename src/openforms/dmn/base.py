@@ -43,6 +43,14 @@ class BasePlugin(ABC, AbstractBasePlugin):
         """
         return []
 
+    def get_definition_xml(self, definition_id: str, version: str = "") -> str:
+        """
+        Return the standards-compliant XML definition of the decision table.
+
+        If this is not available, return an empty string.
+        """
+        return ""
+
     # @abstractmethod
     # def validate_inputs_defined(self, form: Form, component: Component) -> NoReturn:
     #     """

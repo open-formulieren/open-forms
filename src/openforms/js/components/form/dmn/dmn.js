@@ -1,5 +1,8 @@
 import {Formio} from 'react-formio';
+// import DmnJS from 'dmn-js/lib/Modeler';  // https://www.npmjs.com/package/dmn-js
+import DmnJS from 'dmn-js';  // https://www.npmjs.com/package/dmn-js
 
+import {get} from '../../../utils/fetch';
 import editForm from './editForm';
 
 const Field = Formio.Components.components.field;
@@ -39,6 +42,12 @@ export default class DMNEvaluation extends Field {
         return {components: editForm};
     }
 
+    constructor(component, options, data) {
+        super(component, options, data);
+
+        this.viewer = null;
+    }
+
     render() {
         const dmnConfig = this.t(
             'Will evaluate DMN table "{{ decisionTableKey }}"',
@@ -47,5 +56,43 @@ export default class DMNEvaluation extends Field {
         return super.render(this.renderTemplate('dmn', {
             dmnConfig: dmnConfig,
         }));
+    }
+
+    attach(element) {
+        this.loadRefs(element, {
+            dmnPreview: 'single',
+            dmnViewer: 'single',
+        });
+
+        // get the XML DMN definition (if available) and render it in the viewer
+        get(
+            `/api/v1/dmn/decision-definitions/${this.component.dmn.decisionDefinition.id}/xml`,
+            {
+                engine: this.component.dmn.engine.id,
+                version: this.component.dmn.decisionDefinitionVersion.id,
+            }
+        ).then(response => {
+            if (!response.ok) return;
+            if (!this.refs.dmnViewer) return;
+
+            const xml = response.data.xml;
+            if (!xml) return;
+
+            if (!this.viewer) this.viewer = new DmnJS();
+            return this.viewer.importXML(xml);
+        }).then(() => {
+            if (!this.viewer) return;
+
+            this.viewer.attachTo(this.refs.dmnViewer);
+            const view = this.viewer.getViews().find(view => view.type === 'decisionTable');
+            this.viewer.open(view);
+        });
+
+        return super.attach(element);
+    }
+
+    detach() {
+        this.viewer && this.viewer.detach();
+        return super.detach();
     }
 }

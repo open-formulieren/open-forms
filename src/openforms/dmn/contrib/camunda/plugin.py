@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from django.utils.translation import gettext_lazy as _
@@ -6,6 +7,8 @@ from django_camunda.client import get_client
 
 from ...base import BasePlugin, DecisionDefinition, DecisionDefinitionVersion
 from ...registry import register
+
+logger = logging.getLogger(__name__)
 
 
 @register("camunda")
@@ -48,3 +51,28 @@ class Plugin(BasePlugin):
             )
             for result in results
         ]
+
+    def get_definition_xml(self, definition_id: str, version: str = "") -> str:
+        query = {"key": definition_id}
+        # handle version pinning
+        if version:
+            query["version"] = version
+        else:
+            query["latestVersion"] = "true"
+
+        with get_client() as client:
+            # get the results to figure out the decision definition ID
+            results = client.get("decision-definition", query)
+
+            if not results or (num_results := len(results)) > 1:
+                logger.warning(
+                    "None or multiple decision-definition found in the API, found %d results for query %r.",
+                    num_results,
+                    query,
+                )
+                return ""
+
+            camunda_id = results[0]["id"]
+            xml_response = client.get(f"decision-definition/{camunda_id}/xml")
+
+        return xml_response["dmn_xml"]
