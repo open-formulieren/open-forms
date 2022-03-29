@@ -6,12 +6,18 @@ import {PrefixContext} from './Context';
 import ErrorList from './ErrorList';
 
 
-export const normalizeErrors = (errors=[]) => {
+export const normalizeErrors = (errors) => {
     if( typeof errors === 'string' ) {
         errors = [ errors ];
     }
-    const hasErrors = Boolean(errors && errors.length);
-    const formattedErrors = errors.map(([key, msg]) => msg);
+    let formattedErrors;
+    try {
+        formattedErrors = errors.map(([key, msg]) => msg);
+    } catch {
+        formattedErrors = Object.entries(errors).map(([key, msg]) => msg);
+    }
+
+    const hasErrors = Boolean(errors && formattedErrors.length);
     return [hasErrors, formattedErrors];
 };
 

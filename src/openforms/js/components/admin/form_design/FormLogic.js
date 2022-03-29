@@ -1,6 +1,7 @@
 import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {useIntl, FormattedMessage} from 'react-intl';
+import _ from 'lodash';
 
 import DeleteIcon from '../DeleteIcon';
 import Trigger from './logic/Trigger';
@@ -25,13 +26,7 @@ const parseValidationErrors = (errors) => {
     for (const [errorName, errorReason] of errors) {
         const errorNameBits = errorName.split('.');
         if (errorNameBits[0] === 'logicRules') {
-            const ruleIndex = Number(errorNameBits[1]);
-            if (parsedErrors[ruleIndex]) {
-                parsedErrors[ruleIndex][errorNameBits[2]] = errorReason;
-            } else {
-                parsedErrors[ruleIndex] = {};
-                parsedErrors[ruleIndex][errorNameBits[2]] = errorReason;
-            }
+            _.set(parsedErrors, errorNameBits.slice(1), errorReason);
         }
     }
     return parsedErrors;
@@ -97,7 +92,7 @@ const FormLogicRules = ({rules, onAdd, onChange, onDelete}) => {
                             {...rule}
                             onChange={onChange.bind(null, index)}
                             onDelete={onDelete.bind(null, index)}
-                            errors={validationErrors[index]}
+                            errors={validationErrors[index.toString()]}
                         />
                     );
                 })
@@ -139,7 +134,12 @@ const Rule = ({jsonLogicTrigger, actions, isAdvanced, onChange, onDelete, errors
                     onChange={onChange}
                     error={errors.jsonLogicTrigger}
                 />
-                <ActionSet name="actions" actions={actions} onChange={onChange} />
+                <ActionSet
+                    name="actions"
+                    actions={actions}
+                    onChange={onChange}
+                    errors={errors.actions}
+                />
             </div>
         </div>
     );
