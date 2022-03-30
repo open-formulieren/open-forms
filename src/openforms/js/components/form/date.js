@@ -1,5 +1,5 @@
 import {Formio} from 'formiojs';
-import {DEFAULT_TABS, ADVANCED, REGISTRATION, SENSITIVE_BASIC, VALIDATION, PREFILL} from './edit/tabs';
+import {DEFAULT_TABS, ADVANCED, REGISTRATION, SENSITIVE_READ_ONLY, VALIDATION, PREFILL} from './edit/tabs';
 
 const DateTimeField = Formio.Components.components.datetime;
 
@@ -60,9 +60,9 @@ class DateField extends DateTimeField {
         ];
 
         const BASIC_TAB = {
-            ...SENSITIVE_BASIC,
+            ...SENSITIVE_READ_ONLY,
             components: [
-                ...SENSITIVE_BASIC.components,
+                ...SENSITIVE_READ_ONLY.components,
                 ...extra,
             ]
         };
