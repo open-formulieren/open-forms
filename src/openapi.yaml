@@ -286,6 +286,191 @@ paths:
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
+  /api/v1/dmn/decision-definitions:
+    get:
+      operationId: dmn_decision_definitions_list
+      description: List the available decision definitions for a given plugin.
+      summary: List available decision definitions
+      parameters:
+      - in: query
+        name: engine
+        schema:
+          type: string
+          enum:
+          - camunda
+        description: Identifier of the decision engine to query. Note that some engines
+          may be disabled at runtime.
+        required: true
+      tags:
+      - dmn
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DecisionDefinition'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+  /api/v1/dmn/decision-definitions/{definition}/xml:
+    get:
+      operationId: dmn_decision_definitions_xml_retrieve
+      summary: List available decision definition versions
+      parameters:
+      - in: path
+        name: definition
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: engine
+        schema:
+          type: string
+          enum:
+          - camunda
+        description: Identifier of the decision engine to query. Note that some engines
+          may be disabled at runtime.
+        required: true
+      - in: query
+        name: version
+        schema:
+          type: string
+      tags:
+      - dmn
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionDefinitionXML'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+  /api/v1/dmn/decision-definitions/versions:
+    get:
+      operationId: dmn_decision_definitions_versions_list
+      description: |-
+        List the available versions of a given definition.
+
+        If the selected engine supports multiple versions of decision definitions, they can
+        be retrieved through this endpoint. You must specify the engine and selected
+        definition ID.
+      summary: List available decision definition versions
+      parameters:
+      - in: query
+        name: definition
+        schema:
+          type: string
+        description: Identifier of the definition to retrieve available versions for.
+        required: true
+      - in: query
+        name: engine
+        schema:
+          type: string
+          enum:
+          - camunda
+        description: Identifier of the decision engine to query. Note that some engines
+          may be disabled at runtime.
+        required: true
+      tags:
+      - dmn
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DecisionDefinitionVersion'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+  /api/v1/dmn/plugins:
+    get:
+      operationId: dmn_plugins_list
+      description: List all decision plugins that have been registered.
+      summary: List available decision plugins
+      tags:
+      - dmn
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DecisionPlugin'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/form-definitions:
     get:
       operationId: form_definitions_list
@@ -3304,6 +3489,54 @@ components:
           format: date
       required:
       - date
+    DecisionDefinition:
+      type: object
+      properties:
+        id:
+          type: string
+          title: Identifier
+          description: The (unique) identifier pointing to a particular decision definition.
+        label:
+          type: string
+          description: Human readable name/label identifying the decision definition.
+      required:
+      - id
+      - label
+    DecisionDefinitionVersion:
+      type: object
+      properties:
+        id:
+          type: string
+          title: version identifier
+          description: The (unique) identifier pointing to a particular decision definition
+            version.
+        label:
+          type: string
+          description: Textual representation of the definition version.
+      required:
+      - id
+      - label
+    DecisionDefinitionXML:
+      type: object
+      properties:
+        xml:
+          type: string
+          title: DMN XML
+          description: If no XML can be obtained, the value will be an empty string.
+      required:
+      - xml
+    DecisionPlugin:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique plugin identifier
+        label:
+          type: string
+          description: The human-readable name for a plugin.
+      required:
+      - id
+      - label
     Exception:
       type: object
       description: |-
@@ -3336,6 +3569,27 @@ components:
       - instance
       - status
       - title
+    FieldValidationError:
+      type: object
+      description: |-
+        Validation error format, following the NL API Strategy.
+
+        See https://docs.geostandaarden.nl/api/API-Strategie/ and
+        https://docs.geostandaarden.nl/api/API-Strategie-ext/#error-handling-0
+      properties:
+        name:
+          type: string
+          description: Name of the field with invalid data
+        code:
+          type: string
+          description: System code of the type of error
+        reason:
+          type: string
+          description: Explanation of what went wrong with the data
+      required:
+      - code
+      - name
+      - reason
     Form:
       type: object
       description: |-
@@ -4895,6 +5149,43 @@ components:
       required:
       - fullName
       - username
+    ValidationError:
+      type: object
+      description: |-
+        Error format for HTTP 4xx and 5xx errors.
+
+        See https://docs.geostandaarden.nl/api/API-Strategie-ext/#error-handling-0 for the NL API strategy guidelines.
+      properties:
+        type:
+          type: string
+          description: URI reference to the error type, intended for developers
+        code:
+          type: string
+          description: System code indicating the type of error
+        title:
+          type: string
+          description: Generic title for the type of error
+        status:
+          type: integer
+          description: The HTTP status code
+        detail:
+          type: string
+          description: Extra information about the error, if available
+        instance:
+          type: string
+          description: URI with reference to this specific occurrence of the error.
+            This can be used in conjunction with server logs, for example.
+        invalidParams:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldValidationError'
+      required:
+      - code
+      - detail
+      - instance
+      - invalidParams
+      - status
+      - title
     ValidationInput:
       type: object
       properties:
