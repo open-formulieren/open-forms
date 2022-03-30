@@ -1,15 +1,17 @@
 from django.template import Context, Template
 
+from glom import glom
 from rest_framework.request import Request
 
-from openforms.contrib.camunda.dmn import evaluate_dmn
 from openforms.formio.typing import Component
-from openforms.forms.custom_field_types import register
+from openforms.forms.custom_field_types import register as fields_register
 from openforms.submissions.models import Submission
 
+from .registry import register
 
-@register("camunda:dmn")
-def evaluate_camunda_dmn(
+
+@fields_register("dmn")
+def evaluate_dmn(
     component: Component,
     request: Request,
     submission: Submission,
@@ -19,21 +21,32 @@ def evaluate_camunda_dmn(
 
     # TODO: we might want to parse the DMN XML to figure out which input data keys are needed,
     # or use an explicit mapping of component -> input to avoid sending potentially
-    # sensitive data into the Camunda API.
+    # sensitive data into the Camunda API. Note this also ties in with the future variables
+    # implementation.
+
     # TODO: right now, the component key must match the inputData key in the DMN model,
     # it should be possible to apply a mapping for this.
     input_values = submission.data
     if not input_values:
         return component
 
-    result = evaluate_dmn(component["decisionTableKey"], input_values=input_values)
+    configuration = component["dmn"]
+
+    plugin = register[configuration["engine"]["id"]]
+    definition_id = configuration["decisionDefinition"]["id"]
+    definition_version = glom(configuration, "decisionDefinitionVersion.id", default="")
+    result_template = configuration["resultDisplayTemplate"]
+
+    result = plugin.evaluate(
+        definition_id, version=definition_version, input_values=input_values
+    )
 
     context_data = {
         "result": result,
         "submission_data": submission.data,
     }
-    output = Template(component["resultDisplayTemplate"]).render(Context(context_data))
-    component["resultDisplay"] = output
+    output = Template(result_template).render(Context(context_data))
+    component["dmn"]["resultDisplay"] = output
 
     # set the default value to communicate the evaluation result, the SDK can/should pick
     # this up.

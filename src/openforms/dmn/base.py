@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, NoReturn
+from typing import Any, Dict, List, NoReturn
 
 from openforms.formio.typing import Component
 from openforms.forms.models import Form
@@ -28,6 +28,15 @@ class BasePlugin(ABC, AbstractBasePlugin):
         The end-user configuring the component selects one of the available choices.
         Note that different versions of the same definition must be filtered out, as
         specifying a particular version is a separate action.
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def evaluate(
+        self, definition_id: str, *, version: str = "", input_values: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Evaluate the decision definition with the given input data.
         """
         raise NotImplementedError()
 

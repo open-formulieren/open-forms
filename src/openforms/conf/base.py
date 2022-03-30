@@ -184,6 +184,7 @@ INSTALLED_APPS = [
     "openforms.contrib.kvk",
     "openforms.contrib.bag.apps.BAGConfig",
     "openforms.contrib.microsoft.apps.MicrosoftApp",
+    "openforms.dmn",
     "openforms.dmn.contrib.camunda",
     "openforms.registrations",
     "openforms.registrations.contrib.demo",

@@ -10,7 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 def evaluate_dmn(
-    dmn_key: str, *, dmn_id: str = "", input_values: Dict[str, Any]
+    dmn_key: str,
+    *,
+    dmn_id: str = "",
+    input_values: Dict[str, Any],
+    client=None,
 ) -> Dict[str, Any]:
     """
     Evaluate the specified DMN table with the given input values.
@@ -25,12 +29,13 @@ def evaluate_dmn(
         dmn_key,
         dmn_id,
     )
-    client = get_client()
+    client = client or get_client()
     serialized = serialize_variables(input_values)
 
     result = client.post(
         f"decision-definition/key/{dmn_key}/evaluate",
         json={"variables": serialized},
+        underscoreize=False,
     )
 
     output_variables = {}
