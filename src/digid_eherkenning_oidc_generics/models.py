@@ -74,6 +74,22 @@ class OpenIDConnectPublicConfig(OpenIDConnectBaseConfig):
             "These scopes are hardcoded and must be supported by the identity provider"
         ),
     )
+    vertegenwoordigde_claim_name = models.CharField(
+        verbose_name=_("vertegenwoordigde claim name"),
+        default="aanvrager.bsn",
+        max_length=50,
+        help_text=_(
+            "Name of the claim in which the BSN of the person being represented is stored"
+        ),
+    )
+    gemachtigde_claim_name = models.CharField(
+        verbose_name=_("gemachtigde claim name"),
+        default="gemachtigde.bsn",
+        max_length=50,
+        help_text=_(
+            "Name of the claim in which the BSN of the person representing someone else is stored"
+        ),
+    )
 
     @classproperty
     def custom_oidc_db_prefix(cls):

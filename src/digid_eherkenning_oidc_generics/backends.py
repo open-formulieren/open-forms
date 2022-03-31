@@ -16,6 +16,11 @@ class OIDCAuthenticationBackend(_OIDCAuthenticationBackend):
     session_key = ""
     claim_name_field = "identifier_claim_name"
 
+    def extract_claims(self, payload):
+        self.request.session[self.session_key] = payload[
+            self.get_settings(self.claim_name_field)
+        ]
+
     def get_or_create_user(self, access_token, id_token, payload):
         user_info = self.get_userinfo(access_token, id_token, payload)
         claims_verified = self.verify_claims(user_info)
@@ -23,9 +28,8 @@ class OIDCAuthenticationBackend(_OIDCAuthenticationBackend):
             msg = "Claims verification failed"
             raise SuspiciousOperation(msg)
 
-        self.request.session[self.session_key] = payload[
-            self.get_settings(self.claim_name_field)
-        ]
+        self.extract_claims(payload)
+
         user = AnonymousUser()
         user.is_active = True
         return user
