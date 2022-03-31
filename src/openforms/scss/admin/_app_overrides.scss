@@ -20,6 +20,14 @@ body {
   --djai-dropdown-bg--hover: #{$color-primary-dark};
 }
 
+@media (prefers-color-scheme: dark) {
+  body {
+    --djai-tab-bg--hover: #{$color-primary};
+    --djai-tab-fg--active: #{$color-lightest};
+    --djai-dropdown-bg--hover: #{$color-primary};
+  }
+}
+
 $djai-padding: 40px;
 $djai-padding--mobile: 15px;
 $djai-padding--tablet: 30px;
