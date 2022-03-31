@@ -15,14 +15,15 @@
         Submission details for {{form_name}} (submitted on {{datetime}})
     {% endblocktrans %}</p>
 {% endif %}
+<table cellpadding="0" cellspacing="0">
     <tr>
-        <th style="padding: 1px; text-align: left; padding-right: 10px;">{% trans "Field" %}</th>
-        <th style="padding: 1px; text-align: left;">{% trans "Response" %}</th>
+        <th style="padding: 2px 0; text-align: left; padding-right: 10px;">{% trans "Field" %}</th>
+        <th style="padding: 2px 0; text-align: left;">{% trans "Response" %}</th>
     </tr>
     {% for key, value in submitted_data %}
         <tr>
-            <td style="padding: 2px; padding-right: 10px;">{{ key }}:</td>
-            <td style="padding: 2px;">{% display_value value %}</td>
+            <td valign="top" style="padding: 2px 0; padding-right: 10px;">{{ key }}</td>
+            <td valign="top" style="padding: 2px 0;">{% display_value value %}</td>
         </tr>
     {% endfor %}
 </table>
