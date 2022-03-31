@@ -2,6 +2,14 @@
 Changelog
 =========
 
+1.0.5 (2022-03-31)
+==================
+
+Fixed some critical bugs
+
+* [#1466] Fixed crash in submission processing for radio and select fields with numeric values
+* [#1464] Fixed broken styles/layout on some admin pages, such as the import form page
+
 1.0.4 (2022-03-17)
 ==================
 
