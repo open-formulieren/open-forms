@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from typing import Any, Dict, Iterable, List, Union
 
@@ -15,13 +16,29 @@ from openforms.plugins.plugin import AbstractBasePlugin
 from ..typing import Component, OptionDict
 from .registry import register
 
+logger = logging.getLogger(__name__)
 
-def get_value_label(possible_values: List[OptionDict], value: str) -> str:
+
+def get_value_label(possible_values: List[OptionDict], value: Union[int, str]) -> str:
+    # From #1466 it's clear that Formio does not force the values to be strings, e.g.
+    # if you use numeric values for the options. They are stored as string in the form
+    # configuration, but the submitted value is a number.
+    # See https://github.com/formio/formio.js/blob/4.12.x/src/components/radio/Radio.js#L208
+    # (unmodified in 4.13) but also normalization in the select component
+    # https://github.com/formio/formio.js/blob/4.12.x/src/components/select/Select.js#L1227
+    _original = value
+    # cast to string to compare against the values
+    if not isinstance(value, str):
+        value = str(value)
+        logger.info(
+            "Casted original value %r to string value %s for option comparison",
+            _original,
+            value,
+        )
+
     for possible_value in possible_values:
         if possible_value["value"] == value:
             return possible_value["label"]
-
-    assert isinstance(value, str), "Expected value to be a str"
 
     return value
 
@@ -223,7 +240,7 @@ class CurrencyFormatter(FormioFormatter):
 
 @register("radio")
 class RadioFormatter(FormioFormatter):
-    def format(self, component: Component, value: str) -> str:
+    def format(self, component: Component, value: Union[str, int]) -> str:
         return get_value_label(component["values"], value)
 
 
