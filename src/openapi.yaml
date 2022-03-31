@@ -2474,6 +2474,8 @@ paths:
           - kvk-branchNumber
           - kvk-kvkNumber
           - kvk-rsin
+          - phonenumber-international
+          - phonenumber-nl
         description: ID of the validation plugin, see the [`validation_plugin_list`](./#operation/validation_plugin_list)
           operation
         required: true
