@@ -7,7 +7,7 @@ ZGW API's
 The `ZGW (Zaakgericht Werken) API's`_ are a suite of REST based Zaak services.
 Open Forms can be configured to access these API's to register form submissions.
 
-.. _`ZGW (Zaakgericht Werken) API's`: https://www.vngrealisatie.nl/producten/api-standaarden-zaakgericht-werken
+.. _`ZGW (Zaakgericht Werken) API's`: https://vng.nl/projecten/zaakgericht-werken-api
 
 .. note::
 
