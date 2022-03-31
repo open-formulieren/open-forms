@@ -159,6 +159,10 @@
                 "openidconnecteherkenningconfig"
             ],
             [
+                "digid_eherkenning_oidc_generics",
+                "openidconnectdigidmachtigenconfig"
+            ],
+            [
                 "multidomain",
                 "domain"
             ],
