@@ -8,6 +8,7 @@ from furl import furl
 from mozilla_django_oidc.views import get_next_url
 
 from digid_eherkenning_oidc_generics.mixins import (
+    SoloConfigDigiDMachtigenMixin,
     SoloConfigDigiDMixin,
     SoloConfigEHerkenningMixin,
 )
@@ -96,13 +97,13 @@ class eHerkenningOIDCAuthenticationCallbackView(
 
 
 class DigiDMachtigenOIDCAuthenticationRequestView(
-    SoloConfigDigiDMixin, OIDCAuthenticationRequestView
+    SoloConfigDigiDMachtigenMixin, OIDCAuthenticationRequestView
 ):
     plugin_identifier = "digid_machtigen_oidc"
 
 
 class DigiDMachtigenOIDCAuthenticationCallbackView(
-    SoloConfigDigiDMixin, OIDCAuthenticationCallbackView
+    SoloConfigDigiDMachtigenMixin, OIDCAuthenticationCallbackView
 ):
     plugin_identifier = "digid_machtigen_oidc"
     auth_backend_class = OIDCAuthenticationDigiDMachtigenBackend

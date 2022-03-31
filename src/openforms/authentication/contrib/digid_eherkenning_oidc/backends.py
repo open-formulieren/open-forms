@@ -2,9 +2,12 @@ import logging
 from copy import deepcopy
 
 from glom import PathAccessError, glom
+from django.contrib.auth.models import AnonymousUser
+from django.core.exceptions import SuspiciousOperation
 
 from digid_eherkenning_oidc_generics.backends import OIDCAuthenticationBackend
 from digid_eherkenning_oidc_generics.mixins import (
+    SoloConfigDigiDMachtigenMixin,
     SoloConfigDigiDMixin,
     SoloConfigEHerkenningMixin,
 )
@@ -38,9 +41,21 @@ class OIDCAuthenticationEHerkenningBackend(
 
 
 class OIDCAuthenticationDigiDMachtigenBackend(
-    SoloConfigDigiDMixin, OIDCAuthenticationBackend
+    SoloConfigDigiDMachtigenMixin, OIDCAuthenticationBackend
 ):
     session_key = DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY
+
+    def get_or_create_user(self, access_token, id_token, payload):
+        claims_verified = self.verify_claims(payload)
+        if not claims_verified:
+            msg = "Claims verification failed"
+            raise SuspiciousOperation(msg)
+
+        self.extract_claims(payload)
+
+        user = AnonymousUser()
+        user.is_active = True
+        return user
 
     def extract_claims(self, payload: dict) -> None:
         claim_names = [
