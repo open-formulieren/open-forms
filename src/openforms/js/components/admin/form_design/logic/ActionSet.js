@@ -2,57 +2,55 @@ import React from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
+import _ from 'lodash';
 
 import ButtonContainer from '../../forms/ButtonContainer';
 import Action from './Action';
 import {useOnChanged} from './hooks';
 
 
-const emptyAction = {
-    actionType: '',
-    stepToChange: '',
-    componentToChange: '',
-    componentValueSource: '',
-    componentProperty: '',
-    componentPropertyType: '',
-    componentPropertyValue: '',
-    componentVariableValue: '',
-    componentLiteralValue: '',
+const EMPTY_ACTION = {
+    component: '',
+    formStep: '',
+    action: {
+        type: '',
+        property: {type: '', value: ''},
+        value: '',
+        state: '',
+    },
 };
 
-const initialState = {
-    actions: []
-};
 
 const ACTION_SELECTION_ORDER = [
-    'actionType',
-    'stepToChange',
-    'componentToChange',
-    'componentValueSource',
-    'componentProperty',
-    'componentPropertyType',
-    'componentPropertyValue',
-    'componentVariableValue',
-    'componentLiteralValue',
+    'action.type',
+    'formStep',
+    'component',
+    'action.property',
+    'action.state',
+    'action.value',
 ];
 
 
 const reducer = (draft, action) => {
     switch(action.type) {
         case 'ACTION_CHANGED': {
-            const {name, value, index} = action.payload;
-            draft.actions[index][name] = value;
+            const {value, name, index} = action.payload;
+            _.set(draft.actions[index], name, value);
 
             // clear the dependent fields if needed - e.g. if the component changes, all fields to the right change
-            const currentFieldIndex = ACTION_SELECTION_ORDER.indexOf(name);
-            const nextFieldNames = ACTION_SELECTION_ORDER.slice(currentFieldIndex + 1);
-            for (const name of nextFieldNames) {
-                draft.actions[index][name] = emptyAction[name];
+            if (ACTION_SELECTION_ORDER.includes(name)) {
+                const currentFieldIndex = ACTION_SELECTION_ORDER.indexOf(name);
+                const nextFieldNames = ACTION_SELECTION_ORDER.slice(currentFieldIndex + 1);
+                let emptyValue;
+                for (const name of nextFieldNames) {
+                    emptyValue = _.get(EMPTY_ACTION, name);
+                    _.set(draft.actions[index], name, emptyValue);
+                }
             }
             break;
         }
         case 'ACTION_ADDED': {
-            draft.actions.push(emptyAction);
+            draft.actions.push(EMPTY_ACTION);
             break;
         }
         case 'ACTION_DELETED': {
@@ -68,88 +66,28 @@ const reducer = (draft, action) => {
     }
 };
 
-const convertActionToJson = (action) => {
-    return {
-        component: action.componentToChange,
-        formStep: action.stepToChange,
-        action: {
-            type: action.actionType,
-            property: {value: action.componentProperty, type: action.componentPropertyType},
-            // The data in 'value' needs to be valid jsonLogic
-            value: action.componentLiteralValue || {var: action.componentVariableValue},
-            state: action.componentPropertyValue,
-            // Selecting if the new component value should come from a literal or another component doesn't
-            // change anything in the JSON, only entering the literal or picking the component does.
-            // So, this 'source' attribute is here only to keep track of the value for the OperandTypeSelection
-            // dropdown, but is not used in the backend
-            source: action.componentValueSource
-        }
-    };
-};
-
-const parseJsonAction = (jsonAction) => {
-    let componentValueSource = '',
-        componentLiteralValue,
-        componentVariableValue;
-
-    const { value } = jsonAction.action;
-
-    if (value != null) {
-        const actionVar = value?.var;
-        if (actionVar == null) {
-            componentValueSource = 'literal';
-            componentLiteralValue = value;
-            componentVariableValue = '';
-        } else {
-            if (actionVar.length) {
-                componentValueSource = 'component';
-            }
-            componentLiteralValue = '';
-            componentVariableValue = actionVar;
-        }
-    }
-
-    if (!!jsonAction.action.source) componentValueSource = jsonAction.action.source;
-
-    return {
-        componentToChange: jsonAction.component,
-        actionType: jsonAction.action.type,
-        componentValueSource: componentValueSource,
-        componentProperty: jsonAction.action.property?.value,
-        componentLiteralValue: componentLiteralValue,
-        componentVariableValue: componentVariableValue,
-        componentPropertyValue: jsonAction.action.state,
-        componentPropertyType: jsonAction.action.property?.type,
-        stepToChange: jsonAction.formStep,
-    };
-};
 
 const ActionSet = ({name, actions, onChange}) => {
     const [state, dispatch] = useImmerReducer(reducer, {
-        ...initialState,
-        actions: actions.map(action => parseJsonAction(action)) || []
+        actions: actions || []
     });
 
-    const jsonActions = state.actions.map(action => convertActionToJson(action));
     useOnChanged(
-        jsonActions,
-        () => onChange({target: {name, value: jsonActions}}),
+        state.actions,
+        () => onChange({target: {name, value: state.actions}}),
     );
 
     const onActionChange = (index, event) => {
         const {name, value} = event.target;
         dispatch({
             type: 'ACTION_CHANGED',
-            payload: {
-                name,
-                value,
-                index
-            },
+            payload: {index, name, value},
         });
     };
 
     const firstActionPrefix = (<FormattedMessage description="First logic action prefix" defaultMessage="Then" />);
     const extraActionPrefix = (<FormattedMessage description="Extra logic action prefix" defaultMessage="and" />);
+
     return (
         <>
             {state.actions.map((action, index) => (
@@ -168,10 +106,12 @@ const ActionSet = ({name, actions, onChange}) => {
     );
 };
 
+
 ActionSet.propTypes = {
     name: PropTypes.string.isRequired,
-    actions: PropTypes.arrayOf(PropTypes.object).isRequired,
+    actions: PropTypes.arrayOf(PropTypes.object),
     onChange: PropTypes.func.isRequired,
 };
+
 
 export default ActionSet;
