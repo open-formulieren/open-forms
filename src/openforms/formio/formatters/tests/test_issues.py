@@ -376,3 +376,91 @@ class IssuesTestCase(TestCase):
         res = format_value(select1, value)
 
         self.assertEqual(res, "")
+
+    def test_issue_1466_assertion_error_string(self):
+        """
+        Regression test for radio inputs with numeric values.
+
+        Github issue #1466, when a crash occurred in the PDF generation because of
+        unexpected non-string option value. This appears to happen when values are
+        numeric and Formio keeps the number datatype instead of converting to string.
+        """
+        component = {
+            "allowCalculateOverride": False,
+            "allowMultipleMasks": False,
+            "attributes": {},
+            "autofocus": False,
+            "calculateServer": False,
+            "calculateValue": "",
+            "clearOnHide": True,
+            "conditional": {"eq": "", "show": None, "when": None},
+            "customClass": "",
+            "customDefaultValue": "",
+            "dataGridLabel": False,
+            "dbIndex": False,
+            "defaultValue": "",
+            "description": "",
+            "disabled": False,
+            "encrypted": False,
+            "errorLabel": "",
+            "fieldSet": False,
+            "hidden": False,
+            "hideLabel": False,
+            "id": "e2n18ig",
+            "input": True,
+            "inputType": "radio",
+            "isSensitiveData": False,
+            "key": "projectmanagement",
+            "label": "Hoe tevreden ben je met ons projectmanagement / consultancy en bijbehorende communicatie?",
+            "labelPosition": "top",
+            "modalEdit": False,
+            "multiple": False,
+            "overlay": {"height": "", "left": "", "style": "", "top": "", "width": ""},
+            "persistent": True,
+            "placeholder": "",
+            "prefix": "",
+            "properties": {},
+            "protected": False,
+            "redrawOn": "",
+            "refreshOn": "",
+            "registration": {"attribute": ""},
+            "showCharCount": False,
+            "showInEmail": False,
+            "showWordCount": False,
+            "suffix": "",
+            "tabindex": "",
+            "tableView": False,
+            "tooltip": "",
+            "type": "radio",
+            "unique": False,
+            "validate": {
+                "custom": "",
+                "customPrivate": False,
+                "multiple": False,
+                "onlyAvailableItems": False,
+                "plugins": [],
+                "required": True,
+                "strictDateValidation": False,
+                "unique": False,
+            },
+            "validateOn": "change",
+            "values": [
+                {"label": "1 - Totaal niet tevreden", "value": "1"},
+                {"label": "2", "value": "2"},
+                {"label": "3", "value": "3"},
+                {"label": "4", "value": "4"},
+                {"label": "5", "value": "5"},
+                {"label": "6", "value": "6"},
+                {"label": "7", "value": "7"},
+                {"label": "8", "value": "8"},
+                {"label": "9", "value": "9"},
+                {"label": "10 - Heel erg tevreden", "value": "10"},
+                {"label": "n.v.t.", "value": "nvt"},
+            ],
+            "widget": None,
+        }
+        value = 10
+
+        res = format_value(component, value)
+
+        self.assertEqual(res, "10 - Heel erg tevreden")
