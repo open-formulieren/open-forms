@@ -54,6 +54,12 @@ class BaseRegistry:
     def __contains__(self, key: str):
         return key in self._registry
 
+    def get_or_default(self, key: str, default: str):
+        try:
+            return self[key]
+        except KeyError:
+            return self[default]
+
     def iter_enabled_plugins(self):
         try:
             with_demos = GlobalConfiguration.get_solo().enable_demo_plugins

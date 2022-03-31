@@ -69,9 +69,9 @@ class FormioFormatter(AbstractBasePlugin):
         return [v for v in value if not self.is_empty_value(component, v)]
 
     def join_formatted_values(
-        self, component: Component, formatted_values: Iterable[str]
+        self, component: Component, formatted_values: Iterable[str], as_html
     ) -> str:
-        if self.as_html:
+        if as_html:
             args_generator = ((formatted,) for formatted in formatted_values)
             return format_html_join(self.multiple_separator, "{}", args_generator)
         else:
@@ -81,55 +81,54 @@ class FormioFormatter(AbstractBasePlugin):
         return formatted
 
     def __call__(self, component: Component, value: Any, as_html=False) -> str:
-        self.as_html = as_html
         # note all this depends on value not being unexpected type or shape
         values = self.normalise_value_to_list(component, value)
 
         formatted_values = (
-            force_str(self.format(component, value)) for value in values
+            force_str(self.format(component, value, as_html)) for value in values
         )
         # logically we'd want a .filter_formatted_values() step here
         return self.process_result(
-            component, self.join_formatted_values(component, formatted_values)
+            component, self.join_formatted_values(component, formatted_values, as_html)
         )
 
-    def format(self, component: Component, value: Any) -> str:
+    def format(self, component: Component, value: Any, as_html=False) -> str:
         raise NotImplementedError("%r must implement the 'format' method" % type(self))
 
 
 @register("default")
 class DefaultFormatter(FormioFormatter):
-    def format(self, component: Component, value: Any) -> str:
+    def format(self, component: Component, value: Any, as_html=False) -> str:
         return str(value)
 
 
 @register("textfield")
 class TextFieldFormatter(FormioFormatter):
-    def format(self, component: Component, value: str) -> str:
+    def format(self, component: Component, value: str, as_html=False) -> str:
         return str(value)
 
 
 @register("email")
 class EmailFormatter(FormioFormatter):
-    def format(self, component: Component, value: str) -> str:
+    def format(self, component: Component, value: str, as_html=False) -> str:
         return str(value)
 
 
 @register("date")
 class DateFormatter(FormioFormatter):
-    def format(self, component: Component, value: str) -> str:
+    def format(self, component: Component, value: str, as_html=False) -> str:
         return fmt_date(parse_date(value))
 
 
 @register("time")
 class TimeFormatter(FormioFormatter):
-    def format(self, component: Component, value: str) -> str:
+    def format(self, component: Component, value: str, as_html=False) -> str:
         return fmt_time(parse_time(value))
 
 
 @register("phoneNumber")
 class PhoneNumberFormatter(FormioFormatter):
-    def format(self, component: Component, value: str) -> str:
+    def format(self, component: Component, value: str, as_html=False) -> str:
         # TODO custom formatting?
         return str(value)
 
@@ -149,28 +148,30 @@ class FileFormatter(FormioFormatter):
             return _("attachment: %s") % formatted
         return formatted
 
-    def format(self, component: Component, value: List) -> str:
+    def format(self, component: Component, value: List, as_html=False) -> str:
         # this is only valid for display to the user (because filename component option, dedupe etc)
         return value["originalName"]
 
 
 @register("textarea")
 class TextAreaFormatter(FormioFormatter):
-    def format(self, component: Component, value: str) -> str:
+    def format(self, component: Component, value: str, as_html=False) -> str:
         # TODO custom formatting?
         return str(value)
 
 
 @register("number")
 class NumberFormatter(FormioFormatter):
-    def format(self, component: Component, value: Union[int, float]) -> str:
+    def format(
+        self, component: Component, value: Union[int, float], as_html=False
+    ) -> str:
         # localized and forced to decimalLimit
         return number_format(value, decimal_pos=component.get("decimalLimit"))
 
 
 @register("password")
 class PasswordFormatter(FormioFormatter):
-    def format(self, component: Component, value: str) -> str:
+    def format(self, component: Component, value: str, as_html=False) -> str:
         # TODO legacy just printed as-is, but we might want to use unicode-dots or stars
         # return "\u25CF" * len(value)
         return str(value)
@@ -178,13 +179,15 @@ class PasswordFormatter(FormioFormatter):
 
 @register("checkbox")
 class CheckboxFormatter(FormioFormatter):
-    def format(self, component: Component, value: bool) -> str:
+    def format(self, component: Component, value: bool, as_html=False) -> str:
         return yesno(value)
 
 
 @register("selectboxes")
 class SelectBoxesFormatter(FormioFormatter):
-    def format(self, component: Component, value: Dict[str, bool]) -> str:
+    def format(
+        self, component: Component, value: Dict[str, bool], as_html=False
+    ) -> str:
         selected_labels = [
             entry["label"] for entry in component["values"] if value.get(entry["value"])
         ]
@@ -193,7 +196,7 @@ class SelectBoxesFormatter(FormioFormatter):
 
 @register("select")
 class SelectFormatter(FormioFormatter):
-    def format(self, component: Component, value: str) -> str:
+    def format(self, component: Component, value: str, as_html=False) -> str:
         # grab appointment specific data
         if glom(component, "appointments.showDates", default=False):
             return fmt_date(parse_date(value))
@@ -215,7 +218,7 @@ class SelectFormatter(FormioFormatter):
 
 @register("currency")
 class CurrencyFormatter(FormioFormatter):
-    def format(self, component: Component, value: float) -> str:
+    def format(self, component: Component, value: float, as_html=False) -> str:
         # localized and forced to decimalLimit
         # note we mirror formio and default to 2 decimals
         return number_format(value, decimal_pos=component.get("decimalLimit", 2))
@@ -223,15 +226,15 @@ class CurrencyFormatter(FormioFormatter):
 
 @register("radio")
 class RadioFormatter(FormioFormatter):
-    def format(self, component: Component, value: str) -> str:
+    def format(self, component: Component, value: str, as_html=False) -> str:
         return get_value_label(component["values"], value)
 
 
 @register("signature")
 class SignatureFormatter(FormioFormatter):
-    def format(self, component: Component, value: str) -> str:
+    def format(self, component: Component, value: str, as_html=False) -> str:
         text = _("signature added")
-        if not self.as_html:
+        if not as_html:
             return text
 
         assert value.startswith(
@@ -248,6 +251,6 @@ class SignatureFormatter(FormioFormatter):
 
 @register("map")
 class MapFormatter(FormioFormatter):
-    def format(self, component: Component, value: List[float]) -> str:
+    def format(self, component: Component, value: List[float], as_html=False) -> str:
         # use a comma here since its a single data element
         return join_mapped(value, separator=", ")
