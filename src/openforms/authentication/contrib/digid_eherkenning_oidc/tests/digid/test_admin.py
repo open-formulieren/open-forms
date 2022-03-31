@@ -30,15 +30,6 @@ class DigiDOIDCFormAdminTests(WebTest):
         self.user = SuperUserFactory.create(app=self.app)
         self.app.set_user(self.user)
 
-        global_config = GlobalConfiguration.get_solo()
-        global_config.enable_react_form = False
-        global_config.save()
-
-        def _cleanup():
-            GlobalConfiguration.get_solo().delete()
-
-        self.addCleanup(_cleanup)
-
     def test_digid_oidc_disable_allowed(self):
         # Patching `get_solo()` doesn't seem to work when retrieving the change_form
         config = OpenIDConnectPublicConfig(**default_config)
