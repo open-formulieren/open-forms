@@ -1,0 +1,86 @@
+name: Probleem melden / Bug report
+description: Meldt een probleem om ons te helpen verbeteren  / Create a report to help us improve
+title: "Title here"
+labels: ["bug", "triage"]
+assignees: []
+body:
+  - type: input
+    id: product-version
+    attributes:
+      label: Product versie / Product version
+      description: Welke versie gebruikt u? / Which version do you use?
+      placeholder: "1.1.0"
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Omschrijf het probleem / Describe the bug
+      description: Een duidelijke omschrijving van het probleem (de "bug") / A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Stappen om te reproduceren / Steps to reproduce
+      description: Stappen die leiden tot het probleem / Steps to reproduce the behavior
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: false
+  - type: textarea
+    id: expected-behaviour
+    attributes:
+      label: Verwacht gedrag / Expected behavior
+      description: Een duidelijke omschrijving van wat de verwachting is / A clear and concise description of what you expected to happen.
+    validations:
+      required: false
+  - type: dropdown
+    id: screen-resolution
+    attributes:
+      label: Screen resolution
+      options:
+        - "smaller"
+        - "1024 x 768"
+        - "1366 x 768"
+        - "1920 x 1080"
+        - "bigger"
+        - "unknown"
+    validations:
+      required: false
+  - type: dropdown
+    id: device
+    attributes:
+      label: Browser
+      options:
+        - Desktop
+        - Mobile
+        - Tablet
+    validations:
+      required: false
+  - type: dropdown
+    id: os
+    attributes:
+      label: OS
+      options:
+        - Windows
+        - Linux
+        - MacOS
+    validations:
+      required: false
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: Browser
+      multiple: true
+      options:
+        - Edge
+        - Chrome
+        - Safari
+        - Firefox
+        - Other
+    validations:
+      required: false

@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
-- name: Report a security vulnerability
+  - name: Meldt een veiligheidsprobleem / Report a security vulnerability
     url: https://github.com/open-formulieren/open-forms/security/policy
-    about: Please review our security policy for more details
-- name: Priority support
-    url: https://opengem.nl
-    about: Contact us directly to get priority support.
+    about: Bekijk ons beveiligingsbeleid voor meer informatie / Please review our security policy for more details
+  - name: Ondersteuning met prioriteit / Priority support
+    url: https://opengem.nl/contact/
+    about: Neem direct contact met ons op / Contact us directly to get priority support.
