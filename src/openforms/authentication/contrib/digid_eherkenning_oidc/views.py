@@ -19,6 +19,7 @@ from digid_eherkenning_oidc_generics.views import (
 from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from .backends import (
     OIDCAuthenticationDigiDBackend,
+    OIDCAuthenticationDigiDMachtigenBackend,
     OIDCAuthenticationEHerkenningBackend,
 )
 
@@ -92,3 +93,16 @@ class eHerkenningOIDCAuthenticationCallbackView(
 ):
     plugin_identifier = "eherkenning_oidc"
     auth_backend_class = OIDCAuthenticationEHerkenningBackend
+
+
+class DigiDMachtigenOIDCAuthenticationRequestView(
+    SoloConfigDigiDMixin, OIDCAuthenticationRequestView
+):
+    plugin_identifier = "digid_machtigen_oidc"
+
+
+class DigiDMachtigenOIDCAuthenticationCallbackView(
+    SoloConfigDigiDMixin, OIDCAuthenticationCallbackView
+):
+    plugin_identifier = "digid_machtigen_oidc"
+    auth_backend_class = OIDCAuthenticationDigiDMachtigenBackend
