@@ -2,13 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {useIntl} from 'react-intl';
 
-import Select from '../../forms/Select';
-import DeleteIcon from '../../DeleteIcon';
+import Select from '../../../forms/Select';
+import DeleteIcon from '../../../DeleteIcon';
 
-import {ACTION_TYPES} from './constants';
-import DataPreview from './DataPreview';
-import {ActionComponent} from './actions/Actions';
-import {Action as ActionType} from './actions/types';
+import {ACTION_TYPES} from '../constants';
+import DataPreview from '../DataPreview';
+import {ActionComponent} from './Actions';
+import {Action as ActionType} from './types';
 
 
 const Action = ({prefixText, action, onChange, onDelete}) => {

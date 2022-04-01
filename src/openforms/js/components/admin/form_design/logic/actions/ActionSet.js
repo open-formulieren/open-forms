@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 import _ from 'lodash';
 
-import ButtonContainer from '../../forms/ButtonContainer';
+import ButtonContainer from '../../../forms/ButtonContainer';
 import Action from './Action';
-import {useOnChanged} from './hooks';
+import {useOnChanged} from '../hooks';
 
 
 const EMPTY_ACTION = {
