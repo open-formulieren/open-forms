@@ -3,8 +3,6 @@ from django.contrib import admin
 from django.forms import PasswordInput
 from django.utils.translation import gettext_lazy as _
 
-from privates.admin import PrivateMediaMixin
-
 from .models import SoapService, StufService
 
 
@@ -18,10 +16,7 @@ class StufServiceAdminAdminForm(forms.ModelForm):
 
 
 @admin.register(StufService)
-class StufServiceAdmin(PrivateMediaMixin, admin.ModelAdmin):
-    private_media_fields = ("certificate", "certificate_key")
-    private_media_view_options = {"attachment": True}
-
+class StufServiceAdmin(admin.ModelAdmin):
     form = StufServiceAdminAdminForm
     fieldsets = (
         (
@@ -49,22 +44,9 @@ class StufServiceAdmin(PrivateMediaMixin, admin.ModelAdmin):
             _("Connection"),
             {
                 "fields": [
-                    "soap_version",
                     "endpoint_beantwoord_vraag",
                     "endpoint_vrije_berichten",
                     "endpoint_ontvang_asynchroon",
-                ]
-            },
-        ),
-        (
-            _("Authentication"),
-            {
-                "fields": [
-                    "endpoint_security",
-                    "user",
-                    "password",
-                    "certificate",
-                    "certificate_key",
                 ]
             },
         ),
@@ -80,6 +62,26 @@ class SoapServiceAdmin(admin.ModelAdmin):
     search_fields = (
         "label",
         "url",
+    )
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": ("label", "url", "soap_version"),
+            },
+        ),
+        (
+            _("Authentication"),
+            {
+                "fields": [
+                    "endpoint_security",
+                    "user",
+                    "password",
+                    "client_certificate",
+                    "server_certificate",
+                ]
+            },
+        ),
     )
 
     class Meta:
