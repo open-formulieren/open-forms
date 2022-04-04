@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from privates.fields import PrivateMediaFileField
+from zgw_consumers.models import Certificate
 
 from stuf.constants import EndpointSecurity, SOAPVersion
 
@@ -16,6 +16,54 @@ class SoapService(models.Model):
         _("URL"),
         blank=True,
         help_text=_("URL of the service to connect to."),
+    )
+
+    soap_version = models.CharField(
+        _("SOAP version"),
+        max_length=5,
+        default=SOAPVersion.soap12,
+        choices=SOAPVersion.choices,
+        help_text=_("The SOAP version to use for the message envelope."),
+    )
+
+    endpoint_security = models.CharField(
+        _("Security"),
+        max_length=20,
+        blank=True,
+        choices=EndpointSecurity.choices,
+        help_text=_("The security to use for messages sent to the endpoints."),
+    )
+
+    user = models.CharField(
+        _("user"),
+        max_length=200,
+        blank=True,
+        help_text=_("Username to use in the XML security context."),
+    )
+    password = models.CharField(
+        _("password"),
+        max_length=200,
+        blank=True,
+        help_text=_("Password to use in the XML security context."),
+    )
+
+    client_certificate = models.ForeignKey(
+        Certificate,
+        blank=True,
+        null=True,
+        help_text=_(
+            "The SSL certificate file used for client identification. If left empty, mutual TLS is disabled."
+        ),
+        on_delete=models.PROTECT,
+        related_name="soap_services_client",
+    )
+    server_certificate = models.ForeignKey(
+        Certificate,
+        blank=True,
+        null=True,
+        help_text=_("The SSL/TLS certificate of the server"),
+        on_delete=models.PROTECT,
+        related_name="soap_services_server",
     )
 
     class Meta:
@@ -103,52 +151,6 @@ class StufService(models.Model):
         help_text=_(
             "Endpoint for asynchronous messages, usually '[...]/OntvangAsynchroon'."
         ),
-    )
-
-    soap_version = models.CharField(
-        _("SOAP version"),
-        max_length=5,
-        default=SOAPVersion.soap12,
-        choices=SOAPVersion.choices,
-        help_text=_("The SOAP version to use for the message envelope."),
-    )
-
-    endpoint_security = models.CharField(
-        _("Security"),
-        max_length=20,
-        blank=True,
-        choices=EndpointSecurity.choices,
-        help_text=_("The security to use for messages sent to the endpoints."),
-    )
-
-    user = models.CharField(
-        _("user"),
-        max_length=200,
-        blank=True,
-        help_text=_("Username to use in the XML security context."),
-    )
-    password = models.CharField(
-        _("password"),
-        max_length=200,
-        blank=True,
-        help_text=_("Password to use in the XML security context."),
-    )
-
-    certificate = PrivateMediaFileField(
-        upload_to="stuf/certificate/",
-        blank=True,
-        null=True,
-        help_text=_(
-            "The SSL certificate file used for client identification. If left empty, mutual TLS is disabled."
-        ),
-    )
-    certificate_key = PrivateMediaFileField(
-        upload_to="stuf/certificate/",
-        help_text=_(
-            "The SSL certificate key file used for client identification. If left empty, mutual TLS is disabled."
-        ),
-        blank=True,
-        null=True,
     )
 
     class Meta:
