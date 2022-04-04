@@ -158,13 +158,22 @@ class StufService(models.Model):
         verbose_name_plural = _("StUF services")
 
     def get_cert(self):
-        cert = (
-            (self.certificate.path, self.certificate_key.path)
-            if self.certificate and self.certificate_key
-            else (None, None)
-        )
+        certificate = self.soap_service.client_certificate
+        if not certificate:
+            return (None, None)
 
-        return cert
+        if certificate.public_certificate and certificate.private_key:
+            return (certificate.public_certificate.path, certificate.private_key.path)
+
+        if certificate.public_certificate:
+            return certificate.public_certificate.path
+
+    def get_verify(self):
+        certificate = self.soap_service.server_certificate
+        if certificate:
+            return certificate.public_certificate.path
+
+        return True
 
     def get_endpoint(self, type):
         attr = f"endpoint_{type}"
@@ -177,12 +186,12 @@ class StufService(models.Model):
 
     def get_auth(self):
         if (
-            self.endpoint_security
+            self.soap_service.endpoint_security
             in [EndpointSecurity.basicauth, EndpointSecurity.wss_basicauth]
-            and self.user
-            and self.password
+            and self.soap_service.user
+            and self.soap_service.password
         ):
-            return (self.user, self.password)
+            return (self.soap_service.user, self.soap_service.password)
         return (None, None)
 
     def __str__(self):
