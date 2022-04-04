@@ -6,6 +6,8 @@ from stuf.models import SoapService, StufService
 class SoapServiceFactory(factory.django.DjangoModelFactory):
 
     url = "http://zaken/soap/"
+    user = factory.Sequence(lambda n: f"user-{n}")
+    password = factory.Sequence(lambda n: f"password-{n}")
 
     class Meta:
         model = SoapService
@@ -21,9 +23,6 @@ class StufServiceFactory(factory.django.DjangoModelFactory):
     zender_applicatie = factory.Sequence(lambda n: f"zender_applicatie-{n}")
     zender_administratie = factory.Sequence(lambda n: f"zender_administratie-{n}")
     zender_gebruiker = factory.Sequence(lambda n: f"zender_gebruiker-{n}")
-
-    user = factory.Sequence(lambda n: f"user-{n}")
-    password = factory.Sequence(lambda n: f"password-{n}")
 
     soap_service = factory.SubFactory(SoapServiceFactory)
 
