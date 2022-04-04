@@ -59,6 +59,7 @@ body:
         - Desktop
         - Mobile
         - Tablet
+        - Anders / Other
     validations:
       required: false
   - type: dropdown
@@ -69,6 +70,9 @@ body:
         - Windows
         - Linux
         - MacOS
+        - iOS
+        - Android
+        - Anders / Other
     validations:
       required: false
   - type: dropdown
@@ -81,6 +85,6 @@ body:
         - Chrome
         - Safari
         - Firefox
-        - Other
+        - Anders / Other
     validations:
       required: false
