@@ -11,7 +11,7 @@ class LogicActionTypes(DjangoChoices):
     property = ChoiceItem("property", _("Modify a component property"))
     value = ChoiceItem("value", _("Set the value of a component"))
 
-    requires_component = {property, value}
+    requires_component = {property.value, value.value}
 
 
 class PropertyTypes(DjangoChoices):

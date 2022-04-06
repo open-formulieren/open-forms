@@ -43,6 +43,7 @@ from ..models import (
 )
 from .validators import (
     FormIOComponentsValidator,
+    JsonLogicActionValueValidator,
     JsonLogicTriggerValidator,
     JsonLogicValidator,
 )
@@ -629,7 +630,7 @@ class LogicValueActionSerializer(serializers.Serializer):
             "A valid JsonLogic expression describing the value. This may refer to "
             "(other) Form.io components."
         ),
-        validators=[JsonLogicValidator()],
+        validators=[JsonLogicActionValueValidator()],
     )
 
 
@@ -689,16 +690,18 @@ class LogicComponentActionSerializer(serializers.Serializer):
             and action_type in LogicActionTypes.requires_component
             and not component
         ):
-            # raises validation error
-            self.fields["component"].fail("blank")
+            raise serializers.ValidationError(
+                {"component": self.fields["component"].error_messages["blank"]}
+            )
 
         if (
             action_type
             and action_type == LogicActionTypes.step_not_applicable
             and not form_step
         ):
-            # raises validation error
-            self.fields["form_step"].fail("blank")
+            raise serializers.ValidationError(
+                {"form_step": self.fields["form_step"].error_messages["blank"]}
+            )
 
         return data
 

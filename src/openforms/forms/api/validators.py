@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Union
 
 from django.utils.translation import gettext as _
 
@@ -21,6 +21,23 @@ class JsonLogicValidator:
             jsonLogic(value)
         except ValueError:
             raise serializers.ValidationError(_("Invalid JSON logic."), code="invalid")
+
+
+class JsonLogicActionValueValidator(JsonLogicValidator):
+    code = "invalid"
+    message = _("This field needs to refer to a form component")
+
+    def __call__(self, value: Union[dict, str]) -> None:
+        if isinstance(value, str):
+            return
+
+        # ensure that the expression itself is valid
+        super().__call__(value)
+
+        expression = JsonLogicTest.from_expression(value)
+
+        if expression.values[0] == "":
+            raise serializers.ValidationError(ErrorDetail(self.message, code=self.code))
 
 
 class JsonLogicTriggerValidator(JsonLogicValidator):
