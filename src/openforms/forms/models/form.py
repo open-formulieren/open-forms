@@ -360,6 +360,12 @@ class Form(models.Model):
 
             form_step.save()
 
+        for logic in self.formlogic_set.all():
+            logic.pk = None
+            logic.uuid = _uuid.uuid4()
+            logic.form = copy
+            logic.save()
+
         return copy
 
     def get_keys_for_email_confirmation(self) -> List[str]:
