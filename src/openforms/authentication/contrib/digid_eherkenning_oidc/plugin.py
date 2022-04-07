@@ -8,8 +8,9 @@ from furl import furl
 from rest_framework.reverse import reverse
 
 from digid_eherkenning_oidc_generics.models import (
+    OpenIDConnectDigiDMachtigenConfig,
     OpenIDConnectEHerkenningConfig,
-    OpenIDConnectPublicConfig, OpenIDConnectDigiDMachtigenConfig,
+    OpenIDConnectPublicConfig,
 )
 from openforms.contrib.digid_eherkenning.utils import (
     get_digid_logo,

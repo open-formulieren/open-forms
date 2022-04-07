@@ -1,9 +1,10 @@
 import logging
 from copy import deepcopy
 
-from glom import PathAccessError, glom
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import SuspiciousOperation
+
+from glom import PathAccessError, glom
 
 from digid_eherkenning_oidc_generics.backends import OIDCAuthenticationBackend
 from digid_eherkenning_oidc_generics.mixins import (
