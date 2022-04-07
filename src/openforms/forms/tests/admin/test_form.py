@@ -11,6 +11,7 @@ from django.utils.translation import ugettext as _
 from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
+from openforms.submissions.tests.form_logic.factories import FormLogicFactory
 from openforms.tests.utils import disable_2fa
 from openforms.utils.admin import SubmitActions
 
@@ -306,6 +307,9 @@ class FormAdminCopyTests(TestCase):
             authentication_backends=["digid"], internal_name="internal"
         )
         form_step = FormStepFactory.create(form=form, form_definition__is_reusable=True)
+        logic = FormLogicFactory.create(
+            form=form,
+        )
         admin_url = reverse("admin:forms_form_change", args=(form.pk,))
 
         # React UI renders this input, so simulate it in a raw POST call
@@ -323,6 +327,11 @@ class FormAdminCopyTests(TestCase):
         )
         self.assertEqual(copied_form.authentication_backends, ["digid"])
 
+        copied_logic = copied_form.formlogic_set.get()
+        self.assertEqual(copied_logic.json_logic_trigger, logic.json_logic_trigger)
+        self.assertEqual(copied_logic.actions, logic.actions)
+        self.assertNotEqual(copied_logic.pk, logic.pk)
+
         copied_form_step = FormStep.objects.all().order_by("pk").last()
         self.assertNotEqual(copied_form_step.uuid, form_step.uuid)
         self.assertEqual(copied_form_step.form, copied_form)
@@ -338,6 +347,9 @@ class FormAdminActionsTests(WebTest):
         self.user = SuperUserFactory.create(app=self.app)
 
     def test_make_copies_action_makes_copy_of_a_form(self):
+        logic = FormLogicFactory.create(
+            form=self.form,
+        )
         response = self.app.get(reverse("admin:forms_form_changelist"), user=self.user)
 
         html_form = response.forms["changelist-form"]
@@ -351,6 +363,11 @@ class FormAdminActionsTests(WebTest):
             copied_form.name, _("{name} (copy)").format(name=self.form.name)
         )
         self.assertEqual(copied_form.slug, _("{slug}-copy").format(slug=self.form.slug))
+
+        copied_logic = copied_form.formlogic_set.get()
+        self.assertEqual(copied_logic.json_logic_trigger, logic.json_logic_trigger)
+        self.assertEqual(copied_logic.actions, logic.actions)
+        self.assertNotEqual(copied_logic.pk, logic.pk)
 
     def test_set_to_maintenance_mode_sets_form_maintenance_mode_field_to_True(self):
         response = self.app.get(reverse("admin:forms_form_changelist"), user=self.user)
