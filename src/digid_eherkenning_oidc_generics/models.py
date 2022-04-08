@@ -3,7 +3,11 @@ from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
 
 from django_better_admin_arrayfield.models.fields import ArrayField
-from mozilla_django_oidc_db.models import CachingMixin, OpenIDConnectConfigBase
+from mozilla_django_oidc_db.models import (
+    CachingMixin,
+    OpenIDConnectClientBaseConfig,
+    OpenIDConnectConfigBase,
+)
 
 from openforms.authentication.constants import AuthAttribute
 
@@ -37,7 +41,15 @@ class OpenIDConnectBaseConfig(CachingMixin, OpenIDConnectConfigBase):
         blank=True,
     )
 
-    # Keycloak specific config
+    class Meta:
+        verbose_name = _("OpenID Connect configuration")
+
+
+class OpenIDConnectKeycloakClientBaseConfig(OpenIDConnectClientBaseConfig):
+    """
+    Configuration specific for the OpenID Connect clients
+    """
+
     oidc_keycloak_idp_hint = models.CharField(
         _("Keycloak Identity Provider hint"),
         max_length=1000,
@@ -49,11 +61,10 @@ class OpenIDConnectBaseConfig(CachingMixin, OpenIDConnectConfigBase):
     )
 
     class Meta:
-        verbose_name = _("OpenID Connect configuration")
         abstract = True
 
 
-class OpenIDConnectPublicConfig(OpenIDConnectBaseConfig):
+class OpenIDConnectPublicConfig(OpenIDConnectKeycloakClientBaseConfig):
     """
     Configuration for DigiD authentication via OpenID connect
     """
@@ -83,7 +94,7 @@ class OpenIDConnectPublicConfig(OpenIDConnectBaseConfig):
         verbose_name = _("OpenID Connect configuration for DigiD")
 
 
-class OpenIDConnectEHerkenningConfig(OpenIDConnectBaseConfig):
+class OpenIDConnectEHerkenningConfig(OpenIDConnectKeycloakClientBaseConfig):
     """
     Configuration for eHerkenning authentication via OpenID connect
     """
