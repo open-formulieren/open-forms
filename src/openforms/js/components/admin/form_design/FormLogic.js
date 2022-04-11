@@ -4,7 +4,7 @@ import {useIntl, FormattedMessage} from 'react-intl';
 
 import DeleteIcon from '../DeleteIcon';
 import Trigger from './logic/Trigger';
-import ActionSet from './logic/ActionSet';
+import ActionSet from './logic/actions/ActionSet';
 import ButtonContainer from '../forms/ButtonContainer';
 import Fieldset from '../forms/Fieldset';
 import AdvancedTrigger from './logic/AdvancedTrigger';
