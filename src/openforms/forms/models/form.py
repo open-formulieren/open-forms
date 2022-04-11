@@ -362,12 +362,18 @@ class Form(models.Model):
 
         return copy
 
+    def get_keys_for_email_summary(self) -> List[str]:
+        return_keys = set()
+        for form_step in self.formstep_set.select_related("form_definition"):
+            for key in form_step.form_definition.get_keys_for_email_summary():
+                return_keys.add(key)
+        return list(return_keys)
+
     def get_keys_for_email_confirmation(self) -> List[str]:
         return_keys = set()
         for form_step in self.formstep_set.select_related("form_definition"):
             for key in form_step.form_definition.get_keys_for_email_confirmation():
-                if key:
-                    return_keys.add(key)
+                return_keys.add(key)
         return list(return_keys)
 
     def iter_components(self, recursive=True):

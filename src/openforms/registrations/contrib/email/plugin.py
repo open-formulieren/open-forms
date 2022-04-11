@@ -9,6 +9,8 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from openforms.emails.utils import send_mail_html, strip_tags_plus
+from openforms.formio.display.constants import OutputMode
+from openforms.formio.display.service import render
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
 from openforms.submissions.tasks.registration import set_submission_reference
@@ -59,6 +61,7 @@ class EmailRegistration(BasePlugin):
         extra_context=None,
     ):
         # extract the formatted data first
+
         printable_data: list = submission.get_printable_data()
         # get the attachment data, keyed by form component key, value is a model instance
         attachments = submission.get_merged_attachments()
@@ -68,6 +71,8 @@ class EmailRegistration(BasePlugin):
         display_data = []
 
         # get_printable_data relies on ``get_ordered_data_with_component_type``
+
+        # TODO handle attachments
         for (key, (component, value)), (label, display) in zip(
             submission.get_ordered_data_with_component_type().items(), printable_data
         ):
@@ -94,8 +99,14 @@ class EmailRegistration(BasePlugin):
         html_template = get_template("emails/email_registration.html")
         text_template = get_template("emails/email_registration.txt")
 
+        context["_table_content"] = render(
+            submission, mode=OutputMode.email_registration, as_html=True
+        )
         html_content = html_template.render(context)
         context["rendering_text"] = True
+        context["_table_content"] = render(
+            submission, mode=OutputMode.email_registration, as_html=False
+        )
         text_content = text_template.render(context)
 
         # post process since the mail template has html markup and django escaped entities

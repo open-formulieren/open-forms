@@ -9,8 +9,12 @@ from .wrap import get_submission_tree
 __all__ = ["render", "OutputMode"]
 
 
-def render(submission: Submission, *, mode: OutputMode, as_html: bool) -> str:
-    context = RenderContext(mode=mode, as_html=as_html)
+def render(
+    submission: Submission, *, mode: OutputMode, as_html: bool, limit_value_keys=None
+) -> str:
+    context = RenderContext(
+        mode=mode, as_html=as_html, limit_value_keys=limit_value_keys
+    )
     root = get_submission_tree(submission, register)
 
     elements = create_elements(root.children, context)

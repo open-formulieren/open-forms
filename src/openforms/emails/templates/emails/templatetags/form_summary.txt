@@ -1,4 +1,5 @@
-{% load i18n %}{% autoescape off %}{% if submitted_data %}{% trans "Summary" %}
+{% load i18n %}{% autoescape off %}{% if _email_content %}{% trans "Summary" %}
 
+{{ _table_content }}
 {% for key, value in submitted_data %}
 - {{ key }}: {% display_value value %}{% endfor %}{% endif %}{% endautoescape %}

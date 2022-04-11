@@ -4,6 +4,8 @@ from django import template
 from django.template.loader import get_template
 from django.utils.encoding import force_str
 
+from openforms.formio.display.constants import OutputMode
+from openforms.formio.display.service import render
 from openforms.forms.models import FormDefinition
 
 register = template.Library()
@@ -15,9 +17,11 @@ def summary(context):
         name = "emails/templatetags/form_summary.txt"
     else:
         name = "emails/templatetags/form_summary.html"
+
     return get_template(name).render(filter_data_to_show_in_email(context.flatten()))
 
 
+# TODO rename function
 def filter_data_to_show_in_email(context: dict) -> dict:
     """Extract data that should be shown as a summary of submission in the confirmation email
 
@@ -29,16 +33,24 @@ def filter_data_to_show_in_email(context: dict) -> dict:
     submission = context["_submission"]
 
     # From the form definition, see which fields should be shown in the confirmation email
-    data_to_show_in_email = []
-    for form_definition in FormDefinition.objects.filter(formstep__form=form):
-        keys = [item[0] for item in form_definition.get_keys_for_email_summary()]
-        data_to_show_in_email += keys
+    data_to_show_in_email = form.get_keys_for_email_summary()
 
+    table_html = render(
+        submission,
+        mode=OutputMode.email_confirmation,
+        as_html=_is_html,
+        limit_value_keys=set(data_to_show_in_email),
+    )
+
+    # TODO cleanup old code
     filtered_data = submission.get_printable_data(
         keys_to_include=data_to_show_in_email,
         as_html=_is_html,
     )
-    return {"submitted_data": filtered_data}
+    return {
+        "submitted_data": filtered_data,
+        "_table_content": table_html,
+    }
 
 
 @register.simple_tag(takes_context=True)

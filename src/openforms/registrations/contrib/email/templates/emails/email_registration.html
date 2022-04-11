@@ -19,6 +19,7 @@
         <th style="padding: 1px; text-align: left; padding-right: 10px;">{% trans "Field" %}</th>
         <th style="padding: 1px; text-align: left;">{% trans "Response" %}</th>
     </tr>
+    {{ _table_content }}
     {% for key, value in submitted_data %}
         <tr>
             <td style="padding: 2px; padding-right: 10px;">{{ key }}:</td>

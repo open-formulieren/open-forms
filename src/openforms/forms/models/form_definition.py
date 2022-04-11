@@ -131,25 +131,22 @@ class FormDefinition(models.Model):
         keys = [field["key"] for field in self.iter_components(recursive=True)]
         return keys
 
-    def get_keys_for_email_summary(self) -> List[Tuple[str, str]]:
+    def get_keys_with_flag(self, flag: str) -> List[str]:
         """Return the key and the label of fields to include in the email summary"""
-        keys_for_email_summary = []
+        keys = []
 
         for component in self.iter_components(recursive=True):
-            if component.get("showInEmail"):
-                keys_for_email_summary.append((component["key"], component["label"]))
+            if component.get(flag):
+                keys.append(component["key"])
 
-        return keys_for_email_summary
+        return keys
 
-    def get_keys_for_email_confirmation(self) -> List[Tuple[str, str]]:
-        """Return the key and the label of fields to include in the confirmation email"""
-        keys_for_email_confirmation = []
+    def get_keys_for_email_summary(self) -> List[str]:
+        return self.get_keys_with_flag("showInEmail")
 
-        for component in self.iter_components(recursive=True):
-            if component.get("confirmationRecipient"):
-                keys_for_email_confirmation.append(component["key"])
-
-        return keys_for_email_confirmation
+    def get_keys_for_email_confirmation(self) -> List[str]:
+        """Return the key of fields to include in the confirmation email"""
+        return self.get_keys_with_flag("confirmationRecipient")
 
     @cached_property
     def sensitive_fields(self):
