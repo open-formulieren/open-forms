@@ -68,6 +68,23 @@ div.flatpickr-calendar.open
 }
 
 [ref="editForm"] {
+  .choices__list {
+    &--dropdown {
+      background-color: var(--body-bg);
+      color: var(--body-fg);
+      border-color: var(--border-color);
+    }
+
+    .choices__input {
+      background-color: var(--form-input-bg);
+      border-color: var(--border-color);
+    }
+
+    .choices__item--selectable.is-highlighted {
+      background-color: $color-dark;
+    }
+  }
+
   .choices__list + .choices__input {
     border: none;
     border-radius: unset;
@@ -132,5 +149,67 @@ div.flatpickr-calendar.open
 .co-sign {
   .btn {
     border: solid 1px #ccc;
+  }
+}
+
+// bootstrap overrides and dark theme...
+.form-control {
+  background-color: var(--form-input-bg);
+  border-color: var(--border-color);
+  color: var(--body-fg);
+
+  &:focus {
+    background-color: var(--form-input-bg);
+    border-color: var(--body-quiet-color);
+    color: var(--body-fg);
+  }
+}
+
+.card {
+  background-color: var(--body-bg);
+  color: var(--body-fg);
+  border-color: var(--border-color);
+}
+
+.card-header {
+  color: var(--body-fg);
+}
+
+
+@media (prefers-color-scheme: dark) {
+  .card-header {
+    background-color: $color-dark;
+  }
+
+  .btn,
+  .btn:hover {
+    color: var(--body-fg);
+  }
+
+  .formio-dialog {
+    background: rgba(0, 0, 0, 0.7);
+    color: var(--body-fg);
+  }
+
+  .formio-dialog.formio-dialog-theme-default {
+    .formio-dialog-content {
+      background: var(--body-bg);
+    }
+  }
+
+  .nav-tabs {
+    .nav-link.active {
+      color: var(--body-fg);
+      background-color: var(--body-bg);
+      border-color: var(--border-color) var(--border-color) var(--body-bg);
+    }
+
+    .nav-link {
+      &:focus,
+      &:hover {
+        color: var(--body-fg);
+        border-color: var(--hairline-color) var(--hairline-color) var(--body-bg);
+      }
+    }
   }
 }

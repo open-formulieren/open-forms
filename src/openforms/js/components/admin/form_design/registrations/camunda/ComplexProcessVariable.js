@@ -120,7 +120,7 @@ const editPanelStyle = {
     bottom: '0',
     right: '0',
     left: '10%',
-    background: 'white',
+    background: 'var(--body-bg)',
     flexDirection: 'column',
 };
 

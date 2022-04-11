@@ -41,6 +41,10 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
 
   --object-tools-bg: #888;
   --object-tools-hover-bg: #{$color_dark};
+
+  // custom variables
+  --form-input-bg: var(--body-bg);
+  --react-tab-border-color: #{$color-secondary-dark};
 }
 
 @media (prefers-color-scheme: dark) {
@@ -61,6 +65,9 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
     --button-hover-bg: #{$color-primary};
     --default-button-bg: #{$color-primary};
     --default-button-hover-bg: #{$color-dark-light};
+
+    --form-input-bg: #232222;
+    --react-tab-border-color: var(--hairline-color);
   }
 
   .djai-dropdown-menu {
@@ -75,7 +82,7 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
   textarea,
   select,
   .vTextField {
-    background-color: #333333;
+    background-color: var(--form-input-bg);
   }
 }
 
@@ -384,4 +391,8 @@ div.help {
       color: var(--primary-fg);
     }
   }
+}
+
+body {
+  background-color: var(--body-bg) !important;
 }
