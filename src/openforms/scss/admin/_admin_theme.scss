@@ -45,6 +45,10 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
   // custom variables
   --form-input-bg: var(--body-bg);
   --react-tab-border-color: #{$color-secondary-dark};
+  --list-item-active-bg: #{$color-secondary};
+  --list-item-active-fg: var(--primary);
+  --edit-panel-title-bg: #{$color-secondary-dark};
+  --edit-panel-title-fg: #{$color-dark};
 }
 
 @media (prefers-color-scheme: dark) {
@@ -68,6 +72,10 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
 
     --form-input-bg: #232222;
     --react-tab-border-color: var(--hairline-color);
+    --list-item-active-bg: #{$color-dark};
+    --list-item-active-fg: #2fc0ec;
+    --edit-panel-title-bg: #{$color-dark};
+    --edit-panel-title-fg: var(--body-fg);
   }
 
   .djai-dropdown-menu {
@@ -181,11 +189,25 @@ div.breadcrumbs {
 
 /* Icons */
 .addlink {
-  background: var(--body-fg) !important;
-  mask-image: url('../img/admin/plus-square-regular.svg');
-  mask-repeat: no-repeat;
-  mask-size: 14px 14px;
-  mask-position: 0px 0px;
+  background: none;
+  display: inline-flex;
+  align-items: center;
+  padding-left: 0;
+  color: var(--body-fg);
+
+  &:before {
+    display: block;
+    content: "";
+    width: 14px;
+    height: 14px;
+    margin-right: 2px;
+    background: var(--body-fg) !important;
+    color: var(--body-fg);
+    mask-image: url('../img/admin/plus-square-regular.svg');
+    mask-repeat: no-repeat;
+    mask-size: 14px 14px;
+    mask-position: 0px 0px;
+  }
 }
 .changelink, .inlinechangelink {
   background: var(--body-fg) !important;
@@ -395,4 +417,5 @@ div.help {
 
 body {
   background-color: var(--body-bg) !important;
+  color: var(--body-fg);
 }
