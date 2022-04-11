@@ -1,8 +1,10 @@
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
 
+from furl import furl
+
 from ...base import BasePlugin, PaymentInfo
-from ...constants import PaymentStatus
+from ...constants import PaymentStatus, UserAction
 from ...registry import register
 
 
@@ -18,7 +20,16 @@ class DemoPayment(BasePlugin):
     def handle_return(self, request, payment):
         payment.status = PaymentStatus.completed
         payment.save()
-        return HttpResponseRedirect(payment.submission.form_url)
+
+        form_url = furl(payment.submission.form_url)
+        form_url.args.update(
+            {
+                "of_payment_status": payment.status,
+                "of_payment_id": str(payment.uuid),
+                "of_payment_action": UserAction.accept,
+            }
+        )
+        return HttpResponseRedirect(form_url.url)
 
     def check_config(self):
         """
