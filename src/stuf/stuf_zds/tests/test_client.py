@@ -1,7 +1,5 @@
-import os
 from pathlib import Path
 
-from django.conf import settings
 from django.core.files import File
 from django.template.loader import render_to_string
 from django.test import TestCase
@@ -13,37 +11,35 @@ from zgw_consumers.models import Certificate
 from ...tests.factories import StufServiceFactory
 from ..client import StufZDSClient
 
-TEST_CERTIFICATES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
-TEST_XML = Path(
-    settings.BASE_DIR,
-    "src/stuf/stuf_zds/templates/stuf_zds/soap",
-)
+TEST_CERTIFICATES = Path(__file__).parent.parent.parent / "tests" / "data"
 
 
 @requests_mock.Mocker()
 class StufZdsClientTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        with open(
-            os.path.join(TEST_CERTIFICATES, "test.certificate"), "r"
-        ) as certificate_f:
-            with open(os.path.join(TEST_CERTIFICATES, "test.key"), "r") as key_f:
-                cls.client_certificate = Certificate.objects.create(
-                    label="Test client certificate",
-                    type=CertificateTypes.key_pair,
-                    public_certificate=File(certificate_f, name="test.certificate"),
-                    private_key=File(key_f, name="test.key"),
-                )
-                cls.client_certificate_only = Certificate.objects.create(
-                    label="Test client certificate (only cert)",
-                    type=CertificateTypes.cert_only,
-                    public_certificate=File(certificate_f, name="test1.certificate"),
-                )
-                cls.server_certificate = Certificate.objects.create(
-                    label="Test server certificate",
-                    type=CertificateTypes.cert_only,
-                    public_certificate=File(certificate_f, name="test2.certificate"),
-                )
+        super().setUpTestData()
+
+        certificate_file = TEST_CERTIFICATES / "test.certificate"
+        key_file = TEST_CERTIFICATES / "test.key"
+
+        with key_file.open("r") as key_f, certificate_file.open("r") as certificate_f:
+            cls.client_certificate = Certificate.objects.create(
+                label="Test client certificate",
+                type=CertificateTypes.key_pair,
+                public_certificate=File(certificate_f, name="test.certificate"),
+                private_key=File(key_f, name="test.key"),
+            )
+            cls.client_certificate_only = Certificate.objects.create(
+                label="Test client certificate (only cert)",
+                type=CertificateTypes.cert_only,
+                public_certificate=File(certificate_f, name="test1.certificate"),
+            )
+            cls.server_certificate = Certificate.objects.create(
+                label="Test server certificate",
+                type=CertificateTypes.cert_only,
+                public_certificate=File(certificate_f, name="test2.certificate"),
+            )
 
         cls.client_options = {
             "gemeentecode": "1234",
@@ -64,9 +60,7 @@ class StufZdsClientTest(TestCase):
 
         m.post(
             stuf_service.soap_service.url,
-            content=render_to_string(Path("stuf_zds/soap/creeerZaak.xml")).encode(
-                "utf-8"
-            ),
+            text=render_to_string("stuf_zds/soap/creeerZaak.xml"),
         )
 
         client = StufZDSClient(stuf_service, self.client_options)
@@ -95,9 +89,7 @@ class StufZdsClientTest(TestCase):
 
         m.post(
             stuf_service.soap_service.url,
-            content=render_to_string(Path("stuf_zds/soap/creeerZaak.xml")).encode(
-                "utf-8"
-            ),
+            text=render_to_string("stuf_zds/soap/creeerZaak.xml"),
         )
 
         client = StufZDSClient(stuf_service, self.client_options)
@@ -120,9 +112,7 @@ class StufZdsClientTest(TestCase):
 
         m.post(
             stuf_service.soap_service.url,
-            content=render_to_string(Path("stuf_zds/soap/creeerZaak.xml")).encode(
-                "utf-8"
-            ),
+            text=render_to_string("stuf_zds/soap/creeerZaak.xml"),
         )
 
         client = StufZDSClient(stuf_service, self.client_options)

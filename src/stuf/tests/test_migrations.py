@@ -1,17 +1,15 @@
-import os
 from pathlib import Path
 
-from django.conf import settings
 from django.core.files import File
 
 from openforms.utils.tests.test_migrations import TestMigrations
 
 from ..constants import SOAPVersion
 
-TEST_CERTIFICATES = Path(
-    settings.BASE_DIR,
-    "src/stuf/stuf_zds/tests/data",
-)
+TEST_CERTIFICATES = Path(__file__).parent / "data"
+
+CERTIFICATE_FILE = TEST_CERTIFICATES / "test.certificate"
+KEY_FILE = TEST_CERTIFICATES / "test.key"
 
 
 class SOAPServiceWithCertificatesForwardMigrationTests(TestMigrations):
@@ -27,20 +25,17 @@ class SOAPServiceWithCertificatesForwardMigrationTests(TestMigrations):
             url="http://test.api.nl", label="Test SOAP Service"
         )
 
-        with open(
-            os.path.join(TEST_CERTIFICATES, "test.certificate"), "r"
-        ) as f_certificate:
-            with open(os.path.join(TEST_CERTIFICATES, "test.key"), "r") as f_key:
-                self.stuf_service = StufService.objects.create(
-                    soap_service=self.soap_service,
-                    ontvanger_applicatie="Test application",
-                    zender_applicatie="Open Forms",
-                    soap_version=SOAPVersion.soap11,
-                    user="user123",
-                    password="password123",
-                    certificate=File(f_certificate, name="test.certificate"),
-                    certificate_key=File(f_key, name="test.key"),
-                )
+        with CERTIFICATE_FILE.open("r") as f_certificate, KEY_FILE.open("r") as f_key:
+            self.stuf_service = StufService.objects.create(
+                soap_service=self.soap_service,
+                ontvanger_applicatie="Test application",
+                zender_applicatie="Open Forms",
+                soap_version=SOAPVersion.soap11,
+                user="user123",
+                password="password123",
+                certificate=File(f_certificate, name="test.certificate"),
+                certificate_key=File(f_key, name="test.key"),
+            )
 
     def test_certificates_in_new_model(self):
         SoapService = self.apps.get_model("stuf", "SoapService")
@@ -98,14 +93,11 @@ class SOAPServiceWithCertificatesBackwardMigrationTests(TestMigrations):
         StufService = apps.get_model("stuf", "StufService")
         Certificate = apps.get_model("zgw_consumers", "Certificate")
 
-        with open(
-            os.path.join(TEST_CERTIFICATES, "test.certificate"), "r"
-        ) as f_certificate:
-            with open(os.path.join(TEST_CERTIFICATES, "test.key"), "r") as f_key:
-                client_certificate = Certificate.objects.create(
-                    public_certificate=File(f_certificate, name="test.certificate"),
-                    private_key=File(f_key, name="test.key"),
-                )
+        with CERTIFICATE_FILE.open("r") as f_certificate, KEY_FILE.open("r") as f_key:
+            client_certificate = Certificate.objects.create(
+                public_certificate=File(f_certificate, name="test.certificate"),
+                private_key=File(f_key, name="test.key"),
+            )
 
         self.soap_service = SoapService.objects.create(
             url="http://test.api.nl",
