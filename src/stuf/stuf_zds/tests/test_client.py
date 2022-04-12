@@ -3,6 +3,7 @@ import os
 from django.conf import settings
 from django.core.files import File
 from django.template import Context, Template
+from django.template.loader import render_to_string
 from django.test import TestCase
 
 import requests_mock
@@ -28,28 +29,26 @@ TEST_XML = os.path.join(
 class StufZdsClientTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        certificate_f = open(os.path.join(TEST_CERTIFICATES, "test.certificate"), "r")
-        key_f = open(os.path.join(TEST_CERTIFICATES, "test.key"), "r")
-
-        cls.client_certificate = Certificate.objects.create(
-            label="Test client certificate",
-            type=CertificateTypes.key_pair,
-            public_certificate=File(certificate_f, name="test.certificate"),
-            private_key=File(key_f, name="test.key"),
-        )
-        cls.client_certificate_only = Certificate.objects.create(
-            label="Test client certificate (only cert)",
-            type=CertificateTypes.cert_only,
-            public_certificate=File(certificate_f, name="test1.certificate"),
-        )
-        cls.server_certificate = Certificate.objects.create(
-            label="Test server certificate",
-            type=CertificateTypes.cert_only,
-            public_certificate=File(certificate_f, name="test2.certificate"),
-        )
-
-        certificate_f.close()
-        key_f.close()
+        with open(
+            os.path.join(TEST_CERTIFICATES, "test.certificate"), "r"
+        ) as certificate_f:
+            with open(os.path.join(TEST_CERTIFICATES, "test.key"), "r") as key_f:
+                cls.client_certificate = Certificate.objects.create(
+                    label="Test client certificate",
+                    type=CertificateTypes.key_pair,
+                    public_certificate=File(certificate_f, name="test.certificate"),
+                    private_key=File(key_f, name="test.key"),
+                )
+                cls.client_certificate_only = Certificate.objects.create(
+                    label="Test client certificate (only cert)",
+                    type=CertificateTypes.cert_only,
+                    public_certificate=File(certificate_f, name="test1.certificate"),
+                )
+                cls.server_certificate = Certificate.objects.create(
+                    label="Test server certificate",
+                    type=CertificateTypes.cert_only,
+                    public_certificate=File(certificate_f, name="test2.certificate"),
+                )
 
         cls.client_options = {
             "gemeentecode": "1234",
@@ -68,11 +67,12 @@ class StufZdsClientTest(TestCase):
             soap_service__server_certificate=self.server_certificate,
         )
 
-        with open(os.path.join(TEST_XML, "creeerZaak.xml"), "r") as f:
-            m.post(
-                stuf_service.soap_service.url,
-                content=Template(f.read()).render(Context({})).encode("utf-8"),
-            )
+        m.post(
+            stuf_service.soap_service.url,
+            content=render_to_string(os.path.join(TEST_XML, "creeerZaak.xml")).encode(
+                "utf-8"
+            ),
+        )
 
         client = StufZDSClient(stuf_service, self.client_options)
 
@@ -84,7 +84,7 @@ class StufZdsClientTest(TestCase):
         self.assertEqual(
             self.server_certificate.public_certificate.path, request_with_tls.verify
         )
-        self.assertTupleEqual(
+        self.assertEqual(
             (
                 self.client_certificate.public_certificate.path,
                 self.client_certificate.private_key.path,
