@@ -161,6 +161,7 @@ DigiD/EHerkenning/eIDAS settings
 * ``EHERKENNING_SERVICE_INDEX``: The index that was specified in the metadata for the eHerkenning service.
 * ``EHERKENNING_SERVICE_UUID``: The UUID of the eHerkenning service. This can be found in the dienstencatalogus in the ``ServiceUUID`` element (inside the ``ServiceDescription`` element)
 * ``EHERKENNING_SERVICE_INSTANCE_UUID``: The UUID of the eHerkenning service instance. This can be found in the dienstencatalogus in the ``ServiceUUID`` element (inside the ``ServiceInstance`` element)
+* ``EHERKENNING_CONTENT_TYPE``: The value of the ``content-type`` header used in the Artifact resolution request. Defaults to ``application/soap+xml``.
 * ``EIDAS_SERVICE_INDEX``: The index that was specified in the metadata for the eIDAS service.
 * ``EIDAS_SERVICE_UUID``: The UUID of the eIDAS service. This can be found in the dienstencatalogus in the ``ServiceUUID`` element (inside the ``ServiceDescription`` element)
 * ``EIDAS_SERVICE_INSTANCE_UUID``: The UUID of the eIDAS service instance. This can be found in the dienstencatalogus in the ``ServiceUUID`` element (inside the ``ServiceInstance`` element)
