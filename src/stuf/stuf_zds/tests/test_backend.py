@@ -189,7 +189,7 @@ class StufZDSClientTests(StufTestBase):
         )
 
     def test_soap_11(self, m):
-        self.service.soap_version = SOAPVersion.soap11
+        self.service.soap_service.soap_version = SOAPVersion.soap11
         self.service.save()
 
         m.post(

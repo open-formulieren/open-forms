@@ -132,13 +132,13 @@ class StufZDSClient:
         return loader.render_to_string(
             "stuf_zds/soap/includes/envelope.xml",
             {
-                "soap_version": self.service.soap_version,
+                "soap_version": self.service.soap_service.soap_version,
                 "soap_use_wss": (
-                    self.service.endpoint_security
+                    self.service.soap_service.endpoint_security
                     in [EndpointSecurity.wss, EndpointSecurity.wss_basicauth]
                 ),
-                "wss_username": self.service.user,
-                "wss_password": self.service.password,
+                "wss_username": self.service.soap_service.user,
+                "wss_password": self.service.soap_service.password,
                 "wss_created": fmt_soap_date(timezone.now()),
                 "wss_expires": fmt_soap_date(
                     timezone.now() + timedelta(minutes=STUF_ZDS_EXPIRY_MINUTES)
@@ -169,12 +169,13 @@ class StufZDSClient:
                 data=request_data,
                 headers={
                     "Content-Type": SOAP_VERSION_CONTENT_TYPES.get(
-                        self.service.soap_version
+                        self.service.soap_service.soap_version
                     ),
                     "SOAPAction": f"http://www.egem.nl/StUF/sector/zkn/0310/{soap_action}",
                 },
                 auth=self.service.get_auth(),
                 cert=self.service.get_cert(),
+                verify=self.service.get_verify(),
             )
             if response.status_code < 200 or response.status_code >= 400:
                 logger.debug("SOAP-response:\n%s", response.content)

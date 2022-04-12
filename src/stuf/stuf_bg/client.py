@@ -30,8 +30,8 @@ class StufBGClient:
         return {
             "created": timezone.now(),
             "expires": timezone.now() + timedelta(minutes=STUF_BG_EXPIRY_MINUTES),
-            "username": self.service.user,
-            "password": self.service.password,
+            "username": self.service.soap_service.user,
+            "password": self.service.soap_service.password,
             "zender_organisatie": self.service.zender_organisatie,
             "zender_applicatie": self.service.zender_applicatie,
             "zender_administratie": self.service.zender_administratie,
@@ -54,7 +54,7 @@ class StufBGClient:
             data=data,
             headers={
                 "Content-Type": SOAP_VERSION_CONTENT_TYPES.get(
-                    self.service.soap_version
+                    self.service.soap_service.soap_version
                 ),
                 # we only have one action so lets hardcode for now
                 "SOAPAction": "http://www.egem.nl/StUF/sector/bg/0310/npsLv01",
