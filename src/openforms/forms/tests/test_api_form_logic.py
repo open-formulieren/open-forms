@@ -873,6 +873,7 @@ class FormLogicAPITests(APITestCase):
         self.assertEqual(
             "actions.0.component", response.json()["invalidParams"][0]["name"]
         )
+        self.assertEqual("blank", response.json()["invalidParams"][0]["code"])
 
     def test_cant_have_empty_component_in_property_action(self):
         user = SuperUserFactory.create()
@@ -918,3 +919,4 @@ class FormLogicAPITests(APITestCase):
         self.assertEqual(
             "actions.0.component", response.json()["invalidParams"][0]["name"]
         )
+        self.assertEqual("blank", response.json()["invalidParams"][0]["code"])
