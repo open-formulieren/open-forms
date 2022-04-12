@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from django.conf import settings
 from django.core.files import File
@@ -7,13 +8,9 @@ from openforms.utils.tests.test_migrations import TestMigrations
 
 from ..constants import SOAPVersion
 
-TEST_CERTIFICATES = os.path.join(
+TEST_CERTIFICATES = Path(
     settings.BASE_DIR,
-    "src",
-    "stuf",
-    "stuf_zds",
-    "tests",
-    "data",
+    "src/stuf/stuf_zds/tests/data",
 )
 
 

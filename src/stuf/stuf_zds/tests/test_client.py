@@ -1,8 +1,8 @@
 import os
+from pathlib import Path
 
 from django.conf import settings
 from django.core.files import File
-from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.test import TestCase
 
@@ -14,14 +14,9 @@ from ...tests.factories import StufServiceFactory
 from ..client import StufZDSClient
 
 TEST_CERTIFICATES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
-TEST_XML = os.path.join(
+TEST_XML = Path(
     settings.BASE_DIR,
-    "src",
-    "stuf",
-    "stuf_zds",
-    "templates",
-    "stuf_zds",
-    "soap",
+    "src/stuf/stuf_zds/templates/stuf_zds/soap",
 )
 
 
@@ -69,7 +64,7 @@ class StufZdsClientTest(TestCase):
 
         m.post(
             stuf_service.soap_service.url,
-            content=render_to_string(os.path.join(TEST_XML, "creeerZaak.xml")).encode(
+            content=render_to_string(Path("stuf_zds/soap/creeerZaak.xml")).encode(
                 "utf-8"
             ),
         )
@@ -98,11 +93,12 @@ class StufZdsClientTest(TestCase):
             soap_service__server_certificate=self.server_certificate,
         )
 
-        with open(os.path.join(TEST_XML, "creeerZaak.xml"), "r") as f:
-            m.post(
-                stuf_service.soap_service.url,
-                content=Template(f.read()).render(Context({})).encode("utf-8"),
-            )
+        m.post(
+            stuf_service.soap_service.url,
+            content=render_to_string(Path("stuf_zds/soap/creeerZaak.xml")).encode(
+                "utf-8"
+            ),
+        )
 
         client = StufZDSClient(stuf_service, self.client_options)
 
@@ -122,11 +118,12 @@ class StufZdsClientTest(TestCase):
     def test_no_mutual_tls(self, m):
         stuf_service = StufServiceFactory.create()
 
-        with open(os.path.join(TEST_XML, "creeerZaak.xml"), "r") as f:
-            m.post(
-                stuf_service.soap_service.url,
-                content=Template(f.read()).render(Context({})).encode("utf-8"),
-            )
+        m.post(
+            stuf_service.soap_service.url,
+            content=render_to_string(Path("stuf_zds/soap/creeerZaak.xml")).encode(
+                "utf-8"
+            ),
+        )
 
         client = StufZDSClient(stuf_service, self.client_options)
 
