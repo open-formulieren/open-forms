@@ -691,7 +691,8 @@ class LogicComponentActionSerializer(serializers.Serializer):
             and not component
         ):
             raise serializers.ValidationError(
-                {"component": self.fields["component"].error_messages["blank"]}
+                {"component": self.fields["component"].error_messages["blank"]},
+                code="blank",
             )
 
         if (
@@ -700,7 +701,8 @@ class LogicComponentActionSerializer(serializers.Serializer):
             and not form_step
         ):
             raise serializers.ValidationError(
-                {"form_step": self.fields["form_step"].error_messages["blank"]}
+                {"form_step": self.fields["form_step"].error_messages["blank"]},
+                code="blank",
             )
 
         return data

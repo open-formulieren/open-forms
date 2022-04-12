@@ -37,7 +37,7 @@ class JsonLogicActionValueValidator(JsonLogicValidator):
         expression = JsonLogicTest.from_expression(value)
 
         if expression.values[0] == "":
-            raise serializers.ValidationError(ErrorDetail(self.message, code=self.code))
+            raise serializers.ValidationError(self.message, code=self.code)
 
 
 class JsonLogicTriggerValidator(JsonLogicValidator):
@@ -116,17 +116,15 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
         """
         Validate that any operand with {"var": "<component name>"} points to a valid component in the form
         """
+        form = get_from_serializer_data_or_instance(self.form_field, data, serializer)
+
+        # some data missing, can't perform check
+        if not form:
+            return
+
         for index, operand in enumerate(logic_test.values):
             if not isinstance(operand, JsonLogicTest):
                 continue
-
-            form = get_from_serializer_data_or_instance(
-                self.form_field, data, serializer
-            )
-
-            # some data missing, can't perform check
-            if not form:
-                return
 
             if operand.operator == "var":
                 needle = operand.values[0]
