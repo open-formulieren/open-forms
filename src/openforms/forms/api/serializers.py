@@ -701,7 +701,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
             and not form_step
         ):
             raise serializers.ValidationError(
-                {"form_step": self.fields["form_step"].error_messages["blank"]},
+                {"form_step": self.fields["form_step"].error_messages["null"]},
                 code="blank",
             )
 
