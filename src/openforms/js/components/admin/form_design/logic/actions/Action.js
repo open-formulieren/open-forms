@@ -1,15 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import {useIntl} from 'react-intl';
 
 import Select from '../../../forms/Select';
 import DeleteIcon from '../../../DeleteIcon';
-
 import {ACTION_TYPES} from '../constants';
 import DataPreview from '../DataPreview';
 import {ActionComponent} from './Actions';
 import {Action as ActionType} from './types';
-import ErrorList from "../../../forms/ErrorList";
+import ErrorList from '../../../forms/ErrorList';
 
 
 const Action = ({prefixText, action, errors={}, onChange, onDelete}) => {
@@ -32,7 +32,7 @@ const Action = ({prefixText, action, errors={}, onChange, onDelete}) => {
                 <div className="dsl-editor">
                     <div className="dsl-editor__node">{prefixText}</div>
 
-                    <div className="dsl-editor__node">
+                    <div className={`dsl-editor__node ${classNames({'errors': !!errors.action?.type})}`}>
                         {
                             errors.action?.type &&
                             <ErrorList classNamePrefix="logic-action">{errors.action.type}</ErrorList>

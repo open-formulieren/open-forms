@@ -1,5 +1,6 @@
 import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 import ComponentSelection from '../../../forms/ComponentSelection';
 import Select from '../../../forms/Select';
@@ -34,7 +35,7 @@ const ActionProperty = ({action, errors, onChange}) => {
 
     return (
         <>
-            <div className="dsl-editor__node">
+            <div className={`dsl-editor__node ${classNames({'errors': !!errors.component})}`}>
                 {
                     errors.component &&
                     <ErrorList classNamePrefix="logic-action">{errors.component}</ErrorList>
@@ -45,7 +46,7 @@ const ActionProperty = ({action, errors, onChange}) => {
                     onChange={onChange}
                 />
             </div>
-            <div className="dsl-editor__node">
+            <div className={`dsl-editor__node ${classNames({'errors': !!errors.action?.property?.value})}`}>
                 {
                     errors.action?.property?.value &&
                     <ErrorList classNamePrefix="logic-action">{errors.action.property.value}</ErrorList>
@@ -73,7 +74,7 @@ const ActionProperty = ({action, errors, onChange}) => {
             </div>
             {
                 MODIFIABLE_PROPERTIES[action.action.property.value] &&
-                <div className="dsl-editor__node">
+                <div className={`dsl-editor__node ${classNames({'errors': !!errors.action?.state})}`}>
                     {
                         errors.action?.state &&
                         <ErrorList classNamePrefix="logic-action">{errors.action.state}</ErrorList>
@@ -114,7 +115,7 @@ const ActionValue = ({action, errors, onChange}) => {
     const valueSource = getValueSource(action);
     return (
         <>
-            <div className="dsl-editor__node">
+            <div className={`dsl-editor__node ${classNames({'errors': !!errors.component})}`}>
                 {
                     errors.component &&
                     <ErrorList classNamePrefix="logic-action">{errors.component}</ErrorList>
@@ -155,7 +156,7 @@ const ActionValue = ({action, errors, onChange}) => {
             }
             {
                 valueSource === 'component' &&
-                <div className="dsl-editor__node">
+                <div className={`dsl-editor__node ${classNames({'errors': !!errors.action?.value})}`}>
                     {
                         errors.action?.value &&
                         <ErrorList classNamePrefix="logic-action">{errors.action.value}</ErrorList>
@@ -174,7 +175,7 @@ const ActionValue = ({action, errors, onChange}) => {
 
 const ActionStepNotApplicable = ({action, errors, onChange}) => {
     return (
-        <div className="dsl-editor__node">
+        <div className={`dsl-editor__node ${classNames({'errors': !!errors.formStep})}`}>
             {
                 errors.formStep &&
                 <ErrorList classNamePrefix="logic-action">{errors.formStep}</ErrorList>
