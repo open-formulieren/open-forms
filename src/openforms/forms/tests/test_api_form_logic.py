@@ -920,3 +920,49 @@ class FormLogicAPITests(APITestCase):
             "actions.0.component", response.json()["invalidParams"][0]["name"]
         )
         self.assertEqual("blank", response.json()["invalidParams"][0]["code"])
+
+    def test_cant_have_empty_component_in_mark_step_as_not_applicable(self):
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "text1",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "text2",
+                    },
+                ]
+            },
+        )
+
+        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_logic_data = {
+            "form": f"http://testserver{form_url}",
+            "json_logic_trigger": {"==": [{"var": "text1"}, {"var": "text2"}]},
+            "actions": [
+                {
+                    "formStep": "",  # Empty form step
+                    "action": {
+                        "name": "Mark step as not applicable",
+                        "type": "step-not-applicable",
+                        "property": {"value": "", "type": ""},
+                        "state": "",
+                    },
+                }
+            ],
+            "is_advanced": False,
+        }
+        url = reverse("api:form-logics-list")
+
+        response = self.client.post(url, data=form_logic_data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            "actions.0.formStep", response.json()["invalidParams"][0]["name"]
+        )
+        self.assertEqual("blank", response.json()["invalidParams"][0]["code"])
