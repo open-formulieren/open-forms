@@ -14,7 +14,8 @@ const Action = PropTypes.shape({
         state: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.number,
-            PropTypes.bool
+            PropTypes.bool,
+            PropTypes.object,
         ]),
         source: PropTypes.string,
         value: PropTypes.oneOfType([

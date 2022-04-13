@@ -9,6 +9,7 @@ import LiteralValueInput from '../LiteralValueInput';
 import {ComponentsContext} from '../../../forms/Context';
 import StepSelection from '../StepSelection';
 import {Action as ActionType} from './types';
+import ErrorList from '../../../forms/ErrorList';
 
 
 const ActionProperty = ({action, errors, onChange}) => {
@@ -34,6 +35,10 @@ const ActionProperty = ({action, errors, onChange}) => {
     return (
         <>
             <div className="dsl-editor__node">
+                {
+                    errors.component &&
+                    <ErrorList classNamePrefix="logic-action">{errors.component}</ErrorList>
+                }
                 <ComponentSelection
                     name="component"
                     value={action.component}
@@ -41,6 +46,10 @@ const ActionProperty = ({action, errors, onChange}) => {
                 />
             </div>
             <div className="dsl-editor__node">
+                {
+                    errors.action?.property?.value &&
+                    <ErrorList classNamePrefix="logic-action">{errors.action.property.value}</ErrorList>
+                }
                 <Select
                     name="action.property"
                     choices={modifiablePropertyChoices}
@@ -65,6 +74,10 @@ const ActionProperty = ({action, errors, onChange}) => {
             {
                 MODIFIABLE_PROPERTIES[action.action.property.value] &&
                 <div className="dsl-editor__node">
+                    {
+                        errors.action?.state &&
+                        <ErrorList classNamePrefix="logic-action">{errors.action.state}</ErrorList>
+                    }
                     <Select
                         name="action.state"
                         choices={MODIFIABLE_PROPERTIES[action.action.property.value].options}
@@ -102,6 +115,10 @@ const ActionValue = ({action, errors, onChange}) => {
     return (
         <>
             <div className="dsl-editor__node">
+                {
+                    errors.component &&
+                    <ErrorList classNamePrefix="logic-action">{errors.component}</ErrorList>
+                }
                 <ComponentSelection
                     name="component"
                     value={action.component}
@@ -139,6 +156,10 @@ const ActionValue = ({action, errors, onChange}) => {
             {
                 valueSource === 'component' &&
                 <div className="dsl-editor__node">
+                    {
+                        errors.action?.value &&
+                        <ErrorList classNamePrefix="logic-action">{errors.action.value}</ErrorList>
+                    }
                     <ComponentSelection
                         name="action.value.var"
                         value={action.action.value.var}
@@ -154,6 +175,10 @@ const ActionValue = ({action, errors, onChange}) => {
 const ActionStepNotApplicable = ({action, errors, onChange}) => {
     return (
         <div className="dsl-editor__node">
+            {
+                errors.formStep &&
+                <ErrorList classNamePrefix="logic-action">{errors.formStep}</ErrorList>
+            }
             <StepSelection
                 name="formStep"
                 value={action.formStep}
@@ -193,7 +218,7 @@ const ActionComponent = ({action, errors, onChange}) => {
 
 ActionComponent.propTypes = {
     action: ActionType.isRequired,
-    errors: PropTypes.array,
+    errors: PropTypes.object,
     onChange: PropTypes.func.isRequired,
 };
 

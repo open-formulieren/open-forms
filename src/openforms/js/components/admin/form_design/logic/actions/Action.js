@@ -9,9 +9,10 @@ import {ACTION_TYPES} from '../constants';
 import DataPreview from '../DataPreview';
 import {ActionComponent} from './Actions';
 import {Action as ActionType} from './types';
+import ErrorList from "../../../forms/ErrorList";
 
 
-const Action = ({prefixText, action, onChange, onDelete}) => {
+const Action = ({prefixText, action, errors={}, onChange, onDelete}) => {
     const intl = useIntl();
 
     return (
@@ -32,6 +33,10 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
                     <div className="dsl-editor__node">{prefixText}</div>
 
                     <div className="dsl-editor__node">
+                        {
+                            errors.action?.type &&
+                            <ErrorList classNamePrefix="logic-action">{errors.action.type}</ErrorList>
+                        }
                         <Select
                             name="action.type"
                             choices={ACTION_TYPES}
@@ -42,7 +47,7 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
                         />
                     </div>
 
-                    <ActionComponent action={action} errors={[]} onChange={onChange}/>
+                    <ActionComponent action={action} errors={errors} onChange={onChange}/>
                 </div>
             </div>
 
@@ -58,6 +63,7 @@ const Action = ({prefixText, action, onChange, onDelete}) => {
 Action.propTypes = {
     prefixText: PropTypes.node.isRequired,
     action: ActionType.isRequired,
+    errors: PropTypes.object,
     onChange: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
 };
