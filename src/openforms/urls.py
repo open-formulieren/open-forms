@@ -91,6 +91,12 @@ urlpatterns = [
             "openforms.authentication.contrib.digid_eherkenning_oidc.digid_machtigen_urls",
         ),
     ),
+    path(
+        "eherkenning-bewindvoering-oidc/",
+        include(
+            "openforms.authentication.contrib.digid_eherkenning_oidc.eherkenning_bewindvoering_urls",
+        ),
+    ),
     path("payment/", include("openforms.payments.urls", namespace="payments")),
     # NOTE: we dont use the User creation feature so don't enable all the mock views
     path("digid/", include("openforms.authentication.contrib.digid.urls")),
