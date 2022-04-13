@@ -622,6 +622,14 @@ class LogicPropertyActionSerializer(serializers.Serializer):
         ),
     )
 
+    def validate_state(self, value):
+        if value == "":
+            raise serializers.ValidationError(
+                self.fields["state"].error_messages["null"],
+                code="blank",
+            )
+        return value
+
 
 class LogicValueActionSerializer(serializers.Serializer):
     value = serializers.JSONField(
