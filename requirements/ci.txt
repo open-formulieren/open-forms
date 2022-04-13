@@ -303,7 +303,7 @@ django-solo==2.0.0
     #   django-camunda
     #   mozilla-django-oidc-db
     #   zgw-consumers
-django-timeline-logger==2.0.0
+django-timeline-logger==2.1.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
