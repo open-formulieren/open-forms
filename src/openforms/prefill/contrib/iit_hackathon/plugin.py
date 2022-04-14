@@ -2,11 +2,17 @@ from typing import Any, Dict, List
 
 from django.utils.translation import gettext_lazy as _
 
+import requests
+
 from openforms.authentication.constants import AuthAttribute
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
 from ...registry import register
+
+# https://github.com/sgort/Test_data_hackathon_Den_Haag/blob/main/Testgevallen_IIT_v1.json
+
+SOURCE = "https://raw.githubusercontent.com/sgort/Test_data_hackathon_Den_Haag/main/Testgevallen_IIT_v1.json"
 
 
 @register("iit-hackathon")
@@ -16,7 +22,9 @@ class IITPrefill(BasePlugin):
 
     @staticmethod
     def get_available_attributes() -> list:
-        return []
+        data = requests.get(SOURCE).json()
+        keys = data[0].keys()
+        return [(key, key) for key in keys]
 
     @classmethod
     def get_prefill_values(
