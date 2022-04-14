@@ -12,11 +12,12 @@ const origEditForm = Formio.Components.components.currency.editForm;
 
 Formio.Components.components.currency.editForm = function() {
     const form = origEditForm.apply(this);
-    form.components[0].components = [
-        ...form.components[0].components,
-        PREFILL,
+    if (!form.components[0].components.includes(PREFILL)) {
+        form.components[0].components = [
+            ...form.components[0].components,
+            PREFILL,
 
-    ];
-
+        ];
+    }
     return form;
 }

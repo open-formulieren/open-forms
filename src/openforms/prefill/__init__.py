@@ -83,6 +83,11 @@ def apply_prefill(configuration: JSONObject, submission: "Submission", register=
     # finally, ensure the ``defaultValue`` is set based on prefill results
     config_copy = deepcopy(configuration)
     _set_default_values(config_copy, results)
+
+    from .contrib.iit_hackathon.prefill import apply_dmn_prefill
+
+    apply_dmn_prefill(config_copy, submission)
+
     return config_copy
 
 

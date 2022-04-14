@@ -13,7 +13,7 @@ from .models import IITPrefillTestCase
 
 # https://github.com/sgort/Test_data_hackathon_Den_Haag/blob/main/Testgevallen_IIT_v1.json
 
-SOURCE = "https://raw.githubusercontent.com/sgort/Test_data_hackathon_Den_Haag/main/Testgevallen_IIT_v1.json"
+SOURCE = "https://raw.githubusercontent.com/sgort/Test_data_hackathon_Den_Haag/main/Testgevallen_IIT.json"
 
 
 @register("iit-hackathon")
