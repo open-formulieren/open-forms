@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.views.generic import DetailView
+from django.http import FileResponse
+from django.views.generic import DetailView, View
 
 from openforms.submissions.models import Submission
 
@@ -35,3 +36,9 @@ class SubmissionPDFTestView(DetailView):
         ctx["report"] = Report(submission)
 
         return ctx
+
+
+class LogFileView(View):
+    def get(self, reuest, *args, **kwargs):
+        log_file = settings.LOGGING["handlers"]["project"]["filename"]
+        return FileResponse(open(log_file, "rb"), content_type="text/plain")

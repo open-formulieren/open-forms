@@ -15,7 +15,7 @@ from decorator_include import decorator_include
 from openforms.accounts.oidc.views import AdminLoginFailure
 from openforms.emails.admin import EmailTestAdminView
 from openforms.emails.views import EmailWrapperTestView
-from openforms.submissions.dev_views import SubmissionPDFTestView
+from openforms.submissions.dev_views import LogFileView, SubmissionPDFTestView
 from openforms.utils.views import ErrorDetailView
 
 handler500 = "openforms.utils.views.server_error"
@@ -132,6 +132,7 @@ if settings.DEBUG:
                 extra_context={"opts": Form._meta},
             ),
         ),
+        path("dev/logs", LogFileView.as_view()),
     ]
 
 if apps.is_installed("rosetta"):
