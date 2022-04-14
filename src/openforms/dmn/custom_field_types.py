@@ -8,6 +8,7 @@ from openforms.formio.typing import Component
 from openforms.forms.custom_field_types import register as fields_register
 from openforms.submissions.models import Submission
 
+from .models import DMNEvaluationResult
 from .registry import register
 
 
@@ -51,6 +52,11 @@ def evaluate_dmn(
             "submission_data": submission.data,
         }
         output = Template(result_template).render(Context(context_data))
+
+    # save so we can use it in prefill
+    eval_result, _ = DMNEvaluationResult.objects.update_or_create(
+        submission=submission, component=component["key"], defaults={"result": result}
+    )
 
     component["dmn"]["resultDisplay"] = output
 
