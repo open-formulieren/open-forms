@@ -6,6 +6,7 @@ from django.urls import path, reverse
 from django.utils.html import format_html_join
 from django.utils.translation import ngettext, ugettext_lazy as _
 
+from furl import furl
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 from rest_framework.exceptions import ValidationError
 
@@ -17,6 +18,7 @@ from ..forms.form import FormImportForm
 from ..models import Form, FormDefinition, FormStep
 from ..utils import export_form, get_duplicates_keys_for_form, import_form
 from .mixins import FormioConfigMixin
+from .views import ExportFormsView
 
 
 class FormStepInline(OrderedTabularInline):
@@ -108,7 +110,12 @@ class FormAdmin(
         "get_object_actions",
     )
     prepopulated_fields = {"slug": ("name",)}
-    actions = ["make_copies", "set_to_maintenance_mode", "remove_from_maintenance_mode"]
+    actions = [
+        "make_copies",
+        "set_to_maintenance_mode",
+        "remove_from_maintenance_mode",
+        "export_forms",
+    ]
     list_filter = ("active", "maintenance_mode", FormDeletedListFilter)
     search_fields = ("name", "internal_name")
 
@@ -215,7 +222,12 @@ class FormAdmin(
                 "import/",
                 self.admin_site.admin_view(self.import_view),
                 name="forms_import",
-            )
+            ),
+            path(
+                "export/",
+                self.admin_site.admin_view(ExportFormsView.as_view()),
+                name="forms_export",
+            ),
         ]
         return my_urls + urls
 
@@ -351,3 +363,12 @@ class FormAdmin(
 
         # soft-deletes
         queryset.filter(_is_deleted=False).update(_is_deleted=True)
+
+    @admin.action(description=_("Export forms"))
+    def export_forms(self, request, queryset):
+        selected_forms_uuids = queryset.values_list("uuid", flat=True)
+        intermediate_page = furl(reverse("admin:forms_export"))
+        intermediate_page.args["forms_uuids"] = ",".join(
+            [str(form_uuid) for form_uuid in selected_forms_uuids]
+        )
+        return HttpResponseRedirect(intermediate_page.url)
