@@ -329,6 +329,38 @@ const PREFILL = {
             },
             valueProperty: 'id',
             template: '<span>{{ item.label }}</span>',
+        },
+        {
+            type: 'select',
+            input: true,
+            label: 'DMN Evaluation',
+            key: 'prefill.fromDmn.component',
+            dataSrc: 'custom',
+            valueProperty: 'value',
+            data: {
+                custom(context) {
+                    const values = [];
+                    context.utils.eachComponent(
+                        context.instance.options.editForm.components,
+                        (component, path) => {
+                            if (component.key === context.data.key) return;
+                            if (component.type != 'dmn') return;
+                            values.push({
+                              label: `${component.label || component.key} (${path})`,
+                              value: path,
+                            });
+                        }
+                    )
+                    return values;
+                }
+            }
+        },
+        {
+            type: 'textfield',
+            input: true,
+            key: 'prefill.fromDmn.dataPath',
+            label: 'JSON data path to DMN evaluation result',
+            description: 'E.g. "myDMNVariable" if that is what is returned by the DMN evaluation',
         }
     ],
 };

@@ -29,6 +29,7 @@ def evaluate_dmn(
         dmn_key,
         dmn_id,
     )
+    logger.debug("Input data: %r", input_values)
     client = client or get_client()
     serialized = serialize_variables(input_values)
 
