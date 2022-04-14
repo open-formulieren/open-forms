@@ -1,0 +1,16 @@
+{% extends "admin/base_site.html" %}
+{% load static i18n %}
+
+{% block content %}
+    <div>
+        {% blocktrans %}
+            Please enter your email address below. Once your request has been processed, you
+            will receive a link where you can download a zip file with all the exported forms.
+        {% endblocktrans %}
+    </div>
+    <form action="{% url 'admin:forms_export' %}" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}
