@@ -9,6 +9,7 @@ from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
 from ...registry import register
+from .models import IITPrefillTestCase
 
 # https://github.com/sgort/Test_data_hackathon_Den_Haag/blob/main/Testgevallen_IIT_v1.json
 
@@ -33,6 +34,19 @@ class IITPrefill(BasePlugin):
         if not submission.bsn:
             return {}
 
-        import bpdb
+        test_case = IITPrefillTestCase.objects.filter(bsn=submission.bsn).first()
+        if test_case is None:
+            return {}
 
-        bpdb.set_trace()
+        data = requests.get(SOURCE).json()
+        prefill_case = next(
+            (entry for entry in data if entry["test"] == test_case.test), None
+        )
+        if prefill_case is None:
+            return {}
+
+        prefilled = {
+            key: value for key, value in prefill_case.items() if key in attributes
+        }
+
+        return prefilled
