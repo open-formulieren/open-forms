@@ -36,10 +36,7 @@ const ActionProperty = ({action, errors, onChange}) => {
     return (
         <>
             <div className={`dsl-editor__node ${classNames({'errors': !!errors.component})}`}>
-                {
-                    errors.component &&
-                    <ErrorList classNamePrefix="logic-action">{errors.component}</ErrorList>
-                }
+                <ErrorList classNamePrefix="logic-action">{errors.component}</ErrorList>
                 <ComponentSelection
                     name="component"
                     value={action.component}
@@ -47,10 +44,7 @@ const ActionProperty = ({action, errors, onChange}) => {
                 />
             </div>
             <div className={`dsl-editor__node ${classNames({'errors': !!errors.action?.property?.value})}`}>
-                {
-                    errors.action?.property?.value &&
-                    <ErrorList classNamePrefix="logic-action">{errors.action.property.value}</ErrorList>
-                }
+                <ErrorList classNamePrefix="logic-action">{errors.action?.property?.value}</ErrorList>
                 <Select
                     name="action.property"
                     choices={modifiablePropertyChoices}
@@ -75,10 +69,7 @@ const ActionProperty = ({action, errors, onChange}) => {
             {
                 MODIFIABLE_PROPERTIES[action.action.property.value] &&
                 <div className={`dsl-editor__node ${classNames({'errors': !!errors.action?.state})}`}>
-                    {
-                        errors.action?.state &&
-                        <ErrorList classNamePrefix="logic-action">{errors.action.state}</ErrorList>
-                    }
+                    <ErrorList classNamePrefix="logic-action">{errors.action?.state}</ErrorList>
                     <Select
                         name="action.state"
                         choices={MODIFIABLE_PROPERTIES[action.action.property.value].options}
@@ -116,10 +107,7 @@ const ActionValue = ({action, errors, onChange}) => {
     return (
         <>
             <div className={`dsl-editor__node ${classNames({'errors': !!errors.component})}`}>
-                {
-                    errors.component &&
-                    <ErrorList classNamePrefix="logic-action">{errors.component}</ErrorList>
-                }
+                <ErrorList classNamePrefix="logic-action">{errors.component}</ErrorList>
                 <ComponentSelection
                     name="component"
                     value={action.component}
@@ -157,10 +145,7 @@ const ActionValue = ({action, errors, onChange}) => {
             {
                 valueSource === 'component' &&
                 <div className={`dsl-editor__node ${classNames({'errors': !!errors.action?.value})}`}>
-                    {
-                        errors.action?.value &&
-                        <ErrorList classNamePrefix="logic-action">{errors.action.value}</ErrorList>
-                    }
+                    <ErrorList classNamePrefix="logic-action">{errors.action?.value}</ErrorList>
                     <ComponentSelection
                         name="action.value.var"
                         value={action.action.value.var}
@@ -176,10 +161,7 @@ const ActionValue = ({action, errors, onChange}) => {
 const ActionStepNotApplicable = ({action, errors, onChange}) => {
     return (
         <div className={`dsl-editor__node ${classNames({'errors': !!errors.formStep})}`}>
-            {
-                errors.formStep &&
-                <ErrorList classNamePrefix="logic-action">{errors.formStep}</ErrorList>
-            }
+            <ErrorList classNamePrefix="logic-action">{errors.formStep}</ErrorList>
             <StepSelection
                 name="formStep"
                 value={action.formStep}

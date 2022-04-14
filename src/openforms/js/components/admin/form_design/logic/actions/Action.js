@@ -33,10 +33,7 @@ const Action = ({prefixText, action, errors={}, onChange, onDelete}) => {
                     <div className="dsl-editor__node">{prefixText}</div>
 
                     <div className={`dsl-editor__node ${classNames({'errors': !!errors.action?.type})}`}>
-                        {
-                            errors.action?.type &&
-                            <ErrorList classNamePrefix="logic-action">{errors.action.type}</ErrorList>
-                        }
+                        <ErrorList classNamePrefix="logic-action">{errors.action?.type}</ErrorList>
                         <Select
                             name="action.type"
                             choices={ACTION_TYPES}
