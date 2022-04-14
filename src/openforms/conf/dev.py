@@ -73,6 +73,16 @@ LOGGING["loggers"].update(
             "level": "DEBUG",
             "propagate": True,
         },
+        "openforms.contrib.camunda.dmn": {
+            "handlers": ["console", "project"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        "mozilla_django_oidc.middleware": {
+            "handlers": ["project"],
+            "level": "ERROR",
+            "propagate": False,
+        },
     }
 )
 
