@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext as _
 
 from django_webtest import WebTest
+from furl import furl
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
 from openforms.config.models import GlobalConfiguration
@@ -396,6 +397,30 @@ class FormAdminActionsTests(WebTest):
 
         self.form.refresh_from_db()
         self.assertFalse(self.form.maintenance_mode)
+
+    def test_export_multiple_forms(self):
+        form2 = FormFactory.create(internal_name="bar")
+        form3 = FormFactory.create(internal_name="bat")
+
+        response = self.app.get(reverse("admin:forms_form_changelist"), user=self.user)
+
+        html_form = response.forms["changelist-form"]
+        html_form["action"] = "export_forms"
+        html_form["_selected_action"] = [form2.pk, form3.pk]
+        response = html_form.submit()
+
+        self.assertEqual(302, response.status_code)
+
+        redirect_url = furl(response.url)
+
+        self.assertEqual(reverse("admin:forms_export"), redirect_url.path)
+        self.assertIn("forms_uuids", furl(response.url).args)
+
+        forms_uuids = furl(response.url).args["forms_uuids"].split(",")
+
+        self.assertEqual(2, len(forms_uuids))
+        self.assertIn(str(form2.uuid), forms_uuids)
+        self.assertIn(str(form3.uuid), forms_uuids)
 
 
 @disable_2fa
