@@ -1,5 +1,6 @@
 from django.template import Context, Template
 
+import requests
 from glom import glom
 from rest_framework.request import Request
 
@@ -37,15 +38,20 @@ def evaluate_dmn(
     definition_version = glom(configuration, "decisionDefinitionVersion.id", default="")
     result_template = configuration["resultDisplayTemplate"]
 
-    result = plugin.evaluate(
-        definition_id, version=definition_version, input_values=input_values
-    )
+    try:
+        result = plugin.evaluate(
+            definition_id, version=definition_version, input_values=input_values
+        )
+    except requests.HTTPError as exc:
+        result = {}
+        output = exc.response.json()["message"]
+    else:
+        context_data = {
+            "result": result,
+            "submission_data": submission.data,
+        }
+        output = Template(result_template).render(Context(context_data))
 
-    context_data = {
-        "result": result,
-        "submission_data": submission.data,
-    }
-    output = Template(result_template).render(Context(context_data))
     component["dmn"]["resultDisplay"] = output
 
     # set the default value to communicate the evaluation result, the SDK can/should pick

@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import elasticapm
 from rest_framework.request import Request
@@ -25,6 +25,17 @@ def unregister(custom_type: str):
         del REGISTRY[custom_type]
 
 
+def find_nested_component_key(component) -> Optional[str]:
+    # keys_to_try = ["columns", "components"]
+    keys_to_try = ["components"]
+    for key in keys_to_try:
+        has_children = bool(component.get(key))
+        if has_children:
+            return key
+
+    return None
+
+
 @elasticapm.capture_span(span_type="app.formio")
 def handle_custom_types(
     configuration: Dict[str, Any],
@@ -39,12 +50,23 @@ def handle_custom_types(
 
         # no handler -> leave untouched
         if type_key not in REGISTRY:
-            rewritten_components.append(component)
-            continue
-
+            rewritten_component = component
         # if there is a handler, invoke it
-        handler = REGISTRY[type_key]
-        rewritten_components.append(handler(component, request, submission))
+        else:
+            handler = REGISTRY[type_key]
+            rewritten_component = handler(component, request, submission)
+
+        # recurse to handle nested components
+        # TODO: does not handle columns at all yet!
+        nested_component_key = find_nested_component_key(rewritten_component)
+        if nested_component_key:
+            rewritten_component.update(
+                handle_custom_types(
+                    rewritten_component, request=request, submission=submission
+                )
+            )
+
+        rewritten_components.append(rewritten_component)
 
     return {
         "components": rewritten_components,
