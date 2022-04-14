@@ -10,6 +10,7 @@ from django.db.models.functions import RowNumber
 from django.utils.translation import gettext_lazy as _
 
 from autoslug import AutoSlugField
+from privates.fields import PrivateMediaFileField
 from rest_framework.reverse import reverse
 from tinymce.models import HTMLField
 
@@ -24,6 +25,7 @@ from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
 from openforms.utils.validators import DjangoTemplateValidator
 
+from ...utils.files import DeleteFileFieldFilesMixin
 from ..constants import ConfirmationEmailOptions, SubmissionAllowedChoices
 from .utils import literal_getter
 
@@ -444,3 +446,37 @@ class FormLogic(models.Model):
         ),
         default=False,
     )
+
+
+class FormsExport(DeleteFileFieldFilesMixin, models.Model):
+    export_content = PrivateMediaFileField(
+        verbose_name=_("export content"),
+        upload_to="exports/%Y/%m/%d",
+        help_text=_("Zip file containing all the exported forms"),
+    )
+    downloaded = models.BooleanField(
+        verbose_name=_("downloaded"),
+        help_text=_("Whether the zip file has already been downloaded"),
+        default=False,
+    )
+    date_downloaded = models.DateField(
+        verbose_name=_("date downloaded"),
+        help_text=_("The date on which the zip file was downloaded"),
+        blank=True,
+        null=True,
+    )
+    user_email = models.EmailField(
+        verbose_name=_("user email"),
+        help_text=_(
+            "The email address that the user entered when requesting the export"
+        ),
+    )
+    username = models.CharField(
+        verbose_name=_("username"),
+        help_text=_("The unique username of the user that requested the download"),
+        max_length=150,
+    )
+
+    class Meta:
+        verbose_name = _("forms export")
+        verbose_name_plural = _("forms exports")
