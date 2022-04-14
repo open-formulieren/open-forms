@@ -14,37 +14,41 @@ import ErrorList from '../../../forms/ErrorList';
 
 const Action = ({prefixText, action, errors={}, onChange, onDelete}) => {
     const intl = useIntl();
+    const hasErrors = Object.entries(errors).length > 0;
 
     return (
         <div className="logic-action">
 
-            <div className="logic-action__actions">
-                <DeleteIcon
-                    onConfirm={onDelete}
-                    message={intl.formatMessage({
-                        description: 'Logic rule action deletion confirm message',
-                        defaultMessage: 'Are you sure you want to delete this action?',
-                    })}
-                />
-            </div>
+            <div className={`logic-action__row ${classNames({'logic-action__row--has-errors': hasErrors})}`}>
 
-            <div className="logic-action__action">
-                <div className="dsl-editor">
-                    <div className="dsl-editor__node">{prefixText}</div>
+                <div className="logic-action__actions">
+                    <DeleteIcon
+                        onConfirm={onDelete}
+                        message={intl.formatMessage({
+                            description: 'Logic rule action deletion confirm message',
+                            defaultMessage: 'Are you sure you want to delete this action?',
+                        })}
+                    />
+                </div>
 
-                    <div className={`dsl-editor__node ${classNames({'errors': !!errors.action?.type})}`}>
-                        <ErrorList classNamePrefix="logic-action">{errors.action?.type}</ErrorList>
-                        <Select
-                            name="action.type"
-                            choices={ACTION_TYPES}
-                            translateChoices
-                            allowBlank
-                            onChange={onChange}
-                            value={action.action.type}
-                        />
+                <div className="logic-action__action">
+                    <div className="dsl-editor">
+                        <div className="dsl-editor__node">{prefixText}</div>
+
+                        <div className={`dsl-editor__node ${classNames({'errors': !!errors.action?.type})}`}>
+                            <ErrorList classNamePrefix="logic-action">{errors.action?.type}</ErrorList>
+                            <Select
+                                name="action.type"
+                                choices={ACTION_TYPES}
+                                translateChoices
+                                allowBlank
+                                onChange={onChange}
+                                value={action.action.type}
+                            />
+                        </div>
+
+                        <ActionComponent action={action} errors={errors} onChange={onChange}/>
                     </div>
-
-                    <ActionComponent action={action} errors={errors} onChange={onChange}/>
                 </div>
             </div>
 
