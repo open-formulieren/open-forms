@@ -512,6 +512,9 @@ TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS = config(
     "TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS", default=2
 )
 
+# Zip files for file exports: after how long should they be deleted
+FORMS_EXPORT_REMOVED_AFTER_DAYS = config("FORMS_EXPORT_REMOVED_AFTER_DAYS", default=7)
+
 # a custom default timeout for the requests library, added via monkeypatch in
 # :mod:`openforms.setup`. Value is in seconds.
 DEFAULT_TIMEOUT_REQUESTS = config("DEFAULT_TIMEOUT_REQUESTS", default=10.0)
