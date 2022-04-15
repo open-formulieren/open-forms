@@ -369,9 +369,10 @@ class FormAdmin(
     def export_forms(self, request, queryset):
         selected_forms_uuids = queryset.values_list("uuid", flat=True)
         intermediate_page = furl(reverse("admin:forms_export"))
-        intermediate_page.args["forms_uuids"] = ",".join(
-            [str(form_uuid) for form_uuid in selected_forms_uuids]
-        )
+        # Not using query params, because exporting 400+ form will exceed URL length
+        request.session["forms_uuids"] = [
+            str(form_uuid) for form_uuid in selected_forms_uuids
+        ]
         return HttpResponseRedirect(intermediate_page.url)
 
 

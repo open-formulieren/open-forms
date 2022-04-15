@@ -42,7 +42,7 @@ class ExportFormsView(SuccessMessageMixin, FormView):
         initial_data = super().get_initial()
         form = FormsUUIDsForm(
             data={
-                "forms_uuids": self.request.GET.get("forms_uuids"),
+                "forms_uuids": self.request.session.get("forms_uuids"),
                 "username": self.request.user.username,
             }
         )

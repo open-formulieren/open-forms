@@ -31,16 +31,21 @@
             <div>
                 <fieldset class="module aligned">
                     {% csrf_token %}
-                    {% for field in form %}
-                        {% if not field.is_hidden %}
-                            {{ field.label.capitalize }}: {{ field }}<br/>
-                            {{ field.help_text }}
-                        {% endif %}
+                    {{ form.non_field_errors }}
+
+                    {% for hidden in form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+
+                    {% for field in form.visible_fields %}
+                        {{ field.errors }}
+                        {{ field.label.capitalize }}: {{ field }}<br/>
+                        {{ field.help_text }}
                     {% endfor %}
                 </fieldset>
 
                 <div class="submit-row">
-                    <input type="submit" value="{% trans 'Export' %}" name="_export">
+                    <input type="submit" value="{% trans 'Export' %}">
                 </div>
             </div>
         </form>
