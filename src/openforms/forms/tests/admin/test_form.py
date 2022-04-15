@@ -414,9 +414,8 @@ class FormAdminActionsTests(WebTest):
         redirect_url = furl(response.url)
 
         self.assertEqual(reverse("admin:forms_export"), redirect_url.path)
-        self.assertIn("forms_uuids", furl(response.url).args)
 
-        forms_uuids = furl(response.url).args["forms_uuids"].split(",")
+        forms_uuids = self.app.session["forms_uuids"]
 
         self.assertEqual(2, len(forms_uuids))
         self.assertIn(str(form2.uuid), forms_uuids)
