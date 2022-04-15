@@ -1,16 +1,48 @@
 {% extends "admin/base_site.html" %}
-{% load static i18n %}
+{% load static i18n django_admin_index %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" href="{% static "admin/css/admin-index.css" %}">
+{% endblock %}
+
+{% block nav-global %}{% include "django_admin_index/includes/app_list.html" %}{% endblock nav-global %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:forms_form_changelist' %}">{% trans 'Forms' %}</a>
+&rsaquo; {% trans 'Export forms' %}
+</div>
+{% endblock %}
+
+{% block title %} {% trans "Export forms" %} {{ block.super }} {% endblock %}
 
 {% block content %}
-    <div>
+    <h1>{% trans 'Export forms' %}</h1>
+    <div id="content-main">
         {% blocktrans %}
-            Please enter your email address below. Once your request has been processed, you
-            will receive a link where you can download a zip file with all the exported forms.
+            <div>
+                Please enter your email address below. Once your request has been processed, you
+                will receive a link where you can download a zip file with all the exported forms.
+                <br/><br/>
+            </div>
         {% endblocktrans %}
+        <form action="{% url 'admin:forms_export' %}" method="post">
+            <div>
+                <fieldset class="module aligned">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        {% if not field.is_hidden %}
+                            {{ field.label.capitalize }}: {{ field }}<br/>
+                            {{ field.help_text }}
+                        {% endif %}
+                    {% endfor %}
+                </fieldset>
+
+                <div class="submit-row">
+                    <input type="submit" value="{% trans 'Export' %}" name="_export">
+                </div>
+            </div>
+        </form>
     </div>
-    <form action="{% url 'admin:forms_export' %}" method="post">
-        {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="Submit">
-    </form>
 {% endblock %}
