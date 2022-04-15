@@ -23,9 +23,9 @@ from openforms.payments.registry import register as payment_register
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
+from openforms.utils.files import DeleteFileFieldFilesMixin
 from openforms.utils.validators import DjangoTemplateValidator
 
-from ...utils.files import DeleteFileFieldFilesMixin
 from ..constants import ConfirmationEmailOptions, SubmissionAllowedChoices
 from .utils import literal_getter
 
