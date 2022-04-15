@@ -32,6 +32,16 @@ def evaluate_dmn(
     if not input_values:
         return component
 
+    # add the default values, these don't seem to be submitted by Formio
+    for _component in submission.form.iter_components():
+        if not (key := _component.get("key")):
+            continue
+        if _component.get("type") != "radio":
+            continue
+
+        if input_values.get(key) == "" and _component.get("defaultValue") != "":
+            input_values[key] = _component["defaultValue"]
+
     configuration = component["dmn"]
 
     plugin = register[configuration["engine"]["id"]]

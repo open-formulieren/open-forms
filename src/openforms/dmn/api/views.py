@@ -168,3 +168,14 @@ class DecisionDefinitionXMLView(ValidateQueryStringParametersMixin, APIView):
         plugin = get_plugin(engine)
         xml = plugin.get_definition_xml(definition, version=version) or ""
         return Response({"xml": xml})
+
+
+class EvaluateDRDView(APIView):
+    authentication_classes = ()
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        import bpdb
+
+        bpdb.set_trace()
+        return Response(result)

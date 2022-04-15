@@ -4,6 +4,7 @@ from .views import (
     DecisionDefinitionListView,
     DecisionDefinitionVersionListView,
     DecisionDefinitionXMLView,
+    EvaluateDRDView,
     PluginListView,
 )
 
@@ -23,5 +24,9 @@ urlpatterns = [
         "decision-definitions/<str:definition>/xml",
         DecisionDefinitionXMLView.as_view(),
         name="dmn-definition-xml",
+    ),
+    path(
+        "drd/<str:key>/evaluate",
+        EvaluateDRDView.as_view(),
     ),
 ]
