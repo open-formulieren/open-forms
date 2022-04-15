@@ -16,9 +16,10 @@ from ...payments.admin import PaymentBackendChoiceFieldMixin
 from ...utils.expressions import FirstNotBlank
 from ..forms.form import FormImportForm
 from ..models import Form, FormDefinition, FormStep
+from ..models.form import FormsExport
 from ..utils import export_form, get_duplicates_keys_for_form, import_form
 from .mixins import FormioConfigMixin
-from .views import ExportFormsView
+from .views import DownloadExportedFormsView, ExportFormsView
 
 
 class FormStepInline(OrderedTabularInline):
@@ -372,3 +373,21 @@ class FormAdmin(
             [str(form_uuid) for form_uuid in selected_forms_uuids]
         )
         return HttpResponseRedirect(intermediate_page.url)
+
+
+@admin.register(FormsExport)
+class FormsExportAdmin(admin.ModelAdmin):
+    list_display = ("user_email", "downloaded", "date_downloaded")
+    list_filter = ("user_email", "downloaded")
+    search_fields = ("user_email",)
+
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path(
+                "download/<int:pk>/<str:token>/",
+                self.admin_site.admin_view(DownloadExportedFormsView.as_view()),
+                name="download_forms_export",
+            ),
+        ]
+        return my_urls + urls

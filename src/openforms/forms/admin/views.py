@@ -1,12 +1,19 @@
+from datetime import date
+
 from django import forms
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.postgres.forms import SimpleArrayField
+from django.core.exceptions import PermissionDenied
+from django.http import FileResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import DetailView
 from django.views.generic.edit import FormView
 
-from ..models.form import Form
+from ..models.form import Form, FormsExport
 from .tasks import process_forms_export
+from .tokens import exported_forms_token_generator
 
 
 class FormsUUIDsForm(forms.Form):
@@ -46,3 +53,24 @@ class ExportFormsView(SuccessMessageMixin, FormView):
     def form_valid(self, form):
         process_forms_export.delay(**form.cleaned_data)
         return super().form_valid(form)
+
+
+class DownloadExportedFormsView(DetailView):
+    model = FormsExport
+
+    def get(self, request, *args, **kwargs):
+        forms_export = get_object_or_404(FormsExport.objects, pk=kwargs["pk"])
+
+        token = kwargs["token"]
+        valid = exported_forms_token_generator.check_token(forms_export, token)
+        if not valid:
+            raise PermissionDenied("URL is not valid")
+
+        if request.user.username != forms_export.username:
+            raise PermissionDenied("Wrong user requesting download")
+
+        forms_export.downloaded = True
+        forms_export.date_downloaded = date.today()
+        forms_export.save()
+
+        return FileResponse(open(forms_export.export_content.path, "rb"))
