@@ -1,3 +1,4 @@
+import logging
 import os
 import tempfile
 from pathlib import Path
@@ -7,6 +8,7 @@ from zipfile import ZipFile
 from django.conf import settings
 from django.core.files import File
 from django.core.mail import send_mail
+from django.core.management import call_command
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -18,6 +20,8 @@ from ..models import Form
 from ..models.form import FormsExport
 from ..utils import export_form
 from .tokens import exported_forms_token_generator
+
+logger = logging.getLogger(__name__)
 
 
 @app.task
@@ -64,3 +68,9 @@ def process_forms_export(forms_uuids, email, username):
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[email],
         )
+
+
+@app.task
+def clear_forms_export():
+    logger.debug("Clearing old export files")
+    call_command("delete_export_files")

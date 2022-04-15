@@ -621,6 +621,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "openforms.utils.tasks.cleanup_csp_reports",
         "schedule": crontab(hour=4),
     },
+    "clear-forms-exports": {
+        "task": "openforms.forms.admin.tasks.clear_forms_export",
+        "schedule": crontab(hour=0, minute=0, day_of_week="sunday"),
+    },
 }
 
 RETRY_SUBMISSIONS_TIME_LIMIT = config(
