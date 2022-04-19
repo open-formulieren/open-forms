@@ -16,6 +16,4 @@ class Command(BaseCommand):
         )
 
         forms_exports = FormsExport.objects.filter(datetime_downloaded__lt=before_date)
-
-        for forms_export in forms_exports:
-            forms_export.delete()
+        forms_exports.delete()

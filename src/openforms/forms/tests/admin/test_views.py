@@ -8,6 +8,7 @@ from django.utils import timezone
 
 from django_webtest import WebTest
 from freezegun import freeze_time
+from privates.test import temp_private_root
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
 from openforms.forms.admin.tokens import exported_forms_token_generator
@@ -90,6 +91,7 @@ class TestExportFormsView(WebTest):
         self.assertEqual(messages[0].tags, "success")
 
 
+@temp_private_root()
 class TestDownloadExportFormView(TestCase):
     def test_not_logged_in_cant_access(self):
         download_url = build_absolute_uri(

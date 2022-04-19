@@ -23,7 +23,7 @@ from openforms.payments.registry import register as payment_register
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
-from openforms.utils.files import DeleteFileFieldFilesMixin
+from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 from openforms.utils.validators import DjangoTemplateValidator
 
 from ..constants import ConfirmationEmailOptions, SubmissionAllowedChoices
@@ -448,6 +448,10 @@ class FormLogic(models.Model):
     )
 
 
+class FormsExportQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):
+    pass
+
+
 class FormsExport(DeleteFileFieldFilesMixin, models.Model):
     export_content = PrivateMediaFileField(
         verbose_name=_("export content"),
@@ -466,6 +470,8 @@ class FormsExport(DeleteFileFieldFilesMixin, models.Model):
         help_text=_("The user that requested the download."),
         on_delete=models.CASCADE,
     )
+
+    objects = FormsExportQuerySet.as_manager()
 
     class Meta:
         verbose_name = _("forms export")
