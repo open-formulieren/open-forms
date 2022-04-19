@@ -1,9 +1,6 @@
 from mozilla_django_oidc_db.mixins import SoloConfigMixin as _SoloConfigMixin
 
-import digid_eherkenning_oidc_generics.digid_machtigen_settings as digid_machtigen_settings
-import digid_eherkenning_oidc_generics.digid_settings as digid_settings
-import digid_eherkenning_oidc_generics.eherkenning_settings as eherkenning_settings
-
+from . import digid_machtigen_settings, digid_settings, eherkenning_settings
 from .models import (
     OpenIDConnectDigiDMachtigenConfig,
     OpenIDConnectEHerkenningConfig,

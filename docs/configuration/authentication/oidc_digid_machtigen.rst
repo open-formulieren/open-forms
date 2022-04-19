@@ -8,7 +8,7 @@ Open Formulieren ondersteunt `DigiD Machtigen`_ login voor burgers via het OpenI
 Burgers kunnen inloggen op Open Formulieren met hun DigiD account en een formulier invullen namens iemand
 anders. In deze flow:
 
-* Een gebruiker klikt op de knop *Inloggen met DigiD Machtigen* die op de start pagina van een formulier staat.
+* Een gebruiker klikt op de knop *Inloggen met DigiD Machtigen* die op de startpagina van een formulier staat.
 * De gebruiker wordt via de omgeving van de OpenID Connect provider (bijv. `Keycloak`_) naar DigiD geleid, waar de gebruiker kan inloggen met *zijn/haar eigen* DigiD inlog gegevens.
 * De gebruiker kan dan kiezen namens wie hij/zij het formulier wilt invullen.
 * DigiD stuurt de gebruiker terug naar de OIDC omgeving, die op zijn beurt de gebruiker weer terugstuurt naar Open Formulieren
@@ -23,7 +23,7 @@ Configureren van OIDC voor DigiD Machtigen
 ==========================================
 
 De stappen hier zijn dezelfde als voor :ref:`configuration_oidc_digid_appgroup`, maar de **Redirect URI**
-is ``https://open-formulieren.gemeente.nl/digid-oidc-machtigen/callback/`` (met de juiste domein in plaats van
+is ``https://open-formulieren.gemeente.nl/digid-oidc-machtigen/callback/`` (met het juiste domein in plaats van
 ``open-formulieren.gemeente.nl``).
 
 Aan het eind van dit proces moet u de volgende gegevens hebben:
@@ -35,7 +35,7 @@ Aan het eind van dit proces moet u de volgende gegevens hebben:
 Configureren van OIDC in Open Formulieren
 =========================================
 
-Om OIDC in Open-Formulieren te kunnen configureren, de volgende :ref:`gegevens <configuration_oidc_digid_machtigen_appgroup>` zijn nodig:
+Om OIDC in Open-Formulieren te kunnen configureren zijn de volgende :ref:`gegevens <configuration_oidc_digid_machtigen_appgroup>` nodig:
 
 * Server adres
 * Client ID
@@ -49,10 +49,8 @@ Navigeer vervolgens in de admin naar **Configuratie** > **OpenID Connect configu
 #. Vul bij **OpenID Connect scopes**  ``openid``.
 #. Vul bij **OpenID sign algorithm** ``RS256`` in.
 #. Laat **Sign key** leeg.
-#. Laat bij **Vertegenwoordigde claim name** de standaardwaarde staan, tenzij de naam van het BSN veld van de vertegenwoordigde
-#.  in de OIDC claims anders is dan ``aanvrager.bsn``.
-#. Laat bij **Gemachtigde claim name** de standaardwaarde staan, tenzij de naam van het BSN veld van de gemachtigde
-#.  in de OIDC claims anders is dan ``gemachtigde.bsn``.
+#. Laat bij **Vertegenwoordigde claim name** de standaardwaarde staan, tenzij de naam van het BSN veld van de vertegenwoordigde in de OIDC claims anders is dan ``aanvrager.bsn``.
+#. Laat bij **Gemachtigde claim name** de standaardwaarde staan, tenzij de naam van het BSN veld van de gemachtigde in de OIDC claims anders is dan ``gemachtigde.bsn``.
 
 De endpoints die ingesteld moeten worden zijn dezelfde als voor DigiD. U kunt de stappen in :ref:`configuration_oidc_digid_appgroup`
 volgen om die te configureren.
