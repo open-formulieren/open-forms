@@ -61,7 +61,7 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
     --breadcrumbs-link-hover: #{$color-dark-light};
     --breadcrumbs-bg: #{$color-dark};
 
-    --link-fg: #2fc0ec;
+    --link-fg: #04a5bb;
     --link-hover-color: #b2cddf;
 
     --hairline-color: #686868;
@@ -91,6 +91,10 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
   select,
   .vTextField {
     background-color: var(--form-input-bg);
+  }
+
+  body #toolbar {
+    background: var(--body-bg);
   }
 }
 
