@@ -37,14 +37,7 @@ class ExportFormsView(
     success_message = _("Success! You will receive an email when your export is ready.")
 
     def test_func(self):
-        user = self.request.user
-        if not user.is_authenticated:
-            return False
-
-        if user.is_superuser:
-            return True
-
-        return False
+        return self.request.user.is_superuser
 
     def form_valid(self, form):
         process_forms_export.delay(
@@ -59,14 +52,7 @@ class DownloadExportedFormsView(LoginRequiredMixin, UserPassesTestMixin, View):
     model = FormsExport
 
     def test_func(self):
-        user = self.request.user
-        if not user.is_authenticated:
-            return False
-
-        if user.is_superuser:
-            return True
-
-        return False
+        return self.request.user.is_superuser
 
     def get(self, request, *args, **kwargs):
         forms_export = get_object_or_404(
