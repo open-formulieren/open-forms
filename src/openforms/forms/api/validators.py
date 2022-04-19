@@ -1,3 +1,5 @@
+from typing import Any, Union
+
 from django.utils.translation import gettext as _
 
 from json_logic import jsonLogic
@@ -19,6 +21,23 @@ class JsonLogicValidator:
             jsonLogic(value)
         except ValueError:
             raise serializers.ValidationError(_("Invalid JSON logic."), code="invalid")
+
+
+class JsonLogicActionValueValidator(JsonLogicValidator):
+    code = "invalid"
+    message = _("This field needs to refer to a form component")
+
+    def __call__(self, value: Union[dict, str]) -> None:
+        if isinstance(value, str):
+            return
+
+        # ensure that the expression itself is valid
+        super().__call__(value)
+
+        expression = JsonLogicTest.from_expression(value)
+
+        if expression.values[0] == "":
+            raise serializers.ValidationError(self.message, code=self.code)
 
 
 class JsonLogicTriggerValidator(JsonLogicValidator):
@@ -59,13 +78,9 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
         # to be adapted so that we only check primitives.
         logic_test = JsonLogicTest.from_expression(expression)
 
+        # Check that the first operator includes a 'var'
         first_operand = logic_test.values[0]
-        is_date_operand = (
-            isinstance(first_operand, JsonLogicTest)
-            and first_operand.operator == "date"
-            and isinstance(first_operand.values[0], JsonLogicTest)
-            and first_operand.values[0].operator == "var"
-        )
+        is_date_operand = self._is_date_operand(first_operand)
         if not isinstance(first_operand, JsonLogicTest) or (
             first_operand.operator != "var" and not is_date_operand
         ):
@@ -75,41 +90,7 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
                 }
             )
 
-        # finally, validate that it points to a valid component in the form
-        form = get_from_serializer_data_or_instance(self.form_field, data, serializer)
-
-        # some data missing, can't perform check
-        if not form:
-            return
-
-        if is_date_operand:
-            needle = first_operand.values[0].values[0]
-        else:
-            needle = first_operand.values[0]
-
-        for component in form.iter_components(recursive=True):
-            key = component.get("key")
-            if key and key == needle:
-                break
-
-            if component.get("type") == "selectboxes":
-                needle_bits = needle.split(".")
-                key_bits = key.split(".")
-                if key_bits == needle_bits[:-1]:
-                    break
-
-        # executes if the break was not hit
-        else:
-            raise serializers.ValidationError(
-                {
-                    self.trigger_field: ErrorDetail(
-                        _(
-                            "The specified component is not present in the form definition"
-                        ),
-                        code=self.code,
-                    ),
-                }
-            )
+        self.validate_trigger_values(logic_test, data, serializer)
 
     def _is_advanced_logic(
         self, data: dict, serializer: serializers.Serializer
@@ -122,6 +103,69 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
             if is_advanced:
                 return True
         return False
+
+    def _is_date_operand(self, operand: Any) -> bool:
+        return (
+            isinstance(operand, JsonLogicTest)
+            and operand.operator == "date"
+            and isinstance(operand.values[0], JsonLogicTest)
+            and operand.values[0].operator == "var"
+        )
+
+    def validate_trigger_values(self, logic_test, data, serializer):
+        """
+        Validate that any operand with {"var": "<component name>"} points to a valid component in the form
+        """
+        form = get_from_serializer_data_or_instance(self.form_field, data, serializer)
+
+        # some data missing, can't perform check
+        if not form:
+            return
+
+        for index, operand in enumerate(logic_test.values):
+            if not isinstance(operand, JsonLogicTest):
+                continue
+
+            if operand.operator == "var":
+                needle = operand.values[0]
+            elif self._is_date_operand(operand):
+                needle = operand.values[0].values[0]
+            else:
+                continue
+
+            if needle == "":
+                raise serializers.ValidationError(
+                    {
+                        self.trigger_field: ErrorDetail(
+                            _("The component cannot be empty."),
+                            code=self.code,
+                        ),
+                    }
+                )
+
+            for component in form.iter_components(recursive=True):
+                key = component.get("key")
+                if key and key == needle:
+                    break
+
+                if component.get("type") == "selectboxes":
+                    needle_bits = needle.split(".")
+                    key_bits = key.split(".")
+                    if key_bits == needle_bits[:-1]:
+                        break
+
+            # executes if the break was not hit
+            else:
+                raise serializers.ValidationError(
+                    {
+                        self.trigger_field: ErrorDetail(
+                            _(
+                                "The specified component is not present in the form definition"
+                            ),
+                            code=self.code,
+                        ),
+                    }
+                )
 
 
 class FormIOComponentsValidator:
