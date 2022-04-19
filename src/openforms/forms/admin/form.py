@@ -19,7 +19,7 @@ from ..models import Form, FormDefinition, FormStep
 from ..models.form import FormsExport
 from ..utils import export_form, get_duplicates_keys_for_form, import_form
 from .mixins import FormioConfigMixin
-from .views import DownloadExportedFormsView, ExportFormsView
+from .views import DownloadExportedFormsView, ExportFormsForm, ExportFormsView
 
 
 class FormStepInline(OrderedTabularInline):
@@ -367,20 +367,32 @@ class FormAdmin(
 
     @admin.action(description=_("Export forms"))
     def export_forms(self, request, queryset):
+        if not request.user.email:
+            self.message_user(
+                request=request,
+                message=_(
+                    "Please configure your email address in your admin profile before requesting a bulk export"
+                ),
+                level=messages.ERROR,
+            )
+            return
+
         selected_forms_uuids = queryset.values_list("uuid", flat=True)
-        intermediate_page = furl(reverse("admin:forms_export"))
-        # Not using query params, because exporting 400+ form will exceed URL length
-        request.session["forms_uuids"] = [
-            str(form_uuid) for form_uuid in selected_forms_uuids
-        ]
-        return HttpResponseRedirect(intermediate_page.url)
+        form = ExportFormsForm(
+            initial={
+                "forms_uuids": [str(form_uuid) for form_uuid in selected_forms_uuids],
+                "email": request.user.email,
+            }
+        )
+        context = dict(self.admin_site.each_context(request), form=form)
+        return TemplateResponse(request, "admin/forms/form/export.html", context)
 
 
 @admin.register(FormsExport)
 class FormsExportAdmin(admin.ModelAdmin):
-    list_display = ("user_email", "downloaded", "date_downloaded")
-    list_filter = ("user_email", "downloaded")
-    search_fields = ("user_email",)
+    list_display = ("user", "datetime_downloaded")
+    list_filter = ("user",)
+    search_fields = ("user",)
 
     def get_urls(self):
         urls = super().get_urls()

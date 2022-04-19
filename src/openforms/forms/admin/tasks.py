@@ -1,5 +1,4 @@
 import logging
-import os
 import tempfile
 from pathlib import Path
 from uuid import uuid4
@@ -7,13 +6,14 @@ from zipfile import ZipFile
 
 from django.conf import settings
 from django.core.files import File
-from django.core.mail import send_mail
 from django.core.management import call_command
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from openforms.accounts.models import User
 from openforms.celery import app
+from openforms.emails.utils import send_mail_html
 from openforms.utils.urls import build_absolute_uri
 
 from ..models import Form
@@ -25,9 +25,10 @@ logger = logging.getLogger(__name__)
 
 
 @app.task
-def process_forms_export(forms_uuids, email, username):
+def process_forms_export(forms_uuids: list, email: str, user_id: int) -> None:
     forms = Form.objects.filter(uuid__in=forms_uuids)
 
+    # This deletes the temp dir once the context manager is exited
     with tempfile.TemporaryDirectory(dir=settings.PRIVATE_MEDIA_ROOT) as temp_dir:
         output_files = []
         for form in forms:
@@ -41,13 +42,12 @@ def process_forms_export(forms_uuids, email, username):
         zip_filepath = Path(temp_dir, f"forms-export_{uuid4()}.zip")
         with ZipFile(zip_filepath, "w") as zipfile:
             for output_file in output_files:
-                zipfile.write(output_file, arcname=os.path.basename(output_file))
+                zipfile.write(output_file, arcname=Path(output_file).name)
 
         with open(zip_filepath, "rb") as zipfile:
             forms_export = FormsExport.objects.create(
-                export_content=File(zipfile, name=os.path.basename(zip_filepath)),
-                user_email=email,
-                username=username,
+                export_content=File(zipfile, name=Path(zip_filepath).name),
+                user=User.objects.get(id=user_id),
             )
 
         token = exported_forms_token_generator.make_token(forms_export)
@@ -62,9 +62,9 @@ def process_forms_export(forms_uuids, email, username):
             "admin/forms/formsexport/email_content.html", context={"download_url": url}
         )
 
-        send_mail(
+        send_mail_html(
             subject=_("Forms export ready"),
-            message=email_content,
+            html_body=email_content,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[email],
         )

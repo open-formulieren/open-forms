@@ -20,27 +20,20 @@
 {% block content %}
     <h1>{% trans 'Export forms' %}</h1>
     <div id="content-main">
-        {% blocktrans %}
-            <div>
-                Please enter your email address below. Once your request has been processed, you
-                will receive a link where you can download a zip file with all the exported forms.
-                <br/><br/>
-            </div>
-        {% endblocktrans %}
+        <div>
+            {% blocktranslate %}
+            Once your request has been processed, you will be sent an email (at the address configured in your admin
+            profile) containing a link where you can download a zip file with all the exported forms.
+            {% endblocktranslate %}
+            <br/><br/>
+        </div>
         <form action="{% url 'admin:forms_export' %}" method="post">
             <div>
                 <fieldset class="module aligned">
                     {% csrf_token %}
-                    {{ form.non_field_errors }}
 
                     {% for hidden in form.hidden_fields %}
                         {{ hidden }}
-                    {% endfor %}
-
-                    {% for field in form.visible_fields %}
-                        {{ field.errors }}
-                        {{ field.label.capitalize }}: {{ field }}<br/>
-                        {{ field.help_text }}
                     {% endfor %}
                 </fieldset>
 

@@ -452,31 +452,26 @@ class FormsExport(DeleteFileFieldFilesMixin, models.Model):
     export_content = PrivateMediaFileField(
         verbose_name=_("export content"),
         upload_to="exports/%Y/%m/%d",
-        help_text=_("Zip file containing all the exported forms"),
+        help_text=_("Zip file containing all the exported forms."),
     )
-    downloaded = models.BooleanField(
-        verbose_name=_("downloaded"),
-        help_text=_("Whether the zip file has already been downloaded"),
-        default=False,
-    )
-    date_downloaded = models.DateField(
-        verbose_name=_("date downloaded"),
-        help_text=_("The date on which the zip file was downloaded"),
+    datetime_downloaded = models.DateTimeField(
+        verbose_name=_("date time downloaded"),
+        help_text=_("The date and time on which the zip file was downloaded."),
         blank=True,
         null=True,
     )
-    user_email = models.EmailField(
-        verbose_name=_("user email"),
-        help_text=_(
-            "The email address that the user entered when requesting the export"
-        ),
-    )
-    username = models.CharField(
-        verbose_name=_("username"),
-        help_text=_("The unique username of the user that requested the download"),
-        max_length=150,
+    user = models.ForeignKey(
+        to=User,
+        verbose_name=_("user"),
+        help_text=_("The user that requested the download."),
+        on_delete=models.CASCADE,
     )
 
     class Meta:
         verbose_name = _("forms export")
         verbose_name_plural = _("forms exports")
+
+    def __str__(self):
+        return _("Bulk export requested by %(username)s") % {
+            "username": self.user.username
+        }

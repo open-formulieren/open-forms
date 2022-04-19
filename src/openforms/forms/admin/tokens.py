@@ -12,13 +12,12 @@ class ExportedFormsTokenGenerator(BaseTokenGenerator):
     """
 
     key_salt = "openforms.forms.admin.tokens.ExportedFormsTokenGenerator"
-    token_timeout_days = settings.SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS
+    token_timeout_days = settings.FORMS_EXPORT_DOWNLOAD_LINK_EXPIRES_AFTER_DAYS
 
     def get_hash_value_parts(self, exported_forms: FormsExport) -> List[str]:
         exported_forms_attributes = (
             "id",
-            "downloaded",
-            "date_downloaded",
+            "datetime_downloaded",
         )
         exported_forms_bits = [
             str(getattr(exported_forms, attribute) or "")

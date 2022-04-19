@@ -11,13 +11,11 @@ class Command(BaseCommand):
     help = "Clear the downloaded form export files to free up disk space"
 
     def handle(self, *args, **options):
-        before_date = (
-            timezone.now() - timedelta(days=settings.FORMS_EXPORT_REMOVED_AFTER_DAYS)
-        ).date()
-
-        forms_exports = FormsExport.objects.filter(
-            downloaded=True, date_downloaded__lt=before_date
+        before_date = timezone.now() - timedelta(
+            days=settings.FORMS_EXPORT_REMOVED_AFTER_DAYS
         )
+
+        forms_exports = FormsExport.objects.filter(datetime_downloaded__lt=before_date)
 
         for forms_export in forms_exports:
             forms_export.delete()

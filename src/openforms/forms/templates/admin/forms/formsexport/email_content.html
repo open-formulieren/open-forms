@@ -1,16 +1,18 @@
 {% load i18n %}
 
+{% translate "Hi," %}
+<br><br>
+
 {% blocktrans %}
-Hi,<br>
-<br>
-Your zip file containing the exported forms is ready and can be downloaded at the following URL:<br>
-{{ download_url }}<br>
-<br>
-
-Note: the URL is only valid once.
-
-<br>
-Best wishes,<br>
-<br>
-Open Forms<br>
+    Your zip file containing the exported forms is ready and can be downloaded at the following URL:
+    {{ download_url }}
 {% endblocktrans %}
+<br><br>
+
+{% translate "Note: the URL is only valid once." %}
+
+<br>
+{% translate "Best wishes," %}<br>
+<br>
+{% translate "Open Forms" %}<br>
+
