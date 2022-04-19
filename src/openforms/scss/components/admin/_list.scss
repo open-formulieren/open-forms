@@ -8,31 +8,27 @@
   }
 
   &--accordion {
-    border: solid 1px #eee;  // border color from submit-row
+    border: solid 1px var(--hairline-color);
 
     .list__item {
       padding: 0;
-      color: $color-dark;
+      color: var(--body-fg);
 
       & + .list__item {
-        border-top: solid 1px #eee;
+        border-top: solid 1px var(--hairline-color);
       }
 
       &:hover {
-        background: $color-primary;
-        color: $color-lightest;
+        background: var(--primary);
+        color: var(--primary-fg);
       }
-
-      // &--active {
-      //   padding-left: 10px;
-      // }
     }
   }
 
   &__item {
     &--active {
-      background: $color-secondary;
-      color: $color-primary;
+      background: var(--list-item-active-bg);
+      color: var(--list-item-active-fg);
     }
 
     &--with-actions {
@@ -45,12 +41,12 @@
 
 .list__item--active {
   .button--plain {
-    color: $color-primary;
+    color: var(--list-item-active-fg);
   }
 
   &:hover {
     .button--plain {
-      color: $color-lightest;
+      color: var(--primary-fg);
     }
   }
 

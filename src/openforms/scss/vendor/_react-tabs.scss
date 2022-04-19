@@ -6,15 +6,17 @@
 
 .react-tabs {
   &__tab-list {
-    border-bottom-color: $color_secondary_dark;
+    border-bottom-color: var(--react-tab-border-color);
   }
 
   &__tab {
+    color: var(--body-fg);
     font-size: 106%;
 
     &--selected {
       border-radius: 0;
-      border-color: $color_secondary_dark;
+      border-color: var(--react-tab-border-color);
+      background: var(--body-bg);
     }
 
     &--has-errors {

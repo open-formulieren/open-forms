@@ -20,6 +20,7 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
 
   --breadcrumbs-fg: #{$color_primary};
   --breadcrumbs-link-fg: var(--body-fg);
+  --breadcrumbs-link-hover: #{$color-darkest}; // not in the core django vars
   --breadcrumbs-bg: #{$color_secondary};
 
   --link-fg: #{$color_link};
@@ -40,6 +41,61 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
 
   --object-tools-bg: #888;
   --object-tools-hover-bg: #{$color_dark};
+
+  // custom variables
+  --form-input-bg: var(--body-bg);
+  --react-tab-border-color: #{$color-secondary-dark};
+  --list-item-active-bg: #{$color-secondary};
+  --list-item-active-fg: var(--primary);
+  --edit-panel-title-bg: #{$color-secondary-dark};
+  --edit-panel-title-fg: #{$color-dark};
+}
+
+@media (prefers-color-scheme: dark) {
+
+  :root {
+    --primary: #037383 !important;
+    --secondary: #037383 !important;
+
+    --breadcrumbs-fg: #2fc0ec;
+    --breadcrumbs-link-hover: #{$color-dark-light};
+    --breadcrumbs-bg: #{$color-dark};
+
+    --link-fg: #04a5bb;
+    --link-hover-color: #b2cddf;
+
+    --hairline-color: #686868;
+
+    --button-hover-bg: #{$color-primary};
+    --default-button-bg: #{$color-primary};
+    --default-button-hover-bg: #{$color-dark-light};
+
+    --form-input-bg: #232222;
+    --react-tab-border-color: var(--hairline-color);
+    --list-item-active-bg: #{$color-dark};
+    --list-item-active-fg: #2fc0ec;
+    --edit-panel-title-bg: #{$color-dark};
+    --edit-panel-title-fg: var(--body-fg);
+  }
+
+  .djai-dropdown-menu {
+    border-bottom-color: $color-dark !important;
+  }
+
+  input[type=text], input[type=password],
+  input[type=email],
+  input[type=url],
+  input[type=number],
+  input[type=tel],
+  textarea,
+  select,
+  .vTextField {
+    background-color: var(--form-input-bg);
+  }
+
+  body #toolbar {
+    background: var(--body-bg);
+  }
 }
 
 /* Overrides */
@@ -85,7 +141,7 @@ div.breadcrumbs {
   a {
     &:focus,
     &:hover {
-      color: $color_darkest;
+      color: var(--breadcrumbs-link-hover);
     }
   }
 }
@@ -108,6 +164,11 @@ div.breadcrumbs {
 }
 
 /* Calendar & time widget */
+.calendarbox,
+.clockbox {
+  z-index: 2;
+}
+
 .calendar caption,
 .calendarbox h2 {
   background: $color_secondary_dark !important;
@@ -130,21 +191,58 @@ div.breadcrumbs {
   font-weight: bold !important;
 }
 
+@mixin icon-override($iconUrl) {
+  background: none;
+  // display: inline-flex;
+  // align-items: center;
+  // padding-left: 0;
+  color: var(--body-fg);
+  position: relative;
+
+  // need to use pseudo element, otherwise the text in the same element is not visible
+  // because of the mask clipping
+  &:before {
+    display: block;
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 14px;
+    height: 14px;
+    margin-right: 2px;
+    background: var(--body-fg) !important;
+    color: var(--body-fg);
+    mask-image: url($iconUrl);
+    mask-repeat: no-repeat;
+    mask-size: 14px 14px;
+    mask-position: 0px 0px;
+  }
+}
+
 /* Icons */
 .addlink {
-  background: url('../img/admin/plus-square-regular.svg') 0 0/14px 14px no-repeat;
+  @include icon-override('../img/admin/plus-square-regular.svg');
 }
+
+.object-tools a.addlink {
+  &:before {
+    display: none;
+  }
+}
+
 .changelink, .inlinechangelink {
-  background: url('../img/admin/edit-regular.svg') 0 0/14px 14px no-repeat;
+  @include icon-override('../img/admin/edit-regular.svg');
 }
 .deletelink {
   background: url('../img/admin/trash-alt-regular.svg') 0 0/14px 14px no-repeat;
 }
 .datetimeshortcuts .clock-icon {
-  background: url('../img/admin/clock-regular.svg') 0 0/14px 14px no-repeat !important;
+  @include icon-override('../img/admin/clock-regular.svg');
+  background: none !important;
 }
 .datetimeshortcuts .date-icon {
-  background: url('../img/admin/calendar-alt-regular.svg') 0 0/14px 14px no-repeat !important;
+  @include icon-override('../img/admin/calendar-alt-regular.svg');
+  background: none !important;
 }
 
 /* Footer */
@@ -326,4 +424,9 @@ div.help {
       color: var(--primary-fg);
     }
   }
+}
+
+body {
+  background-color: var(--body-bg) !important;
+  color: var(--body-fg);
 }
