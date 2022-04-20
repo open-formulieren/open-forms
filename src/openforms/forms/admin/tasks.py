@@ -1,5 +1,7 @@
 import logging
+import os
 import tempfile
+import zipfile
 from pathlib import Path
 from uuid import uuid4
 from zipfile import ZipFile
@@ -18,7 +20,7 @@ from openforms.utils.urls import build_absolute_uri
 
 from ..models import Form
 from ..models.form import FormsExport
-from ..utils import export_form
+from ..utils import export_form, import_form
 
 logger = logging.getLogger(__name__)
 
@@ -68,6 +70,20 @@ def process_forms_export(forms_uuids: list, user_id: int) -> None:
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],
         )
+
+
+@app.task
+def process_forms_import(import_file: str) -> None:
+    # This deletes the temp dir once the context manager is exited
+    with tempfile.TemporaryDirectory(dir=Path(import_file).parent) as temp_dir:
+        with zipfile.ZipFile(import_file, "r") as zip_file:
+            for zipped_form_file in zip_file.infolist():
+                # This normalises the path before extracting the files (to avoid writing outside the temp_dir)
+                import_form(zip_file.extract(member=zipped_form_file, path=temp_dir))
+            number_imported_forms = len(zip_file.namelist())
+
+    logger.debug("Imported %i forms", number_imported_forms)
+    os.remove(import_file)
 
 
 @app.task

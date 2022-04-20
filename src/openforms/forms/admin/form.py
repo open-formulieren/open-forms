@@ -1,5 +1,4 @@
 from django.contrib import admin, messages
-from django.core.exceptions import PermissionDenied
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
@@ -7,18 +6,21 @@ from django.utils.html import format_html_join
 from django.utils.translation import ngettext, ugettext_lazy as _
 
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
-from rest_framework.exceptions import ValidationError
 
+from openforms.payments.admin import PaymentBackendChoiceFieldMixin
 from openforms.registrations.admin import RegistrationBackendFieldMixin
+from openforms.utils.expressions import FirstNotBlank
 
-from ...payments.admin import PaymentBackendChoiceFieldMixin
-from ...utils.expressions import FirstNotBlank
-from ..forms.form import FormImportForm
 from ..models import Form, FormDefinition, FormStep
 from ..models.form import FormsExport
-from ..utils import export_form, get_duplicates_keys_for_form, import_form
+from ..utils import export_form, get_duplicates_keys_for_form
 from .mixins import FormioConfigMixin
-from .views import DownloadExportedFormsView, ExportFormsForm, ExportFormsView
+from .views import (
+    DownloadExportedFormsView,
+    ExportFormsForm,
+    ExportFormsView,
+    ImportFormsView,
+)
 
 
 class FormStepInline(OrderedTabularInline):
@@ -220,7 +222,7 @@ class FormAdmin(
         my_urls = [
             path(
                 "import/",
-                self.admin_site.admin_view(self.import_view),
+                self.admin_site.admin_view(ImportFormsView.as_view()),
                 name="forms_import",
             ),
             path(
@@ -230,43 +232,6 @@ class FormAdmin(
             ),
         ]
         return my_urls + urls
-
-    def import_view(self, request):
-        if not self.has_add_permission(request):
-            raise PermissionDenied
-
-        if "_import" in request.POST:
-            form = FormImportForm(request.POST, request.FILES)
-            if form.is_valid():
-                try:
-                    import_file = form.cleaned_data["file"]
-                    created_fds = import_form(import_file)
-                    if created_fds:
-                        self.message_user(
-                            request,
-                            _(
-                                "Form definitions were created with the following slugs: {}"
-                            ).format(created_fds),
-                            level=messages.WARNING,
-                        )
-                    self.message_user(
-                        request,
-                        _("Form successfully imported"),
-                        level=messages.SUCCESS,
-                    )
-                    return HttpResponseRedirect(reverse("admin:forms_form_changelist"))
-                except ValidationError as exc:
-                    self.message_user(
-                        request,
-                        _("Something went wrong while importing form: {}").format(exc),
-                        level=messages.ERROR,
-                    )
-        else:
-            form = FormImportForm()
-
-        context = dict(self.admin_site.each_context(request), form=form)
-
-        return TemplateResponse(request, "admin/forms/form/import_form.html", context)
 
     def make_copies(self, request, queryset):
         for instance in queryset:
