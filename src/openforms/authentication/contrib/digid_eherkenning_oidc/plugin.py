@@ -8,6 +8,7 @@ from furl import furl
 from rest_framework.reverse import reverse
 
 from digid_eherkenning_oidc_generics.models import (
+    OpenIDConnectDigiDMachtigenConfig,
     OpenIDConnectEHerkenningConfig,
     OpenIDConnectPublicConfig,
 )
@@ -21,7 +22,11 @@ from ...base import BasePlugin, LoginLogo
 from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...exceptions import InvalidCoSignData
 from ...registry import register
-from .constants import DIGID_OIDC_AUTH_SESSION_KEY, EHERKENNING_OIDC_AUTH_SESSION_KEY
+from .constants import (
+    DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY,
+    DIGID_OIDC_AUTH_SESSION_KEY,
+    EHERKENNING_OIDC_AUTH_SESSION_KEY,
+)
 
 
 class OIDCAuthentication(BasePlugin):
@@ -59,6 +64,15 @@ class OIDCAuthentication(BasePlugin):
             "fields": {},
         }
 
+    def add_claims_to_sessions_if_not_cosigning(self, claim, request):
+        # set the session auth key only if we're not co-signing
+        if claim and CO_SIGN_PARAMETER not in request.GET:
+            request.session[FORM_AUTH_SESSION_KEY] = {
+                "plugin": self.identifier,
+                "attribute": self.provides_auth,
+                "value": claim,
+            }
+
     def handle_return(self, request, form):
         """
         Redirect to form URL.
@@ -69,13 +83,7 @@ class OIDCAuthentication(BasePlugin):
 
         claim = request.session.get(self.session_key)
 
-        # set the session auth key only if we're not co-signing
-        if claim and CO_SIGN_PARAMETER not in request.GET:
-            request.session[FORM_AUTH_SESSION_KEY] = {
-                "plugin": self.identifier,
-                "attribute": self.provides_auth,
-                "value": claim,
-            }
+        self.add_claims_to_sessions_if_not_cosigning(claim, request)
 
         return HttpResponseRedirect(form_url)
 
@@ -129,3 +137,29 @@ class eHerkenningOIDCAuthentication(OIDCAuthentication):
 
     def get_logo(self, request) -> Optional[LoginLogo]:
         return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))
+
+
+@register("digid_machtigen_oidc")
+class DigiDMachtigenOIDCAuthentication(OIDCAuthentication):
+    verbose_name = _("DigiD Machtigen via OpenID Connect")
+    provides_auth = AuthAttribute.bsn
+    init_url = "digid_machtigen_oidc:init"
+    session_key = DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY
+    config_class = OpenIDConnectDigiDMachtigenConfig
+
+    def add_claims_to_sessions_if_not_cosigning(self, claim, request):
+        # set the session auth key only if we're not co-signing
+        if claim and CO_SIGN_PARAMETER not in request.GET:
+            config = OpenIDConnectDigiDMachtigenConfig.get_solo()
+            request.session[FORM_AUTH_SESSION_KEY] = {
+                "plugin": self.identifier,
+                "attribute": self.provides_auth,
+                "value": claim[config.vertegenwoordigde_claim_name],
+                "machtigen": request.session[DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY],
+            }
+
+    def get_label(self) -> str:
+        return "DigiD Machtigen"
+
+    def get_logo(self, request) -> Optional[LoginLogo]:
+        return LoginLogo(title=self.get_label(), **get_digid_logo(request))

@@ -7,6 +7,7 @@ from mozilla_django_oidc_db.models import CachingMixin, OpenIDConnectConfigBase
 
 from openforms.authentication.constants import AuthAttribute
 
+from .digid_machtigen_settings import DIGID_MACHTIGEN_CUSTOM_OIDC_DB_PREFIX
 from .digid_settings import DIGID_CUSTOM_OIDC_DB_PREFIX
 from .eherkenning_settings import EHERKENNING_CUSTOM_OIDC_DB_PREFIX
 
@@ -81,6 +82,42 @@ class OpenIDConnectPublicConfig(OpenIDConnectBaseConfig):
 
     class Meta:
         verbose_name = _("OpenID Connect configuration for DigiD")
+
+
+class OpenIDConnectDigiDMachtigenConfig(OpenIDConnectBaseConfig):
+    vertegenwoordigde_claim_name = models.CharField(
+        verbose_name=_("vertegenwoordigde claim name"),
+        default="aanvrager.bsn",
+        max_length=50,
+        help_text=_(
+            "Name of the claim in which the BSN of the person being represented is stored"
+        ),
+    )
+    gemachtigde_claim_name = models.CharField(
+        verbose_name=_("gemachtigde claim name"),
+        default="gemachtigde.bsn",
+        max_length=50,
+        help_text=_(
+            "Name of the claim in which the BSN of the person representing someone else is stored"
+        ),
+    )
+    oidc_rp_scopes_list = ArrayField(
+        verbose_name=_("OpenID Connect scopes"),
+        base_field=models.CharField(_("OpenID Connect scope"), max_length=50),
+        default=get_default_scopes_bsn,
+        blank=True,
+        help_text=_(
+            "OpenID Connect scopes that are requested during login. "
+            "These scopes are hardcoded and must be supported by the identity provider"
+        ),
+    )
+
+    @classproperty
+    def custom_oidc_db_prefix(cls):
+        return DIGID_MACHTIGEN_CUSTOM_OIDC_DB_PREFIX
+
+    class Meta:
+        verbose_name = _("OpenID Connect configuration for DigiD Machtigen")
 
 
 class OpenIDConnectEHerkenningConfig(OpenIDConnectBaseConfig):

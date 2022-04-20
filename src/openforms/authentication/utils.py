@@ -1,4 +1,4 @@
-from typing import Literal, TypedDict
+from typing import Literal, Optional, TypedDict
 
 from openforms.submissions.models import Submission
 
@@ -13,6 +13,7 @@ class FormAuth(TypedDict):
         AuthAttribute.pseudo,
     ]
     value: str
+    machtigen: Optional[dict]
 
 
 def store_auth_details(submission: Submission, form_auth: FormAuth) -> None:

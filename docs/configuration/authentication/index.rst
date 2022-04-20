@@ -10,5 +10,6 @@ Authentication plugins
    digid
    eherkenning_eidas
    oidc_digid
+   oidc_digid_machtigen
    oidc_eherkenning
    other

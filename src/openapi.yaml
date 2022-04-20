@@ -3203,6 +3203,7 @@ components:
       - eidas
       - digid_oidc
       - eherkenning_oidc
+      - digid_machtigen_oidc
       type: string
     BlankEnum:
       enum:
