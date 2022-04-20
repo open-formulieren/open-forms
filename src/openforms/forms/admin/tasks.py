@@ -13,9 +13,12 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from rest_framework.exceptions import ValidationError
+
 from openforms.accounts.models import User
 from openforms.celery import app
 from openforms.emails.utils import send_mail_html
+from openforms.logging import logevent
 from openforms.utils.urls import build_absolute_uri
 
 from ..models import Form
@@ -38,7 +41,7 @@ def process_forms_export(forms_uuids: list, user_id: int) -> None:
             output_files.append(
                 export_form(
                     form_id=form.pk,
-                    archive_name=Path(temp_dir, f"form_{form.uuid}.zip"),
+                    archive_name=Path(temp_dir, f"form_{form.slug}.zip"),
                 )
             )
 
@@ -73,16 +76,25 @@ def process_forms_export(forms_uuids: list, user_id: int) -> None:
 
 
 @app.task
-def process_forms_import(import_file: str) -> None:
+def process_forms_import(import_file: str, user_id: int) -> None:
+    user = User.objects.get(id=user_id)
+    failed_files = []
     # This deletes the temp dir once the context manager is exited
     with tempfile.TemporaryDirectory(dir=Path(import_file).parent) as temp_dir:
         with zipfile.ZipFile(import_file, "r") as zip_file:
             for zipped_form_file in zip_file.infolist():
-                # This normalises the path before extracting the files (to avoid writing outside the temp_dir)
-                import_form(zip_file.extract(member=zipped_form_file, path=temp_dir))
-            number_imported_forms = len(zip_file.namelist())
+                try:
+                    # This normalises the path before extracting the files (to avoid writing outside the temp_dir)
+                    import_form(
+                        zip_file.extract(member=zipped_form_file, path=temp_dir)
+                    )
+                except ValidationError as exc:
+                    filename = Path(zipped_form_file.filename).name
+                    failed_files.append((filename, exc.detail))
+                    logger.error("Could not import form %s", filename)
+                    continue
 
-    logger.debug("Imported %i forms", number_imported_forms)
+    logevent.bulk_forms_imported(user=user, failed_files=failed_files)
     os.remove(import_file)
 
 

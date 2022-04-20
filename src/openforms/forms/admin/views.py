@@ -125,4 +125,4 @@ class ImportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView
             for chunk in import_file.chunks():
                 f_private.write(chunk)
 
-        process_forms_import.delay(str(imports_file))
+        process_forms_import.delay(str(imports_file), self.request.user.id)

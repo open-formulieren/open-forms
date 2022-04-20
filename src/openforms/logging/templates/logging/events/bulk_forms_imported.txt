@@ -1,0 +1,10 @@
+{% load i18n %}
+{% if log.extra_data.failed_files %}
+    {% blocktranslate trimmed with lead=log.fmt_lead %}
+       {{ lead }}: Performed a form bulk import. Some forms could not be imported.
+    {% endblocktranslate %}
+{% else %}
+    {% blocktranslate trimmed with lead=log.fmt_lead %}
+       {{ lead }}: Performed a form bulk import.
+    {% endblocktranslate %}
+{% endif %}
