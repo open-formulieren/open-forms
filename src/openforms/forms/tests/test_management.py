@@ -16,7 +16,7 @@ from .factories import FormFactory
 
 
 @temp_private_root()
-@override_settings(FORMS_EXPORT_REMOVED_AFTER_DAYS=7)
+@override_settings(FORMS_EXPORT_REMOVED_AFTER_DAYS=1)
 class DeleteFormExportFilesTest(TestCase):
     def test_forms_export_files_deleted(self):
         """
@@ -25,16 +25,14 @@ class DeleteFormExportFilesTest(TestCase):
         form1, form2 = FormFactory.create_batch(2)
         user = StaffUserFactory.create(username="testuser")
 
-        process_forms_export(
-            forms_uuids=[form1.uuid, form2.uuid],
-            email="test@email.nl",
-            user_id=user.id,
-        )
+        with freeze_time("2022-01-01T00:00:00Z"):
+            process_forms_export(
+                forms_uuids=[form1.uuid, form2.uuid],
+                email="test@email.nl",
+                user_id=user.id,
+            )
 
         forms_export = FormsExport.objects.get()
-        with freeze_time("2022-01-01T00:00:00Z"):
-            forms_export.datetime_downloaded = timezone.now()
-            forms_export.save()
         path = forms_export.export_content.path
         storage = forms_export.export_content.storage
 

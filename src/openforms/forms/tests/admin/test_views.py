@@ -4,14 +4,11 @@ from unittest.mock import patch
 from django.core.files import File
 from django.test import TestCase, override_settings
 from django.urls import reverse
-from django.utils import timezone
 
 from django_webtest import WebTest
-from freezegun import freeze_time
 from privates.test import temp_private_root
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
-from openforms.forms.admin.tokens import exported_forms_token_generator
 from openforms.forms.models.form import FormsExport
 from openforms.forms.tests.factories import FormFactory
 from openforms.utils.urls import build_absolute_uri
@@ -96,7 +93,8 @@ class TestDownloadExportFormView(TestCase):
     def test_not_logged_in_cant_access(self):
         download_url = build_absolute_uri(
             reverse(
-                "admin:download_forms_export", kwargs={"pk": 1, "token": "123-123-123"}
+                "admin:download_forms_export",
+                kwargs={"uuid": "1394a957-e1a5-41ab-91f5-c5f741f83622"},
             )
         )
 
@@ -107,7 +105,8 @@ class TestDownloadExportFormView(TestCase):
     def test_not_superuser_cant_access(self):
         download_url = build_absolute_uri(
             reverse(
-                "admin:download_forms_export", kwargs={"pk": 1, "token": "123-123-123"}
+                "admin:download_forms_export",
+                kwargs={"uuid": "1394a957-e1a5-41ab-91f5-c5f741f83622"},
             )
         )
 
@@ -118,32 +117,13 @@ class TestDownloadExportFormView(TestCase):
 
         self.assertEqual(403, response.status_code)
 
-    @patch(
-        "openforms.forms.admin.tasks.exported_forms_token_generator.check_token",
-        return_value=False,
-    )
-    def test_wrong_token_cant_access(self, m_token):
-        user = SuperUserFactory.create(email="test@email.nl")
-        forms_export = FormsExport.objects.create(
-            export_content=File(io.BytesIO(b"Some test content"), name="test.zip"),
-            user=user,
-        )
-        download_url = build_absolute_uri(
-            reverse(
-                "admin:download_forms_export",
-                kwargs={"pk": forms_export.pk, "token": "123-123-123"},
-            )
-        )
-
-        self.client.force_login(user)
-        response = self.client.get(download_url)
-
-        self.assertEqual(403, response.status_code)
-
     def test_wrong_export_gives_404(self):
         download_url = build_absolute_uri(
             reverse(
-                "admin:download_forms_export", kwargs={"pk": 1, "token": "123-123-123"}
+                "admin:download_forms_export",
+                kwargs={
+                    "uuid": "1394a957-e1a5-41ab-91f5-c5f741f83622"
+                },  # Random non existent UUID
             )
         )
 
@@ -153,57 +133,7 @@ class TestDownloadExportFormView(TestCase):
 
         self.assertEqual(404, response.status_code)
 
-    @patch(
-        "openforms.forms.admin.tasks.exported_forms_token_generator.check_token",
-        return_value=True,
-    )
-    @freeze_time("2022-02-21T00:00:00")
-    def test_after_download_export_is_marked_as_downloaded(self, m_token):
-        user = SuperUserFactory(email="test@email.nl")
-        forms_export = FormsExport.objects.create(
-            export_content=File(io.BytesIO(b"Some test content"), name="test.zip"),
-            user=user,
-        )
-        download_url = build_absolute_uri(
-            reverse(
-                "admin:download_forms_export",
-                kwargs={"pk": forms_export.pk, "token": "123-123-123"},
-            )
-        )
-
-        self.client.force_login(user)
-        response = self.client.get(download_url)
-
-        self.assertEqual(200, response.status_code)
-
-        forms_export.refresh_from_db()
-
-        self.assertEqual(
-            timezone.now(),
-            forms_export.datetime_downloaded,
-        )
-
-    def test_token(self):
-        user = SuperUserFactory(email="test@email.nl")
-        forms_export = FormsExport.objects.create(
-            export_content=File(io.BytesIO(b"Some test content"), name="test.zip"),
-            user=user,
-        )
-
-        token = exported_forms_token_generator.make_token(forms_export)
-
-        forms_export.datetime_downloaded = timezone.now()
-        forms_export.save()
-
-        is_valid = exported_forms_token_generator.check_token(forms_export, token)
-
-        self.assertFalse(is_valid)
-
-    @patch(
-        "openforms.forms.admin.tasks.exported_forms_token_generator.check_token",
-        return_value=False,
-    )
-    def test_wrong_user_cant_download(self, m_token):
+    def test_wrong_user_cant_download(self):
         user1 = SuperUserFactory(email="test1@email.nl")
         user2 = SuperUserFactory(email="test2@email.nl")
         forms_export = FormsExport.objects.create(
@@ -213,7 +143,7 @@ class TestDownloadExportFormView(TestCase):
         download_url = build_absolute_uri(
             reverse(
                 "admin:download_forms_export",
-                kwargs={"pk": forms_export.pk, "token": "123-123-123"},
+                kwargs={"uuid": forms_export.uuid},
             )
         )
 

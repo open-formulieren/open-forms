@@ -1,10 +1,11 @@
 import zipfile
-from unittest.mock import patch
 
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 
+from freezegun import freeze_time
 from privates.test import temp_private_root
 
 from openforms.accounts.tests.factories import SuperUserFactory
@@ -18,11 +19,8 @@ from ..factories import FormFactory
 @temp_private_root()
 @override_settings(LANGUAGE_CODE="en")
 class ExportFormsTaskTests(TestCase):
-    @patch(
-        "openforms.forms.admin.tasks.exported_forms_token_generator.make_token",
-        return_value="123-123-123",
-    )
-    def test_zip_file_contains_data(self, m_token):
+    @freeze_time("2022-02-21T00:00:00")
+    def test_zip_file_contains_data(self):
         form1, form2 = FormFactory.create_batch(2)
         user = SuperUserFactory.create(email="test@email.nl")
 
@@ -39,7 +37,7 @@ class ExportFormsTaskTests(TestCase):
 
         forms_export = forms_exports.get()
 
-        self.assertIsNone(forms_export.datetime_downloaded)
+        self.assertEqual(forms_export.datetime_requested, timezone.now())
         self.assertEqual(user, forms_export.user)
 
         # Test that the zip file contains the right forms
@@ -56,7 +54,7 @@ class ExportFormsTaskTests(TestCase):
         download_url = build_absolute_uri(
             reverse(
                 "admin:download_forms_export",
-                kwargs={"pk": forms_export.pk, "token": "123-123-123"},
+                kwargs={"uuid": forms_export.uuid},
             )
         )
 
