@@ -6,7 +6,6 @@ from django.urls import path, reverse
 from django.utils.html import format_html_join
 from django.utils.translation import ngettext, ugettext_lazy as _
 
-from furl import furl
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 from rest_framework.exceptions import ValidationError
 
@@ -390,7 +389,7 @@ class FormAdmin(
 
 @admin.register(FormsExport)
 class FormsExportAdmin(admin.ModelAdmin):
-    list_display = ("user", "datetime_downloaded")
+    list_display = ("uuid", "user", "datetime_requested")
     list_filter = ("user",)
     search_fields = ("user",)
 
@@ -398,7 +397,7 @@ class FormsExportAdmin(admin.ModelAdmin):
         urls = super().get_urls()
         my_urls = [
             path(
-                "download/<int:pk>/<str:token>/",
+                "download/<uuid:uuid>/",
                 self.admin_site.admin_view(DownloadExportedFormsView.as_view()),
                 name="download_forms_export",
             ),

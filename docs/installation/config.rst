@@ -285,11 +285,8 @@ Other settings
 * ``TWO_FACTOR_PATCH_ADMIN``: Whether to use the 2 Factor Authentication login flow for
   the admin or not. Default ``True``. You'll probably want to disable this when using OIDC.
 
-* ``FORMS_EXPORT_REMOVED_AFTER_DAYS``: The number of days after which zip files of exported forms that have been
-  downloaded should be deleted. Defaults to 7 days.
-
-* ``FORMS_EXPORT_DOWNLOAD_LINK_EXPIRES_AFTER_DAYS``: The number of days after which the link sent to a user to download
-  a forms bulk export should expire. Defaults to 1 day.
+* ``FORMS_EXPORT_REMOVED_AFTER_DAYS``: The number of days after which zip files of exported forms should be deleted.
+  Defaults to 7 days.
 
 .. _`Django DATABASE settings`: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DATABASE-ENGINE
 

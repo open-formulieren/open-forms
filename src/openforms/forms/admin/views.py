@@ -6,7 +6,6 @@ from django.core.exceptions import PermissionDenied
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.views import View
 from django.views.generic.edit import FormView
@@ -15,7 +14,6 @@ from openforms.logging import logevent
 
 from ..models.form import Form, FormsExport
 from .tasks import process_forms_export
-from .tokens import exported_forms_token_generator
 
 
 class ExportFormsForm(forms.Form):
@@ -56,19 +54,11 @@ class DownloadExportedFormsView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def get(self, request, *args, **kwargs):
         forms_export = get_object_or_404(
-            FormsExport, pk=kwargs["pk"], user=request.user
+            FormsExport, uuid=kwargs["uuid"], user=request.user
         )
-
-        token = kwargs["token"]
-        valid = exported_forms_token_generator.check_token(forms_export, token)
-        if not valid:
-            raise PermissionDenied("URL is not valid")
 
         if request.user != forms_export.user:
             raise PermissionDenied("Wrong user requesting download")
-
-        forms_export.datetime_downloaded = timezone.now()
-        forms_export.save()
 
         logevent.forms_bulk_export_downloaded(forms_export, request.user)
 

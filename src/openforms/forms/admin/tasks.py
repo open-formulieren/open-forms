@@ -19,7 +19,6 @@ from openforms.utils.urls import build_absolute_uri
 from ..models import Form
 from ..models.form import FormsExport
 from ..utils import export_form
-from .tokens import exported_forms_token_generator
 
 logger = logging.getLogger(__name__)
 
@@ -50,11 +49,10 @@ def process_forms_export(forms_uuids: list, email: str, user_id: int) -> None:
                 user=User.objects.get(id=user_id),
             )
 
-        token = exported_forms_token_generator.make_token(forms_export)
         url = build_absolute_uri(
             reverse(
                 "admin:download_forms_export",
-                kwargs={"pk": forms_export.pk, "token": token},
+                kwargs={"uuid": forms_export.uuid},
             )
         )
 

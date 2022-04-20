@@ -453,16 +453,16 @@ class FormsExportQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):
 
 
 class FormsExport(DeleteFileFieldFilesMixin, models.Model):
+    uuid = models.UUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
     export_content = PrivateMediaFileField(
         verbose_name=_("export content"),
         upload_to="exports/%Y/%m/%d",
         help_text=_("Zip file containing all the exported forms."),
     )
-    datetime_downloaded = models.DateTimeField(
-        verbose_name=_("date time downloaded"),
-        help_text=_("The date and time on which the zip file was downloaded."),
-        blank=True,
-        null=True,
+    datetime_requested = models.DateTimeField(
+        verbose_name=_("date time requested"),
+        help_text=_("The date and time on which the bulk export was requested."),
+        auto_now_add=True,
     )
     user = models.ForeignKey(
         to=User,
@@ -478,6 +478,7 @@ class FormsExport(DeleteFileFieldFilesMixin, models.Model):
         verbose_name_plural = _("forms exports")
 
     def __str__(self):
-        return _("Bulk export requested by %(username)s") % {
-            "username": self.user.username
+        return _("Bulk export requested by %(username)s on %(datetime)s") % {
+            "username": self.user.username,
+            "datetime": self.datetime_requested,
         }
