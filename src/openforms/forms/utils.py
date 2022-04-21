@@ -95,6 +95,7 @@ def export_form(form_id, archive_name=None, response=None):
     with zipfile.ZipFile(outfile, "w") as zip_file:
         for name, data in resources.items():
             zip_file.writestr(f"{name}.json", data)
+    return outfile
 
 
 @transaction.atomic

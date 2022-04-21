@@ -10,6 +10,7 @@ from django.db.models.functions import RowNumber
 from django.utils.translation import gettext_lazy as _
 
 from autoslug import AutoSlugField
+from privates.fields import PrivateMediaFileField
 from rest_framework.reverse import reverse
 from tinymce.models import HTMLField
 
@@ -22,6 +23,7 @@ from openforms.payments.registry import register as payment_register
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
+from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 from openforms.utils.validators import DjangoTemplateValidator
 
 from ..constants import ConfirmationEmailOptions, SubmissionAllowedChoices
@@ -444,3 +446,39 @@ class FormLogic(models.Model):
         ),
         default=False,
     )
+
+
+class FormsExportQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):
+    pass
+
+
+class FormsExport(DeleteFileFieldFilesMixin, models.Model):
+    uuid = models.UUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
+    export_content = PrivateMediaFileField(
+        verbose_name=_("export content"),
+        upload_to="exports/%Y/%m/%d",
+        help_text=_("Zip file containing all the exported forms."),
+    )
+    datetime_requested = models.DateTimeField(
+        verbose_name=_("date time requested"),
+        help_text=_("The date and time on which the bulk export was requested."),
+        auto_now_add=True,
+    )
+    user = models.ForeignKey(
+        to=User,
+        verbose_name=_("user"),
+        help_text=_("The user that requested the download."),
+        on_delete=models.CASCADE,
+    )
+
+    objects = FormsExportQuerySet.as_manager()
+
+    class Meta:
+        verbose_name = _("forms export")
+        verbose_name_plural = _("forms exports")
+
+    def __str__(self):
+        return _("Bulk export requested by %(username)s on %(datetime)s") % {
+            "username": self.user.username,
+            "datetime": self.datetime_requested,
+        }

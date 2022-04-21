@@ -512,6 +512,9 @@ TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS = config(
     "TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS", default=2
 )
 
+# Zip files for file exports: after how long should they be deleted
+FORMS_EXPORT_REMOVED_AFTER_DAYS = config("FORMS_EXPORT_REMOVED_AFTER_DAYS", default=7)
+
 # a custom default timeout for the requests library, added via monkeypatch in
 # :mod:`openforms.setup`. Value is in seconds.
 DEFAULT_TIMEOUT_REQUESTS = config("DEFAULT_TIMEOUT_REQUESTS", default=10.0)
@@ -617,6 +620,10 @@ CELERY_BEAT_SCHEDULE = {
     "cleanup_csp_reports": {
         "task": "openforms.utils.tasks.cleanup_csp_reports",
         "schedule": crontab(hour=4),
+    },
+    "clear-forms-exports": {
+        "task": "openforms.forms.admin.tasks.clear_forms_export",
+        "schedule": crontab(hour=0, minute=0, day_of_week="sunday"),
     },
 }
 

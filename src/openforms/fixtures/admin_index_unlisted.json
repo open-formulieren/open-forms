@@ -13,5 +13,6 @@
     "stuf_bg.StufBGConfig",
     "stuf_zds.StufZDSConfig",
     "stuf.StufService",
-    "zgw_apis.ZgwConfig"
+    "zgw_apis.ZgwConfig",
+    "forms.FormsExport"
 ]

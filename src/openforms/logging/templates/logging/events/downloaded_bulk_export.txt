@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktranslate trimmed with lead=log.fmt_lead %}
+   {{ lead }}: Bulk export file downloaded.
+{% endblocktranslate %}

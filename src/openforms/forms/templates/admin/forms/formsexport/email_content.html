@@ -1,0 +1,16 @@
+{% load i18n %}
+
+{% translate "Hi," %}
+<br><br>
+
+{% blocktrans %}
+    Your zip file containing the exported forms is ready and can be downloaded at the following URL:
+    {{ download_url }}
+{% endblocktrans %}
+<br><br>
+
+<br>
+{% translate "Best wishes," %}<br>
+<br>
+{% translate "Open Forms" %}<br>
+

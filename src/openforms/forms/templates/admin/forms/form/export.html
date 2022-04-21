@@ -1,0 +1,46 @@
+{% extends "admin/base_site.html" %}
+{% load static i18n django_admin_index %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" href="{% static "admin/css/admin-index.css" %}">
+{% endblock %}
+
+{% block nav-global %}{% include "django_admin_index/includes/app_list.html" %}{% endblock nav-global %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:forms_form_changelist' %}">{% trans 'Forms' %}</a>
+&rsaquo; {% trans 'Export forms' %}
+</div>
+{% endblock %}
+
+{% block title %} {% trans "Export forms" %} {{ block.super }} {% endblock %}
+
+{% block content %}
+    <h1>{% trans 'Export forms' %}</h1>
+    <div id="content-main">
+        <div>
+            {% blocktranslate %}
+            Once your request has been processed, you will be sent an email (at the address configured in your admin
+            profile) containing a link where you can download a zip file with all the exported forms.
+            {% endblocktranslate %}
+            <br/><br/>
+        </div>
+        <form action="{% url 'admin:forms_export' %}" method="post">
+            <div>
+                <fieldset class="module aligned">
+                    {% csrf_token %}
+
+                    {% for hidden in form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                </fieldset>
+
+                <div class="submit-row">
+                    <input type="submit" value="{% trans 'Export' %}">
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

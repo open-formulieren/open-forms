@@ -4,7 +4,7 @@ from unittest.mock import patch
 from zipfile import ZipFile
 
 from django.contrib import admin
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 
@@ -396,6 +396,53 @@ class FormAdminActionsTests(WebTest):
 
         self.form.refresh_from_db()
         self.assertFalse(self.form.maintenance_mode)
+
+    def test_export_multiple_forms(self):
+        user = UserFactory.create(
+            is_superuser=True, is_staff=True, email="test@email.nl"
+        )
+        form2 = FormFactory.create(internal_name="bar")
+        form3 = FormFactory.create(internal_name="bat")
+
+        response = self.app.get(reverse("admin:forms_form_changelist"), user=user)
+
+        html_form = response.forms["changelist-form"]
+        html_form["action"] = "export_forms"
+        html_form["_selected_action"] = [form2.pk, form3.pk]
+        response = html_form.submit()
+
+        self.assertEqual(200, response.status_code)
+
+        forms_uuids = response.form["forms_uuids"].value.split(",")
+
+        self.assertEqual(2, len(forms_uuids))
+        self.assertIn(str(form2.uuid), forms_uuids)
+        self.assertIn(str(form3.uuid), forms_uuids)
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_export_no_email_configured(self):
+        user = UserFactory.create(is_superuser=True, is_staff=True)
+        form2 = FormFactory.create(internal_name="bar")
+        form3 = FormFactory.create(internal_name="bat")
+
+        response = self.app.get(reverse("admin:forms_form_changelist"), user=user)
+
+        html_form = response.forms["changelist-form"]
+        html_form["action"] = "export_forms"
+        html_form["_selected_action"] = [form2.pk, form3.pk]
+        response = html_form.submit()
+
+        self.assertEqual(302, response.status_code)
+
+        response = response.follow()
+
+        messages = list(response.context.get("messages"))
+
+        self.assertEqual(1, len(messages))
+        self.assertEqual(
+            "Please configure your email address in your admin profile before requesting a bulk export",
+            messages[0].message,
+        )
 
 
 @disable_2fa

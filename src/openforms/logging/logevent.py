@@ -517,3 +517,14 @@ def hijack_ended(hijacker, hijacked):
         },
         tags=[TimelineLogTags.hijack],
     )
+
+
+# - - -
+
+
+def forms_bulk_export_downloaded(bulk_export, user):
+    _create_log(
+        bulk_export,
+        "downloaded_bulk_export",
+        user=user,
+    )

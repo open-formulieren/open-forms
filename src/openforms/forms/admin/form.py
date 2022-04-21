@@ -15,8 +15,10 @@ from ...payments.admin import PaymentBackendChoiceFieldMixin
 from ...utils.expressions import FirstNotBlank
 from ..forms.form import FormImportForm
 from ..models import Form, FormDefinition, FormStep
+from ..models.form import FormsExport
 from ..utils import export_form, get_duplicates_keys_for_form, import_form
 from .mixins import FormioConfigMixin
+from .views import DownloadExportedFormsView, ExportFormsForm, ExportFormsView
 
 
 class FormStepInline(OrderedTabularInline):
@@ -108,7 +110,12 @@ class FormAdmin(
         "get_object_actions",
     )
     prepopulated_fields = {"slug": ("name",)}
-    actions = ["make_copies", "set_to_maintenance_mode", "remove_from_maintenance_mode"]
+    actions = [
+        "make_copies",
+        "set_to_maintenance_mode",
+        "remove_from_maintenance_mode",
+        "export_forms",
+    ]
     list_filter = ("active", "maintenance_mode", FormDeletedListFilter)
     search_fields = ("name", "internal_name")
 
@@ -215,7 +222,12 @@ class FormAdmin(
                 "import/",
                 self.admin_site.admin_view(self.import_view),
                 name="forms_import",
-            )
+            ),
+            path(
+                "export/",
+                self.admin_site.admin_view(ExportFormsView.as_view()),
+                name="forms_export",
+            ),
         ]
         return my_urls + urls
 
@@ -351,3 +363,42 @@ class FormAdmin(
 
         # soft-deletes
         queryset.filter(_is_deleted=False).update(_is_deleted=True)
+
+    @admin.action(description=_("Export forms"))
+    def export_forms(self, request, queryset):
+        if not request.user.email:
+            self.message_user(
+                request=request,
+                message=_(
+                    "Please configure your email address in your admin profile before requesting a bulk export"
+                ),
+                level=messages.ERROR,
+            )
+            return
+
+        selected_forms_uuids = queryset.values_list("uuid", flat=True)
+        form = ExportFormsForm(
+            initial={
+                "forms_uuids": [str(form_uuid) for form_uuid in selected_forms_uuids],
+            }
+        )
+        context = dict(self.admin_site.each_context(request), form=form)
+        return TemplateResponse(request, "admin/forms/form/export.html", context)
+
+
+@admin.register(FormsExport)
+class FormsExportAdmin(admin.ModelAdmin):
+    list_display = ("uuid", "user", "datetime_requested")
+    list_filter = ("user",)
+    search_fields = ("user__username",)
+
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path(
+                "download/<uuid:uuid>/",
+                self.admin_site.admin_view(DownloadExportedFormsView.as_view()),
+                name="download_forms_export",
+            ),
+        ]
+        return my_urls + urls
