@@ -13,10 +13,7 @@ const DSLEditorNode = ({ errors, children }) => (
 );
 
 DSLEditorNode.propTypes = {
-    children: PropTypes.oneOfType([
-      PropTypes.arrayOf(PropTypes.node),
-      PropTypes.node,
-    ]),
+    children: PropTypes.node,
     errors: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.string),
         PropTypes.string,
