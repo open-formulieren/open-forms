@@ -1,6 +1,7 @@
 import io
 from unittest.mock import patch
 
+from django.contrib.auth.models import Permission
 from django.core.files import File
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -8,7 +9,11 @@ from django.urls import reverse
 from django_webtest import WebTest
 from privates.test import temp_private_root
 
-from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
+from openforms.accounts.tests.factories import (
+    StaffUserFactory,
+    SuperUserFactory,
+    UserFactory,
+)
 from openforms.forms.models.form import FormsExport
 from openforms.forms.tests.factories import FormFactory
 from openforms.utils.urls import build_absolute_uri
@@ -25,36 +30,44 @@ class TestExportFormsView(WebTest):
         self.assertEqual(302, response.status_code)
 
     def test_staff_cant_access(self):
-        user = UserFactory(is_staff=True, is_superuser=False)
+        user = StaffUserFactory()
         self.client.force_login(user)
 
         response = self.client.get(reverse("admin:forms_export"))
 
         self.assertEqual(403, response.status_code)
 
+    def test_staff_with_right_permissions_can_access(self):
+        user = StaffUserFactory()
+        permission = Permission.objects.get(codename="add_formsexport")
+        user.user_permissions.add(permission)
+
+        self.client.force_login(user)
+        response = self.client.get(reverse("admin:forms_export"))
+
+        self.assertEqual(200, response.status_code)
+
     def test_no_forms_uuids_specified(self):
-        user = SuperUserFactory.create()
+        user = SuperUserFactory.create(email="test@email.nl")
 
         response = self.app.get(reverse("admin:forms_export"), user=user)
 
         self.assertEqual(200, response.status_code)
 
         form = response.form
-        form["email"] = "test@email.nl"
         submission_response = form.submit()
 
         # Doesn't redirect because there are errors
         self.assertEqual(200, submission_response.status_code)
 
     def test_wrong_form_uuids(self):
-        user = SuperUserFactory.create()
+        user = SuperUserFactory.create(email="test@email.nl")
 
         response = self.app.get(reverse("admin:forms_export"), user=user)
 
         self.assertEqual(200, response.status_code)
 
         form = response.form
-        form["email"] = "test@email.nl"
         form["forms_uuids"] = "5cd503bf-e83f-4fd1-9acd-c2e8975ff65d"
         submission_response = form.submit()
 
@@ -64,22 +77,19 @@ class TestExportFormsView(WebTest):
     @patch("openforms.forms.admin.views.process_forms_export.delay")
     def test_success_message(self, m):
         form = FormFactory.create()
-        user = SuperUserFactory.create()
+        user = SuperUserFactory.create(email="test@email.nl")
         response = self.app.get(reverse("admin:forms_export"), user=user)
 
         self.assertEqual(200, response.status_code)
 
         page_form = response.form
         page_form["forms_uuids"] = str(form.uuid)
-        page_form["email"] = "test@email.nl"
         submission_response = page_form.submit()
 
         self.assertRedirects(
             submission_response, reverse("admin:forms_form_changelist")
         )
-        m.assert_called_with(
-            forms_uuids=[form.uuid], user_id=user.id, email="test@email.nl"
-        )
+        m.assert_called_with(forms_uuids=[form.uuid], user_id=user.id)
 
         submission_response = submission_response.follow()
         messages = list(submission_response.context.get("messages"))

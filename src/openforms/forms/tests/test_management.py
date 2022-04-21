@@ -23,12 +23,11 @@ class DeleteFormExportFilesTest(TestCase):
         Assert that when a submission is deleted, the file uploads (on disk!) are deleted.
         """
         form1, form2 = FormFactory.create_batch(2)
-        user = StaffUserFactory.create(username="testuser")
+        user = StaffUserFactory.create(username="testuser", email="test@email.nl")
 
         with freeze_time("2022-01-01T00:00:00Z"):
             process_forms_export(
                 forms_uuids=[form1.uuid, form2.uuid],
-                email="test@email.nl",
                 user_id=user.id,
             )
 

@@ -26,7 +26,6 @@ class ExportFormsTaskTests(TestCase):
 
         process_forms_export(
             forms_uuids=[form1.uuid, form2.uuid],
-            email="test@email.nl",
             user_id=user.id,
         )
 
