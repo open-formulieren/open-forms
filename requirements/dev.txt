@@ -268,7 +268,7 @@ django-decorator-include==3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-digid-eherkenning==0.3.0
+django-digid-eherkenning==0.3.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -480,7 +480,7 @@ iniconfig==1.1.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   pytest
-isodate==0.6.0
+isodate==0.6.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -517,7 +517,7 @@ lockfile==0.12.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-yubin
-lxml==4.7.1
+lxml==4.6.5
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -730,7 +730,7 @@ python-dotenv==0.14.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-python3-saml @ git+https://github.com/maykinmedia/python3-saml.git@e000b39ed0ce38270e6351ec6634e6b3a53bbc3d
+python3-saml @ git+https://github.com/maykinmedia/python3-saml.git@f587f77b78be79d51139f29a957b406072e2b537
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

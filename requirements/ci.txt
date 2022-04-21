@@ -237,7 +237,7 @@ django-decorator-include==3.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-digid-eherkenning==0.3.0
+django-digid-eherkenning==0.3.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -419,7 +419,7 @@ inflection==0.5.1
     #   drf-spectacular
 iniconfig==1.1.1
     # via pytest
-isodate==0.6.0
+isodate==0.6.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -450,7 +450,7 @@ lockfile==0.12.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-yubin
-lxml==4.7.1
+lxml==4.6.5
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -615,7 +615,7 @@ python-dotenv==0.14.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-python3-saml @ git+https://github.com/maykinmedia/python3-saml.git@e000b39ed0ce38270e6351ec6634e6b3a53bbc3d
+python3-saml @ git+https://github.com/maykinmedia/python3-saml.git@f587f77b78be79d51139f29a957b406072e2b537
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
