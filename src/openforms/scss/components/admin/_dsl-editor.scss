@@ -17,6 +17,12 @@
     input {
       max-width: 30em;
     }
+
+    &--errors {
+      input, select, textarea {
+        border: 1px solid var(--error-fg);
+      }
+    }
   }
 
   &__node-group {

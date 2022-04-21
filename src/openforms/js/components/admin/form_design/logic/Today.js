@@ -7,6 +7,7 @@ import {OPERATORS} from './constants';
 import Select from '../../forms/Select';
 import {NumberInput} from '../../forms/Inputs';
 import {getTranslatedChoices} from '../../../../utils/i18n';
+import DSLEditorNode from './DSLEditorNode';
 
 
 const EMPTY_RELATIVE_DELTA = [0, 0, 0];
@@ -38,16 +39,16 @@ const Today = ({name, value, onChange}) => {
 
     return (
         <>
-            <div className="dsl-editor__node">
+            <DSLEditorNode errors={null}>
                 <Select
                     name="sign"
                     choices={getTranslatedChoices(intl, operatorChoices)}
                     onChange={onChangeSign}
                     value={sign}
                 />
-            </div>
+            </DSLEditorNode>
             <div className="dsl-editor__node-group">
-                <div className="dsl-editor__node">
+                <DSLEditorNode errors={null}>
                     <NumberInput
                         name="years"
                         value={rdelta[0]}
@@ -64,13 +65,13 @@ const Today = ({name, value, onChange}) => {
                         }}
                         min={0}
                     />
-                </div>
-                <div className="dsl-editor__node">
+                </DSLEditorNode>
+                <DSLEditorNode errors={null}>
                     <FormattedMessage description="Logic trigger number of years" defaultMessage="years" />
-                </div>
+                </DSLEditorNode>
             </div>
             <div className="dsl-editor__node-group">
-                <div className="dsl-editor__node">
+                <DSLEditorNode errors={null}>
                     <NumberInput
                         name="months"
                         value={rdelta[1]}
@@ -88,13 +89,13 @@ const Today = ({name, value, onChange}) => {
                         }}
                         min={0}
                     />
-                </div>
-                <div className="dsl-editor__node">
+                </DSLEditorNode>
+                <DSLEditorNode errors={null}>
                     <FormattedMessage description="Logic trigger number of months" defaultMessage="months" />
-                </div>
+                </DSLEditorNode>
             </div>
             <div className="dsl-editor__node-group">
-                <div className="dsl-editor__node">
+                <DSLEditorNode errors={null}>
                     <NumberInput
                         name="days"
                         value={rdelta[2]}
@@ -111,10 +112,10 @@ const Today = ({name, value, onChange}) => {
                         }}
                         min={0}
                     />
-                </div>
-                <div className="dsl-editor__node">
+                </DSLEditorNode>
+                <DSLEditorNode errors={null}>
                     <FormattedMessage description="Logic trigger number of days" defaultMessage="days" />
-                </div>
+                </DSLEditorNode>
             </div>
         </>
     );

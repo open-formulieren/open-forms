@@ -5,6 +5,7 @@ import {useImmerReducer} from 'use-immer';
 import jsonLogic from 'json-logic-js';
 
 import {getTranslatedChoices} from '../../../../utils/i18n';
+import ArrayInput from '../../forms/ArrayInput';
 import ComponentSelection from '../../forms/ComponentSelection';
 import {ComponentsContext} from '../../forms/Context';
 import Select from '../../forms/Select';
@@ -13,9 +14,9 @@ import { OPERATORS, COMPONENT_TYPE_TO_OPERATORS, COMPONENT_TYPE_TO_OPERAND_TYPE 
 import LiteralValueInput from './LiteralValueInput';
 import OperandTypeSelection from './OperandTypeSelection';
 import DataPreview from './DataPreview';
+import DSLEditorNode from './DSLEditorNode';
 import {useOnChanged} from './hooks';
 import Today from './Today';
-import ArrayInput from '../../forms/ArrayInput';
 
 
 const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
@@ -308,32 +309,32 @@ const Trigger = ({ name, logic, onChange, error, children }) => {
             <div className="logic-trigger__editor">
                 {error && <div className="logic-trigger__error">{error}</div> }
                 <div className="dsl-editor">
-                    <div className="dsl-editor__node">
+                    <DSLEditorNode errors={null}>
                         <FormattedMessage description="Logic trigger prefix" defaultMessage="When" />
-                    </div>
-                    <div className="dsl-editor__node">
+                    </DSLEditorNode>
+                    <DSLEditorNode errors={null}>
                         <ComponentSelection
                             name="component"
                             value={triggerComponent}
                             onChange={onTriggerChange}
                         />
-                    </div>
+                    </DSLEditorNode>
                     { triggerComponent
                         ? (
-                            <div className="dsl-editor__node">
+                            <DSLEditorNode errors={null}>
                                 <OperatorSelection
                                     name="operator"
                                     selectedComponent={triggerComponent}
                                     operator={operator}
                                     onChange={onTriggerChange}
                                 />
-                            </div>
+                            </DSLEditorNode>
                         )
                         : null
                     }
                     { (triggerComponent && operator)
                         ? (
-                            <div className="dsl-editor__node">
+                            <DSLEditorNode errors={null}>
                                 <OperandTypeSelection
                                     name="operandType"
                                     operandType={operandType}
@@ -345,12 +346,12 @@ const Trigger = ({ name, logic, onChange, error, children }) => {
                                         }
                                     }
                                 />
-                            </div>
+                            </DSLEditorNode>
                         )
                         : null
                     }
                     { (triggerComponent && operator && operandType)
-                        ? <div className="dsl-editor__node">{valueInput}</div>
+                        ? <DSLEditorNode errors={null}>{valueInput}</DSLEditorNode>
                         : null
                     }
                 </div>

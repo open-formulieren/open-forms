@@ -7,6 +7,7 @@ import _ from 'lodash';
 import ButtonContainer from '../../../forms/ButtonContainer';
 import Action from './Action';
 import {useOnChanged} from '../hooks';
+import {ActionError} from './types';
 
 
 const EMPTY_ACTION = {
@@ -67,7 +68,7 @@ const reducer = (draft, action) => {
 };
 
 
-const ActionSet = ({name, actions, onChange}) => {
+const ActionSet = ({name, actions, errors=[], onChange}) => {
     const [state, dispatch] = useImmerReducer(reducer, {
         actions: actions || []
     });
@@ -95,6 +96,7 @@ const ActionSet = ({name, actions, onChange}) => {
                     key={index}
                     prefixText={index === 0 ? firstActionPrefix : extraActionPrefix }
                     action={action}
+                    errors={errors[index] || {}}
                     onChange={onActionChange.bind(null, index)}
                     onDelete={() => dispatch({type: 'ACTION_DELETED', payload: {index}})}
                 />
@@ -110,6 +112,7 @@ const ActionSet = ({name, actions, onChange}) => {
 ActionSet.propTypes = {
     name: PropTypes.string.isRequired,
     actions: PropTypes.arrayOf(PropTypes.object),
+    errors: PropTypes.arrayOf(ActionError),
     onChange: PropTypes.func.isRequired,
 };
 

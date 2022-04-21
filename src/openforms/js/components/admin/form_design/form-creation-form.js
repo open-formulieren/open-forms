@@ -457,7 +457,9 @@ function reducer(draft, action) {
             draft.logicRules[index][name] = value;
 
             // Remove the validation error for the updated field
-            draft.validationErrors = draft.validationErrors.filter(([key]) => !(key === `logicRules.${index}.${name}`));
+            // If there are multiple actions with errors in one rule, updating it will clear the error also for the
+            // other actions of that rule.
+            draft.validationErrors = draft.validationErrors.filter(([key]) => !key.startsWith(`logicRules.${index}.${name}`));
             // Update the error badge in the tabs
             const logicRulesErrors = draft.validationErrors.filter(([key]) => key.startsWith('logicRules'));
             if (!logicRulesErrors.length) {
