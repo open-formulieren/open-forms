@@ -28,4 +28,18 @@ const Action = PropTypes.shape({
     formStep: PropTypes.string,
 });
 
-export {jsonLogicVar, Action};
+const ActionError = PropTypes.shape({
+    action: PropTypes.shape({
+        state: PropTypes.string,
+        type: PropTypes.string,
+        property: PropTypes.shape({
+            type: PropTypes.string,
+            value: PropTypes.string,
+        }),
+        value: PropTypes.string,
+    }),
+    component: PropTypes.string,
+    formStep: PropTypes.string,
+});
+
+export {jsonLogicVar, Action, ActionError};

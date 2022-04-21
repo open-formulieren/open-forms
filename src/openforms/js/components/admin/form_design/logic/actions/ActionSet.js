@@ -7,6 +7,7 @@ import _ from 'lodash';
 import ButtonContainer from '../../../forms/ButtonContainer';
 import Action from './Action';
 import {useOnChanged} from '../hooks';
+import {ActionError} from './types';
 
 
 const EMPTY_ACTION = {
@@ -111,7 +112,7 @@ const ActionSet = ({name, actions, errors=[], onChange}) => {
 ActionSet.propTypes = {
     name: PropTypes.string.isRequired,
     actions: PropTypes.arrayOf(PropTypes.object),
-    errors: PropTypes.array,
+    errors: PropTypes.arrayOf(ActionError),
     onChange: PropTypes.func.isRequired,
 };
 

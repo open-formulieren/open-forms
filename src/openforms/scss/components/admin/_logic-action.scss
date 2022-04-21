@@ -31,7 +31,7 @@ $logic-line-breakpoint: 1800px !default;
       padding-top: $error-height;
     }
 
-    .dsl-editor__node:not(.errors) {
+    .dsl-editor__node:not(.dsl-editor__node--errors) {
       padding-top: $error-height;
     }
   }

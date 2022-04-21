@@ -1,6 +1,5 @@
 import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 
 import ComponentSelection from '../../../forms/ComponentSelection';
 import Select from '../../../forms/Select';
@@ -9,8 +8,8 @@ import OperandTypeSelection from '../OperandTypeSelection';
 import LiteralValueInput from '../LiteralValueInput';
 import {ComponentsContext} from '../../../forms/Context';
 import StepSelection from '../StepSelection';
-import {Action as ActionType} from './types';
-import ErrorList from '../../../forms/ErrorList';
+import {Action as ActionType, ActionError} from './types';
+import DSLEditorNode from '../DSLEditorNode';
 
 
 const ActionProperty = ({action, errors, onChange}) => {
@@ -35,16 +34,14 @@ const ActionProperty = ({action, errors, onChange}) => {
 
     return (
         <>
-            <div className={`dsl-editor__node ${classNames({'errors': !!errors.component})}`}>
-                <ErrorList classNamePrefix="logic-action">{errors.component}</ErrorList>
+            <DSLEditorNode errors={errors.component}>
                 <ComponentSelection
                     name="component"
                     value={action.component}
                     onChange={onChange}
                 />
-            </div>
-            <div className={`dsl-editor__node ${classNames({'errors': !!errors.action?.property?.value})}`}>
-                <ErrorList classNamePrefix="logic-action">{errors.action?.property?.value}</ErrorList>
+            </DSLEditorNode>
+            <DSLEditorNode errors={errors.action?.property?.value}>
                 <Select
                     name="action.property"
                     choices={modifiablePropertyChoices}
@@ -65,11 +62,10 @@ const ActionProperty = ({action, errors, onChange}) => {
                     }}
                     value={action.action.property.value}
                 />
-            </div>
+            </DSLEditorNode>
             {
                 MODIFIABLE_PROPERTIES[action.action.property.value] &&
-                <div className={`dsl-editor__node ${classNames({'errors': !!errors.action?.state})}`}>
-                    <ErrorList classNamePrefix="logic-action">{errors.action?.state}</ErrorList>
+                <DSLEditorNode errors={errors.action?.state}>
                     <Select
                         name="action.state"
                         choices={MODIFIABLE_PROPERTIES[action.action.property.value].options}
@@ -85,7 +81,7 @@ const ActionProperty = ({action, errors, onChange}) => {
                         }}
                         value={castValueTypeToString(action)}
                     />
-                </div>
+                </DSLEditorNode>
             }
         </>
     );
@@ -106,14 +102,13 @@ const ActionValue = ({action, errors, onChange}) => {
     const valueSource = getValueSource(action);
     return (
         <>
-            <div className={`dsl-editor__node ${classNames({'errors': !!errors.component})}`}>
-                <ErrorList classNamePrefix="logic-action">{errors.component}</ErrorList>
+            <DSLEditorNode errors={errors.component}>
                 <ComponentSelection
                     name="component"
                     value={action.component}
                     onChange={onChange}
                 />
-            </div>
+            </DSLEditorNode>
             <div className="dsl-editor__node">
                 <OperandTypeSelection
                     name="action.value"
@@ -144,15 +139,14 @@ const ActionValue = ({action, errors, onChange}) => {
             }
             {
                 valueSource === 'component' &&
-                <div className={`dsl-editor__node ${classNames({'errors': !!errors.action?.value})}`}>
-                    <ErrorList classNamePrefix="logic-action">{errors.action?.value}</ErrorList>
+                <DSLEditorNode errors={errors.action?.value}>
                     <ComponentSelection
                         name="action.value.var"
                         value={action.action.value.var}
                         onChange={onChange}
                         filter={(comp) => (comp.type === componentType)}
                     />
-                </div>
+                </DSLEditorNode>
             }
         </>
     );
@@ -160,14 +154,13 @@ const ActionValue = ({action, errors, onChange}) => {
 
 const ActionStepNotApplicable = ({action, errors, onChange}) => {
     return (
-        <div className={`dsl-editor__node ${classNames({'errors': !!errors.formStep})}`}>
-            <ErrorList classNamePrefix="logic-action">{errors.formStep}</ErrorList>
+        <DSLEditorNode errors={errors.formStep}>
             <StepSelection
                 name="formStep"
                 value={action.formStep}
                 onChange={onChange}
             />
-        </div>
+        </DSLEditorNode>
     );
 };
 
@@ -201,7 +194,7 @@ const ActionComponent = ({action, errors, onChange}) => {
 
 ActionComponent.propTypes = {
     action: ActionType.isRequired,
-    errors: PropTypes.object,
+    errors: ActionError,
     onChange: PropTypes.func.isRequired,
 };
 

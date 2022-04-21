@@ -8,8 +8,8 @@ import DeleteIcon from '../../../DeleteIcon';
 import {ACTION_TYPES} from '../constants';
 import DataPreview from '../DataPreview';
 import {ActionComponent} from './Actions';
-import {Action as ActionType} from './types';
-import ErrorList from '../../../forms/ErrorList';
+import {Action as ActionType, ActionError} from './types';
+import DSLEditorNode from '../DSLEditorNode';
 
 
 const Action = ({prefixText, action, errors={}, onChange, onDelete}) => {
@@ -35,8 +35,7 @@ const Action = ({prefixText, action, errors={}, onChange, onDelete}) => {
                     <div className="dsl-editor">
                         <div className="dsl-editor__node">{prefixText}</div>
 
-                        <div className={`dsl-editor__node ${classNames({'errors': !!errors.action?.type})}`}>
-                            <ErrorList classNamePrefix="logic-action">{errors.action?.type}</ErrorList>
+                        <DSLEditorNode errors={errors.action?.type}>
                             <Select
                                 name="action.type"
                                 choices={ACTION_TYPES}
@@ -45,7 +44,7 @@ const Action = ({prefixText, action, errors={}, onChange, onDelete}) => {
                                 onChange={onChange}
                                 value={action.action.type}
                             />
-                        </div>
+                        </DSLEditorNode>
 
                         <ActionComponent action={action} errors={errors} onChange={onChange}/>
                     </div>
@@ -64,7 +63,7 @@ const Action = ({prefixText, action, errors={}, onChange, onDelete}) => {
 Action.propTypes = {
     prefixText: PropTypes.node.isRequired,
     action: ActionType.isRequired,
-    errors: PropTypes.object,
+    errors: ActionError,
     onChange: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
 };
