@@ -380,7 +380,6 @@ class FormAdmin(
         form = ExportFormsForm(
             initial={
                 "forms_uuids": [str(form_uuid) for form_uuid in selected_forms_uuids],
-                "email": request.user.email,
             }
         )
         context = dict(self.admin_site.each_context(request), form=form)
@@ -391,7 +390,7 @@ class FormAdmin(
 class FormsExportAdmin(admin.ModelAdmin):
     list_display = ("uuid", "user", "datetime_requested")
     list_filter = ("user",)
-    search_fields = ("user",)
+    search_fields = ("user__username",)
 
     def get_urls(self):
         urls = super().get_urls()

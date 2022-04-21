@@ -381,6 +381,16 @@
                 "view_formversion",
                 "forms",
                 "formversion"
+            ],
+            [
+                "add_formsexport",
+                "forms",
+                "formsexport"
+            ],
+            [
+                "view_formsexport",
+                "forms",
+                "formsexport"
             ]
         ]
     }
@@ -1067,6 +1077,16 @@
                 "view_formversion",
                 "forms",
                 "formversion"
+            ],
+            [
+                "add_formsexport",
+                "forms",
+                "formsexport"
+            ],
+            [
+                "view_formsexport",
+                "forms",
+                "formsexport"
             ],
             [
                 "add_jccconfig",
