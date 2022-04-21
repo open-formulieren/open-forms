@@ -11,11 +11,13 @@ on:
       - '**.py'
       - '**.json'
       - '**.yaml'
+      - '**.in'
   pull_request:
     paths:
       - '**.py'
       - '**.json'
       - '**.yaml'
+      - '**.in'
   workflow_dispatch:
 
 jobs:
@@ -104,3 +106,16 @@ jobs:
           DB_USER: postgres
           DB_NAME: postgres
           DB_PASSWORD: ''
+
+  dependencies:
+    name: Lint dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Run linter
+        run: python ./bin/lint_dependencies.py
