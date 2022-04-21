@@ -144,7 +144,7 @@ django-csp-reports==1.8.1
     # via -r requirements/base.in
 django-decorator-include==3.0
     # via -r requirements/base.in
-django-digid-eherkenning==0.3.0
+django-digid-eherkenning==0.3.1
     # via -r requirements/base.in
 django-filter==2.4.0
     # via -r requirements/base.in
@@ -229,7 +229,7 @@ inflection==0.5.1
     # via
     #   django-camunda
     #   drf-spectacular
-isodate==0.6.0
+isodate==0.6.1
     # via
     #   python3-saml
     #   zeep
@@ -243,7 +243,7 @@ kombu==5.2.3
     # via celery
 lockfile==0.12.2
     # via django-yubin
-lxml==4.7.1
+lxml==4.6.5
     # via
     #   -r requirements/base.in
     #   django-digid-eherkenning
@@ -313,7 +313,7 @@ python-decouple==3.3
     # via -r requirements/base.in
 python-dotenv==0.14.0
     # via -r requirements/base.in
-python3-saml @ git+https://github.com/maykinmedia/python3-saml.git@e000b39ed0ce38270e6351ec6634e6b3a53bbc3d
+python3-saml @ git+https://github.com/maykinmedia/python3-saml.git@f587f77b78be79d51139f29a957b406072e2b537
     # via -r requirements/base.in
 pytz==2021.3
     # via
