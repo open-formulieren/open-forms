@@ -1,7 +1,6 @@
 import io
 from unittest.mock import patch
 
-from django.contrib.auth.models import Permission
 from django.core.files import File
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -38,9 +37,7 @@ class TestExportFormsView(WebTest):
         self.assertEqual(403, response.status_code)
 
     def test_staff_with_right_permissions_can_access(self):
-        user = StaffUserFactory()
-        permission = Permission.objects.get(codename="add_formsexport")
-        user.user_permissions.add(permission)
+        user = StaffUserFactory(user_permissions=["forms.add_formsexport"])
 
         self.client.force_login(user)
         response = self.client.get(reverse("admin:forms_export"))
@@ -126,6 +123,27 @@ class TestDownloadExportFormView(TestCase):
         response = self.client.get(download_url)
 
         self.assertEqual(403, response.status_code)
+
+    def test_staff_user_with_permissions_can_download(self):
+        user = StaffUserFactory(
+            email="test1@email.nl",
+            user_permissions=["forms.view_formsexport"],
+        )
+        forms_export = FormsExport.objects.create(
+            export_content=File(io.BytesIO(b"Some test content"), name="test.zip"),
+            user=user,
+        )
+        download_url = build_absolute_uri(
+            reverse(
+                "admin:download_forms_export",
+                kwargs={"uuid": forms_export.uuid},
+            )
+        )
+
+        self.client.force_login(user)
+        response = self.client.get(download_url)
+
+        self.assertEqual(response.status_code, 200)
 
     def test_wrong_export_gives_404(self):
         download_url = build_absolute_uri(

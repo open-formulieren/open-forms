@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.postgres.forms import SimpleArrayField
 from django.http import FileResponse
@@ -24,22 +24,16 @@ class ExportFormsForm(forms.Form):
         return self.cleaned_data["forms_uuids"]
 
 
-class ExportFormsView(
-    LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, FormView
-):
+class ExportPermissionMixin(LoginRequiredMixin, PermissionRequiredMixin):
+    pass
+
+
+class ExportFormsView(ExportPermissionMixin, SuccessMessageMixin, FormView):
     template_name = "admin/forms/form/export.html"
     form_class = ExportFormsForm
+    permission_required = "forms.add_formsexport"
     success_url = reverse_lazy("admin:forms_form_changelist")
     success_message = _("Success! You will receive an email when your export is ready.")
-
-    def test_func(self):
-        user = self.request.user
-        if (
-            user.is_superuser
-            or user.user_permissions.filter(codename="add_formsexport").exists()
-        ):
-            return True
-        return False
 
     def form_valid(self, form):
         process_forms_export.delay(
@@ -49,9 +43,8 @@ class ExportFormsView(
         return super().form_valid(form)
 
 
-class DownloadExportedFormsView(LoginRequiredMixin, UserPassesTestMixin, View):
-    def test_func(self):
-        return self.request.user.is_superuser
+class DownloadExportedFormsView(ExportPermissionMixin, View):
+    permission_required = "forms.view_formsexport"
 
     def get(self, request, *args, **kwargs):
         forms_export = get_object_or_404(
