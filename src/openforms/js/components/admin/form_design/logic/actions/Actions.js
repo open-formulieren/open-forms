@@ -109,7 +109,7 @@ const ActionValue = ({action, errors, onChange}) => {
                     onChange={onChange}
                 />
             </DSLEditorNode>
-            <div className="dsl-editor__node">
+            <DSLEditorNode errors={null}>
                 <OperandTypeSelection
                     name="action.value"
                     onChange={(e) => {
@@ -125,17 +125,17 @@ const ActionValue = ({action, errors, onChange}) => {
                         ([choiceKey, choiceLabel]) => ['literal', 'component'].includes(choiceKey)
                     }
                 />
-            </div>
+            </DSLEditorNode>
             {
                 valueSource === 'literal' &&
-                <div className="dsl-editor__node">
+                <DSLEditorNode errors={null}>
                     <LiteralValueInput
                         name="action.value"
                         componentType={componentType}
                         value={action.action.value}
                         onChange={onChange}
                     />
-                </div>
+                </DSLEditorNode>
             }
             {
                 valueSource === 'component' &&

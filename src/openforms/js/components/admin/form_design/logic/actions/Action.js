@@ -33,7 +33,7 @@ const Action = ({prefixText, action, errors={}, onChange, onDelete}) => {
 
                 <div className="logic-action__action">
                     <div className="dsl-editor">
-                        <div className="dsl-editor__node">{prefixText}</div>
+                        <DSLEditorNode errors={null}>{prefixText}</DSLEditorNode>
 
                         <DSLEditorNode errors={errors.action?.type}>
                             <Select
