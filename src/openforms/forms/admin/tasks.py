@@ -1,5 +1,4 @@
 import logging
-import os
 import tempfile
 import zipfile
 from pathlib import Path
@@ -13,6 +12,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from privates.storages import private_media_storage
 from rest_framework.exceptions import ValidationError
 
 from openforms.accounts.models import User
@@ -80,8 +80,8 @@ def process_forms_import(import_file: str, user_id: int) -> None:
     user = User.objects.get(id=user_id)
     failed_files = []
     # This deletes the temp dir once the context manager is exited
-    with tempfile.TemporaryDirectory(dir=Path(import_file).parent) as temp_dir:
-        with zipfile.ZipFile(import_file, "r") as zip_file:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        with zipfile.ZipFile(private_media_storage.open(import_file), "r") as zip_file:
             for zipped_form_file in zip_file.infolist():
                 try:
                     # This normalises the path before extracting the files (to avoid writing outside the temp_dir)
@@ -95,7 +95,7 @@ def process_forms_import(import_file: str, user_id: int) -> None:
                     continue
 
     logevent.bulk_forms_imported(user=user, failed_files=failed_files)
-    os.remove(import_file)
+    private_media_storage.delete(import_file)
 
 
 @app.task

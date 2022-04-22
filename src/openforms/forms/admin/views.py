@@ -1,10 +1,7 @@
-import os
 import zipfile
-from pathlib import Path
 from uuid import uuid4
 
 from django import forms
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -16,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.views import View
 from django.views.generic.edit import FormView
 
+from privates.storages import private_media_storage
 from rest_framework.exceptions import ValidationError
 
 from openforms.logging import logevent
@@ -117,12 +115,7 @@ class ImportFormsView(ExportImportPermissionMixin, SuccessMessageMixin, FormView
             )
 
     def _bulk_import_forms(self, import_file):
-        imports_dir = Path(settings.PRIVATE_MEDIA_ROOT, "imports")
-        if not imports_dir.exists():
-            os.mkdir(imports_dir)
-        imports_file = Path(imports_dir, f"import_forms_{uuid4()}.zip")
-        with open(imports_file, "wb") as f_private:
-            for chunk in import_file.chunks():
-                f_private.write(chunk)
+        name = f"imports/import_forms_{uuid4()}.zip"
+        filename = private_media_storage.save(name, import_file)
 
-        process_forms_import.delay(str(imports_file), self.request.user.id)
+        process_forms_import.delay(filename, self.request.user.id)

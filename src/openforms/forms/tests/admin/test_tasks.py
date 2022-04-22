@@ -1,15 +1,14 @@
-import os
 import zipfile
 from pathlib import Path
 from unittest.mock import patch
 
-from django.conf import settings
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
 from freezegun import freeze_time
+from privates.storages import private_media_storage
 from privates.test import temp_private_root
 from rest_framework.exceptions import ValidationError
 
@@ -84,19 +83,13 @@ class ImportFormsTaskTests(TestCase):
         cls.user = user
 
     def _copy_file_to_imports_tempdir(self):
-        import_dir = Path(settings.PRIVATE_MEDIA_ROOT, "imports")
-        if not import_dir.exists():
-            os.mkdir(import_dir)
-
         exported_zip_file = self.form_export.export_content
         exported_zip_file.seek(0)
-        imported_zip_file = Path(import_dir, "tmp_import_file.zip")
 
-        with open(imported_zip_file, "wb") as f_private:
-            for chunk in exported_zip_file.chunks():
-                f_private.write(chunk)
+        name = "imports/tmp_import_file.zip"
+        filename = private_media_storage.save(name, exported_zip_file)
 
-        return imported_zip_file
+        return filename
 
     def test_import_forms(self):
         imported_file_path = self._copy_file_to_imports_tempdir()
@@ -105,7 +98,8 @@ class ImportFormsTaskTests(TestCase):
         self.assertEqual(4, Form.objects.count())
 
         # Check that no files are left over
-        self.assertEqual(0, len(list(imported_file_path.parent.iterdir())))
+        dir_path = Path(private_media_storage.path(imported_file_path)).parent
+        self.assertEqual(0, len(list(dir_path.iterdir())))
 
     @patch(
         "openforms.forms.admin.tasks.import_form",
