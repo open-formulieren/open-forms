@@ -100,11 +100,13 @@ class ComponentModificationTests(TestCase):
                         "type": "textfield",
                         "key": "component1",
                         "hidden": False,
+                        "clearOnHide": True,
                     },
                     {
                         "type": "textfield",
                         "key": "component2",
                         "hidden": False,
+                        "clearOnHide": True,
                     },
                 ]
             },
@@ -153,11 +155,13 @@ class ComponentModificationTests(TestCase):
                     "type": "textfield",
                     "key": "component1",
                     "hidden": False,
+                    "clearOnHide": True,
                 },
                 {
                     "type": "textfield",
                     "key": "component2",
                     "hidden": True,
+                    "clearOnHide": True,
                 },
             ]
         }
