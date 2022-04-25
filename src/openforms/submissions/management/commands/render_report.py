@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.core.management import BaseCommand, CommandError
 
+from tabulate import tabulate
+
 from ...models import Submission
 from ...rendering.renderer import Renderer, RenderModes
 
@@ -9,6 +11,8 @@ INDENT_SIZES = {
     "FormStepNode": 1,
     "ComponentNode": 2,
 }
+
+INDENT = "    "
 
 
 class Command(BaseCommand):
@@ -48,13 +52,40 @@ class Command(BaseCommand):
         )
 
         self.stdout.write("")
+
+        prev_node_type, tabulate_data = None, []
+
         for node in renderer.render():
+            indent_size = INDENT_SIZES.get(node.type, 0)
+            lead = INDENT * indent_size
+
+            if node.type == "ComponentNode":
+                # extract label + value for tabulate data
+                tabulate_data.append([node.label, node.display_value])
+                prev_node_type = node.type
+                continue
+            else:
+                # changed from component node to something else -> print the tabular data
+                if prev_node_type == "ComponentNode":
+                    self._print_tabulate_data(tabulate_data)
+                    tabulate_data = []
+
             if node.type == "SubmissionStepNode":
+                prev_node_type = node.type
                 continue
 
-            indent_size = INDENT_SIZES[node.type]
-            lead = "    " * indent_size
             if lead:
                 self.stdout.write(lead, ending="")
-
             self.stdout.write(node.render())
+            prev_node_type = node.type
+
+        self._print_tabulate_data(tabulate_data)
+
+    def _print_tabulate_data(self, tabulate_data) -> None:
+        if not tabulate_data:
+            return
+
+        table = tabulate(tabulate_data)
+        _lead = INDENT * INDENT_SIZES["ComponentNode"]
+        for line in table.splitlines():
+            self.stdout.write(f"{_lead}{line}")
