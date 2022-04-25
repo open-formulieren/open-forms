@@ -162,3 +162,20 @@ class OgoneTests(TestCase):
             payment.refresh_from_db()
             self.assertEqual(payment.status, PaymentStatus.completed)
             self.assertEqual(submission.payment_user_has_paid, True)
+
+    def test_apply_status(self):
+        payment = SubmissionPaymentFactory.create(status=PaymentStatus.started)
+        plugin = register["ogone-legacy"]
+
+        # regular apply
+        plugin.apply_status(payment, OgoneStatus.payment_requested)
+        self.assertEqual(payment.status, PaymentStatus.completed)
+
+        # set a final status registered
+        payment.status = PaymentStatus.registered
+        payment.save()
+
+        # ignores when try to race/overwrite to completed again
+        plugin.apply_status(payment, OgoneStatus.payment_requested)
+        # still registered
+        self.assertEqual(payment.status, PaymentStatus.registered)

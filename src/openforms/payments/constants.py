@@ -33,7 +33,7 @@ class PaymentStatus(DjangoChoices):
     registered = ChoiceItem("registered", _("Completed and registered"))
 
     is_final = {
-        failed,
-        completed,
-        registered,
+        failed.value,
+        completed.value,
+        registered.value,
     }
