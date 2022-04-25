@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.management import BaseCommand, CommandError
 
 from ...models import Submission
+from ...rendering.renderer import Renderer, RenderModes
 
 
 class Command(BaseCommand):
@@ -32,3 +33,13 @@ class Command(BaseCommand):
 
         submission = Submission.objects.get(pk=options["submission_id"])
         limit_value_keys = options["limit_value_key"]
+
+        renderer = Renderer(
+            submission=submission,
+            mode=RenderModes.cli,
+            as_html=False,
+            limit_value_keys=limit_value_keys or None,
+        )
+
+        for node in renderer.render():
+            self.stdout.write(node.render())
