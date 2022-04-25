@@ -90,6 +90,84 @@ class ComponentModificationTests(TestCase):
         }
         self.assertEqual(configuration, expected)
 
+    def test_hiding_component_empties_its_data(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "component1",
+                        "hidden": False,
+                        "clearOnHide": True,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "component2",
+                        "hidden": False,
+                        "clearOnHide": True,
+                    },
+                ]
+            },
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [
+                    {"var": "component1"},
+                    "trigger value",
+                ]
+            },
+            actions=[
+                {
+                    "component": "component2",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={
+                "component1": "trigger value",
+                "component2": "Some data to be deleted",
+            },
+        )
+
+        configuration = evaluate_form_logic(
+            submission, submission_step, submission.data, dirty=True
+        )
+
+        expected = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "component1",
+                    "hidden": False,
+                    "clearOnHide": True,
+                },
+                {
+                    "type": "textfield",
+                    "key": "component2",
+                    "hidden": True,
+                    "clearOnHide": True,
+                },
+            ]
+        }
+        self.assertEqual(configuration, expected)
+        self.assertEqual("", submission_step.data["component2"])
+
     def test_change_component_to_required(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(

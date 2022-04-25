@@ -29,6 +29,12 @@ def set_property_value(
     return configuration
 
 
+def get_component(configuration: JSONObject, key: str) -> JSONObject:
+    for component in iter_components(configuration=configuration, recursive=True):
+        if component["key"] == key:
+            return component
+
+
 @elasticapm.capture_span(span_type="app.submissions.logic")
 def evaluate_form_logic(
     submission: "Submission",
@@ -107,6 +113,13 @@ def evaluate_form_logic(
         data_diff = {}
         for key, new_value in step.data.items():
             original_value = data.get(key)
+            # Reset the value of any field that may have become hidden again after evaluating the logic
+            if original_value:
+                component = get_component(configuration, key)
+                if component.get("hidden") and component.get("clearOnHide"):
+                    data_diff[key] = defaults.get(key, "")
+                    continue
+
             if new_value == original_value:
                 continue
             data_diff[key] = new_value
