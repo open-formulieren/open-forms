@@ -1,7 +1,8 @@
 from decimal import Decimal
+from threading import Thread
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 
 from rest_framework import serializers
 
@@ -110,3 +111,47 @@ class UpdatePaymentTests(TestCase):
                 with patch.object(self.plugin, "update_payment_status") as update_mock:
                     update_submission_payment_registration(submission)
                     update_mock.assert_not_called()
+
+
+class TestPaymentRaceCondition(TransactionTestCase):
+    def setUp(self):
+        super().setUp()
+        register = Registry()
+
+        register("registration1")(Plugin)
+        self.plugin = register["registration1"]
+
+        registry_patch = patch("openforms.payments.services.register", new=register)
+        registry_patch.start()
+        self.addCleanup(registry_patch.stop)
+
+    def test_update_payment_registration(self):
+        payment = SubmissionPaymentFactory.create(
+            submission__registration_status=RegistrationStatuses.success,
+            submission__form__registration_backend="registration1",
+            submission__form__payment_backend="payment1",
+            submission__form__product__price=Decimal("11.35"),
+            status=PaymentStatus.completed,
+            plugin_id="payment1",  # not used but added for completion
+        )
+        submission = payment.submission
+
+        with patch.object(self.plugin, "update_payment_status") as update_mock:
+
+            def _thread(sid):
+                sub = Submission.objects.get(id=sid)
+                update_submission_payment_registration(sub)
+
+            threads = [Thread(target=_thread, args=(submission.id,)) for _ in range(5)]
+
+            for t in threads:
+                t.start()
+
+            for t in threads:
+                t.join()
+
+            payment.refresh_from_db()
+
+            update_mock.assert_called_once()
+
+        self.assertEqual(payment.status, PaymentStatus.registered)

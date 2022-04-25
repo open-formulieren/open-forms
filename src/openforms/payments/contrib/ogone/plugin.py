@@ -127,7 +127,7 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         new_status = OgoneStatus.as_payment_status(ogone_status)
 
         # run this query as atomic update()
-        qs = SubmissionPayment.objects.filter(id=payment.id).select_for_update()
+        qs = SubmissionPayment.objects.filter(id=payment.id)
         qs = qs.exclude(status__in=PaymentStatus.is_final)
         qs = qs.exclude(status=new_status)
         res = qs.update(status=new_status)
