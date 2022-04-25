@@ -260,7 +260,7 @@ maykin-json-logic-py @ git+https://github.com/maykinmedia/json-logic-py.git@1ceb
     # via -r requirements/base.in
 mozilla-django-oidc==1.2.4
     # via mozilla-django-oidc-db
-mozilla-django-oidc-db==0.9.0
+mozilla-django-oidc-db==0.10.0
     # via -r requirements/base.in
 o365==2.0.16
     # via -r requirements/base.in
@@ -288,9 +288,7 @@ prometheus-client==0.13.1
 prompt-toolkit==3.0.27
     # via click-repl
 psycopg2==2.8.6
-    # via
-    #   -r requirements/base.in
-    #   mozilla-django-oidc-db
+    # via -r requirements/base.in
 pycparser==2.20
     # via cffi
 pyjwt==1.7.1
