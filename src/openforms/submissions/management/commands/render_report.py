@@ -7,6 +7,7 @@ from ...rendering.renderer import Renderer, RenderModes
 INDENT_SIZES = {
     "FormNode": 0,
     "FormStepNode": 1,
+    "ComponentNode": 2,
 }
 
 
