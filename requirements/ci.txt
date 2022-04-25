@@ -487,7 +487,7 @@ mozilla-django-oidc==1.2.4
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   mozilla-django-oidc-db
-mozilla-django-oidc-db==0.9.0
+mozilla-django-oidc-db==0.10.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -557,7 +557,6 @@ psycopg2==2.8.6
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   mozilla-django-oidc-db
 py==1.10.0
     # via pytest
 pycodestyle==2.7.0
