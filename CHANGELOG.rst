@@ -2,6 +2,19 @@
 Changelog
 =========
 
+1.0.6 (2022-04-25)
+==================
+
+Periodic bugfix release
+
+* Bumped to SDK version 1.0.2 with frontend bugfixes
+* Updated DigiD/eHerkenning/eIDAS integration library for breaking changes in some
+  brokers per May 1st
+* Bumped to latest Django security releases
+* [#1493] Fixed form copy admin (bulk/object) actions not copying logic
+* [#1489] Fixed layout of confirmation emails
+* [#1527] Fixed clearing/resetting the data of fields hidden by server-side logic
+
 1.0.5 (2022-03-31)
 ==================
 
