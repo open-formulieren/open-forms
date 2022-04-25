@@ -4,6 +4,11 @@ from django.core.management import BaseCommand, CommandError
 from ...models import Submission
 from ...rendering.renderer import Renderer, RenderModes
 
+INDENT_SIZES = {
+    "FormNode": 0,
+    "FormStepNode": 1,
+}
+
 
 class Command(BaseCommand):
     help = (
@@ -41,5 +46,14 @@ class Command(BaseCommand):
             limit_value_keys=limit_value_keys or None,
         )
 
+        self.stdout.write("")
         for node in renderer.render():
+            if node.type == "SubmissionStepNode":
+                continue
+
+            indent_size = INDENT_SIZES[node.type]
+            lead = "    " * indent_size
+            if lead:
+                self.stdout.write(lead, ending="")
+
             self.stdout.write(node.render())
