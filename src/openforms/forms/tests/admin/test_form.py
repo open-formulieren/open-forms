@@ -56,10 +56,11 @@ class FormAdminImportExportTests(WebTest):
         form_steps = json.loads(zf.read("formSteps.json"))
         self.assertEqual(len(form_steps), 0)
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_form_admin_import_button(self):
         response = self.app.get(reverse("admin:forms_form_changelist"), user=self.user)
 
-        response = response.click(_("Import form"))
+        response = response.click(href=reverse("admin:forms_import"))
 
         self.assertEqual(response.status_code, 200)
 
@@ -179,6 +180,7 @@ class FormAdminImportExportTests(WebTest):
             )
         )
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_form_admin_import_warning_created_form_definitions(self):
         form = FormFactory.create(slug="test")
         form_definition = FormDefinitionFactory.create(slug="testform")
@@ -280,7 +282,7 @@ class FormAdminImportExportTests(WebTest):
         )
 
         success_message = response.html.find("li", {"class": "success"})
-        self.assertEqual(success_message.text, _("Form successfully imported"))
+        self.assertEqual(success_message.text, _("Form successfully imported!"))
 
         self.assertEqual(Form.objects.count(), 2)
 

@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from django.db.models import Model
 
@@ -526,5 +526,14 @@ def forms_bulk_export_downloaded(bulk_export, user):
     _create_log(
         bulk_export,
         "downloaded_bulk_export",
+        user=user,
+    )
+
+
+def bulk_forms_imported(user: "User", failed_files: List[Tuple[str, str]]):
+    _create_log(
+        user,
+        "bulk_forms_imported",
+        extra_data={"failed_files": failed_files},
         user=user,
     )

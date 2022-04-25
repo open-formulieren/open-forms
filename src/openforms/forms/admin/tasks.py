@@ -1,5 +1,6 @@
 import logging
 import tempfile
+import zipfile
 from pathlib import Path
 from uuid import uuid4
 from zipfile import ZipFile
@@ -11,14 +12,18 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from privates.storages import private_media_storage
+from rest_framework.exceptions import ValidationError
+
 from openforms.accounts.models import User
 from openforms.celery import app
 from openforms.emails.utils import send_mail_html
+from openforms.logging import logevent
 from openforms.utils.urls import build_absolute_uri
 
 from ..models import Form
 from ..models.form import FormsExport
-from ..utils import export_form
+from ..utils import export_form, import_form
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +41,7 @@ def process_forms_export(forms_uuids: list, user_id: int) -> None:
             output_files.append(
                 export_form(
                     form_id=form.pk,
-                    archive_name=Path(temp_dir, f"form_{form.uuid}.zip"),
+                    archive_name=Path(temp_dir, f"form_{form.slug}.zip"),
                 )
             )
 
@@ -68,6 +73,29 @@ def process_forms_export(forms_uuids: list, user_id: int) -> None:
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],
         )
+
+
+@app.task
+def process_forms_import(import_file: str, user_id: int) -> None:
+    user = User.objects.get(id=user_id)
+    failed_files = []
+    # This deletes the temp dir once the context manager is exited
+    with tempfile.TemporaryDirectory() as temp_dir:
+        with zipfile.ZipFile(private_media_storage.open(import_file), "r") as zip_file:
+            for zipped_form_file in zip_file.infolist():
+                try:
+                    # This normalises the path before extracting the files (to avoid writing outside the temp_dir)
+                    import_form(
+                        zip_file.extract(member=zipped_form_file, path=temp_dir)
+                    )
+                except ValidationError as exc:
+                    filename = Path(zipped_form_file.filename).name
+                    failed_files.append((filename, exc.detail))
+                    logger.error("Could not import form %s", filename)
+                    continue
+
+    logevent.bulk_forms_imported(user=user, failed_files=failed_files)
+    private_media_storage.delete(import_file)
 
 
 @app.task
