@@ -14,6 +14,13 @@ class ComponentNode(Node):
     value: Any
 
     @property
+    def visible(self) -> bool:
+        if self.renderer.mode == "pdf":
+            return self.component.get("showInPdf", True)
+        elif self.renderer.mode == "confirmation_email":
+            ...
+
+    @property
     def label(self) -> str:
         return self.component.get("label") or self.component.get("key", "")
 
@@ -34,9 +41,15 @@ class FormioConfigurationNode(Node):
         return ""
 
     def __iter__(self) -> Iterator[ComponentNode]:
+        if not self.visible:
+            return
+
         for component in self.step.form_step.iter_components(
             recursive=True, _mark_root=True
         ):
+            if not component.visible:
+                continue
+
             key = component["key"]
             value = self.step.data.get(key)
             yield ComponentNode(
