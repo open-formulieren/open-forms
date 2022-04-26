@@ -22,6 +22,7 @@ import CoSignField from './components/form/coSign';
 import NpFamilyMembers from './components/form/np-family-members';
 import ColumnField from './components/form/columns';
 import WebformBuilder from './components/formio_builder/WebformBuilder';
+import ContentField from './components/form/content';
 
 const FormIOModule = {
   components: {
@@ -48,6 +49,7 @@ const FormIOModule = {
     coSign: CoSignField,
     npFamilyMembers: NpFamilyMembers,
     columns: ColumnField,
+    content: ContentField,
   },
   builders: {
     webform: WebformBuilder,
