@@ -63,8 +63,7 @@ class TimelineLogProxy(TimelineLog):
             auth = self.content_object.get_auth_mode_display()
             if auth:
                 return _("Authenticated via plugin {auth}").format(auth=auth)
-        else:
-            return gettext("Anonymous user")
+        return gettext("Anonymous user")
 
     @property
     def fmt_form(self) -> str:
