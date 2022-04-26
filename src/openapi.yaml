@@ -2464,16 +2464,6 @@ paths:
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
-        '400':
-          content:
-            application/json:
-              schema:
-                type: string
-                format: binary
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/translations/formio:
     get:
       operationId: translations_formio_retrieve

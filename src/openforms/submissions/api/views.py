@@ -6,9 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from django_sendfile import sendfile
-from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import status
 from rest_framework.generics import DestroyAPIView, GenericAPIView
 from rest_framework.response import Response
 
@@ -22,7 +20,7 @@ from .permissions import (
     DownloadSubmissionReportPermission,
     OwnsTemporaryUploadPermission,
 )
-from .renderers import FileRenderer, PDFRenderer, PlainTextErrorRenderer
+from .renderers import FileRenderer, PDFRenderer
 from .serializers import TemporaryFileUploadSerializer
 
 
@@ -77,10 +75,6 @@ class DownloadSubmissionReportView(GenericAPIView):
         expire_days=settings.TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS,
         max_upload_size=filesizeformat(settings.MAX_FILE_UPLOAD_SIZE),
     ),
-    responses={
-        200: TemporaryFileUploadSerializer,
-        400: bytes,
-    },
     deprecated=True,
 )
 class TemporaryFileUploadView(GenericAPIView):
@@ -88,19 +82,12 @@ class TemporaryFileUploadView(GenericAPIView):
     serializer_class = TemporaryFileUploadSerializer
     authentication_classes = []
     permission_classes = [AnyActiveSubmissionPermission]
-    renderer_classes = [CamelCaseJSONRenderer]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(
             data=request.data,
         )
-        if not serializer.is_valid():
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST,
-                content_type="text/plain",
-            )
-
+        serializer.is_valid(raise_exception=True)
         file = serializer.validated_data["file"]
 
         # trim name part if necessary but keep the extension
@@ -118,16 +105,6 @@ class TemporaryFileUploadView(GenericAPIView):
         return Response(
             self.serializer_class(instance=upload, context={"request": request}).data
         )
-
-    def finalize_response(self, request, response, *args, **kwargs):
-        """
-        Override renderer to support JSON for success and text for error response
-        """
-        if response.status_code == 400:
-            request.accepted_renderer = PlainTextErrorRenderer()
-            request.accepted_media_type = "text/plain"
-        response = super().finalize_response(request, response, *args, **kwargs)
-        return response
 
 
 @extend_schema(
