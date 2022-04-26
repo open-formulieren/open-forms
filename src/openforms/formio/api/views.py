@@ -36,7 +36,7 @@ from openforms.submissions.utils import add_upload_to_session
     ),
     responses={
         200: TemporaryFileUploadSerializer,
-        400: bytes,
+        (400, PlainTextErrorRenderer.media_type): str,
     },
 )
 class TemporaryFileUploadView(GenericAPIView):
@@ -81,6 +81,6 @@ class TemporaryFileUploadView(GenericAPIView):
         """
         if response.status_code == 400:
             request.accepted_renderer = PlainTextErrorRenderer()
-            request.accepted_media_type = "text/plain"
+            request.accepted_media_type = PlainTextErrorRenderer.media_type
         response = super().finalize_response(request, response, *args, **kwargs)
         return response
