@@ -159,6 +159,19 @@ class TimelineLogProxyTests(TestCase):
             # .user takes priority over submission auth
             self.assertEqual(_("Staff user {user}").format(user="Bob"), log.fmt_user)
 
+        # log with auth
+        log = TimelineLogProxyFactory.create(
+            content_object=SubmissionFactory.create(
+                auth_plugin="mock", bsn="123456789"
+            ),
+        )
+        with self.subTest("user auth bsn"):
+            # .user takes priority over submission auth
+            self.assertEqual(
+                _("Authenticated via plugin {auth}").format(auth="mock (bsn)"),
+                log.fmt_user,
+            )
+
         # log with almost nothing
         log = TimelineLogProxyFactory.create(content_object=None, user=None)
         with self.subTest("user anon"):
