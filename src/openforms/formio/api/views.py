@@ -4,6 +4,7 @@ from django.conf import settings
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import gettext_lazy as _
 
+from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
@@ -11,7 +12,7 @@ from rest_framework.response import Response
 
 from openforms.api.parsers import MaxFilesizeMultiPartParser
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
-from openforms.submissions.api.renderers import JSONOrPlainTextRenderer
+from openforms.submissions.api.renderers import PlainTextErrorRenderer
 from openforms.submissions.api.serializers import TemporaryFileUploadSerializer
 from openforms.submissions.attachments import clean_mime_type
 from openforms.submissions.models import TemporaryFileUpload
@@ -39,21 +40,17 @@ class TemporaryFileUploadView(GenericAPIView):
     serializer_class = TemporaryFileUploadSerializer
     authentication_classes = []
     permission_classes = [AnyActiveSubmissionPermission]
-    renderer_classes = [JSONOrPlainTextRenderer]
+    renderer_classes = [CamelCaseJSONRenderer]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(
             data=request.data,
         )
         if not serializer.is_valid():
-            messages = []
-            for sub_errors in serializer.errors.values():
-                messages.extend(sub_errors)
-            data = " ".join(messages)
-
-            # NOTE formio displays the whole response text as message
             return Response(
-                data, status=status.HTTP_400_BAD_REQUEST, content_type="text/plain"
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+                content_type="text/plain",
             )
 
         file = serializer.validated_data["file"]
@@ -73,3 +70,13 @@ class TemporaryFileUploadView(GenericAPIView):
         return Response(
             self.serializer_class(instance=upload, context={"request": request}).data
         )
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        """
+        Override renderer to support JSON for success and text for error response
+        """
+        if response.status_code == 400:
+            request.accepted_renderer = PlainTextErrorRenderer()
+            request.accepted_media_type = "text/plain"
+        response = super().finalize_response(request, response, *args, **kwargs)
+        return response

@@ -82,8 +82,10 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, 400)
 
         # NOTE formio displays the whole response text as message
+        self.assertEqual(
+            response.content.decode("utf8"), _("The submitted file is empty.")
+        )
         self.assertEqual(response.content_type, "text/plain")
-        self.assertEqual(response.data, _("The submitted file is empty."))
 
     @override_settings(MAX_FILE_UPLOAD_SIZE=10)  # only allow 10 bytes upload size
     def test_upload_too_large(self):

@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from django_sendfile import sendfile
+from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status
 from rest_framework.generics import DestroyAPIView, GenericAPIView
@@ -21,7 +22,7 @@ from .permissions import (
     DownloadSubmissionReportPermission,
     OwnsTemporaryUploadPermission,
 )
-from .renderers import FileRenderer, JSONOrPlainTextRenderer, PDFRenderer
+from .renderers import FileRenderer, PDFRenderer, PlainTextErrorRenderer
 from .serializers import TemporaryFileUploadSerializer
 
 
@@ -76,27 +77,24 @@ class DownloadSubmissionReportView(GenericAPIView):
         expire_days=settings.TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS,
         max_upload_size=filesizeformat(settings.MAX_FILE_UPLOAD_SIZE),
     ),
+    deprecated=True,
 )
 class TemporaryFileUploadView(GenericAPIView):
     parser_classes = [MaxFilesizeMultiPartParser]
     serializer_class = TemporaryFileUploadSerializer
     authentication_classes = []
     permission_classes = [AnyActiveSubmissionPermission]
-    renderer_classes = [JSONOrPlainTextRenderer]
+    renderer_classes = [CamelCaseJSONRenderer]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(
             data=request.data,
         )
         if not serializer.is_valid():
-            messages = []
-            for sub_errors in serializer.errors.values():
-                messages.extend(sub_errors)
-            data = " ".join(messages)
-
-            # NOTE formio displays the whole response text as message
             return Response(
-                data, status=status.HTTP_400_BAD_REQUEST, content_type="text/plain"
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+                content_type="text/plain",
             )
 
         file = serializer.validated_data["file"]
@@ -116,6 +114,16 @@ class TemporaryFileUploadView(GenericAPIView):
         return Response(
             self.serializer_class(instance=upload, context={"request": request}).data
         )
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        """
+        Override renderer to support JSON for success and text for error response
+        """
+        if response.status_code == 400:
+            request.accepted_renderer = PlainTextErrorRenderer()
+            request.accepted_media_type = "text/plain"
+        response = super().finalize_response(request, response, *args, **kwargs)
+        return response
 
 
 @extend_schema(

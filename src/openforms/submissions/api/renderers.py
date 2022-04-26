@@ -23,11 +23,15 @@ class FileRenderer(renderers.BaseRenderer):
         return data
 
 
-class JSONOrPlainTextRenderer(renderers.JSONRenderer):
-    def render(self, data, media_type=None, renderer_context=None):
-        if isinstance(data, str):
-            return data.encode("utf8")
-        else:
-            return super().render(
-                data, accepted_media_type=media_type, renderer_context=renderer_context
-            )
+class PlainTextErrorRenderer(renderers.BaseRenderer):
+    media_type = "text/plain"
+    format = "txt"
+
+    def render(
+        self, serializer_errors, accepted_media_type=None, renderer_context=None
+    ):
+        messages = []
+        for sub_errors in serializer_errors.values():
+            messages.extend(sub_errors)
+        message = " ".join(messages)
+        return message.encode(self.charset)
