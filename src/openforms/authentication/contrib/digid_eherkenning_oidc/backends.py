@@ -128,7 +128,6 @@ class OIDCAuthenticationEHerkenningBewindvoeringBackend(
     def claim_names(self):
         return [
             self.config.vertegenwoordigde_company_claim_name,
-            self.config.vertegenwoordigde_person_claim_name,
             self.config.gemachtigde_person_claim_name,
         ]
 

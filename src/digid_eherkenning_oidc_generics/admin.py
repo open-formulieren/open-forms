@@ -139,7 +139,6 @@ class OpenIDConnectConfigEHerkenningBewindvoeringAdmin(
             {
                 "fields": (
                     "vertegenwoordigde_company_claim_name",
-                    "vertegenwoordigde_person_claim_name",
                     "gemachtigde_person_claim_name",
                 )
             },

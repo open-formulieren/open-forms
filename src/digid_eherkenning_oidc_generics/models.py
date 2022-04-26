@@ -9,7 +9,9 @@ from openforms.authentication.constants import AuthAttribute
 
 from .digid_machtigen_settings import DIGID_MACHTIGEN_CUSTOM_OIDC_DB_PREFIX
 from .digid_settings import DIGID_CUSTOM_OIDC_DB_PREFIX
-from .eherkenning_bewindvoering import EHERKENNING_BEWINDVOERING_CUSTOM_OIDC_DB_PREFIX
+from .eherkenning_bewindvoering_settings import (
+    EHERKENNING_BEWINDVOERING_CUSTOM_OIDC_DB_PREFIX,
+)
 from .eherkenning_settings import EHERKENNING_CUSTOM_OIDC_DB_PREFIX
 
 
@@ -153,23 +155,15 @@ class OpenIDConnectEHerkenningConfig(OpenIDConnectBaseConfig):
 
 class OpenIDConnectEHerkenningBewindvoeringConfig(OpenIDConnectBaseConfig):
     vertegenwoordigde_company_claim_name = models.CharField(
-        verbose_name=_("vertegenwoordigde claim name"),
+        verbose_name=_("vertegenwoordigde company claim name"),
         default="aanvrager.kvk",
         max_length=50,
         help_text=_(
             "Name of the claim in which the KVK of the company being represented is stored"
         ),
     )
-    vertegenwoordigde_person_claim_name = models.CharField(
-        verbose_name=_("vertegenwoordigde claim name"),
-        default="aanvrager.pseudoID",
-        max_length=50,
-        help_text=_(
-            "Name of the claim in which the ID of the person being represented is stored"
-        ),
-    )
     gemachtigde_person_claim_name = models.CharField(
-        verbose_name=_("gemachtigde claim name"),
+        verbose_name=_("gemachtigde person claim name"),
         default="gemachtigde.pseudoID",
         max_length=50,
         help_text=_(
