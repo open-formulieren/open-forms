@@ -61,7 +61,7 @@ Configuration
 2. In Open Forms, navigate to: **Configuration** > **SOAP Services**
 3. Click **Add SOAP Services** and fill in the following details:
 
-   * **Label**: *Fill in a human readable label*, for example: ``My StUF-ZDS service``
+   * **Label**: *Fill in a human readable label*, for example: ``My StUF-BG service``
    * **URL**: *Fill in the full URL to the SOAP service endpoint*
    * **SOAP Version**: *Select the SOAP version of your backend provider*
 
