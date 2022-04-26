@@ -58,39 +58,48 @@ Configuration
 =============
 
 1. Obtain credentials and endpoint for StUF-ZDS from the client.
-2. In Open Forms, navigate to: **Configuration** > **SOAP Service**
-3. Click **Add SOAP Service** and fill in the following details:
+2. In Open Forms, navigate to: **Configuration** > **SOAP Services**
+3. Click **Add SOAP Services** and fill in the following details:
 
-   * **Label**: *Fill in a human readable label*, for example: ``My StUF-BG service``
-   * **URL**: *Fill in the full URL to the endpoint for the SOAP 'BeantwoordVraag' action*
-   * **SOAP Version**: *Select the SOAP version of the client system. Typically,
-     this is verison 1.1.*
+   * **Label**: *Fill in a human readable label*, for example: ``My StUF-ZDS service``
+   * **URL**: *Fill in the full URL to the SOAP service endpoint*
+   * **SOAP Version**: *Select the SOAP version of your backend provider*
 
-4. In the **Authentication** section:
+4. In the **Authentication** section enter the authentication details provided by
+   the service provider:
 
-   * **Security**: *Select the security level required by your backend provider*
+   * **Security**: *select the security level required by your backend provider*
 
       * **Basic authentication**: use HTTP Basic authentication, requires to also fill in **Username** and **Password**
       * **SOAP extension: WS-Security**: use WS-Security, requires to also fill in **Username** and **Password**
       * **Both**: use both HTTP Basic authentication and WS-Security, requires to also fill in a shared **Username** and **Password**
       * **None**: no username/password based security (default)
 
-   * **Gebruiker** / **wachtwoord**
-   * **Client Certificate**: optionally provide a certificate and key file that Open Forms will use to identify itself to the server. If empty mutual TLS is disabled.
-   * **Server Certificate**: optionally provide a certificate to check the certificate provided by the server. If empty, the value of the environment variable ``REQUESTS_CA_BUNDLE`` is used to retrieve the list of trusted certificates.
+    * **Certificate** and **Certificate key**: optionally provide a certificate and key file for client identification. If empty mutual TLS is disabled
 
-7. Click **Save**
-8. Navigate to **Configuration** > **Configuration Overview**. In the **Prefill plugin** group, click on **Configuration** for the **StUF-BG** line.
-9.  Click on the 'plus' icon next to the drop down.
-10. Fill in the following details:
+5. Click **Save**
 
-   * **Soap service**: select the soap service that was created above.
+6. Navigate to: **Miscellaneous** > **StUF-services**
+
+7. Click **Add StUF-service** and fill in the following details:
+
+   * **Soap service**: *Select the SOAP service we created above*
+
+8. In the **StUF parameters** section enter the receiving details provided by
+   the service provider. For the sending organization details, you can fill in:
+
    * **Versturende applicatie**: Open Forms
-   * **Ontvangende applicatie**: Name of the application submissions are sent to.
-   * **Endpoint BeantwoordVraag**: *Fill in the same as the URL field used in the SOAP service above*
 
-11. Click **Save**
-12. When back on the **StUF-BG** page, refresh the page and select the StUf-BG service that was just created.
+9. In the **Connection** section:
+
+   * **Endpoint BeantwoordVraag**: *Fill in the full URL to the endpoint for the SOAP 'BeantwoordVraag' action*
+   * **Endpoint VrijeBerichten**: *Fill in the full URL to the endpoint for the SOAP 'VrijeBerichten' action*
+   * **Endpoint OntvangAsynchroon**: *Fill in the full URL to the endpoint for the SOAP 'OntvangAsynchroon' action*
+
+10. Click **Save**
+
+11. Navigate to **Configuration** > **Configuration Overview**. In the **Prefill plugin** group, click on **Configuration** for the **StUF-BG** line.
+12. Select for the **Service**, the StUF Service we created above
 13. Click **Save**
 
 The StUF-BG configuration is now completed.

@@ -70,20 +70,11 @@ Configuration
 3. Click **Add SOAP Services** and fill in the following details:
 
    * **Label**: *Fill in a human readable label*, for example: ``My StUF-ZDS service``
-
-4. In the **StUF parameters** section enter the receiving details provided by
-   the service provider. For the sending organization details, you can fill in:
-
-   * **Versturende applicatie**: Open Forms
-
-5. In the **Connection** section:
-
+   * **URL**: *Fill in the full URL to the SOAP service endpoint*
    * **SOAP Version**: *Select the SOAP version of your backend provider*
-   * **Endpoint BeantwoordVraag**: *Fill in the full URL to the endpoint for the SOAP 'BeantwoordVraag' action*
-   * **Endpoint VrijeBerichten**: *Fill in the full URL to the endpoint for the SOAP 'VrijeBerichten' action*
-   * **Endpoint OntvangAsynchroon**: *Fill in the full URL to the endpoint for the SOAP 'OntvangAsynchroon' action*
 
-6. In the **Authentication** section:
+4. In the **Authentication** section enter the authentication details provided by
+   the service provider:
 
    * **Security**: *select the security level required by your backend provider*
 
@@ -94,11 +85,31 @@ Configuration
 
     * **Certificate** and **Certificate key**: optionally provide a certificate and key file for client identification. If empty mutual TLS is disabled
 
-7. Click **Save**
-8. Navigate to **Configuration** > **Overview**. In the **Registration plugin** group, click on **Configuration** for the **StUF-ZDS** line.
-9. Select for the **Service**, the SOAP Service we created above
-10. Fill the remaining fields with the desired values to be used to create the Zaak and related Documents in the selected StUF-ZDS backend.
-11. Click **Save**
+5. Click **Save**
+
+6. Navigate to: **Miscellaneous** > **StUF-services**
+
+7. Click **Add StUF-service** and fill in the following details:
+
+   * **Soap service**: *Select the SOAP service we created above*
+
+8. In the **StUF parameters** section enter the receiving details provided by
+   the service provider. For the sending organization details, you can fill in:
+
+   * **Versturende applicatie**: Open Forms
+
+9. In the **Connection** section:
+
+   * **Endpoint BeantwoordVraag**: *Fill in the full URL to the endpoint for the SOAP 'BeantwoordVraag' action*
+   * **Endpoint VrijeBerichten**: *Fill in the full URL to the endpoint for the SOAP 'VrijeBerichten' action*
+   * **Endpoint OntvangAsynchroon**: *Fill in the full URL to the endpoint for the SOAP 'OntvangAsynchroon' action*
+
+10. Click **Save**
+
+11. Navigate to **Configuration** > **Overview**. In the **Registration plugin** group, click on **Configuration** for the **StUF-ZDS** line.
+12. Select for the **Service**, the StUF Service we created above
+13. Fill the remaining fields with the desired values to be used to create the Zaak and related Documents in the selected StUF-ZDS backend.
+14. Click **Save**
 
 The StUF-ZDS configuration is now complete and can be selected as registration
 backend in the form builder.
