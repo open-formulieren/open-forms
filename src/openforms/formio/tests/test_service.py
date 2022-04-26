@@ -21,7 +21,5 @@ class ServiceTestCase(TestCase):
         }
         update_configuration_for_request(configuration, request)
 
-        url = request.build_absolute_uri(
-            reverse("api:submissions:temporary-file-upload")
-        )
+        url = request.build_absolute_uri(reverse("api:formio:temporary-file-upload"))
         self.assertEqual(configuration["components"][0]["url"], url)

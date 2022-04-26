@@ -75,6 +75,7 @@ class DownloadSubmissionReportView(GenericAPIView):
         expire_days=settings.TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS,
         max_upload_size=filesizeformat(settings.MAX_FILE_UPLOAD_SIZE),
     ),
+    deprecated=True,
 )
 class TemporaryFileUploadView(GenericAPIView):
     parser_classes = [MaxFilesizeMultiPartParser]
