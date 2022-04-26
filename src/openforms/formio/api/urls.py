@@ -6,7 +6,7 @@ app_name = "formio"
 
 urlpatterns = [
     path(
-        "files/upload",
+        "fileupload",
         TemporaryFileUploadView.as_view(),
         name="temporary-file-upload",
     ),
