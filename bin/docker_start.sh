@@ -34,6 +34,7 @@ exec uwsgi \
     --static-map /media=/app/media  \
     --chdir src \
     --enable-threads \
+    --master \
     --processes $uwsgi_processes \
     --threads $uwsgi_threads \
     --post-buffering=8192 \
