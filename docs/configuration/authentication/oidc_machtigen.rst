@@ -1,4 +1,4 @@
-.. _configuration_authentication_oidc_digid_machtigen:
+.. _configuration_authentication_oidc_machtigen:
 
 =============================================================================
 OpenID Connect voor inloggen met DigiD Machtigen en eHerkenning bewindvoering
@@ -10,8 +10,8 @@ Burgers kunnen inloggen op Open Formulieren met hun DigiD/eHerkenning account en
 anders. In deze flow:
 
 * Een gebruiker klikt op de knop *Inloggen met DigiD Machtigen* of *Inloggen met eHerkenning bewindvoering* die op de startpagina van een formulier staat.
-* De gebruiker wordt via de omgeving van de OpenID Connect provider (bijv. `Keycloak`_) naar DigiD/eHerkenning geleid, waar de gebruiker kan inloggen met *zijn/haar eigen* DigiD/eHerkenning inlog gegevens.
-* De gebruiker kan dan kiezen namens wie hij/zij het formulier wilt invullen.
+* De gebruiker wordt via de omgeving van de OpenID Connect provider (bijv. `Keycloak`_) naar DigiD/eHerkenning geleid, waar de gebruiker kan inloggen met *hun eigen* DigiD/eHerkenning inloggegevens.
+* De gebruiker kan dan kiezen namens wie ze het formulier willen invullen.
 * De gebruiker wordt daarna terug naar de OIDC omgeving gestuurd, die op zijn beurt de gebruiker weer terugstuurt naar Open Formulieren
 * De gebruiker kan verder met het invullen van het formulier
 
