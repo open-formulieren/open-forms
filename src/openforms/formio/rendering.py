@@ -98,6 +98,7 @@ class ComponentNode(Node):
         render_configuration = VISIBILITY_ATTRIBUTE_MAP[self.renderer.mode]
         if render_configuration.attribute is None:
             return render_configuration.default
+
         should_render = self.component.get(
             render_configuration.attribute, render_configuration.default
         )
@@ -151,36 +152,36 @@ class ComponentNode(Node):
         return f"{self.label}\t\t\t{self.display_value}"
 
 
-@register("fieldset")
-class FieldSetNode(ComponentNode):
+class ContainerMixin:
     @property
     def is_visible(self) -> bool:
-        visible_from_config = super().is_visible
-
-        if not visible_from_config:
+        # fieldset does not support the showInFoo properties, so we don't use the super
+        # class.
+        if self.component.get("hidden") is True:
             return False
+
+        render_configuration = VISIBILITY_ATTRIBUTE_MAP[self.renderer.mode]
+        if render_configuration.attribute is not None:
+            assert render_configuration.attribute not in self.component, (
+                f"Component type {self.component['type']} unexpectedly seems to support "
+                f"the {render_configuration.attribute} property!"
+            )
 
         any_children_visible = any((child.is_visible for child in self.get_children()))
         if not any_children_visible:
             return False
 
         return True
+
+
+@register("fieldset")
+class FieldSetNode(ContainerMixin, ComponentNode):
+    pass
 
 
 @register("columns")
-class ColumnsNode(ComponentNode):
-    @property
-    def is_visible(self) -> bool:
-        visible_from_config = super().is_visible
-
-        if not visible_from_config:
-            return False
-
-        any_children_visible = any((child.is_visible for child in self.get_children()))
-        if not any_children_visible:
-            return False
-
-        return True
+class ColumnsNode(ContainerMixin, ComponentNode):
+    pass
 
 
 @register("content")
