@@ -1,6 +1,9 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Iterator, Optional
+from typing import TYPE_CHECKING, Any, Iterator, Optional, Union
 
+from django.utils.safestring import SafeString, mark_safe
+
+from openforms.emails.utils import strip_tags_plus
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
@@ -178,6 +181,27 @@ class ColumnsNode(ComponentNode):
             return False
 
         return True
+
+
+@register("content")
+class WYSIWYGNode(ComponentNode):
+    @property
+    def is_visible(self) -> bool:
+        visible_from_config = super().is_visible
+        if not visible_from_config:
+            return False
+        return self.renderer.mode in (
+            RenderModes.cli,
+            RenderModes.pdf,
+        )
+
+    @property
+    def value(self) -> Union[str, SafeString]:
+        content = self.component["html"]
+        if self.renderer.as_html:
+            return mark_safe(content)
+
+        return strip_tags_plus(content)
 
 
 @dataclass

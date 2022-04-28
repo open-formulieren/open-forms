@@ -39,6 +39,11 @@ class Command(BaseCommand):
                 "specified multiple times."
             ),
         )
+        parser.add_argument(
+            "--as-html",
+            action="store_true",
+            help=("Enable HTML output instead of plain text."),
+        )
 
     def handle(self, **options):
         if not settings.DEBUG:
@@ -46,15 +51,15 @@ class Command(BaseCommand):
 
         self.limit_value_keys = options["limit_value_key"]
         for submission_id in options["submission_id"]:
-            self.render_submission(submission_id)
+            self.render_submission(submission_id, as_html=options["as_html"])
 
-    def render_submission(self, submission_id: int):
+    def render_submission(self, submission_id: int, as_html=False):
         submission = Submission.objects.get(pk=submission_id)
 
         renderer = Renderer(
             submission=submission,
             mode=RenderModes.cli,
-            as_html=False,
+            as_html=as_html,
             limit_value_keys=self.limit_value_keys or None,
         )
 
