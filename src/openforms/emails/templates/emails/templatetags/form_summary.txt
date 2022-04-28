@@ -1,4 +1,8 @@
-{% load i18n %}{% autoescape off %}{% if submitted_data %}{% trans "Summary" %}
+{% load i18n %}{% autoescape off %}{% if renderer.get_children %}{% trans "Summary" %}
 
-{% for key, value in submitted_data %}
-- {{ key }}: {% display_value value %}{% endfor %}{% endif %}{% endautoescape %}
+{% for submission_step_node in renderer.get_children %}
+{{ submission_step_node.render }}
+
+{% for component_node in submission_step_node.get_children %}
+{% whitespace component_node.depth base='  ' %}- {{ component_node.label }}{% if not component_node.is_layout %}:{% endif %} {{ component_node.display_value }}{% endfor %}
+{% endfor %}{% endif %}{% endautoescape %}

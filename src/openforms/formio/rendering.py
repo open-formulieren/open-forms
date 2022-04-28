@@ -51,6 +51,7 @@ class ComponentNode(Node):
     component: Component
     step: SubmissionStep
     depth: int = 0
+    is_layout = False
 
     @staticmethod
     def build_node(
@@ -160,6 +161,8 @@ class ComponentNode(Node):
 
 
 class ContainerMixin:
+    is_layout = True
+
     @property
     def is_visible(self) -> bool:
         # fieldset does not support the showInFoo properties, so we don't use the super

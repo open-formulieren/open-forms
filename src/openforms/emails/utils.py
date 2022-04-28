@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 
 MESSAGE_SIZE_LIMIT = 2 * 1024 * 1024
 
+RE_NON_WHITESPACE = re.compile(r"\S")
+
 
 def sanitize_urls(allowlist: List[str], match) -> str:
     parsed = urlparse(match.group())
@@ -110,7 +112,7 @@ NEWLINE_CHARS = (
 )
 
 
-def strip_tags_plus(text: str) -> str:
+def strip_tags_plus(text: str, keep_leading_whitespace=False) -> str:
     """
     NOTE this renders unescaped user-data and should never used for display as HTML content
 
@@ -121,18 +123,31 @@ def strip_tags_plus(text: str) -> str:
     text = text.replace("<br>", "\n")
     text = django_strip_tags(text)
     lines = text.splitlines()
-    transformed_lines = transform_lines(lines)
+    transformed_lines = transform_lines(
+        lines, keep_leading_whitespace=keep_leading_whitespace
+    )
     deduplicated_newlines = deduplicate_newlines(transformed_lines)
 
     return "".join(deduplicated_newlines)
 
 
-def transform_lines(lines: List[str]) -> List[str]:
+def transform_lines(lines: List[str], keep_leading_whitespace=False) -> List[str]:
     transformed_lines = []
 
     for line in lines:
-        stripped_line = unescape(line)
-        splitted_line = f"{' '.join(stripped_line.split())}".rstrip()
+        unescaped_line = unescape(line)
+
+        if (
+            keep_leading_whitespace
+            and unescaped_line.startswith(" ")
+            and (match := RE_NON_WHITESPACE.search(unescaped_line)) is not None
+        ):
+            start = match.start()
+            leading_whitespace = unescaped_line[:start]
+            transformed = f"{' '.join(unescaped_line[start:].split())}".rstrip()
+            splitted_line = f"{leading_whitespace}{transformed}"
+        else:
+            splitted_line = f"{' '.join(unescaped_line.split())}".rstrip()
 
         transformed_lines.append(f"{splitted_line}\n")
 

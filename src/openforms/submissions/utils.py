@@ -127,7 +127,8 @@ def send_confirmation_email(submission: Submission):
     text_content = strip_tags_plus(
         render_confirmation_email_template(
             content_template, context, rendering_text=True
-        )
+        ),
+        keep_leading_whitespace=True,
     )
 
     try:
