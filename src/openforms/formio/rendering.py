@@ -47,16 +47,22 @@ Map render modes to the component configuration key to check with their defaults
 class ComponentNode(Node):
     component: Component
     step: SubmissionStep
+    depth: int = 0
 
     @staticmethod
     def build_node(
-        step: SubmissionStep, component: Component, renderer: "Renderer"
+        step: SubmissionStep,
+        component: Component,
+        renderer: "Renderer",
+        depth: int = 0,
     ) -> "ComponentNode":
         """
         Instantiate the most specific node type for a given component type.
         """
         node_cls = COMPONENT_TYPE_NODES.get(component["type"], ComponentNode)
-        nested_node = node_cls(step=step, component=component, renderer=renderer)
+        nested_node = node_cls(
+            step=step, component=component, renderer=renderer, depth=depth
+        )
         return nested_node
 
     @property
@@ -105,7 +111,10 @@ class ComponentNode(Node):
             configuration=self.component, recursive=False, _is_root=False
         ):
             yield ComponentNode.build_node(
-                step=self.step, component=component, renderer=self.renderer
+                step=self.step,
+                component=component,
+                renderer=self.renderer,
+                depth=self.depth + 1,
             )
 
     def __iter__(self) -> Iterator["ComponentNode"]:

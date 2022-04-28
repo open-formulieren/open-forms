@@ -3,6 +3,8 @@ from django.core.management import BaseCommand, CommandError
 
 from tabulate import tabulate
 
+from openforms.formio.rendering import ComponentNode
+
 from ...models import Submission
 from ...rendering.renderer import Renderer, RenderModes
 
@@ -65,10 +67,10 @@ class Command(BaseCommand):
             indent_size = INDENT_SIZES.get(node.type, 0)
             lead = INDENT * indent_size
 
-            if node.type == "ComponentNode":
+            if isinstance(node, ComponentNode):
                 # extract label + value for tabulate data
                 tabulate_data.append([node.label, node.display_value])
-                prev_node_type = node.type
+                prev_node_type = "ComponentNode"
                 continue
             else:
                 # changed from component node to something else -> print the tabular data
