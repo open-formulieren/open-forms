@@ -12,3 +12,4 @@ De kern van Open Formulieren is uiteraard het beheren van formulieren.
    logic
    examples/index
    export_import
+   faq
