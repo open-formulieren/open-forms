@@ -136,6 +136,13 @@ class ComponentNode(Node):
             yield from child
 
     @property
+    def layout_modifier(self) -> str:
+        """
+        For HTML based rendering, potentially emit a layout modifier.
+        """
+        return "root" if self.component.get("_is_root", False) else ""
+
+    @property
     def label(self) -> str:
         if self.renderer.mode == RenderModes.export:
             return self.component.get("key") or "KEY_MISSING"
@@ -176,12 +183,12 @@ class ContainerMixin:
 
 @register("fieldset")
 class FieldSetNode(ContainerMixin, ComponentNode):
-    pass
+    layout_modifier = "fieldset"
 
 
 @register("columns")
 class ColumnsNode(ContainerMixin, ComponentNode):
-    pass
+    layout_modifier = "columns"
 
 
 @register("content")
@@ -213,21 +220,7 @@ class FormioConfigurationNode(Node):
     def render(self) -> str:
         return ""
 
-    @property
-    def is_visible(self) -> bool:
-        # TODO: move to SubmissionStepNode
-        # determine if the step as a whole is relevant or not. The stap may be not
-        # applicable because of form logic.
-        logic_evaluated = getattr(self.step, "_form_logic_evaluated", False)
-        assert (
-            logic_evaluated
-        ), "You should ensure that the form logic is evaluated before rendering steps!"
-        return self.step.is_applicable
-
     def __iter__(self) -> Iterator[ComponentNode]:
-        if not self.is_visible:
-            return
-
         for component in self.step.form_step.iter_components(
             recursive=False, _mark_root=True
         ):

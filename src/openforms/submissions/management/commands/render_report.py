@@ -10,7 +10,7 @@ from ...rendering.renderer import Renderer, RenderModes
 
 INDENT_SIZES = {
     "FormNode": 0,
-    "FormStepNode": 1,
+    "SubmissionStepNode": 1,
     "ComponentNode": 2,
 }
 
@@ -92,10 +92,6 @@ class Command(BaseCommand):
                 if prev_node_type == "ComponentNode":
                     self._print_tabulate_data(tabulate_data)
                     tabulate_data = []
-
-            if node.type == "SubmissionStepNode":
-                prev_node_type = node.type
-                continue
 
             if lead:
                 self.stdout.write(lead, ending="")
