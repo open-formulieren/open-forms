@@ -25,6 +25,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "submission_id",
             type=int,
+            nargs="+",
             help="Submission ID to display data from.",
         )
         parser.add_argument(
@@ -41,17 +42,22 @@ class Command(BaseCommand):
         if not settings.DEBUG:
             raise CommandError("This command is only allowed in dev environments")
 
-        submission = Submission.objects.get(pk=options["submission_id"])
-        limit_value_keys = options["limit_value_key"]
+        self.limit_value_keys = options["limit_value_key"]
+        for submission_id in options["submission_id"]:
+            self.render_submission(submission_id)
+
+    def render_submission(self, submission_id: int):
+        submission = Submission.objects.get(pk=submission_id)
 
         renderer = Renderer(
             submission=submission,
             mode=RenderModes.cli,
             as_html=False,
-            limit_value_keys=limit_value_keys or None,
+            limit_value_keys=self.limit_value_keys or None,
         )
 
         self.stdout.write("")
+        self.stdout.write(f"Submission {submission.id} - ", ending="")
 
         prev_node_type, tabulate_data = None, []
 
