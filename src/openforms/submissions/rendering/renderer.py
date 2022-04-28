@@ -3,24 +3,30 @@ High-level submission renderer capable of outputting to different modes.
 """
 from dataclasses import dataclass
 from typing import Iterator, List, Optional
+from urllib.parse import urlsplit
 
-from django.utils.translation import gettext_lazy as _
-
-from djchoices import ChoiceItem, DjangoChoices
+from django.conf import settings
+from django.http import HttpRequest
+from django.test import RequestFactory
+from django.urls import reverse
 
 from openforms.formio.rendering import FormioConfigurationNode
 from openforms.forms.models import Form, FormStep
 
+from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionStep
 from .base import Node
+from .constants import RenderModes  # noqa
 
 
-class RenderModes(DjangoChoices):
-    cli = ChoiceItem("cli", _("CLI"))
-    pdf = ChoiceItem("pdf", _("PDF"))
-    confirmation_email = ChoiceItem("confirmation_email", _("Confirmation email"))
-    export = ChoiceItem("export", _("Submission export"))
-    # registration_email = ChoiceItem('registration_email', _("Registration email"))
+def get_request() -> HttpRequest:
+    base = urlsplit(settings.BASE_URL)
+    request = RequestFactory().get(
+        reverse("core:form-list"),
+        HTTP_HOST=base.netloc,
+        **{"wsgi.url_scheme": base.scheme},
+    )
+    return request
 
 
 @dataclass
@@ -37,6 +43,7 @@ class Renderer:
 
     def render(self) -> Iterator["Node"]:
         common_kwargs = {"renderer": self}
+        dummy_request = get_request()
 
         # emit a FormNode so the form itself is accessible
         yield FormNode(**common_kwargs)
@@ -47,6 +54,17 @@ class Renderer:
             "form_step", "form_step__form_definition"
         ).order_by("form_step__order")
         for step in steps_qs:
+            new_configuration = evaluate_form_logic(
+                submission=self.submission,
+                step=step,
+                data=self.submission.data,
+                dirty=False,
+                request=dummy_request,
+            )
+            # update the configuration for introspection - note that we are mutating
+            # an instance here without persisting it to the backend on purpose!
+            # this replicates the run-time behaviour while filling out the form
+            step.form_step.form_definition.configuration = new_configuration
             yield SubmissionStepNode(step=step, **common_kwargs)
             yield FormStepNode(step=step.form_step, **common_kwargs)
             # at this point, hand over to the formio specific implementation details
