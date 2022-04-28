@@ -20,7 +20,12 @@ const getFormComponents = (formSteps = []) => {
         step => {
             let compMap = FormioUtils.flattenComponents(step.configuration.components || [], true)
             return Object.fromEntries(Object.entries(compMap).map(([key, component]) => {
-                const stepLabel = `${step.internalName || step.name}: ${component.label || component.key}`;
+                let stepLabel;
+                if (component.label) {
+                    stepLabel = `${step.internalName || step.name}: ${component.label} (${component.key})`;
+                } else {
+                    stepLabel = `${step.internalName || step.name}: ${component.key}`;
+                }
                 return [key, {...component, stepLabel}];
             }));
         }).reduce((acc, currentValue) => ({...acc, ...currentValue}), {});
