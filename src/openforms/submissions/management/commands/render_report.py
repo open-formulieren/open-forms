@@ -42,7 +42,13 @@ class Command(BaseCommand):
         parser.add_argument(
             "--as-html",
             action="store_true",
-            help=("Enable HTML output instead of plain text."),
+            help="Enable HTML output instead of plain text.",
+        )
+        parser.add_argument(
+            "--render-mode",
+            choices=[c[0] for c in RenderModes.choices],
+            default=RenderModes.cli,
+            help=f"Simulate a particular render mode. Defaults to {RenderModes.cli}",
         )
 
     def handle(self, **options):
@@ -51,14 +57,18 @@ class Command(BaseCommand):
 
         self.limit_value_keys = options["limit_value_key"]
         for submission_id in options["submission_id"]:
-            self.render_submission(submission_id, as_html=options["as_html"])
+            self.render_submission(
+                submission_id,
+                render_mode=options["render_mode"],
+                as_html=options["as_html"],
+            )
 
-    def render_submission(self, submission_id: int, as_html=False):
+    def render_submission(self, submission_id: int, render_mode: str, as_html=False):
         submission = Submission.objects.get(pk=submission_id)
 
         renderer = Renderer(
             submission=submission,
-            mode=RenderModes.cli,
+            mode=render_mode,
             as_html=as_html,
             limit_value_keys=self.limit_value_keys or None,
         )
