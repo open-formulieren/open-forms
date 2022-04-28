@@ -65,12 +65,21 @@ class Renderer:
             # an instance here without persisting it to the backend on purpose!
             # this replicates the run-time behaviour while filling out the form
             step.form_step.form_definition.configuration = new_configuration
-            yield SubmissionStepNode(step=step, **common_kwargs)
-            yield FormStepNode(step=step.form_step, **common_kwargs)
-            # at this point, hand over to the formio specific implementation details
+
+            submission_step_node = SubmissionStepNode(step=step, **common_kwargs)
+            form_step_node = FormStepNode(step=step.form_step, **common_kwargs)
             formio_configuration_node = FormioConfigurationNode(
                 step=step, **common_kwargs
             )
+            has_any_children = any(
+                child.is_visible for child in formio_configuration_node
+            )
+            if not has_any_children:
+                continue
+
+            yield submission_step_node
+            yield form_step_node
+            # at this point, hand over to the formio specific implementation details
             yield from formio_configuration_node
 
 
