@@ -58,6 +58,7 @@ class EmailRegistration(BasePlugin):
         options: EmailOptions,
         extra_context=None,
     ):
+        # TODO: refactor to use openforms.submissions.rendering.renderer.Renderer
         # extract the formatted data first
         printable_data: list = submission.get_printable_data()
         # get the attachment data, keyed by form component key, value is a model instance

@@ -2,6 +2,7 @@ import hashlib
 import logging
 import os.path
 import uuid
+import warnings
 from collections import OrderedDict, defaultdict
 from dataclasses import dataclass
 from datetime import date, timedelta
@@ -579,6 +580,12 @@ class Submission(models.Model):
         keys_to_include: Optional[List[str]] = None,
         as_html=False,
     ) -> List[Tuple[str, str]]:
+        warnings.warn(
+            "Submission.get_printable_data() is deprecated - instead, use "
+            "'openforms.submissions.rendering.renderer.Renderer' with an appropriate "
+            "render mode.",
+            DeprecationWarning,
+        )
         printable_data = []
 
         for key, (
