@@ -164,6 +164,22 @@ class FieldSetNode(ComponentNode):
         return True
 
 
+@register("columns")
+class ColumnsNode(ComponentNode):
+    @property
+    def is_visible(self) -> bool:
+        visible_from_config = super().is_visible
+
+        if not visible_from_config:
+            return False
+
+        any_children_visible = any((child.is_visible for child in self.get_children()))
+        if not any_children_visible:
+            return False
+
+        return True
+
+
 @dataclass
 class FormioConfigurationNode(Node):
     # TODO: use dynamic SubmissionStep configuration instead which has the logic evaluated!
