@@ -1,0 +1,2 @@
+EHERKENNING_BEWINDVOERING_CUSTOM_OIDC_DB_PREFIX = "eherkenning_bewindvoering_oidc"
+OIDC_AUTHENTICATION_CALLBACK_URL = "eherkenning_bewindvoering_oidc:callback"

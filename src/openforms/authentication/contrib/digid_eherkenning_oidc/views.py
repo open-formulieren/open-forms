@@ -10,6 +10,7 @@ from mozilla_django_oidc.views import get_next_url
 from digid_eherkenning_oidc_generics.mixins import (
     SoloConfigDigiDMachtigenMixin,
     SoloConfigDigiDMixin,
+    SoloConfigEHerkenningBewindvoeringMixin,
     SoloConfigEHerkenningMixin,
 )
 from digid_eherkenning_oidc_generics.views import (
@@ -22,6 +23,7 @@ from .backends import (
     OIDCAuthenticationDigiDBackend,
     OIDCAuthenticationDigiDMachtigenBackend,
     OIDCAuthenticationEHerkenningBackend,
+    OIDCAuthenticationEHerkenningBewindvoeringBackend,
 )
 
 logger = logging.getLogger(__name__)
@@ -107,3 +109,16 @@ class DigiDMachtigenOIDCAuthenticationCallbackView(
 ):
     plugin_identifier = "digid_machtigen_oidc"
     auth_backend_class = OIDCAuthenticationDigiDMachtigenBackend
+
+
+class EHerkenningBewindvoeringOIDCAuthenticationRequestView(
+    SoloConfigEHerkenningBewindvoeringMixin, OIDCAuthenticationRequestView
+):
+    plugin_identifier = "eherkenning_bewindvoering_oidc"
+
+
+class EHerkenningBewindvoeringOIDCAuthenticationCallbackView(
+    SoloConfigEHerkenningBewindvoeringMixin, OIDCAuthenticationCallbackView
+):
+    plugin_identifier = "eherkenning_bewindvoering_oidc"
+    auth_backend_class = OIDCAuthenticationEHerkenningBewindvoeringBackend

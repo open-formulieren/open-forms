@@ -10,6 +10,7 @@ from openforms.forms.models import Form
 
 from .models import (
     OpenIDConnectDigiDMachtigenConfig,
+    OpenIDConnectEHerkenningBewindvoeringConfig,
     OpenIDConnectEHerkenningConfig,
     OpenIDConnectPublicConfig,
 )
@@ -69,4 +70,12 @@ class OpenIDConnectDigiDMachtigenConfigForm(OpenIDConnectBaseConfigForm):
 
     class Meta:
         model = OpenIDConnectDigiDMachtigenConfig
+        fields = "__all__"
+
+
+class OpenIDConnectEHerkenningBewindvoeringConfigForm(OpenIDConnectBaseConfigForm):
+    plugin_identifier = "eherkenning_bewindvoering_oidc"
+
+    class Meta:
+        model = OpenIDConnectEHerkenningBewindvoeringConfig
         fields = "__all__"

@@ -9,6 +9,7 @@ from rest_framework.reverse import reverse
 
 from digid_eherkenning_oidc_generics.models import (
     OpenIDConnectDigiDMachtigenConfig,
+    OpenIDConnectEHerkenningBewindvoeringConfig,
     OpenIDConnectEHerkenningConfig,
     OpenIDConnectPublicConfig,
 )
@@ -25,6 +26,7 @@ from ...registry import register
 from .constants import (
     DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY,
     DIGID_OIDC_AUTH_SESSION_KEY,
+    EHERKENNING_BEWINDVOERING_OIDC_AUTH_SESSION_KEY,
     EHERKENNING_OIDC_AUTH_SESSION_KEY,
 )
 
@@ -163,3 +165,31 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication):
 
     def get_logo(self, request) -> Optional[LoginLogo]:
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))
+
+
+@register("eherkenning_bewindvoering_oidc")
+class EHerkenningBewindvoeringOIDCAuthentication(OIDCAuthentication):
+    verbose_name = _("eHerkenning bewindvoering via OpenID Connect")
+    provides_auth = AuthAttribute.kvk
+    init_url = "eherkenning_bewindvoering_oidc:init"
+    session_key = EHERKENNING_BEWINDVOERING_OIDC_AUTH_SESSION_KEY
+    config_class = OpenIDConnectEHerkenningBewindvoeringConfig
+
+    def add_claims_to_sessions_if_not_cosigning(self, claim, request):
+        # set the session auth key only if we're not co-signing
+        if claim and CO_SIGN_PARAMETER not in request.GET:
+            config = self.config_class.get_solo()
+            request.session[FORM_AUTH_SESSION_KEY] = {
+                "plugin": self.identifier,
+                "attribute": self.provides_auth,
+                "value": claim[config.vertegenwoordigde_company_claim_name],
+                "machtigen": request.session[
+                    EHERKENNING_BEWINDVOERING_OIDC_AUTH_SESSION_KEY
+                ],
+            }
+
+    def get_label(self) -> str:
+        return "eHerkenning bewindvoering"
+
+    def get_logo(self, request) -> Optional[LoginLogo]:
+        return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))

@@ -163,6 +163,10 @@
                 "openidconnectdigidmachtigenconfig"
             ],
             [
+                "digid_eherkenning_oidc_generics",
+                "openidconnecteherkenningbewindvoeringconfig"
+            ],
+            [
                 "multidomain",
                 "domain"
             ],
