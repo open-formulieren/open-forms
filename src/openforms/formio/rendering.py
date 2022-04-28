@@ -129,7 +129,6 @@ class ComponentNode(Node):
             if not child.is_visible:
                 continue
 
-            yield child
             yield from child
 
     @property
