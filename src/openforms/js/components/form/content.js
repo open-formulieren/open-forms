@@ -4,15 +4,20 @@ import {ADVANCED} from './edit/tabs';
 
 const FormioContentField = Formio.Components.components.content;
 
-// TODO to be changed in Issue #1541
 const CUSTOM_CSS_CLASS = {
     weight: 500,
-    type: 'textfield',
+    type: 'select',
     input: true,
-    key: 'customClass',
     label: 'Custom CSS Class',
-    placeholder: 'Custom CSS Class',
-    tooltip: 'Custom CSS class to add to this component.'
+    key: 'customClass',
+    data: {
+        values: [
+            {label: 'Warning', value: 'warning'},
+            {label: 'Info', value: 'info'},
+            {label: 'Error', value: 'error'},
+            {label: 'Success', value: 'success'},
+        ],
+    },
 };
 
 const CONTENT_EDIT_TABS = {
