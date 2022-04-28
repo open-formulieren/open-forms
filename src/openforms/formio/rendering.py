@@ -16,6 +16,14 @@ if TYPE_CHECKING:
 COMPONENT_TYPE_NODES = {}
 
 
+def register(component_type: str):
+    def decorator(cls):
+        COMPONENT_TYPE_NODES[component_type] = cls
+        return cls
+
+    return decorator
+
+
 @dataclass
 class RenderConfiguration:
     attribute: Optional[str]
@@ -75,6 +83,9 @@ class ComponentNode(Node):
         - wysiwyg:
           - in PDF if visible
         """
+        if self.component.get("hidden") is True:
+            return False
+
         render_configuration = VISIBILITY_ATTRIBUTE_MAP[self.renderer.mode]
         if render_configuration.attribute is None:
             return render_configuration.default
@@ -89,6 +100,14 @@ class ComponentNode(Node):
         value = self.step.data.get(key)
         return value
 
+    def get_children(self) -> Iterator["ComponentNode"]:
+        for component in iter_components(
+            configuration=self.component, recursive=False, _is_root=False
+        ):
+            yield ComponentNode.build_node(
+                step=self.step, component=component, renderer=self.renderer
+            )
+
     def __iter__(self) -> Iterator["ComponentNode"]:
         """
         Yield depth-first children.
@@ -97,28 +116,44 @@ class ComponentNode(Node):
             return
 
         yield self
-
-        for component in iter_components(
-            configuration=self.component, recursive=False, _is_root=False
-        ):
-            nested_node = ComponentNode.build_node(
-                step=self.step, component=component, renderer=self.renderer
-            )
-            if not nested_node.is_visible:
+        for child in self.get_children():
+            if not child.is_visible:
                 continue
-            yield nested_node
-            yield from nested_node
+
+            yield child
+            yield from child
 
     @property
     def label(self) -> str:
+        if self.renderer.mode == RenderModes.export:
+            return self.component.get("key") or "KEY_MISSING"
         return self.component.get("label") or self.component.get("key", "")
 
     @property
     def display_value(self) -> str:
+        # in export mode, expose the raw datatype
+        if self.renderer.mode == RenderModes.export:
+            return self.value
         return format_value(self.component, self.value, as_html=self.renderer.as_html)
 
     def render(self) -> str:
         return f"{self.label}\t\t\t{self.display_value}"
+
+
+@register("fieldset")
+class FieldSetNode(ComponentNode):
+    @property
+    def is_visible(self) -> bool:
+        visible_from_config = super().is_visible
+
+        if not visible_from_config:
+            return False
+
+        any_children_visible = any((child.is_visible for child in self.get_children()))
+        if not any_children_visible:
+            return False
+
+        return True
 
 
 @dataclass
