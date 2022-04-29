@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from rest_framework.reverse import reverse
 
@@ -103,3 +103,19 @@ class FormNodeTests(TestCase):
         self.assertEqual(len(nodes), 2)
         enabled_step_node = nodes[1]
         self.assertEqual(enabled_step_node.step, self.sstep1)
+
+    def test_performance_num_queries(self):
+        """
+        Assert that the number of queries stays low while rendering a submission.
+        """
+        renderer = Renderer(
+            submission=self.submission, mode=RenderModes.pdf, as_html=True
+        )
+
+        # Expected queries:
+        # 1. Getting the merged data of the submission steps
+        # 2. Getting the submission steps for the given submission
+        # 3 & 4. Loading the submission execution state
+        # 5. Query the form logic rules for the submission form (and this is cached)
+        with self.assertNumQueries(5):
+            list(renderer)

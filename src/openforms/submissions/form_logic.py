@@ -77,7 +77,15 @@ def evaluate_form_logic(
     if _evaluated:
         return configuration
 
-    rules = FormLogic.objects.filter(form=step.form_step.form)
+    # renderer evaluates logic for all steps at once, so we can avoid repeated queries
+    # by caching the rules on the form instance.
+    # Note that form.formlogic_set.all() is never cached by django, so we can't rely
+    # on that.
+    rules = getattr(submission.form, "_cached_logic_rules", None)
+    if rules is None:
+        rules = FormLogic.objects.filter(form=submission.form)
+        submission.form._cached_logic_rules = rules
+
     submission_state = submission.load_execution_state()
 
     for rule in rules:

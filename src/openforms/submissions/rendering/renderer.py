@@ -57,11 +57,12 @@ class Renderer:
         """
         Produce only the direct child nodes.
         """
+        submission_data = self.submission.data
         for step in self.steps:
             new_configuration = evaluate_form_logic(
                 submission=self.submission,
                 step=step,
-                data=self.submission.data,
+                data=submission_data,
                 dirty=False,
                 request=self.dummy_request,
             )
