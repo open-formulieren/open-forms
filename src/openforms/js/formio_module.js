@@ -23,6 +23,7 @@ import NpFamilyMembers from './components/form/np-family-members';
 import ColumnField from './components/form/columns';
 import WebformBuilder from './components/formio_builder/WebformBuilder';
 import ContentField from './components/form/content';
+import CurrencyField from './components/form/currency';
 
 const FormIOModule = {
   components: {
@@ -50,6 +51,7 @@ const FormIOModule = {
     npFamilyMembers: NpFamilyMembers,
     columns: ColumnField,
     content: ContentField,
+    currency: CurrencyField,
   },
   builders: {
     webform: WebformBuilder,
