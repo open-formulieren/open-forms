@@ -36,6 +36,7 @@ same thing twice.
    :maxdepth: 2
 
    submissions
+   submission-renderer
    utils
    tokens
    testing-tools

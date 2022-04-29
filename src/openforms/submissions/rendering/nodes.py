@@ -33,6 +33,15 @@ class FormNode(Node):
 
 @dataclass
 class SubmissionStepNode(Node):
+    """
+    Render node for a single submission step.
+
+    This node is only considered 'visible' if the step is applicable (determined by
+    form logic). If the step is not visible, no child nodes are emitted.
+
+    Rendering this node outputs the name of the step within the form.
+    """
+
     step: SubmissionStep
 
     @property

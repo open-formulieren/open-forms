@@ -33,10 +33,16 @@ class Renderer:
 
     @property
     def form(self) -> Form:
+        """
+        Get the associated :class:`openforms.forms.models.Form` instance.
+        """
         return self.submission.form
 
     @property
     def steps(self):
+        """
+        Return the submission steps in the correct order.
+        """
         steps_qs = self.submission.submissionstep_set.select_related(
             "form_step", "form_step__form_definition"
         ).order_by("form_step__order")
@@ -63,6 +69,9 @@ class Renderer:
             yield submission_step_node
 
     def __iter__(self) -> Iterator["Node"]:
+        """
+        Yield the nodes to visualize a complete submission.
+        """
         yield FormNode(renderer=self)
         for child in self.get_children():
             yield child
