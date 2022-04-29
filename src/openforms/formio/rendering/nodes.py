@@ -76,21 +76,25 @@ class ComponentNode(Node):
         """
         from .conf import RENDER_CONFIGURATION  # circular import
 
+        # everything is emitted in export mode to get consistent columns
+        if self.mode == RenderModes.export:
+            return True
+
         # explicitly hidden components never show up. Note that this property can be set
         # by form logic!
         if self.component.get("hidden") is True:
             return False
 
-        render_configuration = RENDER_CONFIGURATION[self.renderer.mode]
+        render_configuration = RENDER_CONFIGURATION[self.mode]
         # it's possible the end-user cannot explicitly configure the visibility, in
         # which case the system default is used.
-        if render_configuration.attribute is None:
+        if render_configuration.key is None:
             return render_configuration.default
 
-        # if there is an attribute, try to read it but fall back to the system default
+        # if there is a property key, try to read it but fall back to the system default
         # if it's absent.
         should_render = self.component.get(
-            render_configuration.attribute, render_configuration.default
+            render_configuration.key, render_configuration.default
         )
         return should_render
 
@@ -130,7 +134,10 @@ class ComponentNode(Node):
         if not self.is_visible:
             return
 
-        yield self
+        # in export mode, only emit if there's a 'key' property
+        if self.mode != RenderModes.export or "key" in self.component:
+            yield self
+
         for child in self.get_children():
             if not child.is_visible:
                 continue
@@ -148,7 +155,7 @@ class ComponentNode(Node):
         """
         Obtain the (human-readable) label for the Formio component.
         """
-        if self.renderer.mode == RenderModes.export:
+        if self.mode == RenderModes.export:
             return self.component.get("key") or "KEY_MISSING"
         return self.component.get("label") or self.component.get("key", "")
 
@@ -161,7 +168,7 @@ class ComponentNode(Node):
         component type, using :func:`openforms.formio.formatter.service.format_value`.
         """
         # in export mode, expose the raw datatype
-        if self.renderer.mode == RenderModes.export:
+        if self.mode == RenderModes.export:
             return self.value
         return format_value(self.component, self.value, as_html=self.renderer.as_html)
 
