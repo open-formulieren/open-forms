@@ -106,6 +106,8 @@ def evaluate_form_logic(
                         action["form_step"]
                     )
                     submission_step_to_modify._is_applicable = False
+                    if submission_step_to_modify == step:
+                        step._is_applicable = False
 
     if dirty:
         # only keep the changes in the data, so that old values do not overwrite otherwise

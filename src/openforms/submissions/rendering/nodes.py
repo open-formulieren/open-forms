@@ -1,9 +1,12 @@
+import logging
 from dataclasses import dataclass
 from typing import Iterator
 
 from ..models import SubmissionStep
 from .base import Node
 from .constants import RenderModes
+
+logger = logging.getLogger(__name__)
 
 
 class FormNode(Node):
@@ -48,10 +51,15 @@ class SubmissionStepNode(Node):
     def is_visible(self) -> bool:
         # determine if the step as a whole is relevant or not. The stap may be not
         # applicable because of form logic.
-        # logic_evaluated = getattr(self.step, "_form_logic_evaluated", False)
-        # assert (
-        #     logic_evaluated
-        # ), "You should ensure that the form logic is evaluated before rendering steps!"
+        logic_evaluated = getattr(self.step, "_form_logic_evaluated", False)
+        if not logic_evaluated:
+            logger.warning(
+                "You should ensure that the form logic is evaluated before rendering "
+                "steps! Submission ID: %s, renderer: %r, step ID: %s",
+                self.step.submission.uuid,
+                self.renderer,
+                self.step.uuid,
+            )
         return self.step.is_applicable
 
     def render(self) -> str:

@@ -10,10 +10,12 @@ from typing import Iterator
 
 from openforms.forms.models import Form
 
+from ..form_logic import evaluate_form_logic
 from ..models import Submission
 from .base import Node
 from .constants import RenderModes  # noqa
 from .nodes import FormNode, SubmissionStepNode
+from .utils import get_request
 
 
 @dataclass
@@ -30,6 +32,9 @@ class Renderer:
     submission: Submission
     mode: str
     as_html: bool
+
+    def __post_init__(self):
+        self.dummy_request = get_request()
 
     @property
     def form(self) -> Form:
@@ -52,9 +57,19 @@ class Renderer:
         """
         Produce only the direct child nodes.
         """
-        common_kwargs = {"renderer": self}
         for step in self.steps:
-            submission_step_node = SubmissionStepNode(step=step, **common_kwargs)
+            new_configuration = evaluate_form_logic(
+                submission=self.submission,
+                step=step,
+                data=self.submission.data,
+                dirty=False,
+                request=self.dummy_request,
+            )
+            # update the configuration for introspection - note that we are mutating
+            # an instance here without persisting it to the backend on purpose!
+            # this replicates the run-time behaviour while filling out the form
+            step.form_step.form_definition.configuration = new_configuration
+            submission_step_node = SubmissionStepNode(renderer=self, step=step)
             if not submission_step_node.is_visible:
                 continue
 
