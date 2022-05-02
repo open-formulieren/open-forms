@@ -77,7 +77,6 @@ def apply_prefill(configuration: JSONObject, submission: "Submission", register=
 
     fields = _extract_prefill_fields(configuration)
     grouped_fields = _group_prefills_by_plugin(fields)
-
     results = _fetch_prefill_values_cached(grouped_fields, submission, register)
 
     # finally, ensure the ``defaultValue`` is set based on prefill results
@@ -174,15 +173,26 @@ def _fetch_prefill_values(
 
 def _extract_prefill_fields(configuration: JSONObject) -> List[Dict[str, str]]:
     prefills = []
-    components = configuration.get("components", [])
 
-    for component in components:
-        if prefill := component.get("prefill"):
-            if prefill.get("plugin"):
-                prefills.append(prefill)
-        else:
-            nested = _extract_prefill_fields(component)
-            prefills += nested
+    if ("type" in configuration):
+        fieldType = configuration.get("type")
+
+        if (fieldType == "columns"):
+            columns = configuration.get("columns", [])
+
+            for column in columns:
+                nested = _extract_prefill_fields(column)
+                prefills += nested
+    else:
+        components = configuration.get("components", [])
+
+        for component in components:
+            if prefill := component.get("prefill"):
+                if prefill.get("plugin"):
+                    prefills.append(prefill)
+            else:
+                nested = _extract_prefill_fields(component)
+                prefills += nested
 
     return prefills
 
@@ -230,6 +240,15 @@ def _set_default_values(
     is inspected for prefill configuration, which is then looked up in
     ``prefilled_values`` to set the component ``defaultValue``.
     """
+    if ("type" in configuration):
+        fieldType = configuration.get("type")
+
+        if (fieldType == "columns"):
+            columns = configuration.get("columns", [])
+
+            for column in columns:
+                _set_default_values(column, prefilled_values)
+
     if "prefill" in configuration:
         default_value = configuration.get("defaultValue")
         prefill_value = prefilled_values.get(
