@@ -22,3 +22,4 @@ class Command(BaseCommand):
         report, _ = SubmissionReport.objects.get_or_create(submission=submission)
 
         report.generate_submission_report_pdf()
+        self.stdout.write(f"Generated pdf: {report.content.path}")
