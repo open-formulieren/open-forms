@@ -1,6 +1,4 @@
-import os
 import re
-from urllib.parse import urljoin
 
 from decouple import Csv, config as _config, undefined
 from sentry_sdk.integrations import DidNotEnable, django, redis
@@ -44,7 +42,7 @@ class Filesize:
     k/K for kibibytes and m/M for mebibytes (as opposed to kilobytes/megabytes).
     """
 
-    PATTERN = re.compile(r"^(?P<numbers>[0-9]+)(?P<unit>[a-zA-Z]+)?$")
+    PATTERN = re.compile(r"^(?P<numbers>[0-9]+)( )*(?P<unit>[a-zA-Z]+)?$")
 
     S_SI = S_SI
     S_NGINX = S_NGINX
