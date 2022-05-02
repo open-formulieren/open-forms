@@ -282,3 +282,57 @@ class FormNodeTests(TestCase):
 
         self.assertFalse(component_node.is_visible)
         self.assertEqual(list(component_node), [])
+
+    def test_wysiwyg_component(self):
+        """
+        WYSIWYG is only displayed in confirmation PDF and CLI rendering.
+        """
+        component = {
+            "type": "content",
+            "key": "content",
+            "html": "<p>WYSIWYG with <strong>markup</strong></p>",
+            "input": False,
+            "label": "Content",
+            "hidden": False,
+        }
+        submission = SubmissionFactory.create(
+            form__name="public name",
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={"components": [component]},
+        )
+        step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+        )
+        expected_visibility = {
+            RenderModes.confirmation_email: False,
+            RenderModes.pdf: True,
+            # RenderModes.cli: True,
+        }
+
+        for render_mode, is_visible in expected_visibility.items():
+            with self.subTest(render_mode=render_mode):
+                renderer = Renderer(submission, mode=render_mode, as_html=False)
+                component_node = ComponentNode.build_node(
+                    step=step, component=component, renderer=renderer
+                )
+
+                self.assertEqual(component_node.is_visible, is_visible)
+
+        with self.subTest(as_html=True):
+            renderer = Renderer(submission, mode=RenderModes.pdf, as_html=True)
+            component_node = ComponentNode.build_node(
+                step=step, component=component, renderer=renderer
+            )
+
+            self.assertEqual(
+                component_node.value, "<p>WYSIWYG with <strong>markup</strong></p>"
+            )
+
+        with self.subTest(as_html=False):
+            renderer = Renderer(submission, mode=RenderModes.pdf, as_html=False)
+            component_node = ComponentNode.build_node(
+                step=step, component=component, renderer=renderer
+            )
+
+            self.assertEqual(component_node.value, "WYSIWYG with markup")
