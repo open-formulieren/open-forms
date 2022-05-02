@@ -52,11 +52,10 @@ def register_submission(submission_id: int) -> Optional[dict]:
     config = GlobalConfiguration.get_solo()
     if submission.registration_attempts >= config.registration_attempt_limit:
         # if it fails after this many attempts we give up
-        submission.save_registration_status(
-            RegistrationStatuses.failed,
-            None,
-            retry_on_failed=False,
-        )
+        submission.registration_status = RegistrationStatuses.failed
+        submission.registration_result = None
+        submission.needs_on_completion_retry = False
+        submission.save()
         logevent.registration_attempts_limited(submission)
         return
     else:

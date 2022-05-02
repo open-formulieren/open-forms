@@ -359,22 +359,16 @@ class Submission(models.Model):
         if hasattr(self, "_execution_state"):
             del self._execution_state
 
-    def save_registration_status(self, status, result, retry_on_failed=True):
+    def save_registration_status(self, status, result):
         self.registration_status = status
         self.registration_result = result
+        update_fields = ["registration_status", "registration_result"]
 
-        if retry_on_failed and status == RegistrationStatuses.failed:
+        if status == RegistrationStatuses.failed:
             self.needs_on_completion_retry = True
-        else:
-            self.needs_on_completion_retry = False
+            update_fields += ["needs_on_completion_retry"]
 
-        self.save(
-            update_fields=[
-                "registration_status",
-                "registration_result",
-                "needs_on_completion_retry",
-            ]
-        )
+        self.save(update_fields=update_fields)
 
     @property
     def is_authenticated(self):
