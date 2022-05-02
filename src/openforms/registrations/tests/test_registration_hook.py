@@ -17,6 +17,7 @@ from openforms.forms.models import Form
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from ...logging.models import TimelineLogProxy
 from ..base import BasePlugin
 from ..exceptions import RegistrationFailed
 from ..registry import Registry
@@ -274,3 +275,77 @@ class RegistrationHookTests(TestCase):
         tb = self.submission.registration_result["traceback"]
         self.assertIn("Registration plugin is not enabled", tb)
         self.assertEqual(self.submission.last_register_date, timezone.now())
+
+
+class NumRegistrationsTest(TestCase):
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    def test_limit_registration_attempts(self, mock_get_solo):
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__registration_backend="callback",
+        )
+
+        register = Registry()
+
+        TEST_NUM_ATTEMPTS = 3
+
+        # register the callback
+        @register("callback")
+        class FailsPlugin(BasePlugin):
+            verbose_name = "Callback"
+            configuration_options = serializers.Serializer
+
+            def register_submission(self, submission, options):
+                raise RegistrationFailed("fake failure")
+
+            def get_reference_from_result(self, result: dict) -> None:
+                pass
+
+        mock_get_solo.return_value = GlobalConfiguration(
+            registration_attempt_limit=TEST_NUM_ATTEMPTS,
+            plugin_configuration={"registrations": {"callback": {"enabled": True}}},
+        )
+
+        model_field = Form._meta.get_field("registration_backend")
+        with patch_registry(model_field, register):
+            # first registration won't re-raise RegistrationFailed
+            register_submission(submission.id)
+
+            submission.refresh_from_db()
+            self.assertEqual(
+                submission.registration_status, RegistrationStatuses.failed
+            )
+            self.assertEqual(submission.registration_attempts, 1)
+            # marked for retry
+            self.assertTrue(submission.needs_on_completion_retry)
+
+            # second and next attempts will re-raise RegistrationFailed for Celery retry
+            for i in range(2, TEST_NUM_ATTEMPTS + 1):
+                with self.assertRaises(RegistrationFailed):
+                    register_submission(submission.id)
+
+                submission.refresh_from_db()
+                self.assertEqual(
+                    submission.registration_status, RegistrationStatuses.failed
+                )
+                self.assertEqual(submission.registration_attempts, i)
+                # marked for retry
+                self.assertTrue(submission.needs_on_completion_retry)
+
+            # check
+            self.assertEqual(submission.registration_attempts, TEST_NUM_ATTEMPTS)
+
+            # now make more attempts then limit
+            register_submission(submission.id)
+
+            submission.refresh_from_db()
+            self.assertEqual(
+                submission.registration_status, RegistrationStatuses.failed
+            )
+            self.assertEqual(submission.registration_attempts, TEST_NUM_ATTEMPTS)
+            # no more retries
+            self.assertFalse(submission.needs_on_completion_retry)
+
+            # added log
+            log = TimelineLogProxy.objects.last()
+            self.assertEqual(log.event, "registration_attempts_limited")

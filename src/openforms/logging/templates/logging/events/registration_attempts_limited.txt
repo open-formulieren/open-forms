@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_lead num_attempts=log.fmt_submission_registration_attempts %}
+   {{ lead }}: Registration task stopped after {{ num_attempts }} failed attempts.
+{% endblocktrans %}

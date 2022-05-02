@@ -170,6 +170,13 @@ def registration_skip(submission: "Submission"):
     )
 
 
+def registration_attempts_limited(submission: "Submission"):
+    _create_log(
+        submission,
+        "registration_attempts_limited",
+    )
+
+
 # - - -
 
 

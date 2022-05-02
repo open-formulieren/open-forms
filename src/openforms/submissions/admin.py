@@ -169,6 +169,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         "get_appointment_error_information",
         "on_completion_task_ids",
         "confirmation_email_sent",
+        "registration_attempts",
     ]
     actions = [
         "export_csv",

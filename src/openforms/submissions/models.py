@@ -254,6 +254,13 @@ class Submission(models.Model):
             "Note that this date will be updated even if the registration is not successful."
         ),
     )
+    registration_attempts = models.PositiveIntegerField(
+        _("registration backend retry counter"),
+        default=0,
+        help_text=_(
+            "Counter to track how often we tried calling the registration backend. "
+        ),
+    )
     registration_result = models.JSONField(
         _("registration backend result"),
         blank=True,
