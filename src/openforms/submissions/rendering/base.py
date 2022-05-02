@@ -32,6 +32,16 @@ class Node(ABC):
         """
         return True
 
+    @property
+    def has_children(self) -> bool:
+        generator = self.get_children()
+        try:
+            next(generator)
+        except StopIteration:
+            return False
+        else:
+            return True
+
     @abstractmethod
     def get_children(self) -> Iterator["Node"]:  # pragma: nocover
         """
