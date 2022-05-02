@@ -1,4 +1,4 @@
-from django.test import TestCase, override_settings
+from django.test import TestCase
 
 from rest_framework.reverse import reverse
 
