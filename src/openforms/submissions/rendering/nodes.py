@@ -2,6 +2,8 @@ import logging
 from dataclasses import dataclass
 from typing import Iterator
 
+from openforms.formio.rendering.nodes import FormioNode
+
 from ..models import SubmissionStep
 from .base import Node
 from .constants import RenderModes
@@ -72,10 +74,4 @@ class SubmissionStepNode(Node):
         if not self.is_visible:
             return
 
-        return iter([])  # until we have the formio thing set up
-
-        # # at this point, hand over to the formio specific implementation details
-        # formio_configuration_node = FormioConfigurationNode(
-        #     step=self.step, renderer=self.renderer
-        # )
-        # yield from formio_configuration_node
+        yield from FormioNode(step=self.step, renderer=self.renderer)

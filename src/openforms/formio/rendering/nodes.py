@@ -1,13 +1,16 @@
 from dataclasses import dataclass
-from typing import Any, Iterator, Optional, Union
+from typing import TYPE_CHECKING, Any, Iterator, Literal, Optional, Union
 
 from openforms.submissions.models import SubmissionStep
-from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.rendering.base import Node
+from openforms.submissions.rendering.constants import RenderModes
 
 from ..formatters.service import format_value
 from ..typing import Component
 from ..utils import iter_components
+
+if TYPE_CHECKING:
+    from openforms.submissions.rendering import Renderer
 
 
 @dataclass
@@ -178,9 +181,28 @@ class ComponentNode(Node):
             return self.value
         return format_value(self.component, self.value, as_html=self.renderer.as_html)
 
+    @property
+    def indent(self) -> str:
+        return "    " * self.depth if not self.as_html else ""
+
     def render(self) -> str:
         """
         Output a simple key-value pair of label and value.
         """
-        indent = "    " * self.depth if not self.as_html else ""
-        return f"{indent}{self.label}: {self.display_value}"
+        return f"{self.indent}{self.label}: {self.display_value}"
+
+
+@dataclass
+class FormioNode(Node):
+    step: SubmissionStep
+
+    def render(self) -> Literal[""]:
+        return ""
+
+    def get_children(self) -> Iterator[ComponentNode]:
+        form_step = self.step.form_step
+        for component in form_step.iter_components(recursive=False, _mark_root=True):
+            child_node = ComponentNode.build_node(
+                step=self.step, component=component, renderer=self.renderer
+            )
+            yield from child_node
