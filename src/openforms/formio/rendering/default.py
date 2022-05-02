@@ -46,6 +46,8 @@ class FieldSetNode(ContainerMixin, ComponentNode):
 @register("columns")
 class ColumnsNode(ContainerMixin, ComponentNode):
     layout_modifier = "columns"
+    label = ""  # 1451 -> never output a label
+    value = None  # columns never have a value
 
     def get_children(self) -> Iterator["ComponentNode"]:
         """

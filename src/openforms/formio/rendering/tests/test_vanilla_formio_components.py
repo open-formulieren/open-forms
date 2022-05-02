@@ -196,7 +196,6 @@ class FormNodeTests(TestCase):
     def test_fieldsets_hidden_if_all_children_hidden(self):
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
-        # take
         component = self.step.form_step.form_definition.configuration["components"][0]
         assert component["type"] == "fieldset"
 
@@ -210,7 +209,6 @@ class FormNodeTests(TestCase):
     def test_fieldsets_visible_if_any_child_visible(self):
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
-        # take
         component = self.step.form_step.form_definition.configuration["components"][1]
         assert component["type"] == "fieldset"
 
@@ -227,7 +225,6 @@ class FormNodeTests(TestCase):
     def test_fieldset_hidden_if_marked_as_such_and_visible_children(self):
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
-        # take
         component = self.step.form_step.form_definition.configuration["components"][2]
         assert component["type"] == "fieldset"
 
@@ -241,7 +238,6 @@ class FormNodeTests(TestCase):
     def test_columns_hidden_if_all_children_hidden(self):
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
-        # take
         component = self.step.form_step.form_definition.configuration["components"][3]
         assert component["type"] == "columns"
 
@@ -255,7 +251,6 @@ class FormNodeTests(TestCase):
     def test_columns_visible_if_any_child_visible(self):
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
-        # take
         component = self.step.form_step.form_definition.configuration["components"][4]
         assert component["type"] == "columns"
 
@@ -266,13 +261,12 @@ class FormNodeTests(TestCase):
         self.assertTrue(component_node.is_visible)
         nodelist = list(component_node)
         self.assertEqual(len(nodelist), 2)
-        self.assertEqual(nodelist[0].label, "Columns 2")
+        self.assertEqual(nodelist[0].component["label"], "Columns 2")
         self.assertEqual(nodelist[1].label, "Input 7")
 
     def test_column_hidden_if_marked_as_such_and_visible_children(self):
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
-        # take
         component = self.step.form_step.form_definition.configuration["components"][5]
         assert component["type"] == "columns"
 
@@ -282,6 +276,21 @@ class FormNodeTests(TestCase):
 
         self.assertFalse(component_node.is_visible)
         self.assertEqual(list(component_node), [])
+
+    def test_columns_never_output_label(self):
+        component = self.step.form_step.form_definition.configuration["components"][5]
+        assert component["type"] == "columns"
+
+        for render_mode in RenderModes.values:
+            with self.subTest(render_mode=render_mode):
+                renderer = Renderer(self.submission, mode=render_mode, as_html=False)
+
+                component_node = ComponentNode.build_node(
+                    step=self.step, component=component, renderer=renderer
+                )
+
+                self.assertEqual(component_node.label, "")
+                self.assertIsNone(component_node.value)
 
     def test_wysiwyg_component(self):
         """
