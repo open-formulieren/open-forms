@@ -51,7 +51,7 @@ class ColumnsNode(ContainerMixin, ComponentNode):
 
     def get_children(self) -> Iterator["ComponentNode"]:
         """
-        Columns has a extra nested structure contained within.
+        Columns has an extra nested structure contained within.
 
 
         .. code-block:: python
