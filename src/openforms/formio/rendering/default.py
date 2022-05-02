@@ -41,6 +41,10 @@ class ContainerMixin:
 @register("fieldset")
 class FieldSetNode(ContainerMixin, ComponentNode):
     layout_modifier = "fieldset"
+    display_value = ""
+
+    def render(self) -> str:
+        return f"{self.indent}{self.label}"
 
 
 @register("columns")
@@ -48,6 +52,7 @@ class ColumnsNode(ContainerMixin, ComponentNode):
     layout_modifier = "columns"
     label = ""  # 1451 -> never output a label
     value = None  # columns never have a value
+    display_value = ""
 
     def get_children(self) -> Iterator["ComponentNode"]:
         """
