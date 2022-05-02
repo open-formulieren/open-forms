@@ -4,7 +4,7 @@ from .constants import RenderConfigurationOptions
 from .nodes import RenderConfiguration
 
 RENDER_CONFIGURATION = {
-    # RenderModes.cli: RenderConfiguration(key=None, default=True),
+    RenderModes.cli: RenderConfiguration(key=None, default=True),
     RenderModes.pdf: RenderConfiguration(
         RenderConfigurationOptions.show_in_pdf, default=True
     ),
