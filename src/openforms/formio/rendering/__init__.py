@@ -10,10 +10,3 @@ classes with their public API. For specific Formio component types, you can regi
 a more specific subclass using the registry. The vanilla Formio components requiring
 special attention are implemented in :mod:`openforms.submissions.rendering.default`.
 """
-from .nodes import ComponentNode
-from .registry import register
-
-__all__ = [
-    "register",
-    "ComponentNode",
-]
