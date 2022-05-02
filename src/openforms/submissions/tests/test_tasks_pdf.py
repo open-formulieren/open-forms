@@ -67,6 +67,94 @@ class SubmissionReportGenerationTests(TestCase):
 
         capture.check()
 
+    def test_hidden_output_not_included(self):
+        """
+        Assert that hidden components are not included in the report.
+
+        #1451 requires that components hidden (statically or) dynamically by logic
+        are not included. The report functionality is also extended to add more
+        structure, and step titles/headers may not be included if there's nothing
+        visible in the step.
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "input1",
+                    "label": "Input 1",
+                    "type": "textfield",
+                    "hidden": True,
+                }
+            ],
+            submitted_data={},
+            completed=True,
+            with_report=True,
+        )
+        html = submission.report.generate_submission_report_pdf()
+        step_title = submission.submissionstep_set.get().form_step.form_definition.name
+
+        # hidden component itself may not be visible
+        self.assertNotIn("Input 1", html)
+        # step has no visible children -> also not visible
+        self.assertNotIn(step_title, html)
+
+    def test_visible_output_included(self):
+        """
+        Assert that hidden components are not included in the report.
+
+        #1451 requires that components hidden (statically or) dynamically by logic
+        are not included. The report functionality is also extended to add more
+        structure, and step titles/headers may not be included if there's nothing
+        visible in the step.
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "input1",
+                    "label": "Input 1",
+                    "type": "textfield",
+                    "hidden": True,
+                },
+                {
+                    "key": "input2",
+                    "label": "Input 2",
+                    "type": "textfield",
+                    "hidden": False,
+                },
+                {
+                    "type": "fieldset",
+                    "label": "Group of fields",
+                    "key": "group",
+                    "components": [
+                        {
+                            "type": "currency",
+                            "label": "Money money money",
+                            "key": "money",
+                            "hidden": False,
+                        }
+                    ],
+                },
+                {
+                    "type": "content",
+                    "html": "<p>Some markup</p>",
+                    "key": "content",
+                },
+            ],
+            submitted_data={"input1": None, "input2": "Second input", "money": 1234.56},
+            completed=True,
+            with_report=True,
+        )
+        html = submission.report.generate_submission_report_pdf()
+        step_title = submission.submissionstep_set.get().form_step.form_definition.name
+
+        self.assertIn(step_title, html)
+        self.assertNotIn("Input 1", html)
+        self.assertIn("Input 2", html)
+        self.assertIn("Second input", html)
+        self.assertIn("Group of fields", html)
+        self.assertIn("Money money money", html)
+        self.assertIn("1.234,56", html)
+        self.assertInHTML("<p>Some markup</p>", html)
+
 
 @temp_private_root()
 class SubmissionReportCoSignTests(TestCase):
