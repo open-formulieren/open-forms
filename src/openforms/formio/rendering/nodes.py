@@ -62,13 +62,19 @@ class ComponentNode(Node):
         configuration says so (while falling back to some defaults for older configurations).
 
         The exceptions to this are:
+
         - fieldsets are visible if:
+
           - any of the children is visible (no render_mode dependency)
           - not `hidden` (no render_mode dependency)
           - (not `hideHeader`) -> render children, but not the label
+
         - fieldsets:
+
           - never render the label
+
         - wysiwyg:
+
           - in PDF if visible
 
         These exceptions are handled in more specific subclasses to avoid massive if-else

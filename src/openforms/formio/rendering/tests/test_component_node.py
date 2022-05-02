@@ -13,8 +13,6 @@ from ..constants import RenderConfigurationOptions
 from ..nodes import ComponentNode
 from ..registry import Registry
 
-# from rest_framework.reverse import reverse
-
 
 class FormNodeTests(TestCase):
     @classmethod

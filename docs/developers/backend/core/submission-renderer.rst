@@ -56,3 +56,34 @@ Node types
 
 .. autoclass:: openforms.submissions.rendering.nodes.SubmissionStepNode
    :members:
+
+
+Formio integration
+------------------
+
+The renderers extend to the FormIO component types.
+
+You can :ref:`extend <developers_extending>` your custom FormIO types by using the
+register hook, the mechanism is identical to the usual :ref:`plugin system <plugins_index>`.
+
+**Example**
+
+.. code-block:: python
+
+    from openforms.formio.rendering.nodes import ComponentNode
+    from openforms.formio.rendering.registry import register
+
+
+    @register("my-custom-component-type")
+    class MyCustomComponentType(ComponentNode):
+        ...
+
+.. automodule:: openforms.formio.rendering.nodes
+   :members:
+
+**Vanilla FormIO components**
+
+The following component types are automatically picked up by Open Forms
+
+.. automodule:: openforms.formio.rendering.default
+   :members:
