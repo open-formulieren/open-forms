@@ -294,5 +294,7 @@
   "Please specify an integer file size (e.g. 50 MB)": "Gebruik een gehele bestandsgrootte (bijvoorbeeld 50 MB)",
   "Read only": "Alleen-lezen",
   "Make this component read only": "Maak dit component alleen-lezen",
-  "(optional)": "(optioneel)"
+  "(optional)": "(optioneel)",
+  "Uploading file...": "Bezig met uploaden...",
+  "Please wait for the file(s) upload to finish before continuing.": "Wacht tot het uploaden van de bestanden is voltooid voordat u verdergaat."
 }
