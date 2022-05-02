@@ -40,10 +40,6 @@ class FilesizeCastTests(SimpleTestCase):
 
         self.assertEqual(value, 1_000)
 
-    def test_no_whitespace_allowed(self):
-        with self.assertRaises(ValueError):
-            file_size("10 MB")
-
     def test_invalid_pattern(self):
         with self.assertRaises(ValueError):
             file_size("10MB9")
@@ -69,3 +65,23 @@ class FilesizeCastTests(SimpleTestCase):
                 result = file_size(value)
 
                 self.assertEqual(result, expected)
+
+    def test_filesize_with_spaces_regression(self):
+        """
+        Test that filesizes containing spaces can be parsed correctly.
+
+        Regression for Taiga 448, Github #1492. Either some old file upload configuration
+        or user-input containing spaces for the filesizes was left over/passed
+        client-side validation, causing problems in the file uploads being attached
+        to the form step correctly.
+
+        This relates to #1310 where the formio input validation is lacking.
+        """
+        file_size_cast = Filesize(system=Filesize.S_BINARY)
+        inputs = ["5 MB", "5  MB", "5       mb"]
+
+        for fs in inputs:
+            with self.subTest(input=fs):
+                file_size = file_size_cast(fs)
+
+                self.assertEqual(file_size, 5_242_880)
