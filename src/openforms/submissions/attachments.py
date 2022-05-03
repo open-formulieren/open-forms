@@ -95,7 +95,7 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
             ),
         )
         file_max_size = file_size_cast(
-            glom(component, "fileMaxSize", default=settings.MAX_FILE_UPLOAD_SIZE)
+            glom(component, "fileMaxSize", default="") or settings.MAX_FILE_UPLOAD_SIZE
         )
 
         base_name = glom(component, "file.name", default="")
