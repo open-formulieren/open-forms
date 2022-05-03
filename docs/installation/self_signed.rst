@@ -70,8 +70,7 @@ PKIO
 The Dutch government uses a CA-certificate which is not publicaly trusted. You
 will need to add the so called PKIO G1 private root certificate.
 
-1. Download the G1 certificate ("Stamcertificaat") from 
-   `pkioverheid.nl/ <https://www.pkioverheid.nl/>`__
+1. Download the G1 certificate ("Stamcertificaat") from `cert.pkioverheid.nl/ <https://cert.pkioverheid.nl/>`__
 2. Convert it from the binary X.509 encoding (DER) to the base64 encoding (CRT)
 
    .. code-block:: bash
