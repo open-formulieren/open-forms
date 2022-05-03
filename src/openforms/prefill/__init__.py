@@ -174,10 +174,10 @@ def _fetch_prefill_values(
 def _extract_prefill_fields(configuration: JSONObject) -> List[Dict[str, str]]:
     prefills = []
 
-    if ("type" in configuration):
+    if "type" in configuration:
         fieldType = configuration.get("type")
 
-        if (fieldType == "columns"):
+        if fieldType == "columns":
             columns = configuration.get("columns", [])
 
             for column in columns:
@@ -240,10 +240,10 @@ def _set_default_values(
     is inspected for prefill configuration, which is then looked up in
     ``prefilled_values`` to set the component ``defaultValue``.
     """
-    if ("type" in configuration):
+    if "type" in configuration:
         fieldType = configuration.get("type")
 
-        if (fieldType == "columns"):
+        if fieldType == "columns":
             columns = configuration.get("columns", [])
 
             for column in columns:
