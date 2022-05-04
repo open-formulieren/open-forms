@@ -120,6 +120,7 @@ if settings.DEBUG and apps.is_installed("debug_toolbar"):
 
 if settings.DEBUG:
     from openforms.forms.models import Form
+    from openforms.registrations.contrib.email.views import EmailRegistrationTestView
 
     urlpatterns += [
         path(
@@ -131,6 +132,11 @@ if settings.DEBUG:
             "dev/email/confirmation/<int:submission_id>",
             EmailWrapperTestView.as_view(),
             name="dev-email-confirm",
+        ),
+        path(
+            "dev/email/registration/<int:submission_id>",
+            EmailRegistrationTestView.as_view(),
+            name="dev-email-registration",
         ),
         path(
             "dev/submissions/<int:pk>/pdf",

@@ -1,4 +1,6 @@
 from django import http
+from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import Http404
 from django.template import TemplateDoesNotExist, loader
 from django.views.decorators.csrf import requires_csrf_token
@@ -56,3 +58,12 @@ class ErrorDetailView(TemplateView):
             }
         )
         return context
+
+
+class DevViewMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """
+    Mixin to allow view access only in dev mode.
+    """
+
+    def test_func(self):
+        return settings.DEBUG and self.request.user.is_superuser

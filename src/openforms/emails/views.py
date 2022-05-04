@@ -1,10 +1,9 @@
-from django.conf import settings
-from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
 from openforms.submissions.models import Submission
+from openforms.utils.views import DevViewMixin
 
 from .confirmation_emails import (
     get_confirmation_email_context_data,
@@ -15,13 +14,8 @@ from .context import get_wrapper_context
 from .utils import strip_tags_plus
 
 
-class EmailWrapperTestView(TemplateView):
+class EmailWrapperTestView(DevViewMixin, TemplateView):
     template_name = "emails/wrapper.html"
-
-    def dispatch(self, request, *args, **kwargs):
-        if not settings.DEBUG or not request.user.is_superuser:
-            raise PermissionDenied()
-        return super().dispatch(request, *args, **kwargs)
 
     def _get_mode(self) -> str:
         mode = self.request.GET.get("mode", "html")
