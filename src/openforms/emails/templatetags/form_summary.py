@@ -1,3 +1,4 @@
+import warnings
 from typing import Any
 
 from django import template
@@ -33,6 +34,11 @@ def whitespace(amount: int, base=" ") -> str:
 
 @register.simple_tag(takes_context=True)
 def display_value(context, value: Any):
+    warnings.warn(
+        "The {% display_value %} template tag is deprecated, please use "
+        "'openforms.submissions.rendering.renderer.Renderer' instead.",
+        DeprecationWarning,
+    )
     _is_html = not context.get("rendering_text", False)
     if isinstance(value, dict) and value.get("originalName"):
         # uploads
