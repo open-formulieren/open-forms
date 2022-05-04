@@ -42,7 +42,7 @@ class EmailWrapperTestView(TemplateView):
                 context["rendering_text"] = True
             content = render_confirmation_email_template(content_template, context)
             if mode == "text":
-                content = strip_tags_plus(content)
+                content = strip_tags_plus(content, keep_leading_whitespace=True)
 
         ctx.update(get_wrapper_context(content))
         ctx.update(kwargs)
