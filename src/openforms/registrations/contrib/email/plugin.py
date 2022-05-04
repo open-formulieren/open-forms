@@ -22,7 +22,6 @@ from .checks import check_config
 from .config import EmailOptionsSerializer
 from .constants import AttachmentFormat
 from .models import EmailConfig
-from .presentation import SubmittedDataWrapper
 
 
 class EmailOptions(TypedDict):
@@ -99,45 +98,6 @@ class EmailRegistration(BasePlugin):
         text_content = html.unescape(text_content)
 
         return html_content, text_content
-
-        # # extract the formatted data first
-        # printable_data: list = submission.get_printable_data()
-        # # get the attachment data, keyed by form component key, value is a model instance
-        # attachments = submission.get_merged_attachments()
-        # # these are not related to each other now, but we can iterate over the components
-        # # by keys and inject the file information again so we can generate URLs to
-        # # download the files.
-        # display_data = []
-
-        # # get_printable_data relies on ``get_ordered_data_with_component_type``
-        # for (key, (component, value)), (label, display) in zip(
-        #     submission.get_ordered_data_with_component_type().items(), printable_data
-        # ):
-        #     is_file = component.get("type") == "file"
-        #     if is_file:
-        #         files = attachments.get(key, [])
-        #         display = SubmittedDataWrapper(is_file=True, value=files)
-        #     else:
-        #         display = SubmittedDataWrapper(is_file=False, value=display)
-
-        #     display_data.append((label, display))
-
-        # context = {
-        #     "form_name": submission.form.admin_name,
-        #     "public_reference": submission.public_registration_reference,
-        #     "datetime": timezone.localtime(submission.completed_on).strftime(
-        #         "%H:%M:%S %d-%m-%Y"
-        #     ),
-        #     "submitted_data": display_data,
-        # }
-        # if extra_context:
-        #     context.update(extra_context)
-
-        # html_content = html_template.render(context)
-        # context["rendering_text"] = True
-        # text_content = text_template.render(context)
-
-        # return html_content, text_content
 
     def send_registration_email(
         self,
