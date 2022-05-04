@@ -2,7 +2,7 @@
 Changelog
 =========
 
-1.0.6 (2022-05-04)
+1.0.7 (2022-05-04)
 ==================
 
 Fixed some more reported issues
