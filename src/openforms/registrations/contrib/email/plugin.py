@@ -50,14 +50,8 @@ class EmailRegistration(BasePlugin):
         )
         self.send_registration_email(options["to_emails"], subject, submission, options)
 
-    def send_registration_email(
-        self,
-        recipients,
-        subject,
-        submission: Submission,
-        options: EmailOptions,
-        extra_context=None,
-    ):
+    @staticmethod
+    def render_registration_email(submission, extra_context=None):
         # extract the formatted data first
         printable_data: list = submission.get_printable_data()
         # get the attachment data, keyed by form component key, value is a model instance
@@ -101,6 +95,20 @@ class EmailRegistration(BasePlugin):
         # post process since the mail template has html markup and django escaped entities
         text_content = strip_tags_plus(text_content)
         text_content = html.unescape(text_content)
+
+        return html_content, text_content
+
+    def send_registration_email(
+        self,
+        recipients,
+        subject,
+        submission: Submission,
+        options: EmailOptions,
+        extra_context=None,
+    ):
+        html_content, text_content = self.render_registration_email(
+            submission, extra_context=extra_context
+        )
 
         attachments = []
 

@@ -1,33 +1,23 @@
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
 from openforms.submissions.models import Submission
-from openforms.utils.views import DevViewMixin
+from openforms.utils.views import DevViewMixin, EmailDebugViewMixin
 
 from .confirmation_emails import (
     get_confirmation_email_context_data,
     get_confirmation_email_templates,
     render_confirmation_email_template,
 )
-from .context import get_wrapper_context
 from .utils import strip_tags_plus
 
 
-class EmailWrapperTestView(DevViewMixin, TemplateView):
-    template_name = "emails/wrapper.html"
-
-    def _get_mode(self) -> str:
-        mode = self.request.GET.get("mode", "html")
-        assert mode in ("html", "text"), f"Unknown mode: {mode}"
-        return mode
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data()
+class EmailWrapperTestView(DevViewMixin, EmailDebugViewMixin, TemplateView):
+    def get_email_content(self):
         content = "<b>content goes here</b>"
 
-        if kwargs.get("submission_id"):
-            submission = get_object_or_404(Submission, id=kwargs["submission_id"])
+        if self.kwargs.get("submission_id"):
+            submission = get_object_or_404(Submission, id=self.kwargs["submission_id"])
 
             content_template = get_confirmation_email_templates(submission)[1]
             context = get_confirmation_email_context_data(submission)
@@ -38,14 +28,4 @@ class EmailWrapperTestView(DevViewMixin, TemplateView):
             if mode == "text":
                 content = strip_tags_plus(content, keep_leading_whitespace=True)
 
-        ctx.update(get_wrapper_context(content))
-        ctx.update(kwargs)
-        return ctx
-
-    def render_to_response(self, context, **response_kwargs):
-        mode = self._get_mode()
-        if mode == "text":
-            return HttpResponse(
-                context["content"].encode("utf-8"), content_type="text/plain"
-            )
-        return super().render_to_response(context, **response_kwargs)
+        return content
