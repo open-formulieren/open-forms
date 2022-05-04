@@ -12,6 +12,7 @@ RENDER_CONFIGURATION = {
         RenderConfigurationOptions.show_in_confirmation_email, default=False
     ),
     RenderModes.export: RenderConfiguration(key=None, default=True),
+    RenderModes.registration: RenderConfiguration(key=None, default=True),
 }
 """
 Map render modes to the component configuration key to check, with their defaults.

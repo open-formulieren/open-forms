@@ -619,7 +619,9 @@ class Submission(models.Model):
     attachments = property(get_attachments)
 
     def get_merged_attachments(self) -> Mapping[str, "SubmissionFileAttachment"]:
-        return self.get_attachments().as_form_dict()
+        if not hasattr(self, "_merged_attachments"):
+            self._merged_attachments = self.get_attachments().as_form_dict()
+        return self._merged_attachments
 
     def get_email_confirmation_recipients(self, submitted_data: dict) -> List[str]:
         recipient_emails = set()
