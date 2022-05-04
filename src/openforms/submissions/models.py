@@ -2,7 +2,6 @@ import hashlib
 import logging
 import os.path
 import uuid
-import warnings
 from collections import OrderedDict, defaultdict
 from dataclasses import dataclass
 from datetime import date, timedelta
@@ -14,7 +13,7 @@ from django.db import models, transaction
 from django.template import Context, Template
 from django.urls import resolve
 from django.utils import timezone
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from celery.result import AsyncResult
 from django_better_admin_arrayfield.models.fields import ArrayField
@@ -25,7 +24,7 @@ from privates.fields import PrivateMediaFileField
 from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.contrib.kvk.validators import validate_kvk
-from openforms.formio.formatters.service import filter_printable, format_value
+from openforms.formio.formatters.service import filter_printable
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
@@ -573,38 +572,6 @@ class Submission(models.Model):
         return merged_data
 
     data = property(get_merged_data)
-
-    def get_printable_data(
-        self,
-        keys_to_include: Optional[List[str]] = None,
-        as_html=False,
-    ) -> List[Tuple[str, str]]:
-        warnings.warn(
-            "Submission.get_printable_data() is deprecated - instead, use "
-            "'openforms.submissions.rendering.renderer.Renderer' with an appropriate "
-            "render mode.",
-            DeprecationWarning,
-        )
-        printable_data = []
-
-        for key, (
-            component,
-            value,
-        ) in self.get_ordered_data_with_component_type().items():
-            if keys_to_include is not None and key not in keys_to_include:
-                continue
-
-            printable_data.append(
-                (component["label"], format_value(component, value, as_html=as_html))
-            )
-
-        # finally, check if we have co-sign information to append
-        if self.co_sign_data:
-            if not (co_signer := self.co_sign_data.get("representation", "")):
-                logger.warning("Incomplete co-sign data for submission %s", self.uuid)
-            printable_data.append((gettext("Co-signed by"), co_signer))
-
-        return printable_data
 
     def get_co_signer(self) -> str:
         if not self.co_sign_data:

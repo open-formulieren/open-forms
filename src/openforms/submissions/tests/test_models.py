@@ -136,7 +136,7 @@ class SubmissionTests(TestCase):
         )
         self.assertEqual(actual, expected)
 
-    def test_get_printable_data_with_selectboxes_formio_formatters(self):
+    def test_submission_data_with_selectboxes_formio_formatters(self):
         form_definition = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
@@ -181,16 +181,6 @@ class SubmissionTests(TestCase):
                     {"test1": True, "test2": True, "test3": False},
                 )
             },
-        )
-        printable_data = submission.get_printable_data()
-
-        self.assertEqual(
-            "My Boxes",
-            printable_data[0][0],
-        )
-        self.assertEqual(
-            "test 1; test 2",
-            printable_data[0][1],
         )
 
     def test_submission_remove_sensitive_data(self):
@@ -366,31 +356,6 @@ class SubmissionTests(TestCase):
             SubmissionFileAttachment.objects.filter(pk=attachment.pk).exists()
         )
         self.assertFalse(attachment.content.storage.exists(attachment.content.path))
-
-    def test_printable_data_with_empty_keys_to_include(self):
-        form_definition = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {
-                        "key": "testField",
-                        "type": "textfield",
-                        "label": "Label",
-                        "showInEmail": False,
-                    },
-                ],
-            }
-        )
-        submission = SubmissionFactory.create()
-        SubmissionStepFactory.create(
-            submission=submission,
-            data={"testField": "this is text in a text area"},
-            form_step__form_definition=form_definition,
-        )
-
-        printable_data = submission.get_printable_data(keys_to_include=[])
-
-        self.assertEqual(0, len(printable_data))
 
     def test_get_merged_appointment_data(self):
         form = FormFactory.create()
