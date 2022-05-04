@@ -2,6 +2,19 @@
 Changelog
 =========
 
+1.0.6 (2022-05-04)
+==================
+
+Fixed some more reported issues
+
+* [#1492] Fixed crashes when using file upload components with either a maximum filesize
+  specified as empty string/value or a value containing spaces.
+* [#1550] Fixed form desinger partial crash when adding a currency/number component
+* Bump uwsgi version
+* Ensure uwsgi runs in master process mode
+* [#1453] Fixed user feedback for upload handler validation errors
+* [#1498] Fixed duplicate payment completion updates being sent by registration backend(s)
+
 1.0.6 (2022-04-25)
 ==================
 
