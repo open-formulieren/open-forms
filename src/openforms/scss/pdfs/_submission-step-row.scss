@@ -5,6 +5,10 @@
   justify-content: flex-start;
   align-items: flex-start;
 
+  & + & {
+    margin-top: 1mm;
+  }
+
   &:not(&--root) + &--root {
     padding-top: $grid-margin-1;
   }
@@ -30,6 +34,11 @@
   &__value {
     @include body();
     width: 60%;
+
+    // wysiwyg content
+    p {
+      margin: 0;
+    }
 
     > * {
       max-width: 100%;
