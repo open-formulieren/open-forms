@@ -256,24 +256,6 @@ class FormDefinitionTestCase(TestCase):
             _("{name} (copy)").format(name="A internal"),
         )
 
-    def test_get_keys_for_email_summary(self):
-        form_definition = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {"key": "aaa", "label": "AAA", "showInEmail": True},
-                    {"key": "bbb", "label": "BBB", "showInEmail": False},
-                    {"key": "ccc", "label": "CCC", "showInEmail": True},
-                ],
-            }
-        )
-
-        keys = form_definition.get_keys_for_email_summary()
-
-        self.assertIn(("aaa", "AAA"), keys)
-        self.assertNotIn(("bbb", "BBB"), keys)
-        self.assertIn(("ccc", "CCC"), keys)
-
     def test_get_keys_for_email_confirmation(self):
         form_definition = FormDefinitionFactory.create(
             configuration={

@@ -131,16 +131,6 @@ class FormDefinition(models.Model):
         keys = [field["key"] for field in self.iter_components(recursive=True)]
         return keys
 
-    def get_keys_for_email_summary(self) -> List[Tuple[str, str]]:
-        """Return the key and the label of fields to include in the email summary"""
-        keys_for_email_summary = []
-
-        for component in self.iter_components(recursive=True):
-            if component.get("showInEmail"):
-                keys_for_email_summary.append((component["key"], component["label"]))
-
-        return keys_for_email_summary
-
     def get_keys_for_email_confirmation(self) -> List[Tuple[str, str]]:
         """Return the key and the label of fields to include in the confirmation email"""
         keys_for_email_confirmation = []
