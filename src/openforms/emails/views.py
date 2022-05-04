@@ -12,7 +12,9 @@ from .confirmation_emails import (
 from .utils import strip_tags_plus
 
 
-class EmailWrapperTestView(DevViewMixin, EmailDebugViewMixin, TemplateView):
+class EmailWrapperTestView(
+    DevViewMixin, EmailDebugViewMixin, TemplateView
+):  # pragma: nocover
     def get_email_content(self):
         content = "<b>content goes here</b>"
 

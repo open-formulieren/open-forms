@@ -118,7 +118,7 @@ if settings.DEBUG and apps.is_installed("debug_toolbar"):
         path("__debug__/", include(debug_toolbar.urls)),
     ] + urlpatterns
 
-if settings.DEBUG:
+if settings.DEBUG:  # pragma: nocover
     from openforms.forms.models import Form
     from openforms.registrations.contrib.email.views import EmailRegistrationTestView
 

@@ -71,7 +71,7 @@ class DevViewMixin(LoginRequiredMixin, UserPassesTestMixin):
         return settings.DEBUG and self.request.user.is_superuser
 
 
-class EmailDebugViewMixin:
+class EmailDebugViewMixin:  # pragma: nocover
     """
     Mixin to view the contents of an e-mail as they would be sent out.
 

@@ -6,9 +6,7 @@ from openforms.utils.views import DevViewMixin, EmailDebugViewMixin
 from .plugin import EmailRegistration
 
 
-class EmailRegistrationTestView(
-    DevViewMixin, EmailDebugViewMixin, DetailView
-):  # pragma: nocover
+class EmailRegistrationTestView(DevViewMixin, EmailDebugViewMixin, DetailView):
     model = Submission
     pk_url_kwarg = "submission_id"
 
