@@ -31,3 +31,22 @@ class SubmissionAllowedChoices(DjangoChoices):
     no_without_overview = ChoiceItem(
         "no_without_overview", _("No (without overview page)")
     )
+
+
+class FormVariablesSources(DjangoChoices):
+    component = ChoiceItem("component", _("Component"))
+    user_defined = ChoiceItem("user_defined", _("User defined"))
+    static = ChoiceItem("static", _("Static"))
+
+
+class FormVariablesDataTypes(DjangoChoices):
+    inferred_from_component = ChoiceItem(
+        "inferred_from_component", _("Inferred from component")
+    )
+    string = ChoiceItem("string", _("String"))
+    null = ChoiceItem("null", _("Null"))
+    boolean = ChoiceItem("boolean", _("Boolean"))
+    object = ChoiceItem("object", _("Object"))
+    array = ChoiceItem("array", _("Array"))
+    number = ChoiceItem("number", _("Number"))
+    datetime = ChoiceItem("datetime", _("Datetime"))

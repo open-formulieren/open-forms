@@ -19,6 +19,7 @@ from rest_framework.response import Response
 
 from openforms.api.pagination import PageNumberPagination
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
+from .serializers.form_variable import FormVariableListSerializer, FormVariableSerializer
 
 from ..messages import add_success_message
 from ..models import (
@@ -29,6 +30,7 @@ from ..models import (
     FormStep,
     FormVersion,
 )
+from ..models.form_variable import FormVariable
 from ..utils import export_form, import_form
 from .filters import FormLogicFilter, FormPriceLogicFilter
 from .parsers import (
@@ -517,3 +519,16 @@ class FormsImportAPIView(views.APIView):
         import_form(serializer.validated_data["file"])
 
         return response.Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class FormVariablesViewSet(viewsets.ModelViewSet):
+    queryset = FormVariable.objects.all()
+    permission_classes = [FormAPIPermissions]
+    serializer_class = FormVariableSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

@@ -31,3 +31,10 @@ class ProcessingResults(DjangoChoices):
 
     failed = ChoiceItem("failed", _("Failed, should return to the start of the form."))
     success = ChoiceItem("success", _("Success, proceed to confirmation page."))
+
+
+class SubmissionVariableValueSources(DjangoChoices):
+    user_input = ChoiceItem("user_input", _("User input"))
+    prefill = ChoiceItem("prefill", _("Prefill"))
+    logic = ChoiceItem("logic", _("Logic"))
+    dmn = ChoiceItem("dmn", _("DMN"))
