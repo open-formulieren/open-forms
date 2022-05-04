@@ -95,7 +95,7 @@ class WYSIWYGNode(ComponentNode):
         if not visible_from_config:
             return False
         return self.mode in (
-            # RenderModes.cli,
+            RenderModes.cli,
             RenderModes.pdf,
         )
 

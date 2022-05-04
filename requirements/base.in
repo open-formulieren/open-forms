@@ -18,6 +18,7 @@ portalocker[redis]
 tablib[xlsx]
 xmltodict
 self-certifi
+tabulate
 weasyprint
 zeep
 # Pinned setuptools to a version lower than 58 to allow pyzmail36 to be

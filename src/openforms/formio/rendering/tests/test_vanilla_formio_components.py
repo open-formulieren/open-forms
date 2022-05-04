@@ -316,7 +316,7 @@ class FormNodeTests(TestCase):
         expected_visibility = {
             RenderModes.confirmation_email: False,
             RenderModes.pdf: True,
-            # RenderModes.cli: True,
+            RenderModes.cli: True,
         }
 
         for render_mode, is_visible in expected_visibility.items():

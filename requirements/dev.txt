@@ -937,6 +937,10 @@ tablib[xlsx]==3.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+tabulate==0.8.9
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 tblib==1.7.0
     # via
     #   -c requirements/ci.txt
