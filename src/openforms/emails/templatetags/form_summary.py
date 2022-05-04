@@ -26,6 +26,11 @@ def summary(context):
     return get_template(name).render(context.flatten())
 
 
+@register.simple_tag()
+def whitespace(amount: int, base=" ") -> str:
+    return base * amount
+
+
 @register.simple_tag(takes_context=True)
 def display_value(context, value: Any):
     _is_html = not context.get("rendering_text", False)
