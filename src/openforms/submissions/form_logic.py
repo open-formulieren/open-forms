@@ -116,7 +116,11 @@ def evaluate_form_logic(
             # Reset the value of any field that may have become hidden again after evaluating the logic
             if original_value:
                 component = get_component(configuration, key)
-                if component.get("hidden") and component.get("clearOnHide"):
+                if (
+                    component
+                    and component.get("hidden")
+                    and component.get("clearOnHide")
+                ):
                     data_diff[key] = defaults.get(key, "")
                     continue
 
