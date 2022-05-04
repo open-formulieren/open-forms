@@ -2,9 +2,12 @@
 
 @page {
   size: A4;
+  margin-bottom: 10mm;
 
   @bottom-center {
     content: counter(page) "/" counter(pages);
+    font-size: 85%;
+    @include text;
   }
 }
 

@@ -235,6 +235,23 @@ class FormNodeTests(TestCase):
         self.assertFalse(component_node.is_visible)
         self.assertEqual(list(component_node), [])
 
+    def test_fieldset_with_hidden_label(self):
+        # we always need a renderer instance
+        renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)
+        component = {
+            "type": "fieldset",
+            "key": "fieldset",
+            "label": "A hidden label",
+            "hidden": False,
+            "hideHeader": True,
+        }
+
+        component_node = ComponentNode.build_node(
+            step=self.step, component=component, renderer=renderer
+        )
+
+        self.assertEqual(component_node.label, "")
+
     def test_columns_hidden_if_all_children_hidden(self):
         # we always need a renderer instance
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=False)

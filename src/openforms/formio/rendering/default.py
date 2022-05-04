@@ -43,6 +43,13 @@ class FieldSetNode(ContainerMixin, ComponentNode):
     layout_modifier = "fieldset"
     display_value = ""
 
+    @property
+    def label(self) -> str:
+        header_hidden = self.component.get("hideHeader", False)
+        if header_hidden:
+            return ""
+        return super().label
+
     def render(self) -> str:
         return f"{self.indent}{self.label}"
 
