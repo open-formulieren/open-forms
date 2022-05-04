@@ -1170,6 +1170,36 @@ class StepModificationTests(TestCase):
 
         self.assertFalse(submission_step.can_submit)
 
+    def test_component_removed_from_definition(self):
+        # Test for issue #1568
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "name",
+                    },
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+            data={
+                "name": "Jane",
+                "surname": "Doe",
+            },  # Data for component no longer in the definition
+        )
+
+        # This shouldn't raise an error
+        evaluate_form_logic(
+            submission, submission_step, submission_step.data, dirty=True
+        )
+
 
 class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     def test_response_contains_submission(self):
