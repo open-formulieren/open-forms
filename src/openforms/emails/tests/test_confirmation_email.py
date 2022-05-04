@@ -50,7 +50,7 @@ NESTED_COMPONENT_CONF = {
             "id": "e4jv16",
             "key": "fieldset",
             "type": "fieldset",
-            "label": "",
+            "label": "A fieldset",
             "components": [
                 {
                     "id": "e66yf7q",
@@ -74,8 +74,29 @@ NESTED_COMPONENT_CONF = {
                     "showInEmail": False,
                     "confirmationRecipient": True,
                 },
+                {
+                    "key": "hiddenInput",
+                    "type": "textfield",
+                    "label": "Hidden input",
+                    "hidden": True,
+                    "showInEmail": True,
+                },
             ],
-        }
+        },
+        {
+            "key": "fieldset2",
+            "type": "fieldset",
+            "label": "A fieldset with hidden children",
+            "components": [
+                {
+                    "key": "hiddenInput2",
+                    "type": "textfield",
+                    "label": "Hidden input 2",
+                    "hidden": True,
+                    "showInEmail": True,
+                },
+            ],
+        },
     ],
 }
 
@@ -505,6 +526,9 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         ConfirmationEmailTemplateFactory.create(
             form=submission.form, subject="My Subject", content=template
         )
+        first_step_name = submission.submissionstep_set.all()[
+            0
+        ].form_step.form_definition.name
 
         send_confirmation_email(submission)
 
@@ -533,8 +557,11 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
 
             {_("Summary")}
 
-            - Name: Foo
-            - Last name: de Bar & de Baas
+            {first_step_name}
+
+            - A fieldset
+             - Name: Foo
+             - Last name: de Bar & de Baas
             - File: {_("attachment: %s") % "my-image.jpg"}
             - {_("Co-signed by")}: T. Shikari
 
@@ -604,6 +631,17 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
                 ),
                 message_html_only_tags,
             )
+
+            # fieldset and step containers should be visible
+            self.assertInHTML(
+                format_html("<h3>{}</h3>", first_step_name),
+                message_html_only_tags,
+            )
+
+            # renderer should ignore hidden inputs
+            self.assertNotIn("Hidden input", message_html_only_tags)
+            self.assertNotIn("A fieldset with hidden children", message_html_only_tags)
+            self.assertNotIn("Hidden input 2", message_html_only_tags)
 
         with self.subTest("attachments"):
             # file uploads may not be added as attachments, see #1193
