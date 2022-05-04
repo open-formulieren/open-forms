@@ -1,4 +1,8 @@
-{% load i18n %}{% autoescape off %}{% if submitted_data %}{% trans "Summary" %}
+{% load i18n %}{% autoescape off %}{% if renderer.has_children %}{% trans "Summary" %}
 
-{% for key, value in submitted_data %}
-- {{ key }}: {% display_value value %}{% endfor %}{% endif %}{% endautoescape %}
+{% for submission_step_node in renderer.get_children %}
+{{ submission_step_node.render }}
+
+{% for component_node in submission_step_node.get_children %}
+{% if component_node.label or component_node.display_value %}{% whitespace component_node.depth base=' ' %}- {{ component_node.label }}{% if not component_node.is_layout %}:{% endif %} {{ component_node.display_value }}{% endif %}{% endfor %}
+{% endfor %}{% endif %}{% with co_signer=renderer.submission.get_co_signer %}{% if co_signer %}- {% trans "Co-signed by" %}: {{ co_signer }}{% endif %}{% endwith %}{% endautoescape %}

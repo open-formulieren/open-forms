@@ -53,6 +53,16 @@ class Renderer:
         ).order_by("form_step__order")
         return steps_qs
 
+    @property
+    def has_children(self) -> bool:
+        generator = self.get_children()
+        try:
+            next(generator)
+        except StopIteration:
+            return False
+        else:
+            return True
+
     def get_children(self) -> Iterator["SubmissionStepNode"]:
         """
         Produce only the direct child nodes.

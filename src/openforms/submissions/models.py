@@ -2,6 +2,7 @@ import hashlib
 import logging
 import os.path
 import uuid
+import warnings
 from collections import OrderedDict, defaultdict
 from dataclasses import dataclass
 from datetime import date, timedelta
@@ -573,19 +574,17 @@ class Submission(models.Model):
 
     data = property(get_merged_data)
 
-    @staticmethod
-    def _get_value_label(possible_values: list, value: str) -> str:
-        for possible_value in possible_values:
-            if possible_value["value"] == value:
-                return possible_value["label"]
-        # TODO what if value is not a string? shouldn't it be passed through something to covert for display?
-        return value
-
     def get_printable_data(
         self,
         keys_to_include: Optional[List[str]] = None,
         as_html=False,
     ) -> List[Tuple[str, str]]:
+        warnings.warn(
+            "Submission.get_printable_data() is deprecated - instead, use "
+            "'openforms.submissions.rendering.renderer.Renderer' with an appropriate "
+            "render mode.",
+            DeprecationWarning,
+        )
         printable_data = []
 
         for key, (
@@ -606,6 +605,13 @@ class Submission(models.Model):
             printable_data.append((gettext("Co-signed by"), co_signer))
 
         return printable_data
+
+    def get_co_signer(self) -> str:
+        if not self.co_sign_data:
+            return ""
+        if not (co_signer := self.co_sign_data.get("representation", "")):
+            logger.warning("Incomplete co-sign data for submission %s", self.uuid)
+        return co_signer
 
     def get_attachments(self) -> "SubmissionFileAttachmentQuerySet":
         return SubmissionFileAttachment.objects.for_submission(self)
