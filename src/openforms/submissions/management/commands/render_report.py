@@ -5,7 +5,7 @@ On top of that, it is also a realistic example of using the high-level Python AP
 the renderer to output reports.
 """
 import inspect
-from typing import Type, Union
+from typing import List, Type, Union
 
 from django.core.management import BaseCommand
 
@@ -88,6 +88,9 @@ class Command(BaseCommand):
         for node in renderer:
             lead = get_indent_level(node)
             if isinstance(node, ComponentNode):
+                # do not emit empty lines
+                if not node.label and not node.display_value:
+                    continue
                 # extract label + value for tabulate data
                 tabulate_data.append([node.label, node.display_value])
                 prev_node_type = ComponentNode
@@ -105,7 +108,7 @@ class Command(BaseCommand):
 
         self._print_tabulate_data(tabulate_data)
 
-    def _print_tabulate_data(self, tabulate_data) -> None:
+    def _print_tabulate_data(self, tabulate_data: List[List[str]]) -> None:
         if not tabulate_data:
             return
         table = tabulate(tabulate_data)
