@@ -50,7 +50,7 @@ def get_confirmation_email_context_data(submission: "Submission") -> Dict[str, A
         "_form": submission.form,  # should be the same as self.form
         # TODO: this should use the :func:`openforms.formio.formatters.service.format_value`
         # but be keyed by component.key instead of the label, which
-        # submission.get_printable_data does.
+        # submission.get_printable_data did.
         **submission.data,
         "public_reference": submission.public_registration_reference,
         "form_name": submission.form.name,

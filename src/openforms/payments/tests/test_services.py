@@ -2,6 +2,7 @@ from decimal import Decimal
 from threading import Thread
 from unittest.mock import patch
 
+from django.db import close_old_connections
 from django.test import TestCase, TransactionTestCase
 
 from rest_framework import serializers
@@ -141,6 +142,7 @@ class TestPaymentRaceCondition(TransactionTestCase):
             def _thread(sid):
                 sub = Submission.objects.get(id=sid)
                 update_submission_payment_registration(sub)
+                close_old_connections()
 
             threads = [Thread(target=_thread, args=(submission.id,)) for _ in range(5)]
 
