@@ -1,25 +1,18 @@
-import hashlib
 import logging
-import os.path
 import uuid
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict
 from dataclasses import dataclass
-from datetime import date, timedelta
-from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Union
 
 from django.contrib.auth.hashers import make_password as get_salted_hash
-from django.core.files.base import ContentFile, File
 from django.db import models, transaction
 from django.template import Context, Template
 from django.urls import resolve
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from celery.result import AsyncResult
 from django_better_admin_arrayfield.models.fields import ArrayField
 from furl import furl
 from glom import glom
-from privates.fields import PrivateMediaFileField
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
@@ -27,21 +20,42 @@ from openforms.contrib.kvk.validators import validate_kvk
 from openforms.formio.formatters.service import filter_printable
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
-from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
-from openforms.utils.pdf import render_to_pdf
 from openforms.utils.validators import (
     AllowedRedirectValidator,
     SerializerValidator,
     validate_bsn,
 )
 
-from .constants import RegistrationStatuses
-from .pricing import get_submission_price
-from .query import SubmissionManager
-from .report import Report
-from .serializers import CoSignDataSerializer
+from ..constants import RegistrationStatuses
+from ..pricing import get_submission_price
+from ..query import SubmissionManager
+from ..serializers import CoSignDataSerializer
+from .submission_step import SubmissionStep
+
+if TYPE_CHECKING:
+    from .submission_files import (
+        SubmissionFileAttachment,
+        SubmissionFileAttachmentQuerySet,
+    )
 
 logger = logging.getLogger(__name__)
+
+
+def _get_config_field(field: str) -> str:
+    # workaround for when this function is called during migrations and the table
+    # hasn't fully migrated yet
+    qs = GlobalConfiguration.objects.values_list(field, flat=True)
+    return qs.first()
+
+
+def get_default_bsn() -> str:
+    default_test_bsn = _get_config_field("default_test_bsn")
+    return default_test_bsn or ""
+
+
+def get_default_kvk() -> str:
+    default_test_kvk = _get_config_field("default_test_kvk")
+    return default_test_kvk or ""
 
 
 @dataclass
@@ -114,51 +128,6 @@ class SubmissionState:
     def resolve_step(self, form_step_url: str) -> "SubmissionStep":
         step_to_modify_uuid = resolve(furl(form_step_url).pathstr).kwargs["uuid"]
         return self.get_submission_step(form_step_uuid=step_to_modify_uuid)
-
-
-def _get_config_field(field: str) -> str:
-    # workaround for when this function is called during migrations and the table
-    # hasn't fully migrated yet
-    qs = GlobalConfiguration.objects.values_list(field, flat=True)
-    return qs.first()
-
-
-def _get_values(value: Any, filter_func=bool) -> List[Any]:
-    """
-    Filter a single or multiple value into a list of acceptable values.
-    """
-    # TODO using bool() to filter is evil
-    # normalize values into a list
-    if not isinstance(value, (list, tuple)):
-        value = [value]
-    return [item for item in value if filter_func(item)]
-
-
-def _not_null_empty(value):
-    return value not in (None, "")
-
-
-def _join_mapped(
-    formatter: callable,
-    value: Any,
-    seperator: str = "; ",
-    filter_func=bool,
-) -> str:
-    # filter and map a single or multiple value into a joined string
-    formatted_values = [
-        formatter(x) for x in _get_values(value, filter_func=filter_func)
-    ]
-    return seperator.join(formatted_values)
-
-
-def get_default_bsn() -> str:
-    default_test_bsn = _get_config_field("default_test_bsn")
-    return default_test_bsn or ""
-
-
-def get_default_kvk() -> str:
-    default_test_kvk = _get_config_field("default_test_kvk")
-    return default_test_kvk or ""
 
 
 class Submission(models.Model):
@@ -581,6 +550,8 @@ class Submission(models.Model):
         return co_signer
 
     def get_attachments(self) -> "SubmissionFileAttachmentQuerySet":
+        from .submission_files import SubmissionFileAttachment
+
         return SubmissionFileAttachment.objects.for_submission(self)
 
     attachments = property(get_attachments)
@@ -640,272 +611,3 @@ class Submission(models.Model):
             return f"{self.auth_plugin} ({','.join(auth)})"
         else:
             return ""
-
-
-class SubmissionStep(models.Model):
-    """
-    Submission data.
-
-    TODO: This model (and therefore API) allows for the same form step to be
-    submitted multiple times. Can be useful for retrieving historical data or
-    changes made during filling out the form... but...
-    """
-
-    uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
-    submission = models.ForeignKey("submissions.Submission", on_delete=models.CASCADE)
-    form_step = models.ForeignKey("forms.FormStep", on_delete=models.CASCADE)
-    data = models.JSONField(_("data"), blank=True, null=True)
-    created_on = models.DateTimeField(_("created on"), auto_now_add=True)
-    modified = models.DateTimeField(_("modified on"), auto_now=True)
-
-    # can be modified by logic evaluations/checks
-    _can_submit = True
-    _is_applicable = True
-
-    class Meta:
-        verbose_name = _("Submission step")
-        verbose_name_plural = _("Submission steps")
-        unique_together = (("submission", "form_step"),)
-
-    def __str__(self):
-        return f"SubmissionStep {self.pk}: Submission {self.submission_id} submitted on {self.created_on}"
-
-    @property
-    def completed(self) -> bool:
-        # TODO: should check that all the data for the form definition is present?
-        # and validates?
-        # For now - if it's been saved, we assume that was because it was completed
-        return bool(self.pk and self.data is not None)
-
-    @property
-    def can_submit(self) -> bool:
-        return self._can_submit
-
-    @property
-    def is_applicable(self) -> bool:
-        return self._is_applicable
-
-
-class SubmissionReport(models.Model):
-    title = models.CharField(
-        verbose_name=_("title"),
-        max_length=200,
-        help_text=_("Title of the submission report"),
-    )
-    content = PrivateMediaFileField(
-        verbose_name=_("content"),
-        upload_to="submission-reports/%Y/%m/%d",
-        help_text=_("Content of the submission report"),
-    )
-    submission = models.OneToOneField(
-        to="Submission",
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        verbose_name=_("submission"),
-        help_text=_("Submission the report is about."),
-        related_name="report",
-    )
-    last_accessed = models.DateTimeField(
-        verbose_name=_("last accessed"),
-        blank=True,
-        null=True,
-        help_text=_(
-            "When the submission report was last accessed. This value is "
-            "updated when the report is downloaded."
-        ),
-    )
-    task_id = models.CharField(
-        verbose_name=_("task id"),
-        max_length=200,
-        help_text=_(
-            "ID of the celery task creating the content of the report. This is "
-            "used to check the generation status."
-        ),
-        blank=True,
-    )
-
-    class Meta:
-        verbose_name = _("submission report")
-        verbose_name_plural = _("submission reports")
-
-    def __str__(self):
-        return self.title
-
-    def generate_submission_report_pdf(self) -> str:
-        """
-        Generate the submission report as a PDF.
-
-        :return: string with the HTML used for the PDF generation, so that contents
-          can be tested.
-        """
-        form = self.submission.form
-        html_report, pdf_report = render_to_pdf(
-            "report/submission_report.html",
-            context={"report": Report(self.submission)},
-        )
-        self.content = ContentFile(
-            content=pdf_report,
-            name=f"{form.name}.pdf",  # Takes care of replacing spaces with underscores
-        )
-        self.save()
-        return html_report
-
-    def get_celery_task(self) -> Optional[AsyncResult]:
-        if not self.task_id:
-            return
-
-        return AsyncResult(id=self.task_id)
-
-
-def fmt_upload_to(prefix, instance, filename):
-    name, ext = os.path.splitext(filename)
-    return "{p}/{d}/{u}{e}".format(
-        p=prefix, d=date.today().strftime("%Y/%m/%d"), u=instance.uuid, e=ext
-    )
-
-
-def temporary_file_upload_to(instance, filename):
-    return fmt_upload_to("temporary-uploads", instance, filename)
-
-
-def submission_file_upload_to(instance, filename):
-    return fmt_upload_to("submission-uploads", instance, filename)
-
-
-class TemporaryFileUploadQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):
-    def select_prune(self, age: timedelta):
-        return self.filter(created_on__lt=timezone.now() - age)
-
-
-class TemporaryFileUpload(DeleteFileFieldFilesMixin, models.Model):
-    uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
-    content = PrivateMediaFileField(
-        verbose_name=_("content"),
-        upload_to=temporary_file_upload_to,
-        help_text=_("content of the file attachment."),
-    )
-    file_name = models.CharField(_("original name"), max_length=255)
-    content_type = models.CharField(_("content type"), max_length=255)
-    # store the file size to not have to do disk IO to get the file size
-    file_size = models.PositiveIntegerField(
-        _("file size"),
-        default=0,
-        help_text=_("Size in bytes of the uploaded file."),
-    )
-    created_on = models.DateTimeField(_("created on"), auto_now_add=True)
-
-    objects = TemporaryFileUploadQuerySet.as_manager()
-
-    class Meta:
-        verbose_name = _("temporary file upload")
-        verbose_name_plural = _("temporary file uploads")
-
-
-class SubmissionFileAttachmentQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):
-    def for_submission(self, submission: Submission):
-        return self.filter(submission_step__submission=submission)
-
-    def as_form_dict(self) -> Mapping[str, List["SubmissionFileAttachment"]]:
-        files = defaultdict(list)
-        for file in self:
-            files[file.form_key].append(file)
-        return dict(files)
-
-
-class SubmissionFileAttachmentManager(models.Manager):
-    def create_from_upload(
-        self,
-        submission_step: SubmissionStep,
-        form_key: str,
-        upload: TemporaryFileUpload,
-        file_name: Optional[str] = None,
-    ) -> Tuple["SubmissionFileAttachment", bool]:
-        try:
-            return (
-                self.get(
-                    submission_step=submission_step,
-                    temporary_file=upload,
-                    form_key=form_key,
-                ),
-                False,
-            )
-        except self.model.DoesNotExist:
-            return (
-                self.create(
-                    submission_step=submission_step,
-                    temporary_file=upload,
-                    form_key=form_key,
-                    # wrap in File() so it will be physically copied
-                    content=File(upload.content, name=upload.file_name),
-                    content_type=upload.content_type,
-                    original_name=upload.file_name,
-                    file_name=file_name,
-                ),
-                True,
-            )
-
-
-class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
-    uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
-    submission_step = models.ForeignKey(
-        to="SubmissionStep",
-        on_delete=models.CASCADE,
-        verbose_name=_("submission"),
-        help_text=_("Submission step the file is attached to."),
-        related_name="attachments",
-    )
-    # TODO OneToOne?
-    temporary_file = models.ForeignKey(
-        to="TemporaryFileUpload",
-        on_delete=models.SET_NULL,
-        null=True,
-        verbose_name=_("temporary file"),
-        help_text=_("Temporary upload this file is sourced to."),
-        related_name="attachments",
-    )
-    form_key = models.CharField(_("form component key"), max_length=255)
-
-    content = PrivateMediaFileField(
-        verbose_name=_("content"),
-        upload_to=submission_file_upload_to,
-        help_text=_("Content of the submission file attachment."),
-    )
-    file_name = models.CharField(
-        _("file name"), max_length=255, help_text=_("reformatted file name"), blank=True
-    )
-    original_name = models.CharField(
-        _("original name"), max_length=255, help_text=_("original uploaded file name")
-    )
-    content_type = models.CharField(_("content type"), max_length=255)
-    created_on = models.DateTimeField(_("created on"), auto_now_add=True)
-
-    objects = SubmissionFileAttachmentManager.from_queryset(
-        SubmissionFileAttachmentQuerySet
-    )()
-
-    class Meta:
-        verbose_name = _("submission file attachment")
-        verbose_name_plural = _("submission file attachments")
-        # see https://docs.djangoproject.com/en/2.2/topics/db/managers/#using-managers-for-related-object-access
-        base_manager_name = "objects"
-
-    def get_display_name(self):
-        return self.file_name or self.original_name
-
-    def get_format(self):
-        return os.path.splitext(self.get_display_name())[1].lstrip(".")
-
-    @property
-    def content_hash(self) -> str:
-        """
-        Calculate the sha256 hash of the content.
-
-        MD5 is fast, but has known collisions, so we use sha256 instead.
-        """
-        chunk_size = 8192
-        sha256 = hashlib.sha256()
-        with self.content.open(mode="rb") as file_content:
-            while chunk := file_content.read(chunk_size):
-                sha256.update(chunk)
-        return sha256.hexdigest()

@@ -90,7 +90,7 @@ class FormInlineStyleCSPTests(CSPMixin, APITestCase):
 
 @patch("openforms.submissions.status.AsyncResult")
 @patch(
-    "openforms.submissions.models.GlobalConfiguration.get_solo",
+    "openforms.submissions.models.submission.GlobalConfiguration.get_solo",
     return_value=GlobalConfiguration(),
 )
 class SubmissionConfirmationInlineStyleCSPTests(CSPMixin, APITestCase):
@@ -164,7 +164,7 @@ class SubmissionConfirmationInlineStyleCSPTests(CSPMixin, APITestCase):
 
 
 @patch(
-    "openforms.submissions.models.GlobalConfiguration.get_solo",
+    "openforms.submissions.models.submission.GlobalConfiguration.get_solo",
     return_value=GlobalConfiguration(),
 )
 class ConfigInlineStyleCSPTests(CSPMixin, SubmissionsMixin, APITestCase):
