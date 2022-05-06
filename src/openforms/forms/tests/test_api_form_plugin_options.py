@@ -50,7 +50,7 @@ class FormPluginOptionTest(APITestCase):
         register("test")(RegistrationPlugin)
 
         patcher = patch(
-            "openforms.forms.api.serializers.registration_register", new=register
+            "openforms.forms.api.serializers.form.registration_register", new=register
         )
         with patcher, patch_registry(model_field, register):
             with self.subTest("blank"):
@@ -107,7 +107,7 @@ class FormPluginOptionTest(APITestCase):
         register("test")(PaymentPlugin)
 
         patcher = patch(
-            "openforms.forms.api.serializers.payment_register", new=register
+            "openforms.forms.api.serializers.form.payment_register", new=register
         )
         with patcher, patch_registry(model_field, register):
             with self.subTest("blank"):
