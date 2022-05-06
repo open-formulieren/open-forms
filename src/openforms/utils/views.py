@@ -1,11 +1,15 @@
 from django import http
-from django.http import Http404
+from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.http import Http404, HttpResponse
 from django.template import TemplateDoesNotExist, loader
 from django.views.decorators.csrf import requires_csrf_token
 from django.views.defaults import ERROR_500_TEMPLATE_NAME
 from django.views.generic import TemplateView
 
 from rest_framework import exceptions as drf_exceptions
+
+from openforms.emails.context import get_wrapper_context
 
 from ..api import exceptions
 
@@ -56,3 +60,45 @@ class ErrorDetailView(TemplateView):
             }
         )
         return context
+
+
+class DevViewMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """
+    Mixin to allow view access only in dev mode.
+    """
+
+    def test_func(self):
+        return settings.DEBUG and self.request.user.is_superuser
+
+
+class EmailDebugViewMixin:  # pragma: nocover
+    """
+    Mixin to view the contents of an e-mail as they would be sent out.
+
+    This view supports ?mode=html|text querystring param, defaulting to HTML.
+    """
+
+    template_name = "emails/wrapper.html"
+
+    def _get_mode(self) -> str:
+        mode = self.request.GET.get("mode", "html")
+        assert mode in ("html", "text"), f"Unknown mode: {mode}"
+        return mode
+
+    def get_email_content(self):
+        raise NotImplementedError()
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data()
+        content = self.get_email_content()
+        ctx.update(get_wrapper_context(content))
+        ctx.update(kwargs)
+        return ctx
+
+    def render_to_response(self, context, **response_kwargs):
+        mode = self._get_mode()
+        if mode == "text":
+            return HttpResponse(
+                context["content"].encode("utf-8"), content_type="text/plain"
+            )
+        return super().render_to_response(context, **response_kwargs)

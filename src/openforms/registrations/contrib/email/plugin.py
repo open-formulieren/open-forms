@@ -11,6 +11,8 @@ from django.utils.translation import ugettext_lazy as _
 from openforms.emails.utils import send_mail_html, strip_tags_plus
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
+from openforms.submissions.rendering.constants import RenderModes
+from openforms.submissions.rendering.renderer import Renderer
 from openforms.submissions.tasks.registration import set_submission_reference
 
 from ...base import BasePlugin
@@ -20,7 +22,6 @@ from .checks import check_config
 from .config import EmailOptionsSerializer
 from .constants import AttachmentFormat
 from .models import EmailConfig
-from .presentation import SubmittedDataWrapper
 
 
 class EmailOptions(TypedDict):
@@ -50,6 +51,54 @@ class EmailRegistration(BasePlugin):
         )
         self.send_registration_email(options["to_emails"], subject, submission, options)
 
+    @staticmethod
+    def render_registration_email(submission, extra_context=None):
+        if extra_context is None:
+            extra_context = {}
+
+        # resolve the base templates
+        html_template = get_template("emails/email_registration.html")
+        text_template = get_template("emails/email_registration.txt")
+
+        # common kwargs and context
+        renderer_kwargs = {
+            "submission": submission,
+            "mode": RenderModes.registration,
+        }
+        base_context = {
+            "public_reference": submission.public_registration_reference,
+            "datetime": timezone.localtime(submission.completed_on).strftime(
+                "%H:%M:%S %d-%m-%Y"
+            ),
+        }
+
+        # HTML mode
+        html_renderer = Renderer(as_html=True, **renderer_kwargs)
+        html_content = html_template.render(
+            {
+                **base_context,
+                "renderer": html_renderer,
+                "rendering_text": False,
+                **extra_context,
+            }
+        )
+
+        # Plain text mode
+        text_renderer = Renderer(as_html=False, **renderer_kwargs)
+        text_content = text_template.render(
+            {
+                **base_context,
+                "renderer": text_renderer,
+                "rendering_text": True,
+                **extra_context,
+            }
+        )
+        # post process since the mail template has html markup and django escaped entities
+        text_content = strip_tags_plus(text_content, keep_leading_whitespace=True)
+        text_content = html.unescape(text_content)
+
+        return html_content, text_content
+
     def send_registration_email(
         self,
         recipients,
@@ -58,49 +107,9 @@ class EmailRegistration(BasePlugin):
         options: EmailOptions,
         extra_context=None,
     ):
-        # extract the formatted data first
-        printable_data: list = submission.get_printable_data()
-        # get the attachment data, keyed by form component key, value is a model instance
-        attachments = submission.get_merged_attachments()
-        # these are not related to each other now, but we can iterate over the components
-        # by keys and inject the file information again so we can generate URLs to
-        # download the files.
-        display_data = []
-
-        # get_printable_data relies on ``get_ordered_data_with_component_type``
-        for (key, (component, value)), (label, display) in zip(
-            submission.get_ordered_data_with_component_type().items(), printable_data
-        ):
-            is_file = component.get("type") == "file"
-            if is_file:
-                files = attachments.get(key, [])
-                display = SubmittedDataWrapper(is_file=True, value=files)
-            else:
-                display = SubmittedDataWrapper(is_file=False, value=display)
-
-            display_data.append((label, display))
-
-        context = {
-            "form_name": submission.form.admin_name,
-            "public_reference": submission.public_registration_reference,
-            "datetime": timezone.localtime(submission.completed_on).strftime(
-                "%H:%M:%S %d-%m-%Y"
-            ),
-            "submitted_data": display_data,
-        }
-        if extra_context:
-            context.update(extra_context)
-
-        html_template = get_template("emails/email_registration.html")
-        text_template = get_template("emails/email_registration.txt")
-
-        html_content = html_template.render(context)
-        context["rendering_text"] = True
-        text_content = text_template.render(context)
-
-        # post process since the mail template has html markup and django escaped entities
-        text_content = strip_tags_plus(text_content)
-        text_content = html.unescape(text_content)
+        html_content, text_content = self.render_registration_email(
+            submission, extra_context=extra_context
+        )
 
         attachments = []
 

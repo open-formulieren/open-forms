@@ -1,9 +1,14 @@
 from typing import Iterator, Union
 
+from django.urls import reverse
+from django.utils.html import format_html_join
 from django.utils.safestring import SafeString, mark_safe
+
+from furl import furl
 
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
 from openforms.submissions.rendering.constants import RenderModes
+from openforms.utils.urls import build_absolute_uri
 
 from ..utils import iter_components
 from .conf import RENDER_CONFIGURATION
@@ -114,3 +119,35 @@ class WYSIWYGNode(ComponentNode):
 
         content_without_tags = strip_tags_plus(content)
         return content_without_tags.rstrip()
+
+
+@register("file")
+class FileNode(ComponentNode):
+    @property
+    def display_value(self) -> str:
+        if self.mode != RenderModes.registration:
+            return super().display_value
+
+        files = []
+        attachments = self.renderer.submission.get_merged_attachments()
+        value = attachments[self.component["key"]]
+        for submission_file_attachment in value:
+            display_name = submission_file_attachment.get_display_name()
+            download_link = build_absolute_uri(
+                reverse(
+                    "submissions:attachment-download",
+                    kwargs={"uuid": submission_file_attachment.uuid},
+                )
+            )
+            url = furl(download_link)
+            url.args["hash"] = submission_file_attachment.content_hash
+            files.append((url, display_name))
+
+        if self.as_html:
+            return format_html_join(
+                ", ",
+                '<a href="{}" target="_blank" rel="noopener noreferrer">{}</a>',
+                files,
+            )
+        else:
+            return ", ".join(f"{link} ({display})" for link, display in files)
