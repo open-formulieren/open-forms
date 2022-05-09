@@ -48,7 +48,7 @@ class TestSubmissionExportAdmin(WebTest):
                 "voornaam": "shea",
                 "familienaam": "meyers",
                 "geboortedatum": "01-01-1991",
-                "multi": ["aaa", "bbb"],
+                "multi_str": ["aaa", "bbb"],
                 "my_file": [
                     {
                         "url": f"http://server/api/v1/submissions/files/uuid-uuid-uuid",
@@ -197,7 +197,7 @@ class TestSubmissionExportAdmin(WebTest):
         )
         self.assertEqual(v, [self.submission_1.form.admin_name])
 
-        v = tree.xpath("/submissions/submission/field[@name='multi']/value/text()")
+        v = tree.xpath("/submissions/submission/field[@name='multi_str']/value/text()")
         self.assertEqual(v, ["aaa", "bbb"])
 
         self.assertEqual(
