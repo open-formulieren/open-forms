@@ -1,6 +1,5 @@
 from django.utils.translation import gettext as _
 
-from openforms.emails.templatetags.form_summary import display_value
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -99,16 +98,7 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
         # check if we have something for all components
         self.assertEqual(set(d[0] for d in printable_data), expected_labels)
 
-        text_values = dict()
-        for label, value in printable_data:
-            text_values[label] = display_value({"rendering_text": True}, value)
-
-        html_values = dict()
-        for label, value in printable_data:
-            html_values[label] = display_value({"rendering_text": False}, value)
-
-        # check if text and html values are same
-        self.assertEqual(text_values, html_values)
+        text_values = dict(printable_data)
 
         for label, value in text_printed.items():
             with self.subTest(f"{label} -> '{value}'"):
@@ -129,17 +119,7 @@ class KitchensinkFormatterTestCase(BaseFormatterTestCase):
         )
 
         printable_data = _get_printable_data(submission)
-
-        text_values = dict()
-        for label, value in printable_data:
-            text_values[label] = display_value({"rendering_text": True}, value)
-
-        html_values = dict()
-        for label, value in printable_data:
-            html_values[label] = display_value({"rendering_text": False}, value)
-
-        # check if text and html values are same
-        self.assertEqual(text_values, html_values)
+        text_values = dict(printable_data)
 
         for label, value in text_printed.items():
             with self.subTest(f"{label} -> '{value}'"):
