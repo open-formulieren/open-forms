@@ -14,7 +14,10 @@ class ExportTests(TestCase):
     @freeze_time("2022-05-09T13:00:00Z")
     def test_complex_formio_configuration(self):
         """
-        Assert that complex formio configurations with logic are exported correctly.
+        Assert that complex formio configurations are exported correctly.
+
+        The hidden/visible state may be the result of static or dynamic (logic)
+        configuration.
 
         All form keys should always be present, even if they are hidden.
         """

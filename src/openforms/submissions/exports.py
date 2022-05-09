@@ -8,8 +8,7 @@ import tablib
 from lxml import etree
 from tablib.formats._json import serialize_objects_handler
 
-from openforms.submissions.models.submission import Submission
-
+from .models import Submission
 from .query import SubmissionQuerySet
 from .rendering.base import Node
 from .rendering.constants import RenderModes
