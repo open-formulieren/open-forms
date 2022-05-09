@@ -1,4 +1,5 @@
 import dataclasses
+from typing import Iterator
 
 from django.http import FileResponse, HttpResponse
 from django.utils.timezone import make_naive
@@ -7,7 +8,11 @@ import tablib
 from lxml import etree
 from tablib.formats._json import serialize_objects_handler
 
+from .models import Submission
 from .query import SubmissionQuerySet
+from .rendering.base import Node
+from .rendering.constants import RenderModes
+from .rendering.renderer import Renderer
 
 
 @dataclasses.dataclass
@@ -25,12 +30,32 @@ class ExportFileTypes:
     XML = FileType("xml", "text/xml")
 
 
+def iter_submission_data_nodes(submission: Submission) -> Iterator[Node]:
+    renderer = Renderer(submission, mode=RenderModes.export, as_html=False)
+    for step_node in renderer.get_children():
+        for component_node in step_node.get_children():
+            if component_node.is_layout:
+                continue
+            yield component_node
+
+
 def create_submission_export(queryset: SubmissionQuerySet) -> tablib.Dataset:
-    headers = []
-    for submission in queryset:
-        headers += list(submission.get_merged_data().keys())
-    headers = list(dict.fromkeys(headers))  # Remove duplicates
-    data = tablib.Dataset(headers=["Formuliernaam", "Inzendingdatum"] + headers)
+    """
+    Turn a submissions queryset into a tablib dataset for export.
+
+    .. note:: the queryset of submissions must all be of the same form!
+    """
+    # queryset *could* be empty
+    if not queryset:
+        return tablib.Dataset()
+
+    first_submission = queryset[0]
+    headers = ["Formuliernaam", "Inzendingdatum"]
+    for component_node in iter_submission_data_nodes(first_submission):
+        headers.append(component_node.component["key"])
+
+    data = tablib.Dataset(headers=headers)
+
     for submission in queryset:
         inzending_datum = (
             make_naive(submission.completed_on) if submission.completed_on else None
@@ -38,10 +63,11 @@ def create_submission_export(queryset: SubmissionQuerySet) -> tablib.Dataset:
         submission_data = [
             submission.form.admin_name,
             inzending_datum,
+            *[
+                component_node.value
+                for component_node in iter_submission_data_nodes(submission)
+            ],
         ]
-        merged_data = submission.get_merged_data()
-        for header in headers:
-            submission_data.append(merged_data.get(header))
         data.append(submission_data)
     return data
 
