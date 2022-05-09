@@ -5,7 +5,9 @@ import {
     LABEL,
     KEY,
     DESCRIPTION,
+    SHOW_IN_SUMMARY,
     SHOW_IN_EMAIL,
+    SHOW_IN_PDF,
     MULTIPLE,
     HIDDEN,
     CLEAR_ON_HIDE,
@@ -19,6 +21,18 @@ import {
  * Define the tabs available when editing components in the form builder.
  */
 
+
+const PRESENTATION = {
+    type: 'panel',
+    title: 'Presentation',
+    key: 'presentationConfig',
+    components: [
+        SHOW_IN_SUMMARY,
+        SHOW_IN_EMAIL,
+        SHOW_IN_PDF,
+    ]
+};
+
 const BASIC = {
     key: 'basic',
     label: 'Basic',
@@ -26,7 +40,7 @@ const BASIC = {
         LABEL,
         KEY,
         DESCRIPTION,
-        SHOW_IN_EMAIL,
+        PRESENTATION,
         MULTIPLE,
         HIDDEN,
         CLEAR_ON_HIDE,

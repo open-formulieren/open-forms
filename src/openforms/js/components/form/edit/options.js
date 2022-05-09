@@ -19,11 +19,27 @@ const DESCRIPTION = {
     label: 'Description'
 };
 
+const SHOW_IN_SUMMARY = {
+    type: 'checkbox',
+    key: 'showInSummary',
+    label: 'Show in summary',
+    tooltip: 'Whether to show this value in the submission summary',
+    defaultValue: true,
+};
+
 const SHOW_IN_EMAIL = {
     type: 'checkbox',
     key: 'showInEmail',
     label: 'Show in email',
     tooltip: 'Whether to show this value in the confirmation email'
+};
+
+const SHOW_IN_PDF = {
+    type: 'checkbox',
+    key: 'showInPDF',
+    label: 'Show in PDF',
+    tooltip: 'Whether to show this value in the confirmation PDF',
+    defaultValue: true,
 };
 
 const MULTIPLE = {
@@ -85,7 +101,9 @@ export {
     LABEL,
     KEY,
     DESCRIPTION,
+    SHOW_IN_SUMMARY,
     SHOW_IN_EMAIL,
+    SHOW_IN_PDF,
     MULTIPLE,
     HIDDEN,
     CLEAR_ON_HIDE,
