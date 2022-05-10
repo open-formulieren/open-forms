@@ -189,9 +189,18 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: open-forms-oas
+      - name: Write failure markdown
+        run: |
+          echo 'Run the following command locally and commit the changes' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo './bin/generate_oas.sh' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
       - name: Check for OAS changes
         run: |
           diff openapi.yaml src/openapi.yaml
+      - name: Remove summary markdown  # only runs if the previous step succeeded
+        run: rm $GITHUB_STEP_SUMMARY
 
   oas-lint:
     needs: oas-up-to-date
