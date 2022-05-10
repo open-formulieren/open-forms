@@ -2388,6 +2388,10 @@ paths:
               schema:
                 type: string
                 format: binary
+            application/json:
+              schema:
+                type: string
+                format: binary
           description: ''
           headers:
             X-Session-Expires-In:
@@ -2411,6 +2415,24 @@ paths:
       responses:
         '204':
           description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+        4XX:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+        5XX:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
