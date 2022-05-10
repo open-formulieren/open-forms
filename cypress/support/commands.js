@@ -32,13 +32,21 @@ Cypress.Commands.add("formStartButton", () => {
 
 // Find a form field by its key
 Cypress.Commands.add("formField", (fieldKey, timeout=10000) => {
-    cy.wait(1000)
-    return cy.get(`.openforms-form-control--${fieldKey}`, {timeout: timeout});
+    cy.wait(500)
+    return cy.get(`.openforms-form-control--${fieldKey}`, {timeout: timeout}).should("be.visible");
 })
 
 // Find the continue button
 Cypress.Commands.add("continueButton", (timeout=10000) => {
     return cy.get('button[name="next"][type="submit"]', {timeout: timeout});
+})
+
+// Continue to the next form step
+Cypress.Commands.add("nextStep", () => {
+    cy.continueButton().should(($button) => {
+        expect($button).not.to.have.attr("aria-disabled");
+        $button.click();
+    });
 })
 
 // Find the privacyCheckbox
