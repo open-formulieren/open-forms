@@ -187,7 +187,11 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         url = reverse("api:submissions:temporary-file", kwargs={"uuid": upload.uuid})
 
         with capture_on_commit_callbacks(execute=True):
-            response = self.client.delete(url)
+            response = self.client.delete(
+                url,
+                HTTP_ACCEPT="application/json",
+                content_type="application/json",
+            )
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
