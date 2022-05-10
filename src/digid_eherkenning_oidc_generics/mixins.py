@@ -7,8 +7,6 @@ from django.core.exceptions import SuspiciousOperation
 from glom import PathAccessError, glom
 from mozilla_django_oidc_db.mixins import SoloConfigMixin as _SoloConfigMixin
 
-from digid_eherkenning_oidc_generics.utils import obfuscate_claim
-
 from . import (
     digid_machtigen_settings,
     digid_settings,
