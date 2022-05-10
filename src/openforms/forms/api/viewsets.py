@@ -19,7 +19,6 @@ from rest_framework.response import Response
 
 from openforms.api.pagination import PageNumberPagination
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
-from .serializers.form_variable import FormVariableListSerializer, FormVariableSerializer
 
 from ..messages import add_success_message
 from ..models import (
@@ -51,6 +50,7 @@ from .serializers import (
     FormStepSerializer,
     FormVersionSerializer,
 )
+from .serializers.form_variable import FormVariableSerializer
 
 
 @extend_schema(
@@ -531,4 +531,6 @@ class FormVariablesViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )

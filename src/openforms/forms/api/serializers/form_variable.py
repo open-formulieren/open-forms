@@ -7,6 +7,7 @@ class FormVariableListSerializer(serializers.ListSerializer):
     def create(self, validated_data):
         return super().create(validated_data)
 
+
 class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = FormVariable
@@ -14,6 +15,7 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             "form",
             "name",
+            "slug",
             "source",
             "prefill_plugin",
             "prefill_attribute",
@@ -29,4 +31,3 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
                 "lookup_url_kwarg": "uuid_or_slug",
             },
         }
-

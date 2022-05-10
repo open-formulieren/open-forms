@@ -33,6 +33,7 @@ import {
     updateOrCreateFormSteps,
     saveLogicRules,
     savePriceRules,
+    updateOrCreateFormVariables,
 } from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import FormMetaFields from './FormMetaFields';
@@ -102,6 +103,8 @@ const initialFormState = {
     logicRulesToDelete: [],
     priceRules: [],
     priceRulesToDelete: [],
+    formVariables: [],
+    formVariablesToDelete: [],
     // backend error handling
     validationErrors: [],
     tabsWithErrors: [],
@@ -662,6 +665,14 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             uuid: formUuid,
         },
         newForm: !formUuid,
+        // TODO: create variables properly
+        formVariables: [{
+            name: 'Today',
+            slug: 'today',
+            source: 'static',
+            dataType: 'datetime',
+            initial_value: 'today',
+        }]
     };
     const [state, dispatch] = useImmerReducer(reducer, initialState);
 
@@ -964,6 +975,14 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             dispatch({type: 'SET_FETCH_ERRORS', payload: e.message});
             window.scrollTo(0, 0);
             return;
+        }
+
+        // TODO: Save the form variables
+        try {
+            const {formVariables, formVariablesToDelete} = state;
+            const savedFormVariables = await updateOrCreateFormVariables(formUrl, csrftoken, formVariables, formVariablesToDelete);
+        } catch (e) {
+            // TODO
         }
 
         // finalize the "transacton".

@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from ..constants import FormVariablesDataTypes, FormVariablesSources
@@ -25,6 +26,10 @@ class FormVariable(models.Model):
     name = models.SlugField(
         verbose_name=_("name"),
         help_text=_("Name of the variable"),
+    )
+    slug = models.SlugField(
+        verbose_name=_("slug"),
+        help_text=_("Slug name of the variable, should be unique per form."),
     )
     source = models.CharField(
         verbose_name=_("source"),
@@ -75,6 +80,13 @@ class FormVariable(models.Model):
     class Meta:
         verbose_name = _("Form variable")
         verbose_name_plural = _("Form variables")
+        unique_together = ("slug", "form")
 
     def __str__(self):
         return _("Form variable %(name)s") % {"name": self.name}
+
+    def get_initial_value(self):
+        # TODO
+        if self.source == FormVariablesSources.static:
+            if self.initial_value == "today":
+                return timezone.now()

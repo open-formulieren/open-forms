@@ -34,6 +34,7 @@ class ProcessingResults(DjangoChoices):
 
 
 class SubmissionVariableValueSources(DjangoChoices):
+    static = ChoiceItem("static", _("Static"))
     user_input = ChoiceItem("user_input", _("User input"))
     prefill = ChoiceItem("prefill", _("Prefill"))
     logic = ChoiceItem("logic", _("Logic"))

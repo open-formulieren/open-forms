@@ -1,3 +1,4 @@
+from django.template import Context, Template
 from django.urls import reverse
 
 import elasticapm
@@ -24,6 +25,7 @@ def get_dynamic_configuration(
         configuration, request=request, submission=submission
     )
     configuration = apply_prefill(configuration, submission=submission)
+    configuration = insert_variables(configuration, submission=submission)
     return configuration
 
 
@@ -42,3 +44,15 @@ def update_urls_in_place(configuration: dict, request: Request):
             component["url"] = request.build_absolute_uri(
                 reverse("api:formio:temporary-file-upload")
             )
+
+
+def insert_variables(configuration, submission):
+    # TODO
+    for component in iter_components(configuration):
+        if component.get("type") == "content":
+            content_with_vars = Template(component.get("html", "")).render(
+                Context(submission.data)
+            )
+            component["html"] = content_with_vars
+
+    return configuration

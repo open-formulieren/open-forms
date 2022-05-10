@@ -2,6 +2,7 @@ import {FormException} from '../../../utils/exception';
 import {get, post, put, ValidationErrors} from '../../../utils/fetch';
 import {
     FORM_DEFINITIONS_ENDPOINT,
+    FORM_VARIABLES_ENDPOINT,
     LOGICS_ENDPOINT,
     PRICE_RULES_ENDPOINT,
 } from './constants';
@@ -177,7 +178,25 @@ const savePriceRules = async (formUrl, csrftoken, priceRules, priceRulesToDelete
     return createdRules;
 };
 
+const updateOrCreateFormVariables = async (formUrl, csrftoken, formVariables, formVariablesToDelete) => {
+    // TODO in progress
+    const formVariablesWithFormUrl = formVariables.map(formVariable => {
+        return {
+            ...formVariable,
+            form: formUrl
+        };
+    });
+
+    try {
+        const response = await post(FORM_VARIABLES_ENDPOINT, csrftoken, formVariablesWithFormUrl);
+        console.log(response)
+    } catch(e) {
+        console.error(e);
+    }
+};
+
 
 export { loadPlugins, PluginLoadingError };
 export { updateOrCreateFormSteps };
+export { updateOrCreateFormVariables };
 export { saveLogicRules, savePriceRules };

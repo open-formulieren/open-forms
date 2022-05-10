@@ -18,7 +18,7 @@ from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.contrib.kvk.validators import validate_kvk
 from openforms.formio.formatters.service import filter_printable
-from openforms.forms.models import FormStep
+from openforms.forms.models import FormStep, FormVariable
 from openforms.payments.constants import PaymentStatus
 from openforms.utils.validators import (
     AllowedRedirectValidator,
@@ -26,6 +26,7 @@ from openforms.utils.validators import (
     validate_bsn,
 )
 
+from ...forms.constants import FormVariablesSources
 from ..constants import RegistrationStatuses
 from ..pricing import get_submission_price
 from ..query import SubmissionManager
@@ -525,6 +526,24 @@ class Submission(models.Model):
 
         return appointment_data
 
+    def get_static_variables_data(self):
+        # TODO improve
+        static_variables_data = {}
+
+        if not self.is_completed:
+            form_variables = FormVariable.objects.filter(
+                form=self.form, source=FormVariablesSources.static
+            )
+            for form_variable in form_variables:
+                static_variables_data[
+                    form_variable.slug
+                ] = form_variable.get_initial_value()
+        else:
+            # TODO retrieve saved submission variable values
+            pass
+
+        return static_variables_data
+
     def get_merged_data(self) -> dict:
         merged_data = dict()
 
@@ -538,7 +557,7 @@ class Submission(models.Model):
                     )
                 merged_data[key] = value
 
-        return merged_data
+        return {**self.get_static_variables_data(), **merged_data}
 
     data = property(get_merged_data)
 
