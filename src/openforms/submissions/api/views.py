@@ -6,11 +6,13 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from django_sendfile import sendfile
+from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.generics import DestroyAPIView, GenericAPIView
 from rest_framework.response import Response
 
 from openforms.api.parsers import MaxFilesizeMultiPartParser
+from openforms.api.serializers import ExceptionSerializer
 
 from ..attachments import clean_mime_type
 from ..models import SubmissionReport, TemporaryFileUpload
@@ -129,13 +131,17 @@ class TemporaryFileUploadView(GenericAPIView):
             "Access to this view requires an active form submission. "
             "Unclaimed temporary files automatically expire after {expire_days} day(s). "
         ),
-        responses={204: None},
+        responses={
+            204: None,
+            ("4XX", CamelCaseJSONRenderer.media_type): ExceptionSerializer,
+            ("5XX", CamelCaseJSONRenderer.media_type): ExceptionSerializer,
+        },
     ),
 )
 class TemporaryFileView(DestroyAPIView):
     authentication_classes = []
     permission_classes = [OwnsTemporaryUploadPermission]
-    renderer_classes = [FileRenderer]
+    renderer_classes = [FileRenderer, CamelCaseJSONRenderer]
 
     queryset = TemporaryFileUpload.objects.all()
     lookup_field = "uuid"
