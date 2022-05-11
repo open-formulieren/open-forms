@@ -29,13 +29,6 @@ services:
     networks:
       - open-forms-dev
 
-  sdk:
-    image: openformulieren/open-forms-sdk
-    ports:
-    - 8001:8080
-    networks:
-      - open-forms-dev
-
   busybox:
     image: busybox
     command: /bin/chown -R 1000 /private-media
@@ -63,7 +56,6 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - CELERY_LOGLEVEL=DEBUG
-      - SDK_BASE_URL=${SDK_BASE_URL:-http://localhost:8001}
       - OPENFORMS_LOCATION_CLIENT=${OPENFORMS_LOCATION_CLIENT:-openforms.contrib.bag.client.BAGClient}
       - TWO_FACTOR_FORCE_OTP_ADMIN=0
       - TWO_FACTOR_PATCH_ADMIN=0
@@ -78,7 +70,6 @@ services:
       - 8000:8000
     depends_on:
       - db
-      - sdk
     networks:
       - open-forms-dev
 
