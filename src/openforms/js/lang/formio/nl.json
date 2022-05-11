@@ -296,5 +296,6 @@
   "Make this component read only": "Maak dit component alleen-lezen",
   "(optional)": "(optioneel)",
   "Uploading file...": "Bezig met uploaden...",
-  "Please wait for the file(s) upload to finish before continuing.": "Wacht tot het uploaden van de bestanden is voltooid voordat u verdergaat."
+  "Please wait for the file(s) upload to finish before continuing.": "Wacht tot het uploaden van de bestanden is voltooid voordat u verdergaat.",
+  "array_nonempty": "Dit veld moet minstens één waarde hebben."
 }
