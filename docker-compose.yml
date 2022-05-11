@@ -29,6 +29,11 @@ services:
     networks:
       - open-forms-dev
 
+  smtp:
+    image: namshi/smtp
+    networks:
+      - open-forms-dev
+
   busybox:
     image: busybox
     command: /bin/chown -R 1000 /private-media
@@ -60,6 +65,7 @@ services:
       - TWO_FACTOR_FORCE_OTP_ADMIN=0
       - TWO_FACTOR_PATCH_ADMIN=0
       - CORS_ALLOW_ALL_ORIGINS=${CORS_ALLOW_ALL_ORIGINS:-true}
+      - EMAIL_HOST=smtp
       # Needed for Celery Flower to match the TIME_ZONE configured in the
       # settings used by workers and beat containers.
       - TZ=Europe/Amsterdam
@@ -70,6 +76,8 @@ services:
       - 8000:8000
     depends_on:
       - db
+      - redis
+      - smtp
     networks:
       - open-forms-dev
 
