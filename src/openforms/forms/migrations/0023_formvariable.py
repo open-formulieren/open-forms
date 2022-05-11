@@ -25,8 +25,10 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "name",
-                    models.SlugField(
-                        help_text="Name of the variable", verbose_name="name"
+                    models.CharField(
+                        help_text="Name of the variable",
+                        max_length=100,
+                        verbose_name="name",
                     ),
                 ),
                 (

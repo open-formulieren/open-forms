@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from typing import List
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -5,6 +8,23 @@ from openforms.forms.models.form_variable import FormVariable
 
 from ..constants import SubmissionVariableValueSources
 from .submission import Submission
+
+
+@dataclass
+class SubmissionVariableValuesState:
+    variables: List["SubmissionVariableValue"]
+
+    def get_variables_to_prefill(self):
+        return [
+            variable
+            for variable in self.variables
+            if variable.source == SubmissionVariableValueSources.prefill
+        ]
+
+    def get_data(self):
+        return {
+            variable.form_variable.slug: variable.value for variable in self.variables
+        }
 
 
 class SubmissionVariableValue(models.Model):
@@ -45,4 +65,6 @@ class SubmissionVariableValue(models.Model):
     modified_at = models.DateTimeField(
         verbose_name=_("modified at"),
         help_text=_("The date/time at which the value of this variable was last set"),
+        null=True,
+        blank=True,
     )

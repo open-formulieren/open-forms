@@ -23,9 +23,10 @@ class FormVariable(models.Model):
         on_delete=models.CASCADE,
         null=True,
     )
-    name = models.SlugField(
+    name = models.CharField(
         verbose_name=_("name"),
         help_text=_("Name of the variable"),
+        max_length=100,
     )
     slug = models.SlugField(
         verbose_name=_("slug"),

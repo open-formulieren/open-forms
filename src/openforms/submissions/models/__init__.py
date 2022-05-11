@@ -9,6 +9,7 @@ from .submission_files import (
 )
 from .submission_report import SubmissionReport
 from .submission_step import SubmissionStep
+from .submission_variable_value import SubmissionVariableValue
 
 __all__ = [
     "Submission",
@@ -22,4 +23,5 @@ __all__ = [
     "temporary_file_upload_to",
     "get_default_bsn",
     "get_default_kvk",
+    "SubmissionVariableValue",
 ]

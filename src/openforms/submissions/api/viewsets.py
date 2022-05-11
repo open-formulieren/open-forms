@@ -16,12 +16,13 @@ from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer
 from openforms.logging import logevent
+from openforms.prefill import prefill_variables
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ...utils.api.throttle_classes import PollingRateThrottle
 from ..attachments import attach_uploads_to_submission_step
 from ..form_logic import evaluate_form_logic
-from ..models import Submission, SubmissionStep
+from ..models import Submission, SubmissionStep, SubmissionVariableValue
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser, IgnoreDataJSONRenderer
 from ..signals import submission_complete, submission_start
 from ..status import SubmissionProcessingStatus
@@ -110,6 +111,8 @@ class SubmissionViewSet(
         add_submmission_to_session(serializer.instance, self.request.session)
 
         logevent.submission_start(serializer.instance)
+
+        prefill_variables(serializer.instance)
 
     @extend_schema(
         summary=_("Retrieve co-sign state"),
@@ -370,6 +373,8 @@ class SubmissionStepViewSet(
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
+        self.save_variables(instance)
+
         logevent.submission_step_fill(instance)
 
         attach_uploads_to_submission_step(instance)
@@ -381,6 +386,29 @@ class SubmissionStepViewSet(
 
         status_code = status.HTTP_200_OK if not create else status.HTTP_201_CREATED
         return Response(serializer.data, status=status_code)
+
+    def save_variables(self, submission_step):
+        # TODO move this code somewhere else and improve
+        variables_state = (
+            submission_step.submission.load_submission_variable_values_state()
+        )
+        data = submission_step.data
+
+        variables_to_create = []
+        variables_to_update = []
+        for variable in variables_state.variables:
+            slug = variable.form_variable.slug
+            if slug in data and variable.value != data[slug]:
+                variable.value = data[slug]
+                if variable.pk:
+                    variable.modified_at = timezone.now()
+                    variables_to_update.append(variable)
+                else:
+                    variables_to_create.append(variable)
+        SubmissionVariableValue.objects.bulk_create(variables_to_create)
+        SubmissionVariableValue.objects.bulk_update(
+            variables_to_update, fields=["value", "modified_at"]
+        )
 
     @extend_schema(
         summary=_("Apply/check form logic"),

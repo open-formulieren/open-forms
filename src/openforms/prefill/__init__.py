@@ -86,6 +86,13 @@ def apply_prefill(configuration: JSONObject, submission: "Submission", register=
     return config_copy
 
 
+def prefill_variables(submission):
+    state = submission.load_submission_variable_values_state()
+    variables_to_prefill = state.get_variables_to_prefill()
+
+    # TODO prefill variables
+
+
 def _fetch_prefill_values_cached(
     grouped_fields: Dict[str, list], submission: "Submission", register
 ) -> Dict[str, Dict[str, Any]]:

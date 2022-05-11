@@ -24,7 +24,8 @@ def get_dynamic_configuration(
     configuration = handle_custom_types(
         configuration, request=request, submission=submission
     )
-    configuration = apply_prefill(configuration, submission=submission)
+    # Moved to submission viewset on perform_create
+    # configuration = apply_prefill(configuration, submission=submission)
     configuration = insert_variables(configuration, submission=submission)
     return configuration
 
@@ -47,12 +48,16 @@ def update_urls_in_place(configuration: dict, request: Request):
 
 
 def insert_variables(configuration, submission):
+    variables_values_state = submission.load_submission_variable_values_state()
+
+    data = {**variables_values_state.get_data(), **submission.data}
     # TODO
     for component in iter_components(configuration):
         if component.get("type") == "content":
             content_with_vars = Template(component.get("html", "")).render(
-                Context(submission.data)
+                Context(data)
             )
             component["html"] = content_with_vars
+    # TODO inject values of prefilled variables
 
     return configuration

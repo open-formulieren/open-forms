@@ -400,6 +400,39 @@ class Submission(models.Model):
         if save:
             self.save(update_fields=["auth_attributes_hashed", *attrs])
 
+    def load_submission_variable_values_state(self):
+        if hasattr(self, "_variables_state"):
+            return self._variables_state
+
+        # circular import
+        from .submission_variable_value import (
+            SubmissionVariableValue,
+            SubmissionVariableValuesState,
+        )
+
+        # Add the submission variables values - Some of these will also not yet be in the database
+        form_variables = FormVariable.objects.filter(form=self.form)
+        saved_submission_variable_values = SubmissionVariableValue.objects.filter(
+            submission=self
+        )
+        submission_variable_values = []
+        for form_variable in form_variables:
+            submission_var = saved_submission_variable_values.filter(
+                form_variable=form_variable
+            ).first()
+            if not submission_var:
+                # TODO deal with static vars that should be re-evaluated if forms are resumed
+                submission_var = SubmissionVariableValue(
+                    submission=self,
+                    form_variable=form_variable,
+                    value=form_variable.get_initial_value(),
+                )
+            submission_variable_values.append(submission_var)
+
+        state = SubmissionVariableValuesState(variables=submission_variable_values)
+        self._variables_state = state
+        return state
+
     def load_execution_state(self) -> SubmissionState:
         """
         Retrieve the current execution state of steps from the database.
@@ -526,24 +559,6 @@ class Submission(models.Model):
 
         return appointment_data
 
-    def get_static_variables_data(self):
-        # TODO improve
-        static_variables_data = {}
-
-        if not self.is_completed:
-            form_variables = FormVariable.objects.filter(
-                form=self.form, source=FormVariablesSources.static
-            )
-            for form_variable in form_variables:
-                static_variables_data[
-                    form_variable.slug
-                ] = form_variable.get_initial_value()
-        else:
-            # TODO retrieve saved submission variable values
-            pass
-
-        return static_variables_data
-
     def get_merged_data(self) -> dict:
         merged_data = dict()
 
@@ -557,7 +572,7 @@ class Submission(models.Model):
                     )
                 merged_data[key] = value
 
-        return {**self.get_static_variables_data(), **merged_data}
+        return merged_data
 
     data = property(get_merged_data)
 

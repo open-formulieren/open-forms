@@ -116,6 +116,7 @@ def evaluate_form_logic(
                     submission_step_to_modify._is_applicable = False
                     if submission_step_to_modify == step:
                         step._is_applicable = False
+                # TODO add action to change variables
 
     if dirty:
         # only keep the changes in the data, so that old values do not overwrite otherwise
