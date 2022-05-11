@@ -10,6 +10,7 @@ import './sdk-snippet';
 import './plugin_configuration';
 
 import Debug from './debug';
+import SessionStatus from './SessionStatus';
 import {getIntlProviderProps} from './i18n';
 
 
@@ -58,8 +59,22 @@ const mountDebugComponent = () => {
 };
 
 
+const mountSessionStatus = (intlProps) => {
+    const nodes = document.querySelectorAll('.session-status');
+    for (const node of nodes) {
+        ReactDOM.render(
+            <IntlProvider {...intlProps}>
+                <SessionStatus />
+            </IntlProvider>,
+            node
+        );
+    }
+}
+
+
 const bootstrapApplication = async () => {
     const intlProviderProps = await getIntlProviderProps();
+    mountSessionStatus(intlProviderProps);
     mountForm(intlProviderProps);
     mountFormVersions(intlProviderProps);
 };
