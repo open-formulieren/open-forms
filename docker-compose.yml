@@ -1,3 +1,16 @@
+#
+# Docker-compose for full Open Form stack.
+#
+# DISCLAIMER: THIS IS FOR DEVELOPMENT PURPOSES ONLY AND NOT SUITABLE FOR PRODUCTION.
+#
+# You can use this docker-compose to spin up a local Open Forms stack for demo/try-out
+# purposes, or to get some insight in the various components involved (e.g. to build
+# your Helm charts from). Note that various environment variables are UNSAFE and merely
+# specified so that you can get up and running with the least amount of friction.
+#
+# Before deploying to production, please review the environment configuration reference:
+# https://open-forms.readthedocs.io/en/latest/installation/config.html
+#
 version: '3.4'
 
 services:
@@ -16,10 +29,8 @@ services:
     networks:
       - open-forms-dev
 
-  sdk:
-    image: openformulieren/open-forms-sdk
-    ports:
-    - 8001:8080
+  smtp:
+    image: namshi/smtp
     networks:
       - open-forms-dev
 
@@ -50,11 +61,11 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - CELERY_LOGLEVEL=DEBUG
-      - SDK_BASE_URL=${SDK_BASE_URL:-http://localhost:8001}
       - OPENFORMS_LOCATION_CLIENT=${OPENFORMS_LOCATION_CLIENT:-openforms.contrib.bag.client.BAGClient}
       - TWO_FACTOR_FORCE_OTP_ADMIN=0
       - TWO_FACTOR_PATCH_ADMIN=0
-      - CORS_ALLOW_ALL_ORIGINS=${CORS_ALLOW_ALL_ORIGINS:-false}
+      - CORS_ALLOW_ALL_ORIGINS=${CORS_ALLOW_ALL_ORIGINS:-true}
+      - EMAIL_HOST=smtp
       # Needed for Celery Flower to match the TIME_ZONE configured in the
       # settings used by workers and beat containers.
       - TZ=Europe/Amsterdam
@@ -65,7 +76,8 @@ services:
       - 8000:8000
     depends_on:
       - db
-      - sdk
+      - redis
+      - smtp
     networks:
       - open-forms-dev
 
