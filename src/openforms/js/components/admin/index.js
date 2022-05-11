@@ -60,7 +60,7 @@ const mountDebugComponent = () => {
 
 
 const mountSessionStatus = (intlProps) => {
-    const nodes = document.querySelectorAll('.session-status');
+    const nodes = document.querySelectorAll('.react-session-status');
     for (const node of nodes) {
         ReactDOM.render(
             <IntlProvider {...intlProps}>

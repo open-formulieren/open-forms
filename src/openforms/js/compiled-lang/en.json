@@ -179,6 +179,12 @@
       "value": "Authentication"
     }
   ],
+  "6hApJ7": [
+    {
+      "type": 0,
+      "value": "Stay logged in"
+    }
+  ],
   "7/n6O+": [
     {
       "type": 0,
@@ -395,6 +401,12 @@
       "value": "Display main website link"
     }
   ],
+  "ADAp0E": [
+    {
+      "type": 0,
+      "value": "Please log in again to continue."
+    }
+  ],
   "AFyQut": [
     {
       "type": 0,
@@ -533,6 +545,12 @@
     {
       "type": 0,
       "value": "Move down"
+    }
+  ],
+  "DcI1VF": [
+    {
+      "type": 0,
+      "value": "Session expired"
     }
   ],
   "Dwnqdq": [
@@ -727,6 +745,12 @@
       "value": "hidden"
     }
   ],
+  "JDD7PC": [
+    {
+      "type": 0,
+      "value": "Authentication failure"
+    }
+  ],
   "JZRX+C": [
     {
       "type": 0,
@@ -837,6 +861,12 @@
       "value": "Description"
     }
   ],
+  "NJ3Psx": [
+    {
+      "type": 0,
+      "value": "Your session has expired."
+    }
+  ],
   "NwTdLM": [
     {
       "type": 0,
@@ -859,6 +889,20 @@
     {
       "type": 0,
       "value": "Registration"
+    }
+  ],
+  "OX8wxE": [
+    {
+      "type": 0,
+      "value": "Your session is about to expire "
+    },
+    {
+      "type": 1,
+      "value": "delta"
+    },
+    {
+      "type": 0,
+      "value": ". Extend your session if you wish to continue."
     }
   ],
   "OvqnXR": [
@@ -965,6 +1009,46 @@
       "value": "Data removal"
     }
   ],
+  "S94ET7": [
+    {
+      "type": 0,
+      "value": "Session expires "
+    },
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "on "
+            },
+            {
+              "type": 1,
+              "value": "expiryDate"
+            },
+            {
+              "type": 0,
+              "value": " at "
+            },
+            {
+              "type": 1,
+              "value": "expiryTime"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 1,
+              "value": "relativeTimeToExpiry"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "expiresToday"
+    }
+  ],
   "SX2HTA": [
     {
       "type": 0,
@@ -987,6 +1071,12 @@
     {
       "type": 0,
       "value": "ID"
+    }
+  ],
+  "TFxv38": [
+    {
+      "type": 0,
+      "value": "Back to login"
     }
   ],
   "TR5xSY": [
@@ -1281,6 +1371,12 @@
       "value": "When"
     }
   ],
+  "g+ppJj": [
+    {
+      "type": 0,
+      "value": "Do nothing"
+    }
+  ],
   "gGNIdG": [
     {
       "type": 0,
@@ -1385,6 +1481,12 @@
     {
       "type": 0,
       "value": "No"
+    }
+  ],
+  "jo1PVg": [
+    {
+      "type": 0,
+      "value": "Session will expire"
     }
   ],
   "k34Vke": [
@@ -1577,6 +1679,12 @@
     {
       "type": 0,
       "value": "the field"
+    }
+  ],
+  "rZfe8Z": [
+    {
+      "type": 0,
+      "value": "Sorry, we couldn't do that because you are logged out - this may be because your session expired."
     }
   ],
   "t99ynC": [

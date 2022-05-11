@@ -1,3 +1,4 @@
+import debounce from 'lodash/debounce';
 import {createGlobalstate} from 'state-pool';
 
 const SessionExpiresInHeader = 'X-Session-Expires-In';
@@ -16,15 +17,17 @@ const updateSesionExpiry = (seconds, authFailed=false) => {
         expiry.numSeconds = seconds;
         expiry.authFailure = authFailed;
     });
-    // TODO: we can schedule a message to be set if expiry is getting close
 };
+
+const debouncedUpdate = debounce(updateSesionExpiry, 200);
 
 const onResponseHook = (response) => {
     const sessionExpiry = response.headers.get(SessionExpiresInHeader);
     if (sessionExpiry) {
         const numSeconds = parseInt(sessionExpiry, 10);
         const authFailed = response.status === 401;
-        updateSesionExpiry(numSeconds, authFailed);
+        debouncedUpdate.cancel();
+        debouncedUpdate(numSeconds, authFailed);
     }
 }
 

@@ -1,0 +1,41 @@
+.session-status-wrapper {
+  &--no-modal {
+    position: fixed;
+    z-index: 10;
+    bottom: 0;
+    right: 0;
+  }
+
+  &--modal {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1em;
+  }
+}
+
+
+.session-status {
+  padding: 1em;
+  background: $django-hijack-yellow;
+  border: 2px solid #ae9e49;
+
+  &--in-modal {
+    background: transparent;
+    border: none;
+    padding: 0;
+    width: 100%;
+  }
+
+  &--expired {
+    color: $color-error;
+    border-color: $color-error;
+    font-weight: bold;
+    text-align: center;
+
+    p {
+      margin-bottom: 0;
+    }
+  }
+}
