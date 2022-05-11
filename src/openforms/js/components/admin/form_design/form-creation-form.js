@@ -49,6 +49,9 @@ import {FormLogic, EMPTY_RULE} from './FormLogic';
 import {PriceLogic, EMPTY_PRICE_RULE} from './PriceLogic';
 import {BACKEND_OPTIONS_FORMS} from './registrations';
 import {getFormComponents, findComponent, checkKeyChange, replaceComponentKeyInLogic} from './utils';
+import VariablesEditor from "./variables/VariablesEditor";
+import {updateFormVariables} from "./variables/utils";
+import {STATIC_FORM_VARIABLES} from "./variables/constants";
 
 const initialFormState = {
     form: {
@@ -308,6 +311,9 @@ function reducer(draft, action) {
                 default:
                     throw new Error(`Unknown mutation type '${mutationType}'`);
             }
+
+            // Check if the formVariables need updating
+            draft.formVariables = updateFormVariables(mutationType, schema, originalComp, draft.formVariables);
 
             // Check if a key has been changed and if the logic rules need updating
             const hasKeyChanged = checkKeyChange(mutationType, schema, originalComp);
@@ -666,13 +672,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
         },
         newForm: !formUuid,
         // TODO: create variables properly
-        formVariables: [{
-            name: 'Today',
-            slug: 'today',
-            source: 'static',
-            dataType: 'datetime',
-            initial_value: 'today',
-        }]
+        formVariables: [...STATIC_FORM_VARIABLES]
     };
     const [state, dispatch] = useImmerReducer(reducer, initialState);
 
@@ -1060,6 +1060,9 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         <Tab>
                             <FormattedMessage defaultMessage="Appointments" description="Appointments tab title" />
                         </Tab>
+                        <Tab>
+                            <FormattedMessage defaultMessage="Variables" description="Variables tab title" />
+                        </Tab>
                     </TabList>
 
                     <TabPanel>
@@ -1169,6 +1172,10 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                                     payload: event,
                                 });
                             }} />
+                    </TabPanel>
+
+                    <TabPanel>
+                        <VariablesEditor variables={state.formVariables} />
                     </TabPanel>
                 </Tabs>
             </ComponentsContext.Provider>
