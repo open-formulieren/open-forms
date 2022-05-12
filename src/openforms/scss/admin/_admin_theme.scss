@@ -255,6 +255,12 @@ div.breadcrumbs {
   font-size: smaller;
 }
 
+#footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 /**
  * Environment banner
  */

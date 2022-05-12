@@ -1,9 +1,7 @@
 .session-status-wrapper {
   &--no-modal {
-    position: fixed;
-    z-index: 10;
-    bottom: 0;
-    right: 0;
+    color: $color_secondary_dark;
+    font-size: smaller;
   }
 
   &--modal {
@@ -17,15 +15,15 @@
 
 
 .session-status {
-  padding: 1em;
-  background: $django-hijack-yellow;
-  border: 2px solid #ae9e49;
-
   &--in-modal {
     background: transparent;
     border: none;
     padding: 0;
     width: 100%;
+
+    p:not(:last-child) {
+      margin-bottom: .5em;
+    }
   }
 
   &--expired {
