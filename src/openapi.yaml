@@ -1571,6 +1571,31 @@ paths:
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
+  /api/v1/ping:
+    get:
+      operationId: ping_retrieve
+      description: Pinging the API extends the user session. Note that you must be
+        a staff user or have active submission(s) in your session.
+      summary: Ping the API
+      tags:
+      - ping
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+        4XX:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/prefill/plugins:
     get:
       operationId: prefill_plugins_list
