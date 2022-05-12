@@ -40,9 +40,6 @@ class FormVariablesSources(DjangoChoices):
 
 
 class FormVariablesDataTypes(DjangoChoices):
-    inferred_from_component = ChoiceItem(
-        "inferred_from_component", _("Inferred from component")
-    )
     string = ChoiceItem("string", _("String"))
     null = ChoiceItem("null", _("Null"))
     boolean = ChoiceItem("boolean", _("Boolean"))
@@ -50,3 +47,7 @@ class FormVariablesDataTypes(DjangoChoices):
     array = ChoiceItem("array", _("Array"))
     number = ChoiceItem("number", _("Number"))
     datetime = ChoiceItem("datetime", _("Datetime"))
+
+
+class FormVariablesInitialValues(DjangoChoices):
+    today = ChoiceItem("today", _("Today"))

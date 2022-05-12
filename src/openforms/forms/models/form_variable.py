@@ -1,9 +1,21 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from ..constants import FormVariablesDataTypes, FormVariablesSources
+from ..constants import (
+    FormVariablesDataTypes,
+    FormVariablesInitialValues,
+    FormVariablesSources,
+)
 from .form import Form
 from .form_definition import FormDefinition
+
+
+def get_today():
+    return timezone.now().isoformat()
+
+
+STATIC_INITIAL_VALUES = {FormVariablesInitialValues.today: get_today}
 
 
 class FormVariable(models.Model):
@@ -84,3 +96,9 @@ class FormVariable(models.Model):
 
     def __str__(self):
         return _("Form variable %(name)s") % {"name": self.name}
+
+    def get_initial_value(self):
+        if self.source == FormVariablesSources.static:
+            return STATIC_INITIAL_VALUES[self.initial_value]()
+        else:
+            return self.initial_value
