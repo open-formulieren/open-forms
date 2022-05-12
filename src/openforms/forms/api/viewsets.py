@@ -27,6 +27,7 @@ from ..models import (
     FormLogic,
     FormPriceLogic,
     FormStep,
+    FormVariable,
     FormVersion,
 )
 from ..utils import export_form, import_form
@@ -49,6 +50,7 @@ from .serializers import (
     FormStepSerializer,
     FormVersionSerializer,
 )
+from .serializers.form_variable import FormVariableSerializer
 
 
 @extend_schema(
@@ -517,3 +519,26 @@ class FormsImportAPIView(views.APIView):
         import_form(serializer.validated_data["file"])
 
         return response.Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class FormVariablesViewSet(viewsets.ModelViewSet):
+    queryset = FormVariable.objects.all()
+    permission_classes = [FormAPIPermissions]
+    serializer_class = FormVariableSerializer
+
+    # make this an UPDATE funtion
+    def create(self, request, *args, **kwargs):
+        # TODO:
+        # 1. Use a filter like FormLogicFilter
+        # 2. Retrieve form Variable instances related to the form.
+        # 3. Separate which variables need updating and which creating
+        # 4. Add the create/update functions in the serializer.
+        serializer = self.get_serializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
+
+    # TODO add delete function

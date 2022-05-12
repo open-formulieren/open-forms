@@ -2,7 +2,8 @@ import factory
 
 from openforms.products.tests.factories import ProductFactory
 
-from ..models import Form, FormDefinition, FormStep, FormVersion
+from ..constants import FormVariablesDataTypes, FormVariablesSources
+from ..models import Form, FormDefinition, FormStep, FormVariable, FormVersion
 from ..utils import form_to_json
 
 
@@ -109,3 +110,16 @@ class FormPriceLogicFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = "forms.FormPriceLogic"
+
+
+class FormVariableFactory(factory.django.DjangoModelFactory):
+    name = factory.Sequence(lambda n: "Variable %03d" % n)
+    slug = factory.Faker("word")
+    form = factory.SubFactory(FormFactory)
+    form_definition = factory.SubFactory(FormDefinitionFactory)
+    source = FormVariablesSources.user_defined
+    data_type = FormVariablesDataTypes.string
+    initial_value = {}
+
+    class Meta:
+        model = FormVariable
