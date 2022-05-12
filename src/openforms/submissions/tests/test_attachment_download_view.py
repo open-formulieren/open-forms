@@ -112,9 +112,11 @@ class SubmissionAttachmentDownloadTest(WebTest):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Content-Disposition", response.headers)
-        self.assertTrue(
-            response.headers["Content-Disposition"].startswith("attachment;")
+        self.assertEqual(
+            response.headers["Content-Disposition"],
+            f'attachment; filename="{submission_file_attachment.get_display_name()}"',
         )
+
         self.assertIn("X-Accel-Redirect", response.headers)
 
 
