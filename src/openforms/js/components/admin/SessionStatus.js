@@ -13,6 +13,7 @@ import {
 } from 'react-intl';
 
 import { sessionExpiresAt } from '../../utils/session-expiry';
+import { apiCall } from '../../utils/fetch';
 import FormModal from './FormModal';
 import ActionButton, {SubmitAction} from './forms/ActionButton';
 import SubmitRow from './forms/SubmitRow';
@@ -236,10 +237,9 @@ const SessionStatus = () => {
                         description: 'Extend session button',
                         defaultMessage: 'Stay logged in',
                     })}
-                    onClick={event => {
+                    onClick={async (event) => {
                         event.preventDefault();
-                        console.log('Ok');
-                        // TODO
+                        await apiCall('/api/v1/ping');
                     }}
                 />
             </>
