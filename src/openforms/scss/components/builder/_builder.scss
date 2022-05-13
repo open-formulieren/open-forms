@@ -81,7 +81,7 @@ div.flatpickr-calendar.open
     }
 
     .choices__item--selectable.is-highlighted {
-      background-color: $color-dark;
+      background-color: var(--formio-dropdown-highlighted-bg);
     }
   }
 
