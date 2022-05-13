@@ -9,7 +9,7 @@ let sessionExpiresAt = createGlobalstate({
     authFailure: false,
 });
 
-const updateSesionExpiry = (seconds, authFailed=false) => {
+const updateSessionExpiry = (seconds, authFailed=false) => {
     const newExpiry = new Date();
     newExpiry.setSeconds(newExpiry.getSeconds() + seconds);
     sessionExpiresAt.updateValue((expiry) => {
@@ -19,7 +19,7 @@ const updateSesionExpiry = (seconds, authFailed=false) => {
     });
 };
 
-const debouncedUpdate = debounce(updateSesionExpiry, 200);
+const debouncedUpdate = debounce(updateSessionExpiry, 200);
 
 const onResponseHook = (response) => {
     const sessionExpiry = response.headers.get(SessionExpiresInHeader);
