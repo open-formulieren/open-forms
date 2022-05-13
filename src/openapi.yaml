@@ -2388,10 +2388,6 @@ paths:
               schema:
                 type: string
                 format: binary
-            application/json:
-              schema:
-                type: string
-                format: binary
           description: ''
           headers:
             X-Session-Expires-In:
