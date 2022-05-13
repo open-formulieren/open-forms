@@ -9,7 +9,7 @@ import PhoneNumberField from './components/form/phoneNumber';
 import BsnField from './components/form/bsn';
 import PostcodeField from './components/form/postcode';
 import FileField from './components/form/file';
-import SelectField from './components/form/select';
+import SelectField, {InformatieObjectTypeSelectField} from './components/form/select';
 import RadioField from './components/form/radio';
 import SelectBoxesField from './components/form/selectBoxes';
 import EmailField from './components/form/email';
@@ -40,6 +40,7 @@ const FormIOModule = {
     postcode: PostcodeField,
     file: FileField,
     select: SelectField,
+    iotype_select: InformatieObjectTypeSelectField,
     radio: RadioField,
     selectboxes: SelectBoxesField,
     email: EmailField,

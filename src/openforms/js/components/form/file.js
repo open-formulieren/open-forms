@@ -11,7 +11,7 @@ const REGISTRATION = {
     label: 'Registration',
     components: [
         {
-            type: 'select',
+            type: 'iotype_select',
             key: 'registration.informatieobjecttype',
             label: 'Informatieobjecttype',
             description: 'Save the attachment in the Documents API with this InformatieObjectType.',
