@@ -13,9 +13,10 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework import parsers, permissions, response, status, views, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
-from rest_framework.mixins import ListModelMixin
+from rest_framework.mixins import ListModelMixin, UpdateModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework_nested.viewsets import NestedViewSetMixin as _NestedViewSetMixin
 
 from openforms.api.pagination import PageNumberPagination
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
@@ -521,24 +522,28 @@ class FormsImportAPIView(views.APIView):
         return response.Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class FormVariablesViewSet(viewsets.ModelViewSet):
-    queryset = FormVariable.objects.all()
+class FormVariablesViewSet(NestedViewSetMixin, viewsets.GenericViewSet):
     permission_classes = [FormAPIPermissions]
     serializer_class = FormVariableSerializer
+    queryset = FormVariable.objects.all()
+    parent_lookup_kwargs = {"form_uuid_or_slug": "form__uuid"}
 
-    # make this an UPDATE funtion
-    def create(self, request, *args, **kwargs):
-        # TODO:
-        # 1. Use a filter like FormLogicFilter
-        # 2. Retrieve form Variable instances related to the form.
-        # 3. Separate which variables need updating and which creating
-        # 4. Add the create/update functions in the serializer.
-        serializer = self.get_serializer(data=request.data, many=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+    def initialize_request(self, request, *args, **kwargs):
+        # Skip the NestedViewSetMixin initialize request which would place the form URL in the request data
+        # It doesn't support the data being a list of dicts instead of a dict
+        return super(_NestedViewSetMixin, self).initialize_request(
+            request, *args, **kwargs
         )
 
-    # TODO add delete function
+    @action(detail=False, methods=["put"])
+    def bulk_update(self, request, *args, **kwargs):
+        form_variables = self.get_queryset()
+        # We expect that all the variables that should be associated with a form come in the request.
+        # So we can delete any existing variables because they will be replaced.
+        form_variables.delete()
+
+        serializer = self.get_serializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

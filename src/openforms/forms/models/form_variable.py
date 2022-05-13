@@ -39,9 +39,12 @@ class FormVariable(models.Model):
         help_text=_("Name of the variable"),
         max_length=100,
     )
-    slug = models.SlugField(
-        verbose_name=_("slug"),
-        help_text=_("Slug name of the variable, should be unique per form."),
+    # TODO add validator for namespace and sluggines
+    key = models.CharField(
+        verbose_name=_("key"),
+        help_text=_("Key of the variable, should be unique."),
+        unique=True,
+        max_length=100,
     )
     source = models.CharField(
         verbose_name=_("source"),
@@ -92,7 +95,6 @@ class FormVariable(models.Model):
     class Meta:
         verbose_name = _("Form variable")
         verbose_name_plural = _("Form variables")
-        unique_together = ("slug", "form")
 
     def __str__(self):
         return _("Form variable %(name)s") % {"name": self.name}

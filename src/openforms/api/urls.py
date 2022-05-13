@@ -15,6 +15,7 @@ from openforms.forms.api.viewsets import (
     FormPriceLogicViewSet,
     FormsImportAPIView,
     FormStepViewSet,
+    FormVariablesViewSet,
     FormVersionViewSet,
     FormViewSet,
 )
@@ -36,6 +37,7 @@ router.register(r"forms", FormViewSet)
 forms_router = NestedSimpleRouter(router, r"forms", lookup="form")
 forms_router.register(r"steps", FormStepViewSet, basename="form-steps")
 forms_router.register(r"versions", FormVersionViewSet, basename="form-versions")
+forms_router.register(r"variables", FormVariablesViewSet, basename="form-variables")
 
 # form logic
 router.register(r"logic-rules", FormLogicViewSet, basename="form-logics")

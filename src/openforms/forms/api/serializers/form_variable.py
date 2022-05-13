@@ -5,7 +5,10 @@ from openforms.forms.models import FormVariable
 
 class FormVariableListSerializer(serializers.ListSerializer):
     def create(self, validated_data):
-        return super().create(validated_data)
+        variables_to_create = [
+            FormVariable(**variable) for variable in self.validated_data
+        ]
+        return FormVariable.objects.bulk_create(variables_to_create)
 
 
 # TODO transform in polymorphic serializer to validate on different types of initial values?
@@ -16,7 +19,7 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             "form",
             "name",
-            "slug",
+            "key",
             "source",
             "prefill_plugin",
             "prefill_attribute",

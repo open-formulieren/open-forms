@@ -5,6 +5,6 @@ from openforms.forms.models.form_variable import FormVariable
 
 @admin.register(FormVariable)
 class FormVariableAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug", "form", "source")
-    list_filter = ("name", "slug", "form")
+    list_display = ("name", "key", "form", "source")
+    list_filter = ("name", "key", "form")
     search_fields = ("name",)
