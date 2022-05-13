@@ -9,4 +9,5 @@ class Command(BaseCommand):
     def handle(self, **options):
         config = GlobalConfiguration.get_solo()
         config.enable_demo_plugins = False
+        config.plugin_configuration = {}
         config.save()

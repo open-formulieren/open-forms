@@ -48,6 +48,7 @@
     "react-modal": "^3.14.3",
     "react-tabs": "^3.2.2",
     "react-use": "^17.2.4",
+    "state-pool": "^0.7.1",
     "use-immer": "^0.5.2",
     "uuid": "^8.3.2"
   },

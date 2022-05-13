@@ -1,0 +1,39 @@
+.session-status-wrapper {
+  &--no-modal {
+    color: $color_secondary_dark;
+    font-size: smaller;
+  }
+
+  &--modal {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1em;
+  }
+}
+
+
+.session-status {
+  &--in-modal {
+    background: transparent;
+    border: none;
+    padding: 0;
+    width: 100%;
+
+    p:not(:last-child) {
+      margin-bottom: .5em;
+    }
+  }
+
+  &--expired {
+    color: $color-error;
+    border-color: $color-error;
+    font-weight: bold;
+    text-align: center;
+
+    p {
+      margin-bottom: 0;
+    }
+  }
+}

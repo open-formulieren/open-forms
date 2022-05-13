@@ -21,6 +21,8 @@ from openforms.forms.api.viewsets import (
 from openforms.products.api.viewsets import ProductViewSet
 from openforms.submissions.api.viewsets import SubmissionStepViewSet, SubmissionViewSet
 
+from .views import PingView
+
 # from .schema import schema_view
 
 app_name = "api"
@@ -72,6 +74,7 @@ urlpatterns = [
                     "api-auth",
                     include("rest_framework.urls", namespace="rest_framework"),
                 ),
+                path("ping", PingView.as_view(), name="ping"),
                 path("submissions/", include("openforms.submissions.api.urls")),
                 path("config/", include("openforms.config.api.urls")),
                 path("forms-import", FormsImportAPIView.as_view(), name="forms-import"),

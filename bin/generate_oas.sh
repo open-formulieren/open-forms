@@ -8,13 +8,24 @@
 #
 # 'outfile' defaults to `src/openapi.yml``
 #
+set -eux -o pipefail
+
+CI=${CI:-}
 
 outfile=${1:-src/openapi.yaml}
 
-src/manage.py disable_demo_plugins
+if [[ -z "${CI}" ]]; then
+    CURRENT_CONFIG_FIXTURE=$(src/manage.py dumpdata config.GlobalConfiguration)
+    src/manage.py disable_demo_plugins
+fi
 
 src/manage.py spectacular \
     --validate \
     --fail-on-warn \
     --lang=en \
     --file "$outfile"
+
+# restore global config
+if [[ -z "${CI}" ]]; then
+    echo $CURRENT_CONFIG_FIXTURE | src/manage.py loaddata --format=json -
+fi

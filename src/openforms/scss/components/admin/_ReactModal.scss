@@ -35,6 +35,17 @@
       display: flex;
       flex-direction: column;
     }
+
+    &--small {
+      width: 25vw;
+      min-width: 400px;
+      height: 25vh;
+      min-height: 250px;
+
+      .submit-row:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
 
   &__header {

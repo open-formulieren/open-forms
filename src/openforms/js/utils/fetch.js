@@ -1,3 +1,5 @@
+import {onResponseHook} from './session-expiry';
+
 const fetchDefaults = {
     credentials: 'same-origin',  // required for Firefox 60, which is used in werkplekken
 };
@@ -14,9 +16,11 @@ Object.defineProperty(ValidationErrors.prototype, 'name', {
 });
 
 
-const fetch = (url, opts) => {
+const fetch = async (url, opts) => {
     const options = Object.assign({}, fetchDefaults, opts);
-    return window.fetch(url, options);
+    const response = await window.fetch(url, options);
+    onResponseHook(response);
+    return response;
 };
 
 const apiCall = fetch;

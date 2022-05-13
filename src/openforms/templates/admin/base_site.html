@@ -63,9 +63,10 @@
     <div id="footer">
         {% url 'admin:login' as admin_login_url %}
         {% if request.path != admin_login_url %}
-        <div class="version" title="Git SHA: {{ settings.GIT_SHA|default:'' }}">
-            {% blocktrans with version=settings.RELEASE %}version {{version}}{% endblocktrans %}
-        </div>
+            <div class="version" title="Git SHA: {{ settings.GIT_SHA|default:'' }}">
+                {% blocktrans with version=settings.RELEASE %}version {{version}}{% endblocktrans %}
+            </div>
+            <div class="react-session-status">{# react managed #}</div>
         {% endif %}
     </div>
 {% endblock %}

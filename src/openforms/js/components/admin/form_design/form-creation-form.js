@@ -568,6 +568,13 @@ function reducer(draft, action) {
             draft.tabsWithErrors = [];
             break;
         }
+        // special case - we have a generic session expiry status monitor thing,
+        // so don't display the generic error message.
+        case 'AUTH_FAILURE': {
+            draft.errors = {};
+            draft.submitting = false;
+            break;
+        }
         case 'SET_FETCH_ERRORS': {
             draft.errors = action.payload;
             draft.submitting = false;
@@ -851,7 +858,15 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             var formResponse = await createOrUpdate(endPoint, csrftoken, formData, true);
             // unexpected error
             if (!formResponse.ok) {
-                dispatch({type: 'SET_FETCH_ERRORS', payload: `Error ${formResponse.status} from backend`});
+                if (formResponse.status === 401) {
+                    dispatch({type: 'AUTH_FAILURE'});
+                    return;
+                }
+
+                dispatch({
+                    type: 'SET_FETCH_ERRORS',
+                    payload: `Error ${formResponse.status} from backend`,
+                });
                 return;
             }
             // ok, good to go
