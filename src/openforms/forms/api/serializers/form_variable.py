@@ -4,6 +4,11 @@ from openforms.forms.models import FormVariable
 
 
 class FormVariableListSerializer(serializers.ListSerializer):
+    def __init__(self, *args, **kwargs):
+        if "child" not in kwargs:
+            kwargs = {**kwargs, **{"child": FormVariableSerializer()}}
+        super().__init__(*args, **kwargs)
+
     def create(self, validated_data):
         variables_to_create = [
             FormVariable(**variable) for variable in self.validated_data

@@ -49,9 +49,10 @@ from .serializers import (
     FormPriceLogicSerializer,
     FormSerializer,
     FormStepSerializer,
+    FormVariableListSerializer,
+    FormVariableSerializer,
     FormVersionSerializer,
 )
-from .serializers.form_variable import FormVariableSerializer
 
 
 @extend_schema(
@@ -522,6 +523,22 @@ class FormsImportAPIView(views.APIView):
         return response.Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@extend_schema_view(
+    bulk_update=extend_schema(
+        summary=_("Bulk update/create/delete form variables"),
+        tags=["forms"],
+        parameters=[
+            OpenApiParameter(
+                name="form_uuid_or_slug",
+                location=OpenApiParameter.PATH,
+                type=str,
+                description=_("Either a UUID4 or a slug identifying the form."),
+            ),
+        ],
+        request=FormVariableListSerializer,
+        responses={status.HTTP_201_CREATED: FormVariableListSerializer},
+    ),
+)
 class FormVariablesViewSet(NestedViewSetMixin, viewsets.GenericViewSet):
     permission_classes = [FormAPIPermissions]
     serializer_class = FormVariableSerializer
@@ -536,6 +553,7 @@ class FormVariablesViewSet(NestedViewSetMixin, viewsets.GenericViewSet):
         )
 
     @action(detail=False, methods=["put"])
+    @transaction.atomic
     def bulk_update(self, request, *args, **kwargs):
         form_variables = self.get_queryset()
         # We expect that all the variables that should be associated with a form come in the request.

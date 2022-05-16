@@ -869,6 +869,52 @@ paths:
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
+  /api/v1/forms/{form_uuid_or_slug}/variables/bulk_update:
+    put:
+      operationId: forms_variables_bulk_update_update
+      summary: Bulk update/create/delete form variables
+      parameters:
+      - in: path
+        name: form_uuid_or_slug
+        schema:
+          type: string
+        description: Either a UUID4 or a slug identifying the form.
+        required: true
+      tags:
+      - forms
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FormVariable'
+          application/x-www-form-urlencoded:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FormVariable'
+          multipart/form-data:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FormVariable'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FormVariable'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/forms/{form_uuid_or_slug}/versions:
     get:
       operationId: forms_versions_list
@@ -3381,6 +3427,16 @@ components:
       required:
       - configuration
       - index
+    DataTypeEnum:
+      enum:
+      - string
+      - 'null'
+      - boolean
+      - object
+      - array
+      - number
+      - datetime
+      type: string
     Date:
       type: object
       properties:
@@ -3820,6 +3876,57 @@ components:
           $ref: '#/components/schemas/ButtonText'
         nextText:
           $ref: '#/components/schemas/ButtonText'
+    FormVariable:
+      type: object
+      properties:
+        form:
+          type: string
+          format: uri
+          description: Form to which this variable is related
+        name:
+          type: string
+          description: Name of the variable
+          maxLength: 100
+        key:
+          type: string
+          description: Key of the variable, should be unique.
+          maxLength: 100
+        source:
+          allOf:
+          - $ref: '#/components/schemas/SourceEnum'
+          description: Where will the data that will be associate with this variable
+            come from
+        prefillPlugin:
+          type: string
+          description: Which, if any, prefill plugin should be used
+          maxLength: 50
+        prefillAttribute:
+          type: string
+          description: Which attribute from the prefill response should be used to
+            fill this variable
+          maxLength: 50
+        dataType:
+          allOf:
+          - $ref: '#/components/schemas/DataTypeEnum'
+          description: The type of the value that will be associated with this variable
+        dataFormat:
+          type: string
+          description: The format of the value that will be associated with this variable
+          maxLength: 250
+        isSensitiveData:
+          type: boolean
+          description: Will this variable be associated with sensitive data?
+        initialValue:
+          type: object
+          additionalProperties: {}
+          description: The initial value for this field
+      required:
+      - dataType
+      - form
+      - initialValue
+      - key
+      - name
+      - source
     FormVersion:
       type: object
       properties:
@@ -4617,6 +4724,12 @@ components:
       enum:
       - failed
       - success
+      type: string
+    SourceEnum:
+      enum:
+      - component
+      - user_defined
+      - static
       type: string
     StatusEnum:
       enum:

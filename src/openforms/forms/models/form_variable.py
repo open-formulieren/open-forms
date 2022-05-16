@@ -39,7 +39,8 @@ class FormVariable(models.Model):
         help_text=_("Name of the variable"),
         max_length=100,
     )
-    # TODO add validator for namespace and sluggines
+    # TODO Ideally should be namespaced with the form slug. Should add validator for format <form_slug>:<key>?
+    # and the key part should be of slug format
     key = models.CharField(
         verbose_name=_("key"),
         help_text=_("Key of the variable, should be unique."),
