@@ -1,5 +1,6 @@
 import logging
 import uuid
+import warnings
 from collections import OrderedDict
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Union
@@ -87,6 +88,10 @@ class SubmissionState:
 
         If there are no more steps, the result is None.
         """
+        warnings.warn(
+            "'SubmissionState.get_next_step' is deprecated and scheduled for removal.",
+            DeprecationWarning,
+        )
         offset = self._get_step_offset()
         candidates = (
             step
@@ -467,6 +472,10 @@ class Submission(models.Model):
         """
         Determine which is the next step for the current submission.
         """
+        warnings.warn(
+            "'Submission.get_next_step' is deprecated and scheduled for removal.",
+            DeprecationWarning,
+        )
         submission_state = self.load_execution_state()
         return submission_state.get_next_step()
 

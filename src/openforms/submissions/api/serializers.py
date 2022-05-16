@@ -9,6 +9,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
@@ -112,6 +113,7 @@ class NestedSubmissionPaymentDetailSerializer(serializers.ModelSerializer):
         )
 
 
+@extend_schema_serializer(deprecate_fields=["next_step"])
 class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
     steps = NestedSubmissionStepSerializer(
         label=_("Submission steps"),
