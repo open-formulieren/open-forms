@@ -115,6 +115,7 @@ class FormPriceLogicFactory(factory.django.DjangoModelFactory):
 class FormVariableFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: "Variable %03d" % n)
     form = factory.SubFactory(FormFactory)
+    key = factory.Faker("word")
     form_definition = factory.SubFactory(FormDefinitionFactory)
     source = FormVariablesSources.user_defined
     data_type = FormVariablesDataTypes.string
@@ -122,8 +123,3 @@ class FormVariableFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = FormVariable
-
-    @factory.lazy_attribute
-    def key(self):
-        faker = factory.Faker("word")
-        return f"{self.form.slug}:{faker.generate()}"

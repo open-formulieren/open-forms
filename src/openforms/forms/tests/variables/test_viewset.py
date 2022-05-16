@@ -1,3 +1,5 @@
+from django.test import override_settings
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -77,7 +79,7 @@ class FormVariableViewsetTest(APITestCase):
                 "form": form_url,
                 "form_definition": form_definition_url,
                 "name": "Today",
-                "key": f"{form.slug}:today",
+                "key": "today",
                 "source": FormVariablesSources.static,
                 "data_type": FormVariablesDataTypes.datetime,
                 "initial_value": "today",
@@ -103,6 +105,60 @@ class FormVariableViewsetTest(APITestCase):
         form_variables = variables.filter(form=form)
 
         self.assertEqual(2, form_variables.count())
-        self.assertTrue(form_variables.filter(key=f"{form.slug}:today").exists())
+        self.assertTrue(form_variables.filter(key="today").exists())
         self.assertTrue(form_variables.filter(key=form_variable1.key).exists())
         self.assertFalse(form_variables.filter(key=form_variable2.key).exists())
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_unique_together_key_form(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create()
+
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver.com{form_path}"
+
+        form_definition_path = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
+        )
+        form_definition_url = f"http://testserver.com{form_definition_path}"
+
+        data = [
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "test-not-unique",
+                "name": "Test 1",
+                "source": FormVariablesSources.static,
+                "data_type": FormVariablesDataTypes.string,
+                "initial_value": "",
+            },
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "name": "Test 2",
+                "key": "test-not-unique",
+                "source": FormVariablesSources.static,
+                "data_type": FormVariablesDataTypes.string,
+                "initial_value": "",
+            },
+        ]
+
+        self.client.force_authenticate(user)
+        response = self.client.put(
+            reverse(
+                "api:form-variables-bulk-update",
+                kwargs={"form_uuid_or_slug": form.uuid},
+            ),
+            data=data,
+        )
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        error = response.json()
+
+        self.assertEqual(error["code"], "invalid")
+        self.assertEqual(
+            error["invalidParams"][0]["reason"],
+            "The form and key attributes must be unique together",
+        )
