@@ -10,6 +10,7 @@ from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
+    SubmissionFileAttachmentFactory,
     SubmissionStepFactory,
 )
 
@@ -362,3 +363,97 @@ class FormNodeTests(TestCase):
             )
 
             self.assertEqual(component_node.value, "WYSIWYG with markup")
+
+    def test_file_component_email_registration(self):
+        component = {
+            "type": "file",
+            "key": "file",
+            "label": "My File",
+            "hidden": False,
+        }
+        submission = SubmissionFactory.create(
+            form__name="public name",
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={"components": [component]},
+        )
+
+        step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={
+                "file": [
+                    {
+                        "data": {
+                            "baseUrl": "http://localhost:8000/api/v1/",
+                            "form": "",
+                            "name": "blank.doc",
+                            "project": "",
+                            "size": 1048576,
+                            "url": "http://localhost:8000/api/v1/submissions/files/35527900-8248-4e75-a553-c2d1039a002b",
+                        },
+                        "name": "blank-65faf10b-afaf-48af-a749-ff5780abf75b.doc",
+                        "originalName": "blank.doc",
+                        "size": 1048576,
+                        "storage": "url",
+                        "type": "application/msword",
+                        "url": "http://localhost:8000/api/v1/submissions/files/35527900-8248-4e75-a553-c2d1039a002b",
+                    }
+                ]
+            },
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=step,
+            form_key="file",
+            file_name="blank-renamed.doc",
+            original_name="blank.doc",
+        )
+
+        with self.subTest(as_html=True):
+            renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
+            component_node = ComponentNode.build_node(
+                step=step, component=component, renderer=renderer
+            )
+
+            link = component_node.render()
+            self.assertTrue(link.startswith('My File: <a href="https://'))
+            self.assertTrue(
+                link.endswith(
+                    '" target="_blank" rel="noopener noreferrer">blank-renamed.doc</a>'
+                )
+            )
+
+        with self.subTest(as_html=False):
+            renderer = Renderer(
+                submission, mode=RenderModes.registration, as_html=False
+            )
+            component_node = ComponentNode.build_node(
+                step=step, component=component, renderer=renderer
+            )
+            link = component_node.render()
+            self.assertTrue(link.startswith("My File: https://"))
+            self.assertTrue(link.endswith(" (blank-renamed.doc)"))
+
+    def test_file_component_email_registration_no_file(self):
+        # via GH issue #1594
+        component = {
+            "type": "file",
+            "key": "file",
+            "label": "My File",
+            "hidden": False,
+        }
+        submission = SubmissionFactory.create(
+            form__name="public name",
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={"components": [component]},
+        )
+        step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={},
+        )
+        renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
+        component_node = ComponentNode.build_node(
+            step=step, component=component, renderer=renderer
+        )
+        link = component_node.render()
+        self.assertEqual(link, "My File: ")
