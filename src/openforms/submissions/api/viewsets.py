@@ -381,8 +381,10 @@ class SubmissionStepViewSet(
         submission = instance.submission
         merged_data = submission.data
         execution_state = submission.load_execution_state()
-        current_step = execution_state.submission_steps.index(instance)
-        for subsequent_step in execution_state.submission_steps[current_step + 1 :]:
+        current_step_index = execution_state.submission_steps.index(instance)
+        for subsequent_step in execution_state.submission_steps[
+            current_step_index + 1 :
+        ]:
             if not subsequent_step.pk:
                 continue
 
