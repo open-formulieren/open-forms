@@ -770,7 +770,7 @@ Open Forms fits in the [Common Ground](https://commonground.nl) vision and archi
 and it plays nice with other available components.
 """
 
-API_VERSION = "1.0.0"
+API_VERSION = "1.0.1"
 
 SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": "/api/v1",

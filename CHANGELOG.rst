@@ -2,6 +2,20 @@
 Changelog
 =========
 
+1.0.8 (2022-05-16)
+==================
+
+Bugfix maintenance release
+
+* [#1568] Fixed logic engine crash when form fields are removed while someone is
+  filling out the form
+* [#1539] Fixed crash when deleting a temporary file upload
+* [#1344] Added missing translation for validation error key
+* [#1593] Update nginx location rules for fileuploads
+* [#1587] Fixed analytics scripts being blocked by the CSP
+* Updated to SDK version 1.0.3 with frontend bugfixes
+* Fixed API schema documentation for temporary upload GET
+
 1.0.7 (2022-05-04)
 ==================
 
