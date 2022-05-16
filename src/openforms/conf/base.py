@@ -460,9 +460,9 @@ LOGOUT_REDIRECT_URL = reverse_lazy("admin:index")
 #
 SESSION_COOKIE_SECURE = IS_HTTPS
 SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = (
-    None  # from Lax -> None to enable the SDK to send CORS requests
-)
+# set same-site attribute to None to allow emdedding the SDK for making cross domain
+# requests.
+SESSION_COOKIE_SAMESITE = config("SESSION_COOKIE_SAMESITE", default="None")
 
 CSRF_COOKIE_SECURE = IS_HTTPS
 
