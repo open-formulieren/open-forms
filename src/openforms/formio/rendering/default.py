@@ -130,18 +130,19 @@ class FileNode(ComponentNode):
 
         files = []
         attachments = self.renderer.submission.get_merged_attachments()
-        value = attachments[self.component["key"]]
-        for submission_file_attachment in value:
-            display_name = submission_file_attachment.get_display_name()
-            download_link = build_absolute_uri(
-                reverse(
-                    "submissions:attachment-download",
-                    kwargs={"uuid": submission_file_attachment.uuid},
+        value = attachments.get(self.component["key"])
+        if value:
+            for submission_file_attachment in value:
+                display_name = submission_file_attachment.get_display_name()
+                download_link = build_absolute_uri(
+                    reverse(
+                        "submissions:attachment-download",
+                        kwargs={"uuid": submission_file_attachment.uuid},
+                    )
                 )
-            )
-            url = furl(download_link)
-            url.args["hash"] = submission_file_attachment.content_hash
-            files.append((url, display_name))
+                url = furl(download_link)
+                url.args["hash"] = submission_file_attachment.content_hash
+                files.append((url, display_name))
 
         if self.as_html:
             return format_html_join(
