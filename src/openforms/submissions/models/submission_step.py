@@ -46,3 +46,7 @@ class SubmissionStep(models.Model):
     @property
     def is_applicable(self) -> bool:
         return self._is_applicable
+
+    def reset(self):
+        self.data = None
+        self.save()
