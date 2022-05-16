@@ -1,4 +1,5 @@
 import logging
+from re import sub
 
 from django.db import transaction
 from django.utils import timezone
@@ -373,6 +374,24 @@ class SubmissionStepViewSet(
         logevent.submission_step_fill(instance)
 
         attach_uploads_to_submission_step(instance)
+
+        # See #1480 - if there is navigation between steps and original form field values
+        # are changed, they can cause subsequent steps to be not-applicable. If that
+        # happens, we need to wipe the data from those steps.
+        submission = instance.submission
+        merged_data = submission.data
+        execution_state = submission.load_execution_state()
+        current_step = execution_state.submission_steps.index(instance)
+        for subsequent_step in execution_state.submission_steps[current_step + 1 :]:
+            if not subsequent_step.pk:
+                continue
+
+            # evaluate the logic to determine if the step is applicable or not
+            evaluate_form_logic(
+                submission, subsequent_step, merged_data, dirty=False, request=request
+            )
+            if not subsequent_step.is_applicable and subsequent_step.completed:
+                subsequent_step.reset()
 
         if getattr(instance, "_prefetched_objects_cache", None):
             # If 'prefetch_related' has been applied to a queryset, we need to
