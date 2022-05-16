@@ -5,29 +5,31 @@
 
     <table style="width: 100%; border: none; border-collapse: collapse; table-layout: fixed;" cellpadding="0" cellspacing="0" width="100%">
         {% for submission_step_node in renderer.get_children %}
-            {# row for step title #}
-            <tr>
-                <td width="100%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;" colspan="2">
-                    <h3 style="margin: 1em 0; font-size: 1.2em;">{{ submission_step_node.render }}</h3>
-                </td>
-            </tr>
+            {% if submission_step_node.has_children %}
+                {# row for step title #}
+                <tr>
+                    <td width="100%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;" colspan="2">
+                        <h3 style="margin: 1em 0; font-size: 1.2em;">{{ submission_step_node.render }}</h3>
+                    </td>
+                </tr>
 
-            {# row for every visible form field within the step #}
-            {% for component_node in submission_step_node.get_children %}
-                {% if component_node.label or component_node.display_value %}
+                {# row for every visible form field within the step #}
+                {% for component_node in submission_step_node.get_children %}
+                    {% if component_node.label or component_node.display_value %}
+                        <tr>
+                            <td width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{{ component_node.label }}</td>
+                            <td width="75%" style="padding: 4px 10px 4px 0; text-align: left;">{{ component_node.display_value }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+
+                {% if forloop.last and co_signer %}
                     <tr>
-                        <td width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{{ component_node.label }}</td>
-                        <td width="75%" style="padding: 4px 10px 4px 0; text-align: left;">{{ component_node.display_value }}</td>
+                        <td width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{% trans "Co-signed by" %}</td>
+                        <td width="75%" style="padding: 4px 10px 4px 0; text-align: left;">{{ co_signer }}</td>
                     </tr>
                 {% endif %}
-            {% endfor %}
-
-        {% if forloop.last and co_signer %}
-            <tr>
-                <td width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{% trans "Co-signed by" %}</td>
-                <td width="75%" style="padding: 4px 10px 4px 0; text-align: left;">{{ co_signer }}</td>
-            </tr>
-        {% endif %}
+            {% endif %}
         {% endfor %}
     </table>
 
