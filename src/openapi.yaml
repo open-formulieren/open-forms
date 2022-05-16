@@ -4651,6 +4651,7 @@ components:
           format: uri
           readOnly: true
           nullable: true
+          deprecated: true
         submissionAllowed:
           allOf:
           - $ref: '#/components/schemas/SubmissionAllowedEnum'
