@@ -37,6 +37,7 @@ import elasticapm
 from glom import GlomError, Path, assign, glom
 from zgw_consumers.concurrent import parallel
 
+from openforms.formio.utils import iter_components
 from openforms.logging import logevent
 from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.typing import JSONObject
@@ -174,20 +175,15 @@ def _fetch_prefill_values(
 
 def _extract_prefill_fields(configuration: JSONObject) -> List[Dict[str, str]]:
     prefills = []
-    components = configuration.get("components", [])
-
-    for component in components:
-        if prefill := component.get("prefill"):
-            if prefill.get("plugin"):
-                prefills.append(prefill)
-        else:
-            nested = _extract_prefill_fields(component)
-            prefills += nested
-
+    for component in iter_components(configuration, recursive=True):
+        if not (prefill := component.get("prefill")):
+            continue
+        if prefill.get("plugin") and prefill not in prefills:
+            prefills.append(prefill)
     return prefills
 
 
-def _group_prefills_by_plugin(fields: List[JSONObject]) -> Dict[str, list]:
+def _group_prefills_by_plugin(fields: List[Dict[str, str]]) -> Dict[str, list]:
     grouper = {}
 
     def keyfunc(item):
@@ -230,27 +226,27 @@ def _set_default_values(
     is inspected for prefill configuration, which is then looked up in
     ``prefilled_values`` to set the component ``defaultValue``.
     """
-    if "prefill" in configuration:
-        default_value = configuration.get("defaultValue")
-        prefill_value = prefilled_values.get(
-            configuration["prefill"]["plugin"], {}
-        ).get(configuration["prefill"]["attribute"])
+    for component in iter_components(configuration, recursive=True):
+        if not (prefill := component.get("prefill")):
+            continue
+        if not (plugin := prefill.get("plugin")):
+            continue
+        if not (attribute := prefill.get("attribute")):
+            continue
 
+        default_value = component.get("defaultValue")
+        glom_path = Path(plugin, attribute)
+        prefill_value = glom(prefilled_values, glom_path, default=None)
         if prefill_value is None:
-            logger.debug(
-                "Prefill value for component %s is None, skipping.", configuration["id"]
-            )
-            return
+            logger.debug("Prefill value for component %r is None, skipping.", component)
+            continue
 
         if prefill_value != default_value and default_value is not None:
             logger.info(
-                "Overwriting non-null default value for component %s",
-                configuration["id"],
+                "Overwriting non-null default value for component %r",
+                component,
             )
-        configuration["defaultValue"] = prefill_value
-        if configuration["type"] == "date":
-            configuration["defaultValue"] = format_date_value(prefill_value)
 
-    if components := configuration.get("components"):
-        for component in components:
-            _set_default_values(component, prefilled_values)
+        component["defaultValue"] = prefill_value
+        if component["type"] == "date":
+            component["defaultValue"] = format_date_value(prefill_value)

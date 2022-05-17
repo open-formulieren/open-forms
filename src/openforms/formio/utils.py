@@ -1,9 +1,11 @@
-from typing import Any, Dict
+from typing import Any, Dict, Iterator
+
+from .typing import Component
 
 
 def iter_components(
     configuration: dict, recursive=True, _is_root=True, _mark_root=False
-) -> dict:
+) -> Iterator[Component]:
     components = configuration.get("components")
     if configuration.get("type") == "columns" and recursive:
         assert not components, "Both nested components and columns found"
