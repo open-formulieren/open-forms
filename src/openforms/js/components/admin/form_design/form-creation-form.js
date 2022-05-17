@@ -2,7 +2,7 @@ import zip from 'lodash/zip';
 import getObjectValue from 'lodash/get';
 import set from 'lodash/set';
 import groupBy from 'lodash/groupBy';
-import React from 'react';
+import React, {useContext} from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
@@ -16,7 +16,7 @@ import {ComponentsContext} from '../forms/Context';
 import Fieldset from '../forms/Fieldset';
 import ValidationErrorsProvider from '../forms/ValidationErrors';
 import Loader from '../Loader';
-import {FormContext, FormDefinitionsContext, PluginsContext, FormStepsContext} from './Context';
+import {FormContext, FormDefinitionsContext, PluginsContext, FormStepsContext, FeatureFlagsContext} from './Context';
 import FormSteps from './FormSteps';
 import {
     FORM_ENDPOINT,
@@ -675,6 +675,7 @@ StepsFieldSet.propTypes = {
  * Component to render the form edit page.
  */
 const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
+    const featureFlags = useContext(FeatureFlagsContext);
     const initialState = {
         ...initialFormState,
         form: {
@@ -979,16 +980,18 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             return;
         }
 
-        // Save the FormVariables
-        try {
-            const response = await createOrUpdateFormVariables(formUrl, csrftoken, state.formVariables);
-            if (!response.ok) {
-                 throw new Error('An error occurred while saving the form variables.');
+        if (featureFlags.enable_form_variables) {
+            // Save the FormVariables
+            try {
+                const response = await createOrUpdateFormVariables(formUrl, csrftoken, state.formVariables);
+                if (!response.ok) {
+                    throw new Error('An error occurred while saving the form variables.');
+                }
+            } catch (e) {
+                dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
+                window.scrollTo(0, 0);
+                return;
             }
-        } catch (e) {
-            dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
-            window.scrollTo(0, 0);
-            return;
         }
 
         // Save this new version of the form in the "form version control"
@@ -1081,9 +1084,12 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         <Tab>
                             <FormattedMessage defaultMessage="Appointments" description="Appointments tab title" />
                         </Tab>
-                        <Tab>
-                            <FormattedMessage defaultMessage="Variables" description="Variables tab title" />
-                        </Tab>
+                        {
+                            featureFlags.enable_form_variables &&
+                            <Tab>
+                                <FormattedMessage defaultMessage="Variables" description="Variables tab title"/>
+                            </Tab>
+                        }
                     </TabList>
 
                     <TabPanel>
@@ -1195,9 +1201,12 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                             }} />
                     </TabPanel>
 
-                    <TabPanel>
-                        <VariablesEditor variables={state.formVariables} />
-                    </TabPanel>
+                    {
+                        featureFlags.enable_form_variables &&
+                        <TabPanel>
+                            <VariablesEditor variables={state.formVariables} />
+                        </TabPanel>
+                    }
                 </Tabs>
             </ComponentsContext.Provider>
 
