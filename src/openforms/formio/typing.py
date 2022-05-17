@@ -5,7 +5,10 @@ Formio components are JSON blobs adhering to a formio-specific schema. We define
 (subsets) of these schema's to make it easier to reason about the code operating on
 (parts of) the schema.
 """
+# TODO: on python 3.11+ we can use typing.NotRequired to mark keys that may be absent
 from typing import TypedDict
+
+from openforms.typing import JSONValue
 
 
 class OptionDict(TypedDict):
@@ -18,6 +21,11 @@ class OptionDict(TypedDict):
 
     value: str
     label: str
+
+
+class PrefillConfiguration(TypedDict):
+    plugin: str
+    attribute: str
 
 
 class Component(TypedDict):
@@ -40,3 +48,5 @@ class Component(TypedDict):
     label: str
     multiple: bool
     hidden: bool
+    defaultValue: JSONValue
+    prefill: PrefillConfiguration
