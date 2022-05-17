@@ -140,7 +140,7 @@
     "originalDefault": "Authentication"
   },
   "6hApJ7": {
-    "defaultMessage": "Stay logged in",
+    "defaultMessage": "Ingelogd blijven",
     "description": "Extend session button",
     "originalDefault": "Stay logged in"
   },
@@ -245,7 +245,7 @@
     "originalDefault": "Display main website link"
   },
   "ADAp0E": {
-    "defaultMessage": "Please log in again to continue.",
+    "defaultMessage": "Gelieve opnieuw in te loggen om door te gaan.",
     "description": "Call to action to log in again",
     "originalDefault": "Please log in again to continue."
   },
@@ -340,7 +340,7 @@
     "originalDefault": "Move down"
   },
   "DcI1VF": {
-    "defaultMessage": "Session expired",
+    "defaultMessage": "Sessie vervallen",
     "description": "Modal title session expired",
     "originalDefault": "Session expired"
   },
@@ -505,7 +505,7 @@
     "originalDefault": "hidden"
   },
   "JDD7PC": {
-    "defaultMessage": "Authentication failure",
+    "defaultMessage": "Authenticatiefout",
     "description": "Modal title API call failed with HTTP 401",
     "originalDefault": "Authentication failure"
   },
@@ -595,7 +595,7 @@
     "originalDefault": "Description"
   },
   "NJ3Psx": {
-    "defaultMessage": "Your session has expired.",
+    "defaultMessage": "Uw sessie is vervallen.",
     "description": "Session expiry notice - expired",
     "originalDefault": "Your session has expired."
   },
@@ -620,7 +620,7 @@
     "originalDefault": "Registration"
   },
   "OX8wxE": {
-    "defaultMessage": "Your session is about to expire {delta}. Extend your session if you wish to continue.",
+    "defaultMessage": "Uw sessie vervalt {delta}. Verleng uw sessie indien u wenst door te gaan.",
     "description": "Session expiry warning (in modal)",
     "originalDefault": "Your session is about to expire {delta}. Extend your session if you wish to continue."
   },
@@ -705,7 +705,7 @@
     "originalDefault": "Data removal"
   },
   "S94ET7": {
-    "defaultMessage": "Session expires {expiresToday, select, true {{relativeTimeToExpiry}} other {on {expiryDate} at {expiryTime}}}",
+    "defaultMessage": "Sessie vervalt {expiresToday, select, true {{relativeTimeToExpiry}} other {op {expiryDate} om {expiryTime}}}",
     "description": "Session expiry notice",
     "originalDefault": "Session expires {expiresToday, select, true {{relativeTimeToExpiry}} other {on {expiryDate} at {expiryTime}}}"
   },
@@ -730,7 +730,7 @@
     "originalDefault": "ID"
   },
   "TFxv38": {
-    "defaultMessage": "Back to login",
+    "defaultMessage": "Terug naar loginscherm",
     "description": "Session status modal close button",
     "originalDefault": "Back to login"
   },
@@ -965,7 +965,7 @@
     "originalDefault": "When"
   },
   "g+ppJj": {
-    "defaultMessage": "Do nothing",
+    "defaultMessage": "Negeren",
     "description": "Session expiry warning \"do nothing\" button",
     "originalDefault": "Do nothing"
   },
@@ -1055,7 +1055,7 @@
     "originalDefault": "No"
   },
   "jo1PVg": {
-    "defaultMessage": "Session will expire",
+    "defaultMessage": "Sessie gaat vervallen",
     "description": "Model title session expiry warning",
     "originalDefault": "Session will expire"
   },
@@ -1220,7 +1220,7 @@
     "originalDefault": "the field"
   },
   "rZfe8Z": {
-    "defaultMessage": "Sorry, we couldn't do that because you are logged out - this may be because your session expired.",
+    "defaultMessage": "Excuses, we konden deze actie niet uitvoeren omdat u uitgelogd bent. Uw sessie is waarschijnlijk vervallen.",
     "description": "Session expiry notice - API call failed with 401",
     "originalDefault": "Sorry, we couldn't do that because you are logged out - this may be because your session expired."
   },
