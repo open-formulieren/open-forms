@@ -8,8 +8,7 @@ from openforms.forms.models import FormVariable
 
 class FormVariableListSerializer(serializers.ListSerializer):
     def __init__(self, *args, **kwargs):
-        if "child" not in kwargs:
-            kwargs = {**kwargs, **{"child": FormVariableSerializer()}}
+        kwargs.setdefault("child", FormVariableSerializer())
         super().__init__(*args, **kwargs)
 
     def create(self, validated_data):
@@ -25,7 +24,7 @@ class FormVariableListSerializer(serializers.ListSerializer):
             if key_form_combination in existing_form_key_combinations:
                 raise ValidationError(
                     _("The form and key attributes must be unique together"),
-                    code="invalid",
+                    code="unique",
                 )
             existing_form_key_combinations.append(key_form_combination)
         return attrs

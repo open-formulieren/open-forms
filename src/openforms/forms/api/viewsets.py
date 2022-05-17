@@ -13,12 +13,12 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework import parsers, permissions, response, status, views, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
-from rest_framework.mixins import ListModelMixin, UpdateModelMixin
+from rest_framework.mixins import ListModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework_nested.viewsets import NestedViewSetMixin as _NestedViewSetMixin
 
 from openforms.api.pagination import PageNumberPagination
+from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..messages import add_success_message
@@ -28,7 +28,6 @@ from ..models import (
     FormLogic,
     FormPriceLogic,
     FormStep,
-    FormVariable,
     FormVersion,
 )
 from ..utils import export_form, import_form
@@ -237,6 +236,23 @@ _FORM_ADMIN_FIELDS_MARKDOWN = "\n".join(
         ),
         parameters=[UUID_OR_SLUG_PARAMETER],
     ),
+    variables_bulk_update=extend_schema(
+        summary=_("Bulk update/create/delete form variables"),
+        description=_(
+            "By sending a list of FormVariables to this endpoint, all the FormVariables related to the form will be "
+            "replaced with the data sent to the endpoint."
+        ),
+        tags=["forms"],
+        request=FormVariableListSerializer,
+        responses={
+            status.HTTP_200_OK: FormVariableListSerializer,
+            status.HTTP_400_BAD_REQUEST: ValidationErrorSerializer,
+            status.HTTP_401_UNAUTHORIZED: ExceptionSerializer,
+            status.HTTP_403_FORBIDDEN: ExceptionSerializer,
+            status.HTTP_404_NOT_FOUND: ExceptionSerializer,
+            status.HTTP_405_METHOD_NOT_ALLOWED: ExceptionSerializer,
+        },
+    ),
 )
 class FormViewSet(viewsets.ModelViewSet):
     """
@@ -417,6 +433,53 @@ class FormViewSet(viewsets.ModelViewSet):
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @action(
+        detail=True,
+        methods=["put"],
+        url_path="variables",
+        url_name="variables",
+    )
+    @transaction.atomic
+    def variables_bulk_update(self, request, *args, **kwargs):
+        form = self.get_object()
+        form_variables = form.formvariable_set.all()
+        # We expect that all the variables that should be associated with a form come in the request.
+        # So we can delete any existing variables because they will be replaced.
+        form_variables.delete()
+
+        serializer = FormVariableSerializer(
+            data=request.data, many=True, context={"request": request, "form": form}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @extend_schema(
+        summary=_("List form variables"),
+        description=_("List all FormVariables related to a form."),
+        tags=["forms"],
+        request=FormVariableListSerializer,
+        responses={
+            status.HTTP_200_OK: FormVariableListSerializer,
+            status.HTTP_401_UNAUTHORIZED: ExceptionSerializer,
+            status.HTTP_403_FORBIDDEN: ExceptionSerializer,
+            status.HTTP_404_NOT_FOUND: ExceptionSerializer,
+            status.HTTP_405_METHOD_NOT_ALLOWED: ExceptionSerializer,
+        },
+    )
+    @variables_bulk_update.mapping.get
+    def variables_list(self, request, *args, **kwargs):
+        form = self.get_object()
+        form_variables = form.formvariable_set.all()
+
+        serializer = FormVariableSerializer(
+            instance=form_variables,
+            many=True,
+            context={"request": request, "form": form},
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 FormViewSet.__doc__ = inspect.getdoc(FormViewSet).format(
     admin_fields=_FORM_ADMIN_FIELDS_MARKDOWN
@@ -521,47 +584,3 @@ class FormsImportAPIView(views.APIView):
         import_form(serializer.validated_data["file"])
 
         return response.Response(status=status.HTTP_204_NO_CONTENT)
-
-
-@extend_schema_view(
-    bulk_update=extend_schema(
-        summary=_("Bulk update/create/delete form variables"),
-        tags=["forms"],
-        parameters=[
-            OpenApiParameter(
-                name="form_uuid_or_slug",
-                location=OpenApiParameter.PATH,
-                type=str,
-                description=_("Either a UUID4 or a slug identifying the form."),
-            ),
-        ],
-        request=FormVariableListSerializer,
-        responses={status.HTTP_201_CREATED: FormVariableListSerializer},
-    ),
-)
-class FormVariablesViewSet(NestedViewSetMixin, viewsets.GenericViewSet):
-    permission_classes = [FormAPIPermissions]
-    serializer_class = FormVariableSerializer
-    queryset = FormVariable.objects.all()
-    parent_lookup_kwargs = {"form_uuid_or_slug": "form__uuid"}
-
-    def initialize_request(self, request, *args, **kwargs):
-        # Skip the NestedViewSetMixin initialize request which would place the form URL in the request data
-        # It doesn't support the data being a list of dicts instead of a dict
-        return super(_NestedViewSetMixin, self).initialize_request(
-            request, *args, **kwargs
-        )
-
-    @action(detail=False, methods=["put"])
-    @transaction.atomic
-    def bulk_update(self, request, *args, **kwargs):
-        form_variables = self.get_queryset()
-        # We expect that all the variables that should be associated with a form come in the request.
-        # So we can delete any existing variables because they will be replaced.
-        form_variables.delete()
-
-        serializer = self.get_serializer(data=request.data, many=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -2,7 +2,7 @@ import factory
 
 from openforms.products.tests.factories import ProductFactory
 
-from ..constants import FormVariablesDataTypes, FormVariablesSources
+from ..constants import FormVariableDataTypes, FormVariableSources
 from ..models import Form, FormDefinition, FormStep, FormVariable, FormVersion
 from ..utils import form_to_json
 
@@ -117,8 +117,8 @@ class FormVariableFactory(factory.django.DjangoModelFactory):
     form = factory.SubFactory(FormFactory)
     key = factory.Faker("word")
     form_definition = factory.SubFactory(FormDefinitionFactory)
-    source = FormVariablesSources.user_defined
-    data_type = FormVariablesDataTypes.string
+    source = FormVariableSources.user_defined
+    data_type = FormVariableDataTypes.string
     initial_value = {}
 
     class Meta:

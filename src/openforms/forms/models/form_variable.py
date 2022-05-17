@@ -3,19 +3,19 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from ..constants import (
-    FormVariablesDataTypes,
-    FormVariablesInitialValues,
-    FormVariablesSources,
+    FormVariableDataTypes,
+    FormVariableSources,
+    FormVariableStaticInitialValues,
 )
 from .form import Form
 from .form_definition import FormDefinition
 
 
-def get_today():
+def get_now() -> str:
     return timezone.now().isoformat()
 
 
-STATIC_INITIAL_VALUES = {FormVariablesInitialValues.today: get_today}
+STATIC_INITIAL_VALUES = {FormVariableStaticInitialValues.now: get_now}
 
 
 class FormVariable(models.Model):
@@ -47,9 +47,9 @@ class FormVariable(models.Model):
     source = models.CharField(
         verbose_name=_("source"),
         help_text=_(
-            "Where will the data that will be associate with this variable come from"
+            "Where will the data that will be associated with this variable come from"
         ),
-        choices=FormVariablesSources.choices,
+        choices=FormVariableSources.choices,
         max_length=50,
     )
     prefill_plugin = models.CharField(
@@ -69,7 +69,7 @@ class FormVariable(models.Model):
     data_type = models.CharField(
         verbose_name=_("data type"),
         help_text=_("The type of the value that will be associated with this variable"),
-        choices=FormVariablesDataTypes.choices,
+        choices=FormVariableDataTypes.choices,
         max_length=50,
     )
     data_format = models.CharField(
@@ -83,7 +83,7 @@ class FormVariable(models.Model):
     is_sensitive_data = models.BooleanField(
         verbose_name=_("is sensitive data"),
         help_text=_("Will this variable be associated with sensitive data?"),
-        default=True,
+        default=False,
     )
     initial_value = models.JSONField(
         verbose_name=_("initial value"),
@@ -99,7 +99,7 @@ class FormVariable(models.Model):
         return _("Form variable %(name)s") % {"name": self.name}
 
     def get_initial_value(self):
-        if self.source == FormVariablesSources.static:
+        if self.source == FormVariableSources.static:
             return STATIC_INITIAL_VALUES[self.initial_value]()
         else:
             return self.initial_value

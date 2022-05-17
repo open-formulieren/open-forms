@@ -33,13 +33,13 @@ class SubmissionAllowedChoices(DjangoChoices):
     )
 
 
-class FormVariablesSources(DjangoChoices):
+class FormVariableSources(DjangoChoices):
     component = ChoiceItem("component", _("Component"))
     user_defined = ChoiceItem("user_defined", _("User defined"))
     static = ChoiceItem("static", _("Static"))
 
 
-class FormVariablesDataTypes(DjangoChoices):
+class FormVariableDataTypes(DjangoChoices):
     string = ChoiceItem("string", _("String"))
     null = ChoiceItem("null", _("Null"))
     boolean = ChoiceItem("boolean", _("Boolean"))
@@ -49,5 +49,5 @@ class FormVariablesDataTypes(DjangoChoices):
     datetime = ChoiceItem("datetime", _("Datetime"))
 
 
-class FormVariablesInitialValues(DjangoChoices):
-    today = ChoiceItem("today", _("Today"))
+class FormVariableStaticInitialValues(DjangoChoices):
+    now = ChoiceItem("now", _("Now"))

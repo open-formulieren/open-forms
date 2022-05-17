@@ -5,7 +5,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
-from openforms.forms.constants import FormVariablesDataTypes, FormVariablesSources
+from openforms.forms.constants import FormVariableDataTypes, FormVariableSources
 from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -18,8 +18,8 @@ class FormVariableViewsetTest(APITestCase):
     def test_auth_required(self):
         form = FormFactory.create()
         url = reverse(
-            "api:form-variables-bulk-update",
-            kwargs={"form_uuid_or_slug": form.uuid},
+            "api:form-variables",
+            kwargs={"uuid_or_slug": form.uuid},
         )
 
         response = self.client.put(url)
@@ -33,8 +33,8 @@ class FormVariableViewsetTest(APITestCase):
         )
         form = FormFactory.create()
         url = reverse(
-            "api:form-variables-bulk-update",
-            kwargs={"form_uuid_or_slug": form.uuid},
+            "api:form-variables",
+            kwargs={"uuid_or_slug": form.uuid},
         )
 
         self.client.force_authenticate(user=user)
@@ -56,10 +56,10 @@ class FormVariableViewsetTest(APITestCase):
         form_definition_url = f"http://testserver.com{form_definition_path}"
 
         form_variable1 = FormVariableFactory.create(
-            form=form, form_definition=form_definition
+            form=form, form_definition=form_definition, key="variable1"
         )
-        form_variable2 = FormVariableFactory.create(
-            form=form, form_definition=form_definition
+        FormVariableFactory.create(
+            form=form, form_definition=form_definition, key="variable2"
         )  # This variable will be deleted
         another_form_variable = (
             FormVariableFactory.create()
@@ -78,24 +78,24 @@ class FormVariableViewsetTest(APITestCase):
             {
                 "form": form_url,
                 "form_definition": form_definition_url,
-                "name": "Today",
-                "key": "today",
-                "source": FormVariablesSources.static,
-                "data_type": FormVariablesDataTypes.datetime,
-                "initial_value": "today",
+                "name": "Now",
+                "key": "now",
+                "source": FormVariableSources.static,
+                "data_type": FormVariableDataTypes.datetime,
+                "initial_value": "now",
             },  # New variable
         ]
 
         self.client.force_authenticate(user)
         response = self.client.put(
             reverse(
-                "api:form-variables-bulk-update",
-                kwargs={"form_uuid_or_slug": form.uuid},
+                "api:form-variables",
+                kwargs={"uuid_or_slug": form.uuid},
             ),
             data=data,
         )
 
-        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
 
         variables = FormVariable.objects.all()
 
@@ -105,9 +105,9 @@ class FormVariableViewsetTest(APITestCase):
         form_variables = variables.filter(form=form)
 
         self.assertEqual(2, form_variables.count())
-        self.assertTrue(form_variables.filter(key="today").exists())
-        self.assertTrue(form_variables.filter(key=form_variable1.key).exists())
-        self.assertFalse(form_variables.filter(key=form_variable2.key).exists())
+        self.assertTrue(form_variables.filter(key="now").exists())
+        self.assertTrue(form_variables.filter(key="variable1").exists())
+        self.assertFalse(form_variables.filter(key="variable2").exists())
 
     @override_settings(LANGUAGE_CODE="en")
     def test_unique_together_key_form(self):
@@ -129,8 +129,8 @@ class FormVariableViewsetTest(APITestCase):
                 "form_definition": form_definition_url,
                 "key": "test-not-unique",
                 "name": "Test 1",
-                "source": FormVariablesSources.static,
-                "data_type": FormVariablesDataTypes.string,
+                "source": FormVariableSources.static,
+                "data_type": FormVariableDataTypes.string,
                 "initial_value": "",
             },
             {
@@ -138,8 +138,8 @@ class FormVariableViewsetTest(APITestCase):
                 "form_definition": form_definition_url,
                 "name": "Test 2",
                 "key": "test-not-unique",
-                "source": FormVariablesSources.static,
-                "data_type": FormVariablesDataTypes.string,
+                "source": FormVariableSources.static,
+                "data_type": FormVariableDataTypes.string,
                 "initial_value": "",
             },
         ]
@@ -147,8 +147,8 @@ class FormVariableViewsetTest(APITestCase):
         self.client.force_authenticate(user)
         response = self.client.put(
             reverse(
-                "api:form-variables-bulk-update",
-                kwargs={"form_uuid_or_slug": form.uuid},
+                "api:form-variables",
+                kwargs={"uuid_or_slug": form.uuid},
             ),
             data=data,
         )
@@ -162,3 +162,34 @@ class FormVariableViewsetTest(APITestCase):
             error["invalidParams"][0]["reason"],
             "The form and key attributes must be unique together",
         )
+        self.assertEqual(
+            error["invalidParams"][0]["code"],
+            "unique",
+        )
+
+    def test_list_form_variables(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        form = FormFactory.create()
+
+        form_variable1 = FormVariableFactory.create(form=form)
+        form_variable2 = FormVariableFactory.create(form=form)
+        FormVariableFactory.create()  # Not related to the same form!
+
+        self.client.force_authenticate(user)
+        response = self.client.get(
+            reverse(
+                "api:form-variables",
+                kwargs={"uuid_or_slug": form.uuid},
+            ),
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        response_data = response.json()
+
+        self.assertEqual(2, len(response_data))
+
+        variables_keys = [variable["key"] for variable in response_data]
+
+        self.assertIn(form_variable1.key, variables_keys)
+        self.assertIn(form_variable2.key, variables_keys)
