@@ -17,6 +17,17 @@ def get_now() -> str:
 
 STATIC_INITIAL_VALUES = {FormVariableStaticInitialValues.now: get_now}
 
+INITIAL_VALUES = {
+    FormVariableDataTypes.string: "",
+    FormVariableDataTypes.boolean: False,
+    FormVariableDataTypes.object: {},
+    FormVariableDataTypes.array: [],
+    FormVariableDataTypes.int: 0,
+    FormVariableDataTypes.float: 0.0,
+    FormVariableDataTypes.datetime: "",
+    FormVariableDataTypes.time: "",
+}
+
 
 class FormVariable(models.Model):
     form = models.ForeignKey(
@@ -102,4 +113,4 @@ class FormVariable(models.Model):
         if self.source == FormVariableSources.static:
             return STATIC_INITIAL_VALUES[self.initial_value]()
         else:
-            return self.initial_value
+            return self.initial_value or INITIAL_VALUES[self.data_type]

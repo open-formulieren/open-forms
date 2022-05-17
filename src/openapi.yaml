@@ -3541,12 +3541,13 @@ components:
     DataTypeEnum:
       enum:
       - string
-      - 'null'
       - boolean
       - object
       - array
-      - number
+      - int
+      - float
       - datetime
+      - time
       type: string
     Date:
       type: object
@@ -4027,7 +4028,7 @@ components:
         source:
           allOf:
           - $ref: '#/components/schemas/SourceEnum'
-          description: Where will the data that will be associate with this variable
+          description: Where will the data that will be associated with this variable
             come from
         prefillPlugin:
           type: string

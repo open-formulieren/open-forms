@@ -3,6 +3,7 @@ from django.test import TestCase
 from freezegun import freeze_time
 
 from openforms.forms.constants import (
+    FormVariableDataTypes,
     FormVariableSources,
     FormVariableStaticInitialValues,
 )
@@ -13,6 +14,7 @@ class FormVariablesTests(TestCase):
     def test_get_initial_value(self):
         static_variable = FormVariableFactory.create(
             source=FormVariableSources.static,
+            data_type=FormVariableDataTypes.datetime,
             initial_value=FormVariableStaticInitialValues.now,
         )
         with self.subTest(part="static variable now"):
@@ -22,7 +24,9 @@ class FormVariablesTests(TestCase):
                 )
 
         user_defined_variable = FormVariableFactory.create(
-            source=FormVariableSources.user_defined, initial_value="Some text value"
+            source=FormVariableSources.user_defined,
+            initial_value="Some text value",
+            data_type=FormVariableDataTypes.string,
         )
         with self.subTest(part="user defined variable"):
             self.assertEqual(
@@ -30,7 +34,7 @@ class FormVariablesTests(TestCase):
             )
 
         component_variable = FormVariableFactory.create(
-            source=FormVariableSources.component, initial_value=[]
+            source=FormVariableSources.component, data_type=FormVariableDataTypes.array
         )
         with self.subTest(part="component variable"):
             self.assertEqual([], component_variable.get_initial_value())

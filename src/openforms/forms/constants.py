@@ -41,12 +41,13 @@ class FormVariableSources(DjangoChoices):
 
 class FormVariableDataTypes(DjangoChoices):
     string = ChoiceItem("string", _("String"))
-    null = ChoiceItem("null", _("Null"))
     boolean = ChoiceItem("boolean", _("Boolean"))
     object = ChoiceItem("object", _("Object"))
     array = ChoiceItem("array", _("Array"))
-    number = ChoiceItem("number", _("Number"))
+    int = ChoiceItem("int", _("Integer"))
+    float = ChoiceItem("float", _("Float"))
     datetime = ChoiceItem("datetime", _("Datetime"))
+    time = ChoiceItem("time", _("Time"))
 
 
 class FormVariableStaticInitialValues(DjangoChoices):
