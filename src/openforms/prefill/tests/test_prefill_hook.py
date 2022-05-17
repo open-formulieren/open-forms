@@ -3,6 +3,7 @@ from copy import deepcopy
 from unittest.mock import patch
 
 from django.test import TransactionTestCase
+from django.utils.crypto import get_random_string
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
@@ -107,6 +108,12 @@ class PrefillHookTests(TransactionTestCase):
         self.assertIsInstance(field["defaultValue"], str)
 
     def test_complex_components(self):
+        def config_factory():
+            components = deepcopy(CONFIGURATION["components"])
+            for comp in components:
+                comp["id"] = get_random_string(length=7)
+            return components
+
         complex_configuration = {
             "display": "form",
             "components": [
@@ -114,7 +121,21 @@ class PrefillHookTests(TransactionTestCase):
                     "id": "e1a2cv9",
                     "key": "fieldset",
                     "type": "fieldset",
-                    "components": CONFIGURATION["components"],
+                    "components": config_factory(),
+                },
+                {
+                    "key": "columns",
+                    "type": "columns",
+                    "columns": [
+                        {
+                            "size": 6,
+                            "components": config_factory(),
+                        },
+                        {
+                            "size": 6,
+                            "components": config_factory(),
+                        },
+                    ],
                 },
             ],
         }
@@ -137,6 +158,21 @@ class PrefillHookTests(TransactionTestCase):
         self.assertIn("defaultValue", field)
         self.assertIsNotNone(field["defaultValue"])
         self.assertIsInstance(field["defaultValue"], str)
+
+        column1, column2 = new_configuration["components"][1]["columns"]
+        self.assertNotIn("defaultValue", column1)
+        self.assertNotIn("defaultValue", column2)
+        col_field1, col_field2 = column1["components"][0], column2["components"][0]
+
+        self.assertIn("prefill", col_field1)
+        self.assertIn("defaultValue", col_field1)
+        self.assertIsNotNone(col_field1["defaultValue"])
+        self.assertIsInstance(col_field1["defaultValue"], str)
+
+        self.assertIn("prefill", col_field2)
+        self.assertIn("defaultValue", col_field2)
+        self.assertIsNotNone(col_field2["defaultValue"])
+        self.assertIsInstance(col_field2["defaultValue"], str)
 
     def test_prefill_no_result_and_default_value_set(self):
         config = deepcopy(CONFIGURATION)
