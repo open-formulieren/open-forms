@@ -177,7 +177,16 @@ const savePriceRules = async (formUrl, csrftoken, priceRules, priceRulesToDelete
     return createdRules;
 };
 
+const createOrUpdateFormVariables = async (formUrl, csrftoken, variables) => {
+    const endPoint = `${formUrl}/variables`;
+    const formVariables = variables.map((variable) => {
+        return {...variable, form: formUrl};
+    });
+
+    return await put(endPoint, csrftoken, formVariables);
+};
+
 
 export { loadPlugins, PluginLoadingError };
-export { updateOrCreateFormSteps };
+export { updateOrCreateFormSteps, createOrUpdateFormVariables };
 export { saveLogicRules, savePriceRules };

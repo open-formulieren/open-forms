@@ -32,7 +32,7 @@ import {
     loadPlugins,
     updateOrCreateFormSteps,
     saveLogicRules,
-    savePriceRules,
+    savePriceRules, createOrUpdateFormVariables,
 } from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import FormMetaFields from './FormMetaFields';
@@ -48,6 +48,9 @@ import {FormLogic, EMPTY_RULE} from './FormLogic';
 import {PriceLogic, EMPTY_PRICE_RULE} from './PriceLogic';
 import {BACKEND_OPTIONS_FORMS} from './registrations';
 import {getFormComponents, findComponent, checkKeyChange, replaceComponentKeyInLogic} from './utils';
+import {getFormVariables, updateFormVariables} from './variables/utils';
+import VariablesEditor from './variables/VariablesEditor';
+import {DEFAULT_STATIC_VARIABLES} from './variables/constants';
 
 const initialFormState = {
     form: {
@@ -102,6 +105,7 @@ const initialFormState = {
     logicRulesToDelete: [],
     priceRules: [],
     priceRulesToDelete: [],
+    formVariables: [],
     // backend error handling
     validationErrors: [],
     tabsWithErrors: [],
@@ -220,6 +224,9 @@ function reducer(draft, action) {
             }
             break;
         }
+        case 'ADD_STATIC_VARIABLES':
+            draft.formVariables = [...DEFAULT_STATIC_VARIABLES];
+            break;
         /**
          * FormStep-level actions
          */
@@ -311,6 +318,9 @@ function reducer(draft, action) {
             if (hasKeyChanged) {
                 draft.logicRules = replaceComponentKeyInLogic(draft.logicRules, originalComp.key, schema.key);
             }
+
+            // Check if the formVariables need updating
+            draft.formVariables = updateFormVariables(mutationType, schema, originalComp, draft.formVariables);
 
             // check if we need updates to the backendRegistrationOptions
             const {registrationBackend, registrationBackendOptions} = draft.form;
@@ -608,6 +618,7 @@ const getFormData = async (formUuid, dispatch) => {
             type: 'FORM_STEPS_LOADED',
             payload: [],
         });
+        dispatch({type: 'ADD_STATIC_VARIABLES'});
         return;
     }
 
@@ -616,8 +627,9 @@ const getFormData = async (formUuid, dispatch) => {
         const requests = [
             get(`${FORM_ENDPOINT}/${formUuid}`),
             getFormStepsData(formUuid, dispatch),
+            getFormVariables(formUuid, dispatch)
         ];
-        const [response, formStepsData] = await Promise.all(requests);
+        const [response, formStepsData, formVariables] = await Promise.all(requests);
         if (!response.ok) {
             throw new Error('An error occurred while fetching the form.');
         }
@@ -630,6 +642,7 @@ const getFormData = async (formUuid, dispatch) => {
                 selectedAuthPlugins: form.loginOptions.map((plugin, index) => plugin.identifier),
                 form: form,
                 literals: literals,
+                formVariables: formVariables,
             },
         });
         dispatch({
@@ -966,6 +979,18 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             return;
         }
 
+        // Save the FormVariables
+        try {
+            const response = await createOrUpdateFormVariables(formUrl, csrftoken, state.formVariables);
+            if (!response.ok) {
+                 throw new Error('An error occurred while saving the form variables.');
+            }
+        } catch (e) {
+            dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
+            window.scrollTo(0, 0);
+            return;
+        }
+
         // Save this new version of the form in the "form version control"
         try {
             var versionResponse = await post(
@@ -1055,6 +1080,9 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         </Tab>
                         <Tab>
                             <FormattedMessage defaultMessage="Appointments" description="Appointments tab title" />
+                        </Tab>
+                        <Tab>
+                            <FormattedMessage defaultMessage="Variables" description="Variables tab title" />
                         </Tab>
                     </TabList>
 
@@ -1165,6 +1193,10 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                                     payload: event,
                                 });
                             }} />
+                    </TabPanel>
+
+                    <TabPanel>
+                        <VariablesEditor variables={state.formVariables} />
                     </TabPanel>
                 </Tabs>
             </ComponentsContext.Provider>
