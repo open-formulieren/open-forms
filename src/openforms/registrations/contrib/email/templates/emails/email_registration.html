@@ -25,22 +25,24 @@
 
 
     {% for submission_step_node in renderer.get_children %}
-        {# row for step title #}
-        <tr>
-            <td width="100%" valign="top" style="padding: 4px 0;" colspan="2">
-                <div style="margin: 1em 0 .2em; font-size: 1.2em; text-decoration: underline;">{{ submission_step_node.render }}</div>
-            </td>
-        </tr>
+        {% if submission_step_node.has_children %}
+            {# row for step title #}
+            <tr>
+                <td width="100%" valign="top" style="padding: 4px 0;" colspan="2">
+                    <div style="margin: 1em 0 .2em; font-size: 1.2em; text-decoration: underline;">{{ submission_step_node.render }}</div>
+                </td>
+            </tr>
 
-        {# row for every visible form field within the step #}
-        {% for component_node in submission_step_node.get_children %}
-            {% if component_node.label or component_node.display_value %}
-                <tr>
-                    <td valign="top" style="padding: 2px 0; padding-right: 10px;">{{ component_node.label }}</td>
-                    <td valign="top" style="padding: 2px 0;">{{ component_node.display_value }}</td>
-                </tr>
-            {% endif %}
-        {% endfor %}
+            {# row for every visible form field within the step #}
+            {% for component_node in submission_step_node.get_children %}
+                {% if component_node.label or component_node.display_value %}
+                    <tr>
+                        <td valign="top" style="padding: 2px 0; padding-right: 10px;">{{ component_node.label }}</td>
+                        <td valign="top" style="padding: 2px 0;">{{ component_node.display_value }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
 
         {% if forloop.last and co_signer %}
             <tr>
