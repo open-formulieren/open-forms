@@ -194,6 +194,11 @@
     "description": "Form step save text field help text",
     "originalDefault": "The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
   },
+  "8NbOpb": {
+    "defaultMessage": "Variables",
+    "description": "Variables tab title",
+    "originalDefault": "Variables"
+  },
   "8VqmbG": {
     "defaultMessage": "Type",
     "description": "JSON editor: 'type' header label",
