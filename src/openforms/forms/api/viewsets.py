@@ -237,7 +237,7 @@ _FORM_ADMIN_FIELDS_MARKDOWN = "\n".join(
         parameters=[UUID_OR_SLUG_PARAMETER],
     ),
     variables_bulk_update=extend_schema(
-        summary=_("Bulk update/create/delete form variables"),
+        summary=_("Bulk configure form variables"),
         description=_(
             "By sending a list of FormVariables to this endpoint, all the FormVariables related to the form will be "
             "replaced with the data sent to the endpoint."
@@ -457,7 +457,7 @@ class FormViewSet(viewsets.ModelViewSet):
 
     @extend_schema(
         summary=_("List form variables"),
-        description=_("List all FormVariables related to a form."),
+        description=_("List all variables defined for a form."),
         tags=["forms"],
         request=FormVariableListSerializer,
         responses={

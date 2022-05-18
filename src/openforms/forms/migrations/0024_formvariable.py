@@ -108,7 +108,9 @@ class Migration(migrations.Migration):
                 (
                     "initial_value",
                     models.JSONField(
+                        blank=True,
                         help_text="The initial value for this field",
+                        null=True,
                         verbose_name="initial value",
                     ),
                 ),
@@ -124,6 +126,7 @@ class Migration(migrations.Migration):
                 (
                     "form_definition",
                     models.ForeignKey(
+                        blank=True,
                         help_text="Form definition to which this variable is related. This is kept as metadata",
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,

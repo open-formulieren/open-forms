@@ -1339,7 +1339,7 @@ paths:
   /api/v1/forms/{uuid_or_slug}/variables:
     get:
       operationId: forms_variables_list
-      description: List all FormVariables related to a form.
+      description: List all variables defined for a form.
       summary: List form variables
       parameters:
       - in: path
@@ -1405,7 +1405,7 @@ paths:
       operationId: forms_variables_update
       description: By sending a list of FormVariables to this endpoint, all the FormVariables
         related to the form will be replaced with the data sent to the endpoint.
-      summary: Bulk update/create/delete form variables
+      summary: Bulk configure form variables
       parameters:
       - in: header
         name: X-CSP-Nonce
@@ -4053,11 +4053,11 @@ components:
         initialValue:
           type: object
           additionalProperties: {}
+          nullable: true
           description: The initial value for this field
       required:
       - dataType
       - form
-      - initialValue
       - key
       - name
       - source

@@ -44,6 +44,7 @@ class FormVariable(models.Model):
         ),
         on_delete=models.CASCADE,
         null=True,
+        blank=True,
     )
     name = models.CharField(
         verbose_name=_("name"),
@@ -99,6 +100,8 @@ class FormVariable(models.Model):
     initial_value = models.JSONField(
         verbose_name=_("initial value"),
         help_text=_("The initial value for this field"),
+        blank=True,
+        null=True,
     )
 
     class Meta:
