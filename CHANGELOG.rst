@@ -2,7 +2,18 @@
 Changelog
 =========
 
-1.1.0-rc.0 (2022-05-XX)
+1.1.0 (2022-05-XX)
+==================
+
+Feature release.
+
+Please see the 1.1.0-rc.0 changelog entry to see what's changed.
+
+**Fixes since the release candidate**
+
+* [#1624] Fixed list of prefill attributes refresh on prefill plugin change
+
+1.1.0-rc.0 (2022-05-17)
 =======================
 
 First release candidate of the 1.1.x release series!
