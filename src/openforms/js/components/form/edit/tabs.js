@@ -343,6 +343,8 @@ const PREFILL = {
             },
             valueProperty: 'id',
             template: '<span>{{ item.label }}</span>',
+            refreshOn: 'prefill.plugin',
+            clearOnRefresh: true,
         }
     ],
 };
