@@ -60,6 +60,7 @@ import {
   findComponent,
   checkKeyChange,
   replaceComponentKeyInLogic,
+  getUniqueKey,
 } from './utils';
 import {updateFormVariables} from './variables/utils';
 import VariablesEditor from './variables/VariablesEditor';
@@ -549,9 +550,16 @@ function reducer(draft, action) {
     }
     case 'CHANGE_USER_DEFINED_VARIABLE': {
       const {key, propertyName, propertyValue} = action.payload;
+
       let updatedVariables = _.cloneDeep(draft.formVariables);
       const index = updatedVariables.findIndex(variable => variable.key === key);
-      updatedVariables[index][propertyName] = propertyValue;
+      const existingKeys = updatedVariables.map(variable => variable.key);
+
+      if (propertyName === 'key' && existingKeys.includes(propertyValue)) {
+        updatedVariables[index]['key'] = getUniqueKey(propertyValue, existingKeys);
+      } else {
+        updatedVariables[index][propertyName] = propertyValue;
+      }
 
       draft.formVariables = updatedVariables;
       break;

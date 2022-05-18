@@ -32,25 +32,43 @@ const EditableVariableRow = ({variable, onDelete, onChange}) => {
     onChange(variable.key, e.target.name, e.target.value);
   };
 
+  const updateKey = e => {
+    // Key creation taken from FormIO
+    let updatedKey = _.camelCase(variable.name).replace(/^[0-9]*/, '');
+    onChange(variable.key, 'key', updatedKey);
+  };
+
   return (
     <tr>
       <td>
         <DeleteIcon onConfirm={() => onDelete(variable.key)} message={deleteConfirmMessage} />
       </td>
       <td>
-        <TextInput name="name" value={variable.name} onChange={onValueChanged} />
+        <TextInput
+          name="name"
+          value={variable.name}
+          onChange={onValueChanged}
+          onBlur={updateKey}
+          noVTextField={true}
+        />
       </td>
       <td>
-        <TextInput name="key" value={variable.key} onChange={onValueChanged} />
+        <TextInput name="key" value={variable.key} noVTextField={true} disable={true} />
       </td>
       <td>
-        <TextInput name="prefillPlugin" value={variable.prefillPlugin} onChange={onValueChanged} />
+        <TextInput
+          name="prefillPlugin"
+          value={variable.prefillPlugin}
+          onChange={onValueChanged}
+          noVTextField={true}
+        />
       </td>
       <td>
         <TextInput
           name="prefillAttribute"
           value={variable.prefillAttribute}
           onChange={onValueChanged}
+          noVTextField={true}
         />
       </td>
       <td>
@@ -66,14 +84,26 @@ const EditableVariableRow = ({variable, onDelete, onChange}) => {
         <Checkbox
           name=""
           checked={variable.isSensitiveData}
-          onChange={e => onValueChanged({target: {name: isSensitiveData, value: e.target.value}})}
+          onChange={e =>
+            onValueChanged({target: {name: 'isSensitiveData', value: !variable.isSensitiveData}})
+          }
         />
       </td>
       <td>
-        <TextInput name="initialValue" value={variable.initialValue} onChange={onValueChanged} />
+        <TextInput
+          name="initialValue"
+          value={variable.initialValue}
+          onChange={onValueChanged}
+          noVTextField={true}
+        />
       </td>
       <td>
-        <TextInput name="dataFormat" value={variable.dataFormat} onChange={onValueChanged} />
+        <TextInput
+          name="dataFormat"
+          value={variable.dataFormat}
+          onChange={onValueChanged}
+          noVTextField={true}
+        />
       </td>
     </tr>
   );

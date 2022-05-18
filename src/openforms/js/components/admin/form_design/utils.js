@@ -83,10 +83,27 @@ const replaceComponentKeyInLogic = (existingLogicRules, originalKey, newKey) => 
   });
 };
 
+const getUniqueKey = (key, existingKeys) => {
+  if (!existingKeys.includes(key)) return key;
+
+  let uniqueKey = key;
+
+  if (!uniqueKey.match(/(\d+)$/)) {
+    uniqueKey = `${key}1`;
+  } else {
+    uniqueKey = key.replace(/(\d+)$/, function (suffix) {
+      return Number(suffix) + 1;
+    });
+  }
+
+  return getUniqueKey(uniqueKey, existingKeys);
+};
+
 export {
   stripIdFromComponents,
   getFormComponents,
   findComponent,
   checkKeyChange,
   replaceComponentKeyInLogic,
+  getUniqueKey,
 };
