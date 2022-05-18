@@ -7,11 +7,11 @@ from django.utils.translation import ngettext, ugettext_lazy as _
 
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 
+from openforms.config.models import GlobalConfiguration
 from openforms.payments.admin import PaymentBackendChoiceFieldMixin
 from openforms.registrations.admin import RegistrationBackendFieldMixin
 from openforms.utils.expressions import FirstNotBlank
 
-from ...config.models import GlobalConfiguration
 from ..models import Form, FormDefinition, FormStep
 from ..models.form import FormsExport
 from ..utils import export_form, get_duplicates_keys_for_form

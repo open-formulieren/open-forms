@@ -1,9 +1,13 @@
 const COMPONENT_DATATYPES = {
-    'textfield': 'string',
-    'email': 'string',
     'date': 'datetime',
     'time': 'time',
-    'phoneNumber': 'string',
+    'file': 'object',
+    'currency': 'float',
+    'number': 'float',
+    'checkbox': 'boolean',
+    'selectboxes': 'object',
+    'npFamilyMembers': 'object',
+    'map': 'array'
 };
 
 // Component types that don't need to have an associated FormVariable

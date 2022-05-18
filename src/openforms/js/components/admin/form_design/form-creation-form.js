@@ -32,7 +32,8 @@ import {
     loadPlugins,
     updateOrCreateFormSteps,
     saveLogicRules,
-    savePriceRules, createOrUpdateFormVariables,
+    savePriceRules,
+    createOrUpdateFormVariables,
 } from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import FormMetaFields from './FormMetaFields';
@@ -627,7 +628,7 @@ const getFormData = async (formUuid, dispatch) => {
         const requests = [
             get(`${FORM_ENDPOINT}/${formUuid}`),
             getFormStepsData(formUuid, dispatch),
-            getFormVariables(formUuid, dispatch)
+            getFormVariables(formUuid, dispatch),
         ];
         const [response, formStepsData, formVariables] = await Promise.all(requests);
         if (!response.ok) {
