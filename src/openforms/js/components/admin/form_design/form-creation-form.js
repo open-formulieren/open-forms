@@ -1,6 +1,7 @@
 import zip from 'lodash/zip';
 import getObjectValue from 'lodash/get';
 import set from 'lodash/set';
+import _ from 'lodash';
 import groupBy from 'lodash/groupBy';
 import React, {useContext} from 'react';
 import {useImmerReducer} from 'use-immer';
@@ -62,7 +63,7 @@ import {
 } from './utils';
 import {updateFormVariables} from './variables/utils';
 import VariablesEditor from './variables/VariablesEditor';
-import {DEFAULT_STATIC_VARIABLES} from './variables/constants';
+import {DEFAULT_STATIC_VARIABLES, EMPTY_VARIABLE} from './variables/constants';
 
 const initialFormState = {
   form: {
@@ -235,9 +236,6 @@ function reducer(draft, action) {
       }
       break;
     }
-    case 'ADD_STATIC_VARIABLES':
-      draft.formVariables = [...DEFAULT_STATIC_VARIABLES];
-      break;
     /**
      * FormStep-level actions
      */
@@ -532,6 +530,34 @@ function reducer(draft, action) {
 
       // clear the state of rules to delete, as they have been deleted
       draft.logicRulesToDelete = [];
+      break;
+    }
+    /**
+     * Form Variables
+     */
+    case 'ADD_USER_DEFINED_VARIABLE': {
+      let updatedVariables = _.cloneDeep(draft.formVariables);
+      updatedVariables.push(EMPTY_VARIABLE);
+      draft.formVariables = updatedVariables;
+      break;
+    }
+    case 'DELETE_USER_DEFINED_VARIABLE': {
+      const key = action.payload;
+      let updatedVariables = _.cloneDeep(draft.formVariables);
+      draft.formVariables = updatedVariables.filter(variable => variable.key !== key);
+      break;
+    }
+    case 'CHANGE_USER_DEFINED_VARIABLE': {
+      const {key, propertyName, propertyValue} = action.payload;
+      let updatedVariables = _.cloneDeep(draft.formVariables);
+      const index = updatedVariables.findIndex(variable => variable.key === key);
+      updatedVariables[index][propertyName] = propertyValue;
+
+      draft.formVariables = updatedVariables;
+      break;
+    }
+    case 'ADD_STATIC_VARIABLES': {
+      draft.formVariables = [...DEFAULT_STATIC_VARIABLES];
       break;
     }
 
