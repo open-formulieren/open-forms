@@ -462,7 +462,9 @@ SESSION_COOKIE_SECURE = IS_HTTPS
 SESSION_COOKIE_HTTPONLY = True
 # set same-site attribute to None to allow emdedding the SDK for making cross domain
 # requests.
-SESSION_COOKIE_SAMESITE = config("SESSION_COOKIE_SAMESITE", default="None")
+SESSION_COOKIE_SAMESITE = config(
+    "SESSION_COOKIE_SAMESITE", default="None" if IS_HTTPS else "Lax"
+)
 
 CSRF_COOKIE_SECURE = IS_HTTPS
 
