@@ -3,10 +3,9 @@ import {Tab, TabList, TabPanel, Tabs} from 'react-tabs';
 import {FormattedMessage} from 'react-intl';
 
 import Fieldset from '../../forms/Fieldset';
-import StaticVariables from './StaticVariables';
-import ComponentVariables from './ComponentVariables';
 import {VARIABLE_SOURCES} from './constants';
 import UserDefinedVariables from './UserDefinedVariables';
+import VariablesTable from './VariablesTable';
 
 const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
   return (
@@ -40,12 +39,12 @@ const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
           </TabList>
 
           <TabPanel>
-            <StaticVariables
+            <VariablesTable
               variables={variables.filter(variable => variable.source === VARIABLE_SOURCES.static)}
             />
           </TabPanel>
           <TabPanel>
-            <ComponentVariables
+            <VariablesTable
               variables={variables.filter(
                 variable => variable.source === VARIABLE_SOURCES.component
               )}
