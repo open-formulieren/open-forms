@@ -147,4 +147,4 @@ You can freely add, change or remove presets to create a collection of consisten
 
 .. image:: _assets/color_presets.png
 
-Note changing the presets doesn't change text with previously applied colors.
+.. note:: Changing the presets doesn't change text with previously applied colors.
