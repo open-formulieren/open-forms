@@ -5,7 +5,7 @@ from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 from solo.admin import SingletonModelAdmin
 
 from .forms import GlobalConfigurationAdminForm
-from .models import GlobalConfiguration
+from .models import GlobalConfiguration, RichTextColor
 
 
 @admin.register(GlobalConfiguration)
@@ -142,3 +142,16 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
             },
         ),
     )
+
+
+@admin.register(RichTextColor)
+class RichTextColorAdmin(admin.ModelAdmin):
+    fields = [
+        "label",
+        "color",
+    ]
+    list_display = [
+        "label",
+        "example",
+        "color",
+    ]

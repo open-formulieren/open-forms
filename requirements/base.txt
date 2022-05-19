@@ -134,6 +134,8 @@ django-choices==1.7.1
     #   -r requirements/base.in
     #   django-digid-eherkenning
     #   zgw-consumers
+django-colorfield==0.7.0
+    # via -r requirements/base.in
 django-cookie-consent==0.3.1
     # via -r requirements/base.in
 django-cors-headers==3.11.0
@@ -278,6 +280,7 @@ pillow==9.0.1
     # via
     #   -r requirements/base.in
     #   cairosvg
+    #   django-colorfield
     #   weasyprint
 platformdirs==2.2.0
     # via zeep

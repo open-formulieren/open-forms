@@ -95,6 +95,9 @@ const getBuilderOptions = () => {
                                 }
                             }
                         }
+                    },
+                    fontColor: {
+                        colors: jsonScriptToVar('config-RICH_TEXT_COLORS'),
                     }
                 }
             }

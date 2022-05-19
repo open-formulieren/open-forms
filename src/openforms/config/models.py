@@ -3,8 +3,10 @@ from django.db import models
 from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.utils.encoding import force_str
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
+from colorfield.fields import ColorField
 from django_better_admin_arrayfield.models.fields import ArrayField
 from glom import glom
 from solo.models import SingletonModel
@@ -491,3 +493,31 @@ class GlobalConfiguration(SingletonModel):
             default=True,
         )
         return enabled
+
+
+class RichTextColor(models.Model):
+    color = ColorField(
+        _("color"),
+        format="hex",
+        help_text=_("Color in RGB hex format (#RRGGBB)"),
+    )
+    label = models.CharField(
+        _("label"),
+        max_length=64,
+        help_text=_("Human readable label for reference"),
+    )
+
+    class Meta:
+        verbose_name = _("text editor color preset")
+        verbose_name_plural = _("text editor color presets")
+        ordering = ("label",)
+
+    def __str__(self):
+        return f"{self.label} ({self.color})"
+
+    def example(self):
+        return mark_safe(
+            f'<span style="background-color: {self.color};">&nbsp; &nbsp; &nbsp;</span>'
+        )
+
+    example.short_description = _("Example")

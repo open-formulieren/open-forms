@@ -34,6 +34,7 @@ django-better-admin-arrayfield
 django-camunda
 django-capture-tag
 django-choices
+django-colorfield
 django-cookie-consent
 django-cors-headers
 django-decorator-include

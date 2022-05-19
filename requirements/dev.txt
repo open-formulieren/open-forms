@@ -247,6 +247,10 @@ django-choices==1.7.1
     #   -r requirements/ci.txt
     #   django-digid-eherkenning
     #   zgw-consumers
+django-colorfield==0.7.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 django-cookie-consent==0.3.1
     # via
     #   -c requirements/ci.txt
@@ -617,6 +621,7 @@ pillow==9.0.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   cairosvg
+    #   django-colorfield
     #   weasyprint
 pip-tools==6.5.1
     # via -r requirements/dev.in

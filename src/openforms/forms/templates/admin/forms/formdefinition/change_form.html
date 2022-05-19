@@ -3,6 +3,7 @@
 {% block extrahead %}
     {{ block.super }}
     {{ required_default|json_script:'config-REQUIRED_DEFAULT' }}
+    {{ rich_text_colors|json_script:'config-RICH_TEXT_COLORS' }}
 {% endblock extrahead %}
 
 {% block extrastyle %}
