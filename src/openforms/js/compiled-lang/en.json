@@ -185,6 +185,12 @@
       "value": "Stay logged in"
     }
   ],
+  "6k14SS": [
+    {
+      "type": 0,
+      "value": "Key"
+    }
+  ],
   "7/n6O+": [
     {
       "type": 0,
@@ -331,6 +337,12 @@
     {
       "type": 1,
       "value": "name"
+    }
+  ],
+  "91XY1Q": [
+    {
+      "type": 0,
+      "value": "Is not sensitive"
     }
   ],
   "9N67XB": [
@@ -485,6 +497,18 @@
     {
       "type": 0,
       "value": "Form"
+    }
+  ],
+  "BcuXrg": [
+    {
+      "type": 0,
+      "value": "Boolean"
+    }
+  ],
+  "Bl2NMf": [
+    {
+      "type": 0,
+      "value": "Static"
     }
   ],
   "BrGg65": [
@@ -733,6 +757,12 @@
       "value": "Text with (embedded) form field(s)"
     }
   ],
+  "ItH6EY": [
+    {
+      "type": 0,
+      "value": "Time"
+    }
+  ],
   "Iv+lBL": [
     {
       "type": 0,
@@ -861,6 +891,18 @@
       "value": "Component"
     }
   ],
+  "Mv8yjC": [
+    {
+      "type": 0,
+      "value": "Form variables configuration"
+    }
+  ],
+  "MzMXRd": [
+    {
+      "type": 0,
+      "value": "Prefill attribute"
+    }
+  ],
   "NE5h2q": [
     {
       "type": 0,
@@ -915,6 +957,12 @@
     {
       "type": 0,
       "value": "Yes"
+    }
+  ],
+  "P/njxS": [
+    {
+      "type": 0,
+      "value": "Datetime"
     }
   ],
   "P3oGZG": [
@@ -1009,6 +1057,12 @@
       "value": "Internal name/title of the form"
     }
   ],
+  "Rk13i+": [
+    {
+      "type": 0,
+      "value": "Initial value"
+    }
+  ],
   "S6eF5o": [
     {
       "type": 0,
@@ -1065,6 +1119,12 @@
     {
       "type": 0,
       "value": "Add key-value pair"
+    }
+  ],
+  "TB/ku3": [
+    {
+      "type": 0,
+      "value": "Add variable"
     }
   ],
   "TCQic2": [
@@ -1161,6 +1221,12 @@
       "value": "required"
     }
   ],
+  "Vsgunp": [
+    {
+      "type": 0,
+      "value": "Sensitive data"
+    }
+  ],
   "WHqkYA": [
     {
       "type": 0,
@@ -1177,6 +1243,12 @@
     {
       "type": 0,
       "value": "Logic"
+    }
+  ],
+  "WjDh7l": [
+    {
+      "type": 0,
+      "value": "Prefill plugin"
     }
   ],
   "Wz5QZo": [
@@ -1257,6 +1329,18 @@
       "value": "Login required?"
     }
   ],
+  "b9D64D": [
+    {
+      "type": 0,
+      "value": "Is sensitive"
+    }
+  ],
+  "bDjeSb": [
+    {
+      "type": 0,
+      "value": "Array"
+    }
+  ],
   "bRe/yq": [
     {
       "type": 0,
@@ -1267,6 +1351,12 @@
     {
       "type": 0,
       "value": "Move up"
+    }
+  ],
+  "c1XyJ4": [
+    {
+      "type": 0,
+      "value": "Component"
     }
   ],
   "cDbGU2": [
@@ -1297,6 +1387,12 @@
     {
       "type": 0,
       "value": "Content that will be shown on the start page of the form, below the title and above the log in text."
+    }
+  ],
+  "cpJErE": [
+    {
+      "type": 0,
+      "value": "Integer"
     }
   ],
   "cpiYVw": [
@@ -1335,6 +1431,12 @@
       "value": "Show progress indicator"
     }
   ],
+  "dgwRIk": [
+    {
+      "type": 0,
+      "value": "String"
+    }
+  ],
   "eBk+W0": [
     {
       "type": 0,
@@ -1365,10 +1467,22 @@
       "value": "Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
     }
   ],
+  "fLCWjk": [
+    {
+      "type": 0,
+      "value": "Name"
+    }
+  ],
   "fLHOey": [
     {
       "type": 0,
       "value": "Pricing logic"
+    }
+  ],
+  "fWcg7I": [
+    {
+      "type": 0,
+      "value": "Object"
     }
   ],
   "ftzF/n": [
@@ -1425,6 +1539,12 @@
       "value": "Enabled"
     }
   ],
+  "hefA1X": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete this variable?"
+    }
+  ],
   "huHjRm": [
     {
       "type": 0,
@@ -1435,6 +1555,12 @@
     {
       "type": 0,
       "value": "Internal name"
+    }
+  ],
+  "iR6Mt9": [
+    {
+      "type": 0,
+      "value": "Data format"
     }
   ],
   "iZESbd": [
@@ -1687,6 +1813,18 @@
       "value": "the field"
     }
   ],
+  "rF90xM": [
+    {
+      "type": 0,
+      "value": "Data type"
+    }
+  ],
+  "rTafvA": [
+    {
+      "type": 0,
+      "value": "Float"
+    }
+  ],
   "rZfe8Z": [
     {
       "type": 0,
@@ -1835,6 +1973,12 @@
     {
       "type": 0,
       "value": "Action"
+    }
+  ],
+  "zGMQ75": [
+    {
+      "type": 0,
+      "value": "User defined"
     }
   ],
   "zLTTBw": [
