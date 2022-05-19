@@ -103,7 +103,6 @@ const EditableVariableRow = ({variable, onDelete, onChange}) => {
           choices={prefillPluginChoices}
           value={variable.prefillPlugin}
           onChange={onValueChanged}
-          noVTextField={true}
           allowBlank
         />
       </td>
@@ -113,7 +112,6 @@ const EditableVariableRow = ({variable, onDelete, onChange}) => {
           choices={prefillAttributeChoices}
           value={variable.prefillAttribute}
           onChange={onValueChanged}
-          noVTextField={true}
           disabled={loading || !variable.prefillPlugin}
         />
       </td>
@@ -129,6 +127,7 @@ const EditableVariableRow = ({variable, onDelete, onChange}) => {
       <td>
         <Checkbox
           name=""
+          label=""
           checked={variable.isSensitiveData}
           onChange={e =>
             onValueChanged({target: {name: 'isSensitiveData', value: !variable.isSensitiveData}})
@@ -138,7 +137,7 @@ const EditableVariableRow = ({variable, onDelete, onChange}) => {
       <td>
         <TextInput
           name="initialValue"
-          value={variable.initialValue}
+          value={variable.initialValue || ''}
           onChange={onValueChanged}
           noVTextField={true}
         />
