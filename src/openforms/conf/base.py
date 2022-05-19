@@ -290,10 +290,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # Additional locations of static files
 STATICFILES_DIRS = [
     os.path.join(DJANGO_PROJECT_DIR, "static"),
-    # font-awesome fonts from formio
+    # font-awesome fonts
     (
-        "bundles/fonts",
-        os.path.join(BASE_DIR, "node_modules", "formiojs", "dist", "fonts"),
+        "fonts",
+        os.path.join(
+            BASE_DIR, "node_modules", "@fortawesome", "fontawesome-free", "webfonts"
+        ),
     ),
 ]
 

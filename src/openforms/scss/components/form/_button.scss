@@ -1,9 +1,11 @@
+@use "sass:math";
+
 @import '~microscope-sass/lib/grid';
 @import '~microscope-sass/lib/typography';
 
 $button-line-height: $typography-line-height-text-big * $typography-font-size-text-big;
-$button-line-height-px: $button-line-height / ($button-line-height * 0 + 1) * 16px;
-$button-padding-v: ($grid-row-height - $button-line-height-px) / 2 - $typography-size-border;
+$button-line-height-px: math.div($button-line-height, ($button-line-height * 0 + 1)) * 16px;
+$button-padding-v: math.div(($grid-row-height - $button-line-height-px), 2) - $typography-size-border;
 $button-padding-h: $grid-margin-2;
 
 @mixin button-theme($name, $color, $color-background, $color-border: $color-background, $decorate-on-hover: false) {

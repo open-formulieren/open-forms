@@ -1,21 +1,22 @@
-@import '~microscope-sass/lib/grid';
+@use "sass:math";
 
+@import '~microscope-sass/lib/grid';
 
 @import '../../../ui/static/ui/scss/settings';
 
-$bootstrap-ratio-mobile: 12 / $grid-columns-mobile;
-$bootstrap-ratio-tablet: 12 / $grid-columns-tablet;
-$bootstrap-ratio-laptop: 12 / $grid-columns-laptop;
-$bootstrap-ratio-desktop: 12 / $grid-columns-desktop;
+$bootstrap-ratio-mobile: math.div(12, $grid-columns-mobile);
+$bootstrap-ratio-tablet: math.div(12, $grid-columns-tablet);
+$bootstrap-ratio-laptop: math.div(12, $grid-columns-laptop);
+$bootstrap-ratio-desktop: math.div(12, $grid-columns-desktop);
 
 @mixin bootstrap-span($property, $cols) {
-  $bs-span: $cols / 12 * 100%;
+  $bs-span: math.div($cols, 12) * 100%;
   @include responsive(
     $property,
-    $bs-span / $bootstrap-ratio-mobile,
-    $bs-span / $bootstrap-ratio-tablet,
-    $bs-span / $bootstrap-ratio-laptop,
-    $bs-span / $bootstrap-ratio-desktop,
+    math.div($bs-span, $bootstrap-ratio-mobile),
+    math.div($bs-span, $bootstrap-ratio-tablet),
+    math.div($bs-span, $bootstrap-ratio-laptop),
+    math.div($bs-span, $bootstrap-ratio-desktop),
   );
 }
 
