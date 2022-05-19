@@ -17,6 +17,7 @@
 
 {% block field_sets %}
 {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
+{{ feature_flags|json_script:"feature-flags" }}
 <div
     class="react-form-create"
     data-form-uuid="{{ original.uuid|default:'' }}"

@@ -20,10 +20,14 @@ TinyMceContext.displayName = 'TinyMceContext';
 const FormContext = React.createContext({url: ''});
 FormContext.displayName = 'FormContext';
 
+const FeatureFlagsContext = React.createContext({});
+FeatureFlagsContext.displayName = 'FeatureFlagsContext';
+
 export {
     FormContext,
     FormDefinitionsContext,
     FormStepsContext,
     PluginsContext,
     TinyMceContext,
+    FeatureFlagsContext,
 };

@@ -454,6 +454,11 @@ class GlobalConfiguration(SingletonModel):
             "registrations and validation"
         ),
     )
+    enable_form_variables = models.BooleanField(
+        _("enable form variables"),
+        default=False,
+        help_text=_("Whether to enable form variables in the form builder."),
+    )
 
     class Meta:
         verbose_name = _("General configuration")

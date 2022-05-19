@@ -137,6 +137,7 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
                     "default_test_kvk",
                     "allow_empty_initiator",
                     "payment_order_id_prefix",
+                    "enable_form_variables",
                 ),
             },
         ),

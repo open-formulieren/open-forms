@@ -281,6 +281,12 @@
       "value": "The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
     }
   ],
+  "8NbOpb": [
+    {
+      "type": 0,
+      "value": "Variables"
+    }
+  ],
   "8VqmbG": [
     {
       "type": 0,

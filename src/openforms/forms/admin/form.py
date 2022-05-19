@@ -7,6 +7,7 @@ from django.utils.translation import ngettext, ugettext_lazy as _
 
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 
+from openforms.config.models import GlobalConfiguration
 from openforms.payments.admin import PaymentBackendChoiceFieldMixin
 from openforms.registrations.admin import RegistrationBackendFieldMixin
 from openforms.utils.expressions import FirstNotBlank
@@ -349,6 +350,19 @@ class FormAdmin(
         )
         context = dict(self.admin_site.each_context(request), form=form)
         return TemplateResponse(request, "admin/forms/form/export.html", context)
+
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        extra_context = extra_context or {}
+        config = GlobalConfiguration.get_solo()
+        extra_context["feature_flags"] = {
+            "enable_form_variables": config.enable_form_variables
+        }
+        return super().change_view(
+            request,
+            object_id,
+            form_url,
+            extra_context=extra_context,
+        )
 
 
 @admin.register(FormsExport)

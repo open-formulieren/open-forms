@@ -2,7 +2,7 @@ import zip from 'lodash/zip';
 import getObjectValue from 'lodash/get';
 import set from 'lodash/set';
 import groupBy from 'lodash/groupBy';
-import React from 'react';
+import React, {useContext} from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
@@ -16,7 +16,7 @@ import {ComponentsContext} from '../forms/Context';
 import Fieldset from '../forms/Fieldset';
 import ValidationErrorsProvider from '../forms/ValidationErrors';
 import Loader from '../Loader';
-import {FormContext, FormDefinitionsContext, PluginsContext, FormStepsContext} from './Context';
+import {FormContext, FormDefinitionsContext, PluginsContext, FormStepsContext, FeatureFlagsContext} from './Context';
 import FormSteps from './FormSteps';
 import {
     FORM_ENDPOINT,
@@ -33,6 +33,7 @@ import {
     updateOrCreateFormSteps,
     saveLogicRules,
     savePriceRules,
+    createOrUpdateFormVariables,
 } from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import FormMetaFields from './FormMetaFields';
@@ -48,6 +49,9 @@ import {FormLogic, EMPTY_RULE} from './FormLogic';
 import {PriceLogic, EMPTY_PRICE_RULE} from './PriceLogic';
 import {BACKEND_OPTIONS_FORMS} from './registrations';
 import {getFormComponents, findComponent, checkKeyChange, replaceComponentKeyInLogic} from './utils';
+import {updateFormVariables} from './variables/utils';
+import VariablesEditor from './variables/VariablesEditor';
+import {DEFAULT_STATIC_VARIABLES} from './variables/constants';
 
 const initialFormState = {
     form: {
@@ -102,6 +106,7 @@ const initialFormState = {
     logicRulesToDelete: [],
     priceRules: [],
     priceRulesToDelete: [],
+    formVariables: [],
     // backend error handling
     validationErrors: [],
     tabsWithErrors: [],
@@ -220,6 +225,9 @@ function reducer(draft, action) {
             }
             break;
         }
+        case 'ADD_STATIC_VARIABLES':
+            draft.formVariables = [...DEFAULT_STATIC_VARIABLES];
+            break;
         /**
          * FormStep-level actions
          */
@@ -311,6 +319,9 @@ function reducer(draft, action) {
             if (hasKeyChanged) {
                 draft.logicRules = replaceComponentKeyInLogic(draft.logicRules, originalComp.key, schema.key);
             }
+
+            // Check if the formVariables need updating
+            draft.formVariables = updateFormVariables(mutationType, schema, originalComp, draft.formVariables);
 
             // check if we need updates to the backendRegistrationOptions
             const {registrationBackend, registrationBackendOptions} = draft.form;
@@ -608,6 +619,7 @@ const getFormData = async (formUuid, dispatch) => {
             type: 'FORM_STEPS_LOADED',
             payload: [],
         });
+        dispatch({type: 'ADD_STATIC_VARIABLES'});
         return;
     }
 
@@ -616,20 +628,26 @@ const getFormData = async (formUuid, dispatch) => {
         const requests = [
             get(`${FORM_ENDPOINT}/${formUuid}`),
             getFormStepsData(formUuid, dispatch),
+            get(`${FORM_ENDPOINT}/${formUuid}/variables`),
         ];
-        const [response, formStepsData] = await Promise.all(requests);
+        const [response, formStepsData, responseVariables] = await Promise.all(requests);
         if (!response.ok) {
             throw new Error('An error occurred while fetching the form.');
+        } else if (!responseVariables.ok) {
+            throw new Error('An error occurred while fetching the form variables.');
         }
 
         // Set the loaded form data as state.
         const { literals, ...form } = response.data;
+        const formVariables = responseVariables.data;
+
         dispatch({
             type: 'FORM_LOADED',
             payload: {
                 selectedAuthPlugins: form.loginOptions.map((plugin, index) => plugin.identifier),
                 form: form,
                 literals: literals,
+                formVariables: formVariables,
             },
         });
         dispatch({
@@ -662,6 +680,7 @@ StepsFieldSet.propTypes = {
  * Component to render the form edit page.
  */
 const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
+    const featureFlags = useContext(FeatureFlagsContext);
     const initialState = {
         ...initialFormState,
         form: {
@@ -966,6 +985,20 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
             return;
         }
 
+        if (featureFlags.enable_form_variables) {
+            // Save the FormVariables
+            try {
+                const response = await createOrUpdateFormVariables(formUrl, csrftoken, state.formVariables);
+                if (!response.ok) {
+                    throw new Error('An error occurred while saving the form variables.');
+                }
+            } catch (e) {
+                dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
+                window.scrollTo(0, 0);
+                return;
+            }
+        }
+
         // Save this new version of the form in the "form version control"
         try {
             var versionResponse = await post(
@@ -1056,6 +1089,12 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                         <Tab>
                             <FormattedMessage defaultMessage="Appointments" description="Appointments tab title" />
                         </Tab>
+                        {
+                            featureFlags.enable_form_variables &&
+                            <Tab>
+                                <FormattedMessage defaultMessage="Variables" description="Variables tab title"/>
+                            </Tab>
+                        }
                     </TabList>
 
                     <TabPanel>
@@ -1166,6 +1205,13 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
                                 });
                             }} />
                     </TabPanel>
+
+                    {
+                        featureFlags.enable_form_variables &&
+                        <TabPanel>
+                            <VariablesEditor variables={state.formVariables} />
+                        </TabPanel>
+                    }
                 </Tabs>
             </ComponentsContext.Provider>
 

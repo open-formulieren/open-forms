@@ -4,7 +4,7 @@ import ReactModal from 'react-modal';
 import {IntlProvider} from 'react-intl';
 
 import {FormCreationForm} from './form_design/form-creation-form';
-import {TinyMceContext} from './form_design/Context';
+import {TinyMceContext, FeatureFlagsContext} from './form_design/Context';
 import FormVersionsTable from './form_versions/FormVersionsTable';
 import './sdk-snippet';
 import './plugin_configuration';
@@ -12,7 +12,7 @@ import './plugin_configuration';
 import Debug from './debug';
 import SessionStatus from './SessionStatus';
 import {getIntlProviderProps} from './i18n';
-
+import jsonScriptToVar from '../../utils/json-script';
 
 
 const mountForm = (intlProps) => {
@@ -22,12 +22,16 @@ const mountForm = (intlProps) => {
     for (const formCreationFormNode of formCreationFormNodes) {
         const { csrftoken, formUuid, tinymceUrl, formHistoryUrl } = formCreationFormNode.dataset;
 
+        const featureFlags = jsonScriptToVar('feature-flags');
+
         ReactModal.setAppElement(formCreationFormNode);
 
         ReactDOM.render(
             <IntlProvider {...intlProps}>
                 <TinyMceContext.Provider value={tinymceUrl}>
-                    <FormCreationForm csrftoken={csrftoken} formUuid={formUuid} formHistoryUrl={formHistoryUrl} />
+                    <FeatureFlagsContext.Provider value={featureFlags}>
+                        <FormCreationForm csrftoken={csrftoken} formUuid={formUuid} formHistoryUrl={formHistoryUrl} />
+                    </FeatureFlagsContext.Provider>
                 </TinyMceContext.Provider>
             </IntlProvider>,
             formCreationFormNode
