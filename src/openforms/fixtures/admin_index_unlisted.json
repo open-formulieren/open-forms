@@ -14,5 +14,6 @@
     "stuf_zds.StufZDSConfig",
     "stuf.StufService",
     "zgw_apis.ZgwConfig",
-    "forms.FormsExport"
+    "forms.FormsExport",
+    "config.RichTextColor"
 ]
