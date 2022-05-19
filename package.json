@@ -25,7 +25,7 @@
   "license": "UNLICENSED",
   "homepage": "https://maykinmedia.nl",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.14.0",
+    "@fortawesome/fontawesome-free": "^6.1.1",
     "@rjsf/core": "^3.2.1",
     "@tinymce/tinymce-react": "^3.12.6",
     "bem.js": "^1.0.10",

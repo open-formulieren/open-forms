@@ -1,11 +1,16 @@
-@import '~@fortawesome/fontawesome-free/scss/fontawesome';
-@import "~@fortawesome/fontawesome-free/scss/v4-shims.scss";
-@import '~@fortawesome/fontawesome-free/scss/brands';
-@import '~@fortawesome/fontawesome-free/scss/regular';
-@import '~@fortawesome/fontawesome-free/scss/solid';
-@import '~formiojs/dist/formio.full.css';
+@import '@fortawesome/fontawesome-free/scss/fontawesome';
+@import '@fortawesome/fontawesome-free/scss/v4-shims.scss';
+@import '@fortawesome/fontawesome-free/scss/brands';
+@import '@fortawesome/fontawesome-free/scss/regular';
+@import '@fortawesome/fontawesome-free/scss/solid';
+/**
+ * Builder is full minus font-awesome.
+ *
+ * See https://github.com/formio/formio.js/blob/master/gulpfile.js#L113
+ */
+@import 'formiojs/dist/formio.builder.css';
 // since we include flatpickr in the global scope, we need to embed the CSS ourselves
-@import '~flatpickr/dist/flatpickr.css';
+@import 'flatpickr/dist/flatpickr.css';
 
 
 .field-configuration {
