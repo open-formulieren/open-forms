@@ -17,47 +17,52 @@ const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
           description="Form variables configuration editor fieldset title"
         />
       }
+      extraClassName="variables-editor"
     >
-      <Tabs>
-        <TabList>
-          <Tab>
-            <FormattedMessage defaultMessage="Static" description="Static variables tab title" />
-          </Tab>
-          <Tab>
-            <FormattedMessage
-              defaultMessage="Component"
-              description="Component variables tab title"
-            />
-          </Tab>
-          <Tab>
-            <FormattedMessage
-              defaultMessage="User defined"
-              description="User defined variables tab title"
-            />
-          </Tab>
-        </TabList>
+      <div className="variables-editor__tabs">
+        <Tabs>
+          <TabList>
+            <Tab>
+              <FormattedMessage defaultMessage="Static" description="Static variables tab title" />
+            </Tab>
+            <Tab>
+              <FormattedMessage
+                defaultMessage="Component"
+                description="Component variables tab title"
+              />
+            </Tab>
+            <Tab>
+              <FormattedMessage
+                defaultMessage="User defined"
+                description="User defined variables tab title"
+              />
+            </Tab>
+          </TabList>
 
-        <TabPanel>
-          <StaticVariables
-            variables={variables.filter(variable => variable.source === VARIABLE_SOURCES.static)}
-          />
-        </TabPanel>
-        <TabPanel>
-          <ComponentVariables
-            variables={variables.filter(variable => variable.source === VARIABLE_SOURCES.component)}
-          />
-        </TabPanel>
-        <TabPanel>
-          <UserDefinedVariables
-            variables={variables.filter(
-              variable => variable.source === VARIABLE_SOURCES.userDefined
-            )}
-            onAdd={onAdd}
-            onDelete={onDelete}
-            onChange={onChange}
-          />
-        </TabPanel>
-      </Tabs>
+          <TabPanel>
+            <StaticVariables
+              variables={variables.filter(variable => variable.source === VARIABLE_SOURCES.static)}
+            />
+          </TabPanel>
+          <TabPanel>
+            <ComponentVariables
+              variables={variables.filter(
+                variable => variable.source === VARIABLE_SOURCES.component
+              )}
+            />
+          </TabPanel>
+          <TabPanel>
+            <UserDefinedVariables
+              variables={variables.filter(
+                variable => variable.source === VARIABLE_SOURCES.userDefined
+              )}
+              onAdd={onAdd}
+              onDelete={onDelete}
+              onChange={onChange}
+            />
+          </TabPanel>
+        </Tabs>
+      </div>
     </Fieldset>
   );
 };

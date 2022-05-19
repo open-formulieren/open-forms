@@ -2,7 +2,7 @@
 @import '~microscope-sass/lib/typography';
 
 .variables-table {
-  //table-layout: fixed;
   width: 100%;
   word-wrap: break-word;
+  padding: $typography-margin-h2 0;
 }
