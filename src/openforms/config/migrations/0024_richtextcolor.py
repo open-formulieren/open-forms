@@ -8,7 +8,7 @@ import colorfield.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("config", "0022_globalconfiguration_registration_attempt_limit"),
+        ("config", "0023_globalconfiguration_enable_form_variables"),
     ]
 
     operations = [

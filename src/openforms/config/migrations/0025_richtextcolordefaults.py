@@ -63,7 +63,7 @@ def remove_colors(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("config", "0023_richtextcolor"),
+        ("config", "0024_richtextcolor"),
     ]
 
     operations = [
