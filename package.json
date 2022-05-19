@@ -50,6 +50,7 @@
     "react-use": "^17.2.4",
     "state-pool": "^0.7.1",
     "use-immer": "^0.5.2",
+    "use-keyboard-shortcut": "^1.1.4",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
