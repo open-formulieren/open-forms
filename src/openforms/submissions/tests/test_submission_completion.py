@@ -19,6 +19,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.accounts.tests.factories import UserFactory
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.tests.factories import (
@@ -333,6 +334,35 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         # Since the prefilled field was not disabled, it is possible to modify it and the submission is valid
         self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+
+@temp_private_root()
+class CSRFSubmissionCompletionTests(SubmissionsMixin, APITestCase):
+    def setUp(self):
+        # install a different client class with enforced CSRF checks
+        self.client = self.client_class(enforce_csrf_checks=True)
+        super().setUp()
+
+    def test_can_complete_without_csrf_token_while_logged_in(self):
+        """
+        Assert that a CSRF token is not required if the user is authenticated.
+
+        Regression test for #1627, where POST calls were blocked because of a missing
+        CSRF token if the form was started BEFORE the user logged in to the admin
+        area and the user logged in BEFORE copmleting/suspending the form (in another
+        tab, for example).
+        """
+        user = UserFactory.create()
+        self.client.force_login(
+            user=user, backend="openforms.accounts.backends.UserModelEmailBackend"
+        )
+        submission = SubmissionFactory.from_data({"foo": "bar"})
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 @temp_private_root()

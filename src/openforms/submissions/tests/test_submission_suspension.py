@@ -22,6 +22,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.accounts.tests.factories import UserFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
@@ -181,3 +182,31 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         # Validate the link no longer works
         response = self.client.get(resume_path)
         self.assertEqual(response.status_code, 403)
+
+
+class CSRFSubmissionSuspensionTests(SubmissionsMixin, APITestCase):
+    def setUp(self):
+        # install a different client class with enforced CSRF checks
+        self.client = self.client_class(enforce_csrf_checks=True)
+        super().setUp()
+
+    def test_can_suspend_without_csrf_token_while_logged_in(self):
+        """
+        Assert that a CSRF token is not required if the user is authenticated.
+
+        Regression test for #1627, where POST calls were blocked because of a missing
+        CSRF token if the form was started BEFORE the user logged in to the admin
+        area and the user logged in BEFORE copmleting/suspending the form (in another
+        tab, for example).
+        """
+        user = UserFactory.create()
+        self.client.force_login(
+            user=user, backend="openforms.accounts.backends.UserModelEmailBackend"
+        )
+        submission = SubmissionFactory.from_data({"foo": "bar"})
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-suspend", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint, {"email": "hello@open-forms.nl"})
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
