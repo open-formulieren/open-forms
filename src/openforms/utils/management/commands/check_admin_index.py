@@ -44,4 +44,7 @@ class Command(BaseCommand):
                         self.stdout.write(
                             f"  - {model['app_label']}.{model['object_name']}"
                         )
+                    self.stdout.write(
+                        f"To show this model on the 'Miscellaneous' tab add it to '{self.unlisted_models_fixture}'"
+                    )
                     exit(1)
