@@ -8,6 +8,25 @@ import {DATATYPES_CHOICES} from './constants';
 import DeleteIcon from '../../DeleteIcon';
 import {PluginsContext} from '../Context';
 import {get} from '../../../../utils/fetch';
+import FAIcon from '../../FAIcon';
+
+const SensitiveData = ({isSensitive}) => {
+  const intl = useIntl();
+  const sensitiveTitle = intl.formatMessage({
+    description: 'Is sensitive icon title',
+    defaultMessage: 'Is sensitive',
+  });
+  const notSensitiveTitle = intl.formatMessage({
+    description: 'Is not sensitive icon title',
+    defaultMessage: 'Is not sensitive',
+  });
+
+  return isSensitive ? (
+    <FAIcon icon="check" title={sensitiveTitle} />
+  ) : (
+    <FAIcon icon="times" title={notSensitiveTitle} />
+  );
+};
 
 const VariableRow = ({variable}) => {
   return (
@@ -17,7 +36,9 @@ const VariableRow = ({variable}) => {
       <td>{variable.prefillAttribute}</td>
       <td>{variable.prefillPlugin}</td>
       <td>{variable.dataType}</td>
-      <td>{variable.isSensitiveData}</td>
+      <td>
+        <SensitiveData isSensitive={variable.isSensitiveData} />
+      </td>
       <td>{variable.initialValue}</td>
       <td>{variable.dataFormat}</td>
     </tr>
@@ -74,7 +95,7 @@ const EditableVariableRow = ({variable, onDelete, onChange}) => {
         />
       </td>
       <td>
-        <TextInput name="key" value={variable.key} noVTextField={true} disable={true} />
+        <TextInput name="key" value={variable.key} noVTextField={true} disabled={true} />
       </td>
       <td>
         <Select

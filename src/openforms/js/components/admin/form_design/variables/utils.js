@@ -1,8 +1,6 @@
 import _ from 'lodash';
 import {Utils as FormioUtils} from 'formiojs';
 
-import {get} from '../../../../utils/fetch';
-import {FORM_ENDPOINT} from '../constants';
 import {COMPONENT_DATATYPES} from './constants';
 
 const getComponentDatatype = component => {
