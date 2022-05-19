@@ -3,12 +3,17 @@
 @page {
   size: A4;
   margin-bottom: 10mm;
+  margin-top: 12mm;
 
   @bottom-center {
     content: counter(page) "/" counter(pages);
     font-size: 85%;
     @include text;
   }
+}
+
+@page :first {
+  margin-top: 10mm;
 }
 
 * {
