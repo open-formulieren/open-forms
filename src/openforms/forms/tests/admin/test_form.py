@@ -719,6 +719,25 @@ class FormEditTests(WebTest):
 
         self.assertEqual("true", required_default)
 
+    def test_rich_text_colors_configuration(self):
+        change_page = self.app.get(
+            reverse("admin:forms_form_change", args=(self.form.pk,)),
+            user=self.admin_user,
+        )
+
+        rich_text_colors_raw = change_page.html.find(id="config-RICH_TEXT_COLORS")
+        self.assertIsNotNone(rich_text_colors_raw)
+
+        rich_text_colors = json.loads(rich_text_colors_raw.text)
+        self.assertEqual(15, len(rich_text_colors))
+
+        for node in rich_text_colors:
+            self.assertIn("label", node)
+            self.assertIsInstance(node["label"], str)
+            self.assertGreater(len(node["label"]), 0)
+            self.assertIn("color", node)
+            self.assertRegex(node["color"], r"^#[0-9a-f]{6}$")
+
 
 @disable_2fa
 class FormChangeTests(WebTest):
