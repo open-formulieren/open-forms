@@ -301,5 +301,6 @@
   "(optional)": "(optioneel)",
   "Uploading file...": "Bezig met uploaden...",
   "Please wait for the file(s) upload to finish before continuing.": "Wacht tot het uploaden van de bestanden is voltooid voordat u verdergaat.",
-  "array_nonempty": "Dit veld moet minstens één waarde hebben."
+  "array_nonempty": "Dit veld moet minstens één waarde hebben.",
+  "Display in summaries and confirmations": "Weergave in overzichten en bevestigingen"
 }

@@ -24,7 +24,7 @@ import {
 
 const PRESENTATION = {
     type: 'panel',
-    title: 'Presentation',
+    title: 'Display in summaries and confirmations',
     key: 'presentationConfig',
     components: [
         SHOW_IN_SUMMARY,
