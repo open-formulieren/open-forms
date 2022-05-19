@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import useKeyboardShortcut from 'use-keyboard-shortcut'
 
 import {SubmitAction, AddAnotherAction, ContinueEditingAction} from './ActionButton';
 
@@ -14,6 +15,27 @@ const SubmitRow = ({ onSubmit, preventDefault=true, isDefault=false, extraClassN
         if (preventDefault) event.preventDefault();
         if (onSubmit) onSubmit(event);
     };
+
+    if (onSubmit) {
+        const saveKeyHandler = shortcutKeys => {
+            onSubmit({target: {name: "_continue"}});
+        };
+        const saveKeyOptions = {
+            overrideSystem: true,
+            ignoreInputFields: false,
+            repeatOnHold: false
+        };
+        const {flushControlHeldKeys} = useKeyboardShortcut(
+            ["Control", "S"],
+            saveKeyHandler,
+            saveKeyOptions
+        );
+        const {flushMetaHeldKeys} = useKeyboardShortcut(
+            ["Meta", "S"],
+            saveKeyHandler,
+            saveKeyOptions
+        );
+    }
 
     return (
         <div className={className}>
