@@ -138,6 +138,7 @@ INSTALLED_APPS = [
     # External applications.
     "axes",
     "capture_tag",
+    "colorfield",
     "cookie_consent",
     "corsheaders",
     "django_better_admin_arrayfield",

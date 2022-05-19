@@ -136,3 +136,15 @@ For wider logos, it is possible to increase the size with the following design t
 Which gives:
 
 .. image:: _assets/logo-size.png
+
+
+Color presets for rich text content component
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Via **Admin** > **Miscellaneous** > **Text editor color presets** you can manage the shared color presets palette used by the rich text editor of the content-component.
+
+You can freely add, change or remove presets to create a collection of consistent colors for use in free text. These are then available here:
+
+.. image:: _assets/color_presets.png
+
+.. note:: Changing the presets doesn't change text with previously applied colors.

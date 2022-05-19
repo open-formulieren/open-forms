@@ -80,6 +80,9 @@ const getBuilderOptions = () => {
         editors: {
             ckeditor: {
                 settings: {
+                    toolbar: {
+                        items: ["heading", "fontFamily", "fontSize", "fontColor", "|", "bold", "italic", "link", "bulletedList", "numberedList", "|", "indent", "outdent", "|", "imageUpload", "blockQuote", "insertTable", "mediaEmbed", "alignment:left", "alignment:right", "alignment:center", "undo", "redo"]
+                    },
                     link: {
                         decorators: {
                             openInNewTab: {
@@ -92,6 +95,9 @@ const getBuilderOptions = () => {
                                 }
                             }
                         }
+                    },
+                    fontColor: {
+                        colors: jsonScriptToVar('config-RICH_TEXT_COLORS'),
                     }
                 }
             }
