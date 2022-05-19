@@ -49,7 +49,7 @@ import {FormLogic, EMPTY_RULE} from './FormLogic';
 import {PriceLogic, EMPTY_PRICE_RULE} from './PriceLogic';
 import {BACKEND_OPTIONS_FORMS} from './registrations';
 import {getFormComponents, findComponent, checkKeyChange, replaceComponentKeyInLogic} from './utils';
-import {getFormVariables, updateFormVariables} from './variables/utils';
+import {updateFormVariables} from './variables/utils';
 import VariablesEditor from './variables/VariablesEditor';
 import {DEFAULT_STATIC_VARIABLES} from './variables/constants';
 
@@ -628,15 +628,19 @@ const getFormData = async (formUuid, dispatch) => {
         const requests = [
             get(`${FORM_ENDPOINT}/${formUuid}`),
             getFormStepsData(formUuid, dispatch),
-            getFormVariables(formUuid, dispatch),
+            get(`${FORM_ENDPOINT}/${formUuid}/variables`),
         ];
-        const [response, formStepsData, formVariables] = await Promise.all(requests);
+        const [response, formStepsData, responseVariables] = await Promise.all(requests);
         if (!response.ok) {
             throw new Error('An error occurred while fetching the form.');
+        } else if (!responseVariables.ok) {
+            throw new Error('An error occurred while fetching the form variables.');
         }
 
         // Set the loaded form data as state.
         const { literals, ...form } = response.data;
+        const formVariables = responseVariables.data;
+
         dispatch({
             type: 'FORM_LOADED',
             payload: {

@@ -10,8 +10,6 @@ const COMPONENT_DATATYPES = {
     'map': 'array'
 };
 
-// Component types that don't need to have an associated FormVariable
-const NO_VARIABLE_COMPONENT = ['content', 'fieldset', 'column'];
 
 const DEFAULT_STATIC_VARIABLES = [
     {
@@ -23,4 +21,4 @@ const DEFAULT_STATIC_VARIABLES = [
     },
 ];
 
-export {COMPONENT_DATATYPES, NO_VARIABLE_COMPONENT, DEFAULT_STATIC_VARIABLES};
+export {COMPONENT_DATATYPES, DEFAULT_STATIC_VARIABLES};

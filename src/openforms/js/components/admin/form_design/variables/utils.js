@@ -1,8 +1,9 @@
 import _ from 'lodash';
+import {Utils as FormioUtils} from 'formiojs';
 
 import {get} from '../../../../utils/fetch';
 import {FORM_ENDPOINT} from '../constants';
-import {COMPONENT_DATATYPES, NO_VARIABLE_COMPONENT} from './constants';
+import {COMPONENT_DATATYPES} from './constants';
 
 
 const getComponentDatatype = (component) => {
@@ -16,7 +17,7 @@ const getComponentDatatype = (component) => {
 
 const updateFormVariables = (mutationType, newComponent, oldComponent, currentFormVariables) => {
     // Not all components are associated with variables
-    if (NO_VARIABLE_COMPONENT.includes(newComponent.type)) return currentFormVariables;
+    if (FormioUtils.isLayoutComponent(newComponent)) return currentFormVariables;
 
     let updatedFormVariables = _.cloneDeep(currentFormVariables);
     const existingKeys = updatedFormVariables.map(variable => variable.key);
@@ -62,18 +63,5 @@ const updateFormVariables = (mutationType, newComponent, oldComponent, currentFo
     return updatedFormVariables;
 };
 
-const getFormVariables = async (formUuid, dispatch) => {
-    let response;
-    try {
-        response = await get(`${FORM_ENDPOINT}/${formUuid}/variables`);
-        if (!response.ok) {
-            throw new Error('An error occurred while fetching the form variables.');
-        }
-    } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-    }
 
-    return response.data;
-};
-
-export {updateFormVariables, getFormVariables};
+export {updateFormVariables};

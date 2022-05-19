@@ -12,11 +12,8 @@ import './plugin_configuration';
 import Debug from './debug';
 import SessionStatus from './SessionStatus';
 import {getIntlProviderProps} from './i18n';
+import jsonScriptToVar from '../../utils/json-script';
 
-const jsonScriptToVar = (id) => {
-    const node = document.getElementById(id);
-    return JSON.parse(node.text);
-};
 
 const mountForm = (intlProps) => {
     const formCreationFormNodes = document.getElementsByClassName('react-form-create');
