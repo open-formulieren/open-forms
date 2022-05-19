@@ -1311,7 +1311,17 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl}) => {
 
           {featureFlags.enable_form_variables && (
             <TabPanel>
-              <VariablesEditor variables={state.formVariables} />
+              <VariablesEditor
+                variables={state.formVariables}
+                onAdd={() => dispatch({type: 'ADD_USER_DEFINED_VARIABLE'})}
+                onDelete={key => dispatch({type: 'DELETE_USER_DEFINED_VARIABLE', payload: key})}
+                onChange={(key, propertyName, propertyValue) =>
+                  dispatch({
+                    type: 'CHANGE_USER_DEFINED_VARIABLE',
+                    payload: {key, propertyName, propertyValue},
+                  })
+                }
+              />
             </TabPanel>
           )}
         </Tabs>

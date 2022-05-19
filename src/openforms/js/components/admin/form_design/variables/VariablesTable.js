@@ -1,10 +1,13 @@
-import React from 'react';
+import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
+import useAsync from 'react-use/esm/useAsync';
 
 import {Checkbox, TextInput} from '../../forms/Inputs';
 import Select from '../../forms/Select';
 import {DATATYPES_CHOICES} from './constants';
 import DeleteIcon from '../../DeleteIcon';
+import {PluginsContext} from '../Context';
+import {get} from '../../../../utils/fetch';
 
 const VariableRow = ({variable}) => {
   return (
@@ -28,6 +31,10 @@ const EditableVariableRow = ({variable, onDelete, onChange}) => {
     defaultMessage: 'Are you sure you want to delete this variable?',
   });
 
+  const {availablePrefillPlugins} = useContext(PluginsContext);
+  const prefillPluginChoices = availablePrefillPlugins.map(plugin => [plugin.id, plugin.label]);
+  const [prefillAttributeChoices, setPrefillAttributeChoices] = useState([]);
+
   const onValueChanged = e => {
     onChange(variable.key, e.target.name, e.target.value);
   };
@@ -37,6 +44,20 @@ const EditableVariableRow = ({variable, onDelete, onChange}) => {
     let updatedKey = _.camelCase(variable.name).replace(/^[0-9]*/, '');
     onChange(variable.key, 'key', updatedKey);
   };
+
+  const {loading} = useAsync(async () => {
+    setPrefillAttributeChoices([]);
+    // Load the possible prefill attributes
+    if (!variable.prefillPlugin) return;
+
+    const url = `/api/v1/prefill/plugins/${variable.prefillPlugin}/attributes`;
+    const response = await get(url);
+    if (!response.ok) {
+      console.error(response.data);
+    }
+
+    setPrefillAttributeChoices(response.data.map(attribute => [attribute.id, attribute.label]));
+  }, [variable.prefillPlugin]);
 
   return (
     <tr>
@@ -56,19 +77,23 @@ const EditableVariableRow = ({variable, onDelete, onChange}) => {
         <TextInput name="key" value={variable.key} noVTextField={true} disable={true} />
       </td>
       <td>
-        <TextInput
+        <Select
           name="prefillPlugin"
+          choices={prefillPluginChoices}
           value={variable.prefillPlugin}
           onChange={onValueChanged}
           noVTextField={true}
+          allowBlank
         />
       </td>
       <td>
-        <TextInput
+        <Select
           name="prefillAttribute"
+          choices={prefillAttributeChoices}
           value={variable.prefillAttribute}
           onChange={onValueChanged}
           noVTextField={true}
+          disabled={loading || !variable.prefillPlugin}
         />
       </td>
       <td>
