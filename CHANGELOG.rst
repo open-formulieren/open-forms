@@ -2,16 +2,27 @@
 Changelog
 =========
 
-1.1.0 (2022-05-XX)
-==================
+1.1.0-rc.1 (2022-05-20)
+=======================
 
-Feature release.
-
-Please see the 1.1.0-rc.0 changelog entry to see what's changed.
-
-**Fixes since the release candidate**
+Second release candidate for the 1.1.0 feature release.
 
 * [#1624] Fixed list of prefill attributes refresh on prefill plugin change
+* Fixed styling issue with card components in non-admin pages
+* [#1628] Make fieldset labels stand out in emails
+* [#1628] Made styling of registration email consistent with confirmation email
+* Added raw_id_fields to submissions admin for a performance boost
+* [#1627] Fixed CSRF error when authenticating in the admin after starting a form
+* Fixed cookie ``SameSite=None`` being used in non-HTTPS context for dev environments
+* [#1628] Added missing form designer translations for display/summary options
+* [#1628] Added vertical spacing to confirmation PDF pages other than the first page
+
+.. note:: #1627 caused session authentication to no longer be available in the API
+   schema for the submission suspend/complete endpoints. This was not intended to be
+   public API, so this option is gone now.
+
+   Both of these endpoints require a valid submission ID to exist in the session to
+   use them, which was the intended behaviour.
 
 1.1.0-rc.0 (2022-05-17)
 =======================
