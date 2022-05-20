@@ -3,10 +3,10 @@ Generic admin styling overrides.
 
 DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
  */
-@use "sass:list" as list;
-@use "sass:selector" as selector;
+@use 'sass:list' as list;
+@use 'sass:selector' as selector;
 
-@import "../vars";
+@import '../vars';
 
 // override django CSS variables
 // see admin/static/admin/css/base.css for a reference
@@ -53,7 +53,6 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
 }
 
 @media (prefers-color-scheme: dark) {
-
   :root {
     --primary: #037383 !important;
     --secondary: #037383 !important;
@@ -84,11 +83,12 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
     border-bottom-color: $color-dark !important;
   }
 
-  input[type=text], input[type=password],
-  input[type=email],
-  input[type=url],
-  input[type=number],
-  input[type=tel],
+  input[type='text'],
+  input[type='password'],
+  input[type='email'],
+  input[type='url'],
+  input[type='number'],
+  input[type='tel'],
   textarea,
   select,
   .vTextField {
@@ -103,7 +103,7 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
 /* Overrides */
 body {
   &.change-form {
-    line-height: 1.15;  // bootstrap reboot overrides this otherwise, which is pulled in by formio
+    line-height: 1.15; // bootstrap reboot overrides this otherwise, which is pulled in by formio
   }
 }
 
@@ -111,7 +111,8 @@ div#header {
   // some admin pages (form definitions, form designer) include bootstrap which is
   // just a massive PITA and we need these overrides because of the CSS reset that's
   // loaded.
-  &, * {
+  &,
+  * {
     box-sizing: content-box;
   }
 
@@ -180,7 +181,8 @@ div.breadcrumbs {
 .calendar td,
 .timelist {
   a {
-    &:focus, &:hover {
+    &:focus,
+    &:hover {
       background: $color_primary_dark !important;
     }
   }
@@ -205,7 +207,7 @@ div.breadcrumbs {
   // because of the mask clipping
   &:before {
     display: block;
-    content: "";
+    content: '';
     position: absolute;
     left: 0;
     top: 0;
@@ -232,7 +234,8 @@ div.breadcrumbs {
   }
 }
 
-.changelink, .inlinechangelink {
+.changelink,
+.inlinechangelink {
   @include icon-override('../img/admin/edit-regular.svg');
 }
 .deletelink {
@@ -297,12 +300,10 @@ div.breadcrumbs {
 // just a massive PITA and we need these overrides because of the CSS reset that's
 // loaded.
 div#container {
-
   .content #content {
     padding-top: 20px; // restore original django padding
   }
 }
-
 
 // login template from 2FA in combination with admin
 body.login {
@@ -333,7 +334,6 @@ body.popup {
  * this theme.
  */
 .dynamic-array-widget {
-
   /* Substitute with icon */
   .remove {
     background: url('../img/admin/trash-alt-regular.svg') 0 0/14px 14px no-repeat;
@@ -356,9 +356,9 @@ body.popup {
  * Branding
  */
 
- // some admin pages (form definitions, form designer) include bootstrap which is
- // just a massive PITA and we need these overrides because of the CSS reset that's
- // loaded.
+// some admin pages (form definitions, form designer) include bootstrap which is
+// just a massive PITA and we need these overrides because of the CSS reset that's
+// loaded.
 #branding {
   h1 {
     // bootstrap mess
@@ -367,7 +367,6 @@ body.popup {
     font-weight: bold;
   }
 }
-
 
 /**
  * Help text mouseover
@@ -378,7 +377,7 @@ div.help:hover {
   background-image: none;
   background-color: $color-tooltip-background;
   border: 1px solid $color-tooltip-border;
-  color: $color-tooltip-text;;
+  color: $color-tooltip-text;
   padding: 5px 5px 3px 5px !important;
   max-width: 300px;
   height: auto !important;
@@ -399,7 +398,8 @@ div.help {
 }
 
 /* Overrides default Django CSS */
-.aligned label + p, .aligned label + div.readonly {
+.aligned label + p,
+.aligned label + div.readonly {
   display: inline-block;
   margin-left: inherit !important;
 }

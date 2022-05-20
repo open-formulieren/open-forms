@@ -1,7 +1,6 @@
 const usedKeys = {};
 
-
-const getUniqueRandomString = (length=7, scope='') => {
+const getUniqueRandomString = (length = 7, scope = '') => {
   if (!usedKeys[scope]) usedKeys[scope] = [];
   let randomString;
   do {
@@ -10,11 +9,9 @@ const getUniqueRandomString = (length=7, scope='') => {
   return randomString;
 };
 
-
 // Inspired on FormioUtils.getRandomComponentId and react-key-string
-const getRandomString = (length=7) => {
+const getRandomString = (length = 7) => {
   return `e${Math.random().toString(36).substring(length)}`;
 };
-
 
 export {getRandomString, getUniqueRandomString};

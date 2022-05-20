@@ -9,110 +9,137 @@ import FormRow from '../forms/FormRow';
 import {SubmitAction} from '../forms/ActionButton';
 import Select from '../forms/Select';
 import SubmitRow from '../forms/SubmitRow';
-import { FormDefinitionsContext } from './Context';
+import {FormDefinitionsContext} from './Context';
 
+const NewStepFormDefinitionPicker = ({onReplace}) => {
+  const intl = useIntl();
+  const formDefinitions = useContext(FormDefinitionsContext);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFormDefinition, setSelectedFormDefinition] = useState('');
+  const [validationErrors, setValidationErrors] = useState([]);
 
-const NewStepFormDefinitionPicker = ({ onReplace }) => {
-    const intl = useIntl();
-    const formDefinitions = useContext(FormDefinitionsContext);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedFormDefinition, setSelectedFormDefinition] = useState('');
-    const [validationErrors, setValidationErrors] = useState([]);
+  const formDefinitionChoices = formDefinitions
+    .filter(fd => fd.isReusable)
+    .map(fd => [fd.url, fd.internalName || fd.name]);
 
-    const formDefinitionChoices = formDefinitions.filter(fd => fd.isReusable).map(fd => [fd.url, (fd.internalName || fd.name)]);
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
+  const onFormDefinitionConfirmed = event => {
+    event.preventDefault();
+    if (!selectedFormDefinition) {
+      const requiredError = intl.formatMessage({
+        description: 'Field required error',
+        defaultMessage: 'This field is required.',
+      });
+      setValidationErrors([requiredError]);
+    } else {
+      closeModal();
+      onReplace(selectedFormDefinition);
+    }
+  };
 
-    const onFormDefinitionConfirmed = (event) => {
-        event.preventDefault();
-        if (!selectedFormDefinition) {
-            const requiredError = intl.formatMessage({
-                description: 'Field required error',
-                defaultMessage: 'This field is required.',
-            });
-            setValidationErrors([requiredError]);
-        } else {
-            closeModal();
-            onReplace(selectedFormDefinition);
+  const onSelectChange = event => {
+    const {
+      target: {value},
+    } = event;
+    setValidationErrors([]);
+    setSelectedFormDefinition(value);
+  };
+
+  return (
+    <div className="tiles tiles--horizontal">
+      <button type="button" className="tiles__tile" onClick={() => setIsModalOpen(true)}>
+        <FAIcon
+          icon="recycle"
+          extraClassname="fa-2x"
+          title={intl.formatMessage({
+            description: 'select definition icon title',
+            defaultMessage: 'Select definition',
+          })}
+        />
+        <span>
+          <FormattedMessage
+            description="Select form definition tile"
+            defaultMessage="Select existing form definition"
+          />
+        </span>
+      </button>
+
+      <span className="tiles__separator">&bull;</span>
+
+      <button
+        type="button"
+        className="tiles__tile"
+        onClick={() => {
+          onReplace('');
+        }}
+      >
+        <FAIcon
+          icon="pencil-square-o"
+          extraClassname="fa-2x"
+          title={intl.formatMessage({
+            description: 'create form definition icon title',
+            defaultMessage: 'Create definition',
+          })}
+        />
+        <span>
+          <FormattedMessage
+            description="Create form definition tile"
+            defaultMessage="Create a new form definition"
+          />
+        </span>
+      </button>
+
+      <FormModal
+        isOpen={isModalOpen}
+        closeModal={closeModal}
+        title={
+          <FormattedMessage
+            description="Form definition selection modal title"
+            defaultMessage="Use existing form definition"
+          />
         }
-    };
+      >
+        <FormRow>
+          <Field
+            name="form-definition"
+            label={
+              <FormattedMessage
+                description="Form definition select label"
+                defaultMessage="Select form definition"
+              />
+            }
+            errors={validationErrors}
+            required
+          >
+            <Select
+              name="form-definition"
+              choices={formDefinitionChoices}
+              value={selectedFormDefinition}
+              onChange={onSelectChange}
+              allowBlank
+            />
+          </Field>
+        </FormRow>
 
-    const onSelectChange = (event) => {
-        const { target: {value} } = event;
-        setValidationErrors([]);
-        setSelectedFormDefinition(value);
-    };
-
-    return (
-        <div className="tiles tiles--horizontal">
-            <button type="button" className="tiles__tile" onClick={() => setIsModalOpen(true)}>
-                <FAIcon
-                    icon="recycle"
-                    extraClassname="fa-2x"
-                    title={intl.formatMessage({description: 'select definition icon title', defaultMessage: 'Select definition'})}
-                />
-                <span>
-                    <FormattedMessage
-                        description="Select form definition tile"
-                        defaultMessage="Select existing form definition" />
-                </span>
-            </button>
-
-            <span className="tiles__separator">&bull;</span>
-
-            <button type="button" className="tiles__tile" onClick={() => {onReplace('')}}>
-                <FAIcon
-                    icon="pencil-square-o"
-                    extraClassname="fa-2x"
-                    title={intl.formatMessage({description: 'create form definition icon title', defaultMessage: 'Create definition'})}
-                />
-                <span>
-                    <FormattedMessage
-                        description="Create form definition tile"
-                        defaultMessage="Create a new form definition" />
-                </span>
-            </button>
-
-            <FormModal
-                isOpen={isModalOpen}
-                closeModal={closeModal}
-                title={<FormattedMessage
-                        description="Form definition selection modal title"
-                        defaultMessage="Use existing form definition" />}
-            >
-                <FormRow>
-                    <Field
-                        name="form-definition"
-                        label={<FormattedMessage description="Form definition select label" defaultMessage="Select form definition" />}
-                        errors={validationErrors}
-                        required
-                    >
-                        <Select
-                            name="form-definition"
-                            choices={formDefinitionChoices}
-                            value={selectedFormDefinition}
-                            onChange={onSelectChange}
-                            allowBlank
-                        />
-                    </Field>
-                </FormRow>
-
-                <SubmitRow isDefault>
-                    <SubmitAction
-                        text={intl.formatMessage({description: 'Form definition select confirm button', defaultMessage: 'Confirm'})}
-                        onClick={onFormDefinitionConfirmed}
-                    />
-                </SubmitRow>
-            </FormModal>
-
-        </div>
-    );
+        <SubmitRow isDefault>
+          <SubmitAction
+            text={intl.formatMessage({
+              description: 'Form definition select confirm button',
+              defaultMessage: 'Confirm',
+            })}
+            onClick={onFormDefinitionConfirmed}
+          />
+        </SubmitRow>
+      </FormModal>
+    </div>
+  );
 };
 
 NewStepFormDefinitionPicker.propTypes = {
-    onReplace: PropTypes.func.isRequired,
+  onReplace: PropTypes.func.isRequired,
 };
 
 export default NewStepFormDefinitionPicker;

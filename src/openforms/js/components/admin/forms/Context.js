@@ -6,4 +6,4 @@ const ComponentsContext = React.createContext([]);
 PrefixContext.displayName = 'PrefixContext';
 ComponentsContext.displayName = 'ComponentsContext';
 
-export { PrefixContext, ComponentsContext };
+export {PrefixContext, ComponentsContext};

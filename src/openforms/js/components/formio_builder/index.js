@@ -4,25 +4,25 @@ import FormIOBuilder from './builder';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import flatpickr from 'flatpickr';
-import { Dutch } from 'flatpickr/dist/l10n/nl.js';
+import {Dutch} from 'flatpickr/dist/l10n/nl.js';
 
 document.addEventListener('DOMContentLoaded', event => {
-    const FORM_BUILDERS = BEM.getBEMNodes(BLOCK_FORM_BUILDER);
-    [...FORM_BUILDERS].forEach(node => {
+  const FORM_BUILDERS = BEM.getBEMNodes(BLOCK_FORM_BUILDER);
+  [...FORM_BUILDERS].forEach(node => {
+    const configurationInput = BEM.getChildBEMNode(node, BLOCK_FORM_BUILDER, INPUT_ELEMENT);
+    const configuration = JSON.parse(configurationInput.value) || {display: 'form'};
+    const onChange = newConfiguration =>
+      (configurationInput.value = JSON.stringify(newConfiguration));
 
-        const configurationInput = BEM.getChildBEMNode(node, BLOCK_FORM_BUILDER, INPUT_ELEMENT);
-        const configuration = JSON.parse(configurationInput.value) || {display: 'form'};
-        const onChange = (newConfiguration) => configurationInput.value = JSON.stringify(newConfiguration);
+    ReactDOM.render(
+      <FormIOBuilder configuration={configuration} onChange={onChange} />,
+      BEM.getChildBEMNode(node, BLOCK_FORM_BUILDER, ELEMENT_CONTAINER)
+    );
+  });
 
-        ReactDOM.render(
-            <FormIOBuilder configuration={configuration} onChange={onChange} />,
-            BEM.getChildBEMNode(node, BLOCK_FORM_BUILDER, ELEMENT_CONTAINER)
-        )
-    });
-
-    initFlatpickr();
+  initFlatpickr();
 });
 
 const initFlatpickr = () => {
-    flatpickr.localize(Dutch);
+  flatpickr.localize(Dutch);
 };

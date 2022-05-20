@@ -2,72 +2,67 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
-import FormioComponentRepresentation from '../FormioComponentRepresentation'
+import FormioComponentRepresentation from '../FormioComponentRepresentation';
 
 import Types from './types';
 import {displayInterpolateExpression} from './edit_panel/InterpolatedVariable';
 
+const ValueRepresentation = ({definition = null}) => {
+  let valueRepresentation = null;
 
-const ValueRepresentation = ({ definition=null }) => {
-    let valueRepresentation = null;
-
-    switch(definition?.source) {
-        case 'component': {
-            // initially, we support very simple {"var": "foo"} jsonLogic expressions
-            const componentKey = definition?.definition?.var;
-            if (!componentKey) {
-                return (
-                    <FormattedMessage
-                        description="JSON editor: unknown FormIO component key"
-                        defaultMessage="(missing information)"
-                    />
-                );
-            }
-            valueRepresentation = (<FormioComponentRepresentation componentKey={componentKey} />);
-            break;
-        }
-        case 'manual': {
-            switch (definition?.type) {
-                case 'number':
-                case 'boolean':
-                case 'string': {
-                    const value = definition?.definition;
-                    if (value != null) {
-                        valueRepresentation = value.toString();
-                    }
-                    break;
-                }
-                case 'null': {
-                    valueRepresentation = 'null';
-                    break;
-                }
-                case 'array':
-                case 'object': {
-                    valueRepresentation = (
-                        <FormattedMessage
-                            description="JSON editor: complex value representation"
-                            defaultMessage="(complex value)"
-                        />
-                    );
-                    break;
-                }
-            }
-            break;
-        }
-        case 'interpolate': {
-            valueRepresentation = displayInterpolateExpression(
-                definition?.definition || {},
-                true,
-            );
-            break;
-        }
+  switch (definition?.source) {
+    case 'component': {
+      // initially, we support very simple {"var": "foo"} jsonLogic expressions
+      const componentKey = definition?.definition?.var;
+      if (!componentKey) {
+        return (
+          <FormattedMessage
+            description="JSON editor: unknown FormIO component key"
+            defaultMessage="(missing information)"
+          />
+        );
+      }
+      valueRepresentation = <FormioComponentRepresentation componentKey={componentKey} />;
+      break;
     }
-    return valueRepresentation;
+    case 'manual': {
+      switch (definition?.type) {
+        case 'number':
+        case 'boolean':
+        case 'string': {
+          const value = definition?.definition;
+          if (value != null) {
+            valueRepresentation = value.toString();
+          }
+          break;
+        }
+        case 'null': {
+          valueRepresentation = 'null';
+          break;
+        }
+        case 'array':
+        case 'object': {
+          valueRepresentation = (
+            <FormattedMessage
+              description="JSON editor: complex value representation"
+              defaultMessage="(complex value)"
+            />
+          );
+          break;
+        }
+      }
+      break;
+    }
+    case 'interpolate': {
+      valueRepresentation = displayInterpolateExpression(definition?.definition || {}, true);
+      break;
+    }
+  }
+  return valueRepresentation;
 };
 
 ValueRepresentation.propTypes = {
-    definition: Types.VariableDefinition,
+  definition: Types.VariableDefinition,
 };
-
 
 export default ValueRepresentation;

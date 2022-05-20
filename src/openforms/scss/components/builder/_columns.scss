@@ -1,4 +1,4 @@
-@use "sass:math";
+@use 'sass:math';
 
 @import '~microscope-sass/lib/grid';
 
@@ -16,7 +16,7 @@ $bootstrap-ratio-desktop: math.div(12, $grid-columns-desktop);
     math.div($bs-span, $bootstrap-ratio-mobile),
     math.div($bs-span, $bootstrap-ratio-tablet),
     math.div($bs-span, $bootstrap-ratio-laptop),
-    math.div($bs-span, $bootstrap-ratio-desktop),
+    math.div($bs-span, $bootstrap-ratio-desktop)
   );
 }
 
@@ -25,14 +25,15 @@ $bootstrap-ratio-desktop: math.div(12, $grid-columns-desktop);
   width: 100%;
 
   .alert-info {
-    text-indent: -9999px;  // basically push the text off the screen
+    text-indent: -9999px; // basically push the text off the screen
     line-height: 0; // collapse the lines to not take up vertical space
 
-    &:after {  // the real magic -> insert our own content
-        display: block; // needs to take up space
-        content: "\2b"; // font-awesome unicode for +
-        line-height: initial;  // reset line height
-        text-indent: 0; // reset text indent
+    &:after {
+      // the real magic -> insert our own content
+      display: block; // needs to take up space
+      content: '\2b'; // font-awesome unicode for +
+      line-height: initial; // reset line height
+      text-indent: 0; // reset text indent
     }
   }
 

@@ -1,14 +1,21 @@
-@use "sass:math";
+@use 'sass:math';
 
 @import '~microscope-sass/lib/grid';
 @import '~microscope-sass/lib/typography';
 
 $button-line-height: $typography-line-height-text-big * $typography-font-size-text-big;
 $button-line-height-px: math.div($button-line-height, ($button-line-height * 0 + 1)) * 16px;
-$button-padding-v: math.div(($grid-row-height - $button-line-height-px), 2) - $typography-size-border;
+$button-padding-v: math.div(($grid-row-height - $button-line-height-px), 2) -
+  $typography-size-border;
 $button-padding-h: $grid-margin-2;
 
-@mixin button-theme($name, $color, $color-background, $color-border: $color-background, $decorate-on-hover: false) {
+@mixin button-theme(
+  $name,
+  $color,
+  $color-background,
+  $color-border: $color-background,
+  $decorate-on-hover: false
+) {
   @if $name == '' {
     @include button-style($color, $color-background, $color-border, $decorate-on-hover);
   } @else {
@@ -18,7 +25,12 @@ $button-padding-h: $grid-margin-2;
   }
 }
 
-@mixin button-style($color, $color-background, $color-border: $color-background, $decorate-on-hover: false) {
+@mixin button-style(
+  $color,
+  $color-background,
+  $color-border: $color-background,
+  $decorate-on-hover: false
+) {
   color: $color;
   background-color: $color-background;
   border-right-color: $color-border;
@@ -48,7 +60,12 @@ $button-padding-h: $grid-margin-2;
   @include body;
   @include body--big;
   @include border(all, $color: transparent, $size: 2px);
-  @include button-theme('primary', $color-background, scale_color($color-primary, $lightness: 10%, $saturation: 0%), $color-primary);
+  @include button-theme(
+    'primary',
+    $color-background,
+    scale_color($color-primary, $lightness: 10%, $saturation: 0%),
+    $color-primary
+  );
   @include button-theme('', $typography-color-text, $color-background, $color-border);
   @include button-theme('anchor', $typography-color-link, transparent, transparent, true);
   appearance: none;

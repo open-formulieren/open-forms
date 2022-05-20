@@ -2,17 +2,16 @@
 @import '../../vars';
 
 .openforms-component {
-
   &--hidden {
     padding: $grid-margin-1;
     border-radius: 10px;
     opacity: 0.5;
     background: repeating-linear-gradient(
-        -45deg,
-        $django-hijack-yellow,
-        $django-hijack-yellow 10px,
-        $color-tooltip-background 10px,
-        $color-tooltip-background 20px
+      -45deg,
+      $django-hijack-yellow,
+      $django-hijack-yellow 10px,
+      $color-tooltip-background 10px,
+      $color-tooltip-background 20px
     );
 
     label {

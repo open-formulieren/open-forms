@@ -24,7 +24,7 @@ $logic-line-breakpoint: 1800px !default;
   &__data-preview {
     min-width: 200px;
     @include breakpoint($min: $logic-line-breakpoint) {
-      min-width: 400px;;
+      min-width: 400px;
     }
     max-width: 800px;
     padding-top: 7px;

@@ -1,4 +1,4 @@
-import { Formio } from 'react-formio';
+import {Formio} from 'react-formio';
 
 import './components';
 import OpenForms from './formio_module';
@@ -7,10 +7,10 @@ import OpenForms from './formio_module';
 Formio.use(OpenForms);
 
 const DebugPlugin = {
-    priority: 0,
-    preRequest: (requestArgs) => {
-        console.log(requestArgs);
-    },
+  priority: 0,
+  preRequest: requestArgs => {
+    console.log(requestArgs);
+  },
 };
 
 // Formio.registerPlugin(DebugPlugin, 'debug');

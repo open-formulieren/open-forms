@@ -12,14 +12,12 @@
 // since we include flatpickr in the global scope, we need to embed the CSS ourselves
 @import 'flatpickr/dist/flatpickr.css';
 
-
 .field-configuration {
   overflow: unset;
 }
 
 .field-configuration,
 .form-definition {
-
   & > div:first-of-type {
     width: 100%;
   }
@@ -53,8 +51,7 @@ li.nav-item {
 
 .formio-dialog,
 .ck-body .ck.ck-balloon-panel,
-div.flatpickr-calendar.open
-{
+div.flatpickr-calendar.open {
   z-index: 10000000;
 }
 
@@ -72,7 +69,7 @@ div.flatpickr-calendar.open
   padding-top: 10px;
 }
 
-[ref="editForm"] {
+[ref='editForm'] {
   .choices__list {
     &--dropdown {
       background-color: var(--body-bg);
@@ -107,10 +104,10 @@ div.flatpickr-calendar.open
 
 // bootstrap competing with django admin form styling...
 .react-form-create {
-  :not([ref="editForm"]) {
-
+  :not([ref='editForm']) {
     .form-row {
-      &, :not(select) {
+      &,
+      :not(select) {
         box-sizing: initial;
       }
     }
@@ -128,7 +125,8 @@ div.flatpickr-calendar.open
   margin-bottom: 0;
 
   .form-row {
-    &, * {
+    &,
+    * {
       box-sizing: border-box !important;
     }
   }
@@ -179,7 +177,6 @@ div.flatpickr-calendar.open
 .card-header {
   color: var(--body-fg);
 }
-
 
 @media (prefers-color-scheme: dark) {
   .card-header {

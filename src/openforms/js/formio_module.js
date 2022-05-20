@@ -55,7 +55,7 @@ const FormIOModule = {
   },
   builders: {
     webform: WebformBuilder,
-  }
+  },
 };
 
 export default FormIOModule;
