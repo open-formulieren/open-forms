@@ -7,7 +7,7 @@
     @include margin('auto');
 
     &__module {
-      @include margin('auto', $value-laptop: .5em);
+      @include margin('auto', $value-laptop: 0.5em);
       font-weight: bold;
     }
   }

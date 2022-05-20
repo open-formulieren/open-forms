@@ -8,7 +8,7 @@ const CURRENT_URL = new URL(window.location);
  * @param  {String} path The path to build a URL for, including leading slash.
  * @return {String}      The fully qualified URL, taken from the current host.
  */
-export const getFullyQualifiedUrl = (url) => {
-    const fq = `${CURRENT_URL.protocol}//${CURRENT_URL.host}${url}`;
-    return fq;
+export const getFullyQualifiedUrl = url => {
+  const fq = `${CURRENT_URL.protocol}//${CURRENT_URL.host}${url}`;
+  return fq;
 };

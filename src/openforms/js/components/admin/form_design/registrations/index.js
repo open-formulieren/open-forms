@@ -6,8 +6,8 @@ import {onStepEdit} from './handlers';
  * @type {Object}
  */
 export const BACKEND_OPTIONS_FORMS = {
-    camunda: {
-        form: CamundaOptionsForm,
-        onStepEdit: onStepEdit,
-    },
+  camunda: {
+    form: CamundaOptionsForm,
+    onStepEdit: onStepEdit,
+  },
 };

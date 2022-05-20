@@ -4,38 +4,33 @@ import FormioUtils from 'formiojs/utils';
 import PropTypes from 'prop-types';
 import MessageList from './warnings/MessageList';
 
-
 const CUSTOM_FIELD_TYPES = ['npFamilyMembers'];
 
-
 const AuthenticationWarning = ({loginRequired, configuration}) => {
-    if (loginRequired) return null;
+  if (loginRequired) return null;
 
-    const components = FormioUtils.flattenComponents(configuration.components || [], true);
-    const componentsWithCustomFieldTypes = Object.values(components).filter(
-        (component) => (CUSTOM_FIELD_TYPES.includes(component.type))
-    );
+  const components = FormioUtils.flattenComponents(configuration.components || [], true);
+  const componentsWithCustomFieldTypes = Object.values(components).filter(component =>
+    CUSTOM_FIELD_TYPES.includes(component.type)
+  );
 
-    if (!componentsWithCustomFieldTypes.length) return null;
+  if (!componentsWithCustomFieldTypes.length) return null;
 
-    const formattedWarnings = componentsWithCustomFieldTypes.map((component, index) => (
-        <FormattedMessage
-            key={index}
-            description="No login required for formstep"
-            defaultMessage="Component {label} requires login, but this form step doesn't have the login marked as required."
-            values={{label: component.label}}
-        />
-    ));
+  const formattedWarnings = componentsWithCustomFieldTypes.map((component, index) => (
+    <FormattedMessage
+      key={index}
+      description="No login required for formstep"
+      defaultMessage="Component {label} requires login, but this form step doesn't have the login marked as required."
+      values={{label: component.label}}
+    />
+  ));
 
-    return (<MessageList warnings={formattedWarnings}/>);
-
+  return <MessageList warnings={formattedWarnings} />;
 };
-
 
 AuthenticationWarning.propTypes = {
-    loginRequired: PropTypes.bool.isRequired,
-    configuration: PropTypes.object.isRequired,
+  loginRequired: PropTypes.bool.isRequired,
+  configuration: PropTypes.object.isRequired,
 };
-
 
 export default AuthenticationWarning;

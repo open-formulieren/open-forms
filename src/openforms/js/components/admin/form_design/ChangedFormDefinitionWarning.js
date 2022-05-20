@@ -6,76 +6,76 @@ import Modal from '../Modal';
 import {ChangelistTable, ChangelistColumn} from '../tables';
 import MessageList from './warnings/MessageList';
 
-
 const AffectedFormType = PropTypes.shape({
-    url: PropTypes.string.isRequired,
-    uuid: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    active: PropTypes.bool.isRequired,
-    adminUrl: PropTypes.string.isRequired,
+  url: PropTypes.string.isRequired,
+  uuid: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  active: PropTypes.bool.isRequired,
+  adminUrl: PropTypes.string.isRequired,
 });
 
-
 const AffectedFormsTable = ({children: forms}) => (
-    <ChangelistTable linkColumn={0} linkProp="adminUrl" rowKey="uuid" data={forms}>
+  <ChangelistTable linkColumn={0} linkProp="adminUrl" rowKey="uuid" data={forms}>
+    <ChangelistColumn objProp="name">
+      <FormattedMessage description="Form list 'name' column header" defaultMessage="Name" />
+    </ChangelistColumn>
 
-        <ChangelistColumn objProp="name">
-            <FormattedMessage description="Form list 'name' column header" defaultMessage="Name" />
-        </ChangelistColumn>
-
-        <ChangelistColumn objProp="active" isBool>
-            <FormattedMessage description="Form list 'active' column header" defaultMessage="Active" />
-        </ChangelistColumn>
-
-    </ChangelistTable>
+    <ChangelistColumn objProp="active" isBool>
+      <FormattedMessage description="Form list 'active' column header" defaultMessage="Active" />
+    </ChangelistColumn>
+  </ChangelistTable>
 );
 
 AffectedFormsTable.propTypes = {
-    children: PropTypes.arrayOf(AffectedFormType),
+  children: PropTypes.arrayOf(AffectedFormType),
 };
 
+const ChangedFormDefinitionWarning = ({changed, affectedForms = []}) => {
+  const [modalOpen, setModalOpen] = useState(false);
 
-const ChangedFormDefinitionWarning = ({ changed, affectedForms=[] }) => {
-    const [modalOpen, setModalOpen] = useState(false);
+  const onShowModal = event => {
+    event.preventDefault();
+    setModalOpen(true);
+  };
 
-    const onShowModal = (event) => {
-        event.preventDefault();
-        setModalOpen(true);
-    };
+  if (!changed) return null;
 
-    if (!changed) return null;
-
-    const formattedWarning = (
-        <FormattedMessage
-            description="Warning when modifying existing form definitions"
-            defaultMessage="You are modifying an existing form definition! This change affects <link>{count, plural,
+  const formattedWarning = (
+    <FormattedMessage
+      description="Warning when modifying existing form definitions"
+      defaultMessage="You are modifying an existing form definition! This change affects <link>{count, plural,
                 one {# form}
                 other {# forms}
             }</link>"
-            values={{
-                count: affectedForms.length,
-                link: (chunks) => (<a href="#" onClick={onShowModal}>{chunks}</a>)
-            }}
-        />
-    );
+      values={{
+        count: affectedForms.length,
+        link: chunks => (
+          <a href="#" onClick={onShowModal}>
+            {chunks}
+          </a>
+        ),
+      }}
+    />
+  );
 
-    return (
-        <>
-            <Modal isOpen={modalOpen} closeModal={() => setModalOpen(false)} title={`Formulieren (${affectedForms.length})`}>
-                <AffectedFormsTable>
-                    {affectedForms}
-                </AffectedFormsTable>
-            </Modal>
+  return (
+    <>
+      <Modal
+        isOpen={modalOpen}
+        closeModal={() => setModalOpen(false)}
+        title={`Formulieren (${affectedForms.length})`}
+      >
+        <AffectedFormsTable>{affectedForms}</AffectedFormsTable>
+      </Modal>
 
-            <MessageList warnings={[formattedWarning]} />
-        </>
-    );
+      <MessageList warnings={[formattedWarning]} />
+    </>
+  );
 };
 
 ChangedFormDefinitionWarning.propTypes = {
-    changed: PropTypes.bool,
-    affectedForms: PropTypes.arrayOf(AffectedFormType),
+  changed: PropTypes.bool,
+  affectedForms: PropTypes.arrayOf(AffectedFormType),
 };
-
 
 export default ChangedFormDefinitionWarning;

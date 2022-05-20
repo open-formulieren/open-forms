@@ -4,41 +4,39 @@ import {useIntl} from 'react-intl';
 
 import FAIcon from './FAIcon';
 
+const DeleteIcon = ({onConfirm, message, icon = 'trash'}) => {
+  const intl = useIntl();
+  const defaultMessage = intl.formatMessage({
+    description: 'Default delete confirmation message',
+    defaultMessage: 'Are you sure you want to delete this?',
+  });
+  const confirmMessage = message || defaultMessage;
 
-const DeleteIcon = ({ onConfirm, message, icon='trash' }) => {
-    const intl = useIntl();
-    const defaultMessage = intl.formatMessage({
-        description: 'Default delete confirmation message',
-        defaultMessage: 'Are you sure you want to delete this?',
-    });
-    const confirmMessage = message || defaultMessage;
+  const iconTitle = intl.formatMessage({
+    description: 'Delete icon title',
+    defaultMessage: 'Delete',
+  });
 
-    const iconTitle = intl.formatMessage({
-        description: 'Delete icon title',
-        defaultMessage: 'Delete',
-    });
+  const onClick = () => {
+    if (window.confirm(confirmMessage)) {
+      onConfirm();
+    }
+  };
 
-    const onClick = () => {
-        if (window.confirm(confirmMessage)) {
-            onConfirm();
-        }
-    };
-
-    return (
-        <FAIcon
-            icon={icon}
-            extraClassname="icon icon--danger actions__action"
-            title={iconTitle}
-            onClick={onClick}
-        />
-    );
+  return (
+    <FAIcon
+      icon={icon}
+      extraClassname="icon icon--danger actions__action"
+      title={iconTitle}
+      onClick={onClick}
+    />
+  );
 };
 
 DeleteIcon.propTypes = {
-    onConfirm: PropTypes.func.isRequired,
-    message: PropTypes.string,
-    icon: PropTypes.string,
+  onConfirm: PropTypes.func.isRequired,
+  message: PropTypes.string,
+  icon: PropTypes.string,
 };
-
 
 export default DeleteIcon;

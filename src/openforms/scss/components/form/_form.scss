@@ -9,6 +9,6 @@
   .form-control,
   .help-text,
   .costs-indicator {
-    @include margin($value-mobile: $grid-row-height)
+    @include margin($value-mobile: $grid-row-height);
   }
 }

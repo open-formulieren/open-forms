@@ -1,13 +1,12 @@
 @import '../../vars';
 
 .button {
-
   &--plain {
     width: 100%;
     border: none;
     background: transparent;
     color: inherit;
-    text-align: left;;
+    text-align: left;
 
     &:hover,
     &:active,
@@ -28,7 +27,6 @@
   &--center {
     text-align: center;
   }
-
 }
 
 .button-container {

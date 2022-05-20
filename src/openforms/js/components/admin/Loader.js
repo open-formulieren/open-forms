@@ -8,19 +8,17 @@ import PropTypes from 'prop-types';
  * @return {JSX}
  */
 const Loader = () => {
-    return (
-        <div className="box-loader-container">
-            <div className="box-loader">
-                <div />
-                <div />
-                <div />
-            </div>
-        </div>
-    );
+  return (
+    <div className="box-loader-container">
+      <div className="box-loader">
+        <div />
+        <div />
+        <div />
+      </div>
+    </div>
+  );
 };
 
-Loader.propTypes = {
-};
-
+Loader.propTypes = {};
 
 export default Loader;

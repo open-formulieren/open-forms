@@ -6,45 +6,45 @@ const FieldComponent = Formio.Components.components.field;
 
 // TODO: in the future, allow selection of an auth plugin (from the registry)
 const EDIT_FORM_TABS = [
-    {
-        type: 'tabs',
-        key: 'tabs',
+  {
+    type: 'tabs',
+    key: 'tabs',
+    components: [
+      {
+        key: 'basic',
+        label: 'Basic',
         components: [
-            {
-                key: 'basic',
-                label: 'Basic',
-                components: [
-                    {
-                        type: 'textfield',
-                        key: 'label',
-                        label: 'Label'
-                    },
-                    {
-                        type: 'textfield',
-                        key: 'description',
-                        label: 'Description'
-                    },
-                    {
-                        type: 'select',
-                        key: 'authPlugin',
-                        label: 'Authentication method',
-                        description: 'Which authentication method the co-signer must use. Note that this must be an authentication method available on the form.',
-                        dataSrc: 'url',
-                        data: {
-                            // if the url starts with '/', then formio will prefix it with the formio
-                            // base URL, which is of course wrong. We there explicitly use the detected
-                            // host.
-                            url: getFullyQualifiedUrl('/api/v1/authentication/plugins'),
-                        },
-                        valueProperty: 'id',
-                        template: `<span>{{ item.label }}, provides: {{ item.providesAuth.join(', ') }}</span>`,
-                    }
-                ],
-            }
-        ]
-    }
+          {
+            type: 'textfield',
+            key: 'label',
+            label: 'Label',
+          },
+          {
+            type: 'textfield',
+            key: 'description',
+            label: 'Description',
+          },
+          {
+            type: 'select',
+            key: 'authPlugin',
+            label: 'Authentication method',
+            description:
+              'Which authentication method the co-signer must use. Note that this must be an authentication method available on the form.',
+            dataSrc: 'url',
+            data: {
+              // if the url starts with '/', then formio will prefix it with the formio
+              // base URL, which is of course wrong. We there explicitly use the detected
+              // host.
+              url: getFullyQualifiedUrl('/api/v1/authentication/plugins'),
+            },
+            valueProperty: 'id',
+            template: `<span>{{ item.label }}, provides: {{ item.providesAuth.join(', ') }}</span>`,
+          },
+        ],
+      },
+    ],
+  },
 ];
-
 
 /**
  * A component for co-signing a form.
@@ -55,48 +55,47 @@ const EDIT_FORM_TABS = [
  * presented.
  */
 class CoSignField extends FieldComponent {
+  constructor(component, options, data) {
+    super(component, options, data);
+    this.checks = [];
+  }
 
-    constructor(component, options, data) {
-        super(component, options, data);
-        this.checks = [];
-    }
+  static schema(...extend) {
+    return FieldComponent.schema(
+      {
+        label: 'Co-sign',
+        type: 'coSign',
+        authPlugin: 'digid',
+        input: false,
+      },
+      ...extend
+    );
+  }
 
-    static schema(...extend) {
-        return FieldComponent.schema({
-            label: 'Co-sign',
-            type: 'coSign',
-            authPlugin: 'digid',
-            input: false,
-        }, ...extend);
-    }
+  static get builderInfo() {
+    return {
+      title: 'Co-sign',
+      icon: 'id-card-o',
+      group: 'basic',
+      weight: 300,
+      schema: CoSignField.schema(),
+    };
+  }
 
-    static get builderInfo() {
-      return {
-        title: 'Co-sign',
-        icon: 'id-card-o',
-        group: 'basic',
-        weight: 300,
-        schema: CoSignField.schema()
-      };
-    }
+  static editForm() {
+    return {components: EDIT_FORM_TABS};
+  }
 
-    static editForm() {
-        return {components: EDIT_FORM_TABS};
-    }
-
-    render(content) {
-        const btnContent = this.t(
-            'Co-Sign ({{ authPlugin }})',
-            {authPlugin: this.component.authPlugin}
-        );
-        const context = {
-            content: content,
-            btnContent: btnContent,
-        };
-        return super.render(this.renderTemplate('coSign', context));
-    }
-
+  render(content) {
+    const btnContent = this.t('Co-Sign ({{ authPlugin }})', {
+      authPlugin: this.component.authPlugin,
+    });
+    const context = {
+      content: content,
+      btnContent: btnContent,
+    };
+    return super.render(this.renderTemplate('coSign', context));
+  }
 }
-
 
 export default CoSignField;

@@ -6,13 +6,13 @@
  *   to an array of [value, label] choices.
  */
 const getTranslatedChoices = (intl, choices) => {
-    let choicesArray;
-    if (!Array.isArray(choices)) {
-        choicesArray = Object.entries(choices);
-    } else {
-        choicesArray = choices;
-    }
-    return choicesArray.map( ([value, labelMessage]) => [value, intl.formatMessage(labelMessage)] );
+  let choicesArray;
+  if (!Array.isArray(choices)) {
+    choicesArray = Object.entries(choices);
+  } else {
+    choicesArray = choices;
+  }
+  return choicesArray.map(([value, labelMessage]) => [value, intl.formatMessage(labelMessage)]);
 };
 
 export {getTranslatedChoices};

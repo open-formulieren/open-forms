@@ -5,24 +5,21 @@ import Select from '../../forms/Select';
 import {FormStepsContext} from '../Context';
 
 const StepSelection = ({name, value, onChange}) => {
-    const formSteps = useContext(FormStepsContext);
-    const formStepChoices = formSteps.map((step, index) => [step.url, (step.internalName || step.name)]);
+  const formSteps = useContext(FormStepsContext);
+  const formStepChoices = formSteps.map((step, index) => [
+    step.url,
+    step.internalName || step.name,
+  ]);
 
-    return (
-        <Select
-            name={name}
-            choices={formStepChoices}
-            allowBlank
-            onChange={onChange}
-            value={value}
-        />
-    );
+  return (
+    <Select name={name} choices={formStepChoices} allowBlank onChange={onChange} value={value} />
+  );
 };
 
 StepSelection.propTypes = {
-    name: PropTypes.string.isRequired,
-    value: PropTypes.string,
-    onChange: PropTypes.func,
+  name: PropTypes.string.isRequired,
+  value: PropTypes.string,
+  onChange: PropTypes.func,
 };
 
 export default StepSelection;

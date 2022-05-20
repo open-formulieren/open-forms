@@ -16,24 +16,30 @@ import {ComponentsContext} from '../forms/Context';
 import Fieldset from '../forms/Fieldset';
 import ValidationErrorsProvider from '../forms/ValidationErrors';
 import Loader from '../Loader';
-import {FormContext, FormDefinitionsContext, PluginsContext, FormStepsContext, FeatureFlagsContext} from './Context';
+import {
+  FormContext,
+  FormDefinitionsContext,
+  PluginsContext,
+  FormStepsContext,
+  FeatureFlagsContext,
+} from './Context';
 import FormSteps from './FormSteps';
 import {
-    FORM_ENDPOINT,
-    FORM_DEFINITIONS_ENDPOINT,
-    REGISTRATION_BACKENDS_ENDPOINT,
-    AUTH_PLUGINS_ENDPOINT,
-    PREFILL_PLUGINS_ENDPOINT,
-    PAYMENT_PLUGINS_ENDPOINT,
-    LOGICS_ENDPOINT,
-    PRICE_RULES_ENDPOINT,
+  FORM_ENDPOINT,
+  FORM_DEFINITIONS_ENDPOINT,
+  REGISTRATION_BACKENDS_ENDPOINT,
+  AUTH_PLUGINS_ENDPOINT,
+  PREFILL_PLUGINS_ENDPOINT,
+  PAYMENT_PLUGINS_ENDPOINT,
+  LOGICS_ENDPOINT,
+  PRICE_RULES_ENDPOINT,
 } from './constants';
 import {
-    loadPlugins,
-    updateOrCreateFormSteps,
-    saveLogicRules,
-    savePriceRules,
-    createOrUpdateFormVariables,
+  loadPlugins,
+  updateOrCreateFormSteps,
+  saveLogicRules,
+  savePriceRules,
+  createOrUpdateFormVariables,
 } from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import FormMetaFields from './FormMetaFields';
@@ -48,1211 +54,1267 @@ import Confirmation from './Confirmation';
 import {FormLogic, EMPTY_RULE} from './FormLogic';
 import {PriceLogic, EMPTY_PRICE_RULE} from './PriceLogic';
 import {BACKEND_OPTIONS_FORMS} from './registrations';
-import {getFormComponents, findComponent, checkKeyChange, replaceComponentKeyInLogic} from './utils';
+import {
+  getFormComponents,
+  findComponent,
+  checkKeyChange,
+  replaceComponentKeyInLogic,
+} from './utils';
 import {updateFormVariables} from './variables/utils';
 import VariablesEditor from './variables/VariablesEditor';
 import {DEFAULT_STATIC_VARIABLES} from './variables/constants';
 
 const initialFormState = {
-    form: {
-        name: '',
-        internalName: '',
-        uuid: '',
-        url: '',
-        slug: '',
-        showProgressIndicator: true,
-        active: true,
-        isDeleted: false,
-        maintenanceMode: false,
-        submissionConfirmationTemplate: '',
-        submissionAllowed: 'yes',
-        registrationBackend: '',
-        registrationBackendOptions: {},
-        product: null,
-        paymentBackend: '',
-        paymentBackendOptions: {},
-        submissionsRemovalOptions: {},
-        confirmationEmailTemplate: null,
-        confirmationEmailOption: 'global_email',
-        explanationTemplate: '',
-        autoLoginAuthenticationBackend: '',
+  form: {
+    name: '',
+    internalName: '',
+    uuid: '',
+    url: '',
+    slug: '',
+    showProgressIndicator: true,
+    active: true,
+    isDeleted: false,
+    maintenanceMode: false,
+    submissionConfirmationTemplate: '',
+    submissionAllowed: 'yes',
+    registrationBackend: '',
+    registrationBackendOptions: {},
+    product: null,
+    paymentBackend: '',
+    paymentBackendOptions: {},
+    submissionsRemovalOptions: {},
+    confirmationEmailTemplate: null,
+    confirmationEmailOption: 'global_email',
+    explanationTemplate: '',
+    autoLoginAuthenticationBackend: '',
+  },
+  literals: {
+    beginText: {
+      value: '',
     },
-    literals: {
-        beginText: {
-            value: ''
-        },
-        previousText: {
-            value: ''
-        },
-        changeText: {
-            value: ''
-        },
-        confirmText: {
-            value: ''
-        },
+    previousText: {
+      value: '',
     },
-    newForm: true,
-    formSteps: [],
-    errors: {},
-    formDefinitions: [],
-    availableRegistrationBackends: [],
-    availableAuthPlugins: [],
-    availablePrefillPlugins: [],
-    selectedAuthPlugins: [],
-    availablePaymentBackends: [],
-    stepsToDelete: [],
-    submitting: false,
-    logicRules: [],
-    logicRulesToDelete: [],
-    priceRules: [],
-    priceRulesToDelete: [],
-    formVariables: [],
-    // backend error handling
-    validationErrors: [],
-    tabsWithErrors: [],
+    changeText: {
+      value: '',
+    },
+    confirmText: {
+      value: '',
+    },
+  },
+  newForm: true,
+  formSteps: [],
+  errors: {},
+  formDefinitions: [],
+  availableRegistrationBackends: [],
+  availableAuthPlugins: [],
+  availablePrefillPlugins: [],
+  selectedAuthPlugins: [],
+  availablePaymentBackends: [],
+  stepsToDelete: [],
+  submitting: false,
+  logicRules: [],
+  logicRulesToDelete: [],
+  priceRules: [],
+  priceRulesToDelete: [],
+  formVariables: [],
+  // backend error handling
+  validationErrors: [],
+  tabsWithErrors: [],
 };
 
 const newStepData = {
-    configuration:  {display: 'form'},
-    formDefinition: '',
-    slug: '',
-    url: '',
-    literals: {
-        previousText: {
-            value: ''
-        },
-        saveText: {
-            value: ''
-        },
-        nextText: {
-            value: ''
-        },
+  configuration: {display: 'form'},
+  formDefinition: '',
+  slug: '',
+  url: '',
+  literals: {
+    previousText: {
+      value: '',
     },
-    isNew: true,
-    validationErrors: [],
+    saveText: {
+      value: '',
+    },
+    nextText: {
+      value: '',
+    },
+  },
+  isNew: true,
+  validationErrors: [],
 };
 
 // Maps in which Tab the different form fields are displayed.
 const FORM_FIELDS_TO_TAB_NAMES = {
-    name: 'form',
-    internalName: 'form',
-    uuid: 'form',
-    slug: 'form',
-    showProgressIndicator: 'form',
-    active: 'form',
-    isDeleted: 'form',
-    maintenanceMode: 'form',
-    submissionConfirmationTemplate: 'submission-confirmation',
-    confirmationEmailTemplate: 'submission-confirmation',
-    submissionAllowed: 'form',
-    registrationBackend: 'registration',
-    registrationBackendOptions: 'registration',
-    product: 'product-payment',
-    paymentBackend: 'product-payment',
-    paymentBackendOptions: 'product-payment',
-    submissionsRemovalOptions: 'submission-removal-options',
-    literals: 'literals',
-    explanationTemplate: 'form',
-    logicRules: 'logic-rules',
+  name: 'form',
+  internalName: 'form',
+  uuid: 'form',
+  slug: 'form',
+  showProgressIndicator: 'form',
+  active: 'form',
+  isDeleted: 'form',
+  maintenanceMode: 'form',
+  submissionConfirmationTemplate: 'submission-confirmation',
+  confirmationEmailTemplate: 'submission-confirmation',
+  submissionAllowed: 'form',
+  registrationBackend: 'registration',
+  registrationBackendOptions: 'registration',
+  product: 'product-payment',
+  paymentBackend: 'product-payment',
+  paymentBackendOptions: 'product-payment',
+  submissionsRemovalOptions: 'submission-removal-options',
+  literals: 'literals',
+  explanationTemplate: 'form',
+  logicRules: 'logic-rules',
 };
 
-
 function reducer(draft, action) {
-    switch (action.type) {
-        /**
-         * Form-level actions
-         */
-        case 'FORM_LOADED': {
-            return {
-                ...draft,
-                ...action.payload,
-            };
-        }
-        case 'FORM_CREATED': {
-            draft.newForm = false;
-            draft.form = action.payload;
-            break;
-        }
-        case 'FIELD_CHANGED': {
-            const { name, value } = action.payload;
-            // names are prefixed like `form.foo` and `literals.bar`
-            const [prefix, ...rest] = name.split('.');
-            const fieldName = rest.join('.');
+  switch (action.type) {
+    /**
+     * Form-level actions
+     */
+    case 'FORM_LOADED': {
+      return {
+        ...draft,
+        ...action.payload,
+      };
+    }
+    case 'FORM_CREATED': {
+      draft.newForm = false;
+      draft.form = action.payload;
+      break;
+    }
+    case 'FIELD_CHANGED': {
+      const {name, value} = action.payload;
+      // names are prefixed like `form.foo` and `literals.bar`
+      const [prefix, ...rest] = name.split('.');
+      const fieldName = rest.join('.');
 
-            switch (prefix) {
-                case 'form': {
-                    set(draft.form, fieldName, value);
-                    break;
-                }
-                case 'literals': {
-                    draft.literals[fieldName].value = value;
-                    break;
-                }
-                default: {
-                    throw new Error(`Unknown prefix: ${prefix}`);
-                }
-            }
+      switch (prefix) {
+        case 'form': {
+          set(draft.form, fieldName, value);
+          break;
+        }
+        case 'literals': {
+          draft.literals[fieldName].value = value;
+          break;
+        }
+        default: {
+          throw new Error(`Unknown prefix: ${prefix}`);
+        }
+      }
 
-            // remove any validation errors
-            draft.validationErrors = draft.validationErrors.filter(([key]) => !key.startsWith(name));
+      // remove any validation errors
+      draft.validationErrors = draft.validationErrors.filter(([key]) => !key.startsWith(name));
 
-            // check which tabs still need the marker and which don't
-            const errorsPerTab = groupBy(draft.validationErrors, ([key]) => {
-                const [prefix, fieldPrefix] = key.split('.');
-                return FORM_FIELDS_TO_TAB_NAMES[fieldPrefix];
-            });
-            draft.tabsWithErrors = draft.tabsWithErrors.filter(tabId => tabId in errorsPerTab);
-            break;
-        }
-        case 'PLUGINS_LOADED': {
-            const {stateVar, data} = action.payload;
-            draft[stateVar] = data;
-            break;
-        }
-        case 'FORM_STEPS_LOADED': {
-            draft.formSteps = action.payload;
-            for (const step of draft.formSteps) {
-                step.validationErrors = [];
-            }
-            break;
-        }
-        case 'TOGGLE_AUTH_PLUGIN': {
-            const pluginId = action.payload;
-            if (draft.selectedAuthPlugins.includes(pluginId)) {
-                draft.selectedAuthPlugins = draft.selectedAuthPlugins.filter(id => id !== pluginId);
-            } else {
-                draft.selectedAuthPlugins = [...draft.selectedAuthPlugins, pluginId];
-            }
-            break;
-        }
-        case 'ADD_STATIC_VARIABLES':
-            draft.formVariables = [...DEFAULT_STATIC_VARIABLES];
-            break;
-        /**
-         * FormStep-level actions
-         */
-        case 'DELETE_STEP': {
-            const {index} = action.payload;
-            draft.stepsToDelete.push(draft.formSteps[index].url);
+      // check which tabs still need the marker and which don't
+      const errorsPerTab = groupBy(draft.validationErrors, ([key]) => {
+        const [prefix, fieldPrefix] = key.split('.');
+        return FORM_FIELDS_TO_TAB_NAMES[fieldPrefix];
+      });
+      draft.tabsWithErrors = draft.tabsWithErrors.filter(tabId => tabId in errorsPerTab);
+      break;
+    }
+    case 'PLUGINS_LOADED': {
+      const {stateVar, data} = action.payload;
+      draft[stateVar] = data;
+      break;
+    }
+    case 'FORM_STEPS_LOADED': {
+      draft.formSteps = action.payload;
+      for (const step of draft.formSteps) {
+        step.validationErrors = [];
+      }
+      break;
+    }
+    case 'TOGGLE_AUTH_PLUGIN': {
+      const pluginId = action.payload;
+      if (draft.selectedAuthPlugins.includes(pluginId)) {
+        draft.selectedAuthPlugins = draft.selectedAuthPlugins.filter(id => id !== pluginId);
+      } else {
+        draft.selectedAuthPlugins = [...draft.selectedAuthPlugins, pluginId];
+      }
+      break;
+    }
+    case 'ADD_STATIC_VARIABLES':
+      draft.formVariables = [...DEFAULT_STATIC_VARIABLES];
+      break;
+    /**
+     * FormStep-level actions
+     */
+    case 'DELETE_STEP': {
+      const {index} = action.payload;
+      draft.stepsToDelete.push(draft.formSteps[index].url);
 
-            const unchangedSteps = draft.formSteps.slice(0, index);
-            const updatedSteps = draft.formSteps.slice(index+1).map((step) => {
-                step.index = step.index - 1;
-                return step;
-            });
-            draft.formSteps = [...unchangedSteps, ...updatedSteps];
-            break;
-        }
-        case 'ADD_STEP': {
-            const newIndex = draft.formSteps.length;
-            const emptyStep = {
-                ...newStepData,
-                index: newIndex,
-                name: `Stap ${newIndex + 1}`,
-            };
-            draft.formSteps = draft.formSteps.concat([emptyStep]);
-            break;
-        }
-        case 'FORM_DEFINITION_CHOSEN': {
-            const {index, formDefinitionUrl} = action.payload;
-            if (!formDefinitionUrl) {
-                draft.formSteps[index] = {
-                    ...draft.formSteps[index],
-                    ...newStepData,
-                    // if we're creating a new form definition, mark the step no longer as new since a decision
-                    // was made (re-use one or create a new one)
-                    isNew: false,
-                };
-            } else {
-                const { configuration, name, internalName, isReusable, slug } = draft.formDefinitions.find( fd => fd.url === formDefinitionUrl);
-                const { url } = draft.formSteps[index];
-                draft.formSteps[index] = {
-                    configuration,
-                    formDefinition: formDefinitionUrl,
-                    index,
-                    name,
-                    internalName,
-                    isReusable,
-                    slug,
-                    url,
-                    literals: {
-                        previousText: {
-                            value: ''
-                        },
-                        saveText: {
-                            value: ''
-                        },
-                        nextText: {
-                            value: ''
-                        },
-                    },
-                    isNew: false,
-                    validationErrors: [],
-                };
-            }
-            break;
-        }
-        case 'EDIT_STEP': {
-            const {index, configuration} = action.payload;
-            draft.formSteps[index].configuration = configuration;
-            break;
-        }
-        case 'EDIT_STEP_COMPONENT_MUTATED':  {
-            const {mutationType, schema, args} = action.payload;
+      const unchangedSteps = draft.formSteps.slice(0, index);
+      const updatedSteps = draft.formSteps.slice(index + 1).map(step => {
+        step.index = step.index - 1;
+        return step;
+      });
+      draft.formSteps = [...unchangedSteps, ...updatedSteps];
+      break;
+    }
+    case 'ADD_STEP': {
+      const newIndex = draft.formSteps.length;
+      const emptyStep = {
+        ...newStepData,
+        index: newIndex,
+        name: `Stap ${newIndex + 1}`,
+      };
+      draft.formSteps = draft.formSteps.concat([emptyStep]);
+      break;
+    }
+    case 'FORM_DEFINITION_CHOSEN': {
+      const {index, formDefinitionUrl} = action.payload;
+      if (!formDefinitionUrl) {
+        draft.formSteps[index] = {
+          ...draft.formSteps[index],
+          ...newStepData,
+          // if we're creating a new form definition, mark the step no longer as new since a decision
+          // was made (re-use one or create a new one)
+          isNew: false,
+        };
+      } else {
+        const {configuration, name, internalName, isReusable, slug} = draft.formDefinitions.find(
+          fd => fd.url === formDefinitionUrl
+        );
+        const {url} = draft.formSteps[index];
+        draft.formSteps[index] = {
+          configuration,
+          formDefinition: formDefinitionUrl,
+          index,
+          name,
+          internalName,
+          isReusable,
+          slug,
+          url,
+          literals: {
+            previousText: {
+              value: '',
+            },
+            saveText: {
+              value: '',
+            },
+            nextText: {
+              value: '',
+            },
+          },
+          isNew: false,
+          validationErrors: [],
+        };
+      }
+      break;
+    }
+    case 'EDIT_STEP': {
+      const {index, configuration} = action.payload;
+      draft.formSteps[index].configuration = configuration;
+      break;
+    }
+    case 'EDIT_STEP_COMPONENT_MUTATED': {
+      const {mutationType, schema, args} = action.payload;
 
-            let originalComp;
-            switch (mutationType) {
-                case 'changed': {
-                    [originalComp] = args;
-                    break;
-                }
-                case 'removed': {
-                    originalComp = null;
-                    break;
-                }
-                default:
-                    throw new Error(`Unknown mutation type '${mutationType}'`);
-            }
-
-            // Check if a key has been changed and if the logic rules need updating
-            const hasKeyChanged = checkKeyChange(mutationType, schema, originalComp);
-            if (hasKeyChanged) {
-                draft.logicRules = replaceComponentKeyInLogic(draft.logicRules, originalComp.key, schema.key);
-            }
-
-            // Check if the formVariables need updating
-            draft.formVariables = updateFormVariables(mutationType, schema, originalComp, draft.formVariables);
-
-            // check if we need updates to the backendRegistrationOptions
-            const {registrationBackend, registrationBackendOptions} = draft.form;
-            const handler = BACKEND_OPTIONS_FORMS[registrationBackend]?.onStepEdit;
-            if (handler == null) break;
-
-            const updatedOptions = handler(registrationBackendOptions, schema, originalComp);
-            if (updatedOptions) {
-                draft.form.registrationBackendOptions = updatedOptions;
-            }
-            break;
+      let originalComp;
+      switch (mutationType) {
+        case 'changed': {
+          [originalComp] = args;
+          break;
         }
-        case 'STEP_FIELD_CHANGED': {
-            const {index, name, value} = action.payload;
-            const step = draft.formSteps[index];
-            step[name] = value;
-            step.validationErrors = step.validationErrors.filter(([key]) => key !== name);
-
-            const anyStepHasErrors = draft.formSteps.some( step => step.validationErrors.length > 0);
-            if (!anyStepHasErrors && draft.tabsWithErrors.includes('form-steps')) {
-                draft.tabsWithErrors = draft.tabsWithErrors.filter(tab => tab !== 'form-steps');
-            }
-            break;
-        }
-        case 'STEP_LITERAL_FIELD_CHANGED': {
-            const {index, name, value} = action.payload;
-            draft.formSteps[index]['literals'][name]['value'] = value;
-            break;
-        }
-        case 'MOVE_UP_STEP': {
-            const index = action.payload;
-            if (index <= 0 || index >= draft.formSteps.length) break;
-
-            let updatedSteps = draft.formSteps.slice(0, index-1);
-            updatedSteps = updatedSteps.concat([{...draft.formSteps[index], ...{index: index-1}}]);
-            updatedSteps = updatedSteps.concat([{...draft.formSteps[index-1], ...{index: index}}]);
-
-            draft.formSteps = [...updatedSteps, ...draft.formSteps.slice(index+1)];
-            break;
-        }
-        case 'APPOINTMENT_CONFIGURATION_CHANGED': {
-            // deconstruct the 'event' which holds the information on which config param
-            // was changed and to which component it is (now) set.
-            const {target: {name, value: selectedComponentKey}} = action.payload;
-
-            // name is in the form "appointments.<key>"
-            const [prefix, configKey] = name.split('.');
-
-            // utility to find the component for a given appointment config option
-            const findComponentForConfigKey = (configKey) => {
-                const name = `${prefix}.${configKey}`;
-                return findComponent(
-                    draft.formSteps,
-                    (component) => getObjectValue(component, name, false)
-                );
-            };
-
-            // first, ensure that if the value was changed, the old component is cleared
-            const currentComponentForConfigKey = findComponentForConfigKey(configKey);
-            if (currentComponentForConfigKey) {
-                // wipe the entire appointments configuration
-                set(currentComponentForConfigKey, prefix, {});
-            }
-
-            // next, handle setting the config to the new component
-            const selectedComponent = findComponent(draft.formSteps, (component) => component.key === selectedComponentKey);
-            set(selectedComponent, name, true);
-
-            // finally, handle the dependencies of all appointment configuration - we need
-            // to check and update all keys, even the one that wasn't change, because options
-            // can be set in non-logical order in the UI.
-            for (const otherConfigKey of APPOINTMENT_CONFIG_KEYS) {
-                const relevantComponent = findComponentForConfigKey(otherConfigKey);
-                if (!relevantComponent) continue;
-
-                switch (otherConfigKey) {
-                    // no dependencies, do nothing
-                    case 'showProducts':
-                    case 'lastName':
-                    case 'birthDate':
-                    case 'phoneNumber':
-                        break
-                    // reverse order without breaks, since every component builds on top of
-                    // the others
-                    case 'showTimes': {
-                        // add the date selection component information
-                        const dateComponent = findComponentForConfigKey('showDates');
-                        if (dateComponent) set(relevantComponent, `${prefix}.dateComponent`, dateComponent.key);
-                    }
-                    case 'showDates': {
-                        // add the location selection component information
-                        const locationComponent = findComponentForConfigKey('showLocations');
-                        if (locationComponent) set(relevantComponent, `${prefix}.locationComponent`, locationComponent.key);
-                    }
-                    case 'showLocations': {
-                        // add the product selection component information
-                        const productComponent = findComponentForConfigKey('showProducts');
-                        if (productComponent) set(relevantComponent, `${prefix}.productComponent`, productComponent.key);
-                        break;
-                    }
-                    default: {
-                        throw new Error(`Unknown config key: ${configKey}`);
-                    }
-                }
-            }
-            break;
-        }
-        case 'PROCESS_STEP_VALIDATION_ERRORS': {
-            const {index, errors} = action.payload;
-            draft.formSteps[index].validationErrors = errors.map(err => [err.name, err.reason]);
-            if (!draft.tabsWithErrors.includes('form-steps')) {
-                draft.tabsWithErrors.push('form-steps');
-            }
-            draft.submitting = false;
-            break;
-        }
-        case 'ADD_FORM_DEFINITION': {
-            draft.formDefinitions.push(action.payload);
-            break;
-        }
-        case 'CREATE_FORM_STEP': {
-            const {index, url, formDefinition} = action.payload;
-            draft.formSteps[index].url = url;
-            draft.formSteps[index].formDefinition = formDefinition;
-            break;
-        }
-        /**
-         * Form Logic rules actions
-         */
-        case 'ADD_RULE': {
-            const {form: {url}} = draft;
-            const ruleOverrides = action.payload;
-
-            draft.logicRules.push({
-                ...EMPTY_RULE,
-                ...ruleOverrides,
-                form: url,
-                _generatedId: getUniqueRandomString(),
-            });
-            break;
-        }
-        case 'CHANGED_RULE': {
-            const {index, name, value} = action.payload;
-            draft.logicRules[index][name] = value;
-
-            // Remove the validation error for the updated field
-            // If there are multiple actions with errors in one rule, updating it will clear the error also for the
-            // other actions of that rule.
-            draft.validationErrors = draft.validationErrors.filter(([key]) => !key.startsWith(`logicRules.${index}.${name}`));
-            // Update the error badge in the tabs
-            const logicRulesErrors = draft.validationErrors.filter(([key]) => key.startsWith('logicRules'));
-            if (!logicRulesErrors.length) {
-                draft.tabsWithErrors = draft.tabsWithErrors.filter(tabId => tabId !== FORM_FIELDS_TO_TAB_NAMES['logicRules']);
-            }
-            break;
-        }
-        case 'DELETED_RULE': {
-            const {index} = action.payload;
-            const ruleUuid = draft.logicRules[index].uuid;
-            draft.logicRulesToDelete.push(ruleUuid);
-
-            // delete object from state
-            const updatedRules = [...draft.logicRules];
-            updatedRules.splice(index, 1);
-            draft.logicRules = updatedRules;
-            break;
-        }
-        case 'RULES_SAVED': {
-            // set the generated UUID from the backend for created rules
-            const createdRules = action.payload;
-            for (const rule of createdRules) {
-                const {uuid, index} = rule;
-                draft.logicRules[index].uuid = uuid;
-            }
-
-            // clear the state of rules to delete, as they have been deleted
-            draft.logicRulesToDelete = [];
-            break;
-        }
-
-        /**
-         * Price rules actions
-         */
-        case 'ADD_PRICE_RULE': {
-            const {form: {url}} = draft;
-            draft.priceRules.push({
-                ...EMPTY_PRICE_RULE,
-                form: url,
-                _generatedId: getUniqueRandomString(),
-            });
-            break;
-        }
-        case 'CHANGED_PRICE_RULE': {
-            const {index, name, value} = action.payload;
-            draft.priceRules[index][name] = value;
-            break;
-        }
-        case 'DELETED_PRICE_RULE': {
-            const {index} = action.payload;
-            const ruleUuid = draft.priceRules[index].uuid;
-
-            // delete object from state
-            const updatedRules = [...draft.priceRules];
-            updatedRules.splice(index, 1);
-            draft.priceRules = updatedRules;
-            break;
-        }
-        case 'PRICE_RULES_SAVED': {
-            // set the generated UUID from the backend for created rules
-            const createdRules = action.payload;
-            for (const rule of createdRules) {
-                const {uuid, index} = rule;
-                draft.priceRules[index].uuid = uuid;
-            }
-
-            // clear the state of rules to delete, as they have been deleted
-            draft.priceRulesToDelete = [];
-            break;
-        }
-
-        /**
-         * Validation error handling
-         */
-        case 'PROCESS_VALIDATION_ERRORS': {
-            const {fieldPrefix, errors} = action.payload;
-            // process the errors with their field names
-            const tabsWithErrors = []
-            const prefixedErrors = errors.map( err => {
-                const fieldName = err.name.split('.')[0];
-                if (!tabsWithErrors.includes(fieldName)) tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldName]);
-                let key;
-                // literals are tracked separately in the state
-                if (fieldPrefix === 'form' && fieldName === 'literals') {
-                    key = err.name;
-                } else if (fieldPrefix === 'logic-rules') {
-                    key = err.name;
-                } else {
-                    key = `${fieldPrefix}.${err.name}`;
-                }
-                return [key, err.reason];
-            });
-            draft.validationErrors = [...draft.validationErrors, ...prefixedErrors];
-            // keep track of which tabs have errors
-            draft.tabsWithErrors = [...draft.tabsWithErrors, ...tabsWithErrors];
-            draft.submitting = false;
-            break;
-        }
-        /**
-         * Misc
-         */
-        case 'SUBMIT_STARTED': {
-            draft.submitting = true;
-            draft.errors = {};
-            draft.validationErrors = [];
-            draft.tabsWithErrors = [];
-            break;
-        }
-        // special case - we have a generic session expiry status monitor thing,
-        // so don't display the generic error message.
-        case 'AUTH_FAILURE': {
-            draft.errors = {};
-            draft.submitting = false;
-            break;
-        }
-        case 'SET_FETCH_ERRORS': {
-            draft.errors = action.payload;
-            draft.submitting = false;
-            break;
+        case 'removed': {
+          originalComp = null;
+          break;
         }
         default:
-            throw new Error(`Unknown action type: ${action.type}`);
-    }
-}
+          throw new Error(`Unknown mutation type '${mutationType}'`);
+      }
 
+      // Check if a key has been changed and if the logic rules need updating
+      const hasKeyChanged = checkKeyChange(mutationType, schema, originalComp);
+      if (hasKeyChanged) {
+        draft.logicRules = replaceComponentKeyInLogic(
+          draft.logicRules,
+          originalComp.key,
+          schema.key
+        );
+      }
+
+      // Check if the formVariables need updating
+      draft.formVariables = updateFormVariables(
+        mutationType,
+        schema,
+        originalComp,
+        draft.formVariables
+      );
+
+      // check if we need updates to the backendRegistrationOptions
+      const {registrationBackend, registrationBackendOptions} = draft.form;
+      const handler = BACKEND_OPTIONS_FORMS[registrationBackend]?.onStepEdit;
+      if (handler == null) break;
+
+      const updatedOptions = handler(registrationBackendOptions, schema, originalComp);
+      if (updatedOptions) {
+        draft.form.registrationBackendOptions = updatedOptions;
+      }
+      break;
+    }
+    case 'STEP_FIELD_CHANGED': {
+      const {index, name, value} = action.payload;
+      const step = draft.formSteps[index];
+      step[name] = value;
+      step.validationErrors = step.validationErrors.filter(([key]) => key !== name);
+
+      const anyStepHasErrors = draft.formSteps.some(step => step.validationErrors.length > 0);
+      if (!anyStepHasErrors && draft.tabsWithErrors.includes('form-steps')) {
+        draft.tabsWithErrors = draft.tabsWithErrors.filter(tab => tab !== 'form-steps');
+      }
+      break;
+    }
+    case 'STEP_LITERAL_FIELD_CHANGED': {
+      const {index, name, value} = action.payload;
+      draft.formSteps[index]['literals'][name]['value'] = value;
+      break;
+    }
+    case 'MOVE_UP_STEP': {
+      const index = action.payload;
+      if (index <= 0 || index >= draft.formSteps.length) break;
+
+      let updatedSteps = draft.formSteps.slice(0, index - 1);
+      updatedSteps = updatedSteps.concat([{...draft.formSteps[index], ...{index: index - 1}}]);
+      updatedSteps = updatedSteps.concat([{...draft.formSteps[index - 1], ...{index: index}}]);
+
+      draft.formSteps = [...updatedSteps, ...draft.formSteps.slice(index + 1)];
+      break;
+    }
+    case 'APPOINTMENT_CONFIGURATION_CHANGED': {
+      // deconstruct the 'event' which holds the information on which config param
+      // was changed and to which component it is (now) set.
+      const {
+        target: {name, value: selectedComponentKey},
+      } = action.payload;
+
+      // name is in the form "appointments.<key>"
+      const [prefix, configKey] = name.split('.');
+
+      // utility to find the component for a given appointment config option
+      const findComponentForConfigKey = configKey => {
+        const name = `${prefix}.${configKey}`;
+        return findComponent(draft.formSteps, component => getObjectValue(component, name, false));
+      };
+
+      // first, ensure that if the value was changed, the old component is cleared
+      const currentComponentForConfigKey = findComponentForConfigKey(configKey);
+      if (currentComponentForConfigKey) {
+        // wipe the entire appointments configuration
+        set(currentComponentForConfigKey, prefix, {});
+      }
+
+      // next, handle setting the config to the new component
+      const selectedComponent = findComponent(
+        draft.formSteps,
+        component => component.key === selectedComponentKey
+      );
+      set(selectedComponent, name, true);
+
+      // finally, handle the dependencies of all appointment configuration - we need
+      // to check and update all keys, even the one that wasn't change, because options
+      // can be set in non-logical order in the UI.
+      for (const otherConfigKey of APPOINTMENT_CONFIG_KEYS) {
+        const relevantComponent = findComponentForConfigKey(otherConfigKey);
+        if (!relevantComponent) continue;
+
+        switch (otherConfigKey) {
+          // no dependencies, do nothing
+          case 'showProducts':
+          case 'lastName':
+          case 'birthDate':
+          case 'phoneNumber':
+            break;
+          // reverse order without breaks, since every component builds on top of
+          // the others
+          case 'showTimes': {
+            // add the date selection component information
+            const dateComponent = findComponentForConfigKey('showDates');
+            if (dateComponent) set(relevantComponent, `${prefix}.dateComponent`, dateComponent.key);
+          }
+          case 'showDates': {
+            // add the location selection component information
+            const locationComponent = findComponentForConfigKey('showLocations');
+            if (locationComponent)
+              set(relevantComponent, `${prefix}.locationComponent`, locationComponent.key);
+          }
+          case 'showLocations': {
+            // add the product selection component information
+            const productComponent = findComponentForConfigKey('showProducts');
+            if (productComponent)
+              set(relevantComponent, `${prefix}.productComponent`, productComponent.key);
+            break;
+          }
+          default: {
+            throw new Error(`Unknown config key: ${configKey}`);
+          }
+        }
+      }
+      break;
+    }
+    case 'PROCESS_STEP_VALIDATION_ERRORS': {
+      const {index, errors} = action.payload;
+      draft.formSteps[index].validationErrors = errors.map(err => [err.name, err.reason]);
+      if (!draft.tabsWithErrors.includes('form-steps')) {
+        draft.tabsWithErrors.push('form-steps');
+      }
+      draft.submitting = false;
+      break;
+    }
+    case 'ADD_FORM_DEFINITION': {
+      draft.formDefinitions.push(action.payload);
+      break;
+    }
+    case 'CREATE_FORM_STEP': {
+      const {index, url, formDefinition} = action.payload;
+      draft.formSteps[index].url = url;
+      draft.formSteps[index].formDefinition = formDefinition;
+      break;
+    }
+    /**
+     * Form Logic rules actions
+     */
+    case 'ADD_RULE': {
+      const {
+        form: {url},
+      } = draft;
+      const ruleOverrides = action.payload;
+
+      draft.logicRules.push({
+        ...EMPTY_RULE,
+        ...ruleOverrides,
+        form: url,
+        _generatedId: getUniqueRandomString(),
+      });
+      break;
+    }
+    case 'CHANGED_RULE': {
+      const {index, name, value} = action.payload;
+      draft.logicRules[index][name] = value;
+
+      // Remove the validation error for the updated field
+      // If there are multiple actions with errors in one rule, updating it will clear the error also for the
+      // other actions of that rule.
+      draft.validationErrors = draft.validationErrors.filter(
+        ([key]) => !key.startsWith(`logicRules.${index}.${name}`)
+      );
+      // Update the error badge in the tabs
+      const logicRulesErrors = draft.validationErrors.filter(([key]) =>
+        key.startsWith('logicRules')
+      );
+      if (!logicRulesErrors.length) {
+        draft.tabsWithErrors = draft.tabsWithErrors.filter(
+          tabId => tabId !== FORM_FIELDS_TO_TAB_NAMES['logicRules']
+        );
+      }
+      break;
+    }
+    case 'DELETED_RULE': {
+      const {index} = action.payload;
+      const ruleUuid = draft.logicRules[index].uuid;
+      draft.logicRulesToDelete.push(ruleUuid);
+
+      // delete object from state
+      const updatedRules = [...draft.logicRules];
+      updatedRules.splice(index, 1);
+      draft.logicRules = updatedRules;
+      break;
+    }
+    case 'RULES_SAVED': {
+      // set the generated UUID from the backend for created rules
+      const createdRules = action.payload;
+      for (const rule of createdRules) {
+        const {uuid, index} = rule;
+        draft.logicRules[index].uuid = uuid;
+      }
+
+      // clear the state of rules to delete, as they have been deleted
+      draft.logicRulesToDelete = [];
+      break;
+    }
+
+    /**
+     * Price rules actions
+     */
+    case 'ADD_PRICE_RULE': {
+      const {
+        form: {url},
+      } = draft;
+      draft.priceRules.push({
+        ...EMPTY_PRICE_RULE,
+        form: url,
+        _generatedId: getUniqueRandomString(),
+      });
+      break;
+    }
+    case 'CHANGED_PRICE_RULE': {
+      const {index, name, value} = action.payload;
+      draft.priceRules[index][name] = value;
+      break;
+    }
+    case 'DELETED_PRICE_RULE': {
+      const {index} = action.payload;
+      const ruleUuid = draft.priceRules[index].uuid;
+
+      // delete object from state
+      const updatedRules = [...draft.priceRules];
+      updatedRules.splice(index, 1);
+      draft.priceRules = updatedRules;
+      break;
+    }
+    case 'PRICE_RULES_SAVED': {
+      // set the generated UUID from the backend for created rules
+      const createdRules = action.payload;
+      for (const rule of createdRules) {
+        const {uuid, index} = rule;
+        draft.priceRules[index].uuid = uuid;
+      }
+
+      // clear the state of rules to delete, as they have been deleted
+      draft.priceRulesToDelete = [];
+      break;
+    }
+
+    /**
+     * Validation error handling
+     */
+    case 'PROCESS_VALIDATION_ERRORS': {
+      const {fieldPrefix, errors} = action.payload;
+      // process the errors with their field names
+      const tabsWithErrors = [];
+      const prefixedErrors = errors.map(err => {
+        const fieldName = err.name.split('.')[0];
+        if (!tabsWithErrors.includes(fieldName))
+          tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldName]);
+        let key;
+        // literals are tracked separately in the state
+        if (fieldPrefix === 'form' && fieldName === 'literals') {
+          key = err.name;
+        } else if (fieldPrefix === 'logic-rules') {
+          key = err.name;
+        } else {
+          key = `${fieldPrefix}.${err.name}`;
+        }
+        return [key, err.reason];
+      });
+      draft.validationErrors = [...draft.validationErrors, ...prefixedErrors];
+      // keep track of which tabs have errors
+      draft.tabsWithErrors = [...draft.tabsWithErrors, ...tabsWithErrors];
+      draft.submitting = false;
+      break;
+    }
+    /**
+     * Misc
+     */
+    case 'SUBMIT_STARTED': {
+      draft.submitting = true;
+      draft.errors = {};
+      draft.validationErrors = [];
+      draft.tabsWithErrors = [];
+      break;
+    }
+    // special case - we have a generic session expiry status monitor thing,
+    // so don't display the generic error message.
+    case 'AUTH_FAILURE': {
+      draft.errors = {};
+      draft.submitting = false;
+      break;
+    }
+    case 'SET_FETCH_ERRORS': {
+      draft.errors = action.payload;
+      draft.submitting = false;
+      break;
+    }
+    default:
+      throw new Error(`Unknown action type: ${action.type}`);
+  }
+}
 
 /**
  * Functions to fetch data
  */
 const getFormStepsData = async (formUuid, dispatch) => {
-    try {
-        var response = await get(`${FORM_ENDPOINT}/${formUuid}/steps`);
-        if (!response.ok) {
-            throw new Error('An error occurred while fetching the form steps.');
-        }
-    } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+  try {
+    var response = await get(`${FORM_ENDPOINT}/${formUuid}/steps`);
+    if (!response.ok) {
+      throw new Error('An error occurred while fetching the form steps.');
     }
+  } catch (e) {
+    dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+  }
 
-    return response.data;
+  return response.data;
 };
 
 const getFormData = async (formUuid, dispatch) => {
-    if (!formUuid) {
-        dispatch({
-            type: 'FORM_STEPS_LOADED',
-            payload: [],
-        });
-        dispatch({type: 'ADD_STATIC_VARIABLES'});
-        return;
+  if (!formUuid) {
+    dispatch({
+      type: 'FORM_STEPS_LOADED',
+      payload: [],
+    });
+    dispatch({type: 'ADD_STATIC_VARIABLES'});
+    return;
+  }
+
+  try {
+    // do the requests in parallel
+    const requests = [
+      get(`${FORM_ENDPOINT}/${formUuid}`),
+      getFormStepsData(formUuid, dispatch),
+      get(`${FORM_ENDPOINT}/${formUuid}/variables`),
+    ];
+    const [response, formStepsData, responseVariables] = await Promise.all(requests);
+    if (!response.ok) {
+      throw new Error('An error occurred while fetching the form.');
+    } else if (!responseVariables.ok) {
+      throw new Error('An error occurred while fetching the form variables.');
     }
 
-    try {
-        // do the requests in parallel
-        const requests = [
-            get(`${FORM_ENDPOINT}/${formUuid}`),
-            getFormStepsData(formUuid, dispatch),
-            get(`${FORM_ENDPOINT}/${formUuid}/variables`),
-        ];
-        const [response, formStepsData, responseVariables] = await Promise.all(requests);
-        if (!response.ok) {
-            throw new Error('An error occurred while fetching the form.');
-        } else if (!responseVariables.ok) {
-            throw new Error('An error occurred while fetching the form variables.');
-        }
+    // Set the loaded form data as state.
+    const {literals, ...form} = response.data;
+    const formVariables = responseVariables.data;
 
-        // Set the loaded form data as state.
-        const { literals, ...form } = response.data;
-        const formVariables = responseVariables.data;
-
-        dispatch({
-            type: 'FORM_LOADED',
-            payload: {
-                selectedAuthPlugins: form.loginOptions.map((plugin, index) => plugin.identifier),
-                form: form,
-                literals: literals,
-                formVariables: formVariables,
-            },
-        });
-        dispatch({
-            type: 'FORM_STEPS_LOADED',
-            payload: formStepsData,
-        });
-    } catch (e) { // TODO: convert to ErrorBoundary
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-    }
+    dispatch({
+      type: 'FORM_LOADED',
+      payload: {
+        selectedAuthPlugins: form.loginOptions.map((plugin, index) => plugin.identifier),
+        form: form,
+        literals: literals,
+        formVariables: formVariables,
+      },
+    });
+    dispatch({
+      type: 'FORM_STEPS_LOADED',
+      payload: formStepsData,
+    });
+  } catch (e) {
+    // TODO: convert to ErrorBoundary
+    dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+  }
 };
 
-const StepsFieldSet = ({ submitting=false, loadingErrors, steps=[], ...props }) => {
-    if (loadingErrors) {
-        return (
-            <div className="fetch-error">{loadingErrors}</div>
-        );
-    }
-    return (
-        <FormSteps steps={steps} submitting={submitting} {...props} />
-    );
+const StepsFieldSet = ({submitting = false, loadingErrors, steps = [], ...props}) => {
+  if (loadingErrors) {
+    return <div className="fetch-error">{loadingErrors}</div>;
+  }
+  return <FormSteps steps={steps} submitting={submitting} {...props} />;
 };
 
 StepsFieldSet.propTypes = {
-    loadingErrors: PropTypes.node,
-    steps: PropTypes.arrayOf(PropTypes.object),
-    submitting: PropTypes.bool,
+  loadingErrors: PropTypes.node,
+  steps: PropTypes.arrayOf(PropTypes.object),
+  submitting: PropTypes.bool,
 };
 
 /**
  * Component to render the form edit page.
  */
-const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl }) => {
-    const featureFlags = useContext(FeatureFlagsContext);
-    const initialState = {
-        ...initialFormState,
-        form: {
-            ...initialFormState.form,
-            uuid: formUuid,
-        },
-        newForm: !formUuid,
-    };
-    const [state, dispatch] = useImmerReducer(reducer, initialState);
+const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl}) => {
+  const featureFlags = useContext(FeatureFlagsContext);
+  const initialState = {
+    ...initialFormState,
+    form: {
+      ...initialFormState.form,
+      uuid: formUuid,
+    },
+    newForm: !formUuid,
+  };
+  const [state, dispatch] = useImmerReducer(reducer, initialState);
 
-    // load all these plugin registries in parallel
-    const pluginsToLoad = [
-        {endpoint: PAYMENT_PLUGINS_ENDPOINT, stateVar: 'availablePaymentBackends'},
-        {endpoint: FORM_DEFINITIONS_ENDPOINT, stateVar: 'formDefinitions'},
-        {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},
-        {endpoint: AUTH_PLUGINS_ENDPOINT, stateVar: 'availableAuthPlugins'},
-        {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
+  // load all these plugin registries in parallel
+  const pluginsToLoad = [
+    {endpoint: PAYMENT_PLUGINS_ENDPOINT, stateVar: 'availablePaymentBackends'},
+    {endpoint: FORM_DEFINITIONS_ENDPOINT, stateVar: 'formDefinitions'},
+    {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},
+    {endpoint: AUTH_PLUGINS_ENDPOINT, stateVar: 'availableAuthPlugins'},
+    {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
+  ];
+
+  // only load rules if we're dealing with an existing form rather than when we're creating
+  // a new form.
+  if (formUuid) {
+    pluginsToLoad.push({endpoint: `${LOGICS_ENDPOINT}?form=${formUuid}`, stateVar: 'logicRules'});
+    pluginsToLoad.push({
+      endpoint: `${PRICE_RULES_ENDPOINT}?form=${formUuid}`,
+      stateVar: 'priceRules',
+    });
+  }
+
+  const {loading} = useAsync(async () => {
+    const promises = [
+      // TODO: this is a bad function name, refactor
+      loadPlugins(pluginsToLoad),
+      getFormData(formUuid, dispatch),
     ];
+    const [pluginsData] = await Promise.all(promises);
 
-    // only load rules if we're dealing with an existing form rather than when we're creating
-    // a new form.
-    if (formUuid) {
-        pluginsToLoad.push({endpoint: `${LOGICS_ENDPOINT}?form=${formUuid}`, stateVar: 'logicRules'});
-        pluginsToLoad.push({endpoint: `${PRICE_RULES_ENDPOINT}?form=${formUuid}`, stateVar: 'priceRules'});
-    }
-
-    const {loading} = useAsync(async () => {
-        const promises = [
-            // TODO: this is a bad function name, refactor
-            loadPlugins(pluginsToLoad),
-            getFormData(formUuid, dispatch),
-        ];
-        const [
-            pluginsData,
-        ] = await Promise.all(promises);
-
-        // load various module plugins & update the state
-        for (const group of zip(pluginsToLoad, pluginsData) ) {
-            const [plugin, data] = group;
-            dispatch({
-                type: 'PLUGINS_LOADED',
-                payload: {
-                    stateVar: plugin.stateVar,
-                    data: data,
-                }
-            });
-        }
-    }, []);
-
-    /**
-     * Functions for handling events
-     */
-    const onFieldChange = (event) => {
-        const { name, value } = event.target;
-        dispatch({
-            type: 'FIELD_CHANGED',
-            payload: {name, value},
-        });
-    };
-
-    const onStepDelete = (index) => {
-        dispatch({
-            type: 'DELETE_STEP',
-            payload: {index: index}
-        });
-    };
-
-    const onStepReplace = (index, formDefinitionUrl) => {
-        dispatch({
-            type: 'FORM_DEFINITION_CHOSEN',
-            payload: {
-                index: index,
-                formDefinitionUrl,
-            }
-        });
-    };
-
-    // TODO: we can probably remove a lot of state updates by tapping into onComponentMutated
-    // rather than onChange
-    const onStepEdit = (index, configuration) => {
-        dispatch({
-            type: 'EDIT_STEP',
-            payload: {
-                index: index,
-                configuration: configuration
-            }
-        });
-    };
-
-    // see https://github.com/formio/formio.js/blob/4.12.x/src/WebformBuilder.js#L1172
-    const onComponentMutated = (mutationType, schema, ...rest) => {
-        dispatch({
-            type: 'EDIT_STEP_COMPONENT_MUTATED',
-            payload: {
-                mutationType,
-                schema,
-                args: rest,
-            }
-        });
-    };
-
-    const onStepFieldChange = (index, event) => {
-        const { name, value } = event.target;
-        dispatch({
-            type: 'STEP_FIELD_CHANGED',
-            payload: {name, value, index},
-        });
-    };
-
-    const onCreateFormStep = (index, stepUrl, formDefinitionUrl) => {
-        dispatch({
-            type: 'CREATE_FORM_STEP',
-            payload: {
-                index: index,
-                url: stepUrl,
-                formDefinition: formDefinitionUrl
-            }
-        });
-    }
-
-    const onFormDefinitionCreate = (formDefinitionData) => {
+    // load various module plugins & update the state
+    for (const group of zip(pluginsToLoad, pluginsData)) {
+      const [plugin, data] = group;
       dispatch({
-          type: 'ADD_FORM_DEFINITION',
-          payload: formDefinitionData
-      })
+        type: 'PLUGINS_LOADED',
+        payload: {
+          stateVar: plugin.stateVar,
+          data: data,
+        },
+      });
+    }
+  }, []);
+
+  /**
+   * Functions for handling events
+   */
+  const onFieldChange = event => {
+    const {name, value} = event.target;
+    dispatch({
+      type: 'FIELD_CHANGED',
+      payload: {name, value},
+    });
+  };
+
+  const onStepDelete = index => {
+    dispatch({
+      type: 'DELETE_STEP',
+      payload: {index: index},
+    });
+  };
+
+  const onStepReplace = (index, formDefinitionUrl) => {
+    dispatch({
+      type: 'FORM_DEFINITION_CHOSEN',
+      payload: {
+        index: index,
+        formDefinitionUrl,
+      },
+    });
+  };
+
+  // TODO: we can probably remove a lot of state updates by tapping into onComponentMutated
+  // rather than onChange
+  const onStepEdit = (index, configuration) => {
+    dispatch({
+      type: 'EDIT_STEP',
+      payload: {
+        index: index,
+        configuration: configuration,
+      },
+    });
+  };
+
+  // see https://github.com/formio/formio.js/blob/4.12.x/src/WebformBuilder.js#L1172
+  const onComponentMutated = (mutationType, schema, ...rest) => {
+    dispatch({
+      type: 'EDIT_STEP_COMPONENT_MUTATED',
+      payload: {
+        mutationType,
+        schema,
+        args: rest,
+      },
+    });
+  };
+
+  const onStepFieldChange = (index, event) => {
+    const {name, value} = event.target;
+    dispatch({
+      type: 'STEP_FIELD_CHANGED',
+      payload: {name, value, index},
+    });
+  };
+
+  const onCreateFormStep = (index, stepUrl, formDefinitionUrl) => {
+    dispatch({
+      type: 'CREATE_FORM_STEP',
+      payload: {
+        index: index,
+        url: stepUrl,
+        formDefinition: formDefinitionUrl,
+      },
+    });
+  };
+
+  const onFormDefinitionCreate = formDefinitionData => {
+    dispatch({
+      type: 'ADD_FORM_DEFINITION',
+      payload: formDefinitionData,
+    });
+  };
+
+  const onStepLiteralFieldChange = (index, event) => {
+    const {name, value} = event.target;
+    dispatch({
+      type: 'STEP_LITERAL_FIELD_CHANGED',
+      payload: {name, value, index},
+    });
+  };
+
+  const onStepReorder = (index, direction) => {
+    if (direction === 'up') {
+      dispatch({
+        type: 'MOVE_UP_STEP',
+        payload: index,
+      });
+    } else if (direction === 'down') {
+      dispatch({
+        type: 'MOVE_UP_STEP',
+        payload: index + 1,
+      });
+    }
+  };
+
+  const onRuleChange = (index, event) => {
+    const {name, value} = event.target;
+    dispatch({
+      type: 'CHANGED_RULE',
+      payload: {name, value, index},
+    });
+  };
+
+  const onPriceRuleChange = (index, event) => {
+    const {name, value} = event.target;
+    dispatch({
+      type: 'CHANGED_PRICE_RULE',
+      payload: {name, value, index},
+    });
+  };
+
+  const onSubmit = async event => {
+    const {name: submitAction} = event.target;
+    dispatch({type: 'SUBMIT_STARTED'});
+
+    // Update the form
+    const formData = {
+      ...state.form,
+      literals: {
+        beginText: {
+          value: state.literals.beginText.value,
+        },
+        previousText: {
+          value: state.literals.previousText.value,
+        },
+        changeText: {
+          value: state.literals.changeText.value,
+        },
+        confirmText: {
+          value: state.literals.confirmText.value,
+        },
+      },
+      authenticationBackends: state.selectedAuthPlugins,
     };
 
-    const onStepLiteralFieldChange = (index, event) => {
-        const { name, value } = event.target;
+    const createOrUpdate = state.newForm ? post : put;
+    const endPoint = state.newForm ? FORM_ENDPOINT : `${FORM_ENDPOINT}/${state.form.uuid}`;
+
+    try {
+      var formResponse = await createOrUpdate(endPoint, csrftoken, formData, true);
+      // unexpected error
+      if (!formResponse.ok) {
+        if (formResponse.status === 401) {
+          dispatch({type: 'AUTH_FAILURE'});
+          return;
+        }
+
         dispatch({
-            type: 'STEP_LITERAL_FIELD_CHANGED',
-            payload: {name, value, index},
+          type: 'SET_FETCH_ERRORS',
+          payload: `Error ${formResponse.status} from backend`,
         });
-    };
-
-    const onStepReorder = (index, direction) => {
-        if (direction === 'up') {
-            dispatch({
-                type: 'MOVE_UP_STEP',
-                payload: index,
-            });
-        } else if (direction === 'down') {
-            dispatch({
-                type: 'MOVE_UP_STEP',
-                payload: index+1,
-            });
-        }
-    };
-
-    const onRuleChange = (index, event) => {
-        const { name, value } = event.target;
+        return;
+      }
+      // ok, good to go
+      var {uuid: formUuid, url: formUrl} = formResponse.data;
+      dispatch({type: 'FORM_CREATED', payload: formResponse.data});
+    } catch (e) {
+      if (e instanceof ValidationErrors) {
         dispatch({
-            type: 'CHANGED_RULE',
-            payload: {name, value, index},
+          type: 'PROCESS_VALIDATION_ERRORS',
+          payload: {
+            fieldPrefix: 'form',
+            errors: e.errors,
+          },
         });
-    };
-
-    const onPriceRuleChange = (index, event) => {
-        const { name, value } = event.target;
-        dispatch({
-            type: 'CHANGED_PRICE_RULE',
-            payload: {name, value, index},
-        });
-    };
-
-    const onSubmit = async (event) => {
-        const { name: submitAction } = event.target;
-        dispatch({type: 'SUBMIT_STARTED'});
-
-        // Update the form
-        const formData = {
-            ...state.form,
-            literals: {
-                beginText: {
-                    value: state.literals.beginText.value
-                },
-                previousText: {
-                    value: state.literals.previousText.value
-                },
-                changeText: {
-                    value: state.literals.changeText.value
-                },
-                confirmText: {
-                    value: state.literals.confirmText.value
-                }
-            },
-            authenticationBackends: state.selectedAuthPlugins,
-        };
-
-        const createOrUpdate = state.newForm ? post : put;
-        const endPoint = state.newForm ? FORM_ENDPOINT : `${FORM_ENDPOINT}/${state.form.uuid}`;
-
-        try {
-            var formResponse = await createOrUpdate(endPoint, csrftoken, formData, true);
-            // unexpected error
-            if (!formResponse.ok) {
-                if (formResponse.status === 401) {
-                    dispatch({type: 'AUTH_FAILURE'});
-                    return;
-                }
-
-                dispatch({
-                    type: 'SET_FETCH_ERRORS',
-                    payload: `Error ${formResponse.status} from backend`,
-                });
-                return;
-            }
-            // ok, good to go
-            var {uuid: formUuid, url: formUrl} = formResponse.data;
-            dispatch({type: 'FORM_CREATED', payload: formResponse.data});
-        } catch (e) {
-            if (e instanceof ValidationErrors) {
-                dispatch({
-                    type: 'PROCESS_VALIDATION_ERRORS',
-                    payload: {
-                        fieldPrefix: 'form',
-                        errors: e.errors,
-                    },
-                });
-                return;
-            } else {
-                throw e; // re-throw unchanged error, this is unexpected.
-            }
-        }
-
-        try {
-            var stepValidationErrors = await updateOrCreateFormSteps(csrftoken, formUrl, state.formSteps, onCreateFormStep, onFormDefinitionCreate);
-        } catch (e) {
-            dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
-            window.scrollTo(0, 0);
-            return;
-        }
-
-        // dispatch validation errors for errored steps so that they are displayed
-        const erroredSteps = stepValidationErrors.filter( erroredStep => !!erroredStep);
-        for (const erroredStep of erroredSteps) {
-            const {step, error} = erroredStep;
-            dispatch({
-                type: 'PROCESS_STEP_VALIDATION_ERRORS',
-                payload: {
-                    index: state.formSteps.indexOf(step),
-                    errors: error.errors,
-                },
-            });
-        }
-        // stop processing if there are errored steps
-        if (erroredSteps.length) {
-            return;
-        }
-
-        if (state.stepsToDelete.length) {
-            for (const step of state.stepsToDelete) {
-                // Steps that were added but are not saved in the backend yet don't have a URL.
-                if (!step) return;
-
-                try {
-                     var response = await apiDelete(step, csrftoken);
-                     if (!response.ok) {
-                         throw new Error('An error occurred while deleting form steps.');
-                    }
-                } catch (e) {
-                    dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
-                    window.scrollTo(0, 0);
-                    return;
-                }
-
-            }
-        }
-
-        // Update/create logic rules
-        try {
-            const {logicRules, logicRulesToDelete} = state;
-            const createdRules = await saveLogicRules(formUrl, csrftoken, logicRules, logicRulesToDelete);
-            dispatch({
-                type: 'RULES_SAVED',
-                payload: createdRules,
-            });
-        } catch (e) {
-            dispatch({
-                type: 'PROCESS_VALIDATION_ERRORS',
-                payload: {
-                    fieldPrefix: 'logic-rules',
-                    errors: e.errors,
-                },
-            });
-            window.scrollTo(0, 0);
-            return;
-        }
-
-        // Update/create price rules
-        try {
-            const {priceRules, priceRulesToDelete} = state;
-            const createdPriceRules = await savePriceRules(formUrl, csrftoken, priceRules, priceRulesToDelete);
-            dispatch({
-                type: 'PRICE_RULES_SAVED',
-                payload: createdPriceRules,
-            });
-        } catch (e) {
-            console.error(e);
-            dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
-            window.scrollTo(0, 0);
-            return;
-        }
-
-        if (featureFlags.enable_form_variables) {
-            // Save the FormVariables
-            try {
-                const response = await createOrUpdateFormVariables(formUrl, csrftoken, state.formVariables);
-                if (!response.ok) {
-                    throw new Error('An error occurred while saving the form variables.');
-                }
-            } catch (e) {
-                dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
-                window.scrollTo(0, 0);
-                return;
-            }
-        }
-
-        // Save this new version of the form in the "form version control"
-        try {
-            var versionResponse = await post(
-                `${FORM_ENDPOINT}/${formUuid}/versions`,
-                csrftoken
-            );
-            if (!versionResponse.ok) {
-                throw new Error('An error occurred while saving the form version.');
-            }
-        } catch (e) {
-            dispatch({type: 'SET_FETCH_ERRORS', payload: e.message});
-            window.scrollTo(0, 0);
-            return;
-        }
-
-        // finalize the "transacton".
-        //
-        // * schedule a success message
-        // * obtain the admin URL to redirect to (detail if editing again, add if creating
-        //   another object or list page for simple save)
-        const messageData = {
-            isCreate: state.newForm,
-            submitAction: submitAction,
-        };
-        const messageResponse = await post(`${formUrl}/admin-message`, csrftoken, messageData);
-        // this full-page reload ensures that the admin messages are displayed
-        window.location = messageResponse.data.redirectUrl;
-    };
-
-    const onAuthPluginChange = (event) => {
-        const pluginId = event.target.value;
-        dispatch({
-            type: 'TOGGLE_AUTH_PLUGIN',
-            payload: pluginId,
-        })
-    };
-
-    if (loading || state.submitting) {
-        return (<Loader />);
+        return;
+      } else {
+        throw e; // re-throw unchanged error, this is unexpected.
+      }
     }
 
-    const availableComponents = getFormComponents(state.formSteps);
-    // dev/debug helper
-    const activeTab = new URLSearchParams(window.location.search).get('tab');
+    try {
+      var stepValidationErrors = await updateOrCreateFormSteps(
+        csrftoken,
+        formUrl,
+        state.formSteps,
+        onCreateFormStep,
+        onFormDefinitionCreate
+      );
+    } catch (e) {
+      dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
+      window.scrollTo(0, 0);
+      return;
+    }
 
-    return (
-        <ValidationErrorsProvider errors={state.validationErrors}>
-            <FormObjectTools isLoading={loading} historyUrl={formHistoryUrl} />
+    // dispatch validation errors for errored steps so that they are displayed
+    const erroredSteps = stepValidationErrors.filter(erroredStep => !!erroredStep);
+    for (const erroredStep of erroredSteps) {
+      const {step, error} = erroredStep;
+      dispatch({
+        type: 'PROCESS_STEP_VALIDATION_ERRORS',
+        payload: {
+          index: state.formSteps.indexOf(step),
+          errors: error.errors,
+        },
+      });
+    }
+    // stop processing if there are errored steps
+    if (erroredSteps.length) {
+      return;
+    }
 
-            <h1>
-                <FormattedMessage defaultMessage="Change form" description="Change form page title" />
-            </h1>
+    if (state.stepsToDelete.length) {
+      for (const step of state.stepsToDelete) {
+        // Steps that were added but are not saved in the backend yet don't have a URL.
+        if (!step) return;
 
-            { Object.keys(state.errors).length
-                ? (<div className="fetch-error">
-                     <FormattedMessage defaultMessage="The form is invalid. Please correct the errors below." description="Generic error message" />
-                   </div>)
-                : null
-            }
+        try {
+          var response = await apiDelete(step, csrftoken);
+          if (!response.ok) {
+            throw new Error('An error occurred while deleting form steps.');
+          }
+        } catch (e) {
+          dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
+          window.scrollTo(0, 0);
+          return;
+        }
+      }
+    }
 
-            <ComponentsContext.Provider value={availableComponents}>
-                <Tabs defaultIndex={activeTab ? parseInt(activeTab, 10) : null}>
-                    <TabList>
-                        <Tab hasErrors={state.tabsWithErrors.includes('form')}>
-                            <FormattedMessage defaultMessage="Form" description="Form fields tab title" />
-                        </Tab>
-                        <Tab hasErrors={state.tabsWithErrors.includes('form-steps')}>
-                            <FormattedMessage defaultMessage="Steps and fields" description="Form design tab title" />
-                        </Tab>
-                        <Tab hasErrors={state.tabsWithErrors.includes('submission-confirmation')}>
-                            <FormattedMessage defaultMessage="Confirmation" description="Form confirmation options tab title" />
-                        </Tab>
-                        <Tab hasErrors={state.tabsWithErrors.includes('registration')}>
-                            <FormattedMessage defaultMessage="Registration" description="Form registration options tab title" />
-                        </Tab>
-                        <Tab hasErrors={state.tabsWithErrors.includes('literals')}>
-                            <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
-                        </Tab>
-                        <Tab hasErrors={state.tabsWithErrors.includes('product-payment')}>
-                            <FormattedMessage defaultMessage="Product & payment" description="Product & payments tab title" />
-                        </Tab>
-                        <Tab hasErrors={state.tabsWithErrors.includes('submission-removal-options')}>
-                            <FormattedMessage defaultMessage="Data removal" description="Data removal tab title" />
-                        </Tab>
-                        <Tab hasErrors={state.tabsWithErrors.includes('logic-rules')}>
-                            <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
-                        </Tab>
-                        <Tab>
-                            <FormattedMessage defaultMessage="Appointments" description="Appointments tab title" />
-                        </Tab>
-                        {
-                            featureFlags.enable_form_variables &&
-                            <Tab>
-                                <FormattedMessage defaultMessage="Variables" description="Variables tab title"/>
-                            </Tab>
-                        }
-                    </TabList>
+    // Update/create logic rules
+    try {
+      const {logicRules, logicRulesToDelete} = state;
+      const createdRules = await saveLogicRules(formUrl, csrftoken, logicRules, logicRulesToDelete);
+      dispatch({
+        type: 'RULES_SAVED',
+        payload: createdRules,
+      });
+    } catch (e) {
+      dispatch({
+        type: 'PROCESS_VALIDATION_ERRORS',
+        payload: {
+          fieldPrefix: 'logic-rules',
+          errors: e.errors,
+        },
+      });
+      window.scrollTo(0, 0);
+      return;
+    }
 
-                    <TabPanel>
-                        <FormMetaFields
-                            form={state.form}
-                            literals={state.literals}
-                            onChange={onFieldChange}
-                            availableAuthPlugins={state.availableAuthPlugins}
-                            selectedAuthPlugins={state.selectedAuthPlugins}
-                            onAuthPluginChange={onAuthPluginChange}
-                        />
-                    </TabPanel>
+    // Update/create price rules
+    try {
+      const {priceRules, priceRulesToDelete} = state;
+      const createdPriceRules = await savePriceRules(
+        formUrl,
+        csrftoken,
+        priceRules,
+        priceRulesToDelete
+      );
+      dispatch({
+        type: 'PRICE_RULES_SAVED',
+        payload: createdPriceRules,
+      });
+    } catch (e) {
+      console.error(e);
+      dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
+      window.scrollTo(0, 0);
+      return;
+    }
 
-                    <TabPanel>
-                        <Fieldset title={<FormattedMessage defaultMessage="Form design" description="Form design/editor fieldset title" />}>
-                            <FormDefinitionsContext.Provider value={state.formDefinitions}>
-                                <PluginsContext.Provider value={{
-                                    availableAuthPlugins: state.availableAuthPlugins,
-                                    selectedAuthPlugins: state.selectedAuthPlugins,
-                                    availablePrefillPlugins: state.availablePrefillPlugins
-                                }}>
-                                    <FormContext.Provider value={{url: state.form.url}}>
-                                        <StepsFieldSet
-                                            steps={state.formSteps}
-                                            loadingErrors={state.errors.loadingErrors}
-                                            onEdit={onStepEdit}
-                                            onComponentMutated={onComponentMutated}
-                                            onFieldChange={onStepFieldChange}
-                                            onLiteralFieldChange={onStepLiteralFieldChange}
-                                            onDelete={onStepDelete}
-                                            onReorder={onStepReorder}
-                                            onReplace={onStepReplace}
-                                            onAdd={ (e) => {
-                                                e.preventDefault();
-                                                dispatch({type: 'ADD_STEP'});
-                                            }}
-                                            submitting={state.submitting}
-                                        />
-                                    </FormContext.Provider>
-                                </PluginsContext.Provider>
-                            </FormDefinitionsContext.Provider>
-                        </Fieldset>
-                    </TabPanel>
+    if (featureFlags.enable_form_variables) {
+      // Save the FormVariables
+      try {
+        const response = await createOrUpdateFormVariables(formUrl, csrftoken, state.formVariables);
+        if (!response.ok) {
+          throw new Error('An error occurred while saving the form variables.');
+        }
+      } catch (e) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
+        window.scrollTo(0, 0);
+        return;
+      }
+    }
 
-                    <TabPanel>
-                        <Confirmation
-                            pageTemplate={state.form.submissionConfirmationTemplate}
-                            displayMainWebsiteLink={state.form.displayMainWebsiteLink}
-                            emailOption={state.form.confirmationEmailOption}
-                            emailTemplate={state.form.confirmationEmailTemplate || {}}
-                            onChange={onFieldChange}
-                        />
-                    </TabPanel>
+    // Save this new version of the form in the "form version control"
+    try {
+      var versionResponse = await post(`${FORM_ENDPOINT}/${formUuid}/versions`, csrftoken);
+      if (!versionResponse.ok) {
+        throw new Error('An error occurred while saving the form version.');
+      }
+    } catch (e) {
+      dispatch({type: 'SET_FETCH_ERRORS', payload: e.message});
+      window.scrollTo(0, 0);
+      return;
+    }
 
-                    <TabPanel>
-                        <RegistrationFields
-                            backends={state.availableRegistrationBackends}
-                            selectedBackend={state.form.registrationBackend}
-                            backendOptions={state.form.registrationBackendOptions}
-                            onChange={onFieldChange}
-                        />
-                    </TabPanel>
+    // finalize the "transacton".
+    //
+    // * schedule a success message
+    // * obtain the admin URL to redirect to (detail if editing again, add if creating
+    //   another object or list page for simple save)
+    const messageData = {
+      isCreate: state.newForm,
+      submitAction: submitAction,
+    };
+    const messageResponse = await post(`${formUrl}/admin-message`, csrftoken, messageData);
+    // this full-page reload ensures that the admin messages are displayed
+    window.location = messageResponse.data.redirectUrl;
+  };
 
-                    <TabPanel>
-                        <TextLiterals literals={state.literals} onChange={onFieldChange} />
-                    </TabPanel>
+  const onAuthPluginChange = event => {
+    const pluginId = event.target.value;
+    dispatch({
+      type: 'TOGGLE_AUTH_PLUGIN',
+      payload: pluginId,
+    });
+  };
 
-                    <TabPanel>
-                        <ProductFields selectedProduct={state.form.product} onChange={onFieldChange} />
-                        <PaymentFields
-                            backends={state.availablePaymentBackends}
-                            selectedBackend={state.form.paymentBackend}
-                            backendOptions={state.form.paymentBackendOptions}
-                            onChange={onFieldChange}
-                        />
-                        <PriceLogic
-                            rules={state.priceRules}
-                            onChange={onPriceRuleChange}
-                            onDelete={(index) => dispatch({type: 'DELETED_PRICE_RULE', payload: {index: index}})}
-                            onAdd={() => dispatch({type: 'ADD_PRICE_RULE'})}
-                        />
-                    </TabPanel>
+  if (loading || state.submitting) {
+    return <Loader />;
+  }
 
-                    <TabPanel>
-                        <DataRemoval
-                            submissionsRemovalOptions={state.form.submissionsRemovalOptions}
-                            onChange={onFieldChange}
-                        />
-                    </TabPanel>
+  const availableComponents = getFormComponents(state.formSteps);
+  // dev/debug helper
+  const activeTab = new URLSearchParams(window.location.search).get('tab');
 
-                    <TabPanel>
-                        <FormStepsContext.Provider value={state.formSteps}>
-                            <FormLogic
-                                logicRules={state.logicRules}
-                                onChange={onRuleChange}
-                                onDelete={(index) => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
-                                onAdd={(ruleOverrides) => dispatch({type: 'ADD_RULE', payload: ruleOverrides})}
-                            />
-                        </FormStepsContext.Provider>
-                    </TabPanel>
+  return (
+    <ValidationErrorsProvider errors={state.validationErrors}>
+      <FormObjectTools isLoading={loading} historyUrl={formHistoryUrl} />
 
-                    <TabPanel>
-                        <Appointments
-                            onChange={(event) => {
-                                dispatch({
-                                    type: 'APPOINTMENT_CONFIGURATION_CHANGED',
-                                    payload: event,
-                                });
-                            }} />
-                    </TabPanel>
+      <h1>
+        <FormattedMessage defaultMessage="Change form" description="Change form page title" />
+      </h1>
 
-                    {
-                        featureFlags.enable_form_variables &&
-                        <TabPanel>
-                            <VariablesEditor variables={state.formVariables} />
-                        </TabPanel>
-                    }
-                </Tabs>
-            </ComponentsContext.Provider>
+      {Object.keys(state.errors).length ? (
+        <div className="fetch-error">
+          <FormattedMessage
+            defaultMessage="The form is invalid. Please correct the errors below."
+            description="Generic error message"
+          />
+        </div>
+      ) : null}
 
-            <FormSubmit onSubmit={onSubmit} displayActions={!state.newForm} />
+      <ComponentsContext.Provider value={availableComponents}>
+        <Tabs defaultIndex={activeTab ? parseInt(activeTab, 10) : null}>
+          <TabList>
+            <Tab hasErrors={state.tabsWithErrors.includes('form')}>
+              <FormattedMessage defaultMessage="Form" description="Form fields tab title" />
+            </Tab>
+            <Tab hasErrors={state.tabsWithErrors.includes('form-steps')}>
+              <FormattedMessage
+                defaultMessage="Steps and fields"
+                description="Form design tab title"
+              />
+            </Tab>
+            <Tab hasErrors={state.tabsWithErrors.includes('submission-confirmation')}>
+              <FormattedMessage
+                defaultMessage="Confirmation"
+                description="Form confirmation options tab title"
+              />
+            </Tab>
+            <Tab hasErrors={state.tabsWithErrors.includes('registration')}>
+              <FormattedMessage
+                defaultMessage="Registration"
+                description="Form registration options tab title"
+              />
+            </Tab>
+            <Tab hasErrors={state.tabsWithErrors.includes('literals')}>
+              <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />
+            </Tab>
+            <Tab hasErrors={state.tabsWithErrors.includes('product-payment')}>
+              <FormattedMessage
+                defaultMessage="Product & payment"
+                description="Product & payments tab title"
+              />
+            </Tab>
+            <Tab hasErrors={state.tabsWithErrors.includes('submission-removal-options')}>
+              <FormattedMessage
+                defaultMessage="Data removal"
+                description="Data removal tab title"
+              />
+            </Tab>
+            <Tab hasErrors={state.tabsWithErrors.includes('logic-rules')}>
+              <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
+            </Tab>
+            <Tab>
+              <FormattedMessage
+                defaultMessage="Appointments"
+                description="Appointments tab title"
+              />
+            </Tab>
+            {featureFlags.enable_form_variables && (
+              <Tab>
+                <FormattedMessage defaultMessage="Variables" description="Variables tab title" />
+              </Tab>
+            )}
+          </TabList>
 
-        </ValidationErrorsProvider>
-    );
+          <TabPanel>
+            <FormMetaFields
+              form={state.form}
+              literals={state.literals}
+              onChange={onFieldChange}
+              availableAuthPlugins={state.availableAuthPlugins}
+              selectedAuthPlugins={state.selectedAuthPlugins}
+              onAuthPluginChange={onAuthPluginChange}
+            />
+          </TabPanel>
+
+          <TabPanel>
+            <Fieldset
+              title={
+                <FormattedMessage
+                  defaultMessage="Form design"
+                  description="Form design/editor fieldset title"
+                />
+              }
+            >
+              <FormDefinitionsContext.Provider value={state.formDefinitions}>
+                <PluginsContext.Provider
+                  value={{
+                    availableAuthPlugins: state.availableAuthPlugins,
+                    selectedAuthPlugins: state.selectedAuthPlugins,
+                    availablePrefillPlugins: state.availablePrefillPlugins,
+                  }}
+                >
+                  <FormContext.Provider value={{url: state.form.url}}>
+                    <StepsFieldSet
+                      steps={state.formSteps}
+                      loadingErrors={state.errors.loadingErrors}
+                      onEdit={onStepEdit}
+                      onComponentMutated={onComponentMutated}
+                      onFieldChange={onStepFieldChange}
+                      onLiteralFieldChange={onStepLiteralFieldChange}
+                      onDelete={onStepDelete}
+                      onReorder={onStepReorder}
+                      onReplace={onStepReplace}
+                      onAdd={e => {
+                        e.preventDefault();
+                        dispatch({type: 'ADD_STEP'});
+                      }}
+                      submitting={state.submitting}
+                    />
+                  </FormContext.Provider>
+                </PluginsContext.Provider>
+              </FormDefinitionsContext.Provider>
+            </Fieldset>
+          </TabPanel>
+
+          <TabPanel>
+            <Confirmation
+              pageTemplate={state.form.submissionConfirmationTemplate}
+              displayMainWebsiteLink={state.form.displayMainWebsiteLink}
+              emailOption={state.form.confirmationEmailOption}
+              emailTemplate={state.form.confirmationEmailTemplate || {}}
+              onChange={onFieldChange}
+            />
+          </TabPanel>
+
+          <TabPanel>
+            <RegistrationFields
+              backends={state.availableRegistrationBackends}
+              selectedBackend={state.form.registrationBackend}
+              backendOptions={state.form.registrationBackendOptions}
+              onChange={onFieldChange}
+            />
+          </TabPanel>
+
+          <TabPanel>
+            <TextLiterals literals={state.literals} onChange={onFieldChange} />
+          </TabPanel>
+
+          <TabPanel>
+            <ProductFields selectedProduct={state.form.product} onChange={onFieldChange} />
+            <PaymentFields
+              backends={state.availablePaymentBackends}
+              selectedBackend={state.form.paymentBackend}
+              backendOptions={state.form.paymentBackendOptions}
+              onChange={onFieldChange}
+            />
+            <PriceLogic
+              rules={state.priceRules}
+              onChange={onPriceRuleChange}
+              onDelete={index => dispatch({type: 'DELETED_PRICE_RULE', payload: {index: index}})}
+              onAdd={() => dispatch({type: 'ADD_PRICE_RULE'})}
+            />
+          </TabPanel>
+
+          <TabPanel>
+            <DataRemoval
+              submissionsRemovalOptions={state.form.submissionsRemovalOptions}
+              onChange={onFieldChange}
+            />
+          </TabPanel>
+
+          <TabPanel>
+            <FormStepsContext.Provider value={state.formSteps}>
+              <FormLogic
+                logicRules={state.logicRules}
+                onChange={onRuleChange}
+                onDelete={index => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
+                onAdd={ruleOverrides => dispatch({type: 'ADD_RULE', payload: ruleOverrides})}
+              />
+            </FormStepsContext.Provider>
+          </TabPanel>
+
+          <TabPanel>
+            <Appointments
+              onChange={event => {
+                dispatch({
+                  type: 'APPOINTMENT_CONFIGURATION_CHANGED',
+                  payload: event,
+                });
+              }}
+            />
+          </TabPanel>
+
+          {featureFlags.enable_form_variables && (
+            <TabPanel>
+              <VariablesEditor variables={state.formVariables} />
+            </TabPanel>
+          )}
+        </Tabs>
+      </ComponentsContext.Provider>
+
+      <FormSubmit onSubmit={onSubmit} displayActions={!state.newForm} />
+    </ValidationErrorsProvider>
+  );
 };
 
-
-const Tab = ({ hasErrors=false, children, ...props }) => {
-    const intl = useIntl();
-    const customProps = {
-        className: [
-            'react-tabs__tab',
-            {'react-tabs__tab--has-errors': hasErrors},
-        ]
-    };
-    const allProps = {...props, ...customProps};
-    const title = intl.formatMessage({
-        defaultMessage: 'There are validation errors',
-        description: 'Tab validation errors icon title',
-    });
-    return (
-        <ReactTab {...allProps}>
-            {children}
-            { hasErrors ? <FAIcon icon="exclamation-circle" title={title} /> : null}
-        </ReactTab>
-    );
+const Tab = ({hasErrors = false, children, ...props}) => {
+  const intl = useIntl();
+  const customProps = {
+    className: ['react-tabs__tab', {'react-tabs__tab--has-errors': hasErrors}],
+  };
+  const allProps = {...props, ...customProps};
+  const title = intl.formatMessage({
+    defaultMessage: 'There are validation errors',
+    description: 'Tab validation errors icon title',
+  });
+  return (
+    <ReactTab {...allProps}>
+      {children}
+      {hasErrors ? <FAIcon icon="exclamation-circle" title={title} /> : null}
+    </ReactTab>
+  );
 };
 Tab.tabsRole = 'Tab';
 
 Tab.propTypes = {
-    hasErrors: PropTypes.bool,
+  hasErrors: PropTypes.bool,
 };
-
 
 FormCreationForm.propTypes = {
-    csrftoken: PropTypes.string.isRequired,
-    formUuid: PropTypes.string.isRequired,
-    formHistoryUrl: PropTypes.string.isRequired,
+  csrftoken: PropTypes.string.isRequired,
+  formUuid: PropTypes.string.isRequired,
+  formHistoryUrl: PropTypes.string.isRequired,
 };
 
-export { FormCreationForm };
+export {FormCreationForm};

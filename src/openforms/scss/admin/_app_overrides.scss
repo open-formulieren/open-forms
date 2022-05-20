@@ -6,7 +6,7 @@
 @import '~microscope-sass/lib/responsive';
 @import '~microscope-sass/lib/util';
 
-@import "../vars";
+@import '../vars';
 
 /**
  * DJANGO ADMIN INDEX
@@ -37,8 +37,18 @@ $djai-border-width: 8px;
   // by default, the header has 40px padding on both sides. To make the border stretch
   // full width, set negative margins and positive paddings. On mobile and tablet these
   // values are 15px and 30px respectively.
-  @include responsive((margin-left, margin-right), -$djai-padding--mobile, -$djai-padding--tablet, -$djai-padding);
-  @include responsive((padding-left, padding-right), $djai-padding--mobile, $djai-padding--tablet, $djai-padding);
+  @include responsive(
+    (margin-left, margin-right),
+    -$djai-padding--mobile,
+    -$djai-padding--tablet,
+    -$djai-padding
+  );
+  @include responsive(
+    (padding-left, padding-right),
+    $djai-padding--mobile,
+    $djai-padding--tablet,
+    $djai-padding
+  );
 
   // use full width on mobile & tablet
   width: 100%;
@@ -56,7 +66,7 @@ $djai-border-width: 8px;
 
     // remove the border height from the breadcrumbs padding
     & + .breadcrumbs {
-      padding-top: 10px - $djai-border-width;  // 10px is original django value
+      padding-top: 10px - $djai-border-width; // 10px is original django value
     }
 
     // overwrite admin '#header a:link' rule which is otherwise more specific
@@ -69,7 +79,7 @@ $djai-border-width: 8px;
       }
     }
   }
-  
+
   @at-root body.login #header {
     padding-bottom: 15px !important;
   }
@@ -102,18 +112,19 @@ $djai-border-width: 8px;
   padding-top: 1em;
 }
 
-
 /* Styling for react-jsonschema-form */
 .rjsf {
   legend {
     font-size: 13px;
   }
 
-  input, select, .btn-group {
+  input,
+  select,
+  .btn-group {
     height: 30px;
   }
 
-  input[type="button"] {
+  input[type='button'] {
     height: auto;
   }
 
@@ -132,7 +143,8 @@ $djai-border-width: 8px;
     margin-top: 10px;
   }
 
-  .btn-danger, .btn-danger:hover {
+  .btn-danger,
+  .btn-danger:hover {
     color: unset;
     background-color: unset;
     border: unset;
@@ -154,13 +166,13 @@ $djai-border-width: 8px;
   }
 
   .glyphicon-plus:before {
-    content: var(--of-add-another-text, "Add another");
-    font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+    content: var(--of-add-another-text, 'Add another');
+    font-family: 'Roboto', 'Lucida Grande', Verdana, Arial, sans-serif;
     font-size: 13px;
   }
 
   .glyphicon-remove:before {
-    content: "\f1f8";
+    content: '\f1f8';
     font-weight: normal;
   }
 
@@ -182,9 +194,8 @@ $djai-border-width: 8px;
   }
 
   select.form-control {
-    $properties:
-      display, width, font-size, font-weight, line-height, color,
-      background-clip, transition;
+    $properties: display, width, font-size, font-weight, line-height, color, background-clip,
+      transition;
 
     @each $property in $properties {
       #{$property}: inherit;

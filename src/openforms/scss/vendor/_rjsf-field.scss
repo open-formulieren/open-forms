@@ -22,8 +22,8 @@
   }
 
   &__input {
-    input[type="email"] {
-      width: $input-field-size;  // override from admin/rjsf default
+    input[type='email'] {
+      width: $input-field-size; // override from admin/rjsf default
     }
   }
 
@@ -40,7 +40,7 @@
 
   &__help {
     cursor: help;
-    padding-left: .5em;
+    padding-left: 0.5em;
     color: #999;
   }
 

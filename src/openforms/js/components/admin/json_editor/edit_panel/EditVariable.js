@@ -13,120 +13,125 @@ import InterpolatedVariable from './InterpolatedVariable';
 import PrimitiveManualVariable from './PrimitiveManualVariable';
 import VariableSourceSelector from './VariableSourceSelector';
 
-
-const ComponentSelectionRow = ({ component='', onChange }) => {
-    return (
-        <FormRow>
-            <Field name="component" label={<FormattedMessage
-                description="Formio component selection label"
-                defaultMessage="Component"
-            />}>
-                <ComponentSelection name="component" value={component} onChange={onChange} />
-            </Field>
-        </FormRow>
-    );
+const ComponentSelectionRow = ({component = '', onChange}) => {
+  return (
+    <FormRow>
+      <Field
+        name="component"
+        label={
+          <FormattedMessage
+            description="Formio component selection label"
+            defaultMessage="Component"
+          />
+        }
+      >
+        <ComponentSelection name="component" value={component} onChange={onChange} />
+      </Field>
+    </FormRow>
+  );
 };
 
 ComponentSelectionRow.propTypes = {
-    component: PropTypes.string,
-    onChange: PropTypes.func.isRequired,
+  component: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
 };
 
+const DependentFields = ({source, component, expression, manual, onChange}) => {
+  let fields = null;
 
-const DependentFields = ({ source, component, expression, manual, onChange }) => {
-    let fields = null;
-
-    switch (source) {
-        case 'component': {
-            fields = (<ComponentSelectionRow component={component} onChange={onChange} />);
-            break;
-        }
-        case 'manual': {
-            fields = (
-                <PrimitiveManualVariable {...manual} onChange={onChange} />
-            );
-            break;
-        }
-        case 'interpolate': {
-            fields = (
-                <InterpolatedVariable expression={expression} onChange={onChange} />
-            );
-            break;
-        }
+  switch (source) {
+    case 'component': {
+      fields = <ComponentSelectionRow component={component} onChange={onChange} />;
+      break;
     }
-    return fields;
+    case 'manual': {
+      fields = <PrimitiveManualVariable {...manual} onChange={onChange} />;
+      break;
+    }
+    case 'interpolate': {
+      fields = <InterpolatedVariable expression={expression} onChange={onChange} />;
+      break;
+    }
+  }
+  return fields;
 };
 
 DependentFields.propTypes = {
-    source: Types.VariableSource.isRequired,
-    component: PropTypes.string,
-    manual: PropTypes.shape({
-        type: Types.VariableType,
-        definition: Types.LeafVariableDefinition,
-    }),
-    expression: PropTypes.object,  // JSON logic expression
-    onChange: PropTypes.func.isRequired,
+  source: Types.VariableSource.isRequired,
+  component: PropTypes.string,
+  manual: PropTypes.shape({
+    type: Types.VariableType,
+    definition: Types.LeafVariableDefinition,
+  }),
+  expression: PropTypes.object, // JSON logic expression
+  onChange: PropTypes.func.isRequired,
 };
 
-
 const EditVariable = ({
-    name, source, component='', manual, expression, parent=null,
-    onFieldChange, onManualChange, dependentFieldsOnChange, onEditDefinition,
+  name,
+  source,
+  component = '',
+  manual,
+  expression,
+  parent = null,
+  onFieldChange,
+  onManualChange,
+  dependentFieldsOnChange,
+  onEditDefinition,
 }) => {
-    return (
-        <>
-            <Fieldset>
-                <FormRow>
-                    <Field name="source" label={<FormattedMessage
-                        description="JSON editor: value source selector label"
-                        defaultMessage="Source"
-                    />}
-                    >
-                        <VariableSourceSelector value={source} onChange={onFieldChange} />
-                    </Field>
-                </FormRow>
-
-                <DependentFields
-                    source={source}
-                    component={component}
-                    expression={expression}
-                    manual={manual}
-                    onChange={dependentFieldsOnChange}
-                />
-
-            </Fieldset>
-
-            { source === 'manual'
-                ? (
-                    <ComplexManualVariable
-                        name={name}
-                        {...manual}
-                        parent={parent}
-                        onChange={onManualChange}
-                        onEditDefinition={onEditDefinition}
-                    />
-                )
-                : null
+  return (
+    <>
+      <Fieldset>
+        <FormRow>
+          <Field
+            name="source"
+            label={
+              <FormattedMessage
+                description="JSON editor: value source selector label"
+                defaultMessage="Source"
+              />
             }
-        </>
-    );
+          >
+            <VariableSourceSelector value={source} onChange={onFieldChange} />
+          </Field>
+        </FormRow>
+
+        <DependentFields
+          source={source}
+          component={component}
+          expression={expression}
+          manual={manual}
+          onChange={dependentFieldsOnChange}
+        />
+      </Fieldset>
+
+      {source === 'manual' ? (
+        <ComplexManualVariable
+          name={name}
+          {...manual}
+          parent={parent}
+          onChange={onManualChange}
+          onEditDefinition={onEditDefinition}
+        />
+      ) : null}
+    </>
+  );
 };
 
 EditVariable.propTypes = {
-    name: Types.VariableIdentifier.isRequired,
-    source: Types.VariableSource.isRequired,
-    component: PropTypes.string,
-    expression: PropTypes.object,
-    manual: PropTypes.shape({
-        type: Types.VariableType,
-        definition: Types.LeafVariableDefinition,
-    }),
-    parent: Types.VariableParent,
-    onFieldChange: PropTypes.func.isRequired,
-    onManualChange: PropTypes.func.isRequired,
-    dependentFieldsOnChange: PropTypes.func.isRequired,
-    onEditDefinition: PropTypes.func.isRequired,
+  name: Types.VariableIdentifier.isRequired,
+  source: Types.VariableSource.isRequired,
+  component: PropTypes.string,
+  expression: PropTypes.object,
+  manual: PropTypes.shape({
+    type: Types.VariableType,
+    definition: Types.LeafVariableDefinition,
+  }),
+  parent: Types.VariableParent,
+  onFieldChange: PropTypes.func.isRequired,
+  onManualChange: PropTypes.func.isRequired,
+  dependentFieldsOnChange: PropTypes.func.isRequired,
+  onEditDefinition: PropTypes.func.isRequired,
 };
-
 
 export default EditVariable;

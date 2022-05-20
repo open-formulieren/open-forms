@@ -8,73 +8,80 @@ import Fieldset from '../forms/Fieldset';
 import Select from '../forms/Select';
 import FormRjsfWrapper from '../RJSFWrapper';
 
+const PaymentFields = ({backends = [], selectedBackend = '', backendOptions = {}, onChange}) => {
+  const backendChoices = backends.map(backend => [backend.id, backend.label]);
+  const backend = backends.find(backend => backend.id === selectedBackend);
+  const hasOptionsForm = Boolean(backend && Object.keys(backend.schema.properties).length);
 
-const PaymentFields = ({
-    backends=[],
-    selectedBackend='',
-    backendOptions={},
-    onChange
-}) => {
-    const backendChoices = backends.map( backend => [backend.id, backend.label]);
-    const backend = backends.find( backend => backend.id === selectedBackend );
-    const hasOptionsForm = Boolean(backend && Object.keys(backend.schema.properties).length);
-
-    return (
-        <Fieldset
-            extraClassName="admin-fieldset"
-            title={<FormattedMessage description="Payment provider fieldset title" defaultMessage="Payment provider" />}
+  return (
+    <Fieldset
+      extraClassName="admin-fieldset"
+      title={
+        <FormattedMessage
+          description="Payment provider fieldset title"
+          defaultMessage="Payment provider"
+        />
+      }
+    >
+      <FormRow>
+        <Field
+          name="form.paymentBackend"
+          label={
+            <FormattedMessage
+              description="Payment backend label"
+              defaultMessage="Select payment backend"
+            />
+          }
         >
-            <FormRow>
-                <Field
-                    name="form.paymentBackend"
-                    label={<FormattedMessage description="Payment backend label" defaultMessage="Select payment backend" />}
-                >
-                    <Select
-                        choices={backendChoices}
-                        value={selectedBackend}
-                        onChange={ (event) => {
-                            onChange(event);
-                            // Clear options when changing backend
-                            onChange({target: {name: 'form.paymentBackendOptions', value: {}}})
-                        }}
-                        allowBlank
-                    />
-                </Field>
-            </FormRow>
-            {
-                hasOptionsForm
-                ? (
-                    <FormRow>
-                        <FormRjsfWrapper
-                            name="form.paymentBackendOptions"
-                            label={<FormattedMessage description="Payment backend options label" defaultMessage="Payment backend options" />}
-                            schema={backend.schema}
-                            formData={backendOptions}
-                            onChange={({ formData }) => onChange({target: {name: 'form.paymentBackendOptions', value: formData}})}
-                        />
-                    </FormRow>
-                )
-                : null
+          <Select
+            choices={backendChoices}
+            value={selectedBackend}
+            onChange={event => {
+              onChange(event);
+              // Clear options when changing backend
+              onChange({target: {name: 'form.paymentBackendOptions', value: {}}});
+            }}
+            allowBlank
+          />
+        </Field>
+      </FormRow>
+      {hasOptionsForm ? (
+        <FormRow>
+          <FormRjsfWrapper
+            name="form.paymentBackendOptions"
+            label={
+              <FormattedMessage
+                description="Payment backend options label"
+                defaultMessage="Payment backend options"
+              />
             }
-
-        </Fieldset>
-    );
+            schema={backend.schema}
+            formData={backendOptions}
+            onChange={({formData}) =>
+              onChange({target: {name: 'form.paymentBackendOptions', value: formData}})
+            }
+          />
+        </FormRow>
+      ) : null}
+    </Fieldset>
+  );
 };
 
 PaymentFields.propTypes = {
-    backends: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        label: PropTypes.string.isRequired,
-        schema: PropTypes.shape({
-            type: PropTypes.oneOf(['object']), // it's the JSON schema root, it has to be
-            properties: PropTypes.object,
-            required: PropTypes.arrayOf(PropTypes.string),
-        }),
-    })),
-    selectedBackend: PropTypes.string,
-    backendOptions: PropTypes.object,
-    onChange: PropTypes.func.isRequired,
+  backends: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+      schema: PropTypes.shape({
+        type: PropTypes.oneOf(['object']), // it's the JSON schema root, it has to be
+        properties: PropTypes.object,
+        required: PropTypes.arrayOf(PropTypes.string),
+      }),
+    })
+  ),
+  selectedBackend: PropTypes.string,
+  backendOptions: PropTypes.object,
+  onChange: PropTypes.func.isRequired,
 };
-
 
 export default PaymentFields;

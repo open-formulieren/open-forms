@@ -60,6 +60,24 @@ jobs:
         run: |
           black --check src/openforms docs
 
+  prettier:
+    name: Check frontend code formatting with prettier
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '16'
+
+      - name: Install prettier
+        run: |
+          npm ci
+
+      - name: Run prettier
+        run: |
+          npm run checkformat
+
   migrations:
     name: Check for model changes not present in the migrations or default_admin_index fixture
     runs-on: ubuntu-latest

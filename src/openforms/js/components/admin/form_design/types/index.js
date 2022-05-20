@@ -1,7 +1,7 @@
 import AuthPlugin from './AuthPlugin';
 
 const TYPES = {
-    AuthPlugin,
+  AuthPlugin,
 };
 
 export default TYPES;

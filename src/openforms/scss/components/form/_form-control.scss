@@ -1,7 +1,6 @@
 @import '~microscope-sass/lib/color';
 @import '~microscope-sass/lib/typography';
 
-
 .form-control {
   position: relative;
 
@@ -9,7 +8,7 @@
     display: none;
   }
 
-  &[class*="error"] {
+  &[class*='error'] {
     @include border(left, $color-danger, 4px);
     padding-left: $grid-margin-3;
   }
