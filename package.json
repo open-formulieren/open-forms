@@ -15,7 +15,8 @@
     "makemessages-en": "formatjs extract 'src/openforms/js/**/*.js' --format src/openforms/js/i18n-formatter.js --out-file src/openforms/js/lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "makemessages-nl": "formatjs extract 'src/openforms/js/**/*.js' --format src/openforms/js/i18n-formatter.js --out-file src/openforms/js/lang/nl.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "makemessages": "npm run makemessages-nl && npm run makemessages-en",
-    "compilemessages": "formatjs compile-folder --ast src/openforms/js/lang src/openforms/js/compiled-lang"
+    "compilemessages": "formatjs compile-folder --ast src/openforms/js/lang src/openforms/js/compiled-lang",
+    "format": "prettier --write 'src/js/*.{js}'"
   },
   "repository": {
     "type": "git",
@@ -69,6 +70,7 @@
     "postcss": "^8.0.8",
     "postcss-loader": "^4.0.1",
     "postcss-selector-lint": "^1.0.2",
+    "prettier": "2.6.2",
     "sass": "^1.32.12",
     "sass-loader": "^10.1.1",
     "typescript": "^4.3.5",
