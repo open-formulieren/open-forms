@@ -171,6 +171,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         "confirmation_email_sent",
         "registration_attempts",
     ]
+    raw_id_fields = ("form", "previous_submission")
     actions = [
         "export_csv",
         "export_json",
