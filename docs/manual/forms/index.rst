@@ -13,4 +13,3 @@ De kern van Open Formulieren is uiteraard het beheren van formulieren.
    examples/index
    export_import
    faq
-   shortcuts
