@@ -8,7 +8,6 @@ import {TinyMceContext, FeatureFlagsContext} from './form_design/Context';
 import FormVersionsTable from './form_versions/FormVersionsTable';
 import './sdk-snippet';
 import './plugin_configuration';
-import enableKeyboardShortcuts from "./Keyboard";
 
 import Debug from './debug';
 import SessionStatus from './SessionStatus';
@@ -86,4 +85,3 @@ const bootstrapApplication = async () => {
 
 bootstrapApplication();
 mountDebugComponent();
-enableKeyboardShortcuts();
