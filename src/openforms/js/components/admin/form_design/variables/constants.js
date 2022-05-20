@@ -94,7 +94,7 @@ const EMPTY_VARIABLE = {
   prefillPlugin: '',
   prefillAttribute: '',
   isSensitiveData: false,
-  dataType: '',
+  dataType: 'string',
   initial_value: '',
 };
 
