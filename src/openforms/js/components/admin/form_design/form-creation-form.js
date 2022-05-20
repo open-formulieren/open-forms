@@ -551,17 +551,14 @@ function reducer(draft, action) {
     case 'CHANGE_USER_DEFINED_VARIABLE': {
       const {key, propertyName, propertyValue} = action.payload;
 
-      let updatedVariables = _.cloneDeep(draft.formVariables);
-      const index = updatedVariables.findIndex(variable => variable.key === key);
-      const existingKeys = updatedVariables.map(variable => variable.key);
+      const index = draft.formVariables.findIndex(variable => variable.key === key);
+      const existingKeys = draft.formVariables.map(variable => variable.key);
 
       if (propertyName === 'key' && existingKeys.includes(propertyValue)) {
-        updatedVariables[index]['key'] = getUniqueKey(propertyValue, existingKeys);
+        draft.formVariables[index]['key'] = getUniqueKey(propertyValue, existingKeys);
       } else {
-        updatedVariables[index][propertyName] = propertyValue;
+        draft.formVariables[index][propertyName] = propertyValue;
       }
-
-      draft.formVariables = updatedVariables;
       break;
     }
     case 'ADD_STATIC_VARIABLES': {

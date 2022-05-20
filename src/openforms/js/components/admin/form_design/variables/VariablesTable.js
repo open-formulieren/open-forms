@@ -9,6 +9,7 @@ import DeleteIcon from '../../DeleteIcon';
 import {PluginsContext} from '../Context';
 import {get} from '../../../../utils/fetch';
 import FAIcon from '../../FAIcon';
+import {ChangelistTableWrapper, HeadColumn} from '../../tables';
 
 const SensitiveData = ({isSensitive}) => {
   const intl = useIntl();
@@ -28,9 +29,9 @@ const SensitiveData = ({isSensitive}) => {
   );
 };
 
-const VariableRow = ({variable}) => {
+const VariableRow = ({index, variable}) => {
   return (
-    <tr>
+    <tr className={`row${(index % 2) + 1}`}>
       <td>{variable.name}</td>
       <td>{variable.key}</td>
       <td>{variable.prefillAttribute}</td>
@@ -45,7 +46,7 @@ const VariableRow = ({variable}) => {
   );
 };
 
-const EditableVariableRow = ({variable, onDelete, onChange}) => {
+const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
   const intl = useIntl();
   const deleteConfirmMessage = intl.formatMessage({
     description: 'User defined variable deletion confirm message',
@@ -81,7 +82,7 @@ const EditableVariableRow = ({variable, onDelete, onChange}) => {
   }, [variable.prefillPlugin]);
 
   return (
-    <tr>
+    <tr className={`row${(index % 2) + 1}`}>
       <td>
         <DeleteIcon onConfirm={() => onDelete(variable.key)} message={deleteConfirmMessage} />
       </td>
@@ -155,71 +156,82 @@ const EditableVariableRow = ({variable, onDelete, onChange}) => {
 };
 
 const VariablesTable = ({variables, editable, onChange, onDelete}) => {
-  return (
-    <table className="variables-table">
-      <thead>
-        <tr>
-          {editable && <th className="variables-table__header" />}
-          <th className="variables-table__header">
-            <FormattedMessage defaultMessage="Name" description="Variable table name title" />
-          </th>
-          <th className="variables-table__header">
-            <FormattedMessage defaultMessage="Key" description="Variable table key title" />
-          </th>
-          <th className="variables-table__header">
-            <FormattedMessage
-              defaultMessage="Prefill plugin"
-              description="Variable table prefill plugin title"
-            />
-          </th>
-          <th className="variables-table__header">
-            <FormattedMessage
-              defaultMessage="Prefill attribute"
-              description="Variable table prefill attribute title"
-            />
-          </th>
-          <th className="variables-table__header">
-            <FormattedMessage
-              defaultMessage="Data type"
-              description="Variable table data type title"
-            />
-          </th>
-          <th className="variables-table__header">
-            <FormattedMessage
-              defaultMessage="Sensitive data"
-              description="Variable table sensitive data title"
-            />
-          </th>
-          <th className="variables-table__header">
-            <FormattedMessage
-              defaultMessage="Initial value"
-              description="Variable table initial value title"
-            />
-          </th>
-          <th className="variables-table__header">
-            <FormattedMessage
-              defaultMessage="Data format"
-              description="Variable table data format title"
-            />
-          </th>
-        </tr>
-      </thead>
+  const headColumns = (
+    <>
+      {editable && <HeadColumn content="" />}
+      <HeadColumn
+        content={<FormattedMessage defaultMessage="Name" description="Variable table name title" />}
+      />
+      <HeadColumn
+        content={<FormattedMessage defaultMessage="Key" description="Variable table key title" />}
+      />
+      <HeadColumn
+        content={
+          <FormattedMessage
+            defaultMessage="Prefill plugin"
+            description="Variable table prefill plugin title"
+          />
+        }
+      />
+      <HeadColumn
+        content={
+          <FormattedMessage
+            defaultMessage="Prefill attribute"
+            description="Variable table prefill attribute title"
+          />
+        }
+      />
+      <HeadColumn
+        content={
+          <FormattedMessage
+            defaultMessage="Data type"
+            description="Variable table data type title"
+          />
+        }
+      />
+      <HeadColumn
+        content={
+          <FormattedMessage
+            defaultMessage="Sensitive data"
+            description="Variable table sensitive data title"
+          />
+        }
+      />
+      <HeadColumn
+        content={
+          <FormattedMessage
+            defaultMessage="Initial value"
+            description="Variable table initial value title"
+          />
+        }
+      />
+      <HeadColumn
+        content={
+          <FormattedMessage
+            defaultMessage="Data format"
+            description="Variable table data format title"
+          />
+        }
+      />
+    </>
+  );
 
-      <tbody>
-        {variables.map(variable =>
-          editable ? (
-            <EditableVariableRow
-              key={variable.key}
-              variable={variable}
-              onChange={onChange}
-              onDelete={onDelete}
-            />
-          ) : (
-            <VariableRow key={variable.key} variable={variable} />
-          )
-        )}
-      </tbody>
-    </table>
+  return (
+    <ChangelistTableWrapper headColumns={headColumns}>
+      {variables.map((variable, index) =>
+        editable ? (
+          <EditableVariableRow
+            key={variable.key}
+            index={index}
+            variable={variable}
+            onChange={onChange}
+            onDelete={onDelete}
+          />
+        ) : (
+          <VariableRow key={variable.key} index={index} variable={variable} />
+        )
+      )}
+    </ChangelistTableWrapper>
   );
 };
 
