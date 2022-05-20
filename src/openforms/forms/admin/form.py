@@ -5,6 +5,7 @@ from django.urls import path, reverse
 from django.utils.html import format_html_join
 from django.utils.translation import ngettext, ugettext_lazy as _
 
+from admin_edit_lock.admin import AdminEditLockMixin
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 
 from openforms.config.models import GlobalConfiguration
@@ -101,6 +102,7 @@ class FormAdmin(
     RegistrationBackendFieldMixin,
     PaymentBackendChoiceFieldMixin,
     OrderedInlineModelAdminMixin,
+    AdminEditLockMixin,
     admin.ModelAdmin,
 ):
     list_display = (

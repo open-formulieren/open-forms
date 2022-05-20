@@ -27,6 +27,7 @@ setuptools
 
 # Framework libraries
 django ~= 3.2.0
+django-admin-edit-lock
 django-admin-index
 django-autoslug
 django-axes

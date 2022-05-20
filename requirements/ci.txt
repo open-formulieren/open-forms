@@ -146,6 +146,7 @@ django==3.2.13
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   django-admin-edit-lock
     #   django-admin-index
     #   django-appconf
     #   django-axes
@@ -179,6 +180,10 @@ django==3.2.13
     #   mozilla-django-oidc
     #   mozilla-django-oidc-db
     #   zgw-consumers
+django-admin-edit-lock==0.4.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django-admin-index==2.0.0
     # via
     #   -c requirements/base.txt

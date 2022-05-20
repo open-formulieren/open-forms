@@ -136,6 +136,7 @@ INSTALLED_APPS = [
     # 'django.contrib.humanize',
     # 'django.contrib.sitemaps',
     # External applications.
+    "admin_edit_lock",
     "axes",
     "capture_tag",
     "cookie_consent",
@@ -526,6 +527,13 @@ MAX_FILE_UPLOAD_SIZE = config("MAX_FILE_UPLOAD_SIZE", default="50M", cast=Filesi
 # 3RD PARTY LIBRARY SETTINGS #
 #                            #
 ##############################
+
+#
+# Django-Admin-Edit-Lock
+#
+ADMIN_EDIT_LOCK_DURATION = 5
+ADMIN_EDIT_LOCK_MAX_DURATION = 3600 * 2
+ADMIN_EDIT_LOCK_DISPLAY_OWNER = True
 
 #
 # Django-Admin-Index

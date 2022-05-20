@@ -80,7 +80,14 @@ LOGGING["loggers"].update(
 # https://django-axes.readthedocs.io/en/latest/configuration.html#known-configuration-problems
 CACHES.update(
     {
-        "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://localhost:6379/0",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "IGNORE_EXCEPTIONS": True,
+            },
+        },
         "axes": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"},
         "oidc": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
     }

@@ -80,6 +80,7 @@ defusedxml==0.6.0
 django==3.2.13
     # via
     #   -r requirements/base.in
+    #   django-admin-edit-lock
     #   django-admin-index
     #   django-appconf
     #   django-axes
@@ -111,6 +112,8 @@ django==3.2.13
     #   mozilla-django-oidc
     #   mozilla-django-oidc-db
     #   zgw-consumers
+django-admin-edit-lock==0.4.0
+    # via -r requirements/base.in
 django-admin-index==2.0.0
     # via -r requirements/base.in
 django-appconf==1.0.4
