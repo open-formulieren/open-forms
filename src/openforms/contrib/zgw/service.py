@@ -5,7 +5,6 @@ from typing import Optional
 
 from django.utils import timezone
 
-from glom import glom
 from zgw_consumers.models import Service
 
 from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
@@ -143,37 +142,12 @@ def create_csv_document(
     return create_document(name, base64_body, options, get_drc=get_drc)
 
 
-def retrieve_attachment_iotype(
-    submission_attachment: SubmissionFileAttachment, default_iotype: str
-) -> str:
-    """
-    Retrieve the informatieobjecttype for a FileField from the configuration
-    """
-    informatieobjecttype = default_iotype
-    formdef_config = (
-        submission_attachment.submission_step.form_step.form_definition.configuration
-    )
-    for component in formdef_config["components"]:
-        if component["key"] == submission_attachment.form_key:
-            # Use field-specific override
-            if iotype := glom(
-                component, "registration.informatieobjecttype", default=""
-            ):
-                informatieobjecttype = iotype
-                break
-
-    return informatieobjecttype
-
-
 def create_attachment_document(
     name: str,
     submission_attachment: SubmissionFileAttachment,
     options: dict,
     get_drc=default_get_drc,
 ) -> dict:
-    client = get_drc().build_client()
-    today = date.today().isoformat()
-
     submission_attachment.content.seek(0)
     base64_body = b64encode(submission_attachment.content.read()).decode()
 

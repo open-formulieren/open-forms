@@ -239,7 +239,7 @@ class ObjectsAPIBackendTests(TestCase):
         object_create_body = object_create.json()
         self.assertEqual(object_create.method, "POST")
         self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
-        self.assertDictEqual(object_create_body, expected_object_body)
+        self.assertEqual(object_create_body, expected_object_body)
 
     def test_submission_with_objects_api_backend_override_defaults_upload_csv_default_type(
         self, m
@@ -400,7 +400,7 @@ class ObjectsAPIBackendTests(TestCase):
         object_create_body = object_create.json()
         self.assertEqual(object_create.method, "POST")
         self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
-        self.assertDictEqual(object_create_body, expected_object_body)
+        self.assertEqual(object_create_body, expected_object_body)
 
     def test_submission_with_objects_api_backend_override_defaults_do_not_upload_csv(
         self, m
@@ -529,7 +529,7 @@ class ObjectsAPIBackendTests(TestCase):
         object_create_body = object_create.json()
         self.assertEqual(object_create.method, "POST")
         self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
-        self.assertDictEqual(object_create_body, expected_object_body)
+        self.assertEqual(object_create_body, expected_object_body)
 
     def test_submission_with_objects_api_backend_use_config_defaults(self, m):
         submission = SubmissionFactory.from_components(
@@ -666,7 +666,7 @@ class ObjectsAPIBackendTests(TestCase):
         object_create_body = object_create.json()
         self.assertEqual(object_create.method, "POST")
         self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
-        self.assertDictEqual(object_create_body, expected_object_body)
+        self.assertEqual(object_create_body, expected_object_body)
 
     def test_submission_with_objects_api_backend_bsn(self, m):
         submission = SubmissionFactory.from_components(
@@ -806,7 +806,7 @@ class ObjectsAPIBackendTests(TestCase):
         object_create_body = object_create.json()
         self.assertEqual(object_create.method, "POST")
         self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
-        self.assertDictEqual(object_create_body, expected_object_body)
+        self.assertEqual(object_create_body, expected_object_body)
 
     def test_submission_with_objects_api_backend_kvk(self, m):
         submission = SubmissionFactory.from_components(
@@ -923,7 +923,7 @@ class ObjectsAPIBackendTests(TestCase):
         object_create_body = object_create.json()
         self.assertEqual(object_create.method, "POST")
         self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
-        self.assertDictEqual(object_create_body, expected_object_body)
+        self.assertEqual(object_create_body, expected_object_body)
 
     def test_submission_with_objects_api_backend_attachments(self, m):
         submission = SubmissionFactory.from_components(
@@ -1156,7 +1156,7 @@ class ObjectsAPIBackendTests(TestCase):
         object_create_body = object_create.json()
         self.assertEqual(object_create.method, "POST")
         self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
-        self.assertDictEqual(object_create_body, expected_object_body)
+        self.assertEqual(object_create_body, expected_object_body)
 
     def test_no_reference_can_be_extracted(self, m):
         submission = SubmissionFactory.create(
@@ -1379,4 +1379,4 @@ class ObjectsAPIBackendTests(TestCase):
         object_create_body = object_create.json()
         self.assertEqual(object_create.method, "POST")
         self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
-        self.assertDictEqual(object_create_body, expected_object_body)
+        self.assertEqual(object_create_body, expected_object_body)

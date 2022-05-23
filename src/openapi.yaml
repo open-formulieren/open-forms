@@ -2081,27 +2081,6 @@ paths:
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
-  /api/v1/registration/informatieobjecttypen:
-    get:
-      operationId: registration_informatieobjecttypen_list
-      description: List the available InformatieObjectTypen.
-      summary: List available InformatieObjectTypen
-      tags:
-      - registration
-      security:
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InformatieObjectType'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/registration/plugins:
     get:
       operationId: registration_plugins_list
@@ -2144,6 +2123,27 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ProcessDefinition'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+  /api/v1/registration/plugins/zgw/informatieobjecttypen/:
+    get:
+      operationId: registration_plugins_zgw_informatieobjecttypen_list
+      description: List the available InformatieObjectTypen.
+      summary: List available InformatieObjectTypen
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InformatieObjectTypeChoice'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -3486,6 +3486,13 @@ components:
           description: Email given when making the appointment
       required:
       - email
+    CatalogusDomain:
+      type: object
+      properties:
+        domein:
+          type: string
+      required:
+      - domein
     CompletionValidation:
       type: object
       properties:
@@ -4139,22 +4146,23 @@ components:
     InformatieObjectType:
       type: object
       properties:
-        description:
-          type: string
-          title: omschrijving
-          description: The description of the InformatieObjectType
         url:
           type: string
-          format: uri
-          description: The URL of the InformatieObjectType.
-        catalogusDomain:
+        omschrijving:
           type: string
-          title: catalogus domein
-          description: The domain of the related Catalogus
       required:
-      - catalogusDomain
-      - description
+      - omschrijving
       - url
+    InformatieObjectTypeChoice:
+      type: object
+      properties:
+        informatieobjecttype:
+          $ref: '#/components/schemas/InformatieObjectType'
+        catalogus:
+          $ref: '#/components/schemas/CatalogusDomain'
+      required:
+      - catalogus
+      - informatieobjecttype
     Location:
       type: object
       properties:
