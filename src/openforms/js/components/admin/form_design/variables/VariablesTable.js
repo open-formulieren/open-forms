@@ -23,9 +23,9 @@ const SensitiveData = ({isSensitive}) => {
   });
 
   return isSensitive ? (
-    <FAIcon icon="check" title={sensitiveTitle} />
+    <FAIcon icon="exclamation-circle" title={sensitiveTitle} />
   ) : (
-    <FAIcon icon="times" title={notSensitiveTitle} />
+    <FAIcon icon="check-circle" title={notSensitiveTitle} />
   );
 };
 
