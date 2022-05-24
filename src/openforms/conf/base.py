@@ -153,6 +153,7 @@ INSTALLED_APPS = [
     "solo",
     "timeline_logger",
     "tinymce",
+    "treebeard",
     "privates",
     "zgw_consumers",
     "stuf",

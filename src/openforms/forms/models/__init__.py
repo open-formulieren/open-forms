@@ -1,3 +1,4 @@
+from .category import Category
 from .form import Form, FormLogic
 from .form_definition import FormDefinition
 from .form_step import FormStep
@@ -13,4 +14,5 @@ __all__ = [
     "FormLogic",
     "FormPriceLogic",
     "FormVariable",
+    "Category",
 ]

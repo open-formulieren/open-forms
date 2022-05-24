@@ -44,6 +44,7 @@ django-privates
 django-redis
 django-solo
 django-tinymce
+django-treebeard
 django-yubin
 mozilla-django-oidc-db
 git+https://github.com/maykinmedia/python3-saml.git@f587f77b78be79d51139f29a957b406072e2b537#egg=python3_saml

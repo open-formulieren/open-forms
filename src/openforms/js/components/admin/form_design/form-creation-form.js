@@ -33,6 +33,7 @@ import {
   PAYMENT_PLUGINS_ENDPOINT,
   LOGICS_ENDPOINT,
   PRICE_RULES_ENDPOINT,
+  CATEGORIES_ENDPOINT,
 } from './constants';
 import {
   loadPlugins,
@@ -74,6 +75,7 @@ const initialFormState = {
     slug: '',
     showProgressIndicator: true,
     active: true,
+    category: '',
     isDeleted: false,
     maintenanceMode: false,
     submissionConfirmationTemplate: '',
@@ -112,6 +114,7 @@ const initialFormState = {
   availablePrefillPlugins: [],
   selectedAuthPlugins: [],
   availablePaymentBackends: [],
+  availableCategories: [],
   stepsToDelete: [],
   submitting: false,
   logicRules: [],
@@ -153,6 +156,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   slug: 'form',
   showProgressIndicator: 'form',
   active: 'form',
+  category: 'form',
   isDeleted: 'form',
   maintenanceMode: 'form',
   submissionConfirmationTemplate: 'submission-confirmation',
@@ -780,6 +784,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     {endpoint: FORM_DEFINITIONS_ENDPOINT, stateVar: 'formDefinitions'},
     {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},
     {endpoint: AUTH_PLUGINS_ENDPOINT, stateVar: 'availableAuthPlugins'},
+    {endpoint: CATEGORIES_ENDPOINT, stateVar: 'availableCategories'},
     {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
   ];
 
@@ -1235,6 +1240,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
                   onChange={onFieldChange}
                   availableAuthPlugins={state.availableAuthPlugins}
                   selectedAuthPlugins={state.selectedAuthPlugins}
+                  availableCategories={state.availableCategories}
                   onAuthPluginChange={onAuthPluginChange}
                 />
               </TabPanel>

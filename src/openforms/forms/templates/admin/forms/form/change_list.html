@@ -1,6 +1,40 @@
 {% extends "admin/change_list.html" %}
 {% load i18n admin_urls %}
 
+{% block result_list %}
+    {% if categories.annotated %}
+    <a href="?">
+        {% if not categories.show %}
+            <b>{% trans "All categories" %}</b>
+        {% else %}
+            {% trans "All categories" %}
+        {% endif %}
+    </a>
+    {% for category, info in categories.annotated %}
+        {% if info.open %}
+            <ul><li>
+       {% else %}
+            </li>
+            <li>
+        {% endif %}
+
+        <a href="?category__id__in={{ category.get_branch_ids|join:"," }}">
+            {% if category.id in categories.show %}
+                <b>{{ category.name }}</b>
+            {% else %}
+                {{ category.name }}
+            {% endif %}
+        </a>
+
+        {% for close in info.close %}
+            </li>
+            </ul>
+        {% endfor %}
+    {% endfor %}
+    {% endif %}
+    {{ block.super }}
+{% endblock %}
+
 {% block object-tools-items %}
 
     {% if not is_popup and has_add_permission and has_change_permission %}

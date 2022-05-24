@@ -267,6 +267,51 @@ paths:
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
+  /api/v1/categories:
+    get:
+      operationId: categories_list
+      tags:
+      - categories
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+  /api/v1/categories/{uuid}:
+    get:
+      operationId: categories_retrieve
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - categories
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/config/privacy_policy_info:
     get:
       operationId: config_privacy_policy_info_retrieve
@@ -538,6 +583,7 @@ paths:
         - `paymentBackend`
         - `paymentBackendOptions`
         - `product`
+        - `category`
         - `isDeleted`
         - `submissionConfirmationTemplate`
         - `submissionsRemovalOptions`
@@ -594,6 +640,7 @@ paths:
         - `paymentBackend`
         - `paymentBackendOptions`
         - `product`
+        - `category`
         - `isDeleted`
         - `submissionConfirmationTemplate`
         - `submissionsRemovalOptions`
@@ -996,6 +1043,7 @@ paths:
         - `paymentBackend`
         - `paymentBackendOptions`
         - `product`
+        - `category`
         - `isDeleted`
         - `submissionConfirmationTemplate`
         - `submissionsRemovalOptions`
@@ -1056,6 +1104,7 @@ paths:
         - `paymentBackend`
         - `paymentBackendOptions`
         - `product`
+        - `category`
         - `isDeleted`
         - `submissionConfirmationTemplate`
         - `submissionsRemovalOptions`
@@ -1122,6 +1171,7 @@ paths:
         - `paymentBackend`
         - `paymentBackendOptions`
         - `product`
+        - `category`
         - `isDeleted`
         - `submissionConfirmationTemplate`
         - `submissionsRemovalOptions`
@@ -3493,6 +3543,34 @@ components:
           type: string
       required:
       - domein
+    Category:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          readOnly: true
+        name:
+          type: string
+          description: Human readable name
+          maxLength: 64
+        uuid:
+          type: string
+          format: uuid
+        ancestors:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              uuid:
+                type: string
+          readOnly: true
+      required:
+      - ancestors
+      - name
+      - url
     CompletionValidation:
       type: object
       properties:
@@ -3644,7 +3722,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`.
       properties:
         uuid:
           type: string
@@ -3714,6 +3792,11 @@ components:
           type: string
           format: uri
           readOnly: true
+        category:
+          type: string
+          format: uri
+          nullable: true
+          description: URL to the category in the Open Forms API
         steps:
           type: array
           items:
@@ -4474,7 +4557,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`.
       properties:
         uuid:
           type: string
@@ -4544,6 +4627,11 @@ components:
           type: string
           format: uri
           readOnly: true
+        category:
+          type: string
+          format: uri
+          nullable: true
+          description: URL to the category in the Open Forms API
         steps:
           type: array
           items:

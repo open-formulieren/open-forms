@@ -197,6 +197,7 @@ django==3.2.13
     #   django-silk
     #   django-solo
     #   django-timeline-logger
+    #   django-treebeard
     #   djangorestframework
     #   drf-jsonschema
     #   drf-nested-routers
@@ -351,6 +352,10 @@ django-timeline-logger==2.1.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
 django-tinymce==3.4.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+django-treebeard==4.5.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
