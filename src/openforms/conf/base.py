@@ -507,6 +507,12 @@ with open(os.path.join(BASE_DIR, ".sdk-release"), "r") as sdk_release_file:
 
 SDK_RELEASE = config("SDK_RELEASE", default=sdk_release_default)
 
+NUM_PROXIES = config(
+    "NUM_PROXIES",
+    default=1,
+    cast=lambda val: int(val) if val is not None else None,
+)
+
 BASE_URL = config("BASE_URL", "https://open-forms.test.maykin.opengem.nl")
 
 # Submission download: how long-lived should the one-time URL be:
@@ -552,6 +558,8 @@ AXES_FAILURE_LIMIT = 10
 # will be forgotten. Can be set to a python timedelta object or an integer. If
 # an integer, will be interpreted as a number of hours. Default: None
 AXES_COOLOFF_TIME = 1
+# The number of reverse proxies
+AXES_PROXY_COUNT = NUM_PROXIES - 1 if NUM_PROXIES else None
 # If True only locks based on user id and never locks by IP if attempts limit
 # exceed, otherwise utilize the existing IP and user locking logic Default:
 # False
@@ -744,11 +752,7 @@ REST_FRAMEWORK = {
     },
     # required to get the right IP addres for throttling depending on the amount of
     # reverse proxies (X-Forwarded-For).
-    "NUM_PROXIES": config(
-        "NUM_PROXIES",
-        default=1,
-        cast=lambda val: int(val) if val is not None else None,
-    ),
+    "NUM_PROXIES": NUM_PROXIES,
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
     "DEFAULT_SCHEMA_CLASS": "openforms.api.schema.AutoSchema",
     "EXCEPTION_HANDLER": "openforms.api.views.exception_handler",
