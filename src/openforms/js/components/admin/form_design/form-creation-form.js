@@ -549,12 +549,21 @@ function reducer(draft, action) {
       const {key, propertyName, propertyValue} = action.payload;
 
       const index = draft.formVariables.findIndex(variable => variable.key === key);
-      const existingKeys = draft.formVariables.map(variable => variable.key);
 
-      if (propertyName === 'key' && existingKeys.includes(propertyValue)) {
-        draft.formVariables[index]['key'] = getUniqueKey(propertyValue, existingKeys);
-      } else {
-        draft.formVariables[index][propertyName] = propertyValue;
+      draft.formVariables[index][propertyName] = propertyValue;
+
+      // Check that after the update there are no duplicate keys.
+      // If it is the case, update the key that was last updated
+      if (propertyName === 'key') {
+        const existingKeysAfterUpdate = draft.formVariables.map(variable => variable.key);
+        const uniqueKeysAfterUpdate = new Set(existingKeysAfterUpdate);
+
+        if (existingKeysAfterUpdate.length !== uniqueKeysAfterUpdate.size) {
+          draft.formVariables[index][propertyName] = getUniqueKey(
+            propertyValue,
+            Array.from(uniqueKeysAfterUpdate)
+          );
+        }
       }
       break;
     }
