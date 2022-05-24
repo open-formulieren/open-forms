@@ -12,11 +12,15 @@ class HTMLAssertMixinTest(HTMLAssertMixin, SimpleTestCase):
         <p style="foo:bar;">
             xxx
         </p>
+        <td
+            some="attr"
+        >baz</td>
         """
         self.assertTagWithTextIn("td", "aaa", html)
         self.assertTagWithTextIn("td", "bbb", html)
-        self.assertTagWithTextIn("span", "ccc", html)
+        self.assertTagWithTextIn("span", "cccc", html)
         self.assertTagWithTextIn("p", "xxx", html)
+        self.assertTagWithTextIn("td", "baz", html)
 
         with self.assertRaisesRegex(AssertionError, r"^cannot find <td..>xyz in: "):
             self.assertTagWithTextIn("td", "xyz", html)

@@ -8,6 +8,7 @@ from furl import furl
 
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
 from openforms.submissions.rendering.constants import RenderModes
+from openforms.submissions.rendering.renderer import Renderer
 from openforms.utils.urls import build_absolute_uri
 
 from ..utils import iter_components
@@ -109,13 +110,9 @@ class WYSIWYGNode(ComponentNode):
 
     @property
     def is_visible(self) -> bool:
-        visible_from_config = super().is_visible
-        if not visible_from_config:
+        if self.mode in (RenderModes.registration, RenderModes.export):
             return False
-        return self.mode in (
-            RenderModes.cli,
-            RenderModes.pdf,
-        )
+        return super().is_visible
 
     @property
     def value(self) -> Union[str, SafeString]:
