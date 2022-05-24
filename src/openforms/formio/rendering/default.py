@@ -45,8 +45,8 @@ class ContainerMixin:
 
 @register("fieldset")
 class FieldSetNode(ContainerMixin, ComponentNode):
-    layout_modifier = "fieldset"
-    display_value = ""
+    layout_modifier: str = "fieldset"
+    display_value: str = ""
 
     @property
     def label(self) -> str:
@@ -61,10 +61,10 @@ class FieldSetNode(ContainerMixin, ComponentNode):
 
 @register("columns")
 class ColumnsNode(ContainerMixin, ComponentNode):
-    layout_modifier = "columns"
-    label = ""  # 1451 -> never output a label
+    layout_modifier: str = "columns"
+    label: str = ""  # 1451 -> never output a label
     value = None  # columns never have a value
-    display_value = ""
+    display_value: str = ""
 
     def get_children(self) -> Iterator["ComponentNode"]:
         """
@@ -101,6 +101,12 @@ class ColumnsNode(ContainerMixin, ComponentNode):
 
 @register("content")
 class WYSIWYGNode(ComponentNode):
+    layout_modifier: str = "full-width"
+
+    @property
+    def spans_full_width(self) -> bool:
+        return self.mode != RenderModes.cli
+
     @property
     def is_visible(self) -> bool:
         visible_from_config = super().is_visible

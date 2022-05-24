@@ -1,4 +1,4 @@
-@import '~microscope-sass/lib/typography';
+@import "~microscope-sass/lib/typography";
 
 .submission-step-row {
   display: flex;
@@ -7,6 +7,10 @@
 
   & + & {
     margin-top: 1mm;
+  }
+
+  &#{&}--full-width {
+    display: block;
   }
 
   &:not(&--root) + &--root {
