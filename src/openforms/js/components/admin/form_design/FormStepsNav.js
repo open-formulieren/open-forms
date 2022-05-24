@@ -38,13 +38,13 @@ const FormStepNavItem = ({
     <li className={className}>
       <div className="actions actions--vertical">
         <FAIcon
-          icon="angle-up"
+          icon="sort-up"
           title={intl.formatMessage({description: 'Move up icon title', defaultMessage: 'Move up'})}
           extraClassname="fa-lg actions__action"
           onClick={() => onReorder('up')}
         />
         <FAIcon
-          icon="angle-down"
+          icon="sort-down"
           title={intl.formatMessage({
             description: 'Move down icon title',
             defaultMessage: 'Move down',

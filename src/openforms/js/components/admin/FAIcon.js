@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const FAIcon = ({icon, title, extraClassname = '', ...props}) => {
-  let className = `fa fa-${icon}`;
+  let className = `fa-solid fa-${icon}`;
   if (extraClassname) {
     className += ` ${extraClassname}`;
   }
