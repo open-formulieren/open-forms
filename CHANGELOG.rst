@@ -2,6 +2,20 @@
 Changelog
 =========
 
+1.1.0 (2022-05-24)
+==================
+
+Feature release 1.1.0
+
+For the full list of changes, please review the changelog entries below for 1.1.0-rc.0
+and 1.1.0-rc.1.
+
+Since 1.1.0-rc.1, the following changes were made:
+
+* Fixed maintaining the logo aspect ratio in the confirmation PDF for a submission
+* Exposed options to display content/WYSIWYG text in confirmation emails
+* WYSIWYG component content is displayed full-width in the confirmation email and PDF
+
 1.1.0-rc.1 (2022-05-20)
 =======================
 
