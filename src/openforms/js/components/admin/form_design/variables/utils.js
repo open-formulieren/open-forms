@@ -26,6 +26,7 @@ const updateFormVariables = (mutationType, newComponent, oldComponent, currentFo
         name: newComponent.label,
         key: newComponent.key,
         source: 'component',
+        isSensitiveData: newComponent.isSensitiveData,
         prefillPlugin: newComponent.prefill?.plugin || '',
         prefillAttribute: newComponent.prefill?.attribute || '',
         dataType: getComponentDatatype(newComponent),
@@ -48,6 +49,7 @@ const updateFormVariables = (mutationType, newComponent, oldComponent, currentFo
           name: newComponent.label,
           prefillPlugin: newComponent.prefill?.plugin || '',
           prefillAttribute: newComponent.prefill?.attribute || '',
+          isSensitiveData: newComponent.isSensitiveData,
           initialValue: newComponent.defaultValue || '',
         };
       });

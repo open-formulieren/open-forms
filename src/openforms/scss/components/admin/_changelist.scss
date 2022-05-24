@@ -2,39 +2,47 @@
 // the #changelist ID. We use classnames since there's a chance a table like that is
 // not unique on the page.
 
-.changelist.changelist--react {
-  .results {
-    overflow-x: auto;
-  }
+.changelist {
+  &--react {
+    .results {
+      overflow-x: auto;
+    }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
+    table {
+      width: 100%;
+      border-collapse: collapse;
 
-    thead {
-      th {
-        padding: 0;
-        white-space: nowrap;
-        vertical-align: middle;
+      thead {
+        th {
+          padding: 0;
+          white-space: nowrap;
+          vertical-align: middle;
+        }
+
+        th[title] {
+          .text > span:after {
+            content: '';
+            cursor: help;
+            display: inline-block;
+            background-image: url(../admin/img/icon-unknown.svg);
+            width: 13px;
+            height: 13px;
+            margin-left: 3px;
+          }
+        }
       }
 
-      th[title] {
-        .text > span:after {
-          content: '';
-          cursor: help;
-          display: inline-block;
-          background-image: url(../admin/img/icon-unknown.svg);
-          width: 13px;
-          height: 13px;
-          margin-left: 3px;
+      tbody {
+        th {
+          padding-right: 1em;
         }
       }
     }
+  }
 
-    tbody {
-      th {
-        padding-right: 1em;
-      }
+  &--fixed {
+    table {
+      table-layout: fixed;
     }
   }
 }

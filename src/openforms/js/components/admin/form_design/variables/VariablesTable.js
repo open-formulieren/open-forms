@@ -23,15 +23,16 @@ const SensitiveData = ({isSensitive}) => {
   });
 
   return isSensitive ? (
-    <FAIcon icon="exclamation-circle" title={sensitiveTitle} />
+    <FAIcon icon="exclamation-triangle" title={sensitiveTitle} />
   ) : (
-    <FAIcon icon="check-circle" title={notSensitiveTitle} />
+    <FAIcon icon="circle-xmark" extraClassname="fa-regular" title={notSensitiveTitle} />
   );
 };
 
 const VariableRow = ({index, variable}) => {
   return (
     <tr className={`row${(index % 2) + 1}`}>
+      <td />
       <td>{variable.name}</td>
       <td>{variable.key}</td>
       <td>{variable.prefillAttribute}</td>
@@ -158,7 +159,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
 const VariablesTable = ({variables, editable, onChange, onDelete}) => {
   const headColumns = (
     <>
-      {editable && <HeadColumn content="" />}
+      <HeadColumn content="" />
       <HeadColumn
         content={<FormattedMessage defaultMessage="Name" description="Variable table name title" />}
       />
@@ -217,21 +218,23 @@ const VariablesTable = ({variables, editable, onChange, onDelete}) => {
   );
 
   return (
-    <ChangelistTableWrapper headColumns={headColumns}>
-      {variables.map((variable, index) =>
-        editable ? (
-          <EditableVariableRow
-            key={variable.key}
-            index={index}
-            variable={variable}
-            onChange={onChange}
-            onDelete={onDelete}
-          />
-        ) : (
-          <VariableRow key={variable.key} index={index} variable={variable} />
-        )
-      )}
-    </ChangelistTableWrapper>
+    <div className="variables-table">
+      <ChangelistTableWrapper headColumns={headColumns} extraModifiers={['fixed']}>
+        {variables.map((variable, index) =>
+          editable ? (
+            <EditableVariableRow
+              key={variable.key}
+              index={index}
+              variable={variable}
+              onChange={onChange}
+              onDelete={onDelete}
+            />
+          ) : (
+            <VariableRow key={variable.key} index={index} variable={variable} />
+          )
+        )}
+      </ChangelistTableWrapper>
+    </div>
   );
 };
 
