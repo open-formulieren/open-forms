@@ -1,11 +1,11 @@
 @use "sass:math";
 
-@import '~microscope-sass/lib/typography';
+@import "~microscope-sass/lib/typography";
 
 $padding-size: 10mm;
 
 .header {
-  @include margin('auto');
+  @include margin("auto");
   // offset the container padding
   margin-top: -$padding-size;
   margin-left: -$padding-size;
@@ -23,6 +23,7 @@ $padding-size: 10mm;
   &__logo {
     min-width: 100px;
     min-height: 50px;
+    object-fit: contain; // maintain aspect ratio
 
     width: var(--of-logo-header-width, auto);
     height: var(--of-logo-header-height, 50px);
