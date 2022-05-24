@@ -42,6 +42,13 @@ const SHOW_IN_PDF = {
   defaultValue: true,
 };
 
+const PRESENTATION = {
+  type: 'panel',
+  title: 'Display in summaries and confirmations',
+  key: 'presentationConfig',
+  components: [SHOW_IN_SUMMARY, SHOW_IN_EMAIL, SHOW_IN_PDF],
+};
+
 const MULTIPLE = {
   type: 'checkbox',
   key: 'multiple',
@@ -107,6 +114,7 @@ export {
   SHOW_IN_SUMMARY,
   SHOW_IN_EMAIL,
   SHOW_IN_PDF,
+  PRESENTATION,
   MULTIPLE,
   HIDDEN,
   CLEAR_ON_HIDE,

@@ -1,5 +1,5 @@
 import {Formio} from 'formiojs';
-import {HIDDEN, KEY, LABEL} from './edit/options';
+import {HIDDEN, KEY, LABEL, PRESENTATION, SHOW_IN_EMAIL, SHOW_IN_PDF} from './edit/options';
 import {ADVANCED} from './edit/tabs';
 
 const FormioContentField = Formio.Components.components.content;
@@ -18,6 +18,11 @@ const CUSTOM_CSS_CLASS = {
       {label: 'Success', value: 'success'},
     ],
   },
+};
+
+const CONTENT_PRESENTATION = {
+  ...PRESENTATION,
+  components: [SHOW_IN_EMAIL, SHOW_IN_PDF],
 };
 
 const CONTENT_EDIT_TABS = {
@@ -39,12 +44,30 @@ const CONTENT_EDIT_TABS = {
       key: 'tabs',
       components: [
         {
-          label: 'Display',
-          key: 'display',
           weight: 0,
-          components: [LABEL, KEY, HIDDEN, CUSTOM_CSS_CLASS],
+          type: 'textarea',
+          editor: 'ckeditor',
+          label: 'Content',
+          hideLabel: true,
+          input: true,
+          key: 'html',
+          as: 'html',
+          rows: 3,
+          tooltip: 'The HTML template for the result data items.',
         },
-        ADVANCED,
+        {
+          type: 'tabs',
+          key: 'tabs',
+          components: [
+            {
+              label: 'Display',
+              key: 'display',
+              weight: 0,
+              components: [LABEL, KEY, HIDDEN, CONTENT_PRESENTATION, CUSTOM_CSS_CLASS],
+            },
+            ADVANCED,
+          ],
+        },
       ],
     },
   ],

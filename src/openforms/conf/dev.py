@@ -7,6 +7,7 @@ os.environ.setdefault(
     "SECRET_KEY", "@r0w-0(&apjfde5fl6h23!vn)r1ldkp1c_d2#!$did4z5hun4a"
 )
 os.environ.setdefault("IS_HTTPS", "no")
+os.environ.setdefault("SESSION_COOKIE_SAMESITE", "Lax")
 os.environ.setdefault("VERSION_TAG", "dev")
 
 os.environ.setdefault("DB_NAME", "openforms"),

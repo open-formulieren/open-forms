@@ -1,0 +1,42 @@
+{% load i18n %}
+{% for submission_step_node in renderer.get_children %}
+    {% if submission_step_node.has_children %}
+        {# row for step title #}
+        <tr>
+            <td width="100%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;" colspan="2">
+                <h3 style="margin: 0 0 1em; font-size: 1.2em;">{{ submission_step_node.render }}</h3>
+            </td>
+        </tr>
+
+        {% if include_header_row %}
+            <tr>
+                <th width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{% trans "Field" %}</th>
+                <th width="75%" style="padding: 4px 10px 4px 0; text-align: left;">{% trans "Response" %}</th>
+            </tr>
+        {% endif %}
+
+        {# row for every visible form field within the step #}
+        {% for component_node in submission_step_node.get_children %}
+            {% with add_bottom_margin=forloop.last %}
+                {% if component_node.label or component_node.display_value %}
+                    {% ifchanged component_node.layout_modifier %}
+                        {% if component_node.layout_modifier == 'fieldset' %}
+                            {% include "emails/templatetags/field_summary.html" with padding_top='16px' label_font_weight='600' %}
+                        {% else %}
+                            {% include "emails/templatetags/field_summary.html" %}
+                        {% endif %}
+                    {% else %}
+                        {% include "emails/templatetags/field_summary.html" %}
+                    {% endifchanged %}
+                {% endif %}
+            {% endwith %}
+        {% endfor %}
+    {% endif %}
+
+    {% if forloop.last and co_signer %}
+        <tr>
+            <td width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{% trans "Co-signed by" %}</td>
+            <td width="75%" style="padding: 4px 10px 4px 0; text-align: left;">{{ co_signer }}</td>
+        </tr>
+    {% endif %}
+{% endfor %}

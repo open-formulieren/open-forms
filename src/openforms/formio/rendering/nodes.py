@@ -153,6 +153,13 @@ class ComponentNode(Node):
             yield from child
 
     @property
+    def spans_full_width(self) -> bool:
+        """
+        Whether the display value spans the full width rather than 2 columns.
+        """
+        return False
+
+    @property
     def layout_modifier(self) -> str:
         """
         For HTML based rendering, potentially emit a layout modifier.

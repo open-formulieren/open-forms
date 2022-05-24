@@ -23,6 +23,7 @@ $padding-size: 10mm;
   &__logo {
     min-width: 100px;
     min-height: 50px;
+    object-fit: contain; // maintain aspect ratio
 
     width: var(--of-logo-header-width, auto);
     height: var(--of-logo-header-height, 50px);

@@ -142,7 +142,9 @@ class SubmissionViewSet(
         },
     )
     @transaction.atomic()
-    @action(detail=True, methods=["post"], url_name="complete")
+    @action(
+        detail=True, methods=["post"], authentication_classes=(), url_name="complete"
+    )
     def _complete(self, request, *args, **kwargs):
         """
         Mark the submission as completed.
@@ -260,7 +262,9 @@ class SubmissionViewSet(
         },
     )
     @transaction.atomic()
-    @action(detail=True, methods=["post"], url_name="suspend")
+    @action(
+        detail=True, methods=["post"], authentication_classes=(), url_name="suspend"
+    )
     def _suspend(self, request, *args, **kwargs):
         """
         Suspend the submission.

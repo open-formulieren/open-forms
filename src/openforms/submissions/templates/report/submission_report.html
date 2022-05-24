@@ -47,15 +47,17 @@
                         {% for component_node in submission_step_node.get_children %}
                             {% if component_node.label or component_node.display_value %}
                                 <div class="submission-step-row {% if component_node.layout_modifier %}submission-step-row--{{ component_node.layout_modifier }}{% endif %}">
-
-                                    <div class="submission-step-row__label">
-                                        {{ component_node.label }}
-                                    </div>
-
-                                    <div class="submission-step-row__value">
+                                    {% if component_node.spans_full_width %}
                                         {{ component_node.display_value }}
-                                    </div>
+                                    {% else %}
+                                        <div class="submission-step-row__label">
+                                            {{ component_node.label }}
+                                        </div>
 
+                                        <div class="submission-step-row__value">
+                                            {{ component_node.display_value }}
+                                        </div>
+                                    {% endif %}
                                 </div>
                             {% endif %}
                         {% endfor %}

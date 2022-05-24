@@ -4,7 +4,7 @@ Test the render component node implementations for the built-in Formio component
 These can be considered integration tests for the Formio aspect, relying on the out
 of the box configuration in Open Forms through the registry.
 """
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.rendering import Renderer, RenderModes
@@ -364,6 +364,7 @@ class FormNodeTests(TestCase):
 
             self.assertEqual(component_node.value, "WYSIWYG with markup")
 
+    @override_settings(BASE_URL="http://localhost:8000")
     def test_file_component_email_registration(self):
         component = {
             "type": "file",
@@ -415,7 +416,7 @@ class FormNodeTests(TestCase):
             )
 
             link = component_node.render()
-            self.assertTrue(link.startswith('My File: <a href="https://'))
+            self.assertTrue(link.startswith('My File: <a href="http://localhost:8000/'))
             self.assertTrue(
                 link.endswith(
                     '" target="_blank" rel="noopener noreferrer">blank-renamed.doc</a>'
@@ -430,7 +431,7 @@ class FormNodeTests(TestCase):
                 step=step, component=component, renderer=renderer
             )
             link = component_node.render()
-            self.assertTrue(link.startswith("My File: https://"))
+            self.assertTrue(link.startswith("My File: http://localhost:8000/"))
             self.assertTrue(link.endswith(" (blank-renamed.doc)"))
 
     def test_file_component_email_registration_no_file(self):

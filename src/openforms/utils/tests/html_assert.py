@@ -15,14 +15,24 @@ class HTMLAssertMixin:
         """
         check for html tags and their content while ignoring tag attributes
         """
-        if not re.search(fr"<{tag}(?: [^>]*)?>\s*{text}", document_str):
+        document = strip_all_attributes(document_str)
+        expected = f"<{tag}>{text}</{tag}>"
+        try:
+            self.assertInHTML(expected, document)
+        except AssertionError:
             self.fail(f"cannot find <{tag}..>{text} in: {document_str}")
 
     def assertNotTagWithTextIn(self, tag, text, document_str):
         """
         check for html tags and their content while ignoring tag attributes
         """
-        if re.search(fr"<{tag}(?: [^>]*)?>\s*{text}", document_str):
+        document = strip_all_attributes(document_str)
+        expected = f"<{tag}>{text}</{tag}>"
+        try:
+            self.assertInHTML(expected, document)
+        except AssertionError:
+            pass
+        else:
             self.fail(f"unexpectedly found <{tag}..>{text} in: {document_str}")
 
     def assertHTMLValid(self, html_text):

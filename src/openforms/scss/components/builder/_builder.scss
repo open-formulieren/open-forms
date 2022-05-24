@@ -172,6 +172,10 @@ div.flatpickr-calendar.open {
   background-color: var(--body-bg);
   color: var(--body-fg);
   border-color: var(--border-color);
+
+  @at-root body.view__body & {
+    background-color: white;
+  }
 }
 
 .card-header {

@@ -8,6 +8,7 @@ from furl import furl
 
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
 from openforms.submissions.rendering.constants import RenderModes
+from openforms.submissions.rendering.renderer import Renderer
 from openforms.utils.urls import build_absolute_uri
 
 from ..utils import iter_components
@@ -45,8 +46,8 @@ class ContainerMixin:
 
 @register("fieldset")
 class FieldSetNode(ContainerMixin, ComponentNode):
-    layout_modifier = "fieldset"
-    display_value = ""
+    layout_modifier: str = "fieldset"
+    display_value: str = ""
 
     @property
     def label(self) -> str:
@@ -61,10 +62,10 @@ class FieldSetNode(ContainerMixin, ComponentNode):
 
 @register("columns")
 class ColumnsNode(ContainerMixin, ComponentNode):
-    layout_modifier = "columns"
-    label = ""  # 1451 -> never output a label
+    layout_modifier: str = "columns"
+    label: str = ""  # 1451 -> never output a label
     value = None  # columns never have a value
-    display_value = ""
+    display_value: str = ""
 
     def get_children(self) -> Iterator["ComponentNode"]:
         """
@@ -101,15 +102,17 @@ class ColumnsNode(ContainerMixin, ComponentNode):
 
 @register("content")
 class WYSIWYGNode(ComponentNode):
+    layout_modifier: str = "full-width"
+
+    @property
+    def spans_full_width(self) -> bool:
+        return self.mode != RenderModes.cli
+
     @property
     def is_visible(self) -> bool:
-        visible_from_config = super().is_visible
-        if not visible_from_config:
+        if self.mode in (RenderModes.registration, RenderModes.export):
             return False
-        return self.mode in (
-            RenderModes.cli,
-            RenderModes.pdf,
-        )
+        return super().is_visible
 
     @property
     def value(self) -> Union[str, SafeString]:

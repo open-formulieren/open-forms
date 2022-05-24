@@ -9,6 +9,10 @@
     margin-top: 1mm;
   }
 
+  &#{&}--full-width {
+    display: block;
+  }
+
   &:not(&--root) + &--root {
     padding-top: $grid-margin-1;
   }

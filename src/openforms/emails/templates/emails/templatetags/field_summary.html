@@ -1,0 +1,13 @@
+<tr>
+    {% if not component_node.spans_full_width %}
+    <td width="25%" valign="top" style="padding: {{ padding_top|default:'4px' }} 10px 4px 0; text-align: left;{% if label_font_weight %}font-weight: {{ label_font_weight }};{% endif %}{% if add_bottom_margin %}padding-bottom: 24px;{% endif %}">
+        {{ component_node.label }}
+    </td>
+    {% endif %}
+    <td
+        {% if component_node.spans_full_width %}colspan="2" width="100%"{% else %}width="75%"{% endif %}
+        style="padding: {{ padding_top|default:'4px' }} 10px 4px 0; text-align: left;{% if add_bottom_margin %}padding-bottom: 24px;{% endif %}"
+    >
+        {{ component_node.display_value }}
+    </td>
+</tr>
