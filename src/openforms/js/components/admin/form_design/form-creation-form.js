@@ -242,7 +242,19 @@ function reducer(draft, action) {
      */
     case 'DELETE_STEP': {
       const {index} = action.payload;
-      draft.stepsToDelete.push(draft.formSteps[index].url);
+
+      const stepToDelete = draft.formSteps[index];
+
+      // Delete all component FormVariables associated with the step
+      draft.formVariables = draft.formVariables.filter(
+        variable =>
+          !(
+            variable.formDefinition === stepToDelete.formDefinition ||
+            variable.formDefinition === stepToDelete._generatedId
+          )
+      );
+
+      draft.stepsToDelete.push(stepToDelete.url);
 
       const unchangedSteps = draft.formSteps.slice(0, index);
       const updatedSteps = draft.formSteps.slice(index + 1).map(step => {
