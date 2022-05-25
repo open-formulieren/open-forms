@@ -5,6 +5,7 @@ When a submission ("session") is started, the data for a single form step must b
 submitted to a submission step. Existing data can be overwritten and new data is created
 by using HTTP PUT.
 """
+from unittest.mock import patch
 
 from freezegun import freeze_time
 from privates.test import temp_private_root
@@ -19,6 +20,7 @@ from openforms.forms.tests.factories import (
     FormVariableFactory,
 )
 
+from ...config.models import GlobalConfiguration
 from ..models import SubmissionValueVariable
 from .factories import (
     SubmissionFactory,
@@ -36,8 +38,10 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
 
         # ensure there is a form definition
         cls.form = FormFactory.create()
-        cls.variable1 = FormVariableFactory.create(form=cls.form, key="some")
         cls.step1, cls.step2 = FormStepFactory.create_batch(2, form=cls.form)
+        cls.variable1 = FormVariableFactory.create(
+            form=cls.form, form_definition=cls.step1.form_definition, key="some"
+        )
         cls.form_url = reverse(
             "api:form-detail", kwargs={"uuid_or_slug": cls.form.uuid}
         )
@@ -46,7 +50,9 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         cls.submission = SubmissionFactory.create(form=cls.form)
 
     @freeze_time("2022-05-25T10:53:19+00:00")
-    def test_create_step_data(self):
+    @patch("openforms.submissions.api.viewsets.GlobalConfiguration.get_solo")
+    def test_create_step_data(self, m_conf):
+        m_conf.return_value = GlobalConfiguration(enable_form_variables=True)
         self._add_submission_to_session(self.submission)
         endpoint = reverse(
             "api:submission-steps-detail",
@@ -130,7 +136,9 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_update_step_data(self):
+    @patch("openforms.submissions.api.viewsets.GlobalConfiguration.get_solo")
+    def test_update_step_data(self, m_conf):
+        m_conf.return_value = GlobalConfiguration(enable_form_variables=True)
         self._add_submission_to_session(self.submission)
         SubmissionStepFactory.create(
             submission=self.submission,

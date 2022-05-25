@@ -1,7 +1,10 @@
+from unittest.mock import patch
+
 from django.test import TestCase
 
 from rest_framework.reverse import reverse
 
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ...rendering import Renderer, RenderModes
@@ -104,10 +107,13 @@ class FormNodeTests(TestCase):
         enabled_step_node = nodes[1]
         self.assertEqual(enabled_step_node.step, self.sstep1)
 
-    def test_performance_num_queries(self):
+    @patch("openforms.formio.service.GlobalConfiguration.get_solo")
+    def test_performance_num_queries(self, m_conf):
         """
         Assert that the number of queries stays low while rendering a submission.
         """
+        m_conf.return_value = GlobalConfiguration(enable_form_variables=False)
+
         renderer = Renderer(
             submission=self.submission, mode=RenderModes.pdf, as_html=True
         )
