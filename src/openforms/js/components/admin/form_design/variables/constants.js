@@ -90,6 +90,7 @@ const VARIABLE_SOURCES = {
 const EMPTY_VARIABLE = {
   name: '',
   key: '',
+  formDefinition: '',
   source: VARIABLE_SOURCES.userDefined,
   prefillPlugin: '',
   prefillAttribute: '',
