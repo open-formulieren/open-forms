@@ -19,7 +19,7 @@ from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.contrib.kvk.validators import validate_kvk
 from openforms.formio.formatters.service import filter_printable
-from openforms.forms.models import FormStep
+from openforms.forms.models import FormStep, FormVariable
 from openforms.payments.constants import PaymentStatus
 from openforms.utils.validators import (
     AllowedRedirectValidator,
@@ -403,6 +403,40 @@ class Submission(models.Model):
         self.auth_attributes_hashed = True
         if save:
             self.save(update_fields=["auth_attributes_hashed", *attrs])
+
+    def load_submission_value_variables_state(self):
+        if hasattr(self, "_variables_state"):
+            return self._variables_state
+
+        # circular import
+        from .submission_value_variable import (
+            SubmissionValueVariable,
+            SubmissionValueVariablesState,
+        )
+
+        # Add the submission variables values - Some of these will also not yet be in the database
+        form_variables = FormVariable.objects.filter(form=self.form)
+        saved_submission_value_variables = SubmissionValueVariable.objects.filter(
+            submission=self
+        )
+        submission_value_variables = []
+        for form_variable in form_variables:
+            submission_var = saved_submission_value_variables.filter(
+                form_variable=form_variable
+            ).first()
+            if not submission_var:
+                # TODO Fill source field
+                submission_var = SubmissionValueVariable(
+                    submission=self,
+                    form_variable=form_variable,
+                    key=form_variable.key,
+                    value=form_variable.get_initial_value(),
+                )
+            submission_value_variables.append(submission_var)
+
+        state = SubmissionValueVariablesState(variables=submission_value_variables)
+        self._variables_state = state
+        return state
 
     def load_execution_state(self) -> SubmissionState:
         """
