@@ -4012,6 +4012,12 @@ components:
           type: string
           format: uri
           description: Form to which this variable is related
+        formDefinition:
+          type: string
+          format: uri
+          nullable: true
+          description: Form definition to which this variable is related. This is
+            kept as metadata
         name:
           type: string
           description: Name of the variable
