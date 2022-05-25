@@ -6,6 +6,7 @@ submitted to a submission step. Existing data can be overwritten and new data is
 by using HTTP PUT.
 """
 
+from freezegun import freeze_time
 from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -15,9 +16,15 @@ from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
 
-from .factories import SubmissionFactory, SubmissionStepFactory
+from ..models import SubmissionValueVariable
+from .factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+    SubmissionValueVariableFactory,
+)
 from .mixins import SubmissionsMixin
 
 
@@ -29,6 +36,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
 
         # ensure there is a form definition
         cls.form = FormFactory.create()
+        cls.variable1 = FormVariableFactory.create(form=cls.form, key="some")
         cls.step1, cls.step2 = FormStepFactory.create_batch(2, form=cls.form)
         cls.form_url = reverse(
             "api:form-detail", kwargs={"uuid_or_slug": cls.form.uuid}
@@ -37,6 +45,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         # ensure there is a submission
         cls.submission = SubmissionFactory.create(form=cls.form)
 
+    @freeze_time("2022-05-25T10:53:19+00:00")
     def test_create_step_data(self):
         self._add_submission_to_session(self.submission)
         endpoint = reverse(
@@ -73,6 +82,18 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
             },
         )
         self.assertEqual(submission_step.data, {"some": "example data"})
+
+        submission_variables = SubmissionValueVariable.objects.filter(
+            submission=self.submission
+        )
+
+        self.assertEqual(1, submission_variables.count())
+
+        variable = submission_variables.get()
+
+        self.assertEqual("some", variable.key)
+        self.assertEqual("example data", variable.value)
+        self.assertEqual("2022-05-25T10:53:19+00:00", variable.created_at.isoformat())
 
     def test_create_step_wrong_step_id(self):
         """
@@ -120,6 +141,22 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
             data={"foo": "bar"},
             form_step=self.step2,
         )
+        form_variable1 = FormVariableFactory.create(
+            form=self.submission.form,
+            form_definition=self.step2.form_definition,
+            key="foo",
+        )
+        FormVariableFactory.create(
+            form=self.submission.form,
+            form_definition=self.step2.form_definition,
+            key="modified",
+        )
+        SubmissionValueVariableFactory.create(
+            submission=self.submission,
+            form_variable=form_variable1,
+            key="foo",
+            value="bar",
+        )
         endpoint = reverse(
             "api:submission-steps-detail",
             kwargs={
@@ -154,6 +191,18 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         )
         submission_step.refresh_from_db()
         self.assertEqual(submission_step.data, {"modified": "data"})
+
+        submission_variables = SubmissionValueVariable.objects.filter(
+            submission=self.submission
+        )
+
+        self.assertEqual(2, submission_variables.count())
+
+        submission_variable1 = submission_variables.get(key="foo")
+        submission_variable2 = submission_variables.get(key="modified")
+
+        self.assertEqual("", submission_variable1.value)
+        self.assertEqual("data", submission_variable2.value)
 
     def test_data_not_underscored(self):
         form_definition = FormDefinitionFactory.create(

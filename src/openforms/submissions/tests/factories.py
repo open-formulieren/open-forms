@@ -6,18 +6,20 @@ from django.utils import timezone
 
 import factory
 
+from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
 )
 
-from ..constants import RegistrationStatuses
+from ..constants import RegistrationStatuses, SubmissionValueVariableSources
 from ..models import (
     Submission,
     SubmissionFileAttachment,
     SubmissionReport,
     SubmissionStep,
+    SubmissionValueVariable,
     TemporaryFileUpload,
 )
 
@@ -170,3 +172,14 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = SubmissionFileAttachment
+
+
+class SubmissionValueVariableFactory(factory.django.DjangoModelFactory):
+    submission = factory.SubFactory(SubmissionFactory)
+    form_variable = factory.SubFactory(FormVariable)
+    key = factory.Faker("word")
+    value = factory.Faker("bs")
+    source = SubmissionValueVariableSources.user_input
+
+    class Meta:
+        model = SubmissionValueVariable
