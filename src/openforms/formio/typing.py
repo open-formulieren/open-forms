@@ -50,3 +50,4 @@ class Component(TypedDict):
     hidden: bool
     defaultValue: JSONValue
     prefill: PrefillConfiguration
+    value: JSONValue

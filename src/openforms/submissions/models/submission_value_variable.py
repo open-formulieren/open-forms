@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from django.db import models
 from django.utils import timezone
@@ -15,12 +15,10 @@ from .submission import Submission
 class SubmissionValueVariablesState:
     variables: List["SubmissionValueVariable"]
 
-    def get_variables_to_prefill(self):
-        return [
-            variable
-            for variable in self.variables
-            if variable.source == SubmissionValueVariableSources.prefill
-        ]
+    def get_variable(self, key: str) -> Optional["SubmissionValueVariable"]:
+        for variable in self.variables:
+            if variable.key == key:
+                return variable
 
     def get_data(self):
         return {variable.key: variable.value for variable in self.variables}

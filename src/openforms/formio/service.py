@@ -1,8 +1,10 @@
+from django.template import Context, Template
 from django.urls import reverse
 
 import elasticapm
 from rest_framework.request import Request
 
+from openforms.config.models import GlobalConfiguration
 from openforms.formio.utils import iter_components
 from openforms.forms.custom_field_types import handle_custom_types
 from openforms.prefill import apply_prefill
@@ -23,7 +25,34 @@ def get_dynamic_configuration(
     configuration = handle_custom_types(
         configuration, request=request, submission=submission
     )
-    configuration = apply_prefill(configuration, submission=submission)
+
+    conf = GlobalConfiguration.get_solo()
+
+    if conf.enable_form_variables:
+        configuration = insert_variables(configuration, submission=submission)
+    else:
+        configuration = apply_prefill(configuration, submission=submission)
+
+    return configuration
+
+
+def insert_variables(configuration: dict, submission: Submission) -> dict:
+    value_variables_state = submission.load_submission_value_variables_state()
+    data = value_variables_state.get_data()
+
+    for component in iter_components(configuration):
+        if component["key"] in data:
+            # TODO Look in old prefill function for edge cases
+            component["defaultValue"] = data[component["key"]]
+
+        if "html" in component:
+            content_with_vars = Template(component.get("html", "")).render(
+                Context(data)
+            )
+            component["html"] = content_with_vars
+
+        # TODO: inject variables also in label?
+
     return configuration
 
 

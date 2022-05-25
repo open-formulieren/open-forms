@@ -40,6 +40,7 @@ from zgw_consumers.concurrent import parallel
 from openforms.formio.utils import iter_components
 from openforms.logging import logevent
 from openforms.plugins.exceptions import PluginNotEnabled
+from openforms.submissions.constants import SubmissionValueVariableSources
 from openforms.typing import JSONObject
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -250,3 +251,42 @@ def _set_default_values(
         component["defaultValue"] = prefill_value
         if component["type"] == "date":
             component["defaultValue"] = format_date_value(prefill_value)
+
+
+def prefill_variables(submission: "Submission", register=None) -> None:
+    from openforms.submissions.models import SubmissionValueVariable
+
+    from .registry import register as default_register
+
+    register = register or default_register
+
+    state = submission.load_submission_value_variables_state()
+
+    grouped_fields = {}
+    variables_to_prefill = []
+    for submission_value_variable in state.variables:
+        prefill_plugin = submission_value_variable.form_variable.prefill_plugin
+        if prefill_plugin == "":
+            continue
+
+        if prefill_plugin in grouped_fields:
+            grouped_fields[prefill_plugin] += [
+                submission_value_variable.form_variable.prefill_attribute
+            ]
+        else:
+            grouped_fields[prefill_plugin] = [
+                submission_value_variable.form_variable.prefill_attribute
+            ]
+
+        variables_to_prefill.append(submission_value_variable)
+
+    results = _fetch_prefill_values(grouped_fields, submission, register)
+
+    for variable in variables_to_prefill:
+        if prefill_value := results.get(variable.form_variable.prefill_plugin, {}).get(
+            variable.form_variable.prefill_attribute
+        ):
+            variable.value = prefill_value
+            variable.source = SubmissionValueVariableSources.prefill
+
+    SubmissionValueVariable.objects.bulk_create(variables_to_prefill)

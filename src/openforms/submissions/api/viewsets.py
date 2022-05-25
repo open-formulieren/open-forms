@@ -19,6 +19,7 @@ from openforms.api.serializers import ExceptionSerializer
 from openforms.logging import logevent
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
+from ...config.models import GlobalConfiguration
 from ...prefill import prefill_variables
 from ...utils.api.throttle_classes import PollingRateThrottle
 from ..attachments import attach_uploads_to_submission_step
@@ -113,7 +114,9 @@ class SubmissionViewSet(
 
         logevent.submission_start(serializer.instance)
 
-        prefill_variables(serializer.instance)
+        conf = GlobalConfiguration.get_solo()
+        if conf.enable_form_variables:
+            prefill_variables(serializer.instance)
 
     @extend_schema(
         summary=_("Retrieve co-sign state"),
@@ -380,7 +383,9 @@ class SubmissionStepViewSet(
 
         # TODO substitute step data with data directly coming from the request. There will no longer be
         # data on the submission step
-        SubmissionValueVariable.bulk_create_or_update(instance, instance.data)
+        config = GlobalConfiguration.get_solo()
+        if config.enable_form_variables:
+            SubmissionValueVariable.bulk_create_or_update(instance, instance.data)
 
         logevent.submission_step_fill(instance)
 
