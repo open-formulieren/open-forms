@@ -1,0 +1,11 @@
+@import '../../../ui/static/ui/scss/settings';
+
+.variables-editor {
+  ul {
+    margin-left: 0 !important;
+  }
+
+  &__tabs {
+    padding-top: $typography-margin-h2;
+  }
+}

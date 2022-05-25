@@ -1,9 +1,7 @@
 import _ from 'lodash';
 import {Utils as FormioUtils} from 'formiojs';
 
-import {get} from '../../../../utils/fetch';
-import {FORM_ENDPOINT} from '../constants';
-import {COMPONENT_DATATYPES} from './constants';
+import {COMPONENT_DATATYPES, VARIABLE_SOURCES} from './constants';
 
 const getComponentDatatype = component => {
   if (component.multiple) {
@@ -17,7 +15,9 @@ const updateFormVariables = (mutationType, newComponent, oldComponent, currentFo
   if (FormioUtils.isLayoutComponent(newComponent)) return currentFormVariables;
 
   let updatedFormVariables = _.cloneDeep(currentFormVariables);
-  const existingKeys = updatedFormVariables.map(variable => variable.key);
+  const existingKeys = updatedFormVariables
+    .filter(variable => variable.source === VARIABLE_SOURCES.component)
+    .map(variable => variable.key);
 
   // The 'change' event is emitted for both create and update events
   if (mutationType === 'changed') {
@@ -27,7 +27,8 @@ const updateFormVariables = (mutationType, newComponent, oldComponent, currentFo
       updatedFormVariables.push({
         name: newComponent.label,
         key: newComponent.key,
-        source: 'component',
+        source: VARIABLE_SOURCES.component,
+        isSensitiveData: newComponent.isSensitiveData,
         prefillPlugin: newComponent.prefill?.plugin || '',
         prefillAttribute: newComponent.prefill?.attribute || '',
         dataType: getComponentDatatype(newComponent),
@@ -50,6 +51,7 @@ const updateFormVariables = (mutationType, newComponent, oldComponent, currentFo
           name: newComponent.label,
           prefillPlugin: newComponent.prefill?.plugin || '',
           prefillAttribute: newComponent.prefill?.attribute || '',
+          isSensitiveData: newComponent.isSensitiveData,
           initialValue: newComponent.defaultValue || '',
         };
       });

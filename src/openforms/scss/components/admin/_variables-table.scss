@@ -1,0 +1,11 @@
+.variables-table {
+  td:nth-child(1),
+  th:nth-child(1) {
+    width: 30px; // Needs to fit the fa icon
+  }
+
+  select,
+  input {
+    max-width: 90%;
+  }
+}

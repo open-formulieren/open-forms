@@ -182,7 +182,13 @@
   "6hApJ7": [
     {
       "type": 0,
-      "value": "Stay logged in"
+      "value": "Ingelogd blijven"
+    }
+  ],
+  "6k14SS": [
+    {
+      "type": 0,
+      "value": "Key"
     }
   ],
   "7/n6O+": [
@@ -337,6 +343,12 @@
       "value": "name"
     }
   ],
+  "91XY1Q": [
+    {
+      "type": 0,
+      "value": "Is not sensitive"
+    }
+  ],
   "9N67XB": [
     {
       "type": 0,
@@ -414,7 +426,7 @@
   "ADAp0E": [
     {
       "type": 0,
-      "value": "Please log in again to continue."
+      "value": "Gelieve opnieuw in te loggen om door te gaan."
     }
   ],
   "AFyQut": [
@@ -491,6 +503,18 @@
       "value": "Formulier"
     }
   ],
+  "BcuXrg": [
+    {
+      "type": 0,
+      "value": "Boolean"
+    }
+  ],
+  "Bl2NMf": [
+    {
+      "type": 0,
+      "value": "Static"
+    }
+  ],
   "BrGg65": [
     {
       "type": 0,
@@ -560,7 +584,7 @@
   "DcI1VF": [
     {
       "type": 0,
-      "value": "Session expired"
+      "value": "Sessie vervallen"
     }
   ],
   "Dwnqdq": [
@@ -737,6 +761,12 @@
       "value": "Tekst met (ingesloten) formulierveldwaarde(n)"
     }
   ],
+  "ItH6EY": [
+    {
+      "type": 0,
+      "value": "Time"
+    }
+  ],
   "Iv+lBL": [
     {
       "type": 0,
@@ -758,7 +788,7 @@
   "JDD7PC": [
     {
       "type": 0,
-      "value": "Authentication failure"
+      "value": "Authenticatiefout"
     }
   ],
   "JZRX+C": [
@@ -865,6 +895,18 @@
       "value": "Veld"
     }
   ],
+  "Mv8yjC": [
+    {
+      "type": 0,
+      "value": "Form variables configuration"
+    }
+  ],
+  "MzMXRd": [
+    {
+      "type": 0,
+      "value": "Prefill attribute"
+    }
+  ],
   "NE5h2q": [
     {
       "type": 0,
@@ -874,7 +916,7 @@
   "NJ3Psx": [
     {
       "type": 0,
-      "value": "Your session has expired."
+      "value": "Uw sessie is vervallen."
     }
   ],
   "NwTdLM": [
@@ -904,7 +946,7 @@
   "OX8wxE": [
     {
       "type": 0,
-      "value": "Your session is about to expire "
+      "value": "Uw sessie vervalt "
     },
     {
       "type": 1,
@@ -912,13 +954,19 @@
     },
     {
       "type": 0,
-      "value": ". Extend your session if you wish to continue."
+      "value": ". Verleng uw sessie indien u wenst door te gaan."
     }
   ],
   "OvqnXR": [
     {
       "type": 0,
       "value": "Ja"
+    }
+  ],
+  "P/njxS": [
+    {
+      "type": 0,
+      "value": "Datetime"
     }
   ],
   "P3oGZG": [
@@ -1013,6 +1061,12 @@
       "value": "Interne naam van het formulier voor onderscheid in overzichten"
     }
   ],
+  "Rk13i+": [
+    {
+      "type": 0,
+      "value": "Initial value"
+    }
+  ],
   "S6eF5o": [
     {
       "type": 0,
@@ -1022,7 +1076,7 @@
   "S94ET7": [
     {
       "type": 0,
-      "value": "Session expires "
+      "value": "Sessie vervalt "
     },
     {
       "options": {
@@ -1030,7 +1084,7 @@
           "value": [
             {
               "type": 0,
-              "value": "on "
+              "value": "op "
             },
             {
               "type": 1,
@@ -1038,7 +1092,7 @@
             },
             {
               "type": 0,
-              "value": " at "
+              "value": " om "
             },
             {
               "type": 1,
@@ -1071,6 +1125,12 @@
       "value": "Sleutel-waarde paar (object) toevoegen"
     }
   ],
+  "TB/ku3": [
+    {
+      "type": 0,
+      "value": "Add variable"
+    }
+  ],
   "TCQic2": [
     {
       "type": 0,
@@ -1086,7 +1146,7 @@
   "TFxv38": [
     {
       "type": 0,
-      "value": "Back to login"
+      "value": "Terug naar loginscherm"
     }
   ],
   "TR5xSY": [
@@ -1165,6 +1225,12 @@
       "value": "verplicht"
     }
   ],
+  "Vsgunp": [
+    {
+      "type": 0,
+      "value": "Sensitive data"
+    }
+  ],
   "WHqkYA": [
     {
       "type": 0,
@@ -1181,6 +1247,12 @@
     {
       "type": 0,
       "value": "Logica"
+    }
+  ],
+  "WjDh7l": [
+    {
+      "type": 0,
+      "value": "Prefill plugin"
     }
   ],
   "Wz5QZo": [
@@ -1261,6 +1333,18 @@
       "value": "Vereist authenticatie"
     }
   ],
+  "b9D64D": [
+    {
+      "type": 0,
+      "value": "Is sensitive"
+    }
+  ],
+  "bDjeSb": [
+    {
+      "type": 0,
+      "value": "Array"
+    }
+  ],
   "bRe/yq": [
     {
       "type": 0,
@@ -1271,6 +1355,12 @@
     {
       "type": 0,
       "value": "Verplaats omhoog"
+    }
+  ],
+  "c1XyJ4": [
+    {
+      "type": 0,
+      "value": "Component"
     }
   ],
   "cDbGU2": [
@@ -1301,6 +1391,12 @@
     {
       "type": 0,
       "value": "Inhoud die op de formulierstartpagina wordt getoond, onder de titel en boven de startknop(pen)."
+    }
+  ],
+  "cpJErE": [
+    {
+      "type": 0,
+      "value": "Integer"
     }
   ],
   "cpiYVw": [
@@ -1339,6 +1435,12 @@
       "value": "Toon voortgang"
     }
   ],
+  "dgwRIk": [
+    {
+      "type": 0,
+      "value": "String"
+    }
+  ],
   "eBk+W0": [
     {
       "type": 0,
@@ -1369,10 +1471,22 @@
       "value": "Aantal dagen dat een sessie bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
     }
   ],
+  "fLCWjk": [
+    {
+      "type": 0,
+      "value": "Name"
+    }
+  ],
   "fLHOey": [
     {
       "type": 0,
       "value": "Prijslogica"
+    }
+  ],
+  "fWcg7I": [
+    {
+      "type": 0,
+      "value": "Object"
     }
   ],
   "ftzF/n": [
@@ -1384,7 +1498,7 @@
   "g+ppJj": [
     {
       "type": 0,
-      "value": "Do nothing"
+      "value": "Negeren"
     }
   ],
   "gGNIdG": [
@@ -1429,6 +1543,12 @@
       "value": "Ingeschakeld"
     }
   ],
+  "hefA1X": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete this variable?"
+    }
+  ],
   "huHjRm": [
     {
       "type": 0,
@@ -1439,6 +1559,12 @@
     {
       "type": 0,
       "value": "Interne naam"
+    }
+  ],
+  "iR6Mt9": [
+    {
+      "type": 0,
+      "value": "Data format"
     }
   ],
   "iZESbd": [
@@ -1496,7 +1622,7 @@
   "jo1PVg": [
     {
       "type": 0,
-      "value": "Session will expire"
+      "value": "Sessie gaat vervallen"
     }
   ],
   "k34Vke": [
@@ -1691,10 +1817,22 @@
       "value": "het veld"
     }
   ],
+  "rF90xM": [
+    {
+      "type": 0,
+      "value": "Data type"
+    }
+  ],
+  "rTafvA": [
+    {
+      "type": 0,
+      "value": "Float"
+    }
+  ],
   "rZfe8Z": [
     {
       "type": 0,
-      "value": "Sorry, we couldn't do that because you are logged out - this may be because your session expired."
+      "value": "Excuses, we konden deze actie niet uitvoeren omdat u uitgelogd bent. Uw sessie is waarschijnlijk vervallen."
     }
   ],
   "t99ynC": [
@@ -1839,6 +1977,12 @@
     {
       "type": 0,
       "value": "Actie"
+    }
+  ],
+  "zGMQ75": [
+    {
+      "type": 0,
+      "value": "User defined"
     }
   ],
   "zLTTBw": [
