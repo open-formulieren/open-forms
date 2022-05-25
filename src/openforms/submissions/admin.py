@@ -25,6 +25,7 @@ from .models import (
     SubmissionFileAttachment,
     SubmissionReport,
     SubmissionStep,
+    SubmissionValueVariable,
     TemporaryFileUpload,
 )
 from .tasks import on_completion_retry
@@ -134,6 +135,15 @@ class SubmissionLogInline(GenericTabularInline):
         return False
 
 
+class SubmissionValueVariableInline(admin.TabularInline):
+    model = SubmissionValueVariable
+
+    fields = ("form_variable", "key", "value", "source")
+    readonly_fields = ("form_variable", "key", "value", "source")
+    extra = 0
+    can_delete = False
+
+
 @admin.register(Submission)
 class SubmissionAdmin(admin.ModelAdmin):
     date_hierarchy = "completed_on"
@@ -158,6 +168,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         SubmissionStepInline,
         SubmissionPaymentInline,
         SubmissionLogInline,
+        SubmissionValueVariableInline,
     ]
     readonly_fields = [
         "created_on",
