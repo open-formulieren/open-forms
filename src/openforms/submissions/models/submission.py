@@ -38,6 +38,7 @@ if TYPE_CHECKING:
         SubmissionFileAttachment,
         SubmissionFileAttachmentQuerySet,
     )
+    from .submission_value_variable import SubmissionValueVariablesState
 
 logger = logging.getLogger(__name__)
 
@@ -354,23 +355,39 @@ class Submission(models.Model):
 
     @transaction.atomic()
     def remove_sensitive_data(self):
+        from ..constants import SubmissionValueVariableSources
+        from . import SubmissionValueVariable
+
         self.bsn = ""
         self.kvk = ""
         self.pseudo = ""
         self.prefill_data = dict()
 
-        steps_qs = self.submissionstep_set.select_related(
-            "form_step",
-            "form_step__form_definition",
-        )
-        for submission_step in steps_qs.select_for_update():
-            fields = submission_step.form_step.form_definition.sensitive_fields
-            removed_data = {key: "" for key in fields}
-            submission_step.data.update(removed_data)
-            submission_step.save()
+        conf = GlobalConfiguration.get_solo()
+        if conf.enable_form_variables:
+            sensitive_variables = SubmissionValueVariable.objects.filter(
+                submission=self, form_variable__is_sensitive_data=True
+            )
+            for variable in sensitive_variables:
+                variable.value = ""
+                variable.source = SubmissionValueVariableSources.sensitive_data_cleaner
+            SubmissionValueVariable.objects.bulk_update(
+                sensitive_variables, ["value", "source"]
+            )
+        else:
+            steps_qs = self.submissionstep_set.select_related(
+                "form_step",
+                "form_step__form_definition",
+            )
+            for submission_step in steps_qs.select_for_update():
+                fields = submission_step.form_step.form_definition.sensitive_fields
+                removed_data = {key: "" for key in fields}
+                submission_step.data.update(removed_data)
+                submission_step.save()
 
-            # handle the attachments
-            submission_step.attachments.filter(form_key__in=fields).delete()
+                # handle the attachments
+                submission_step.attachments.filter(form_key__in=fields).delete()
+
         self._is_cleaned = True
 
         if self.co_sign_data:
@@ -404,8 +421,10 @@ class Submission(models.Model):
         if save:
             self.save(update_fields=["auth_attributes_hashed", *attrs])
 
-    def load_submission_value_variables_state(self):
-        if hasattr(self, "_variables_state"):
+    def load_submission_value_variables_state(
+        self, refresh: bool = False
+    ) -> "SubmissionValueVariablesState":
+        if hasattr(self, "_variables_state") and not refresh:
             return self._variables_state
 
         # circular import
@@ -437,6 +456,26 @@ class Submission(models.Model):
         state = SubmissionValueVariablesState(variables=submission_value_variables)
         self._variables_state = state
         return state
+
+    def update_submission_value_variables_state(
+        self, data: dict, source: str = None
+    ) -> "SubmissionValueVariablesState":
+        from .submission_value_variable import SubmissionValueVariablesState
+
+        if not hasattr(self, "_variables_state"):
+            self.load_submission_value_variables_state()
+
+        updated_variables = []
+        for variable in self._variables_state.variables:
+            if variable.key in data:
+                variable.value = data[variable.key]
+                if source:
+                    variable.source = source
+            updated_variables.append(variable)
+
+        updates_state = SubmissionValueVariablesState(variables=updated_variables)
+        self._variables_state = updates_state
+        return updates_state
 
     def load_execution_state(self) -> SubmissionState:
         """
@@ -569,6 +608,12 @@ class Submission(models.Model):
         return appointment_data
 
     def get_merged_data(self) -> dict:
+        conf = GlobalConfiguration.get_solo()
+
+        if conf.enable_form_variables:
+            values_state = self.load_submission_value_variables_state()
+            return values_state.get_data()
+
         merged_data = dict()
 
         for step in self.submissionstep_set.exclude(data=None):

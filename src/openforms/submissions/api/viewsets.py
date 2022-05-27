@@ -23,6 +23,7 @@ from ...config.models import GlobalConfiguration
 from ...prefill import prefill_variables
 from ...utils.api.throttle_classes import PollingRateThrottle
 from ..attachments import attach_uploads_to_submission_step
+from ..constants import SubmissionValueVariableSources
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionStep, SubmissionValueVariable
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser, IgnoreDataJSONRenderer
@@ -381,11 +382,11 @@ class SubmissionStepViewSet(
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        # TODO substitute step data with data directly coming from the request. There will no longer be
-        # data on the submission step
         config = GlobalConfiguration.get_solo()
         if config.enable_form_variables:
-            SubmissionValueVariable.bulk_create_or_update(instance, instance.data)
+            SubmissionValueVariable.bulk_create_or_update(
+                instance, request.data["data"]
+            )
 
         logevent.submission_step_fill(instance)
 
@@ -432,7 +433,10 @@ class SubmissionStepViewSet(
         throttle_classes=[PollingRateThrottle],
     )
     def logic_check(self, request, *args, **kwargs):
+        config = GlobalConfiguration.get_solo()
+
         submission_step = self.get_object()
+        submission = submission_step.submission
 
         form_data_serializer = FormDataSerializer(data=request.data)
         form_data_serializer.is_valid(raise_exception=True)
@@ -442,10 +446,16 @@ class SubmissionStepViewSet(
             # TODO: probably we should use a recursive merge here, in the event that
             # keys like ``foo.bar`` and ``foo.baz`` are used which construct a foo object
             # with keys bar and baz.
-            merged_data = {**submission_step.submission.data, **data}
-            submission_step.data = data
+            merged_data = {**submission.data, **data}
+            if not config.enable_form_variables:
+                submission_step.data = data
+            else:
+                submission.update_submission_value_variables_state(
+                    data, source=SubmissionValueVariableSources.user_input
+                )
+
             new_configuration = evaluate_form_logic(
-                submission_step.submission,
+                submission,
                 submission_step,
                 merged_data,
                 dirty=True,
@@ -454,9 +464,7 @@ class SubmissionStepViewSet(
             submission_step.form_step.form_definition.configuration = new_configuration
 
         submission_state_logic_serializer = SubmissionStateLogicSerializer(
-            instance=SubmissionStateLogic(
-                submission=submission_step.submission, step=submission_step
-            ),
+            instance=SubmissionStateLogic(submission=submission, step=submission_step),
             context={"request": request, "unsaved_data": data},
         )
         return Response(submission_state_logic_serializer.data)

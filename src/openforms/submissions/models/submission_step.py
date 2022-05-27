@@ -3,6 +3,8 @@ import uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from openforms.config.models import GlobalConfiguration
+
 
 class SubmissionStep(models.Model):
     """
@@ -16,7 +18,7 @@ class SubmissionStep(models.Model):
     uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     submission = models.ForeignKey("submissions.Submission", on_delete=models.CASCADE)
     form_step = models.ForeignKey("forms.FormStep", on_delete=models.CASCADE)
-    data = models.JSONField(_("data"), blank=True, null=True)
+    _data = models.JSONField(_("data"), blank=True, null=True)
     created_on = models.DateTimeField(_("created on"), auto_now_add=True)
     modified = models.DateTimeField(_("modified on"), auto_now=True)
 
@@ -37,7 +39,7 @@ class SubmissionStep(models.Model):
         # TODO: should check that all the data for the form definition is present?
         # and validates?
         # For now - if it's been saved, we assume that was because it was completed
-        return bool(self.pk and self.data is not None)
+        return bool(self.pk and self.get_data() is not None)
 
     @property
     def can_submit(self) -> bool:
@@ -48,5 +50,19 @@ class SubmissionStep(models.Model):
         return self._is_applicable
 
     def reset(self):
-        self.data = None
+        self._data = None
         self.save()
+
+    @property
+    def data(self) -> dict:
+        config = GlobalConfiguration.get_solo()
+        if config.enable_form_variables:
+            values_state = self.submission.load_submission_value_variables_state()
+            variables_in_step = values_state.get_variables_in_submission_step(self)
+            return {variable.key: variable.value for variable in variables_in_step}
+        else:
+            return self._data
+
+    @data.setter
+    def data(self, data):
+        self._data = data
