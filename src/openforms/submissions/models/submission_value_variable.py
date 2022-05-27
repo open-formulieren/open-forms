@@ -113,6 +113,8 @@ class SubmissionValueVariable(models.Model):
         for variable in submission_step_variables:
             key = variable.key
             if key in data:
+                if data[key] != variable.value:
+                    variable.source = SubmissionValueVariableSources.user_input
                 variable.value = data[key]
             else:
                 variable.value = ""
@@ -124,4 +126,6 @@ class SubmissionValueVariable(models.Model):
                 variables_to_update.append(variable)
 
         cls.objects.bulk_create(variables_to_create)
-        cls.objects.bulk_update(variables_to_update, fields=["value", "modified_at"])
+        cls.objects.bulk_update(
+            variables_to_update, fields=["value", "source", "modified_at"]
+        )

@@ -43,6 +43,7 @@ class Migration(migrations.Migration):
                     models.CharField(
                         choices=[
                             ("static", "Static"),
+                            ("sensitive_data_cleaner", "Sensitive data cleaner"),
                             ("user_input", "User input"),
                             ("prefill", "Prefill"),
                             ("logic", "Logic"),
