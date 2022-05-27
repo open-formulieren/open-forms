@@ -11,8 +11,11 @@ from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
 
+from ...formio.utils import is_layout_component, iter_components
+from ...forms.constants import FormVariableSources
 from ..constants import RegistrationStatuses, SubmissionValueVariableSources
 from ..models import (
     Submission,
@@ -84,7 +87,8 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         **kwargs,
     ) -> Submission:
         """
-        generate a complete Form/FormStep/FormDefinition + Submission/SubmissionStep
+        generate a complete
+        Form/FormStep/FormDefinition/FormVariable + Submission/SubmissionStep/SubmissionValueVariable
         tree from a list of formio components
 
         remember to generate from privates.test import temp_private_root
@@ -112,10 +116,36 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             name=f"definition-{key}", configuration=configuration
         )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+        form_variables = []
+        for component in iter_components(configuration=configuration, recursive=True):
+            if is_layout_component(component):
+                continue
+
+            form_variables.append(
+                FormVariableFactory.create(
+                    key=component["key"],
+                    is_sensitive_data=component.get("isSensitiveData", False),
+                    form=form,
+                    form_definition=form_definition,
+                    source=FormVariableSources.component,
+                )
+            )
+
         SubmissionStepFactory.create(
             submission=submission, form_step=form_step, data=submitted_data
         )
+        for form_variable in form_variables:
+            SubmissionValueVariableFactory.create(
+                submission=submission,
+                form_variable=form_variable,
+                key=form_variable.key,
+                value=submitted_data.get(form_variable.key)
+                or form_variable.get_initial_value(),
+            )
 
+        # When the submission was initially created, the method calculate_price has already
+        # loaded the submission_value_variables_state, but no submission variables existed at that point.
+        submission.load_submission_value_variables_state(refresh=True)
         return submission
 
     @staticmethod

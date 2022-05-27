@@ -11,13 +11,17 @@ from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
+    SubmissionValueVariableFactory,
 )
 
+from ...forms.constants import FormVariableSources
+from ...forms.models import FormVariable
 from ..constants import AppointmentDetailsStatus
 from ..contrib.jcc.tests.test_plugin import mock_response
 from ..exceptions import AppointmentCreateFailed
@@ -89,40 +93,60 @@ class BookAppointmentForSubmissionTest(TestCase):
         self,
     ):
         form = FormFactory.create()
+        components_1 = [
+            {
+                "key": "product",
+                "appointments": {"showProducts": True},
+                "label": "Product",
+            },
+            {
+                "key": "time",
+                "appointments": {"showTimes": True},
+                "label": "Time",
+            },
+        ]
         form_definition_1 = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
-                "components": [
-                    {
-                        "key": "product",
-                        "appointments": {"showProducts": True},
-                        "label": "Product",
-                    },
-                    {
-                        "key": "time",
-                        "appointments": {"showTimes": True},
-                        "label": "Time",
-                    },
-                ],
+                "components": components_1,
             }
         )
+        for component in components_1:
+            FormVariableFactory.create(
+                key=component["key"],
+                is_sensitive_data=component.get("isSensitiveData", False),
+                form=form,
+                form_definition=form_definition_1,
+                source=FormVariableSources.component,
+            )
+
+        components_2 = [
+            {
+                "key": "lastName",
+                "appointments": {"lastName": True},
+                "label": "Last Name",
+            },
+            {
+                "key": "birthDate",
+                "appointments": {"birthDate": True},
+                "label": "Date of Birth",
+            },
+        ]
         form_definition_2 = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
-                "components": [
-                    {
-                        "key": "lastName",
-                        "appointments": {"lastName": True},
-                        "label": "Last Name",
-                    },
-                    {
-                        "key": "birthDate",
-                        "appointments": {"birthDate": True},
-                        "label": "Date of Birth",
-                    },
-                ],
+                "components": components_2,
             }
         )
+        for component in components_2:
+            FormVariableFactory.create(
+                key=component["key"],
+                is_sensitive_data=component.get("isSensitiveData", False),
+                form=form,
+                form_definition=form_definition_2,
+                source=FormVariableSources.component,
+            )
+
         form_step_1 = FormStepFactory.create(
             form=form, form_definition=form_definition_1
         )
@@ -130,22 +154,45 @@ class BookAppointmentForSubmissionTest(TestCase):
             form=form, form_definition=form_definition_2
         )
         submission = SubmissionFactory.create(form=form)
+        data_1 = {
+            "product": {"identifier": "79", "name": "Paspoort"},
+            "time": "2021-08-25T17:00:00",
+        }
         SubmissionStepFactory.create(
             submission=submission,
-            data={
-                "product": {"identifier": "79", "name": "Paspoort"},
-                "time": "2021-08-25T17:00:00",
-            },
+            data=data_1,
             form_step=form_step_1,
         )
+        data_2 = {
+            "lastName": "Maykin",
+            "birthDate": "",
+        }
         SubmissionStepFactory.create(
             submission=submission,
-            data={
-                "lastName": "Maykin",
-                "birthDate": "",
-            },
+            data=data_2,
             form_step=form_step_2,
         )
+        for form_variable in FormVariable.objects.filter(
+            form_definition=form_definition_1
+        ):
+            SubmissionValueVariableFactory.create(
+                submission=submission,
+                form_variable=form_variable,
+                key=form_variable.key,
+                value=data_1.get(form_variable.key)
+                or form_variable.get_initial_value(),
+            )
+
+        for form_variable in FormVariable.objects.filter(
+            form_definition=form_definition_2
+        ):
+            SubmissionValueVariableFactory.create(
+                submission=submission,
+                form_variable=form_variable,
+                key=form_variable.key,
+                value=data_2.get(form_variable.key)
+                or form_variable.get_initial_value(),
+            )
 
         with self.assertRaises(AppointmentRegistrationFailed):
             book_appointment_for_submission(submission)
@@ -173,45 +220,65 @@ class BookAppointmentForSubmissionTest(TestCase):
         self, m
     ):
         form = FormFactory.create()
+        components_1 = [
+            {
+                "key": "product",
+                "appointments": {"showProducts": True},
+                "label": "Product",
+            },
+            {
+                "key": "location",
+                "appointments": {"showLocations": True},
+                "label": "Location",
+            },
+            {
+                "key": "time",
+                "appointments": {"showTimes": True},
+                "label": "Time",
+            },
+        ]
         form_definition_1 = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
-                "components": [
-                    {
-                        "key": "product",
-                        "appointments": {"showProducts": True},
-                        "label": "Product",
-                    },
-                    {
-                        "key": "location",
-                        "appointments": {"showLocations": True},
-                        "label": "Location",
-                    },
-                    {
-                        "key": "time",
-                        "appointments": {"showTimes": True},
-                        "label": "Time",
-                    },
-                ],
+                "components": components_1,
             }
         )
+        for component in components_1:
+            FormVariableFactory.create(
+                key=component["key"],
+                is_sensitive_data=component.get("isSensitiveData", False),
+                form=form,
+                form_definition=form_definition_1,
+                source=FormVariableSources.component,
+            )
+
+        components_2 = [
+            {
+                "key": "lastName",
+                "appointments": {"lastName": True},
+                "label": "Last Name",
+            },
+            {
+                "key": "birthDate",
+                "appointments": {"birthDate": True},
+                "label": "Date of Birth",
+            },
+        ]
         form_definition_2 = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
-                "components": [
-                    {
-                        "key": "lastName",
-                        "appointments": {"lastName": True},
-                        "label": "Last Name",
-                    },
-                    {
-                        "key": "birthDate",
-                        "appointments": {"birthDate": True},
-                        "label": "Date of Birth",
-                    },
-                ],
+                "components": components_2,
             }
         )
+        for component in components_2:
+            FormVariableFactory.create(
+                key=component["key"],
+                is_sensitive_data=component.get("isSensitiveData", False),
+                form=form,
+                form_definition=form_definition_2,
+                source=FormVariableSources.component,
+            )
+
         form_step_1 = FormStepFactory.create(
             form=form, form_definition=form_definition_1
         )
@@ -219,23 +286,47 @@ class BookAppointmentForSubmissionTest(TestCase):
             form=form, form_definition=form_definition_2
         )
         submission = SubmissionFactory.create(form=form)
+        data_1 = {
+            "product": {"identifier": "79", "name": "Paspoort"},
+            "location": {"identifier": "1", "name": "Amsterdam"},
+            "time": "2021-08-25T17:00:00+02:00",
+        }
         SubmissionStepFactory.create(
             submission=submission,
-            data={
-                "product": {"identifier": "79", "name": "Paspoort"},
-                "location": {"identifier": "1", "name": "Amsterdam"},
-                "time": "2021-08-25T17:00:00+02:00",
-            },
+            data=data_1,
             form_step=form_step_1,
         )
+        data_2 = {
+            "lastName": "Maykin",
+            "birthDate": "1990-08-01",
+        }
         SubmissionStepFactory.create(
             submission=submission,
-            data={
-                "lastName": "Maykin",
-                "birthDate": "1990-08-01",
-            },
+            data=data_2,
             form_step=form_step_2,
         )
+
+        for form_variable in FormVariable.objects.filter(
+            form_definition=form_definition_1
+        ):
+            SubmissionValueVariableFactory.create(
+                submission=submission,
+                form_variable=form_variable,
+                key=form_variable.key,
+                value=data_1.get(form_variable.key)
+                or form_variable.get_initial_value(),
+            )
+
+        for form_variable in FormVariable.objects.filter(
+            form_definition=form_definition_2
+        ):
+            SubmissionValueVariableFactory.create(
+                submission=submission,
+                form_variable=form_variable,
+                key=form_variable.key,
+                value=data_2.get(form_variable.key)
+                or form_variable.get_initial_value(),
+            )
 
         m.post(
             "http://example.com/soap11",
@@ -356,45 +447,64 @@ class BookAppointmentForSubmissionTest(TestCase):
     @requests_mock.Mocker()
     def test_failed_creating_appointment_adds_error_message_to_submission(self, m):
         form = FormFactory.create()
+        components_1 = [
+            {
+                "key": "product",
+                "appointments": {"showProducts": True},
+                "label": "Product",
+            },
+            {
+                "key": "location",
+                "appointments": {"showLocations": True},
+                "label": "Location",
+            },
+            {
+                "key": "time",
+                "appointments": {"showTimes": True},
+                "label": "Time",
+            },
+        ]
         form_definition_1 = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
-                "components": [
-                    {
-                        "key": "product",
-                        "appointments": {"showProducts": True},
-                        "label": "Product",
-                    },
-                    {
-                        "key": "location",
-                        "appointments": {"showLocations": True},
-                        "label": "Location",
-                    },
-                    {
-                        "key": "time",
-                        "appointments": {"showTimes": True},
-                        "label": "Time",
-                    },
-                ],
+                "components": components_1,
             }
         )
+        for component in components_1:
+            FormVariableFactory.create(
+                key=component["key"],
+                is_sensitive_data=component.get("isSensitiveData", False),
+                form=form,
+                form_definition=form_definition_1,
+                source=FormVariableSources.component,
+            )
+
+        components_2 = [
+            {
+                "key": "lastName",
+                "appointments": {"lastName": True},
+                "label": "Last Name",
+            },
+            {
+                "key": "birthDate",
+                "appointments": {"birthDate": True},
+                "label": "Date of Birth",
+            },
+        ]
         form_definition_2 = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
-                "components": [
-                    {
-                        "key": "lastName",
-                        "appointments": {"lastName": True},
-                        "label": "Last Name",
-                    },
-                    {
-                        "key": "birthDate",
-                        "appointments": {"birthDate": True},
-                        "label": "Date of Birth",
-                    },
-                ],
+                "components": components_2,
             }
         )
+        for component in components_2:
+            FormVariableFactory.create(
+                key=component["key"],
+                is_sensitive_data=component.get("isSensitiveData", False),
+                form=form,
+                form_definition=form_definition_2,
+                source=FormVariableSources.component,
+            )
         form_step_1 = FormStepFactory.create(
             form=form, form_definition=form_definition_1
         )
@@ -402,23 +512,47 @@ class BookAppointmentForSubmissionTest(TestCase):
             form=form, form_definition=form_definition_2
         )
         submission = SubmissionFactory.create(form=form)
+        data_1 = {
+            "product": {"identifier": "79", "name": "Paspoort"},
+            "location": {"identifier": "1", "name": "Amsterdam"},
+            "time": "2021-08-25T17:00:00+02:00",
+        }
         SubmissionStepFactory.create(
             submission=submission,
-            data={
-                "product": {"identifier": "79", "name": "Paspoort"},
-                "location": {"identifier": "1", "name": "Amsterdam"},
-                "time": "2021-08-25T17:00:00+02:00",
-            },
+            data=data_1,
             form_step=form_step_1,
         )
+        data_2 = {
+            "lastName": "Maykin",
+            "birthDate": "1990-08-01",
+        }
         SubmissionStepFactory.create(
             submission=submission,
-            data={
-                "lastName": "Maykin",
-                "birthDate": "1990-08-01",
-            },
+            data=data_2,
             form_step=form_step_2,
         )
+
+        for form_variable in FormVariable.objects.filter(
+            form_definition=form_definition_1
+        ):
+            SubmissionValueVariableFactory.create(
+                submission=submission,
+                form_variable=form_variable,
+                key=form_variable.key,
+                value=data_1.get(form_variable.key)
+                or form_variable.get_initial_value(),
+            )
+
+        for form_variable in FormVariable.objects.filter(
+            form_definition=form_definition_2
+        ):
+            SubmissionValueVariableFactory.create(
+                submission=submission,
+                form_variable=form_variable,
+                key=form_variable.key,
+                value=data_2.get(form_variable.key)
+                or form_variable.get_initial_value(),
+            )
 
         m.post(
             "http://example.com/soap11",
@@ -450,45 +584,64 @@ class BookAppointmentForSubmissionTest(TestCase):
     @requests_mock.Mocker()
     def test_failed_creating_appointment_when_submission_previously_failed(self, m):
         form = FormFactory.create()
+        components_1 = [
+            {
+                "key": "product",
+                "appointments": {"showProducts": True},
+                "label": "Product",
+            },
+            {
+                "key": "location",
+                "appointments": {"showLocations": True},
+                "label": "Location",
+            },
+            {
+                "key": "time",
+                "appointments": {"showTimes": True},
+                "label": "Time",
+            },
+        ]
         form_definition_1 = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
-                "components": [
-                    {
-                        "key": "product",
-                        "appointments": {"showProducts": True},
-                        "label": "Product",
-                    },
-                    {
-                        "key": "location",
-                        "appointments": {"showLocations": True},
-                        "label": "Location",
-                    },
-                    {
-                        "key": "time",
-                        "appointments": {"showTimes": True},
-                        "label": "Time",
-                    },
-                ],
+                "components": components_1,
             }
         )
+        for component in components_1:
+            FormVariableFactory.create(
+                key=component["key"],
+                is_sensitive_data=component.get("isSensitiveData", False),
+                form=form,
+                form_definition=form_definition_1,
+                source=FormVariableSources.component,
+            )
+
+        components_2 = [
+            {
+                "key": "lastName",
+                "appointments": {"lastName": True},
+                "label": "Last Name",
+            },
+            {
+                "key": "birthDate",
+                "appointments": {"birthDate": True},
+                "label": "Date of Birth",
+            },
+        ]
         form_definition_2 = FormDefinitionFactory.create(
             configuration={
                 "display": "form",
-                "components": [
-                    {
-                        "key": "lastName",
-                        "appointments": {"lastName": True},
-                        "label": "Last Name",
-                    },
-                    {
-                        "key": "birthDate",
-                        "appointments": {"birthDate": True},
-                        "label": "Date of Birth",
-                    },
-                ],
+                "components": components_2,
             }
         )
+        for component in components_2:
+            FormVariableFactory.create(
+                key=component["key"],
+                is_sensitive_data=component.get("isSensitiveData", False),
+                form=form,
+                form_definition=form_definition_2,
+                source=FormVariableSources.component,
+            )
         form_step_1 = FormStepFactory.create(
             form=form, form_definition=form_definition_1
         )
@@ -501,23 +654,46 @@ class BookAppointmentForSubmissionTest(TestCase):
             error_information="Failed to make appointment",
             submission=submission,
         )
+        data_1 = {
+            "product": {"identifier": "79", "name": "Paspoort"},
+            "location": {"identifier": "1", "name": "Amsterdam"},
+            "time": "2021-08-25T17:00:00+02:00",
+        }
         SubmissionStepFactory.create(
             submission=submission,
-            data={
-                "product": {"identifier": "79", "name": "Paspoort"},
-                "location": {"identifier": "1", "name": "Amsterdam"},
-                "time": "2021-08-25T17:00:00+02:00",
-            },
+            data=data_1,
             form_step=form_step_1,
         )
+        data_2 = {
+            "lastName": "Maykin",
+            "birthDate": "1990-08-01",
+        }
         SubmissionStepFactory.create(
             submission=submission,
-            data={
-                "lastName": "Maykin",
-                "birthDate": "1990-08-01",
-            },
+            data=data_2,
             form_step=form_step_2,
         )
+        for form_variable in FormVariable.objects.filter(
+            form_definition=form_definition_1
+        ):
+            SubmissionValueVariableFactory.create(
+                submission=submission,
+                form_variable=form_variable,
+                key=form_variable.key,
+                value=data_1.get(form_variable.key)
+                or form_variable.get_initial_value(),
+            )
+
+        for form_variable in FormVariable.objects.filter(
+            form_definition=form_definition_2
+        ):
+            SubmissionValueVariableFactory.create(
+                submission=submission,
+                form_variable=form_variable,
+                key=form_variable.key,
+                value=data_2.get(form_variable.key)
+                or form_variable.get_initial_value(),
+            )
 
         m.post(
             "http://example.com/soap11",
