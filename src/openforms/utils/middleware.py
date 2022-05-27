@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from openforms.config.models import GlobalConfiguration
+from openforms.config.models import CSPSetting, GlobalConfiguration
 
 
 class UpdateCSPMiddleware:
@@ -9,8 +9,13 @@ class UpdateCSPMiddleware:
 
     def get_csp_update(self) -> Dict[str, List[str]]:
         update = dict()
-        config = GlobalConfiguration.get_solo()
-        _append_dict_list_values(update, config.get_csp_updates())
+
+        _append_dict_list_values(
+            update, GlobalConfiguration.get_solo().get_csp_updates()
+        )
+
+        _append_dict_list_values(update, CSPSetting.objects.as_dict())
+
         return update
 
     def __call__(self, request):
