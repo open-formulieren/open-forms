@@ -37,6 +37,7 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
         list_serializer_class = FormVariableListSerializer
         fields = (
             "form",
+            "form_definition",
             "name",
             "key",
             "source",

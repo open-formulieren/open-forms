@@ -34,6 +34,7 @@ const emptyConfiguration = {
  */
 const FormStepDefinition = ({
   url = '',
+  generatedId = '',
   name = '',
   internalName = '',
   slug = '',
@@ -225,7 +226,7 @@ const FormStepDefinition = ({
         <FormIOBuilder
           configuration={configuration}
           onChange={onChange}
-          onComponentMutated={onComponentMutated}
+          onComponentMutated={onComponentMutated.bind(null, url || generatedId)}
           {...props}
         />
       </div>

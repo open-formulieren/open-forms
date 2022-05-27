@@ -133,6 +133,8 @@ const updateOrCreateSingleFormStep = async (
     onFormDefinitionCreate(definitionResponse.data);
     onCreateFormStep(index, stepResponse.data.url, stepResponse.data.formDefinition);
   }
+
+  return stepResponse.data;
 };
 
 /**
@@ -150,7 +152,7 @@ const updateOrCreateFormSteps = async (
 ) => {
   const stepPromises = formSteps.map(async (step, index) => {
     try {
-      await updateOrCreateSingleFormStep(
+      return await updateOrCreateSingleFormStep(
         csrftoken,
         index,
         formUrl,
@@ -158,7 +160,6 @@ const updateOrCreateFormSteps = async (
         onCreateFormStep,
         onFormDefinitionCreate
       );
-      return null;
     } catch (e) {
       if (e instanceof ValidationErrors) {
         return {
@@ -169,7 +170,21 @@ const updateOrCreateFormSteps = async (
       throw e; // re-throw unexpected errors
     }
   });
-  return await Promise.all(stepPromises);
+
+  const results = await Promise.all(stepPromises);
+
+  const updatedSteps = [];
+  const errors = [];
+
+  results.map(result => {
+    if (result.error) {
+      errors.push(result);
+    } else {
+      updatedSteps.push(result);
+    }
+  });
+
+  return {updatedSteps, errors};
 };
 
 const saveLogicRules = async (formUrl, csrftoken, logicRules, logicRulesToDelete) => {
@@ -196,10 +211,32 @@ const savePriceRules = async (formUrl, csrftoken, priceRules, priceRulesToDelete
   return createdRules;
 };
 
-const createOrUpdateFormVariables = async (formUrl, csrftoken, variables) => {
+const createOrUpdateFormVariables = async (
+  formUrl,
+  csrftoken,
+  variables,
+  stateformSteps,
+  updatedFormSteps
+) => {
   const endPoint = `${formUrl}/variables`;
   const formVariables = variables.map(variable => {
-    return {...variable, form: formUrl};
+    // There are 2 cases here:
+    // 1. The variable was added to an existing form definition (i.e. which already has a URL). So variable.formDefinition
+    //   is the URL of the formDefinition.
+    // 2. The variable was added to a new form definition (i.e. which didn't have a URL). So variable.formDefinition
+    //   is the _generatedId of the formDefinition.
+    let formDefinitionUrl = variable.formDefinition;
+    try {
+      new URL(variable.formDefinition);
+    } catch (e) {
+      // Retrieve the URL of the definition from the formSteps which have already been saved
+      stateformSteps.map((step, index) => {
+        if (step._generatedId === variable.formDefinition) {
+          formDefinitionUrl = updatedFormSteps[index].formDefinition;
+        }
+      });
+    }
+    return {...variable, form: formUrl, formDefinition: formDefinitionUrl};
   });
 
   return await put(endPoint, csrftoken, formVariables);

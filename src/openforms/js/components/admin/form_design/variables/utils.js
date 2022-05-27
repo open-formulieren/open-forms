@@ -10,7 +10,13 @@ const getComponentDatatype = component => {
   return COMPONENT_DATATYPES[component.type] || 'string';
 };
 
-const updateFormVariables = (mutationType, newComponent, oldComponent, currentFormVariables) => {
+const updateFormVariables = (
+  formDefinition,
+  mutationType,
+  newComponent,
+  oldComponent,
+  currentFormVariables
+) => {
   // Not all components are associated with variables
   if (FormioUtils.isLayoutComponent(newComponent)) return currentFormVariables;
 
@@ -27,6 +33,7 @@ const updateFormVariables = (mutationType, newComponent, oldComponent, currentFo
       updatedFormVariables.push({
         name: newComponent.label,
         key: newComponent.key,
+        formDefinition: formDefinition,
         source: VARIABLE_SOURCES.component,
         isSensitiveData: newComponent.isSensitiveData,
         prefillPlugin: newComponent.prefill?.plugin || '',

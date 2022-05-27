@@ -14,6 +14,7 @@ const FormStep = ({
   onReplace,
 }) => {
   const {
+    _generatedId,
     configuration,
     formDefinition,
     name,
@@ -47,6 +48,7 @@ const FormStep = ({
       internalName={internalName}
       slug={slug}
       url={formDefinition}
+      generatedId={_generatedId}
       previousText={literals.previousText.value}
       saveText={literals.saveText.value}
       nextText={literals.nextText.value}

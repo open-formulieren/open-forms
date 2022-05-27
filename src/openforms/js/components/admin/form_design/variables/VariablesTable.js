@@ -6,7 +6,7 @@ import {Checkbox, TextInput} from '../../forms/Inputs';
 import Select from '../../forms/Select';
 import {DATATYPES_CHOICES} from './constants';
 import DeleteIcon from '../../DeleteIcon';
-import {PluginsContext} from '../Context';
+import {FormStepsContext, PluginsContext} from '../Context';
 import {get} from '../../../../utils/fetch';
 import FAIcon from '../../FAIcon';
 import {ChangelistTableWrapper, HeadColumn} from '../../tables';
@@ -30,11 +30,22 @@ const SensitiveData = ({isSensitive}) => {
 };
 
 const VariableRow = ({index, variable}) => {
+  const formSteps = useContext(FormStepsContext);
+
+  const getFormDefinitionName = formDefinition => {
+    for (const step of formSteps) {
+      if (step.formDefinition === formDefinition || step._generatedId === formDefinition)
+        return step.name;
+    }
+    return '';
+  };
+
   return (
     <tr className={`row${(index % 2) + 1}`}>
       <td />
       <td>{variable.name}</td>
       <td>{variable.key}</td>
+      <td>{getFormDefinitionName(variable.formDefinition)}</td>
       <td>{variable.prefillAttribute}</td>
       <td>{variable.prefillPlugin}</td>
       <td>{variable.dataType}</td>
@@ -57,6 +68,13 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
   const {availablePrefillPlugins} = useContext(PluginsContext);
   const prefillPluginChoices = availablePrefillPlugins.map(plugin => [plugin.id, plugin.label]);
   const [prefillAttributeChoices, setPrefillAttributeChoices] = useState([]);
+
+  const formSteps = useContext(FormStepsContext);
+  const formStepsChoices = formSteps.map(step => {
+    if (step.formDefinition) return [step.formDefinition, step.name];
+
+    return [step._generatedId, step.name];
+  });
 
   const onValueChanged = e => {
     onChange(variable.key, e.target.name, e.target.value);
@@ -98,6 +116,15 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
       </td>
       <td>
         <TextInput name="key" value={variable.key} noVTextField={true} disabled={true} />
+      </td>
+      <td>
+        <Select
+          name="formDefinition"
+          choices={formStepsChoices}
+          value={variable.formDefinition}
+          onChange={onValueChanged}
+          allowBlank
+        />
       </td>
       <td>
         <Select
@@ -165,6 +192,14 @@ const VariablesTable = ({variables, editable, onChange, onDelete}) => {
       />
       <HeadColumn
         content={<FormattedMessage defaultMessage="Key" description="Variable table key title" />}
+      />
+      <HeadColumn
+        content={
+          <FormattedMessage
+            defaultMessage="Form definition"
+            description="Variable table form definition title"
+          />
+        }
       />
       <HeadColumn
         content={
