@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.template import Context, Template
@@ -479,6 +481,14 @@ class GlobalConfiguration(SingletonModel):
     @property
     def siteimprove_enabled(self) -> bool:
         return bool(self.siteimprove_id)
+
+    def get_csp_updates(self):
+        updates = defaultdict(list)
+        if self.siteimprove_enabled:
+            updates["DEFAULT_SRC"].append("siteimproveanalytics.com")
+            updates["IMG_SRC"].append("*.siteimproveanalytics.io")
+        # TODO support more contributions
+        return updates
 
     def render_privacy_policy_label(self):
         template = self.privacy_policy_label
