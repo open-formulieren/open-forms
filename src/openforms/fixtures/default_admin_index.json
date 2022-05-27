@@ -62,11 +62,11 @@
             ],
             [
                 "forms",
-                "formversion"
+                "formvariable"
             ],
             [
                 "forms",
-                "formvariable"
+                "formversion"
             ]
         ]
     }
@@ -132,6 +132,10 @@
             ],
             [
                 "config",
+                "cspsetting"
+            ],
+            [
+                "config",
                 "globalconfiguration"
             ],
             [
@@ -147,16 +151,12 @@
                 "familymemberstypeconfig"
             ],
             [
-                "django_camunda",
-                "camundaconfig"
-            ],
-            [
-                "django_yubin",
-                "blacklist"
+                "digid_eherkenning_oidc_generics",
+                "openidconnectdigidmachtigenconfig"
             ],
             [
                 "digid_eherkenning_oidc_generics",
-                "openidconnectpublicconfig"
+                "openidconnecteherkenningbewindvoeringconfig"
             ],
             [
                 "digid_eherkenning_oidc_generics",
@@ -164,11 +164,15 @@
             ],
             [
                 "digid_eherkenning_oidc_generics",
-                "openidconnectdigidmachtigenconfig"
+                "openidconnectpublicconfig"
             ],
             [
-                "digid_eherkenning_oidc_generics",
-                "openidconnecteherkenningbewindvoeringconfig"
+                "django_camunda",
+                "camundaconfig"
+            ],
+            [
+                "django_yubin",
+                "blacklist"
             ],
             [
                 "multidomain",
@@ -184,15 +188,15 @@
             ],
             [
                 "zgw_consumers",
+                "certificate"
+            ],
+            [
+                "zgw_consumers",
                 "nlxconfig"
             ],
             [
                 "zgw_consumers",
                 "service"
-            ],
-            [
-                "zgw_consumers",
-                "certificate"
             ]
         ]
     }
