@@ -13,7 +13,6 @@ class UpdateCSPMiddleware:
         _append_dict_list_values(
             update, GlobalConfiguration.get_solo().get_csp_updates()
         )
-
         _append_dict_list_values(update, CSPSetting.objects.as_dict())
 
         return update
@@ -39,6 +38,7 @@ class UpdateCSPMiddleware:
 
 
 def _merge_list_values(left, right) -> List[str]:
+    # combine strings or lists to a list with unique values
     if isinstance(left, str):
         left = [left]
     if isinstance(right, str):
@@ -47,11 +47,13 @@ def _merge_list_values(left, right) -> List[str]:
 
 
 def _append_dict_list_values(target, source):
-    for k in source:
+    for k, v in source.items():
+        # normalise the directives
+        k = k.lower().replace("_", "-")
         if k in target:
-            target[k] = _merge_list_values(target[k], source[k])
+            target[k] = _merge_list_values(target[k], v)
         else:
-            if isinstance(source[k], str):
-                target[k] = [source[k]]
+            if isinstance(v, str):
+                target[k] = [v]
             else:
-                target[k] = source[k]
+                target[k] = list(set(v))

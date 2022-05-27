@@ -486,8 +486,8 @@ class GlobalConfiguration(SingletonModel):
     def get_csp_updates(self):
         updates = defaultdict(list)
         if self.siteimprove_enabled:
-            updates["DEFAULT_SRC"].append("siteimproveanalytics.com")
-            updates["IMG_SRC"].append("*.siteimproveanalytics.io")
+            updates["default-src"].append("siteimproveanalytics.com")
+            updates["img-src"].append("*.siteimproveanalytics.io")
         # TODO support more contributions
         return updates
 
