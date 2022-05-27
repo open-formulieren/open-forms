@@ -36,3 +36,19 @@ def get_default_values(configuration: dict) -> Dict[str, Any]:
         defaults[component["key"]] = component["defaultValue"]
 
     return defaults
+
+
+def is_layout_component(component):
+    # Adapted from isLayoutComponent util function in Formio
+    column = component.get("columns")
+    components = component.get("components")
+    rows = component.get("rows")
+
+    if (
+        (column and isinstance(column, list))
+        or (components and isinstance(components, list))
+        or (rows and isinstance(rows, list))
+    ):
+        return True
+
+    return False
