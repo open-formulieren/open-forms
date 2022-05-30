@@ -357,6 +357,7 @@ class Submission(models.Model):
     def remove_sensitive_data(self):
         from ..constants import SubmissionValueVariableSources
         from . import SubmissionValueVariable
+        from .submission_files import SubmissionFileAttachment
 
         self.bsn = ""
         self.kvk = ""
@@ -368,12 +369,17 @@ class Submission(models.Model):
             sensitive_variables = SubmissionValueVariable.objects.filter(
                 submission=self, form_variable__is_sensitive_data=True
             )
+
             for variable in sensitive_variables:
                 variable.value = ""
                 variable.source = SubmissionValueVariableSources.sensitive_data_cleaner
+
             SubmissionValueVariable.objects.bulk_update(
                 sensitive_variables, ["value", "source"]
             )
+            SubmissionFileAttachment.objects.filter(
+                submission_variable__form_variable__is_sensitive_data=True
+            ).delete()
         else:
             steps_qs = self.submissionstep_set.select_related(
                 "form_step",
@@ -616,7 +622,7 @@ class Submission(models.Model):
 
         merged_data = dict()
 
-        for step in self.submissionstep_set.exclude(data=None):
+        for step in self.submissionstep_set.exclude(_data=None):
             for key, value in step.data.items():
                 if key in merged_data:
                     logger.warning(

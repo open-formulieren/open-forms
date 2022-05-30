@@ -86,7 +86,7 @@ class SubmissionStepInline(admin.StackedInline):
     fields = (
         "uuid",
         "form_step",
-        "data",
+        "_data",
     )
     raw_id_fields = ("form_step",)
 

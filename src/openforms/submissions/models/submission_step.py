@@ -39,7 +39,7 @@ class SubmissionStep(models.Model):
         # TODO: should check that all the data for the form definition is present?
         # and validates?
         # For now - if it's been saved, we assume that was because it was completed
-        return bool(self.pk and self.get_data() is not None)
+        return bool(self.pk and self.data is not None)
 
     @property
     def can_submit(self) -> bool:
