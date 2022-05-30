@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.template import Context, Template
@@ -12,6 +14,7 @@ from glom import glom
 from solo.models import SingletonModel
 from tinymce.models import HTMLField
 
+from openforms.config.constants import CSPDirective
 from openforms.data_removal.constants import RemovalMethods
 from openforms.emails.validators import URLSanitationValidator
 from openforms.payments.validators import validate_payment_order_id_prefix
@@ -480,6 +483,14 @@ class GlobalConfiguration(SingletonModel):
     def siteimprove_enabled(self) -> bool:
         return bool(self.siteimprove_id)
 
+    def get_csp_updates(self):
+        updates = defaultdict(list)
+        if self.siteimprove_enabled:
+            updates["default-src"].append("siteimproveanalytics.com")
+            updates["img-src"].append("*.siteimproveanalytics.io")
+        # TODO support more contributions
+        return updates
+
     def render_privacy_policy_label(self):
         template = self.privacy_policy_label
         rendered_content = Template(template).render(Context({}))
@@ -521,3 +532,33 @@ class RichTextColor(models.Model):
         )
 
     example.short_description = _("Example")
+
+
+class CSPSettingQuerySet(models.QuerySet):
+    def as_dict(self):
+        ret = defaultdict(set)
+        for directive, value in self.values_list("directive", "value"):
+            ret[directive].add(value)
+        return {k: list(v) for k, v in ret.items()}
+
+
+class CSPSetting(models.Model):
+    directive = models.CharField(
+        _("directive"),
+        max_length=64,
+        help_text=_("CSP header directive"),
+        choices=CSPDirective.choices,
+    )
+    value = models.CharField(
+        _("value"),
+        max_length=128,
+        help_text=_("CSP header value"),
+    )
+
+    objects = CSPSettingQuerySet.as_manager()
+
+    class Meta:
+        ordering = ("directive", "value")
+
+    def __str__(self):
+        return f"{self.directive} '{self.value}'"

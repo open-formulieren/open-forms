@@ -232,7 +232,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
     "csp.contrib.rate_limiting.RateLimitedCSPMiddleware",
-    "csp.middleware.CSPMiddleware",
+    # note: UpdateCSPMiddleware sets data on the **response** for use by RateLimitedCSPMiddleware, so has to come after
+    "openforms.utils.middleware.UpdateCSPMiddleware",
 ]
 
 ROOT_URLCONF = "openforms.urls"
