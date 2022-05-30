@@ -47,5 +47,4 @@ class SelectField extends Select {
   }
 }
 
-
 export default SelectField;
