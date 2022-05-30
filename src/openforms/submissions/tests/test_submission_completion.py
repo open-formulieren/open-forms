@@ -134,7 +134,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
     def test_submit_form_with_not_applicable_step(self):
         form = FormFactory.create()
-        step1 = FormStepFactory.create(
+        step1 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -145,7 +145,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create(
+        step2 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -179,7 +179,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step1,
             data={"age": 16},
@@ -267,7 +267,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
     def test_prefilled_data_updated(self):
         form = FormFactory.create()
-        step = FormStepFactory.create(
+        step = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -284,7 +284,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         submission = SubmissionFactory.create(
             form=form, prefill_data={"test-prefill": {"surname": "Doe"}}
         )
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step,
             data={"surname": "Doe-MODIFIED"},

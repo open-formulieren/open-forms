@@ -34,6 +34,7 @@ FORMIO_CONFIGURATION_COMPONENTS = [
     # container: visible fieldset with visible children
     {
         "type": "fieldset",
+        "key": "fieldsetVisibleChildren",
         "label": "A container with visible children",
         "hidden": False,
         "components": [
@@ -59,19 +60,9 @@ class SubmissionRendererIntegrationTests(TestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        submission = SubmissionFactory.create(
-            form__name="public name",
-            form__internal_name="internal name",
-            form__generate_minimal_setup=True,
-            form__formstep__form_definition__name="Stap 1",
-            form__formstep__form_definition__configuration={
-                "components": FORMIO_CONFIGURATION_COMPONENTS
-            },
-        )
-        step = SubmissionStepFactory.create(
-            submission=submission,
-            form_step=submission.form.formstep_set.get(),
-            data={
+        submission = SubmissionFactory.from_components(
+            components_list=FORMIO_CONFIGURATION_COMPONENTS,
+            submitted_data={
                 "input1": "first input",
                 "input2": "second input",
                 "amount": 1234.56,
@@ -79,9 +70,18 @@ class SubmissionRendererIntegrationTests(TestCase):
             },
         )
 
+        form = submission.form
+        form.name = "public name"
+        form.internal_name = "internal name"
+        form.save()
+
+        form_definition = submission.steps[0].form_step.form_definition
+        form_definition.name = "Stap 1"
+        form_definition.save()
+
         # expose test data to test methods
         cls.submission = submission
-        cls.step = step
+        cls.step = submission.steps[0]
 
     def test_all_nodes_returned_in_correct_order(self):
         renderer = Renderer(

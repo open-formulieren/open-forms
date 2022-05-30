@@ -2,6 +2,7 @@ import factory
 
 from openforms.products.tests.factories import ProductFactory
 
+from ...formio.utils import is_layout_component, iter_components
 from ..constants import FormVariableDataTypes, FormVariableSources
 from ..models import Form, FormDefinition, FormStep, FormVariable, FormVersion
 from ..utils import form_to_json
@@ -80,6 +81,29 @@ class FormStepFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = FormStep
+
+    @classmethod
+    def create_with_variables(
+        cls,
+        **kwargs,
+    ) -> FormStep:
+        form_step = cls.create(**kwargs)
+
+        form_definition_configuration = form_step.form_definition.configuration
+        for component in iter_components(
+            configuration=form_definition_configuration, recursive=True
+        ):
+            if is_layout_component(component):
+                continue
+
+            FormVariableFactory.create(
+                form=form_step.form,
+                form_definition=form_step.form_definition,
+                key=component["key"],
+                is_sensitive_data=component.get("isSensitiveData", False),
+            )
+
+        return form_step
 
 
 class FormVersionFactory(factory.django.DjangoModelFactory):

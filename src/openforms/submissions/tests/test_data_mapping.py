@@ -157,6 +157,8 @@ class MappingTests(TestCase):
         }
         self.assertEqual(actual, expected)
 
+    # TODO Ask
+    # What to do about variables with empty data?
     def test_skip_missing(self):
         mapping = {
             "persoon.voornaam": "xyz_voornaam",

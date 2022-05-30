@@ -96,10 +96,10 @@ class SubmissionAttachmentTest(TestCase):
             {"key": "my_normal_key", "type": "text"},
             {"key": "my_file", "type": "file", "file": {"name": "my-filename.txt"}},
         ]
-        form_step = FormStepFactory.create(
+        form_step = FormStepFactory.create_with_variables(
             form_definition__configuration={"components": components}
         )
-        submission_step = SubmissionStepFactory.create(
+        submission_step = SubmissionStepFactory.create_with_variables(
             form_step=form_step, submission__form=form_step.form, data=data
         )
 
@@ -184,10 +184,10 @@ class SubmissionAttachmentTest(TestCase):
                 "file": {"name": "my-filename.txt"},
             },
         ]
-        form_step = FormStepFactory.create(
+        form_step = FormStepFactory.create_with_variables(
             form_definition__configuration={"components": components}
         )
-        submission_step = SubmissionStepFactory.create(
+        submission_step = SubmissionStepFactory.create_with_variables(
             form_step=form_step, submission__form=form_step.form, data=data
         )
 
@@ -260,10 +260,10 @@ class SubmissionAttachmentTest(TestCase):
                 },
             },
         ]
-        form_step = FormStepFactory.create(
+        form_step = FormStepFactory.create_with_variables(
             form_definition__configuration={"components": components}
         )
-        submission_step = SubmissionStepFactory.create(
+        submission_step = SubmissionStepFactory.create_with_variables(
             form_step=form_step, submission__form=form_step.form, data=data
         )
 

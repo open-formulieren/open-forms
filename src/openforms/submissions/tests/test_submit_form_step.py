@@ -140,16 +140,8 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
     def test_update_step_data(self, m_conf):
         m_conf.return_value = GlobalConfiguration(enable_form_variables=True)
         self._add_submission_to_session(self.submission)
-        SubmissionStepFactory.create(
-            submission=self.submission,
-            form_step=self.step1,
-        )
-        submission_step = SubmissionStepFactory.create(
-            submission=self.submission,
-            data={"foo": "bar"},
-            form_step=self.step2,
-        )
-        form_variable1 = FormVariableFactory.create(
+
+        FormVariableFactory.create(
             form=self.submission.form,
             form_definition=self.step2.form_definition,
             key="foo",
@@ -159,12 +151,17 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
             form_definition=self.step2.form_definition,
             key="modified",
         )
-        SubmissionValueVariableFactory.create(
+
+        SubmissionStepFactory.create_with_variables(
             submission=self.submission,
-            form_variable=form_variable1,
-            key="foo",
-            value="bar",
+            form_step=self.step1,
         )
+        submission_step = SubmissionStepFactory.create_with_variables(
+            submission=self.submission,
+            data={"foo": "bar"},
+            form_step=self.step2,
+        )
+
         endpoint = reverse(
             "api:submission-steps-detail",
             kwargs={
@@ -188,9 +185,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                         "components": [{"type": "test-component", "key": "test-key"}]
                     },
                 },
-                "data": {
-                    "modified": "data",
-                },
+                "data": {"modified": "data", "foo": ""},
                 "isApplicable": True,
                 "completed": True,
                 "optional": False,
@@ -198,7 +193,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
             },
         )
         submission_step.refresh_from_db()
-        self.assertEqual(submission_step.data, {"modified": "data"})
+        self.assertEqual(submission_step.data, {"foo": "", "modified": "data"})
 
         submission_variables = SubmissionValueVariable.objects.filter(
             submission=self.submission
@@ -224,7 +219,9 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 ]
             }
         )
-        form_step = FormStepFactory.create(form_definition=form_definition)
+        form_step = FormStepFactory.create_with_variables(
+            form_definition=form_definition
+        )
 
         submission = SubmissionFactory.create(form=form_step.form)
         self._add_submission_to_session(submission)
@@ -259,9 +256,11 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                 ]
             }
         )
-        form_step = FormStepFactory.create(form_definition=form_definition)
+        form_step = FormStepFactory.create_with_variables(
+            form_definition=form_definition
+        )
         submission = SubmissionFactory.create(form=form_step.form)
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             data={"country_of_residence": "Netherlands"},
             form_step=form_step,

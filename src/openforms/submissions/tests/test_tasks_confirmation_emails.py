@@ -18,6 +18,7 @@ from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.constants import ConfirmationEmailOptions
 from openforms.utils.tests.html_assert import HTMLAssertMixin
 
+from ...forms.tests.factories import FormStepFactory, FormVariableFactory
 from ..tasks import maybe_send_confirmation_email
 from ..tasks.emails import send_confirmation_email
 from .factories import SubmissionFactory, SubmissionStepFactory
@@ -67,10 +68,23 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             submitted_data={"email": "test@test.nl"},
         )
         # add a second step
-        SubmissionStepFactory.create(
+        form_step = FormStepFactory.create_with_variables(
+            optional=False,
+            form=submission.form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "foo",
+                        "type": "textfield",
+                        "label": "Foo",
+                        "showInEmail": True,
+                    }
+                ],
+            },
+        )
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
-            form_step__form=submission.form,
-            form_step__optional=False,
+            form_step=form_step,
             data={"foo": "bar"},
         )
         ConfirmationEmailTemplateFactory.create(
@@ -143,10 +157,8 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             submitted_data={"foo": "foovalue", "email": "test@test.nl"},
         )
         # add second step
-        SubmissionStepFactory.create(
-            submission=submission,
-            form_step__form=submission.form,
-            form_step__form_definition__configuration={
+        form_step = FormStepFactory.create_with_variables(
+            form_definition__configuration={
                 "components": [
                     {
                         "key": "bar",
@@ -162,6 +174,11 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                     },
                 ],
             },
+            form=submission.form,
+        )
+        SubmissionStepFactory.create_with_variables(
+            submission=submission,
+            form_step=form_step,
             data={"bar": "barvalue", "hello": "hellovalue"},
         )
         ConfirmationEmailTemplateFactory.create(
@@ -219,10 +236,8 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             submitted_data={"single1": "single1@test.nl", "single2": "single2@test.nl"},
         )
         # second step
-        SubmissionStepFactory.create(
-            submission=submission,
-            form_step__form=submission.form,
-            form_step__form_definition__configuration={
+        form_step = FormStepFactory.create_with_variables(
+            form_definition__configuration={
                 "display": "form",
                 "components": [
                     {
@@ -234,6 +249,11 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                     },
                 ],
             },
+            form=submission.form,
+        )
+        SubmissionStepFactory.create_with_variables(
+            submission=submission,
+            form_step=form_step,
             data={"many": ["many1@test.nl", "many2@test.nl"]},
         )
         ConfirmationEmailTemplateFactory.create(

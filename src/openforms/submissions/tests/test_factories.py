@@ -62,10 +62,7 @@ class SubmissionFactoryTests(TestCase):
         )
 
         actual = submission.get_merged_data()
-        expected = {
-            "foo": 1,
-            "bar": 2,
-        }
+        expected = {"foo": 1, "bar": 2, "bazz": ""}
         self.assertEqual(actual, expected)
 
     def test_from_components__kwargs(self):

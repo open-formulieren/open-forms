@@ -131,16 +131,16 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
                 )
             )
 
+        data = submitted_data or {}
         SubmissionStepFactory.create(
-            submission=submission, form_step=form_step, data=submitted_data
+            submission=submission, form_step=form_step, data=data
         )
         for form_variable in form_variables:
             SubmissionValueVariableFactory.create(
                 submission=submission,
                 form_variable=form_variable,
                 key=form_variable.key,
-                value=submitted_data.get(form_variable.key)
-                or form_variable.get_initial_value(),
+                value=data.get(form_variable.key) or form_variable.get_initial_value(),
             )
 
         # When the submission was initially created, the method calculate_price has already
@@ -172,6 +172,29 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = SubmissionStep
 
+    @classmethod
+    def create_with_variables(
+        cls,
+        **kwargs,
+    ) -> SubmissionStep:
+        submission_step = cls.create(**kwargs)
+
+        form_variables = FormVariable.objects.filter(
+            form=submission_step.submission.form
+        )
+        step_data = kwargs.get("data", {})
+
+        for variable in form_variables:
+            if variable.key in step_data:
+                SubmissionValueVariableFactory.create(
+                    submission=submission_step.submission,
+                    key=variable.key,
+                    value=step_data[variable.key],
+                    form_variable=variable,
+                )
+
+        return submission_step
+
 
 class SubmissionReportFactory(factory.django.DjangoModelFactory):
     title = factory.Faker("bs")
@@ -202,6 +225,27 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = SubmissionFileAttachment
+
+    @classmethod
+    def create_with_variable(
+        cls,
+        **kwargs,
+    ) -> SubmissionFileAttachment:
+        file_attachment = cls.create(**kwargs)
+
+        submission = file_attachment.submission_step.submission
+        form_variable = FormVariable.objects.get(
+            form=submission.form, key=file_attachment.form_key
+        )
+        submission_variable = SubmissionValueVariableFactory.create(
+            submission=submission,
+            key=file_attachment.form_key,
+            form_variable=form_variable,
+        )
+        file_attachment.submission_variable = submission_variable
+        file_attachment.save()
+
+        return file_attachment
 
 
 class SubmissionValueVariableFactory(factory.django.DjangoModelFactory):

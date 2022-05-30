@@ -29,6 +29,8 @@ from .factories import (
 class SubmissionTests(TestCase):
     maxDiff = None
 
+    # TODO Ask
+    # With variables, we can't anymore have equal keys in the same form
     def test_get_merged_data(self):
         submission = SubmissionFactory.create()
         SubmissionStepFactory.create(
@@ -50,6 +52,8 @@ class SubmissionTests(TestCase):
             {"key1": "value1", "key2": "value-a", "key3": "value-b"},
         )
 
+    # TODO Ask
+    # With variables, we can't anymore have equal keys in the same form
     def test_get_ordered_data_with_component_type_formio_formatters(self):
         form_definition = FormDefinitionFactory.create(
             configuration={
@@ -155,10 +159,10 @@ class SubmissionTests(TestCase):
             }
         )
         submission = SubmissionFactory.create()
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             data={"testSelectBoxes": {"test1": True, "test2": True, "test3": False}},
-            form_step=FormStepFactory.create(
+            form_step=FormStepFactory.create_with_variables(
                 form=submission.form, form_definition=form_definition
             ),
         )
@@ -202,15 +206,17 @@ class SubmissionTests(TestCase):
             }
         )
         form = FormFactory.create()
-        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
-        form_step_2 = FormStepFactory.create(
+        form_step = FormStepFactory.create_with_variables(
+            form=form, form_definition=form_definition
+        )
+        form_step_2 = FormStepFactory.create_with_variables(
             form=form, form_definition=form_definition_2
         )
 
         submission = SubmissionFactory.create(
             form=form, bsn="999990676", kvk="69599084", prefill_data={"secret": "123"}
         )
-        submission_step = SubmissionStepFactory.create(
+        submission_step = SubmissionStepFactory.create_with_variables(
             submission=submission,
             data={
                 "textFieldSensitive": "this is sensitive",
@@ -218,10 +224,10 @@ class SubmissionTests(TestCase):
             },
             form_step=form_step,
         )
-        attachment = SubmissionFileAttachmentFactory.create(
+        attachment = SubmissionFileAttachmentFactory.create_with_variable(
             submission_step=submission_step, form_key="sensitiveFile"
         )
-        submission_step_2 = SubmissionStepFactory.create(
+        submission_step_2 = SubmissionStepFactory.create_with_variables(
             submission=submission,
             data={
                 "textFieldSensitive2": "this is sensitive",
@@ -408,14 +414,14 @@ class SubmissionTests(TestCase):
                 ],
             }
         )
-        form_step_1 = FormStepFactory.create(
+        form_step_1 = FormStepFactory.create_with_variables(
             form=form, form_definition=form_definition_1
         )
-        form_step_2 = FormStepFactory.create(
+        form_step_2 = FormStepFactory.create_with_variables(
             form=form, form_definition=form_definition_2
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             data={
                 "product": {"identifier": "79", "name": "Paspoort"},
@@ -424,7 +430,7 @@ class SubmissionTests(TestCase):
             },
             form_step=form_step_1,
         )
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             data={
                 "lastName": "Maykin",

@@ -9,6 +9,7 @@ from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
 
 from ..constants import RegistrationStatuses
+from ..models import SubmissionValueVariable
 from .factories import SubmissionFactory
 
 
@@ -57,8 +58,13 @@ class TestSubmissionAdmin(WebTest):
         self.assertContains(response, expected, html=True)
 
     def test_displaying_merged_data_displays_signature_as_image_formio_formatters(self):
+        # TODO remove when variables become default
         self.submission_step_1.data["signature"] = "data:image/png;base64,iVBOR"
         self.submission_step_1.save()
+
+        signature_variable = SubmissionValueVariable.objects.get(key="signature")
+        signature_variable.value = "data:image/png;base64,iVBOR"
+        signature_variable.save()
 
         response = self.app.get(
             reverse(

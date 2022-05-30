@@ -19,6 +19,7 @@ from openforms.submissions.tests.factories import (
     SubmissionValueVariableFactory,
 )
 
+from ...forms.models import FormStep, FormVariable
 from ..constants import RemovalMethods
 from ..tasks import delete_submissions, make_sensitive_data_anonymous
 
@@ -379,6 +380,68 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         cls.step2 = FormStepFactory.create(
             form=cls.form, form_definition=cls.form_definition_2
         )
+        cls._create_form_variables(cls.form)
+
+    @staticmethod
+    def _create_form_variables(form):
+        form_steps = list(FormStep.objects.filter(form=form).order_by("pk"))
+        if not len(form_steps):
+            form_step1 = FormStepFactory.create(form=form)
+            form_step2 = FormStepFactory.create(form=form)
+            form_steps = [form_step1, form_step2]
+
+        FormVariableFactory.create(
+            key="textFieldSensitive",
+            is_sensitive_data=True,
+            form_definition=form_steps[0].form_definition,
+            form=form,
+        )
+        FormVariableFactory.create(
+            key="textFieldNotSensitive",
+            is_sensitive_data=False,
+            form_definition=form_steps[0].form_definition,
+            form=form,
+        )
+        FormVariableFactory.create(
+            key="textFieldSensitive2",
+            is_sensitive_data=True,
+            form_definition=form_steps[1].form_definition,
+            form=form,
+        )
+        FormVariableFactory.create(
+            key="textFieldNotSensitive2",
+            is_sensitive_data=False,
+            form_definition=form_steps[1].form_definition,
+            form=form,
+        )
+
+    def _create_submission_variables(self, submission):
+        form_variables = FormVariable.objects.filter(form=submission.form)
+
+        SubmissionValueVariableFactory.create(
+            submission=submission,
+            form_variable=form_variables.get(key="textFieldSensitive"),
+            key="textFieldSensitive",
+            value="This is sensitive",
+        )
+        SubmissionValueVariableFactory.create(
+            submission=submission,
+            form_variable=form_variables.get(key="textFieldNotSensitive"),
+            key="textFieldNotSensitive",
+            value="This is not sensitive",
+        )
+        SubmissionValueVariableFactory.create(
+            submission=submission,
+            form_variable=form_variables.get(key="textFieldSensitive2"),
+            key="textFieldSensitive2",
+            value="This is also sensitive",
+        )
+        SubmissionValueVariableFactory.create(
+            submission=submission,
+            form_variable=form_variables.get(key="textFieldNotSensitive2"),
+            key="textFieldNotSensitive2",
+            value="This is also not sensitive",
+        )
 
     def test_certain_successful_submissions_have_sensitive_data_removed(self):
         config = GlobalConfiguration.get_solo()
@@ -410,6 +473,8 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         delete_submission.save()
         submission_to_be_anonymous.save()
 
+        self._create_form_variables(delete_submission.form)
+
         for submission in [
             not_successful,
             too_recent,
@@ -421,7 +486,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
                 },
-                form_step=self.step1,
+                form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
             SubmissionStepFactory.create(
@@ -429,9 +494,10 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
                 },
-                form_step=self.step2,
+                form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
             )
+            self._create_submission_variables(submission)
 
         make_sensitive_data_anonymous()
 
@@ -529,6 +595,9 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         delete_submission.save()
         submission_to_be_anonymous.save()
 
+        self._create_form_variables(override_form)
+        self._create_form_variables(delete_submission.form)
+
         for submission in [
             not_successful,
             too_recent,
@@ -541,7 +610,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
                 },
-                form_step=self.step1,
+                form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
             SubmissionStepFactory.create(
@@ -549,9 +618,10 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
                 },
-                form_step=self.step2,
+                form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
             )
+            self._create_submission_variables(submission)
 
         make_sensitive_data_anonymous()
 
@@ -660,6 +730,9 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         in_progress_delete_submission.save()
         in_progress_submission_to_be_anonymous.save()
 
+        self._create_form_variables(pending_delete_submission.form)
+        self._create_form_variables(in_progress_delete_submission.form)
+
         for submission in [
             not_successful,
             pending_too_recent,
@@ -674,7 +747,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
                 },
-                form_step=self.step1,
+                form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
             SubmissionStepFactory.create(
@@ -682,9 +755,10 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
                 },
-                form_step=self.step2,
+                form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
             )
+            self._create_submission_variables(submission)
 
         make_sensitive_data_anonymous()
 
@@ -808,6 +882,10 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         in_progress_delete_submission.save()
         in_progress_submission_to_be_anonymous.save()
 
+        self._create_form_variables(override_form)
+        self._create_form_variables(pending_delete_submission.form)
+        self._create_form_variables(in_progress_delete_submission.form)
+
         for submission in [
             not_successful,
             pending_too_recent,
@@ -824,7 +902,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
                 },
-                form_step=self.step1,
+                form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
             SubmissionStepFactory.create(
@@ -832,9 +910,10 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
                 },
-                form_step=self.step2,
+                form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
             )
+            self._create_submission_variables(submission)
 
         make_sensitive_data_anonymous()
 
@@ -910,95 +989,57 @@ class MakeSensitiveDataAnonymousTask(TestCase):
             registration_status=RegistrationStatuses.failed, form=self.form
         )
 
+        delete_submission = SubmissionFactory.create(
+            registration_status=RegistrationStatuses.failed,
+            form__errored_submissions_removal_method=RemovalMethods.delete_permanently,
+        )
         submission_to_be_anonymous = SubmissionFactory.create(
             form=self.form, registration_status=RegistrationStatuses.failed
         )
 
         # Passing created_on to the factory create method does not work
+        delete_submission.created_on = timezone.now() - timedelta(
+            days=config.errored_submissions_removal_limit + 1
+        )
         submission_to_be_anonymous.created_on = timezone.now() - timedelta(
             days=config.errored_submissions_removal_limit + 1
         )
+        delete_submission.save()
         submission_to_be_anonymous.save()
 
-        form_variable_sensitive1 = FormVariableFactory.create(
-            key="textFieldSensitive",
-            is_sensitive_data=True,
-            form_definition=self.step1.form_definition,
-            form=self.form,
-        )
-        form_variable_not_sensitive1 = FormVariableFactory.create(
-            key="textFieldNotSensitive",
-            is_sensitive_data=False,
-            form_definition=self.step1.form_definition,
-            form=self.form,
-        )
-        form_variable_sensitive2 = FormVariableFactory.create(
-            key="textFieldSensitive2",
-            is_sensitive_data=True,
-            form_definition=self.step2.form_definition,
-            form=self.form,
-        )
-        form_variable_not_sensitive2 = FormVariableFactory.create(
-            key="textFieldNotSensitive2",
-            is_sensitive_data=False,
-            form_definition=self.step2.form_definition,
-            form=self.form,
-        )
+        self._create_form_variables(delete_submission.form)
 
         for submission in [
             not_failed,
             too_recent,
+            delete_submission,
             submission_to_be_anonymous,
         ]:
-            SubmissionStepFactory.create(
+            SubmissionStepFactory.create_with_variables(
                 data={
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
                 },
-                form_step=self.step1,
+                form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
-
-            SubmissionValueVariableFactory.create(
-                submission=submission,
-                form_variable=form_variable_sensitive1,
-                key=form_variable_sensitive1.key,
-                value="This is sensitive",
-            )
-            SubmissionValueVariableFactory.create(
-                submission=submission,
-                form_variable=form_variable_not_sensitive1,
-                key=form_variable_not_sensitive1.key,
-                value="This is not sensitive",
-            )
-            SubmissionStepFactory.create(
+            SubmissionStepFactory.create_with_variables(
                 data={
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
                 },
-                form_step=self.step2,
+                form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
-            )
-            SubmissionValueVariableFactory.create(
-                submission=submission,
-                form_variable=form_variable_sensitive2,
-                key=form_variable_sensitive2.key,
-                value="This is also sensitive",
-            )
-            SubmissionValueVariableFactory.create(
-                submission=submission,
-                form_variable=form_variable_not_sensitive2,
-                key=form_variable_not_sensitive2.key,
-                value="This is also not sensitive",
             )
 
         make_sensitive_data_anonymous()
 
         not_failed.refresh_from_db()
         too_recent.refresh_from_db()
+        delete_submission.refresh_from_db()
         submission_to_be_anonymous.refresh_from_db()
 
-        for submission in [not_failed, too_recent]:
+        for submission in [not_failed, too_recent, delete_submission]:
             with self.subTest(submission=submission):
                 self.assertEqual(
                     submission.submissionstep_set.first().data["textFieldSensitive"],
@@ -1044,114 +1085,6 @@ class MakeSensitiveDataAnonymousTask(TestCase):
             )
             self.assertTrue(submission_to_be_anonymous._is_cleaned)
 
-    def test_errored_submission_with_delete_permanently_has_data_removed(self):
-        config = GlobalConfiguration.get_solo()
-
-        delete_submission = SubmissionFactory.create(
-            registration_status=RegistrationStatuses.failed,
-            form__errored_submissions_removal_method=RemovalMethods.delete_permanently,
-        )
-        form = delete_submission.form
-
-        step1 = FormStepFactory.create(form=form, form_definition=self.form_definition)
-        step2 = FormStepFactory.create(
-            form=form, form_definition=self.form_definition_2
-        )
-
-        # Passing created_on to the factory create method does not work
-        delete_submission.created_on = timezone.now() - timedelta(
-            days=config.errored_submissions_removal_limit + 1
-        )
-        delete_submission.save()
-
-        form_variable_sensitive1 = FormVariableFactory.create(
-            key="textFieldSensitive",
-            is_sensitive_data=True,
-            form=form,
-            form_definition=self.form_definition,
-        )
-        form_variable_not_sensitive1 = FormVariableFactory.create(
-            key="textFieldNotSensitive",
-            is_sensitive_data=False,
-            form=form,
-            form_definition=self.form_definition,
-        )
-        form_variable_sensitive2 = FormVariableFactory.create(
-            key="textFieldSensitive2",
-            is_sensitive_data=True,
-            form=form,
-            form_definition=self.form_definition_2,
-        )
-        form_variable_not_sensitive2 = FormVariableFactory.create(
-            key="textFieldNotSensitive2",
-            is_sensitive_data=False,
-            form=form,
-            form_definition=self.form_definition_2,
-        )
-
-        SubmissionStepFactory.create(
-            data={
-                "textFieldSensitive": "This is sensitive",
-                "textFieldNotSensitive": "This is not sensitive",
-            },
-            form_step=step1,
-            submission=delete_submission,
-        )
-
-        SubmissionValueVariableFactory.create(
-            submission=delete_submission,
-            form_variable=form_variable_sensitive1,
-            key=form_variable_sensitive1.key,
-            value="This is sensitive",
-        )
-        SubmissionValueVariableFactory.create(
-            submission=delete_submission,
-            form_variable=form_variable_not_sensitive1,
-            key=form_variable_not_sensitive1.key,
-            value="This is not sensitive",
-        )
-        SubmissionStepFactory.create(
-            data={
-                "textFieldSensitive2": "This is also sensitive",
-                "textFieldNotSensitive2": "This is also not sensitive",
-            },
-            form_step=step2,
-            submission=delete_submission,
-        )
-        SubmissionValueVariableFactory.create(
-            submission=delete_submission,
-            form_variable=form_variable_sensitive2,
-            key=form_variable_sensitive2.key,
-            value="This is also sensitive",
-        )
-        SubmissionValueVariableFactory.create(
-            submission=delete_submission,
-            form_variable=form_variable_not_sensitive2,
-            key=form_variable_not_sensitive2.key,
-            value="This is also not sensitive",
-        )
-
-        make_sensitive_data_anonymous()
-
-        delete_submission.refresh_from_db()
-
-        self.assertEqual(
-            delete_submission.submissionstep_set.first().data["textFieldSensitive"],
-            "This is sensitive",
-        )
-        self.assertEqual(
-            delete_submission.submissionstep_set.first().data["textFieldNotSensitive"],
-            "This is not sensitive",
-        )
-        self.assertEqual(
-            delete_submission.submissionstep_set.last().data["textFieldSensitive2"],
-            "This is also sensitive",
-        )
-        self.assertEqual(
-            delete_submission.submissionstep_set.last().data["textFieldNotSensitive2"],
-            "This is also not sensitive",
-        )
-
     def test_form_override_of_errored_submissions_have_sensitive_data_removed(self):
         config = GlobalConfiguration.get_solo()
 
@@ -1195,6 +1128,9 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         delete_submission.save()
         submission_to_be_anonymous.save()
 
+        self._create_form_variables(override_form)
+        self._create_form_variables(delete_submission.form)
+
         for submission in [
             not_failed,
             too_recent,
@@ -1207,7 +1143,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
                 },
-                form_step=self.step1,
+                form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
             SubmissionStepFactory.create(
@@ -1215,9 +1151,10 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
                 },
-                form_step=self.step2,
+                form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
             )
+            self._create_submission_variables(submission)
 
         make_sensitive_data_anonymous()
 

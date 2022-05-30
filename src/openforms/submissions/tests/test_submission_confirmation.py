@@ -15,16 +15,40 @@ class SubmissionConfirmationPageTests(APITestCase):
         config.save()
 
         form = FormFactory.create()
-        step1 = FormStepFactory.create(form=form)
-        step2 = FormStepFactory.create(form=form)
+        step1 = FormStepFactory.create_with_variables(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "name",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "last_name",
+                    },
+                ]
+            },
+        )
+        step2 = FormStepFactory.create_with_variables(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "favourite_icecream",
+                    }
+                ]
+            },
+        )
         submission = SubmissionFactory.create(form=form)
 
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step1,
             data={"name": "john", "last_name": "doe"},
         )
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step2,
             data={"favourite_icecream": "hazelnut"},
@@ -45,16 +69,40 @@ class SubmissionConfirmationPageTests(APITestCase):
         form = FormFactory.create(
             submission_confirmation_template="Dear {{ name|title }} {{ last_name|title }}, {{ favourite_icecream }} is a great ice cream choice!"
         )
-        step1 = FormStepFactory.create(form=form)
-        step2 = FormStepFactory.create(form=form)
+        step1 = FormStepFactory.create_with_variables(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "name",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "last_name",
+                    },
+                ]
+            },
+        )
+        step2 = FormStepFactory.create_with_variables(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "favourite_icecream",
+                    }
+                ]
+            },
+        )
         submission = SubmissionFactory.create(form=form)
 
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step1,
             data={"name": "john", "last_name": "doe"},
         )
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step2,
             data={"favourite_icecream": "hazelnut"},
