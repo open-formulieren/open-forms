@@ -2127,7 +2127,7 @@ paths:
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
-  /api/v1/registration/plugins/zgw/informatieobjecttypen/:
+  /api/v1/registration/plugins/zgw/informatieobjecttypen:
     get:
       operationId: registration_plugins_zgw_informatieobjecttypen_list
       description: List the available InformatieObjectTypen.

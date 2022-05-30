@@ -6,7 +6,7 @@ app_name = "zgw_apis"
 
 urlpatterns = [
     path(
-        "informatieobjecttypen/",
+        "informatieobjecttypen",
         InformatieObjectTypenListView.as_view(),
         name="iotypen-list",
     ),

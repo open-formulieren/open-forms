@@ -19,7 +19,7 @@ const REGISTRATION = {
         // if the url starts with '/', then formio will prefix it with the formio
         // base URL, which is of course wrong. We there explicitly use the detected
         // host.
-        url: getFullyQualifiedUrl('/api/v1/registration/plugins/zgw/informatieobjecttypen/'),
+        url: getFullyQualifiedUrl('/api/v1/registration/plugins/zgw/informatieobjecttypen'),
       },
       valueProperty: 'url',
     },
