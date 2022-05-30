@@ -1,4 +1,3 @@
-from copy import deepcopy
 from datetime import date
 from typing import Any, Dict, NoReturn
 
@@ -7,10 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from zgw_consumers.models import Service
 
-from openforms.plugins.exceptions import InvalidPluginConfiguration
-
-# "Borrow" the functions from another plugin.
-from openforms.registrations.contrib.zgw_apis.service import (
+from openforms.contrib.zgw.service import (
     create_attachment_document,
     create_csv_document,
     create_report_document,
@@ -39,6 +35,18 @@ def _point_coordinate(value):
     return {"type": "Point", "coordinates": [value[0], value[1]]}
 
 
+def build_options(plugin_options: dict, key_mapping: dict) -> dict:
+    """
+    Construct options from plugin options dict, allowing renaming of keys
+    """
+    options = {
+        new_key: plugin_options[key_in_opts]
+        for new_key, key_in_opts in key_mapping.items()
+        if key_in_opts in plugin_options
+    }
+    return options
+
+
 @register("objects_api")
 class ObjectsAPIRegistration(BasePlugin):
     verbose_name = _("Objects API registration")
@@ -57,10 +65,14 @@ class ObjectsAPIRegistration(BasePlugin):
         config.apply_defaults_to(options)
 
         submission_report = SubmissionReport.objects.get(submission=submission)
-        submission_report_options = deepcopy(options)
-        submission_report_options["informatieobjecttype"] = options[
-            "informatieobjecttype_submission_report"
-        ]
+        submission_report_options = build_options(
+            options,
+            {
+                "informatieobjecttype": "informatieobjecttype_submission_report",
+                "organisatie_rsin": "organisatie_rsin",
+                "vertrouwelijkheidaanduiding": "vertrouwelijkheidaanduiding",
+            },
+        )
         document = create_report_document(
             submission.form.admin_name,
             submission_report,
@@ -68,12 +80,21 @@ class ObjectsAPIRegistration(BasePlugin):
             get_drc=get_drc,
         )
 
-        attachment_options = deepcopy(options)
-        attachment_options["informatieobjecttype"] = options[
-            "informatieobjecttype_attachment"
-        ]
         attachments = []
         for attachment in submission.attachments:
+            attachment_options = build_options(
+                options,
+                {
+                    "informatieobjecttype": "informatieobjecttype_attachment",
+                    "organisatie_rsin": "organisatie_rsin",
+                    "vertrouwelijkheidaanduiding": "vertrouwelijkheidaanduiding",
+                },
+            )
+            if attachment.informatieobjecttype:
+                attachment_options[
+                    "informatieobjecttype"
+                ] = attachment.informatieobjecttype
+
             attachment_document = create_attachment_document(
                 submission.form.admin_name,
                 attachment,
@@ -96,10 +117,14 @@ class ObjectsAPIRegistration(BasePlugin):
             options.get("upload_submission_csv", False)
             and options["informatieobjecttype_submission_csv"]
         ):
-            submission_csv_options = deepcopy(options)
-            submission_csv_options["informatieobjecttype"] = options[
-                "informatieobjecttype_submission_csv"
-            ]
+            submission_csv_options = build_options(
+                options,
+                {
+                    "informatieobjecttype": "informatieobjecttype_submission_csv",
+                    "organisatie_rsin": "organisatie_rsin",
+                    "vertrouwelijkheidaanduiding": "vertrouwelijkheidaanduiding",
+                },
+            )
             submission_csv = create_submission_export(
                 Submission.objects.filter(pk=submission.pk)
             ).export("csv")

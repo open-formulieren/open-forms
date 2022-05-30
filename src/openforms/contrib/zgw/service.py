@@ -148,9 +148,6 @@ def create_attachment_document(
     options: dict,
     get_drc=default_get_drc,
 ) -> dict:
-    client = get_drc().build_client()
-    today = date.today().isoformat()
-
     submission_attachment.content.seek(0)
     base64_body = b64encode(submission_attachment.content.read()).decode()
 

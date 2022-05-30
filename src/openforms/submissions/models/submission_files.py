@@ -11,6 +11,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from glom import glom
 from privates.fields import PrivateMediaFileField
 
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
@@ -172,3 +173,17 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
             while chunk := file_content.read(chunk_size):
                 sha256.update(chunk)
         return sha256.hexdigest()
+
+    @property
+    def informatieobjecttype(self) -> Optional[str]:
+        """
+        Get the informatieobjecttype for this attachment from the configuration
+        """
+        formdef_config = self.submission_step.form_step.iter_components()
+        for component in formdef_config:
+            if component["key"] == self.form_key:
+                # Use field-specific override
+                if iotype := glom(
+                    component, "registration.informatieobjecttype", default=""
+                ):
+                    return iotype

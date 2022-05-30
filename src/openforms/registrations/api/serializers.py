@@ -34,3 +34,28 @@ class RegistrationAttributeSerializer(serializers.Serializer):
         label=_("Label"),
         help_text=_("The human-readable name for an attribute."),
     )
+
+
+@dataclass
+class InformatieObjectTypeWrapper:
+    iotype: tuple
+
+    def __post_init__(self):
+        self.description = self.iotype[0]
+        self.url = self.iotype[1]
+        self.catalogus_domain = self.iotype[2]
+
+
+class InformatieObjectTypeSerializer(serializers.Serializer):
+    description = serializers.CharField(
+        label=_("omschrijving"),
+        help_text=_("The description of the InformatieObjectType"),
+    )
+    url = serializers.URLField(
+        label=_("url"),
+        help_text=_("The URL of the InformatieObjectType."),
+    )
+    catalogus_domain = serializers.CharField(
+        label=_("catalogus domein"),
+        help_text=_("The domain of the related Catalogus"),
+    )

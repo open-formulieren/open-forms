@@ -2127,6 +2127,27 @@ paths:
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
+  /api/v1/registration/plugins/zgw/informatieobjecttypen:
+    get:
+      operationId: registration_plugins_zgw_informatieobjecttypen_list
+      description: List the available InformatieObjectTypen.
+      summary: List available InformatieObjectTypen
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InformatieObjectTypeChoice'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/submissions:
     get:
       operationId: submissions_list
@@ -3465,6 +3486,13 @@ components:
           description: Email given when making the appointment
       required:
       - email
+    CatalogusDomain:
+      type: object
+      properties:
+        domein:
+          type: string
+      required:
+      - domein
     CompletionValidation:
       type: object
       properties:
@@ -4115,6 +4143,26 @@ components:
       - delete_permanently
       - make_anonymous
       type: string
+    InformatieObjectType:
+      type: object
+      properties:
+        url:
+          type: string
+        omschrijving:
+          type: string
+      required:
+      - omschrijving
+      - url
+    InformatieObjectTypeChoice:
+      type: object
+      properties:
+        informatieobjecttype:
+          $ref: '#/components/schemas/InformatieObjectType'
+        catalogus:
+          $ref: '#/components/schemas/CatalogusDomain'
+      required:
+      - catalogus
+      - informatieobjecttype
     Location:
       type: object
       properties:

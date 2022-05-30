@@ -6,6 +6,15 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
+from openforms.contrib.zgw.service import (
+    create_attachment_document,
+    create_report_document,
+    create_rol,
+    create_status,
+    create_zaak,
+    relate_document,
+    set_zaak_payment,
+)
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.mixins import JsonSchemaSerializerMixin
@@ -16,15 +25,6 @@ from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
 from ...registry import register
 from .checks import check_config
 from .models import ZgwConfig
-from .service import (
-    create_attachment_document,
-    create_report_document,
-    create_rol,
-    create_status,
-    create_zaak,
-    relate_document,
-    set_zaak_payment,
-)
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -113,6 +113,9 @@ class ZGWRegistration(BasePlugin):
         status = create_status(zaak)
 
         for attachment in submission.attachments:
+            options["informatieobjecttype"] = (
+                attachment.informatieobjecttype or options["informatieobjecttype"]
+            )
             attachment = create_attachment_document(
                 submission.form.admin_name, attachment, options
             )

@@ -10,6 +10,7 @@ import BsnField from './components/form/bsn';
 import PostcodeField from './components/form/postcode';
 import FileField from './components/form/file';
 import SelectField from './components/form/select';
+import InformatieObjectTypeSelectField from './components/form/iotype-select';
 import RadioField from './components/form/radio';
 import SelectBoxesField from './components/form/selectBoxes';
 import EmailField from './components/form/email';
@@ -40,6 +41,7 @@ const FormIOModule = {
     postcode: PostcodeField,
     file: FileField,
     select: SelectField,
+    iotypeSelect: InformatieObjectTypeSelectField,
     radio: RadioField,
     selectboxes: SelectBoxesField,
     email: EmailField,

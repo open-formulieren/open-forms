@@ -1,5 +1,4 @@
 import {Formio} from 'formiojs';
-
 import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION} from './edit/tabs';
 
 const Select = Formio.Components.components.select;
