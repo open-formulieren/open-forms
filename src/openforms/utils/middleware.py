@@ -4,17 +4,26 @@ from openforms.config.models import CSPSetting, GlobalConfiguration
 
 
 class UpdateCSPMiddleware:
+    """
+    adds database driven CSP directives by simulating the django-csp '@csp_update' decorator
+
+    https://django-csp.readthedocs.io/en/latest/decorators.html#csp-update
+    """
+
     def __init__(self, get_response):
         self.get_response = get_response
 
     def get_csp_update(self) -> Dict[str, List[str]]:
         update = dict()
 
+        # known standard stuff from commonn settings
         _append_dict_list_values(
             update, GlobalConfiguration.get_solo().get_csp_updates()
         )
+        # dynamic admin driven
         _append_dict_list_values(update, CSPSetting.objects.as_dict())
 
+        # TODO more contributions can be collected here
         return update
 
     def __call__(self, request):
