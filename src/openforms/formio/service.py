@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.template import Context, Template
 from django.urls import reverse
 
@@ -8,7 +9,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.formio.utils import iter_components
 from openforms.forms.custom_field_types import handle_custom_types
 from openforms.prefill import apply_prefill, format_date_value
-from openforms.submissions.models import Submission
+from openforms.submissions.models import Submission, SubmissionValueVariable
 
 
 # TODO: it might be beneficial to memoize this function if it runs multiple times in
@@ -37,11 +38,16 @@ def get_dynamic_configuration(
 
 
 def insert_variables(configuration: dict, submission: Submission) -> dict:
+    prefill_variables = SubmissionValueVariable.objects.filter(
+        ~Q(form_variable__prefill_plugin=""), submission=submission
+    ).values("key", "value")
+    prefill_data = {variable.key: variable.value for variable in prefill_variables}
+
     value_variables_state = submission.load_submission_value_variables_state()
     data = value_variables_state.get_data()
 
     for component in iter_components(configuration):
-        if value := data.get(component["key"]):
+        if value := prefill_data.get(component["key"]):
             component["defaultValue"] = value
             if component["type"] == "date":
                 component["defaultValue"] = format_date_value(value)

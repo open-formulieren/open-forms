@@ -13,7 +13,7 @@ from django.utils.translation import gettext_lazy as _
 
 from django_better_admin_arrayfield.models.fields import ArrayField
 from furl import furl
-from glom import glom
+from glom import PathAccessError, glom
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
@@ -473,8 +473,13 @@ class Submission(models.Model):
 
         updated_variables = []
         for variable in self._variables_state.variables:
-            new_value = data.get(variable.key)
-            if new_value and variable.value != new_value:
+            try:
+                new_value = glom(data, variable.key)
+            except PathAccessError:
+                updated_variables.append(variable)
+                continue
+
+            if variable.value != new_value:
                 variable.value = new_value
                 if source:
                     variable.source = source

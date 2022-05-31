@@ -5,6 +5,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from glom import Assign, glom
+
 from openforms.forms.models.form_variable import FormVariable
 
 from ..constants import SubmissionValueVariableSources
@@ -20,12 +22,27 @@ class SubmissionValueVariablesState:
             if variable.key == key:
                 return variable
 
-    def get_data(self):
-        return {
-            variable.key: variable.value
-            for variable in self.variables
-            if variable.value != ""
-        }
+    def get_data(self, submission_step=None):
+        submission_variables = self.variables
+        if submission_step:
+            form_variables = FormVariable.objects.filter(
+                form_definition=submission_step.form_step.form_definition
+            )
+            submission_variables = [
+                variable
+                for variable in self.variables
+                if variable.form_variable in form_variables
+            ]
+
+        data = {}
+        for variable in submission_variables:
+            if (
+                variable.value != ""
+                or variable.source
+                == SubmissionValueVariableSources.sensitive_data_cleaner
+            ):
+                glom(data, Assign(variable.key, variable.value, missing=dict))
+        return data
 
     def get_variables_in_submission_step(self, submission_step):
         form_variables = FormVariable.objects.filter(
