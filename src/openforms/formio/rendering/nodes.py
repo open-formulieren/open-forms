@@ -8,7 +8,7 @@ from openforms.submissions.rendering.constants import RenderModes
 
 from ..formatters.service import format_value
 from ..typing import Component
-from ..utils import iter_components
+from ..utils import is_layout_component, iter_components
 
 if TYPE_CHECKING:
     from openforms.submissions.rendering import Renderer
@@ -154,8 +154,8 @@ class ComponentNode(Node):
         if not self.is_visible:
             return
 
-        # in export mode, only emit if there's a 'key' property
-        if self.mode != RenderModes.export or "key" in self.component:
+        # in export mode, only emit if the component is not a layout component
+        if self.mode != RenderModes.export or not is_layout_component(self.component):
             yield self
 
         for child in self.get_children():
