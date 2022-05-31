@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Any, Dict
 import elasticapm
 from json_logic import jsonLogic
 
-from openforms.config.models import GlobalConfiguration
 from openforms.formio.service import get_dynamic_configuration
 from openforms.formio.utils import get_default_values, iter_components
 from openforms.forms.constants import LogicActionTypes
@@ -70,9 +69,7 @@ def evaluate_form_logic(
     # if keys are present in both dicts
     data = {**defaults, **data}
 
-    conf = GlobalConfiguration.get_solo()
-
-    if not conf.enable_form_variables and not step.data:
+    if not step.data:
         step.data = {}
 
     # ensure this function is idempotent
@@ -91,7 +88,6 @@ def evaluate_form_logic(
 
     submission_state = submission.load_execution_state()
 
-    data_update = {}
     for rule in rules:
         if jsonLogic(rule.json_logic_trigger, data):
             for action in rule.actions:
@@ -101,7 +97,7 @@ def evaluate_form_logic(
                     configuration = set_property_value(
                         configuration, action["component"], "value", new_value
                     )
-                    data_update[action["component"]] = new_value
+                    step.data[action["component"]] = new_value
                 elif action_details["type"] == LogicActionTypes.property:
                     property_name = action_details["property"]["value"]
                     property_value = action_details["state"]
@@ -125,7 +121,7 @@ def evaluate_form_logic(
         # only keep the changes in the data, so that old values do not overwrite otherwise
         # debounced client-side data changes
         data_diff = {}
-        for key, new_value in data_update.items():
+        for key, new_value in step.data.items():
             original_value = data.get(key)
             # Reset the value of any field that may have become hidden again after evaluating the logic
             if original_value:
@@ -144,10 +140,7 @@ def evaluate_form_logic(
 
         # only return the 'overrides'
         if data_diff:
-            if conf.enable_form_variables:
-                submission.update_submission_value_variables_state(data_diff)
-            else:
-                step.data = data_diff
+            step.data = data_diff
 
     step._form_logic_evaluated = True
 

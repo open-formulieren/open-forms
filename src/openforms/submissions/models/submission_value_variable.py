@@ -21,7 +21,11 @@ class SubmissionValueVariablesState:
                 return variable
 
     def get_data(self):
-        return {variable.key: variable.value for variable in self.variables}
+        return {
+            variable.key: variable.value
+            for variable in self.variables
+            if variable.value
+        }
 
     def get_variables_in_submission_step(self, submission_step):
         form_variables = FormVariable.objects.filter(

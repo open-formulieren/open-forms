@@ -231,6 +231,10 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         source="form_step.optional",
         read_only=True,
     )
+    data = serializers.JSONField(
+        source="_data",
+        label=_("data"),
+    )
 
     parent_lookup_kwargs = {
         "submission_uuid": "submission__uuid",
@@ -267,6 +271,11 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         )
         # update the config for serialization
         instance.form_step.form_definition.configuration = new_configuration
+
+        config = GlobalConfiguration.get_solo()
+        if config.enable_form_variables:
+            instance._data = instance.data
+
         return super().to_representation(instance)
 
 

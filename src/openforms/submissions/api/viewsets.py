@@ -22,7 +22,6 @@ from openforms.utils.api.throttle_classes import PollingRateThrottle
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..attachments import attach_uploads_to_submission_step
-from ..constants import SubmissionValueVariableSources
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionStep, SubmissionValueVariable
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser, IgnoreDataJSONRenderer
@@ -384,7 +383,7 @@ class SubmissionStepViewSet(
         config = GlobalConfiguration.get_solo()
         if config.enable_form_variables:
             SubmissionValueVariable.bulk_create_or_update(
-                instance, serializer.validated_data["data"]
+                instance, request.data["data"]
             )
 
         logevent.submission_step_fill(instance)
@@ -432,8 +431,6 @@ class SubmissionStepViewSet(
         throttle_classes=[PollingRateThrottle],
     )
     def logic_check(self, request, *args, **kwargs):
-        config = GlobalConfiguration.get_solo()
-
         submission_step = self.get_object()
         submission = submission_step.submission
 
@@ -446,12 +443,7 @@ class SubmissionStepViewSet(
             # keys like ``foo.bar`` and ``foo.baz`` are used which construct a foo object
             # with keys bar and baz.
             merged_data = {**submission.data, **data}
-            if not config.enable_form_variables:
-                submission_step.data = data
-            else:
-                submission.update_submission_value_variables_state(
-                    data, source=SubmissionValueVariableSources.user_input
-                )
+            submission_step.data = data
 
             new_configuration = evaluate_form_logic(
                 submission,

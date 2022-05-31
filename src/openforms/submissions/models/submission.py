@@ -473,8 +473,9 @@ class Submission(models.Model):
 
         updated_variables = []
         for variable in self._variables_state.variables:
-            if variable.key in data:
-                variable.value = data[variable.key]
+            new_value = data.get(variable.key)
+            if new_value and variable.value != new_value:
+                variable.value = new_value
                 if source:
                     variable.source = source
             updated_variables.append(variable)

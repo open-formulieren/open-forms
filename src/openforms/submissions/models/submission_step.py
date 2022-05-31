@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.config.models import GlobalConfiguration
 
+from ..constants import SubmissionValueVariableSources
+
 
 class SubmissionStep(models.Model):
     """
@@ -59,10 +61,20 @@ class SubmissionStep(models.Model):
         if config.enable_form_variables:
             values_state = self.submission.load_submission_value_variables_state()
             variables_in_step = values_state.get_variables_in_submission_step(self)
-            return {variable.key: variable.value for variable in variables_in_step}
+            return {
+                variable.key: variable.value
+                for variable in variables_in_step
+                if variable.value
+                or variable.source
+                == SubmissionValueVariableSources.sensitive_data_cleaner
+            }
         else:
             return self._data
 
     @data.setter
     def data(self, data):
-        self._data = data
+        config = GlobalConfiguration.get_solo()
+        if config.enable_form_variables:
+            self.submission.update_submission_value_variables_state(data=data)
+        else:
+            self._data = data
