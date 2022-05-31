@@ -22,6 +22,7 @@
 <div
     class="react-form-create"
     data-form-uuid="{{ original.uuid|default:'' }}"
+    data-form-url="{{ original.get_absolute_url }}"
     data-form-history-url="{{ history_url }}"
     data-csrftoken="{{ csrf_token }}"
     data-tinymce-url="{% static 'tinymce/tinymce.min.js' %}"

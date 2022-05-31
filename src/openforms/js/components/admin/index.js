@@ -19,7 +19,7 @@ const mountForm = intlProps => {
   if (!formCreationFormNodes.length) return;
 
   for (const formCreationFormNode of formCreationFormNodes) {
-    const {csrftoken, formUuid, tinymceUrl, formHistoryUrl} = formCreationFormNode.dataset;
+    const {csrftoken, formUuid, formUrl, tinymceUrl, formHistoryUrl} = formCreationFormNode.dataset;
 
     const featureFlags = jsonScriptToVar('feature-flags');
 
@@ -32,6 +32,7 @@ const mountForm = intlProps => {
             <FormCreationForm
               csrftoken={csrftoken}
               formUuid={formUuid}
+              formUrl={formUrl}
               formHistoryUrl={formHistoryUrl}
             />
           </FeatureFlagsContext.Provider>
