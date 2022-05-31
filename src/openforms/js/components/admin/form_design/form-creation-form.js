@@ -762,7 +762,7 @@ StepsFieldSet.propTypes = {
 /**
  * Component to render the form edit page.
  */
-const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl}) => {
+const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
   const featureFlags = useContext(FeatureFlagsContext);
   const initialState = {
     ...initialFormState,
@@ -1144,7 +1144,7 @@ const FormCreationForm = ({csrftoken, formUuid, formHistoryUrl}) => {
 
   return (
     <ValidationErrorsProvider errors={state.validationErrors}>
-      <FormObjectTools isLoading={loading} historyUrl={formHistoryUrl} />
+      <FormObjectTools isLoading={loading} historyUrl={formHistoryUrl} formUrl={formUrl} />
 
       <h1>
         <FormattedMessage defaultMessage="Change form" description="Change form page title" />
@@ -1390,6 +1390,7 @@ Tab.propTypes = {
 FormCreationForm.propTypes = {
   csrftoken: PropTypes.string.isRequired,
   formUuid: PropTypes.string.isRequired,
+  formUrl: PropTypes.string.isRequired,
   formHistoryUrl: PropTypes.string.isRequired,
 };
 
