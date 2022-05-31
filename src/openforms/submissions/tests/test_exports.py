@@ -5,12 +5,14 @@ from django.utils import timezone
 
 from freezegun import freeze_time
 
+from openforms.utils.mixins import VariablesTestMixin
+
 from ..exports import create_submission_export
 from ..models import Submission
 from .factories import SubmissionFactory
 
 
-class ExportTests(TestCase):
+class ExportTests(VariablesTestMixin, TestCase):
     @freeze_time("2022-05-09T13:00:00Z")
     def test_complex_formio_configuration(self):
         """
@@ -112,10 +114,10 @@ class ExportTests(TestCase):
                 "Export test",
                 datetime(2022, 5, 9, 15, 0, 0),
                 "Input 1",
-                None,
+                "",
                 "Input 3",
-                None,
-                None,
-                None,
+                "",
+                "",
+                "",
             ),
         )

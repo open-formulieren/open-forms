@@ -5,6 +5,7 @@ from typing import List
 from django.utils import timezone
 
 import factory
+from glom import PathAccessError, glom
 
 from openforms.formio.utils import is_layout_component, iter_components
 from openforms.forms.constants import FormVariableSources
@@ -189,13 +190,17 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
         step_data = kwargs.get("data", {})
 
         for variable in form_variables:
-            if variable.key in step_data:
-                SubmissionValueVariableFactory.create(
-                    submission=submission_step.submission,
-                    key=variable.key,
-                    value=step_data[variable.key],
-                    form_variable=variable,
-                )
+            try:
+                value = glom(step_data, variable.key)
+            except PathAccessError:
+                continue
+
+            SubmissionValueVariableFactory.create(
+                submission=submission_step.submission,
+                key=variable.key,
+                value=value,
+                form_variable=variable,
+            )
 
         return submission_step
 

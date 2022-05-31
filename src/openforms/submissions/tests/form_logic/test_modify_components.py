@@ -7,6 +7,7 @@ from rest_framework.test import APITestCase
 
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.utils.mixins import VariablesTestMixin
 
 from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory
@@ -14,10 +15,10 @@ from ..mixins import SubmissionsMixin
 from .factories import FormLogicFactory
 
 
-class ComponentModificationTests(TestCase):
+class ComponentModificationTests(VariablesTestMixin, TestCase):
     def test_change_component_to_hidden(self):
         form = FormFactory.create()
-        step1 = FormStepFactory.create(
+        step1 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -28,7 +29,7 @@ class ComponentModificationTests(TestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create(
+        step2 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -64,7 +65,7 @@ class ComponentModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step1,
             data={"step1_textfield1": "hide step 2"},
@@ -92,7 +93,7 @@ class ComponentModificationTests(TestCase):
 
     def test_hiding_component_empties_its_data(self):
         form = FormFactory.create()
-        form_step = FormStepFactory.create(
+        form_step = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -136,7 +137,7 @@ class ComponentModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        submission_step = SubmissionStepFactory.create(
+        submission_step = SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=form_step,
             data={
@@ -166,11 +167,11 @@ class ComponentModificationTests(TestCase):
             ]
         }
         self.assertEqual(configuration, expected)
-        self.assertEqual("", submission_step.data["component2"])
+        self.assertEqual({"component1": "trigger value"}, submission_step.data)
 
     def test_change_component_to_required(self):
         form = FormFactory.create()
-        step1 = FormStepFactory.create(
+        step1 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -181,7 +182,7 @@ class ComponentModificationTests(TestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create(
+        step2 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -217,7 +218,7 @@ class ComponentModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step1,
             data={"name": "john"},
@@ -245,7 +246,7 @@ class ComponentModificationTests(TestCase):
 
     def test_change_component_to_hidden_if_text_contains(self):
         form = FormFactory.create()
-        step1 = FormStepFactory.create(
+        step1 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -256,7 +257,7 @@ class ComponentModificationTests(TestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create(
+        step2 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -292,7 +293,7 @@ class ComponentModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step1,
             data={"fooBarBaz": "foo"},
@@ -320,7 +321,7 @@ class ComponentModificationTests(TestCase):
 
     def test_change_component_to_hidden_if_array_contains(self):
         form = FormFactory.create()
-        step1 = FormStepFactory.create(
+        step1 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -331,7 +332,7 @@ class ComponentModificationTests(TestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create(
+        step2 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -367,7 +368,7 @@ class ComponentModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step1,
             data={"userEmail": "test1@example.com"},
@@ -395,7 +396,7 @@ class ComponentModificationTests(TestCase):
 
     def test_dont_change_component_to_hidden_if_text_does_not_contain(self):
         form = FormFactory.create()
-        step1 = FormStepFactory.create(
+        step1 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -406,7 +407,7 @@ class ComponentModificationTests(TestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create(
+        step2 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -442,7 +443,7 @@ class ComponentModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step1,
             data={"fooBarBaz": "hello"},
@@ -470,7 +471,7 @@ class ComponentModificationTests(TestCase):
 
     def test_dont_change_component_to_hidden_if_array_does_not_contain(self):
         form = FormFactory.create()
-        step1 = FormStepFactory.create(
+        step1 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -481,7 +482,7 @@ class ComponentModificationTests(TestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create(
+        step2 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -517,7 +518,7 @@ class ComponentModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step1,
             data={"userEmail": "test3@example.com"},
@@ -618,7 +619,7 @@ class ComponentModificationTests(TestCase):
         since they haven't been filled in yet.
         """
         form = FormFactory.create()
-        step1 = FormStepFactory.create(
+        step1 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -629,7 +630,7 @@ class ComponentModificationTests(TestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create(
+        step2 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -665,7 +666,7 @@ class ComponentModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step1,
             data={},  # Empty data!
@@ -694,7 +695,7 @@ class ComponentModificationTests(TestCase):
 
     def test_change_component_with_nested_components(self):
         form = FormFactory.create()
-        step = FormStepFactory.create(
+        step = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -757,7 +758,7 @@ class ComponentModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        submission_step = SubmissionStepFactory.create(
+        submission_step = SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step,
             data={},
@@ -768,10 +769,10 @@ class ComponentModificationTests(TestCase):
         )
 
 
-class StepModificationTests(TestCase):
+class StepModificationTests(VariablesTestMixin, TestCase):
     def test_next_button_disabled(self):
         form = FormFactory.create()
-        step1 = FormStepFactory.create(
+        step1 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -782,7 +783,7 @@ class StepModificationTests(TestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create(
+        step2 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -812,7 +813,7 @@ class StepModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step1,
             data={"step1_textfield1": "disable next button"},
@@ -831,7 +832,7 @@ class StepModificationTests(TestCase):
 
     def test_step_not_applicable(self):
         form = FormFactory.create()
-        step1 = FormStepFactory.create(
+        step1 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -842,7 +843,7 @@ class StepModificationTests(TestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create(
+        step2 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -876,7 +877,7 @@ class StepModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        submission_step_1 = SubmissionStepFactory.create(
+        submission_step_1 = SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step1,
             data={"age": 16},
@@ -899,7 +900,7 @@ class StepModificationTests(TestCase):
 
     def test_date_trigger(self):
         form = FormFactory.create()
-        step = FormStepFactory.create(
+        step = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -928,7 +929,7 @@ class StepModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        submission_step = SubmissionStepFactory.create(
+        submission_step = SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step,
             data={"dateOfBirth": "2020-01-01"},
@@ -942,7 +943,7 @@ class StepModificationTests(TestCase):
 
     def test_date_of_birth_trigger(self):
         form = FormFactory.create()
-        step = FormStepFactory.create(
+        step = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -971,7 +972,7 @@ class StepModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        submission_step = SubmissionStepFactory.create(
+        submission_step = SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step,
             data={"dateOfBirth": "2003-01-01"},
@@ -986,7 +987,7 @@ class StepModificationTests(TestCase):
 
     def test_dirty_data_only_diff_data_returned(self):
         form = FormFactory.create()
-        step = FormStepFactory.create(
+        step = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -1021,8 +1022,8 @@ class StepModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        submission_step = SubmissionStepFactory.create(
-            submission=submission, form_step=step, data=None
+        submission_step = SubmissionStepFactory.create_with_variables(
+            submission=submission, form_step=step, data={}
         )
         dirty_data = {
             "name": "john",
@@ -1038,7 +1039,7 @@ class StepModificationTests(TestCase):
 
     def test_select_boxes_trigger(self):
         form = FormFactory.create()
-        step = FormStepFactory.create(
+        step = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -1072,7 +1073,7 @@ class StepModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        submission_step = SubmissionStepFactory.create(
+        submission_step = SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step,
             data={"currentPets": {"cat": True, "dog": False, "fish": False}},
@@ -1086,7 +1087,7 @@ class StepModificationTests(TestCase):
 
     def test_select_boxes_trigger_with_dot_in_key_name(self):
         form = FormFactory.create()
-        step = FormStepFactory.create(
+        step = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -1120,7 +1121,7 @@ class StepModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        submission_step = SubmissionStepFactory.create(
+        submission_step = SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step,
             data={"current": {"pets": {"cat": True, "dog": False, "fish": False}}},
@@ -1134,7 +1135,7 @@ class StepModificationTests(TestCase):
 
     def test_normal_component_trigger_with_dot_in_key_name(self):
         form = FormFactory.create()
-        step = FormStepFactory.create(
+        step = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [{"key": "normal.component", "type": "textfield"}]
@@ -1158,7 +1159,7 @@ class StepModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        submission_step = SubmissionStepFactory.create(
+        submission_step = SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step,
             data={"normal": {"component": "test-value"}},
@@ -1173,7 +1174,7 @@ class StepModificationTests(TestCase):
     def test_component_removed_from_definition(self):
         # Test for issue #1568
         form = FormFactory.create()
-        step = FormStepFactory.create(
+        step = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -1186,7 +1187,7 @@ class StepModificationTests(TestCase):
         )
 
         submission = SubmissionFactory.create(form=form)
-        submission_step = SubmissionStepFactory.create(
+        submission_step = SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step,
             data={
@@ -1201,10 +1202,10 @@ class StepModificationTests(TestCase):
         )
 
 
-class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
+class CheckLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestCase):
     def test_response_contains_submission(self):
         form = FormFactory.create()
-        form_step1 = FormStepFactory.create(
+        form_step1 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -1215,7 +1216,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 ]
             },
         )
-        form_step2 = FormStepFactory.create(
+        form_step2 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -1249,7 +1250,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=form_step1,
             data={"dateOfBirth": "2003-01-01"},
@@ -1425,7 +1426,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             )
 
 
-class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
+class EvaluateLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestCase):
     def test_evaluate_logic_with_default_values(self):
         form = FormFactory.create(
             generate_minimal_setup=True,

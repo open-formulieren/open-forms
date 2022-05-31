@@ -29,7 +29,6 @@ from .factories import (
 class SubmissionTests(TestCase):
     maxDiff = None
 
-    # TODO Remove once variables are default
     def test_get_merged_data(self):
         submission = SubmissionFactory.create()
         SubmissionStepFactory.create(

@@ -4,20 +4,21 @@ from rest_framework.test import APITestCase
 
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.utils.mixins import VariablesTestMixin
 
 from ..factories import SubmissionFactory, SubmissionStepFactory
 from ..mixins import SubmissionsMixin
 from .factories import FormLogicFactory
 
 
-class SideEffectTests(SubmissionsMixin, APITestCase):
+class SideEffectTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
     def test_not_applicable_steps_are_reset(self):
         """
         Assert that subsequent steps are reset when they become not-applicable.
         """
         # set up the form with logic
         form = FormFactory.create()
-        step1 = FormStepFactory.create(
+        step1 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -34,7 +35,7 @@ class SideEffectTests(SubmissionsMixin, APITestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create(
+        step2 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -76,13 +77,13 @@ class SideEffectTests(SubmissionsMixin, APITestCase):
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
 
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step1,
             data={"step1": "b"},  # With this data, step 2 is applicable
         )
         # mimick step 2 being submitted as well
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step2,
             data={"step2": "submitted"},
