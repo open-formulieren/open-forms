@@ -24,7 +24,7 @@ class SubmissionValueVariablesState:
         return {
             variable.key: variable.value
             for variable in self.variables
-            if variable.value
+            if variable.value != ""
         }
 
     def get_variables_in_submission_step(self, submission_step):
@@ -63,6 +63,8 @@ class SubmissionValueVariable(models.Model):
     value = models.JSONField(
         verbose_name=_("value"),
         help_text=_("The value of the variable"),
+        null=True,
+        blank=True,
     )
     source = models.CharField(
         verbose_name=_("source"),

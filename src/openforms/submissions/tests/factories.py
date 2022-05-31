@@ -136,11 +136,15 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             submission=submission, form_step=form_step, data=data
         )
         for form_variable in form_variables:
+            value = form_variable.get_initial_value()
+            if form_variable.key in data:
+                value = data.get(form_variable.key)
+
             SubmissionValueVariableFactory.create(
                 submission=submission,
                 form_variable=form_variable,
                 key=form_variable.key,
-                value=data.get(form_variable.key) or form_variable.get_initial_value(),
+                value=value,
             )
 
         # When the submission was initially created, the method calculate_price has already

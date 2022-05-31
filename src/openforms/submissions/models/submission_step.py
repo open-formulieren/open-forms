@@ -64,7 +64,7 @@ class SubmissionStep(models.Model):
             return {
                 variable.key: variable.value
                 for variable in variables_in_step
-                if variable.value
+                if variable.value != ""
                 or variable.source
                 == SubmissionValueVariableSources.sensitive_data_cleaner
             }

@@ -35,7 +35,10 @@ class Migration(migrations.Migration):
                 (
                     "value",
                     models.JSONField(
-                        help_text="The value of the variable", verbose_name="value"
+                        help_text="The value of the variable",
+                        verbose_name="value",
+                        blank=True,
+                        null=True,
                     ),
                 ),
                 (
