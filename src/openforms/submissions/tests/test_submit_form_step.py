@@ -5,33 +5,27 @@ When a submission ("session") is started, the data for a single form step must b
 submitted to a submission step. Existing data can be overwritten and new data is created
 by using HTTP PUT.
 """
-from unittest.mock import patch
-
 from freezegun import freeze_time
 from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
     FormVariableFactory,
 )
+from openforms.utils.mixins import VariablesTestMixin
 
 from ..models import SubmissionValueVariable
-from .factories import (
-    SubmissionFactory,
-    SubmissionStepFactory,
-    SubmissionValueVariableFactory,
-)
+from .factories import SubmissionFactory, SubmissionStepFactory
 from .mixins import SubmissionsMixin
 
 
 @temp_private_root()
-class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
+class FormStepSubmissionTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -50,9 +44,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         cls.submission = SubmissionFactory.create(form=cls.form)
 
     @freeze_time("2022-05-25T10:53:19+00:00")
-    @patch("openforms.submissions.api.viewsets.GlobalConfiguration.get_solo")
-    def test_create_step_data(self, m_conf):
-        m_conf.return_value = GlobalConfiguration(enable_form_variables=True)
+    def test_create_step_data(self):
         self._add_submission_to_session(self.submission)
         endpoint = reverse(
             "api:submission-steps-detail",
@@ -136,9 +128,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    @patch("openforms.submissions.api.viewsets.GlobalConfiguration.get_solo")
-    def test_update_step_data(self, m_conf):
-        m_conf.return_value = GlobalConfiguration(enable_form_variables=True)
+    def test_update_step_data(self):
         self._add_submission_to_session(self.submission)
 
         FormVariableFactory.create(
@@ -185,7 +175,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
                         "components": [{"type": "test-component", "key": "test-key"}]
                     },
                 },
-                "data": {"modified": "data", "foo": ""},
+                "data": {"modified": "data"},
                 "isApplicable": True,
                 "completed": True,
                 "optional": False,
@@ -193,7 +183,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
             },
         )
         submission_step.refresh_from_db()
-        self.assertEqual(submission_step.data, {"foo": "", "modified": "data"})
+        self.assertEqual(submission_step.data, {"modified": "data"})
 
         submission_variables = SubmissionValueVariable.objects.filter(
             submission=self.submission

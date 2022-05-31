@@ -8,7 +8,6 @@ from openforms.config.models import GlobalConfiguration
 from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
-from ...models import SubmissionValueVariable
 from ...rendering import Renderer, RenderModes
 from ...rendering.nodes import FormNode, SubmissionStepNode
 from ..factories import (

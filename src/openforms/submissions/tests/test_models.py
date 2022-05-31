@@ -29,8 +29,7 @@ from .factories import (
 class SubmissionTests(TestCase):
     maxDiff = None
 
-    # TODO Ask
-    # With variables, we can't anymore have equal keys in the same form
+    # TODO Remove once variables are default
     def test_get_merged_data(self):
         submission = SubmissionFactory.create()
         SubmissionStepFactory.create(
@@ -52,8 +51,7 @@ class SubmissionTests(TestCase):
             {"key1": "value1", "key2": "value-a", "key3": "value-b"},
         )
 
-    # TODO Ask
-    # With variables, we can't anymore have equal keys in the same form
+    # TODO Remove once variables are default
     def test_get_ordered_data_with_component_type_formio_formatters(self):
         form_definition = FormDefinitionFactory.create(
             configuration={

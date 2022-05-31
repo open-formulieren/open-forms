@@ -25,6 +25,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
+from openforms.utils.mixins import VariablesTestMixin
 
 from ..constants import SUBMISSIONS_SESSION_KEY, SubmissionValueVariableSources
 from ..models import Submission, SubmissionValueVariable
@@ -35,7 +36,7 @@ from ..models import Submission, SubmissionValueVariable
     ALLOWED_HOSTS=["*"],
     CORS_ALLOWED_ORIGINS=["http://testserver.com"],
 )
-class SubmissionStartTests(APITestCase):
+class SubmissionStartTests(VariablesTestMixin, APITestCase):
     endpoint = reverse_lazy("api:submission-list")
 
     @classmethod
@@ -181,10 +182,7 @@ class SubmissionStartTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    @patch("openforms.submissions.api.viewsets.GlobalConfiguration.get_solo")
-    def test_start_submission_with_prefill(self, m_conf):
-        m_conf.return_value = GlobalConfiguration(enable_form_variables=True)
-
+    def test_start_submission_with_prefill(self):
         body = {
             "form": f"http://testserver.com{self.form_url}",
             "formUrl": "http://testserver.com/my-form",

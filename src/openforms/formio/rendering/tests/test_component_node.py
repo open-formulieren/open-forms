@@ -230,8 +230,6 @@ class FormNodeTests(TestCase):
             self.assertEqual(nodelist[0].label, "A container without visible children")
 
     def test_export_always_emits_all_nodes(self):
-        # TODO Ask
-        # Fields without key are not rendered, but in the example the fieldsets had no key, why?
         renderer = Renderer(self.submission, mode=RenderModes.export, as_html=False)
 
         nodelist = []

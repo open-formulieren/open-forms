@@ -17,6 +17,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
+from openforms.utils.mixins import VariablesTestMixin
 
 from ..constants import AppointmentDetailsStatus
 from ..contrib.jcc.tests.test_plugin import mock_response
@@ -34,7 +35,7 @@ from .factories import AppointmentInfoFactory
 from .utils import setup_jcc
 
 
-class BookAppointmentForSubmissionTest(TestCase):
+class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

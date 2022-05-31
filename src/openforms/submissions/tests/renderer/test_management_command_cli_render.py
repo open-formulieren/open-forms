@@ -6,11 +6,7 @@ from io import StringIO
 from django.core.management import call_command
 from django.test import TestCase
 
-from openforms.submissions.rendering import Renderer, RenderModes
-from openforms.submissions.tests.factories import (
-    SubmissionFactory,
-    SubmissionStepFactory,
-)
+from openforms.submissions.tests.factories import SubmissionFactory
 
 FORMIO_CONFIGURATION_COMPONENTS = [
     # visible component, leaf node

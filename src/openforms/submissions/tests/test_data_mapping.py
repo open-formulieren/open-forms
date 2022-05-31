@@ -11,6 +11,7 @@ from openforms.submissions.mapping import (
     get_unmapped_data,
 )
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.utils.mixins import VariablesTestMixin
 
 
 class TestAttribute(DjangoChoices):
@@ -27,7 +28,7 @@ class TestAttribute(DjangoChoices):
 
 
 @temp_private_root()
-class MappingTests(TestCase):
+class MappingTests(VariablesTestMixin, TestCase):
     def test_kitchensink(self):
         """
         all-in-one testcase for demonstration purposes
@@ -157,8 +158,6 @@ class MappingTests(TestCase):
         }
         self.assertEqual(actual, expected)
 
-    # TODO Ask
-    # What to do about variables with empty data?
     def test_skip_missing(self):
         mapping = {
             "persoon.voornaam": "xyz_voornaam",

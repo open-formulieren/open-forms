@@ -32,6 +32,7 @@ from openforms.submissions.tests.factories import (
 )
 from openforms.submissions.utils import send_confirmation_email
 from openforms.tests.utils import NOOP_CACHES
+from openforms.utils.mixins import VariablesTestMixin
 from openforms.utils.tests.html_assert import HTMLAssertMixin, strip_all_attributes
 from openforms.utils.urls import build_absolute_uri
 
@@ -110,7 +111,7 @@ class FixedCancelAndChangeLinkPlugin(TestPlugin):
 
 
 @override_settings(CACHES=NOOP_CACHES)
-class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
+class ConfirmationEmailTests(VariablesTestMixin, HTMLAssertMixin, TestCase):
     def test_validate_content_syntax(self):
         email = ConfirmationEmailTemplate(subject="foo", content="{{{}}}")
 

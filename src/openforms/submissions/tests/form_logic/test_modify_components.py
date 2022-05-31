@@ -545,7 +545,7 @@ class ComponentModificationTests(TestCase):
 
     def test_extract_value(self):
         form = FormFactory.create()
-        step1 = FormStepFactory.create(
+        step1 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -556,7 +556,7 @@ class ComponentModificationTests(TestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create(
+        step2 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -583,7 +583,7 @@ class ComponentModificationTests(TestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step1,
             data={"step1_textfield1": "some value"},
