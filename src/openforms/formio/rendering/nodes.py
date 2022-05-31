@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Iterator, Literal, Optional, Union
 
+from openforms.config.models import GlobalConfiguration
 from openforms.submissions.models import SubmissionStep, SubmissionValueVariable
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
 
-from ...config.models import GlobalConfiguration
 from ..formatters.service import format_value
 from ..typing import Component
 from ..utils import iter_components

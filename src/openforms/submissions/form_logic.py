@@ -3,13 +3,12 @@ from typing import TYPE_CHECKING, Any, Dict
 import elasticapm
 from json_logic import jsonLogic
 
+from openforms.config.models import GlobalConfiguration
 from openforms.formio.service import get_dynamic_configuration
 from openforms.formio.utils import get_default_values, iter_components
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
 from openforms.prefill import JSONObject
-
-from ..config.models import GlobalConfiguration
 
 if TYPE_CHECKING:  # pragma: nocover
     from .models import Submission, SubmissionStep

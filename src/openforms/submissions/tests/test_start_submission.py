@@ -19,13 +19,13 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import (
     FormFactory,
     FormStepFactory,
     FormVariableFactory,
 )
 
-from ...config.models import GlobalConfiguration
 from ..constants import SUBMISSIONS_SESSION_KEY, SubmissionValueVariableSources
 from ..models import Submission, SubmissionValueVariable
 

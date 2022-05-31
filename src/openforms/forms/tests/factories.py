@@ -1,8 +1,8 @@
 import factory
 
+from openforms.formio.utils import is_layout_component, iter_components
 from openforms.products.tests.factories import ProductFactory
 
-from ...formio.utils import is_layout_component, iter_components
 from ..constants import FormVariableDataTypes, FormVariableSources
 from ..models import Form, FormDefinition, FormStep, FormVariable, FormVersion
 from ..utils import form_to_json

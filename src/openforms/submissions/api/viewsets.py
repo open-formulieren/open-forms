@@ -1,5 +1,4 @@
 import logging
-from re import sub
 
 from django.db import transaction
 from django.utils import timezone
@@ -16,12 +15,12 @@ from rest_framework.reverse import reverse
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer
+from openforms.config.models import GlobalConfiguration
 from openforms.logging import logevent
+from openforms.prefill import prefill_variables
+from openforms.utils.api.throttle_classes import PollingRateThrottle
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
-from ...config.models import GlobalConfiguration
-from ...prefill import prefill_variables
-from ...utils.api.throttle_classes import PollingRateThrottle
 from ..attachments import attach_uploads_to_submission_step
 from ..constants import SubmissionValueVariableSources
 from ..form_logic import evaluate_form_logic
@@ -385,7 +384,7 @@ class SubmissionStepViewSet(
         config = GlobalConfiguration.get_solo()
         if config.enable_form_variables:
             SubmissionValueVariable.bulk_create_or_update(
-                instance, request.data["data"]
+                instance, serializer.validated_data["data"]
             )
 
         logevent.submission_step_fill(instance)

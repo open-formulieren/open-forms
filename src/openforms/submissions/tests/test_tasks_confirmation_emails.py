@@ -16,9 +16,9 @@ from openforms.config.models import GlobalConfiguration
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.constants import ConfirmationEmailOptions
+from openforms.forms.tests.factories import FormStepFactory
 from openforms.utils.tests.html_assert import HTMLAssertMixin
 
-from ...forms.tests.factories import FormStepFactory, FormVariableFactory
 from ..tasks import maybe_send_confirmation_email
 from ..tasks.emails import send_confirmation_email
 from .factories import SubmissionFactory, SubmissionStepFactory

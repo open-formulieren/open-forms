@@ -13,6 +13,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -20,7 +21,6 @@ from openforms.forms.tests.factories import (
     FormVariableFactory,
 )
 
-from ...config.models import GlobalConfiguration
 from ..models import SubmissionValueVariable
 from .factories import (
     SubmissionFactory,

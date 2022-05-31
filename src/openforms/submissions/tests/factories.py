@@ -6,6 +6,8 @@ from django.utils import timezone
 
 import factory
 
+from openforms.formio.utils import is_layout_component, iter_components
+from openforms.forms.constants import FormVariableSources
 from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -14,8 +16,6 @@ from openforms.forms.tests.factories import (
     FormVariableFactory,
 )
 
-from ...formio.utils import is_layout_component, iter_components
-from ...forms.constants import FormVariableSources
 from ..constants import RegistrationStatuses, SubmissionValueVariableSources
 from ..models import (
     Submission,

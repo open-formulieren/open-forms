@@ -7,7 +7,7 @@ from rest_framework.request import Request
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.utils import iter_components
 from openforms.forms.custom_field_types import handle_custom_types
-from openforms.prefill import apply_prefill
+from openforms.prefill import apply_prefill, format_date_value
 from openforms.submissions.models import Submission
 
 
@@ -41,9 +41,10 @@ def insert_variables(configuration: dict, submission: Submission) -> dict:
     data = value_variables_state.get_data()
 
     for component in iter_components(configuration):
-        if component["key"] in data:
-            # TODO Look in old prefill function for edge cases
-            component["defaultValue"] = data[component["key"]]
+        if value := data.get(component["key"]):
+            component["defaultValue"] = value
+            if component["type"] == "date":
+                component["defaultValue"] = format_date_value(value)
 
         if "html" in component:
             content_with_vars = Template(component.get("html", "")).render(

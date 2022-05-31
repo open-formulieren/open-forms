@@ -5,11 +5,8 @@ from django.test import TestCase
 from rest_framework.reverse import reverse
 
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.tests.factories import (
-    FormFactory,
-    FormStepFactory,
-    FormVariableFactory,
-)
+from openforms.forms.models import FormVariable
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ...models import SubmissionValueVariable
 from ...rendering import Renderer, RenderModes
@@ -31,7 +28,7 @@ class FormNodeTests(TestCase):
             name="public name",
             internal_name="internal name",
         )
-        step1 = FormStepFactory.create(
+        step1 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__name="Step 1",
             form_definition__configuration={
@@ -43,10 +40,7 @@ class FormNodeTests(TestCase):
                 ]
             },
         )
-        form_var1 = FormVariableFactory.create(
-            form=form, form_definition=step1.form_definition, key="input1"
-        )
-        step2 = FormStepFactory.create(
+        step2 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__name="Step 2",
             form_definition__configuration={
@@ -58,18 +52,9 @@ class FormNodeTests(TestCase):
                 ]
             },
         )
-        form_var2 = FormVariableFactory.create(
-            form=form, form_definition=step2.form_definition, key="input2"
-        )
         submission = SubmissionFactory.create(form=form)
         sstep1 = SubmissionStepFactory.create(submission=submission, form_step=step1)
         sstep2 = SubmissionStepFactory.create(submission=submission, form_step=step2)
-        SubmissionValueVariableFactory.create(
-            submission=submission, key="input1", form_variable=form_var1
-        )
-        SubmissionValueVariableFactory.create(
-            submission=submission, key="input2", form_variable=form_var2
-        )
 
         # expose test data to test methods
         cls.submission = submission
@@ -115,9 +100,13 @@ class FormNodeTests(TestCase):
         self.sstep1.data = {"input1": "disabled-step-2"}
         self.sstep1.save()
 
-        submission_var1 = SubmissionValueVariable.objects.get(key="input1")
-        submission_var1.value = "disabled-step-2"
-        submission_var1.save()
+        form_var1 = FormVariable.objects.get(key="input1")
+        SubmissionValueVariableFactory.create(
+            submission=self.submission,
+            key=form_var1.key,
+            value="disabled-step-2",
+            form_variable=form_var1,
+        )
 
         renderer = Renderer(
             submission=self.submission, mode=RenderModes.pdf, as_html=True

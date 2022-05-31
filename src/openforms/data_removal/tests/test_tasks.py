@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from openforms.config.models import GlobalConfiguration
+from openforms.forms.models import FormStep
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -16,10 +17,8 @@ from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
-    SubmissionValueVariableFactory,
 )
 
-from ...forms.models import FormStep, FormVariable
 from ..constants import RemovalMethods
 from ..tasks import delete_submissions, make_sensitive_data_anonymous
 
@@ -374,13 +373,12 @@ class MakeSensitiveDataAnonymousTask(TestCase):
             incomplete_submissions_removal_method=RemovalMethods.make_anonymous,
             errored_submissions_removal_method=RemovalMethods.make_anonymous,
         )
-        cls.step1 = FormStepFactory.create(
+        cls.step1 = FormStepFactory.create_with_variables(
             form=cls.form, form_definition=cls.form_definition
         )
-        cls.step2 = FormStepFactory.create(
+        cls.step2 = FormStepFactory.create_with_variables(
             form=cls.form, form_definition=cls.form_definition_2
         )
-        cls._create_form_variables(cls.form)
 
     @staticmethod
     def _create_form_variables(form):
@@ -413,34 +411,6 @@ class MakeSensitiveDataAnonymousTask(TestCase):
             is_sensitive_data=False,
             form_definition=form_steps[1].form_definition,
             form=form,
-        )
-
-    def _create_submission_variables(self, submission):
-        form_variables = FormVariable.objects.filter(form=submission.form)
-
-        SubmissionValueVariableFactory.create(
-            submission=submission,
-            form_variable=form_variables.get(key="textFieldSensitive"),
-            key="textFieldSensitive",
-            value="This is sensitive",
-        )
-        SubmissionValueVariableFactory.create(
-            submission=submission,
-            form_variable=form_variables.get(key="textFieldNotSensitive"),
-            key="textFieldNotSensitive",
-            value="This is not sensitive",
-        )
-        SubmissionValueVariableFactory.create(
-            submission=submission,
-            form_variable=form_variables.get(key="textFieldSensitive2"),
-            key="textFieldSensitive2",
-            value="This is also sensitive",
-        )
-        SubmissionValueVariableFactory.create(
-            submission=submission,
-            form_variable=form_variables.get(key="textFieldNotSensitive2"),
-            key="textFieldNotSensitive2",
-            value="This is also not sensitive",
         )
 
     def test_certain_successful_submissions_have_sensitive_data_removed(self):
@@ -481,7 +451,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
             delete_submission,
             submission_to_be_anonymous,
         ]:
-            SubmissionStepFactory.create(
+            SubmissionStepFactory.create_with_variables(
                 data={
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
@@ -489,7 +459,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
-            SubmissionStepFactory.create(
+            SubmissionStepFactory.create_with_variables(
                 data={
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
@@ -497,7 +467,6 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
             )
-            self._create_submission_variables(submission)
 
         make_sensitive_data_anonymous()
 
@@ -605,7 +574,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
             submission_to_be_anonymous,
             override_submission,
         ]:
-            SubmissionStepFactory.create(
+            SubmissionStepFactory.create_with_variables(
                 data={
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
@@ -613,7 +582,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
-            SubmissionStepFactory.create(
+            SubmissionStepFactory.create_with_variables(
                 data={
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
@@ -621,7 +590,6 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
             )
-            self._create_submission_variables(submission)
 
         make_sensitive_data_anonymous()
 
@@ -742,7 +710,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
             in_progress_delete_submission,
             in_progress_submission_to_be_anonymous,
         ]:
-            SubmissionStepFactory.create(
+            SubmissionStepFactory.create_with_variables(
                 data={
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
@@ -750,7 +718,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
-            SubmissionStepFactory.create(
+            SubmissionStepFactory.create_with_variables(
                 data={
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
@@ -758,7 +726,6 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
             )
-            self._create_submission_variables(submission)
 
         make_sensitive_data_anonymous()
 
@@ -897,7 +864,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
             pending_override_submission,
             in_progress_override_submission,
         ]:
-            SubmissionStepFactory.create(
+            SubmissionStepFactory.create_with_variables(
                 data={
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
@@ -905,7 +872,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
-            SubmissionStepFactory.create(
+            SubmissionStepFactory.create_with_variables(
                 data={
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
@@ -913,7 +880,6 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
             )
-            self._create_submission_variables(submission)
 
         make_sensitive_data_anonymous()
 
@@ -1138,7 +1104,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
             submission_to_be_anonymous,
             override_submission,
         ]:
-            SubmissionStepFactory.create(
+            SubmissionStepFactory.create_with_variables(
                 data={
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
@@ -1146,7 +1112,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
-            SubmissionStepFactory.create(
+            SubmissionStepFactory.create_with_variables(
                 data={
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
@@ -1154,7 +1120,6 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                 form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
             )
-            self._create_submission_variables(submission)
 
         make_sensitive_data_anonymous()
 
