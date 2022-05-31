@@ -5098,7 +5098,6 @@ components:
         data:
           type: object
           additionalProperties: {}
-          nullable: true
         isApplicable:
           type: boolean
           readOnly: true

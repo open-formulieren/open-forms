@@ -234,6 +234,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
     data = serializers.JSONField(
         source="_data",
         label=_("data"),
+        required=False,
     )
 
     parent_lookup_kwargs = {
