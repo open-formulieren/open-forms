@@ -17,6 +17,35 @@ The main website link is used so the end-user can return to you main website, e.
 ``https://www.gemeente.nl``. Clicking the logo (or link) in the header will return the
 end-user to this URL.
 
+**Theme CSS class name**
+
+You can specify a CSS class name to apply to the root ``html`` element here. Typically
+you need this if you use an NL Design System design token package which emits the design
+tokens under this class name scope.
+
+Example value: ``<gemeente>-theme``.
+
+The `NL DS theme switcher`_ source code contains a list of built in themes and their
+class names.
+
+**Theme stylesheet URL**
+
+If your organization publishes their design tokens as a package, you can use the
+resulting CSS file here by specifying the URL to the hosted stylesheet.
+
+The `NL DS theme switcher`_ source code contains a list of built in themes with
+available hosted stylesheets under the ``href`` key.
+
+.. note::
+
+   If you are specifying an externally hosted stylesheet, then it will by default by
+   blocked by the Content-Security-Policy (CSP).
+
+   Navigate to **Admin** > **Configuratie** > **Csp settings** and add an entry to put
+   this stylesheet on the allowlist. For the *directive* field, select ``style-src``,
+   while the *Waarde* field should contain the (base) URL of the stylesheet, e.g.
+   ``https://unpkg.com/@gemeente-denhaag/``.
+
 **Design token values**
 
 With the design token values, you can control aspects such as back- and foreground
@@ -95,6 +124,7 @@ The configuration in the admin requires this to be provided as JSON, for example
     }
 
 
+.. _NL DS theme switcher: https://github.com/nl-design-system/themes/blob/main/packages/theme-switcher/src/index.js
 .. _style dictionary: https://amzn.github.io/style-dictionary/
 
 
