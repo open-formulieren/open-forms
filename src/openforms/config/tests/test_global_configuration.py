@@ -75,7 +75,7 @@ class AdminTests(WebTest):
 
             style_tag = form_page.pyquery("style")
             self.assertIn(
-                f"--of-logo-header-url: url('{config.logo.url}')",
+                f"--of-header-logo-url: url('{config.logo.url}')",
                 style_tag.text(),
             )
 

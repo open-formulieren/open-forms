@@ -201,8 +201,8 @@ class GlobalConfiguration(SingletonModel):
     # the configuration of the values of available design tokens, following the
     # format outlined in https://github.com/amzn/style-dictionary#design-tokens which
     # is used by NLDS.
-    # TODO: specify a serializer describing the supported design parameters to use for
-    # validation.
+    # TODO: validate against the JSON build from @open-formulieren/design-tokens for
+    # available tokens.
     # Example:
     # {
     #   "of": {

@@ -1,15 +1,15 @@
 @import '../../settings';
 
 // colors
-$page-header-background: var(--of-page-header-background, $color-white);
+$page-header-background: var(--of-page-header-bg);
 
 // padding/spacing
-$page-header-padding--mobile: var(--of-page-header-padding-mobile, $typography-margin-text-mobile);
-$page-header-padding--tablet: var(--of-page-header-padding-tablet, $typography-margin-text-tablet);
-$page-header-padding--laptop: var(--of-page-header-padding-laptop, $typography-margin-text-laptop);
-$page-header-padding--desktop: var(--of-page-header-padding-desktop, $typography-margin-text-desktop);
+$page-header-padding--mobile: var(--of-page-header-mobile-padding);
+$page-header-padding--tablet: var(--of-page-header-tablet-padding);
+$page-header-padding--laptop: var(--of-page-header-laptop-padding);
+$page-header-padding--desktop: var(--of-page-header-desktop-padding);
 
 // logo
-$page-header-logo-url: var(--of-logo-header-url);
-$page-header-logo-width: var(--of-logo-header-width, auto);
-$page-header-logo-height: var(--of-logo-header-height, auto);
+$page-header-logo-url: var(--of-header-logo-url);
+$page-header-logo-width: var(--of-header-logo-width);
+$page-header-logo-height: var(--of-header-logo-height);

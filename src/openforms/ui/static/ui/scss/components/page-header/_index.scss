@@ -11,16 +11,18 @@
     $value-mobile: $page-header-padding--mobile,
     $value-tablet: $page-header-padding--tablet,
     $value-laptop: $page-header-padding--laptop,
-    $value-desktop: $page-header-padding--desktop,
+    $value-desktop: $page-header-padding--desktop
   );
 
   background: $page-header-background;
+  color: var(--of-page-header-fg, #{$typography-color-text});
   display: flex;
   justify-content: flex-start;
 
   &--has-logo {
     .page-header__return-url {
-      &, &:hover {
+      &,
+      &:hover {
         color: transparent !important;
         text-decoration: none !important;
       }

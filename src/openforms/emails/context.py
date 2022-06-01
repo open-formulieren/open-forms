@@ -23,26 +23,25 @@ def get_wrapper_context(html_content=""):
 def _get_design_token_values(tokens):
     """
     convert and apply defaults for use in template
+
+    TODO: convert to use style-dict assets merged with database tokens
+    TODO: figure out how to use the remote stylesheet for this
     """
     return {
         "header": {
-            "color": glom(tokens, "page-header.color.value", default="#000000"),
-            "background": glom(
-                tokens, "page-header.background.value", default="#ffffff"
-            ),
+            "fg": glom(tokens, "page-header.fg.value", default="#000000"),
+            "bg": glom(tokens, "page-header.bg.value", default="#ffffff"),
         },
         "logo": {
             # Setting height to a default of 50 obtaines the same result on the
             # website that uses flexbox shrink, to size the logo to it's minimum
             # size.
-            "height": glom(tokens, "logo-header.height.value", default="50"),
-            "width": glom(tokens, "logo-header.width.value", default="auto"),
+            "height": glom(tokens, "header-logo.height.value", default="50"),
+            "width": glom(tokens, "header-logo.width.value", default="auto"),
         },
         "footer": {
-            "color": glom(tokens, "footer.color.value", default="#ffffff"),
-            "background": glom(tokens, "footer.background.value", default="#2980b9"),
+            "fg": glom(tokens, "page-footer.fg.value", default="#ffffff"),
+            "bg": glom(tokens, "page-footer.bg.value", default="#2980b9"),
         },
-        "layout": {
-            "background": glom(tokens, "layout.background.value", default="#e6e6e6")
-        },
+        "layout": {"bg": glom(tokens, "layout.bg.value", default="#e6e6e6")},
     }
