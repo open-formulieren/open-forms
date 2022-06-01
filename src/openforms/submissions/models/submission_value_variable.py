@@ -5,7 +5,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from glom import Assign, glom
+from glom import Assign, PathAccessError, glom
 
 from openforms.forms.models.form_variable import FormVariable
 
@@ -119,7 +119,9 @@ class SubmissionValueVariable(models.Model):
         return _("Submission value variable %(key)s") % {"key": self.key}
 
     @classmethod
-    def bulk_create_or_update(cls, submission_step, data):
+    def bulk_create_or_update(
+        cls, submission_step, data, update_missing_variables: bool = False
+    ):
         submission = submission_step.submission
 
         submission_value_variables_state = (
@@ -135,16 +137,16 @@ class SubmissionValueVariable(models.Model):
         variables_to_update = []
         for variable in submission_step_variables:
             key = variable.key
-            if key in data:
-                if data[key] != variable.value:
-                    variable.source = SubmissionValueVariableSources.user_input
-                variable.value = data[key]
-            else:
-                variable.value = ""
+            try:
+                variable.value = glom(data, key)
+            except PathAccessError:
+                if update_missing_variables:
+                    variable.value = variable.form_variable.get_initial_value()
 
             if not variable.pk:
                 variables_to_create.append(variable)
             else:
+                variable.source = SubmissionValueVariableSources.user_input
                 variable.modified_at = timezone.now()
                 variables_to_update.append(variable)
 

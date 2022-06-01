@@ -383,7 +383,7 @@ class SubmissionStepViewSet(
         config = GlobalConfiguration.get_solo()
         if config.enable_form_variables:
             SubmissionValueVariable.bulk_create_or_update(
-                instance, request.data["data"]
+                instance, request.data["data"], update_missing_variables=True
             )
 
         logevent.submission_step_fill(instance)

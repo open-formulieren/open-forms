@@ -116,7 +116,9 @@ def evaluate_form_logic(
                         action["form_step"]
                     )
                     submission_step_to_modify._is_applicable = False
+                    submission_step_to_modify.reset()
                     if submission_step_to_modify == step:
+                        updated_data = {}
                         step._is_applicable = False
     step.data = updated_data
 

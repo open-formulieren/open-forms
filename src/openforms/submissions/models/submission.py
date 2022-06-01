@@ -464,7 +464,11 @@ class Submission(models.Model):
         return state
 
     def update_submission_value_variables_state(
-        self, data: dict, source: str = None
+        self,
+        data: dict,
+        submission_step: "SubmissionStep" = None,
+        source: str = None,
+        update_missing_variables: bool = False,
     ) -> "SubmissionValueVariablesState":
         from .submission_value_variable import SubmissionValueVariablesState
 
@@ -473,9 +477,19 @@ class Submission(models.Model):
 
         updated_variables = []
         for variable in self._variables_state.variables:
+            if (
+                submission_step
+                and variable.form_variable.form_definition
+                != submission_step.form_step.form_definition
+            ):
+                updated_variables.append(variable)
+                continue
+
             try:
                 new_value = glom(data, variable.key)
             except PathAccessError:
+                if update_missing_variables:
+                    variable.value = variable.form_variable.get_initial_value()
                 updated_variables.append(variable)
                 continue
 

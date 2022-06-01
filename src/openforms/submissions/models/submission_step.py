@@ -3,11 +3,7 @@ import uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from glom import Assign, glom
-
 from openforms.config.models import GlobalConfiguration
-
-from ..constants import SubmissionValueVariableSources
 
 
 class SubmissionStep(models.Model):
@@ -54,8 +50,14 @@ class SubmissionStep(models.Model):
         return self._is_applicable
 
     def reset(self):
-        self._data = None
-        self.save()
+        config = GlobalConfiguration.get_solo()
+        if config.enable_form_variables:
+            self.submission.update_submission_value_variables_state(
+                data={}, submission_step=self, update_missing_variables=True
+            )
+        else:
+            self._data = None
+            self.save()
 
     @property
     def data(self) -> dict:
@@ -70,6 +72,8 @@ class SubmissionStep(models.Model):
     def data(self, data):
         config = GlobalConfiguration.get_solo()
         if config.enable_form_variables:
-            self.submission.update_submission_value_variables_state(data=data)
+            self.submission.update_submission_value_variables_state(
+                data=data, submission_step=self
+            )
         else:
             self._data = data
