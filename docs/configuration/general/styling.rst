@@ -38,8 +38,8 @@ available hosted stylesheets under the ``href`` key.
 
 .. note::
 
-   If you are specifying an externally hosted stylesheet, then it will by default by
-   blocked by the Content-Security-Policy (CSP).
+   If you are specifying an externally hosted stylesheet, then it will be
+   blocked by default by the Content-Security-Policy (CSP).
 
    Navigate to **Admin** > **Configuratie** > **Csp settings** and add an entry to put
    this stylesheet on the allowlist. For the *directive* field, select ``style-src``,
