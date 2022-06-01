@@ -28,6 +28,7 @@
   "homepage": "https://maykinmedia.nl",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.1.1",
+    "@open-formulieren/design-tokens": "^0.3.0",
     "@rjsf/core": "^3.2.1",
     "@tinymce/tinymce-react": "^3.12.6",
     "bem.js": "^1.0.10",
