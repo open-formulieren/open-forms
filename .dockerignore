@@ -1,17 +1,30 @@
 node_modules
+**/__pycache__
+*.pyc
+
 Dockerfile*
 docker-compose*
 .dockerignore
 .git
+.github/
 .vscode
+deployment/
+docs/
+docker/
 env/
 local.py
 /doc/_build/
+/nlx
 
 /htmlcov
 .coverage
+# tests and test assets
+src/**/tests/**
 
 src/openforms/static/bundles
+/log/
 /static/
 /media/
 /private_media/
+/certifi_ca_bundle
+/celerybeat
