@@ -18,8 +18,8 @@ be :ref:`prefilled <configuration_prefill_index>` with relevant personal data.
 
 .. note::
 
-    Open Forms currently only supports security level 25
-    (zekerheidsniveau = Substantieel).
+    Open Forms currently only supports security level 
+    ``MobileTwoFactorContract`` (betrouwbaarheidsniveau "Midden").
 
 
 Step by step overview
