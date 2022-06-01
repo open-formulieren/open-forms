@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 from django.template import Context, Template
 from django.template.loader import render_to_string
@@ -214,11 +214,6 @@ class GlobalConfiguration(SingletonModel):
     #   }
     # }
     #
-    # TODO: later on, we should have the ability to include a dist/index.css file containing
-    # the municipality styles. This would then allow us to use references to existing design
-    # tokens or even have the OF-specific design tokens included in the municipality dist
-    # already, see for example https://unpkg.com/@utrecht/design-tokens@1.0.0-alpha.20/dist/index.css
-
     design_token_values = models.JSONField(
         _("design token values"),
         blank=True,
@@ -228,6 +223,29 @@ class GlobalConfiguration(SingletonModel):
             "colors... Note that this is advanced usage. Any available but un-specified "
             "values will use fallback default values. See https://open-forms.readthedocs.io/en/latest"
             "/installation/form_hosting.html#run-time-configuration for documentation."
+        ),
+    )
+
+    theme_classname = models.SlugField(
+        _("theme CSS class name"),
+        blank=True,
+        help_text=_("If provided, this class name will be set on the <html> element."),
+    )
+    theme_stylesheet = models.URLField(
+        _("theme stylesheet URL"),
+        blank=True,
+        max_length=1000,
+        validators=[
+            RegexValidator(
+                regex=r"\.css$",
+                message=_("The URL must point to a CSS resource (.css extension)."),
+            ),
+        ],
+        help_text=_(
+            "The URL stylesheet with theme-specific rules for your organization. "
+            "This will be included as final stylesheet, overriding previously defined styles. "
+            "Note that you also have to include the host to the `style-src` CSP directive. "
+            "Example value: https://unpkg.com/@utrecht/design-tokens@1.0.0-alpha.20/dist/index.css."
         ),
     )
 
