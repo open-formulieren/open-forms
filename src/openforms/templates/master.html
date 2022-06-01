@@ -4,7 +4,7 @@
 {% firstof config.analytics_cookie_consent_group.varname '_dummy' as analytics_varname %}
 {% with request|cookie_group_accepted:analytics_varname as enable_analytics %}
 
-<html lang="nl" class="view {% block view_class %}view--{{ request.resolver_match.namespaces|join:'-' }}-{{ request.resolver_match.url_name }}{% endblock %}">
+<html lang="nl" class="view {{ config.theme_classname }} {% block view_class %}view--{{ request.resolver_match.namespaces|join:'-' }}-{{ request.resolver_match.url_name }}{% endblock %}">
 <head>
     <meta charset="utf-8">
     <title>{% block title %}Openforms{% endblock %}</title>
@@ -13,6 +13,10 @@
     <link href="{% static 'bundles/openforms-css.css' %}" media="all" rel="stylesheet"/>
     <link href="{% static 'bundles/core-css.css' %}" media="all" rel="stylesheet"/>
     {% block extra_css %}{% endblock %}
+
+    {# Note that the custom stylesheet is deliberately kept outside of extra_css to ensure it is the last stylesheet loaded! #}
+    {% if config.theme_stylesheet %}<link href="{{ config.theme_stylesheet }}" media="all" rel="stylesheet" />{% endif %}
+
     {% if enable_analytics %}
         {# Load the various supported analytics provider snippets #}
         {% include "includes/analytics/all_head.html" %}
