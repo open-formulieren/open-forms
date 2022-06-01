@@ -3,16 +3,17 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.utils.mixins import VariablesTestMixin
 
 from ..factories import SubmissionFactory, SubmissionStepFactory
 from ..mixins import SubmissionsMixin
 from .factories import FormLogicFactory
 
 
-class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
+class CheckLogicEndpointTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
     def test_update_not_applicable_steps(self):
         form = FormFactory.create()
-        step1 = FormStepFactory.create(
+        step1 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -29,7 +30,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create(
+        step2 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -44,7 +45,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
             "api:form-steps-detail",
             kwargs={"form_uuid_or_slug": form.uuid, "uuid": step2.uuid},
         )
-        step3 = FormStepFactory.create(
+        step3 = FormStepFactory.create_with_variables(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -97,7 +98,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         )
         submission = SubmissionFactory.create(form=form)
 
-        SubmissionStepFactory.create(
+        SubmissionStepFactory.create_with_variables(
             submission=submission,
             form_step=step1,
             data={"pet": "dog"},  # With this data, step 3 is not applicable
