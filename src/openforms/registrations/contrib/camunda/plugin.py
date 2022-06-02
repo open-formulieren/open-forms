@@ -13,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 
 import requests
 from django_camunda.api import get_process_definitions
+from django_camunda.client import get_client
 from django_camunda.models import CamundaConfig
 from django_camunda.tasks import start_process
 from django_camunda.types import ProcessVariables
@@ -150,15 +151,29 @@ class CamundaRegistration(BasePlugin):
             }
         }
 
-    def get_reference_from_result(self, result: Dict[str, str]) -> NoReturn:
+    def get_reference_from_result(
+        self, result: Dict[str, str], submission: Submission
+    ) -> NoReturn:
         """
         Extract the public submission reference from the result data.
 
-        We never return, as the Camunda API response does not contain anything useful
-        and readable for the end-user and we cannot make assumptions about the process
-        model. The instance ID is a UUID, which is not suitable for end users.
+        Returning is deferred to third party plugins. If there is no suitable plugin
+        or plugin return value, we do not return at all because we cannot make any
+        assumptions. This results in Open Forms generating a reference.
         """
-        # camunda_plugin_register[]
+        import bpdb
+
+        bpdb.set_trace()
+        options = self.get_options(submission.form)
+        if plugin_id := options.get("plugin"):
+            plugin = camunda_plugin_register[plugin_id]
+            client = get_client()
+            reference = plugin.obtain_reference(client, submission)
+            if reference:
+                logger.info("Plugin %r returned reference: %s", plugin, reference)
+                return reference
+            else:
+                logger.info("Plugin %r returned empty reference", plugin)
 
         raise NoSubmissionReference("Deferred to Open Forms itself")
 

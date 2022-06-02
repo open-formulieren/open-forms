@@ -27,7 +27,7 @@ class Plugin1(BasePlugin):
     def register_submission(self, submission, options):
         pass
 
-    def get_reference_from_result(self, result) -> str:
+    def get_reference_from_result(self, result, submission) -> str:
         return result.get("reference")
 
 
@@ -38,7 +38,7 @@ class Plugin2(BasePlugin):
     def register_submission(self, submission, options):
         pass
 
-    def get_reference_from_result(self, result: dict) -> str:
+    def get_reference_from_result(self, result: dict, submission) -> str:
         return str(result["reference"])
 
 

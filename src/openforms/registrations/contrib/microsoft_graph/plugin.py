@@ -53,7 +53,7 @@ class MSGraphRegistration(BasePlugin):
 
         self._set_payment(uploader, submission, folder_name)
 
-    def get_reference_from_result(self, result: None) -> NoReturn:
+    def get_reference_from_result(self, result: None, submission) -> NoReturn:
         raise NoSubmissionReference("MS Graph plugin does not emit a reference")
 
     def update_payment_status(self, submission: "Submission", options: dict):

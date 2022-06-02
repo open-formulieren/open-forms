@@ -159,7 +159,7 @@ class EmailRegistration(BasePlugin):
             text_message=text_content,
         )
 
-    def get_reference_from_result(self, result: None) -> NoReturn:
+    def get_reference_from_result(self, result: None, submission) -> NoReturn:
         raise NoSubmissionReference("Email plugin does not emit a reference")
 
     def update_payment_status(self, submission: "Submission", options: dict):

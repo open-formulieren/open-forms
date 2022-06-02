@@ -96,12 +96,8 @@ def register_submission(submission_id: int) -> Optional[dict]:
         logevent.registration_failure(submission, e)
         raise e
 
-    logger.debug("De-serializing the plugin configuration options")
-    options_serializer = plugin.configuration_options(
-        data=form.registration_backend_options
-    )
     try:
-        options_serializer.is_valid(raise_exception=True)
+        options = plugin.get_options(form)
     except Exception as e:
         submission.save_registration_status(
             RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
@@ -111,9 +107,7 @@ def register_submission(submission_id: int) -> Optional[dict]:
 
     logger.debug("Invoking the '%r' plugin callback", plugin)
     try:
-        result = plugin.register_submission(
-            submission, options_serializer.validated_data
-        )
+        result = plugin.register_submission(submission, options)
     # downstream tasks can still execute, so we return rather than failing.
     except RegistrationFailed as e:
         logger.warning(

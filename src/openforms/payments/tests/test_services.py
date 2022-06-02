@@ -27,7 +27,7 @@ class Plugin(BasePlugin):
     def update_payment_status(self, submission: Submission, options):
         pass
 
-    def get_reference_from_result(self, result):
+    def get_reference_from_result(self, result, submission):
         pass
 
 

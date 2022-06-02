@@ -38,6 +38,6 @@ def extract_submission_reference(submission: Submission) -> str:
     plugin = registry[backend]
 
     try:
-        return plugin.get_reference_from_result(result)
+        return plugin.get_reference_from_result(result, submission)
     except Exception as exc:
         raise NoSubmissionReference("Extraction failed") from exc

@@ -191,7 +191,7 @@ class StufZDSRegistration(BasePlugin):
         }
         return result
 
-    def get_reference_from_result(self, result: Dict[str, str]) -> str:
+    def get_reference_from_result(self, result: Dict[str, str], submission) -> str:
         """
         Extract the public submission reference from the result data.
 

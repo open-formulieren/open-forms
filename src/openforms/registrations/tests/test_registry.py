@@ -17,7 +17,7 @@ class Plugin(BasePlugin):
     def register_submission(self, submission, options):
         pass
 
-    def get_reference_from_result(self, result: dict) -> None:
+    def get_reference_from_result(self, result: dict, submission) -> None:
         pass
 
 
@@ -28,7 +28,7 @@ class NoConfigPlugin(BasePlugin):
     def register_submission(self, submission, options):
         pass
 
-    def get_reference_from_result(self, result: dict) -> None:
+    def get_reference_from_result(self, result: dict, submission) -> None:
         pass
 
 

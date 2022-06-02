@@ -1,3 +1,4 @@
+import logging
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Optional, Type
 
@@ -8,6 +9,8 @@ from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 if TYPE_CHECKING:  # pragma: nocover
     from openforms.submissions.models import Submission
+
+logger = logging.getLogger(__name__)
 
 SerializerCls = Type[serializers.Serializer]
 
@@ -32,6 +35,15 @@ class BasePlugin(ABC, AbstractBasePlugin):
     Iterable of JSON keys to ignore when converting between snake_case/camelCase.
     """
 
+    def get_options(self, form) -> Any:
+        """
+        Return the configuration options as stored on the form.
+        """
+        logger.debug("De-serializing the plugin configuration options")
+        serializer = self.configuration_options(data=form.registration_backend_options)
+        serializer.is_valid(raise_exception=True)
+        return serializer.validated_data
+
     @abstractmethod
     def register_submission(
         self, submission: "Submission", options: dict
@@ -39,7 +51,7 @@ class BasePlugin(ABC, AbstractBasePlugin):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_reference_from_result(self, result: Any) -> str:
+    def get_reference_from_result(self, result: Any, submission: "Submission") -> str:
         """
         Extract the public submission reference from the result data.
 

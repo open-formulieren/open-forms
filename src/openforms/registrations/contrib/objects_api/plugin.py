@@ -158,7 +158,7 @@ class ObjectsAPIRegistration(BasePlugin):
         created_object = objects_client.create("object", object_data)
         return created_object
 
-    def get_reference_from_result(self, result: None) -> NoReturn:
+    def get_reference_from_result(self, result: None, submission) -> NoReturn:
         raise NoSubmissionReference("Object API plugin does not emit a reference")
 
     def check_config(self):

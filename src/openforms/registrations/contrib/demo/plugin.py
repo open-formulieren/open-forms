@@ -21,7 +21,7 @@ class DemoRegistration(BasePlugin):
         if options.get("extra_line"):
             print(options["extra_line"])
 
-    def get_reference_from_result(self, result: None) -> NoReturn:
+    def get_reference_from_result(self, result: None, submission) -> NoReturn:
         raise NoSubmissionReference("Demo plugin does not emit a reference")
 
     def update_payment_status(self, submission: "Submission", options: dict):
@@ -43,7 +43,7 @@ class DemoFailRegistration(BasePlugin):
     def register_submission(self, submission: Submission, options: dict) -> NoReturn:
         raise RegistrationFailed("Demo failing registration")
 
-    def get_reference_from_result(self, result: None) -> NoReturn:
+    def get_reference_from_result(self, result: None, submission) -> NoReturn:
         raise NoSubmissionReference("Demo plugin does not emit a reference")
 
     def update_payment_status(self, submission: "Submission", options: dict):
@@ -65,7 +65,7 @@ class DemoExceptionRegistration(BasePlugin):
     def register_submission(self, submission: Submission, options: dict) -> NoReturn:
         raise Exception("Demo exception registration")
 
-    def get_reference_from_result(self, result: None) -> NoReturn:
+    def get_reference_from_result(self, result: None, submission) -> NoReturn:
         raise NoSubmissionReference("Demo plugin does not emit a reference")
 
     def update_payment_status(self, submission: "Submission", options: dict):

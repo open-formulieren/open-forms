@@ -74,7 +74,7 @@ class RegistrationHookTests(TestCase):
 
                 return {"result": "ok"}
 
-            def get_reference_from_result(self, result: dict) -> None:
+            def get_reference_from_result(self, result: dict, submission) -> None:
                 pass
 
         # call the hook for the submission, while patching the model field registry
@@ -106,7 +106,7 @@ class RegistrationHookTests(TestCase):
                 err = ZeroDivisionError("Can't divide by zero")
                 raise RegistrationFailed("zerodiv") from err
 
-            def get_reference_from_result(self, result: dict) -> None:
+            def get_reference_from_result(self, result: dict, submission) -> None:
                 pass
 
         # call the hook for the submission, while patching the model field registry
@@ -145,7 +145,7 @@ class RegistrationHookTests(TestCase):
                 # plugin errors with unexected exception (= not converted into RegistrationFailed)
                 raise ZeroDivisionError("Can't divide by zero")
 
-            def get_reference_from_result(self, result: dict) -> None:
+            def get_reference_from_result(self, result: dict, submission) -> None:
                 pass
 
         # call the hook for the submission, while patching the model field registry
@@ -184,7 +184,7 @@ class RegistrationHookTests(TestCase):
                 err = ZeroDivisionError("Can't divide by zero")
                 raise RegistrationFailed("zerodiv") from err
 
-            def get_reference_from_result(self, result: dict) -> None:
+            def get_reference_from_result(self, result: dict, submission) -> None:
                 pass
 
         # call the hook for the submission, while patching the model field registry
@@ -254,7 +254,7 @@ class RegistrationHookTests(TestCase):
             def register_submission(self, submission, options):
                 pass
 
-            def get_reference_from_result(self, result: dict) -> None:
+            def get_reference_from_result(self, result: dict, submission) -> None:
                 pass
 
         mock_get_solo.return_value = GlobalConfiguration(
@@ -298,7 +298,7 @@ class NumRegistrationsTest(TestCase):
             def register_submission(self, submission, options):
                 raise RegistrationFailed("fake failure")
 
-            def get_reference_from_result(self, result: dict) -> None:
+            def get_reference_from_result(self, result: dict, submission) -> None:
                 pass
 
         mock_get_solo.return_value = GlobalConfiguration(
