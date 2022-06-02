@@ -25,6 +25,7 @@ from ...exceptions import NoSubmissionReference, RegistrationFailed
 from ...registry import register
 from .checks import check_config
 from .complex_variables import get_complex_process_variables
+from .registry import register as camunda_plugin_register
 from .serializers import CamundaOptionsSerializer
 from .type_mapping import to_python
 
@@ -85,7 +86,7 @@ class CamundaRegistration(BasePlugin):
 
     def register_submission(
         self, submission: Submission, options: dict
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Any]:
         process_definition = options["process_definition"]
         version = options["process_definition_version"]
 
@@ -157,6 +158,8 @@ class CamundaRegistration(BasePlugin):
         and readable for the end-user and we cannot make assumptions about the process
         model. The instance ID is a UUID, which is not suitable for end users.
         """
+        # camunda_plugin_register[]
+
         raise NoSubmissionReference("Deferred to Open Forms itself")
 
     def update_payment_status(self, submission: "Submission", options: dict):

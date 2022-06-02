@@ -23,7 +23,7 @@ class ProcessDefinitionsListEndpointTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @patch(
-        "openforms.registrations.contrib.camunda.api.get_process_definitions",
+        "openforms.registrations.contrib.camunda.api.views.get_process_definitions",
         return_value=[],
     )
     def test_staff_user_required(self, mock_get_process_definitions):
@@ -84,7 +84,7 @@ class ProcessDefinitionsListEndpointTests(APITestCase):
         ]
 
         with patch(
-            "openforms.registrations.contrib.camunda.api.get_process_definitions",
+            "openforms.registrations.contrib.camunda.api.views.get_process_definitions",
             return_value=mock_data,
         ):
             response = self.client.get(self.endpoint)
