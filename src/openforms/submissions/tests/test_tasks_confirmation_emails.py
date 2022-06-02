@@ -68,7 +68,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             submitted_data={"email": "test@test.nl"},
         )
         # add a second step
-        form_step = FormStepFactory.create_with_variables(
+        form_step = FormStepFactory.create(
             optional=False,
             form=submission.form,
             form_definition__configuration={
@@ -82,7 +82,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                 ],
             },
         )
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=form_step,
             data={"foo": "bar"},
@@ -157,7 +157,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             submitted_data={"foo": "foovalue", "email": "test@test.nl"},
         )
         # add second step
-        form_step = FormStepFactory.create_with_variables(
+        form_step = FormStepFactory.create(
             form_definition__configuration={
                 "components": [
                     {
@@ -176,7 +176,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             },
             form=submission.form,
         )
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=form_step,
             data={"bar": "barvalue", "hello": "hellovalue"},
@@ -236,7 +236,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             submitted_data={"single1": "single1@test.nl", "single2": "single2@test.nl"},
         )
         # second step
-        form_step = FormStepFactory.create_with_variables(
+        form_step = FormStepFactory.create(
             form_definition__configuration={
                 "display": "form",
                 "components": [
@@ -251,7 +251,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             },
             form=submission.form,
         )
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=form_step,
             data={"many": ["many1@test.nl", "many2@test.nl"]},

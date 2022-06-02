@@ -18,10 +18,9 @@ from openforms.forms.tests.factories import (
     FormVariableFactory,
 )
 from openforms.logging.models import TimelineLogProxy
-from openforms.utils.mixins import VariablesTestMixin
 
 from .factories import SubmissionFactory, SubmissionStepFactory
-from .mixins import SubmissionsMixin
+from .mixins import SubmissionsMixin, VariablesTestMixin
 
 
 class SubmissionReadTests(SubmissionsMixin, APITestCase):
@@ -212,7 +211,7 @@ class SubmissionReadPaymentInformationTests(
             form=submission.form,
             form_definition=submission.form.formstep_set.get().form_definition,
         )
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=submission.form.formstep_set.get(),
             data={"test-key": "test"},

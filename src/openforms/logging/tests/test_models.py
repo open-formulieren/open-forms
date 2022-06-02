@@ -67,7 +67,7 @@ class TimelineLogProxyTests(TestCase):
                         {
                             "key": "theFirstName",
                             "label": "The First Name",
-                            "prefill": {"attribute": "voornamen"},
+                            "prefill": {"plugin": "myplugin", "attribute": "voornamen"},
                         }
                     ],
                 },
@@ -100,7 +100,7 @@ class TimelineLogProxyTests(TestCase):
                         {
                             "key": "theFirstName",
                             "label": "The First Name",
-                            "prefill": {"attribute": "voornamen"},
+                            "prefill": {"plugin": "myplugin", "attribute": "voornamen"},
                         }
                     ],
                 },

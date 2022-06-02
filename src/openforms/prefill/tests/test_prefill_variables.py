@@ -4,7 +4,10 @@ from django.test import TestCase
 
 from openforms.forms.tests.factories import FormStepFactory, FormVariableFactory
 from openforms.submissions.constants import SubmissionValueVariableSources
-from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+)
 
 from .. import prefill_variables
 
@@ -44,28 +47,12 @@ class PrefillVariablesTests(TestCase):
     )
     def test_applying_prefill_plugins(self, m_prefill):
         form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
-        FormVariableFactory.create(
-            form=form_step.form,
-            form_definition=form_step.form_definition,
-            key="voornamen",
-            prefill_plugin="demo",
-            prefill_attribute="random_string",
-            source="component",
-        )
-        FormVariableFactory.create(
-            form=form_step.form,
-            form_definition=form_step.form_definition,
-            key="age",
-            prefill_plugin="demo",
-            prefill_attribute="random_number",
-            source="component",
-        )
-        submission = SubmissionFactory.create(form=form_step.form)
+        submission_step = SubmissionStepFactory.create(submission__form=form_step.form)
 
-        prefill_variables(submission=submission)
+        prefill_variables(submission=submission_step.submission)
 
         submission_value_variables_state = (
-            submission.load_submission_value_variables_state()
+            submission_step.submission.load_submission_value_variables_state()
         )
 
         self.assertEqual(2, len(submission_value_variables_state.variables))

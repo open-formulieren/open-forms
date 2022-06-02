@@ -5,11 +5,10 @@ from django.utils import timezone
 
 from freezegun import freeze_time
 
-from openforms.utils.mixins import VariablesTestMixin
-
 from ..exports import create_submission_export
 from ..models import Submission
 from .factories import SubmissionFactory
+from .mixins import VariablesTestMixin
 
 
 class ExportTests(VariablesTestMixin, TestCase):
@@ -114,10 +113,10 @@ class ExportTests(VariablesTestMixin, TestCase):
                 "Export test",
                 datetime(2022, 5, 9, 15, 0, 0),
                 "Input 1",
-                "",
+                None,
                 "Input 3",
-                "",
-                "",
-                "",
+                None,
+                None,
+                None,
             ),
         )

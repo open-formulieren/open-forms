@@ -30,9 +30,9 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
+from openforms.submissions.tests.mixins import VariablesTestMixin
 from openforms.submissions.utils import send_confirmation_email
 from openforms.tests.utils import NOOP_CACHES
-from openforms.utils.mixins import VariablesTestMixin
 from openforms.utils.tests.html_assert import HTMLAssertMixin, strip_all_attributes
 from openforms.utils.urls import build_absolute_uri
 

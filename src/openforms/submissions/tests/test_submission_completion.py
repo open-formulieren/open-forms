@@ -29,12 +29,11 @@ from openforms.forms.tests.factories import (
     FormVariableFactory,
 )
 
-from ...utils.mixins import VariablesTestMixin
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..models import SubmissionStep
 from .factories import SubmissionFactory, SubmissionStepFactory
 from .form_logic.factories import FormLogicFactory
-from .mixins import SubmissionsMixin
+from .mixins import SubmissionsMixin, VariablesTestMixin
 
 
 @temp_private_root()
@@ -136,7 +135,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
     def test_submit_form_with_not_applicable_step(self):
         form = FormFactory.create()
-        step1 = FormStepFactory.create_with_variables(
+        step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -147,7 +146,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create_with_variables(
+        step2 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -181,7 +180,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=step1,
             data={"age": 16},
@@ -269,7 +268,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
     def test_prefilled_data_updated(self):
         form = FormFactory.create()
-        step = FormStepFactory.create_with_variables(
+        step = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -286,7 +285,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         submission = SubmissionFactory.create(
             form=form, prefill_data={"test-prefill": {"surname": "Doe"}}
         )
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=step,
             data={"surname": "Doe-MODIFIED"},
@@ -457,7 +456,7 @@ class SetSubmissionPriceOnCompletionTests(
             form=submission.form,
             form_definition=submission.form.formstep_set.get().form_definition,
         )
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=submission.form.formstep_set.get(),
             data={"test-key": "test"},
@@ -494,7 +493,7 @@ class SetSubmissionPriceOnCompletionTests(
             form=submission.form,
             form_definition=submission.form.formstep_set.get().form_definition,
         )
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=submission.form.formstep_set.get(),
             data={"test-key": "test"},

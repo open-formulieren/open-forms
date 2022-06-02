@@ -29,15 +29,14 @@ So, to recap:
 import logging
 from collections import defaultdict
 from copy import deepcopy
-from datetime import date, datetime
 from itertools import groupby
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 
 import elasticapm
-from glom import GlomError, Path, assign, glom
+from glom import GlomError, Path, PathAccessError, assign, glom
 from zgw_consumers.concurrent import parallel
 
-from openforms.formio.utils import iter_components
+from openforms.formio.utils import format_date_value, iter_components
 from openforms.logging import logevent
 from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.constants import SubmissionValueVariableSources
@@ -196,22 +195,6 @@ def _group_prefills_by_plugin(fields: List[Dict[str, str]]) -> Dict[str, list]:
     return grouper
 
 
-def format_date_value(date_value: str) -> str:
-    try:
-        parsed_date = date.fromisoformat(date_value)
-    except ValueError:
-        try:
-            parsed_date = datetime.strptime(date_value, "%Y%m%d").date()
-        except ValueError:
-            logger.info(
-                "Invalid date %s for prefill of date field. Using empty value.",
-                date_value,
-            )
-            return ""
-
-    return parsed_date.isoformat()
-
-
 def _set_default_values(
     configuration: JSONObject, prefilled_values: Dict[str, Dict[str, Any]]
 ) -> None:
@@ -283,10 +266,19 @@ def prefill_variables(submission: "Submission", register=None) -> None:
     results = _fetch_prefill_values(grouped_fields, submission, register)
 
     for variable in variables_to_prefill:
-        if prefill_value := results.get(variable.form_variable.prefill_plugin, {}).get(
-            variable.form_variable.prefill_attribute
-        ):
-            variable.value = prefill_value
-            variable.source = SubmissionValueVariableSources.prefill
+        try:
+            prefill_value = glom(
+                results,
+                Path(
+                    variable.form_variable.prefill_plugin,
+                    variable.form_variable.prefill_attribute,
+                ),
+            )
+        except PathAccessError:
+            continue
 
+        variable.value = prefill_value
+        variable.source = SubmissionValueVariableSources.prefill
+
+    # Prefill variables is invoked once at the beginning od the submission, so no need to worry about updates
     SubmissionValueVariable.objects.bulk_create(variables_to_prefill)

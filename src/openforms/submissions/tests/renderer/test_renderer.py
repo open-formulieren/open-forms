@@ -27,7 +27,7 @@ class FormNodeTests(TestCase):
             name="public name",
             internal_name="internal name",
         )
-        step1 = FormStepFactory.create_with_variables(
+        step1 = FormStepFactory.create(
             form=form,
             form_definition__name="Step 1",
             form_definition__configuration={
@@ -39,7 +39,7 @@ class FormNodeTests(TestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create_with_variables(
+        step2 = FormStepFactory.create(
             form=form,
             form_definition__name="Step 2",
             form_definition__configuration={

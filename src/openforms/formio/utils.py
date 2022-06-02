@@ -1,6 +1,10 @@
+import logging
+from datetime import date, datetime
 from typing import Any, Dict, Iterator
 
 from .typing import Component
+
+logger = logging.getLogger(__name__)
 
 
 def iter_components(
@@ -40,6 +44,7 @@ def get_default_values(configuration: dict) -> Dict[str, Any]:
 
 def is_layout_component(component):
     # Adapted from isLayoutComponent util function in Formio
+    # https://github.com/formio/formio.js/blob/4.13.x/src/utils/formUtils.js#L25
     column = component.get("columns")
     components = component.get("components")
     rows = component.get("rows")
@@ -52,3 +57,19 @@ def is_layout_component(component):
         return True
 
     return False
+
+
+def format_date_value(date_value: str) -> str:
+    try:
+        parsed_date = date.fromisoformat(date_value)
+    except ValueError:
+        try:
+            parsed_date = datetime.strptime(date_value, "%Y%m%d").date()
+        except ValueError:
+            logger.info(
+                "Invalid date %s for prefill of date field. Using empty value.",
+                date_value,
+            )
+            return ""
+
+    return parsed_date.isoformat()

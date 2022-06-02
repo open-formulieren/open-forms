@@ -98,25 +98,27 @@ class SubmissionValueVariable(models.Model):
     created_at = models.DateTimeField(
         verbose_name=_("created at"),
         help_text=_("The date/time at which the value of this variable was created"),
-        auto_now=True,
+        auto_now_add=True,
     )
     modified_at = models.DateTimeField(
         verbose_name=_("modified at"),
         help_text=_("The date/time at which the value of this variable was last set"),
         null=True,
         blank=True,
+        auto_now=True,
     )
 
     class Meta:
         verbose_name = _("Submission value variable")
         verbose_name_plural = _("Submission values variables")
+        unique_together = [["submission", "key"], ["submission", "form_variable"]]
 
     def __str__(self):
         if self.form_variable:
-            return _("Submission value variable %(name)s") % {
-                "name": self.form_variable.name
-            }
-        return _("Submission value variable %(key)s") % {"key": self.key}
+            return _("Submission value variable %(name)s").format(
+                name=self.form_variable.name
+            )
+        return _("Submission value variable %(key)s").format(key=self.key)
 
     @classmethod
     def bulk_create_or_update(
@@ -147,7 +149,6 @@ class SubmissionValueVariable(models.Model):
                 variables_to_create.append(variable)
             else:
                 variable.source = SubmissionValueVariableSources.user_input
-                variable.modified_at = timezone.now()
                 variables_to_update.append(variable)
 
         cls.objects.bulk_create(variables_to_create)

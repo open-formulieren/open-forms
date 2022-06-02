@@ -23,10 +23,10 @@ from .factories import (
     SubmissionStepFactory,
     SubmissionValueVariableFactory,
 )
-from .mixins import SubmissionsMixin
+from .mixins import SubmissionsMixin, VariablesTestMixin
 
 
-class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
+class ReadSubmissionStepTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

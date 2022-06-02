@@ -156,10 +156,10 @@ class SubmissionTests(TestCase):
             }
         )
         submission = SubmissionFactory.create()
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             data={"testSelectBoxes": {"test1": True, "test2": True, "test3": False}},
-            form_step=FormStepFactory.create_with_variables(
+            form_step=FormStepFactory.create(
                 form=submission.form, form_definition=form_definition
             ),
         )
@@ -203,17 +203,15 @@ class SubmissionTests(TestCase):
             }
         )
         form = FormFactory.create()
-        form_step = FormStepFactory.create_with_variables(
-            form=form, form_definition=form_definition
-        )
-        form_step_2 = FormStepFactory.create_with_variables(
+        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+        form_step_2 = FormStepFactory.create(
             form=form, form_definition=form_definition_2
         )
 
         submission = SubmissionFactory.create(
             form=form, bsn="999990676", kvk="69599084", prefill_data={"secret": "123"}
         )
-        submission_step = SubmissionStepFactory.create_with_variables(
+        submission_step = SubmissionStepFactory.create(
             submission=submission,
             data={
                 "textFieldSensitive": "this is sensitive",
@@ -221,10 +219,10 @@ class SubmissionTests(TestCase):
             },
             form_step=form_step,
         )
-        attachment = SubmissionFileAttachmentFactory.create_with_variable(
+        attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission_step, form_key="sensitiveFile"
         )
-        submission_step_2 = SubmissionStepFactory.create_with_variables(
+        submission_step_2 = SubmissionStepFactory.create(
             submission=submission,
             data={
                 "textFieldSensitive2": "this is sensitive",
@@ -411,14 +409,14 @@ class SubmissionTests(TestCase):
                 ],
             }
         )
-        form_step_1 = FormStepFactory.create_with_variables(
+        form_step_1 = FormStepFactory.create(
             form=form, form_definition=form_definition_1
         )
-        form_step_2 = FormStepFactory.create_with_variables(
+        form_step_2 = FormStepFactory.create(
             form=form, form_definition=form_definition_2
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             data={
                 "product": {"identifier": "79", "name": "Paspoort"},
@@ -427,7 +425,7 @@ class SubmissionTests(TestCase):
             },
             form_step=form_step_1,
         )
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             data={
                 "lastName": "Maykin",

@@ -25,10 +25,10 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
-from openforms.utils.mixins import VariablesTestMixin
 
 from ..constants import SUBMISSIONS_SESSION_KEY, SubmissionValueVariableSources
 from ..models import Submission, SubmissionValueVariable
+from .mixins import VariablesTestMixin
 
 
 @override_settings(

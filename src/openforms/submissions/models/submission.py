@@ -27,7 +27,7 @@ from openforms.utils.validators import (
     validate_bsn,
 )
 
-from ..constants import RegistrationStatuses
+from ..constants import RegistrationStatuses, SubmissionValueVariableSources
 from ..pricing import get_submission_price
 from ..query import SubmissionManager
 from ..serializers import CoSignDataSerializer
@@ -355,8 +355,6 @@ class Submission(models.Model):
 
     @transaction.atomic()
     def remove_sensitive_data(self):
-        from ..constants import SubmissionValueVariableSources
-        from . import SubmissionValueVariable
         from .submission_files import SubmissionFileAttachment
 
         self.bsn = ""
@@ -366,19 +364,16 @@ class Submission(models.Model):
 
         conf = GlobalConfiguration.get_solo()
         if conf.enable_form_variables:
-            sensitive_variables = SubmissionValueVariable.objects.filter(
-                submission=self, form_variable__is_sensitive_data=True
+            sensitive_variables = self.submissionvaluevariable_set.filter(
+                form_variable__is_sensitive_data=True
+            )
+            sensitive_variables.update(
+                value="", source=SubmissionValueVariableSources.sensitive_data_cleaner
             )
 
-            for variable in sensitive_variables:
-                variable.value = ""
-                variable.source = SubmissionValueVariableSources.sensitive_data_cleaner
-
-            SubmissionValueVariable.objects.bulk_update(
-                sensitive_variables, ["value", "source"]
-            )
             SubmissionFileAttachment.objects.filter(
-                submission_variable__form_variable__is_sensitive_data=True
+                submission_step__submission=self,
+                submission_variable__form_variable__is_sensitive_data=True,
             ).delete()
         else:
             steps_qs = self.submissionstep_set.select_related(
@@ -441,9 +436,8 @@ class Submission(models.Model):
 
         # Add the submission variables values - Some of these will also not yet be in the database
         form_variables = FormVariable.objects.filter(form=self.form)
-        saved_submission_value_variables = SubmissionValueVariable.objects.filter(
-            submission=self
-        )
+        saved_submission_value_variables = self.submissionvaluevariable_set.all()
+
         submission_value_variables = []
         for form_variable in form_variables:
             submission_var = saved_submission_value_variables.filter(
@@ -472,8 +466,7 @@ class Submission(models.Model):
     ) -> "SubmissionValueVariablesState":
         from .submission_value_variable import SubmissionValueVariablesState
 
-        if not hasattr(self, "_variables_state"):
-            self.load_submission_value_variables_state()
+        self.load_submission_value_variables_state()
 
         updated_variables = []
         for variable in self._variables_state.variables:

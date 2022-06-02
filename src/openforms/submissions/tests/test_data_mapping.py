@@ -11,7 +11,8 @@ from openforms.submissions.mapping import (
     get_unmapped_data,
 )
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.utils.mixins import VariablesTestMixin
+
+from .mixins import VariablesTestMixin
 
 
 class TestAttribute(DjangoChoices):

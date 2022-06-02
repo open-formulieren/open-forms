@@ -15,7 +15,7 @@ class SubmissionConfirmationPageTests(APITestCase):
         config.save()
 
         form = FormFactory.create()
-        step1 = FormStepFactory.create_with_variables(
+        step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -30,7 +30,7 @@ class SubmissionConfirmationPageTests(APITestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create_with_variables(
+        step2 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -43,12 +43,12 @@ class SubmissionConfirmationPageTests(APITestCase):
         )
         submission = SubmissionFactory.create(form=form)
 
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=step1,
             data={"name": "john", "last_name": "doe"},
         )
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=step2,
             data={"favourite_icecream": "hazelnut"},
@@ -69,7 +69,7 @@ class SubmissionConfirmationPageTests(APITestCase):
         form = FormFactory.create(
             submission_confirmation_template="Dear {{ name|title }} {{ last_name|title }}, {{ favourite_icecream }} is a great ice cream choice!"
         )
-        step1 = FormStepFactory.create_with_variables(
+        step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -84,7 +84,7 @@ class SubmissionConfirmationPageTests(APITestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create_with_variables(
+        step2 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -97,12 +97,12 @@ class SubmissionConfirmationPageTests(APITestCase):
         )
         submission = SubmissionFactory.create(form=form)
 
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=step1,
             data={"name": "john", "last_name": "doe"},
         )
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=step2,
             data={"favourite_icecream": "hazelnut"},

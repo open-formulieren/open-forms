@@ -1,11 +1,8 @@
-from unittest.mock import patch
-
 from django.contrib.auth.mixins import UserPassesTestMixin
 
 from drf_jsonschema import to_jsonschema
 
 from openforms.api.utils import underscore_to_camel
-from openforms.config.models import GlobalConfiguration
 
 
 def _camelize_required(schema: dict):
@@ -43,16 +40,3 @@ class JsonSchemaSerializerMixin:
 class UserIsStaffMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_staff
-
-
-class VariablesTestMixin:
-    def setUp(self):
-        super().setUp()
-
-        patcher = patch(
-            "openforms.config.models.GlobalConfiguration.get_solo",
-            return_value=GlobalConfiguration(enable_form_variables=True),
-        )
-        patcher.start()
-
-        self.addCleanup(patcher.stop)

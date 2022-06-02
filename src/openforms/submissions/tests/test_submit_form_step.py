@@ -17,11 +17,10 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
-from openforms.utils.mixins import VariablesTestMixin
 
 from ..models import SubmissionValueVariable
 from .factories import SubmissionFactory, SubmissionStepFactory
-from .mixins import SubmissionsMixin
+from .mixins import SubmissionsMixin, VariablesTestMixin
 
 
 @temp_private_root()
@@ -32,10 +31,13 @@ class FormStepSubmissionTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
 
         # ensure there is a form definition
         cls.form = FormFactory.create()
-        cls.step1, cls.step2 = FormStepFactory.create_batch(2, form=cls.form)
-        cls.variable1 = FormVariableFactory.create(
-            form=cls.form, form_definition=cls.step1.form_definition, key="some"
+        cls.step1 = FormStepFactory.create(
+            form=cls.form,
+            form_definition__configuration={
+                "components": [{"key": "test-key", "type": "textfield"}]
+            },
         )
+
         cls.form_url = reverse(
             "api:form-detail", kwargs={"uuid_or_slug": cls.form.uuid}
         )
@@ -53,7 +55,7 @@ class FormStepSubmissionTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
                 "step_uuid": self.step1.uuid,
             },
         )
-        body = {"data": {"some": "example data"}}
+        body = {"data": {"test-key": "example data"}}
 
         response = self.client.put(endpoint, body)
 
@@ -67,11 +69,11 @@ class FormStepSubmissionTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
                 "formStep": {
                     "index": 0,
                     "configuration": {
-                        "components": [{"type": "test-component", "key": "test-key"}]
+                        "components": [{"type": "textfield", "key": "test-key"}]
                     },
                 },
                 "data": {
-                    "some": "example data",
+                    "test-key": "example data",
                 },
                 "isApplicable": True,
                 "completed": True,
@@ -79,7 +81,7 @@ class FormStepSubmissionTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
                 "canSubmit": True,
             },
         )
-        self.assertEqual(submission_step.data, {"some": "example data"})
+        self.assertEqual(submission_step.data, {"test-key": "example data"})
 
         submission_variables = SubmissionValueVariable.objects.filter(
             submission=self.submission
@@ -89,7 +91,7 @@ class FormStepSubmissionTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
 
         variable = submission_variables.get()
 
-        self.assertEqual("some", variable.key)
+        self.assertEqual("test-key", variable.key)
         self.assertEqual("example data", variable.value)
         self.assertEqual("2022-05-25T10:53:19+00:00", variable.created_at.isoformat())
 
@@ -131,32 +133,31 @@ class FormStepSubmissionTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
     def test_update_step_data(self):
         self._add_submission_to_session(self.submission)
 
-        FormVariableFactory.create(
-            form=self.submission.form,
-            form_definition=self.step2.form_definition,
-            key="foo",
-        )
-        FormVariableFactory.create(
-            form=self.submission.form,
-            form_definition=self.step2.form_definition,
-            key="modified",
+        step2 = FormStepFactory.create(
+            form=self.form,
+            form_definition__configuration={
+                "components": [
+                    {"key": "foo", "type": "textfield"},
+                    {"key": "modified", "type": "textfield"},
+                ]
+            },
         )
 
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=self.submission,
             form_step=self.step1,
         )
-        submission_step = SubmissionStepFactory.create_with_variables(
+        submission_step = SubmissionStepFactory.create(
             submission=self.submission,
             data={"foo": "bar"},
-            form_step=self.step2,
+            form_step=step2,
         )
 
         endpoint = reverse(
             "api:submission-steps-detail",
             kwargs={
                 "submission_uuid": self.submission.uuid,
-                "step_uuid": self.step2.uuid,
+                "step_uuid": step2.uuid,
             },
         )
         body = {"data": {"modified": "data"}}
@@ -168,11 +169,14 @@ class FormStepSubmissionTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
             response.json(),
             {
                 "id": str(submission_step.uuid),
-                "slug": self.step2.form_definition.slug,
+                "slug": step2.form_definition.slug,
                 "formStep": {
                     "index": 1,
                     "configuration": {
-                        "components": [{"type": "test-component", "key": "test-key"}]
+                        "components": [
+                            {"key": "foo", "type": "textfield"},
+                            {"key": "modified", "type": "textfield"},
+                        ]
                     },
                 },
                 "data": {"modified": "data"},
@@ -209,9 +213,7 @@ class FormStepSubmissionTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
                 ]
             }
         )
-        form_step = FormStepFactory.create_with_variables(
-            form_definition=form_definition
-        )
+        form_step = FormStepFactory.create(form_definition=form_definition)
 
         submission = SubmissionFactory.create(form=form_step.form)
         self._add_submission_to_session(submission)
@@ -246,11 +248,9 @@ class FormStepSubmissionTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
                 ]
             }
         )
-        form_step = FormStepFactory.create_with_variables(
-            form_definition=form_definition
-        )
+        form_step = FormStepFactory.create(form_definition=form_definition)
         submission = SubmissionFactory.create(form=form_step.form)
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             data={"country_of_residence": "Netherlands"},
             form_step=form_step,

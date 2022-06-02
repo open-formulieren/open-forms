@@ -235,6 +235,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         source="_data",
         label=_("data"),
         required=False,
+        allow_null=True,
     )
 
     parent_lookup_kwargs = {

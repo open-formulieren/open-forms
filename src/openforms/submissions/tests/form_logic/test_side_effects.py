@@ -4,10 +4,9 @@ from rest_framework.test import APITestCase
 
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
-from openforms.utils.mixins import VariablesTestMixin
 
 from ..factories import SubmissionFactory, SubmissionStepFactory
-from ..mixins import SubmissionsMixin
+from ..mixins import SubmissionsMixin, VariablesTestMixin
 from .factories import FormLogicFactory
 
 
@@ -18,7 +17,7 @@ class SideEffectTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
         """
         # set up the form with logic
         form = FormFactory.create()
-        step1 = FormStepFactory.create_with_variables(
+        step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -35,7 +34,7 @@ class SideEffectTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
                 ]
             },
         )
-        step2 = FormStepFactory.create_with_variables(
+        step2 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -77,13 +76,13 @@ class SideEffectTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
         submission = SubmissionFactory.create(form=form)
         self._add_submission_to_session(submission)
 
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=step1,
             data={"step1": "b"},  # With this data, step 2 is applicable
         )
         # mimick step 2 being submitted as well
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=step2,
             data={"step2": "submitted"},

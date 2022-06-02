@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import CheckConstraint, Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -108,6 +109,16 @@ class FormVariable(models.Model):
         verbose_name = _("Form variable")
         verbose_name_plural = _("Form variables")
         unique_together = ("form", "key")
+
+        constraints = [
+            CheckConstraint(
+                check=Q(
+                    (Q(prefill_plugin="") & Q(prefill_attribute=""))
+                    | (~Q(prefill_plugin="") & ~Q(prefill_attribute=""))
+                ),
+                name="Valid prefill configuration",
+            )
+        ]
 
     def __str__(self):
         return _("Form variable %(name)s") % {"name": self.name}

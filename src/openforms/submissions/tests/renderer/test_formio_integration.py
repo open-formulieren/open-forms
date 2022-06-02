@@ -68,12 +68,9 @@ class SubmissionRendererIntegrationTests(TestCase):
                 "amount": 1234.56,
                 "input4": "fourth input",
             },
+            form__name="public name",
+            form__internal_name="internal name",
         )
-
-        form = submission.form
-        form.name = "public name"
-        form.internal_name = "internal name"
-        form.save()
 
         form_definition = submission.steps[0].form_step.form_definition
         form_definition.name = "Stap 1"

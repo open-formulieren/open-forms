@@ -3,17 +3,16 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
-from openforms.utils.mixins import VariablesTestMixin
 
 from ..factories import SubmissionFactory, SubmissionStepFactory
-from ..mixins import SubmissionsMixin
+from ..mixins import SubmissionsMixin, VariablesTestMixin
 from .factories import FormLogicFactory
 
 
 class CheckLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestCase):
     def test_check_logic_on_whole_submission(self):
         form = FormFactory.create()
-        step1 = FormStepFactory.create_with_variables(
+        step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -24,7 +23,7 @@ class CheckLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestCase
                 ]
             },
         )
-        step2 = FormStepFactory.create_with_variables(
+        step2 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -58,7 +57,7 @@ class CheckLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestCase
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=step1,
             data={"age": 16},
@@ -80,7 +79,7 @@ class CheckLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestCase
 
     def test_check_logic_with_full_datetime(self):
         form = FormFactory.create()
-        step1 = FormStepFactory.create_with_variables(
+        step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -91,7 +90,7 @@ class CheckLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestCase
                 ]
             },
         )
-        step2 = FormStepFactory.create_with_variables(
+        step2 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -125,7 +124,7 @@ class CheckLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestCase
             ],
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             form_step=step1,
             data={"dateOfBirth": "2020-01-01T00:00:00+01:00"},

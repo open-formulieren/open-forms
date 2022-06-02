@@ -117,36 +117,11 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             name=f"definition-{key}", configuration=configuration
         )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
-        form_variables = []
-        for component in iter_components(configuration=configuration, recursive=True):
-            if is_layout_component(component):
-                continue
-
-            form_variables.append(
-                FormVariableFactory.create(
-                    key=component["key"],
-                    is_sensitive_data=component.get("isSensitiveData", False),
-                    form=form,
-                    form_definition=form_definition,
-                    source=FormVariableSources.component,
-                )
-            )
 
         data = submitted_data or {}
         SubmissionStepFactory.create(
             submission=submission, form_step=form_step, data=data
         )
-        for form_variable in form_variables:
-            value = form_variable.get_initial_value()
-            if form_variable.key in data:
-                value = data.get(form_variable.key)
-
-            SubmissionValueVariableFactory.create(
-                submission=submission,
-                form_variable=form_variable,
-                key=form_variable.key,
-                value=value,
-            )
 
         # When the submission was initially created, the method calculate_price has already
         # loaded the submission_value_variables_state, but no submission variables existed at that point.
@@ -178,15 +153,14 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
         model = SubmissionStep
 
     @classmethod
-    def create_with_variables(
+    def create(
         cls,
         **kwargs,
     ) -> SubmissionStep:
-        submission_step = cls.create(**kwargs)
 
-        form_variables = FormVariable.objects.filter(
-            form=submission_step.submission.form
-        )
+        submission_step = super().create(**kwargs)
+
+        form_variables = submission_step.submission.form.formvariable_set.all()
         step_data = kwargs.get("data", {})
 
         for variable in form_variables:
@@ -236,21 +210,34 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
         model = SubmissionFileAttachment
 
     @classmethod
-    def create_with_variable(
+    def create(
         cls,
         **kwargs,
     ) -> SubmissionFileAttachment:
-        file_attachment = cls.create(**kwargs)
+        file_attachment = super().create(**kwargs)
 
         submission = file_attachment.submission_step.submission
-        form_variable = FormVariable.objects.get(
+        form_variable = FormVariable.objects.filter(
             form=submission.form, key=file_attachment.form_key
-        )
-        submission_variable = SubmissionValueVariableFactory.create(
-            submission=submission,
-            key=file_attachment.form_key,
-            form_variable=form_variable,
-        )
+        ).first()
+
+        if not form_variable:
+            form_variable = FormVariableFactory.create(
+                form=submission.form,
+                form_definition=file_attachment.submission_step.form_step.form_definition,
+                key=file_attachment.form_key,
+            )
+
+        submission_variable = submission.submissionvaluevariable_set.filter(
+            key=file_attachment.form_key
+        ).first()
+        if not submission_variable:
+            submission_variable = SubmissionValueVariableFactory.create(
+                submission=submission,
+                key=file_attachment.form_key,
+                form_variable=form_variable,
+            )
+
         file_attachment.submission_variable = submission_variable
         file_attachment.save()
 
@@ -259,9 +246,8 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
 
 class SubmissionValueVariableFactory(factory.django.DjangoModelFactory):
     submission = factory.SubFactory(SubmissionFactory)
-    form_variable = factory.SubFactory(FormVariable)
-    key = factory.Faker("word")
-    value = factory.Faker("bs")
+    form_variable = factory.SubFactory(FormVariableFactory)
+    key = factory.SelfAttribute("form_variable.key")
     source = SubmissionValueVariableSources.user_input
 
     class Meta:

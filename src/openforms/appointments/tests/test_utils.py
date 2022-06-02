@@ -17,7 +17,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
-from openforms.utils.mixins import VariablesTestMixin
+from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ..constants import AppointmentDetailsStatus
 from ..contrib.jcc.tests.test_plugin import mock_response
@@ -124,14 +124,14 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
                 ],
             }
         )
-        form_step_1 = FormStepFactory.create_with_variables(
+        form_step_1 = FormStepFactory.create(
             form=form, form_definition=form_definition_1
         )
-        form_step_2 = FormStepFactory.create_with_variables(
+        form_step_2 = FormStepFactory.create(
             form=form, form_definition=form_definition_2
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             data={
                 "product": {"identifier": "79", "name": "Paspoort"},
@@ -139,7 +139,7 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
             },
             form_step=form_step_1,
         )
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             data={
                 "lastName": "Maykin",
@@ -213,14 +213,14 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
                 ],
             }
         )
-        form_step_1 = FormStepFactory.create_with_variables(
+        form_step_1 = FormStepFactory.create(
             form=form, form_definition=form_definition_1
         )
-        form_step_2 = FormStepFactory.create_with_variables(
+        form_step_2 = FormStepFactory.create(
             form=form, form_definition=form_definition_2
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             data={
                 "product": {"identifier": "79", "name": "Paspoort"},
@@ -229,7 +229,7 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
             },
             form_step=form_step_1,
         )
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             data={
                 "lastName": "Maykin",
@@ -396,14 +396,14 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
                 ],
             }
         )
-        form_step_1 = FormStepFactory.create_with_variables(
+        form_step_1 = FormStepFactory.create(
             form=form, form_definition=form_definition_1
         )
-        form_step_2 = FormStepFactory.create_with_variables(
+        form_step_2 = FormStepFactory.create(
             form=form, form_definition=form_definition_2
         )
         submission = SubmissionFactory.create(form=form)
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             data={
                 "product": {"identifier": "79", "name": "Paspoort"},
@@ -412,7 +412,7 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
             },
             form_step=form_step_1,
         )
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             data={
                 "lastName": "Maykin",
@@ -490,10 +490,10 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
                 ],
             }
         )
-        form_step_1 = FormStepFactory.create_with_variables(
+        form_step_1 = FormStepFactory.create(
             form=form, form_definition=form_definition_1
         )
-        form_step_2 = FormStepFactory.create_with_variables(
+        form_step_2 = FormStepFactory.create(
             form=form, form_definition=form_definition_2
         )
         submission = SubmissionFactory.create(form=form)
@@ -502,7 +502,7 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
             error_information="Failed to make appointment",
             submission=submission,
         )
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             data={
                 "product": {"identifier": "79", "name": "Paspoort"},
@@ -511,7 +511,7 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
             },
             form_step=form_step_1,
         )
-        SubmissionStepFactory.create_with_variables(
+        SubmissionStepFactory.create(
             submission=submission,
             data={
                 "lastName": "Maykin",

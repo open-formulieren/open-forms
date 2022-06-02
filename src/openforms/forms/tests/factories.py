@@ -1,4 +1,5 @@
 import factory
+from glom import Path, glom
 
 from openforms.formio.utils import is_layout_component, iter_components
 from openforms.products.tests.factories import ProductFactory
@@ -83,25 +84,39 @@ class FormStepFactory(factory.django.DjangoModelFactory):
         model = FormStep
 
     @classmethod
-    def create_with_variables(
+    def create(
         cls,
         **kwargs,
     ) -> FormStep:
-        form_step = cls.create(**kwargs)
+        form_step = super().create(**kwargs)
 
         form_definition_configuration = form_step.form_definition.configuration
+        existing_form_variables = form_step.form.formvariable_set.all()
         for component in iter_components(
             configuration=form_definition_configuration, recursive=True
         ):
             if is_layout_component(component):
                 continue
 
-            FormVariableFactory.create(
-                form=form_step.form,
-                form_definition=form_step.form_definition,
-                key=component["key"],
-                is_sensitive_data=component.get("isSensitiveData", False),
-            )
+            if not existing_form_variables.filter(key=component["key"]):
+                FormVariableFactory.create(
+                    form=form_step.form,
+                    form_definition=form_step.form_definition,
+                    prefill_plugin=glom(
+                        component,
+                        Path("prefill", "plugin"),
+                        default="",
+                        skip_exc=KeyError,
+                    ),
+                    prefill_attribute=glom(
+                        component,
+                        Path("prefill", "attribute"),
+                        default="",
+                        skip_exc=KeyError,
+                    ),
+                    key=component["key"],
+                    is_sensitive_data=component.get("isSensitiveData", False),
+                )
 
         return form_step
 

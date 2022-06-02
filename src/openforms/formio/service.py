@@ -6,9 +6,9 @@ import elasticapm
 from rest_framework.request import Request
 
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.utils import iter_components
+from openforms.formio.utils import format_date_value, iter_components
 from openforms.forms.custom_field_types import handle_custom_types
-from openforms.prefill import apply_prefill, format_date_value
+from openforms.prefill import apply_prefill
 from openforms.submissions.models import Submission, SubmissionValueVariable
 
 
@@ -38,10 +38,11 @@ def get_dynamic_configuration(
 
 
 def insert_variables(configuration: dict, submission: Submission) -> dict:
-    prefill_variables = SubmissionValueVariable.objects.filter(
-        ~Q(form_variable__prefill_plugin=""), submission=submission
-    ).values("key", "value")
-    prefill_data = {variable.key: variable.value for variable in prefill_variables}
+    prefill_data = dict(
+        SubmissionValueVariable.objects.filter(
+            ~Q(form_variable__prefill_plugin=""), submission=submission
+        ).values_list("key", "value")
+    )
 
     value_variables_state = submission.load_submission_value_variables_state()
     data = value_variables_state.get_data()
