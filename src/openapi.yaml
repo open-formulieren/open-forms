@@ -2106,6 +2106,31 @@ paths:
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
+  /api/v1/registration/plugins/camunda/plugins:
+    get:
+      operationId: registration_plugins_camunda_plugins_list
+      description: |-
+        List the Camunda-specific plugins that are registered.
+
+        This endpoint exposes all the plugins that are registered with the Camunda
+        registration backend, including non-core plugins.
+      summary: List available Camunda plugins
+      tags:
+      - registration
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CamundaPlugin'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/registration/plugins/camunda/process-definitions:
     get:
       operationId: registration_plugins_camunda_process_definitions_list
@@ -3477,6 +3502,18 @@ components:
       required:
       - resolved
       - value
+    CamundaPlugin:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique plugin identifier
+        label:
+          type: string
+          description: The human-readable name for a plugin.
+      required:
+      - id
+      - label
     CancelAppointmentInput:
       type: object
       properties:
