@@ -46,6 +46,14 @@ available hosted stylesheets under the ``href`` key.
    while the *Waarde* field should contain the (base) URL of the stylesheet, e.g.
    ``https://unpkg.com/@gemeente-denhaag/``.
 
+.. note::
+
+    This configuration option is not supported in the HTML e-mail styling, please use
+    the "design token values" for that instead.
+
+    HTML e-mails have notoriously bad CSS support - this limitation is unfortunately
+    outside of our hands.
+
 **Design token values**
 
 With the design token values, you can control aspects such as back- and foreground
