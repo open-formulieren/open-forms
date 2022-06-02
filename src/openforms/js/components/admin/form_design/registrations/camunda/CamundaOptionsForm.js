@@ -4,30 +4,39 @@ import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
 
 import {get} from '../../../../../utils/fetch';
-import {PROCESS_DEFINITIONS_ENDPOINT} from '../../constants';
+import {PROCESS_DEFINITIONS_ENDPOINT, CAMUNDA_PLUGINS_ENDPOINT} from '../../constants';
 import Field from '../../../forms/Field';
 import Loader from '../../../Loader';
 import FormFields from './FormFields';
 
-const useLoadProcessDefinitions = () => {
+const useLoadBackendData = () => {
   let processDefinitions;
+  let plugins;
   const {loading, value, error} = useAsync(async () => {
-    const response = await get(PROCESS_DEFINITIONS_ENDPOINT);
-    if (!response.ok) throw new Error(`Response status: ${response.status}`);
-    return response.data;
+    const [processDefinitionsResponse, pluginsResponse] = await Promise.all([
+      get(PROCESS_DEFINITIONS_ENDPOINT),
+      get(CAMUNDA_PLUGINS_ENDPOINT),
+    ]);
+
+    if (!processDefinitionsResponse.ok)
+      throw new Error(`Response status: ${processDefinitionsResponse.status}`);
+    if (!pluginsResponse.ok) throw new Error(`Response status: ${pluginsResponse.status}`);
+
+    return [processDefinitionsResponse.data, pluginsResponse.data];
   }, []);
 
   if (!loading && !error) {
     // transform the process definitions in a grouped structure
-    processDefinitions = groupBy(value, 'key');
+    processDefinitions = groupBy(value[0], 'key');
+    plugins = value[1];
   }
 
-  return {loading, processDefinitions, error};
+  return {loading, processDefinitions, plugins, error};
 };
 
 // TODO: handle validation errors properly
 const CamundaOptionsForm = ({name, label, formData, onChange}) => {
-  const {loading, processDefinitions, error} = useLoadProcessDefinitions();
+  const {loading, processDefinitions, plugins, error} = useLoadBackendData();
   if (error) {
     console.error(error);
     return 'Unexpected error, see console';
@@ -41,6 +50,7 @@ const CamundaOptionsForm = ({name, label, formData, onChange}) => {
           formData={formData}
           onChange={formData => onChange({formData})}
           processDefinitions={processDefinitions}
+          plugins={plugins}
         />
       )}
     </Field>

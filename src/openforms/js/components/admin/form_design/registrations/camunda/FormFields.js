@@ -53,12 +53,13 @@ const getProcessSelectionChoices = (processDefinitions, processDefinition) => {
   return [processDefinitionChoices, versionChoices];
 };
 
-const FormFields = ({processDefinitions, formData, onChange}) => {
+const FormFields = ({processDefinitions, plugins, formData, onChange}) => {
   const {
     processDefinition = '',
     processDefinitionVersion = null,
     processVariables = [],
     complexProcessVariables = [],
+    plugin = '',
   } = formData;
 
   const intl = useIntl();
@@ -202,6 +203,31 @@ const FormFields = ({processDefinitions, formData, onChange}) => {
         </CustomFieldTemplate>
 
         <CustomFieldTemplate
+          id="camundaOptions.plugin"
+          label={intl.formatMessage({
+            defaultMessage: 'Plugin',
+            description: "Camunda options 'plugin' label",
+          })}
+          rawErrors={null}
+          errors={null} // TODO
+          rawDescription={intl.formatMessage({
+            description: "Camunda 'plugin' help text",
+            defaultMessage:
+              '(Custom) camunda-specific plugin to invoke as part of the registration process.',
+          })}
+          required={false}
+          displayLabel
+        >
+          <Select
+            name="plugin"
+            choices={plugins.map(({id, label}) => [id, label])}
+            value={plugin}
+            onChange={onFieldChange}
+            allowBlank
+          />
+        </CustomFieldTemplate>
+
+        <CustomFieldTemplate
           id="camundaOptions.manageProcessVars"
           displayLabel={false}
           rawErrors={null}
@@ -326,6 +352,12 @@ FormFields.propTypes = {
       })
     )
   ).isRequired,
+  plugins: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+    })
+  ),
   formData: PropTypes.shape({
     // matches the backend serializer!
     processDefinition: PropTypes.string,

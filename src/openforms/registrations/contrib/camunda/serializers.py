@@ -4,6 +4,7 @@ from drf_polymorphic.serializers import PolymorphicSerializer
 from rest_framework import serializers
 
 from openforms.api.utils import get_from_serializer_data_or_instance
+from openforms.plugins.validators import PluginExistsValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from .constants import (
@@ -12,6 +13,7 @@ from .constants import (
     VariableSourceChoices,
 )
 from .fields import NullField
+from .registry import register as camunda_register
 
 
 class MappedVariableSerializer(serializers.Serializer):
@@ -200,6 +202,15 @@ class CamundaOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer
     complex_process_variables = ComplexVariableSerializer(
         many=True,
         label=_("Complex process variables"),
+    )
+    plugin = serializers.CharField(
+        required=False,
+        label=_("plugin"),
+        help_text=_(
+            "(Custom) Camunda registration plugin. You can register your own plugins "
+            "and have them invoked as part of the Camunda registration process."
+        ),
+        validators=[PluginExistsValidator(registry=camunda_register)],
     )
 
     def validate(self, attrs: dict) -> dict:
