@@ -3,6 +3,8 @@ from django.utils.translation import gettext_lazy as _
 from django_camunda.camunda_models import ProcessDefinition
 from zgw_consumers.drf.serializers import APIModelSerializer
 
+from openforms.plugins.api.serializers import PluginBaseSerializer
+
 
 class ProcessDefinitionSerializer(APIModelSerializer):
     class Meta:
@@ -21,3 +23,7 @@ class ProcessDefinitionSerializer(APIModelSerializer):
                 "help_text": _("The version identifier relative to the 'key'."),
             },
         }
+
+
+class CamundaPluginSerializer(PluginBaseSerializer):
+    pass
