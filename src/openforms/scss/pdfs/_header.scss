@@ -14,7 +14,11 @@ $padding-size: 10mm;
   // deterministic output
   padding: math.div($padding-size, 2) $padding-size;
 
-  background-color: var(--of-page-header-background, $color-white);
+  background-color: var(--of-page-header-bg, $color-white);
+
+  &#{&}--has-logo {
+    page: haslogo;
+  }
 
   &:not(&--has-logo) {
     display: none;
@@ -25,7 +29,7 @@ $padding-size: 10mm;
     min-height: 50px;
     object-fit: contain; // maintain aspect ratio
 
-    width: var(--of-logo-header-width, auto);
-    height: var(--of-logo-header-height, 50px);
+    width: var(--of-header-logo-width, auto);
+    height: var(--of-header-logo-height, 50px);
   }
 }

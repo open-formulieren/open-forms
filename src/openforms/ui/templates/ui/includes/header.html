@@ -10,7 +10,7 @@ include the SDK snippet directly.
 {% if config.logo %}
 <style nonce="{{ request.csp_nonce }}">
 .page-header {
-    --of-logo-header-url: url('{{ config.logo.url }}');
+    --of-header-logo-url: url('{{ config.logo.url }}');
 }
 </style>
 {% endif %}

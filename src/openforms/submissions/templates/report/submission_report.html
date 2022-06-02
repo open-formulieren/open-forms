@@ -1,5 +1,6 @@
 {% load static i18n solo_tags style_dictionary %}<!DOCTYPE html>
-<html lang="nl">
+{% get_solo 'config.GlobalConfiguration' as config %}
+<html lang="nl" class="{{ config.theme_classname }}">
     <head>
         <meta charset="utf-8">
         <title>{% block title %}{% trans "Summary PDF" %}{% endblock %}</title>
@@ -7,8 +8,10 @@
         <link href="{% static 'bundles/pdf-css.css' %}" media="all" rel="stylesheet" />
         {% block extra_css %}{% endblock %}
 
+        {# if an external stylesheet is configured, apply it BEFORE the admin-specified design tokens #}
+        {% if config.theme_stylesheet %}<link href="{{ config.theme_stylesheet }}" media="all" rel="stylesheet" />{% endif %}
+
         {# Inject design tokens for theming #}
-        {% get_solo 'config.GlobalConfiguration' as config %}
         {% style_dictionary config.design_token_values prefix="of" as design_tokens %}
         {# This goes through WeasyPrint normally, so excluded from CSP #}
         <style>

@@ -1,6 +1,9 @@
 // vendor
 @import 'paper-css/paper.css';
 
+// design tokens
+@import '@open-formulieren/design-tokens/dist/root.css';
+
 // own CSS
 @import '../ui/static/ui/scss/settings';
 @import 'pdfs/index';
