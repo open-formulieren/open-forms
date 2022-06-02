@@ -8,6 +8,7 @@ from treebeard.forms import movenodeform_factory
 from openforms.forms.models import Category, Form
 
 
+@admin.register(Category)
 class CategoryAdmin(TreeAdmin):
     fields = [
         "name",
@@ -16,14 +17,8 @@ class CategoryAdmin(TreeAdmin):
     ]
     form = movenodeform_factory(Category, fields=fields)
     list_display = [
-        "form_list",
+        "name",
         "anno_count",
-        "edit_link",
-    ]
-    readonly_fields = [
-        "form_list",
-        "anno_count",
-        "edit_link",
     ]
 
     def get_queryset(self, request):
@@ -37,20 +32,3 @@ class CategoryAdmin(TreeAdmin):
         return getattr(category, "anno_count", 0)
 
     anno_count.short_description = _("count")
-
-    def form_list(self, category=None):
-        if not category:
-            return ""
-        return category.get_admin_changelist_link(Form)
-
-    form_list.short_description = _("forms")
-
-    def edit_link(self, category=None):
-        if not category:
-            return ""
-        return category.get_edit_link()
-
-    edit_link.short_description = _("actions")
-
-
-admin.site.register(Category, CategoryAdmin)

@@ -12,3 +12,6 @@ indent_size = 2
 
 [*.{yml,yaml}]
 indent_size = 2
+
+[*.js]
+indent_size = 2

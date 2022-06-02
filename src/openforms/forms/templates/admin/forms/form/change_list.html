@@ -1,38 +1,9 @@
 {% extends "admin/change_list.html" %}
-{% load i18n admin_urls %}
+{% load i18n static admin_urls admin_list forms_admin_list %}
 
-{% block result_list %}
-    {% if categories.annotated %}
-    <a href="?">
-        {% if not categories.show %}
-            <b>{% trans "All categories" %}</b>
-        {% else %}
-            {% trans "All categories" %}
-        {% endif %}
-    </a>
-    {% for category, info in categories.annotated %}
-        {% if info.open %}
-            <ul><li>
-       {% else %}
-            </li>
-            <li>
-        {% endif %}
-
-        <a href="?category__id__in={{ category.get_branch_ids|join:"," }}">
-            {% if category.id in categories.show %}
-                <b>{{ category.name }}</b>
-            {% else %}
-                {{ category.name }}
-            {% endif %}
-        </a>
-
-        {% for close in info.close %}
-            </li>
-            </ul>
-        {% endfor %}
-    {% endfor %}
-    {% endif %}
-    {{ block.super }}
+{% block extrastyle %}
+<link rel="stylesheet" href="{% static "bundles/core-css.css" %}">
+{{ block.super }}
 {% endblock %}
 
 {% block object-tools-items %}
@@ -47,4 +18,67 @@
     {% endif %}
 
     {{ block.super }}
+{% endblock %}
+
+{% block result_list %}
+    {% if action_form and actions_on_top and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+    {{ request.GET|json_script:'request-GET' }}
+
+    {% comment %}
+        Scaffold the table layout so all categories are properly aligned.
+
+        Taken from django/contrib/admin/templates/admin/change_list_results.html
+    {% endcomment %}
+    <div class="results">
+
+        <table id="result_list" class="form-category-tree">
+            <thead>
+                <tr>
+                    {% for header in result_headers %}
+                    <th scope="col"{{ header.class_attrib }}>
+                       {% if header.sortable %}
+                         {% if header.sort_priority > 0 %}
+                           <div class="sortoptions">
+                             <a class="sortremove" href="{{ header.url_remove }}" title="{% translate "Remove from sorting" %}"></a>
+                             {% if num_sorted_fields > 1 %}<span class="sortpriority" title="{% blocktranslate with priority_number=header.sort_priority %}Sorting priority: {{ priority_number }}{% endblocktranslate %}">{{ header.sort_priority }}</span>{% endif %}
+                             <a href="{{ header.url_toggle }}" class="toggle {% if header.ascending %}ascending{% else %}descending{% endif %}" title="{% translate "Toggle sorting" %}"></a>
+                           </div>
+                         {% endif %}
+                       {% endif %}
+                       <div class="text">{% if header.sortable %}<a href="{{ header.url_primary }}">{{ header.text|capfirst }}</a>{% else %}<span>{{ header.text|capfirst }}</span>{% endif %}</div>
+                       <div class="clear"></div>
+                    </th>{% endfor %}
+                </tr>
+            </thead>
+
+            {# Output the category tree structure, where we will later inject the form list per category #}
+            {% for category, info in categories %}
+                <tbody>
+                    <tr class="form-category {% if category.form_count %}form-category--has-children{% endif %} {% if category.is_leaf %}form-category--leaf{% endif %}" data-id="{{ category.id }}" data-depth="{{ category.get_depth }}">
+                        {# span action checkbox + first column #}
+                        <th colspan="{{ result_headers|length }}" scope="col" class="form-category__name">
+                            {% render_spacers category.get_depth|add:"-1" classname="form-category__spacer" %}
+                            {{ category }} ({{ category.form_count }})
+                        </th>
+                    </tr>
+                    {# content managed asynchronously via JS #}
+                </tbody>
+            {% endfor %}
+
+            {# forms without category #}
+            <tbody>
+                <tr class="form-category form-category--leaf {% if count_no_category %}form-category--has-children{% endif %}" data-id="" data-depth="0">
+                    <th colspan="{{ result_headers|length }}" scope="col" class="form-category__name">
+                        {% trans "Forms without category" %} ({{ count_no_category }})
+                    </th>
+                </tr>
+                {# content managed asynchronously via JS #}
+            </tbody>
+
+        </table>
+    </div>
+
+    {% if action_form and actions_on_bottom and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+
+    <script src="{% static "bundles/core-js.js" %}"></script>
 {% endblock %}
