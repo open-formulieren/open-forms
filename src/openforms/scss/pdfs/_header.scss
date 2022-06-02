@@ -16,6 +16,10 @@ $padding-size: 10mm;
 
   background-color: var(--of-page-header-bg, $color-white);
 
+  &#{&}--has-logo {
+    page: haslogo;
+  }
+
   &:not(&--has-logo) {
     display: none;
   }
