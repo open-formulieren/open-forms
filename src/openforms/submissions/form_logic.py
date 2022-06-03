@@ -10,6 +10,8 @@ from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
 from openforms.prefill import JSONObject
 
+from .models.submission_step import DirtyData
+
 if TYPE_CHECKING:  # pragma: nocover
     from .models import Submission, SubmissionStep
 
@@ -71,7 +73,7 @@ def evaluate_form_logic(
     data = {**defaults, **data}
 
     if not step.data:
-        step.data = {}
+        step.data = DirtyData(data={})
 
     # ensure this function is idempotent
     _evaluated = getattr(step, "_form_logic_evaluated", False)
@@ -116,11 +118,11 @@ def evaluate_form_logic(
                         action["form_step"]
                     )
                     submission_step_to_modify._is_applicable = False
-                    submission_step_to_modify.reset()
+                    submission_step_to_modify.data = {}
                     if submission_step_to_modify == step:
                         updated_data = {}
                         step._is_applicable = False
-    step.data = updated_data
+    step.data = DirtyData(updated_data)
 
     if dirty:
         # only keep the changes in the data, so that old values do not overwrite otherwise
@@ -145,7 +147,7 @@ def evaluate_form_logic(
 
         # only return the 'overrides'
         if data_diff:
-            step.data = data_diff
+            step.data = DirtyData(data_diff)
 
     step._form_logic_evaluated = True
 

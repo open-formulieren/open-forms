@@ -23,7 +23,7 @@ from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSet
 
 from ..attachments import attach_uploads_to_submission_step
 from ..form_logic import evaluate_form_logic
-from ..models import Submission, SubmissionStep, SubmissionValueVariable
+from ..models import Submission, SubmissionStep
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser, IgnoreDataJSONRenderer
 from ..signals import submission_complete, submission_start
 from ..status import SubmissionProcessingStatus
@@ -379,12 +379,6 @@ class SubmissionStepViewSet(
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-
-        config = GlobalConfiguration.get_solo()
-        if config.enable_form_variables:
-            SubmissionValueVariable.bulk_create_or_update(
-                instance, request.data["data"], update_missing_variables=True
-            )
 
         logevent.submission_step_fill(instance)
 

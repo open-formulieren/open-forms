@@ -7,7 +7,7 @@ from rest_framework.test import APITestCase
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
 
 from ..models import FormPriceLogic
-from .factories import FormFactory, FormPriceLogicFactory
+from .factories import FormFactory, FormPriceLogicFactory, FormStepFactory
 
 
 class FormPriceLogicAPITests(APITestCase):
@@ -119,9 +119,24 @@ class FormPriceLogicAPITests(APITestCase):
 
     def test_partial_update_price_logic(self):
         self.client.force_authenticate(user=self.superuser)
-        form1, form2 = FormFactory.create_batch(2, generate_minimal_setup=True)
+        form1, form2 = FormFactory.create_batch(2)
+        FormStepFactory.create(
+            form_definition__configuration={
+                "components": [{"key": "test-key", "type": "textfield"}]
+            },
+            form=form1,
+        )
+        FormStepFactory.create(
+            form_definition__configuration={
+                "components": [{"key": "test-key", "type": "textfield"}]
+            },
+            form=form2,
+        )
+
         form2_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form2.uuid})
-        price_rule = FormPriceLogicFactory.create(form=form1)
+        price_rule = FormPriceLogicFactory.create(
+            form=form1, json_logic_trigger={"==": [{"var": "test-key"}, "1"]}
+        )
         url = reverse("api:price-logics-detail", kwargs={"uuid": price_rule.uuid})
 
         response = self.client.patch(

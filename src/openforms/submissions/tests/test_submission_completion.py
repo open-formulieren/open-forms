@@ -37,7 +37,7 @@ from .mixins import SubmissionsMixin, VariablesTestMixin
 
 
 @temp_private_root()
-class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
+class SubmissionCompletionTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
     def test_invalid_submission_id(self):
         submission = SubmissionFactory.create()
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
@@ -338,7 +338,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
 
 @temp_private_root()
-class CSRFSubmissionCompletionTests(SubmissionsMixin, APITestCase):
+class CSRFSubmissionCompletionTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
     def setUp(self):
         # install a different client class with enforced CSRF checks
         self.client = self.client_class(enforce_csrf_checks=True)

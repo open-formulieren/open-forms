@@ -7,8 +7,6 @@ from django.utils import timezone
 import factory
 from glom import PathAccessError, glom
 
-from openforms.formio.utils import is_layout_component, iter_components
-from openforms.forms.constants import FormVariableSources
 from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -158,10 +156,10 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
         **kwargs,
     ) -> SubmissionStep:
 
+        step_data = kwargs.pop("data", {})
         submission_step = super().create(**kwargs)
 
         form_variables = submission_step.submission.form.formvariable_set.all()
-        step_data = kwargs.get("data", {})
 
         for variable in form_variables:
             try:
@@ -217,8 +215,8 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
         file_attachment = super().create(**kwargs)
 
         submission = file_attachment.submission_step.submission
-        form_variable = FormVariable.objects.filter(
-            form=submission.form, key=file_attachment.form_key
+        form_variable = submission.form.formvariable_set.filter(
+            key=file_attachment.form_key
         ).first()
 
         if not form_variable:

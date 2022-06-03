@@ -428,7 +428,9 @@ class TestAppointmentPlugin(BasePlugin):
 
 
 @override_settings(DEFAULT_FROM_EMAIL="foo@sender.com")
-class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
+class ConfirmationEmailRenderingIntegrationTest(
+    VariablesTestMixin, HTMLAssertMixin, TestCase
+):
     template = """
     <p>Geachte heer/mevrouw,</p>
 

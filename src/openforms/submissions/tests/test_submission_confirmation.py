@@ -7,8 +7,10 @@ from openforms.submissions.tests.factories import (
     SubmissionStepFactory,
 )
 
+from .mixins import VariablesTestMixin
 
-class SubmissionConfirmationPageTests(APITestCase):
+
+class SubmissionConfirmationPageTests(VariablesTestMixin, APITestCase):
     def test_global_template_used(self):
         config = GlobalConfiguration.get_solo()
         config.submission_confirmation_template = "Dear {{ name|title }} {{ last_name|title }}, Thank you for submitting this form."

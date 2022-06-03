@@ -247,7 +247,7 @@ def prefill_variables(submission: "Submission", register=None) -> None:
 
     grouped_fields = {}
     variables_to_prefill = []
-    for submission_value_variable in state.variables:
+    for key, submission_value_variable in state.variables.items():
         prefill_plugin = submission_value_variable.form_variable.prefill_plugin
         if prefill_plugin == "":
             continue

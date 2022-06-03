@@ -166,7 +166,7 @@ class ComponentModificationTests(VariablesTestMixin, TestCase):
             ]
         }
         self.assertEqual(configuration, expected)
-        self.assertEqual({"component1": "trigger value"}, submission_step.data)
+        self.assertEqual("", submission_step.data["component2"])
 
     def test_change_component_to_required(self):
         form = FormFactory.create()

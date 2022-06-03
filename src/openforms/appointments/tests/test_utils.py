@@ -58,16 +58,19 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
                 "components": [
                     {
                         "key": "product",
+                        "type": "textfield",
                         "appointments": {"showProducts": True},
                         "label": "Product",
                     },
                     {
                         "key": "location",
+                        "type": "textfield",
                         "appointments": {"showLocations": True},
                         "label": "Location",
                     },
                     {
                         "key": "time",
+                        "type": "textfield",
                         "appointments": {"showTimes": True},
                         "label": "Time",
                     },
@@ -96,11 +99,13 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
                 "components": [
                     {
                         "key": "product",
+                        "type": "textfield",
                         "appointments": {"showProducts": True},
                         "label": "Product",
                     },
                     {
                         "key": "time",
+                        "type": "textfield",
                         "appointments": {"showTimes": True},
                         "label": "Time",
                     },
@@ -113,11 +118,13 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
                 "components": [
                     {
                         "key": "lastName",
+                        "type": "textfield",
                         "appointments": {"lastName": True},
                         "label": "Last Name",
                     },
                     {
                         "key": "birthDate",
+                        "type": "textfield",
                         "appointments": {"birthDate": True},
                         "label": "Date of Birth",
                     },
@@ -180,16 +187,19 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
                 "components": [
                     {
                         "key": "product",
+                        "type": "textfield",
                         "appointments": {"showProducts": True},
                         "label": "Product",
                     },
                     {
                         "key": "location",
+                        "type": "textfield",
                         "appointments": {"showLocations": True},
                         "label": "Location",
                     },
                     {
                         "key": "time",
+                        "type": "textfield",
                         "appointments": {"showTimes": True},
                         "label": "Time",
                     },
@@ -202,11 +212,13 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
                 "components": [
                     {
                         "key": "lastName",
+                        "type": "textfield",
                         "appointments": {"lastName": True},
                         "label": "Last Name",
                     },
                     {
                         "key": "birthDate",
+                        "type": "textfield",
                         "appointments": {"birthDate": True},
                         "label": "Date of Birth",
                     },
@@ -280,26 +292,31 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
             components_list=[
                 {
                     "key": "product",
+                    "type": "textfield",
                     "appointments": {"showProducts": True},
                     "label": "Product",
                 },
                 {
                     "key": "location",
+                    "type": "textfield",
                     "appointments": {"showLocations": True},
                     "label": "Location",
                 },
                 {
                     "key": "time",
+                    "type": "textfield",
                     "appointments": {"showTimes": True},
                     "label": "Time",
                 },
                 {
                     "key": "lastName",
+                    "type": "textfield",
                     "appointments": {"lastName": True},
                     "label": "Last Name",
                 },
                 {
                     "key": "birthDate",
+                    "type": "textfield",
                     "appointments": {"birthDate": True},
                     "label": "Date of Birth",
                 },
@@ -363,16 +380,19 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
                 "components": [
                     {
                         "key": "product",
+                        "type": "textfield",
                         "appointments": {"showProducts": True},
                         "label": "Product",
                     },
                     {
                         "key": "location",
+                        "type": "textfield",
                         "appointments": {"showLocations": True},
                         "label": "Location",
                     },
                     {
                         "key": "time",
+                        "type": "textfield",
                         "appointments": {"showTimes": True},
                         "label": "Time",
                     },
@@ -385,11 +405,13 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
                 "components": [
                     {
                         "key": "lastName",
+                        "type": "textfield",
                         "appointments": {"lastName": True},
                         "label": "Last Name",
                     },
                     {
                         "key": "birthDate",
+                        "type": "textfield",
                         "appointments": {"birthDate": True},
                         "label": "Date of Birth",
                     },
@@ -457,16 +479,19 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
                 "components": [
                     {
                         "key": "product",
+                        "type": "textfield",
                         "appointments": {"showProducts": True},
                         "label": "Product",
                     },
                     {
                         "key": "location",
+                        "type": "textfield",
                         "appointments": {"showLocations": True},
                         "label": "Location",
                     },
                     {
                         "key": "time",
+                        "type": "textfield",
                         "appointments": {"showTimes": True},
                         "label": "Time",
                     },
@@ -479,11 +504,13 @@ class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
                 "components": [
                     {
                         "key": "lastName",
+                        "type": "textfield",
                         "appointments": {"lastName": True},
                         "label": "Last Name",
                     },
                     {
                         "key": "birthDate",
+                        "type": "textfield",
                         "appointments": {"birthDate": True},
                         "label": "Date of Birth",
                     },
@@ -619,11 +646,13 @@ class UtilsTests(TestCase):
             components_list=[
                 {
                     "key": "product",
+                    "type": "textfield",
                     "appointments": {"showProducts": True},
                     "label": "Product",
                 },
                 {
                     "key": "time",
+                    "type": "textfield",
                     "appointments": {"showTimes": True},
                     "label": "Time",
                 },

@@ -64,7 +64,7 @@ class RestoreVersionTest(TestCase):
         )
         self.assertEqual("test-definition-1", restored_form_definition.slug)
         self.assertEqual(
-            {"components": [{"test": "1", "key": "test"}]},
+            {"components": [{"test": "1", "key": "test", "type": "textfield"}]},
             restored_form_definition.configuration,
         )
 
@@ -195,10 +195,20 @@ class RestoreVersionTest(TestCase):
         """
         form_definition = FormDefinitionFactory.create(
             slug="test-definition-1",
-            configuration={"components": [{"test": "1", "key": "test"}]},
+            configuration={
+                "components": [
+                    {
+                        "test": "1",
+                        "key": "test",
+                        "type": "textfield",
+                    }
+                ]
+            },
         )
         form = FormFactory.create(name="Test Form 2")
         FormStepFactory.create(form=form, form_definition=form_definition)
+
+        self.assertEqual(1, FormDefinition.objects.count())
 
         version = FormVersion.objects.create(
             form=form,

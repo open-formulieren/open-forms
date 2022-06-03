@@ -13,13 +13,13 @@ from django.utils.translation import gettext_lazy as _
 
 from django_better_admin_arrayfield.models.fields import ArrayField
 from furl import furl
-from glom import PathAccessError, glom
+from glom import glom
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.contrib.kvk.validators import validate_kvk
 from openforms.formio.formatters.service import filter_printable
-from openforms.forms.models import FormStep, FormVariable
+from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
 from openforms.utils.validators import (
     AllowedRedirectValidator,
@@ -429,72 +429,10 @@ class Submission(models.Model):
             return self._variables_state
 
         # circular import
-        from .submission_value_variable import (
-            SubmissionValueVariable,
-            SubmissionValueVariablesState,
-        )
-
-        # Add the submission variables values - Some of these will also not yet be in the database
-        form_variables = FormVariable.objects.filter(form=self.form)
-        saved_submission_value_variables = self.submissionvaluevariable_set.all()
-
-        submission_value_variables = []
-        for form_variable in form_variables:
-            submission_var = saved_submission_value_variables.filter(
-                form_variable=form_variable
-            ).first()
-            if not submission_var:
-                # TODO Fill source field
-                submission_var = SubmissionValueVariable(
-                    submission=self,
-                    form_variable=form_variable,
-                    key=form_variable.key,
-                    value=form_variable.get_initial_value(),
-                )
-            submission_value_variables.append(submission_var)
-
-        state = SubmissionValueVariablesState(variables=submission_value_variables)
-        self._variables_state = state
-        return state
-
-    def update_submission_value_variables_state(
-        self,
-        data: dict,
-        submission_step: "SubmissionStep" = None,
-        source: str = None,
-        update_missing_variables: bool = False,
-    ) -> "SubmissionValueVariablesState":
         from .submission_value_variable import SubmissionValueVariablesState
 
-        self.load_submission_value_variables_state()
-
-        updated_variables = []
-        for variable in self._variables_state.variables:
-            if (
-                submission_step
-                and variable.form_variable.form_definition
-                != submission_step.form_step.form_definition
-            ):
-                updated_variables.append(variable)
-                continue
-
-            try:
-                new_value = glom(data, variable.key)
-            except PathAccessError:
-                if update_missing_variables:
-                    variable.value = variable.form_variable.get_initial_value()
-                updated_variables.append(variable)
-                continue
-
-            if variable.value != new_value:
-                variable.value = new_value
-                if source:
-                    variable.source = source
-            updated_variables.append(variable)
-
-        updates_state = SubmissionValueVariablesState(variables=updated_variables)
-        self._variables_state = updates_state
-        return updates_state
+        self._variables_state = SubmissionValueVariablesState.get_state(self)
+        return self._variables_state
 
     def load_execution_state(self) -> SubmissionState:
         """

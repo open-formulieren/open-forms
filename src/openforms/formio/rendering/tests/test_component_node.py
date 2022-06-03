@@ -8,6 +8,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
+from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ..constants import RenderConfigurationOptions
 from ..nodes import ComponentNode

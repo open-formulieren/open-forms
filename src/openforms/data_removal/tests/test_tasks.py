@@ -359,16 +359,32 @@ class MakeSensitiveDataAnonymousTask(VariablesTestMixin, TestCase):
         cls.form_definition = FormDefinitionFactory.create(
             configuration={
                 "components": [
-                    {"key": "textFieldSensitive", "isSensitiveData": True},
-                    {"key": "textFieldNotSensitive", "isSensitiveData": False},
+                    {
+                        "key": "textFieldSensitive",
+                        "type": "textfield",
+                        "isSensitiveData": True,
+                    },
+                    {
+                        "key": "textFieldNotSensitive",
+                        "type": "textfield",
+                        "isSensitiveData": False,
+                    },
                 ],
             }
         )
         cls.form_definition_2 = FormDefinitionFactory.create(
             configuration={
                 "components": [
-                    {"key": "textFieldSensitive2", "isSensitiveData": True},
-                    {"key": "textFieldNotSensitive2", "isSensitiveData": False},
+                    {
+                        "key": "textFieldSensitive2",
+                        "type": "textfield",
+                        "isSensitiveData": True,
+                    },
+                    {
+                        "key": "textFieldNotSensitive2",
+                        "type": "textfield",
+                        "isSensitiveData": False,
+                    },
                 ],
             }
         )

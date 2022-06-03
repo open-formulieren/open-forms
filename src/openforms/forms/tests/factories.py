@@ -1,7 +1,6 @@
 import factory
-from glom import Path, glom
+from factory import post_generation
 
-from openforms.formio.utils import is_layout_component, iter_components
 from openforms.products.tests.factories import ProductFactory
 
 from ..constants import FormVariableDataTypes, FormVariableSources
@@ -36,7 +35,9 @@ class FormDefinitionFactory(factory.django.DjangoModelFactory):
 
     slug = factory.Sequence(lambda n: f"fd-{n}")
     login_required = False
-    configuration = {"components": [{"type": "test-component", "key": "test-key"}]}
+    configuration = factory.Sequence(
+        lambda n: {"components": [{"type": "textfield", "key": f"test-key-{n}"}]}
+    )
 
     class Meta:
         model = FormDefinition
@@ -48,26 +49,31 @@ class FormDefinitionFactory(factory.django.DjangoModelFactory):
                 "components": [
                     {
                         "key": "product",
+                        "type": "textfield",
                         "appointments": {"showProducts": True},
                         "label": "Product",
                     },
                     {
                         "key": "location",
+                        "type": "textfield",
                         "appointments": {"showLocations": True},
                         "label": "Location",
                     },
                     {
                         "key": "time",
+                        "type": "textfield",
                         "appointments": {"showTimes": True},
                         "label": "Time",
                     },
                     {
                         "key": "lastName",
+                        "type": "textfield",
                         "appointments": {"lastName": True},
                         "label": "Last Name",
                     },
                     {
                         "key": "birthDate",
+                        "type": "date",
                         "appointments": {"birthDate": True},
                         "label": "Date of Birth",
                     },
@@ -89,35 +95,7 @@ class FormStepFactory(factory.django.DjangoModelFactory):
         **kwargs,
     ) -> FormStep:
         form_step = super().create(**kwargs)
-
-        form_definition_configuration = form_step.form_definition.configuration
-        existing_form_variables = form_step.form.formvariable_set.all()
-        for component in iter_components(
-            configuration=form_definition_configuration, recursive=True
-        ):
-            if is_layout_component(component):
-                continue
-
-            if not existing_form_variables.filter(key=component["key"]):
-                FormVariableFactory.create(
-                    form=form_step.form,
-                    form_definition=form_step.form_definition,
-                    prefill_plugin=glom(
-                        component,
-                        Path("prefill", "plugin"),
-                        default="",
-                        skip_exc=KeyError,
-                    ),
-                    prefill_attribute=glom(
-                        component,
-                        Path("prefill", "attribute"),
-                        default="",
-                        skip_exc=KeyError,
-                    ),
-                    key=component["key"],
-                    is_sensitive_data=component.get("isSensitiveData", False),
-                )
-
+        FormVariable.objects.create_for_formstep(form_step)
         return form_step
 
 

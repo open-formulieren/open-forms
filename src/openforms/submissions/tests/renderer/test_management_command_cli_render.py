@@ -6,7 +6,8 @@ from io import StringIO
 from django.core.management import call_command
 from django.test import TestCase
 
-from openforms.submissions.tests.factories import SubmissionFactory
+from ..factories import SubmissionFactory
+from ..mixins import VariablesTestMixin
 
 FORMIO_CONFIGURATION_COMPONENTS = [
     # visible component, leaf node
@@ -62,7 +63,7 @@ FORMIO_CONFIGURATION_COMPONENTS = [
 ]
 
 
-class CLIRendererIntegrationTests(TestCase):
+class CLIRendererIntegrationTests(VariablesTestMixin, TestCase):
     maxDiff = None
 
     def test_render_submission_in_cli_no_html(self):
@@ -74,12 +75,9 @@ class CLIRendererIntegrationTests(TestCase):
                 "amount": 1234.56,
                 "input4": "fourth input",
             },
+            form__name="public name",
+            form__internal_name="internal name",
         )
-
-        form = submission.form
-        form.name = "public name"
-        form.internal_name = "internal name"
-        form.save()
 
         form_definition = submission.steps[0].form_step.form_definition
         form_definition.name = "Stap 1"
@@ -122,12 +120,9 @@ Submission {submission.id} - public name
                 "amount": 1234.56,
                 "input4": "fourth input",
             },
+            form__name="public name",
+            form__internal_name="internal name",
         )
-
-        form = submission.form
-        form.name = "public name"
-        form.internal_name = "internal name"
-        form.save()
 
         form_definition = submission.steps[0].form_step.form_definition
         form_definition.name = "Stap 1"

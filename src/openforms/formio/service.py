@@ -8,7 +8,7 @@ from rest_framework.request import Request
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.utils import format_date_value, iter_components
 from openforms.forms.custom_field_types import handle_custom_types
-from openforms.prefill import apply_prefill
+from openforms.prefill import _set_default_values, apply_prefill
 from openforms.submissions.models import Submission, SubmissionValueVariable
 
 
@@ -47,19 +47,17 @@ def insert_variables(configuration: dict, submission: Submission) -> dict:
     value_variables_state = submission.load_submission_value_variables_state()
     data = value_variables_state.get_data()
 
-    for component in iter_components(configuration):
-        if value := prefill_data.get(component["key"]):
-            component["defaultValue"] = value
-            if component["type"] == "date":
-                component["defaultValue"] = format_date_value(value)
+    # TODO Once the enable_form_variables feature flag is removed, whe should move this code around
+    _set_default_values(configuration, prefill_data)
 
+    for component in iter_components(configuration):
         if "html" in component:
             content_with_vars = Template(component.get("html", "")).render(
                 Context(data)
             )
             component["html"] = content_with_vars
 
-        # TODO: inject variables also in label?
+        # TODO: inject variables also in label
 
     return configuration
 

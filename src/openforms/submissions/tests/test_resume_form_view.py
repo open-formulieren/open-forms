@@ -13,9 +13,10 @@ from openforms.config.models import GlobalConfiguration
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..tokens import submission_resume_token_generator
 from .factories import SubmissionFactory, SubmissionStepFactory
+from .mixins import VariablesTestMixin
 
 
-class SubmissionResumeViewTests(TestCase):
+class SubmissionResumeViewTests(VariablesTestMixin, TestCase):
     def test_good_token_and_submission_redirect_and_add_submission_to_session(self):
         submission = SubmissionFactory.from_components(
             completed=True,
@@ -187,7 +188,8 @@ class SubmissionResumeViewTests(TestCase):
         self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)
 
     def test_after_successful_auth_redirects_to_form(self):
-        submission = SubmissionFactory.create(
+        submission = SubmissionFactory.from_components(
+            components_list=[{"key": "foo", "type": "textfield"}],
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
             auth_plugin="digid",

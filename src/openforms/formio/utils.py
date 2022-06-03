@@ -2,6 +2,7 @@ import logging
 from datetime import date, datetime
 from typing import Any, Dict, Iterator
 
+from .constants import COMPONENT_DATATYPES
 from .typing import Component
 
 logger = logging.getLogger(__name__)
@@ -73,3 +74,8 @@ def format_date_value(date_value: str) -> str:
             return ""
 
     return parsed_date.isoformat()
+
+
+def get_component_datatype(component):
+    component_type = component["type"]
+    return COMPONENT_DATATYPES.get(component_type, "string")

@@ -22,6 +22,7 @@ from openforms.submissions.tests.factories import (
     SubmissionReportFactory,
     SubmissionStepFactory,
 )
+from openforms.submissions.tests.mixins import VariablesTestMixin
 from openforms.utils.tests.html_assert import HTMLAssertMixin
 
 from ....service import NoSubmissionReference, extract_submission_reference
@@ -33,7 +34,7 @@ from ..plugin import EmailRegistration
 @override_settings(
     DEFAULT_FROM_EMAIL="info@open-forms.nl", BASE_URL="https://example.com"
 )
-class EmailBackendTests(HTMLAssertMixin, TestCase):
+class EmailBackendTests(VariablesTestMixin, HTMLAssertMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.form = FormFactory.create(

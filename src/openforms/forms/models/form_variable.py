@@ -1,7 +1,17 @@
+from typing import TYPE_CHECKING, List
+
 from django.db import models
 from django.db.models import CheckConstraint, Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+from glom import Path, glom
+
+from openforms.formio.utils import (
+    get_component_datatype,
+    is_layout_component,
+    iter_components,
+)
 
 from ..constants import (
     FormVariableDataTypes,
@@ -10,6 +20,9 @@ from ..constants import (
 )
 from .form import Form
 from .form_definition import FormDefinition
+
+if TYPE_CHECKING:
+    from .form_step import FormStep
 
 
 def get_now() -> str:
@@ -28,6 +41,65 @@ INITIAL_VALUES = {
     FormVariableDataTypes.datetime: "",
     FormVariableDataTypes.time: "",
 }
+
+
+class FormVariableManager(models.Manager):
+    def create_for_form(self, form: "Form") -> List["FormVariable"]:
+        form_steps = form.formstep_set.select_related("form_definition")
+
+        for form_step in form_steps:
+            # TODO deal with duplicate keys!
+            self.create_for_formstep(form_step)
+            return form_step
+
+    def create_for_formstep(self, form_step: "FormStep") -> List["FormVariable"]:
+        form_definition_configuration = form_step.form_definition.configuration
+        component_keys = [
+            component["key"]
+            for component in iter_components(
+                configuration=form_definition_configuration, recursive=True
+            )
+        ]
+        existing_form_variables_keys = (
+            form_step.form_definition.formvariable_set.filter(
+                key__in=component_keys
+            ).values_list("key", flat=True)
+        )
+
+        form_variables = []
+        for component in iter_components(
+            configuration=form_definition_configuration, recursive=True
+        ):
+            if (
+                is_layout_component(component)
+                or component["key"] in existing_form_variables_keys
+            ):
+                continue
+
+            form_variables.append(
+                self.model(
+                    form=form_step.form,
+                    form_definition=form_step.form_definition,
+                    prefill_plugin=glom(
+                        component,
+                        Path("prefill", "plugin"),
+                        default="",
+                        skip_exc=KeyError,
+                    ),
+                    prefill_attribute=glom(
+                        component,
+                        Path("prefill", "attribute"),
+                        default="",
+                        skip_exc=KeyError,
+                    ),
+                    key=component["key"],
+                    is_sensitive_data=component.get("isSensitiveData", False),
+                    source=FormVariableSources.component,
+                    data_type=get_component_datatype(component),
+                )
+            )
+
+        return self.bulk_create(form_variables)
 
 
 class FormVariable(models.Model):
@@ -104,6 +176,8 @@ class FormVariable(models.Model):
         blank=True,
         null=True,
     )
+
+    objects = FormVariableManager()
 
     class Meta:
         verbose_name = _("Form variable")

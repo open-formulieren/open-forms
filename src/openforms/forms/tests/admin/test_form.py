@@ -1,5 +1,6 @@
 import json
 from io import BytesIO
+from unittest import skip
 from unittest.mock import patch
 from zipfile import ZipFile
 
@@ -17,7 +18,7 @@ from openforms.tests.utils import disable_2fa
 from openforms.utils.admin import SubmitActions
 
 from ...admin.form import FormAdmin
-from ...models import Form, FormDefinition, FormStep
+from ...models import Form, FormDefinition, FormStep, FormVariable
 from ...tests.factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
 
@@ -761,6 +762,7 @@ class FormChangeTests(WebTest):
         patcher.start()
         self.addCleanup(patcher.stop)
 
+    @skip("With form variables, it is not possible to have duplicate keys")
     def test_form_change_duplicate_keys_warning_message(self):
         """
         Assert that a warning message is displayed when a form has duplicate
@@ -773,10 +775,12 @@ class FormChangeTests(WebTest):
                     {
                         "key": "duplicate-field1",
                         "label": "Location",
+                        "type": "textfield",
                     },
                     {
                         "key": "non-duplicate-field1",
                         "label": "Product",
+                        "type": "textfield",
                     },
                 ],
             }
@@ -788,10 +792,12 @@ class FormChangeTests(WebTest):
                     {
                         "key": "duplicate-field1",
                         "label": "Location",
+                        "type": "textfield",
                     },
                     {
                         "key": "duplicate-field2",
                         "label": "Foo",
+                        "type": "textfield",
                     },
                 ],
             }
@@ -803,10 +809,12 @@ class FormChangeTests(WebTest):
                     {
                         "key": "duplicate-field2",
                         "label": "Foo",
+                        "type": "textfield",
                     },
                     {
                         "key": "non-duplicate-field2",
                         "label": "Bar",
+                        "type": "textfield",
                     },
                 ],
             }
@@ -928,23 +936,25 @@ class FormDeleteTests(WebTest):
 
     def test_second_delete_from_detail_page_permanently_deleted(self):
         form = FormFactory.create(
-            generate_minimal_setup=True,
             deleted_=True,
-            formstep__form_definition__is_reusable=True,
         )
+        FormStepFactory.create(form=form, form_definition__is_reusable=True)
         FormStepFactory.create(form=form)
         with self.subTest("check test setup"):
             self.assertTrue(form._is_deleted)
+            self.assertEqual(2, form.formvariable_set.count())
+
         delete_page = self.app.get(
             reverse("admin:forms_form_delete", args=(form.pk,)),
             user=self.user,
         )
         delete_page.form.submit()
 
-        # check that the form is hard deleted and reusable form definitions are kept
+        # check that the form/form variables are hard deleted and reusable form definitions are kept
         self.assertFalse(Form.objects.exists())
         self.assertFalse(FormStep.objects.exists())
         self.assertEqual(FormDefinition.objects.count(), 1)
+        self.assertEqual(FormVariable.objects.count(), 0)
 
     def test_admin_filter_bypass_delete_does_both_soft_and_hard_delete(self):
         """

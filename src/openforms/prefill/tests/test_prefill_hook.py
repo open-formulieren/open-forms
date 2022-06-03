@@ -110,8 +110,9 @@ class PrefillHookTests(TransactionTestCase):
     def test_complex_components(self):
         def config_factory():
             components = deepcopy(CONFIGURATION["components"])
-            for comp in components:
+            for index, comp in enumerate(components):
                 comp["id"] = get_random_string(length=7)
+                comp["key"] = comp["key"] + get_random_string(length=4)
             return components
 
         complex_configuration = {

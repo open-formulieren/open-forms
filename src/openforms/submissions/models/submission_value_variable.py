@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import TYPE_CHECKING, Dict, Optional
 
 from django.db import models
-from django.utils import timezone
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from glom import Assign, PathAccessError, glom
@@ -12,48 +12,117 @@ from openforms.forms.models.form_variable import FormVariable
 from ..constants import SubmissionValueVariableSources
 from .submission import Submission
 
+if TYPE_CHECKING:
+    from .submission_step import SubmissionStep
+
 
 @dataclass
 class SubmissionValueVariablesState:
-    variables: List["SubmissionValueVariable"]
+    variables: Dict[str, "SubmissionValueVariable"]
 
     def get_variable(self, key: str) -> Optional["SubmissionValueVariable"]:
-        for variable in self.variables:
-            if variable.key == key:
-                return variable
+        return self.variables[key]
 
-    def get_data(self, submission_step=None):
+    def get_data(self, submission_step: Optional["SubmissionStep"] = None) -> dict:
         submission_variables = self.variables
         if submission_step:
-            form_variables = FormVariable.objects.filter(
-                form_definition=submission_step.form_step.form_definition
+            submission_variables = self.get_variables_in_submission_step(
+                submission_step
             )
-            submission_variables = [
-                variable
-                for variable in self.variables
-                if variable.form_variable in form_variables
-            ]
 
         data = {}
-        for variable in submission_variables:
+        for variable_key, variable in submission_variables.items():
             if (
                 variable.value != ""
                 or variable.source
                 == SubmissionValueVariableSources.sensitive_data_cleaner
             ):
-                glom(data, Assign(variable.key, variable.value, missing=dict))
+                glom(data, Assign(variable_key, variable.value, missing=dict))
         return data
 
-    def get_variables_in_submission_step(self, submission_step):
-        form_variables = FormVariable.objects.filter(
-            form_definition=submission_step.form_step.form_definition
+    def get_variables_in_submission_step(
+        self, submission_step: "SubmissionStep"
+    ) -> Dict[str, "SubmissionValueVariable"]:
+        form_definition = submission_step.form_step.form_definition
+        return {
+            variable_key: variable
+            for variable_key, variable in self.variables.items()
+            if variable.form_variable.form_definition == form_definition
+        }
+
+    @classmethod
+    def get_state(cls, submission: "Submission") -> "SubmissionValueVariablesState":
+        # Get the SubmissionValueVariables already saved in the database
+        saved_submission_value_variables = (
+            submission.submissionvaluevariable_set.all().select_related(
+                "form_variable", "form_variable__form_definition"
+            )
         )
 
-        return [
-            variable
-            for variable in self.variables
-            if variable.form_variable in form_variables
-        ]
+        # Get all the form variables for the SubmissionVariables that have not been created yet
+        form_variables = FormVariable.objects.filter(
+            ~Q(
+                id__in=saved_submission_value_variables.values_list(
+                    "form_variable__id", flat=True
+                )
+            ),
+            form=submission.form,
+        )
+
+        unsaved_value_variables = {}
+        for form_variable in form_variables:
+            # TODO Fill source field
+            key = form_variable.key
+            unsaved_submission_var = SubmissionValueVariable(
+                submission=submission,
+                form_variable=form_variable,
+                key=key,
+                value=form_variable.get_initial_value(),
+            )
+            unsaved_value_variables[key] = unsaved_submission_var
+
+        return cls(
+            variables={
+                **{
+                    variable.key: variable
+                    for variable in saved_submission_value_variables
+                },
+                **unsaved_value_variables,
+            }
+        )
+
+
+class SubmissionValueVariableManager(models.Manager):
+    def bulk_create_or_update(
+        self, submission_step, data, update_missing_variables: bool = False
+    ):
+        submission = submission_step.submission
+
+        submission_value_variables_state = (
+            submission.load_submission_value_variables_state()
+        )
+        submission_step_variables = (
+            submission_value_variables_state.get_variables_in_submission_step(
+                submission_step
+            )
+        )
+
+        variables_to_create = []
+        variables_to_update = []
+        for key, variable in submission_step_variables.items():
+            try:
+                variable.value = glom(data, key)
+            except PathAccessError:
+                if update_missing_variables:
+                    variable.value = variable.form_variable.get_initial_value()
+
+            if not variable.pk:
+                variables_to_create.append(variable)
+            else:
+                variables_to_update.append(variable)
+
+        self.bulk_create(variables_to_create)
+        self.bulk_update(variables_to_update, fields=["value"])
 
 
 class SubmissionValueVariable(models.Model):
@@ -108,6 +177,8 @@ class SubmissionValueVariable(models.Model):
         auto_now=True,
     )
 
+    objects = SubmissionValueVariableManager()
+
     class Meta:
         verbose_name = _("Submission value variable")
         verbose_name_plural = _("Submission values variables")
@@ -119,39 +190,3 @@ class SubmissionValueVariable(models.Model):
                 name=self.form_variable.name
             )
         return _("Submission value variable %(key)s").format(key=self.key)
-
-    @classmethod
-    def bulk_create_or_update(
-        cls, submission_step, data, update_missing_variables: bool = False
-    ):
-        submission = submission_step.submission
-
-        submission_value_variables_state = (
-            submission.load_submission_value_variables_state()
-        )
-        submission_step_variables = (
-            submission_value_variables_state.get_variables_in_submission_step(
-                submission_step
-            )
-        )
-
-        variables_to_create = []
-        variables_to_update = []
-        for variable in submission_step_variables:
-            key = variable.key
-            try:
-                variable.value = glom(data, key)
-            except PathAccessError:
-                if update_missing_variables:
-                    variable.value = variable.form_variable.get_initial_value()
-
-            if not variable.pk:
-                variables_to_create.append(variable)
-            else:
-                variable.source = SubmissionValueVariableSources.user_input
-                variables_to_update.append(variable)
-
-        cls.objects.bulk_create(variables_to_create)
-        cls.objects.bulk_update(
-            variables_to_update, fields=["value", "source", "modified_at"]
-        )
