@@ -30,10 +30,7 @@ MAPPING_FORWARDS = {
 MAPPING_BACKWARDS = {v: k for k, v in MAPPING_FORWARDS.items()}
 
 
-def remove_empty_tokens(obj: dict) -> Optional[dict]:
-    if not obj:
-        return None
-
+def remove_empty_tokens(obj: dict) -> dict:
     if "value" in obj:
         return obj
 
@@ -70,7 +67,8 @@ def get_operation(mapping: dict):
                 delete(new_value, source)
 
         # clean up and remove nonsense token specs
-        new_value = remove_empty_tokens(new_value)
+        if new_value:
+            new_value = remove_empty_tokens(new_value)
         config.design_token_values = new_value
         config.save(update_fields=["design_token_values"])
 

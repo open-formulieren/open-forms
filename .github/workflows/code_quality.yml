@@ -72,7 +72,7 @@ jobs:
 
       - name: Install prettier
         run: |
-          npm ci
+          npm ci --legacy-peer-deps
 
       - name: Run prettier
         run: |
