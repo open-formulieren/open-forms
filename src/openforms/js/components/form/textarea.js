@@ -38,7 +38,17 @@ const textareaTabs = {
   components: [textareaBasicTab, ADVANCED, TEXT_VALIDATION],
 };
 
-class TextArea extends Formio.Components.components.textarea {
+const FormioTextarea = Formio.Components.components.textarea;
+
+class TextArea extends FormioTextarea {
+  static schema(...extend) {
+    return FormioTextarea.schema({validate: {maxLength: 10000}}, ...extend);
+  }
+
+  get defaultSchema() {
+    return TextArea.schema();
+  }
+
   static editForm() {
     return {components: [textareaTabs]};
   }
