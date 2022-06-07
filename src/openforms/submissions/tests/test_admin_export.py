@@ -13,9 +13,10 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
+from openforms.submissions.tests.mixins import VariablesTestMixin
 
 
-class TestSubmissionExportAdmin(WebTest):
+class TestSubmissionExportAdmin(VariablesTestMixin, WebTest):
     @classmethod
     def setUpTestData(cls):
         form_definition = FormDefinitionFactory(

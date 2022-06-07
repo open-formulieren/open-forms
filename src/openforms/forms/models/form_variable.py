@@ -33,11 +33,11 @@ STATIC_INITIAL_VALUES = {FormVariableStaticInitialValues.now: get_now}
 
 INITIAL_VALUES = {
     FormVariableDataTypes.string: "",
-    FormVariableDataTypes.boolean: False,
+    FormVariableDataTypes.boolean: "",
     FormVariableDataTypes.object: {},
     FormVariableDataTypes.array: [],
-    FormVariableDataTypes.int: 0,
-    FormVariableDataTypes.float: 0.0,
+    FormVariableDataTypes.int: "",
+    FormVariableDataTypes.float: "",
     FormVariableDataTypes.datetime: "",
     FormVariableDataTypes.time: "",
 }
@@ -60,11 +60,10 @@ class FormVariableManager(models.Manager):
                 configuration=form_definition_configuration, recursive=True
             )
         ]
-        existing_form_variables_keys = (
-            form_step.form_definition.formvariable_set.filter(
-                key__in=component_keys
-            ).values_list("key", flat=True)
-        )
+        existing_form_variables_keys = form_step.form.formvariable_set.filter(
+            key__in=component_keys,
+            form_definition=form_step.form_definition,
+        ).values_list("key", flat=True)
 
         form_variables = []
         for component in iter_components(

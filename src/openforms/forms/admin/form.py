@@ -369,6 +369,18 @@ class FormAdmin(
             extra_context=extra_context,
         )
 
+    def add_view(self, request, form_url="", extra_context=None):
+        extra_context = extra_context or {}
+        config = GlobalConfiguration.get_solo()
+        extra_context["feature_flags"] = {
+            "enable_form_variables": config.enable_form_variables
+        }
+        return super().add_view(
+            request,
+            form_url,
+            extra_context=extra_context,
+        )
+
 
 @admin.register(FormsExport)
 class FormsExportAdmin(admin.ModelAdmin):

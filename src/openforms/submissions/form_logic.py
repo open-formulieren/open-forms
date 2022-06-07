@@ -118,6 +118,8 @@ def evaluate_form_logic(
                         action["form_step"]
                     )
                     submission_step_to_modify._is_applicable = False
+                    # This clears data in the database to make sure that saved steps later become
+                    # not-applicable don't have old data
                     submission_step_to_modify.data = {}
                     if submission_step_to_modify == step:
                         updated_data = {}

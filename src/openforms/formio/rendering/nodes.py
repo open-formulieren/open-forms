@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Iterator, Literal, Optional, Union
 
-from openforms.config.models import GlobalConfiguration
-from openforms.submissions.models import SubmissionStep, SubmissionValueVariable
+from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
 
@@ -119,16 +118,6 @@ class ComponentNode(Node):
 
         TODO: build and use the type conversion for Formio components.
         """
-        conf = GlobalConfiguration.get_solo()
-        if conf.enable_form_variables:
-            value_variable = SubmissionValueVariable.objects.filter(
-                submission=self.step.submission, key=self.component["key"]
-            )
-            if value_variable.exists():
-                value_variable = value_variable.get()
-                return value_variable.value
-            return None
-
         key = self.component["key"]
         value = self.step.data.get(key)
         return value

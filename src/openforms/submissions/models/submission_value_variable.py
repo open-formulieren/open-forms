@@ -55,7 +55,7 @@ class SubmissionValueVariablesState:
         # Get the SubmissionValueVariables already saved in the database
         saved_submission_value_variables = (
             submission.submissionvaluevariable_set.all().select_related(
-                "form_variable", "form_variable__form_definition"
+                "form_variable__form_definition"
             )
         )
 
@@ -67,7 +67,7 @@ class SubmissionValueVariablesState:
                 )
             ),
             form=submission.form,
-        )
+        ).select_related("form_definition")
 
         unsaved_value_variables = {}
         for form_variable in form_variables:

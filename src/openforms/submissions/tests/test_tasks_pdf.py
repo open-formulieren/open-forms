@@ -10,10 +10,11 @@ from testfixtures import LogCapture
 from ..models import SubmissionReport
 from ..tasks.pdf import generate_submission_report
 from .factories import SubmissionFactory, SubmissionReportFactory
+from .mixins import VariablesTestMixin
 
 
 @temp_private_root()
-class SubmissionReportGenerationTests(TestCase):
+class SubmissionReportGenerationTests(VariablesTestMixin, TestCase):
     def test_submission_report_metadata(self):
         submission = SubmissionFactory.create(completed=True, form__name="Test Form")
 

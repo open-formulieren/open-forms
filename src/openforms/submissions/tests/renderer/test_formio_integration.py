@@ -9,6 +9,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
+from openforms.submissions.tests.mixins import VariablesTestMixin
 
 FORMIO_CONFIGURATION_COMPONENTS = [
     # visible component, leaf node
@@ -55,7 +56,7 @@ FORMIO_CONFIGURATION_COMPONENTS = [
 ]
 
 
-class SubmissionRendererIntegrationTests(TestCase):
+class SubmissionRendererIntegrationTests(VariablesTestMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
