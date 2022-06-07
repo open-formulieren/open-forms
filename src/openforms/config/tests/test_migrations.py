@@ -27,3 +27,20 @@ class DesignTokenMigrationTests(TestMigrations):
             "link": {"color": {"value": "white"}},
         }
         self.assertEqual(config.design_token_values, expected)
+
+
+@override_settings(SOLO_CACHE=None)
+class DesignTokenMigrationTests(TestMigrations):
+    app = "config"
+    migrate_from = "0028_auto_20220601_1422"
+    migrate_to = "0029_rename_design_tokens"
+
+    def setUpBeforeMigration(self, apps):
+        config = GlobalConfiguration.get_solo()
+        config.design_token_values = {}
+        config.save()
+
+    def test_empty_design_token_values(self):
+        config = GlobalConfiguration.get_solo()
+
+        self.assertEqual(config.design_token_values, {})
