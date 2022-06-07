@@ -28,7 +28,8 @@ jobs:
         ports:
           - 5432:5432
         # Needed because the postgres container does not provide a healthcheck
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        options:
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
       redis:
         image: redis:6
         ports:
@@ -64,7 +65,7 @@ jobs:
 
       - name: Build frontend
         run: |
-          npm ci
+          npm ci --legacy-peer-deps
           npm run build
 
       - name: Run tests
@@ -181,7 +182,7 @@ jobs:
 
   oas-up-to-date:
     needs: tests
-    name:  Check for unexepected OAS changes
+    name: Check for unexepected OAS changes
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -199,12 +200,12 @@ jobs:
       - name: Check for OAS changes
         run: |
           diff openapi.yaml src/openapi.yaml
-      - name: Remove summary markdown  # only runs if the previous step succeeded
+      - name: Remove summary markdown # only runs if the previous step succeeded
         run: rm $GITHUB_STEP_SUMMARY
 
   oas-lint:
     needs: oas-up-to-date
-    name:  Validate OAS
+    name: Validate OAS
     runs-on: ubuntu-latest
     steps:
       - name: Download generated OAS
@@ -258,17 +259,29 @@ jobs:
       - name: Validate schema
         run: openapi-generator-cli validate -i ./openapi.yaml
       - name: Generate Java client
-        run: openapi-generator-cli generate -i ./openapi.yaml --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \
-          -o ./sdks/java -g java --additional-properties=dateLibrary=java8,java8=true,optionalProjectFile=false,optionalAssemblyInfo=false
+        run:
+          openapi-generator-cli generate -i ./openapi.yaml
+          --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \ -o
+          ./sdks/java -g java
+          --additional-properties=dateLibrary=java8,java8=true,optionalProjectFile=false,optionalAssemblyInfo=false
       - name: Generate .NET Core client
-        run: openapi-generator-cli generate -i ./openapi.yaml --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \
-          -o ./sdks/netcore -g csharp-netcore --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false
+        run:
+          openapi-generator-cli generate -i ./openapi.yaml
+          --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \ -o
+          ./sdks/netcore -g csharp-netcore
+          --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false
       - name: Generate .NET Full Framework client
-        run: openapi-generator-cli generate -i ./openapi.yaml --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \
-          -o ./sdks/net -g csharp --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false
+        run:
+          openapi-generator-cli generate -i ./openapi.yaml
+          --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \ -o
+          ./sdks/net -g csharp
+          --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false
       - name: Generate Python client
-        run: openapi-generator-cli generate -i ./openapi.yaml --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \
-          -o ./sdks/python -g python --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false+
+        run:
+          openapi-generator-cli generate -i ./openapi.yaml
+          --global-property=modelTests=false,apiTests=false,modelDocs=false,apiDocs=false \ -o
+          ./sdks/python -g python
+          --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false+
 
   docker_push:
     needs:
@@ -280,7 +293,7 @@ jobs:
 
     name: Push Docker image
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'  # Exclude PRs
+    if: github.event_name == 'push' # Exclude PRs
 
     steps:
       # This will include the updated OAS (if updated) from the update-oas job.
@@ -316,7 +329,9 @@ jobs:
           docker image load -i image-test.tar
 
       - name: Log into registry
-        run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        run:
+          echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USERNAME }}
+          --password-stdin
 
       - name: Push the Docker image (production)
         env:
