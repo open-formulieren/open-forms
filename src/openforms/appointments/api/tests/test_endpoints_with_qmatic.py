@@ -5,7 +5,7 @@ import requests_mock
 
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.submissions.tests.mixins import SubmissionsMixin
+from openforms.submissions.tests.mixins import SubmissionsMixin, VariablesTestMixin
 
 from ...constants import AppointmentDetailsStatus
 from ...contrib.qmatic.client import QmaticException
@@ -208,7 +208,7 @@ class TimesListTests(SubmissionsMixin, TestCase):
         self.assertEqual(response.status_code, 403)
 
 
-class CancelAppointmentTests(SubmissionsMixin, TestCase):
+class CancelAppointmentTests(VariablesTestMixin, SubmissionsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         appointments_config = AppointmentsConfig.get_solo()

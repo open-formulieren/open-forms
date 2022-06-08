@@ -4,7 +4,8 @@
         {
             "components": [{
                 "test": "1",
-                "key": "test"
+                "key": "test",
+                "type": "textfield"
             }]
         },
         "name": "Test Definition 1",

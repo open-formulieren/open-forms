@@ -6,11 +6,11 @@ from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ..factories import SubmissionFactory, SubmissionStepFactory
-from ..mixins import SubmissionsMixin
+from ..mixins import SubmissionsMixin, VariablesTestMixin
 from .factories import FormLogicFactory
 
 
-class SideEffectTests(SubmissionsMixin, APITestCase):
+class SideEffectTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
     def test_not_applicable_steps_are_reset(self):
         """
         Assert that subsequent steps are reset when they become not-applicable.

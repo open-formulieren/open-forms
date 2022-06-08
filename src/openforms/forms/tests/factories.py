@@ -1,4 +1,5 @@
 import factory
+from factory import post_generation
 
 from openforms.products.tests.factories import ProductFactory
 
@@ -34,7 +35,9 @@ class FormDefinitionFactory(factory.django.DjangoModelFactory):
 
     slug = factory.Sequence(lambda n: f"fd-{n}")
     login_required = False
-    configuration = {"components": [{"type": "test-component", "key": "test-key"}]}
+    configuration = factory.Sequence(
+        lambda n: {"components": [{"type": "textfield", "key": f"test-key-{n}"}]}
+    )
 
     class Meta:
         model = FormDefinition
@@ -46,26 +49,31 @@ class FormDefinitionFactory(factory.django.DjangoModelFactory):
                 "components": [
                     {
                         "key": "product",
+                        "type": "textfield",
                         "appointments": {"showProducts": True},
                         "label": "Product",
                     },
                     {
                         "key": "location",
+                        "type": "textfield",
                         "appointments": {"showLocations": True},
                         "label": "Location",
                     },
                     {
                         "key": "time",
+                        "type": "textfield",
                         "appointments": {"showTimes": True},
                         "label": "Time",
                     },
                     {
                         "key": "lastName",
+                        "type": "textfield",
                         "appointments": {"lastName": True},
                         "label": "Last Name",
                     },
                     {
                         "key": "birthDate",
+                        "type": "date",
                         "appointments": {"birthDate": True},
                         "label": "Date of Birth",
                     },
@@ -80,6 +88,15 @@ class FormStepFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = FormStep
+
+    @classmethod
+    def create(
+        cls,
+        **kwargs,
+    ) -> FormStep:
+        form_step = super().create(**kwargs)
+        FormVariable.objects.create_for_formstep(form_step)
+        return form_step
 
 
 class FormVersionFactory(factory.django.DjangoModelFactory):

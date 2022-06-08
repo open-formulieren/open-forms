@@ -1,5 +1,6 @@
 from typing import Optional
 
+from django import forms
 from django.contrib import admin, messages
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.template.defaultfilters import filesizeformat
@@ -25,6 +26,7 @@ from .models import (
     SubmissionFileAttachment,
     SubmissionReport,
     SubmissionStep,
+    SubmissionValueVariable,
     TemporaryFileUpload,
 )
 from .tasks import on_completion_retry
@@ -85,7 +87,7 @@ class SubmissionStepInline(admin.StackedInline):
     fields = (
         "uuid",
         "form_step",
-        "data",
+        "_data",
     )
     raw_id_fields = ("form_step",)
 
@@ -134,6 +136,24 @@ class SubmissionLogInline(GenericTabularInline):
         return False
 
 
+class SubmissionValueVariableAdminForm(forms.ModelForm):
+    class Meta:
+        model = SubmissionValueVariable
+        fields = ("form_variable", "key", "value", "source")
+        widgets = {
+            "value": forms.Textarea(attrs={"cols": 40, "rows": 1}),
+        }
+
+
+class SubmissionValueVariableInline(admin.TabularInline):
+    model = SubmissionValueVariable
+
+    fields = ("form_variable", "key", "value", "source")
+    readonly_fields = ("form_variable", "key", "source")
+    extra = 0
+    form = SubmissionValueVariableAdminForm
+
+
 @admin.register(Submission)
 class SubmissionAdmin(admin.ModelAdmin):
     date_hierarchy = "completed_on"
@@ -156,6 +176,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     )
     inlines = [
         SubmissionStepInline,
+        SubmissionValueVariableInline,
         SubmissionPaymentInline,
         SubmissionLogInline,
     ]

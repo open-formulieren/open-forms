@@ -8,11 +8,13 @@ from openforms.accounts.tests.factories import UserFactory
 from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
 
+from ...forms.models import FormVariable
 from ..constants import RegistrationStatuses
-from .factories import SubmissionFactory
+from .factories import SubmissionFactory, SubmissionValueVariableFactory
+from .mixins import VariablesTestMixin
 
 
-class TestSubmissionAdmin(WebTest):
+class TestSubmissionAdmin(VariablesTestMixin, WebTest):
     @classmethod
     def setUpTestData(cls):
         cls.submission_1 = SubmissionFactory.from_components(
@@ -57,8 +59,15 @@ class TestSubmissionAdmin(WebTest):
         self.assertContains(response, expected, html=True)
 
     def test_displaying_merged_data_displays_signature_as_image_formio_formatters(self):
-        self.submission_step_1.data["signature"] = "data:image/png;base64,iVBOR"
-        self.submission_step_1.save()
+        form_variable = FormVariable.objects.get(
+            key="signature", form=self.submission_1.form
+        )
+        SubmissionValueVariableFactory.create(
+            key="signature",
+            submission=self.submission_1,
+            value="data:image/png;base64,iVBOR",
+            form_variable=form_variable,
+        )
 
         response = self.app.get(
             reverse(

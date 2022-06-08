@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Dict
 
 import elasticapm
@@ -8,6 +9,8 @@ from openforms.formio.utils import get_default_values, iter_components
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
 from openforms.prefill import JSONObject
+
+from .models.submission_step import DirtyData
 
 if TYPE_CHECKING:  # pragma: nocover
     from .models import Submission, SubmissionStep
@@ -70,7 +73,7 @@ def evaluate_form_logic(
     data = {**defaults, **data}
 
     if not step.data:
-        step.data = {}
+        step.data = DirtyData({})
 
     # ensure this function is idempotent
     _evaluated = getattr(step, "_form_logic_evaluated", False)
@@ -88,6 +91,7 @@ def evaluate_form_logic(
 
     submission_state = submission.load_execution_state()
 
+    updated_data = deepcopy(step.data)
     for rule in rules:
         if jsonLogic(rule.json_logic_trigger, data):
             for action in rule.actions:
@@ -97,11 +101,11 @@ def evaluate_form_logic(
                     configuration = set_property_value(
                         configuration, action["component"], "value", new_value
                     )
-                    step.data[action["component"]] = new_value
+                    updated_data[action["component"]] = new_value
                 elif action_details["type"] == LogicActionTypes.property:
                     property_name = action_details["property"]["value"]
                     property_value = action_details["state"]
-                    set_property_value(
+                    configuration = set_property_value(
                         configuration,
                         action["component"],
                         property_name,
@@ -114,8 +118,13 @@ def evaluate_form_logic(
                         action["form_step"]
                     )
                     submission_step_to_modify._is_applicable = False
+                    # This clears data in the database to make sure that saved steps which later become
+                    # not-applicable don't have old data
+                    submission_step_to_modify.data = {}
                     if submission_step_to_modify == step:
+                        updated_data = {}
                         step._is_applicable = False
+    step.data = DirtyData(updated_data)
 
     if dirty:
         # only keep the changes in the data, so that old values do not overwrite otherwise
@@ -139,7 +148,8 @@ def evaluate_form_logic(
             data_diff[key] = new_value
 
         # only return the 'overrides'
-        step.data = data_diff
+        if data_diff:
+            step.data = DirtyData(data_diff)
 
     step._form_logic_evaluated = True
 

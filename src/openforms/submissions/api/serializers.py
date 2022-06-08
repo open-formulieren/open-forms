@@ -231,6 +231,11 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         source="form_step.optional",
         read_only=True,
     )
+    data = serializers.JSONField(
+        label=_("data"),
+        required=False,
+        allow_null=True,
+    )
 
     parent_lookup_kwargs = {
         "submission_uuid": "submission__uuid",

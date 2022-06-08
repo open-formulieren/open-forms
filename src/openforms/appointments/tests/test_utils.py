@@ -17,6 +17,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
+from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ..constants import AppointmentDetailsStatus
 from ..contrib.jcc.tests.test_plugin import mock_response
@@ -34,7 +35,7 @@ from .factories import AppointmentInfoFactory
 from .utils import setup_jcc
 
 
-class BookAppointmentForSubmissionTest(TestCase):
+class BookAppointmentForSubmissionTest(VariablesTestMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -57,16 +58,19 @@ class BookAppointmentForSubmissionTest(TestCase):
                 "components": [
                     {
                         "key": "product",
+                        "type": "textfield",
                         "appointments": {"showProducts": True},
                         "label": "Product",
                     },
                     {
                         "key": "location",
+                        "type": "textfield",
                         "appointments": {"showLocations": True},
                         "label": "Location",
                     },
                     {
                         "key": "time",
+                        "type": "textfield",
                         "appointments": {"showTimes": True},
                         "label": "Time",
                     },
@@ -95,11 +99,13 @@ class BookAppointmentForSubmissionTest(TestCase):
                 "components": [
                     {
                         "key": "product",
+                        "type": "textfield",
                         "appointments": {"showProducts": True},
                         "label": "Product",
                     },
                     {
                         "key": "time",
+                        "type": "textfield",
                         "appointments": {"showTimes": True},
                         "label": "Time",
                     },
@@ -112,11 +118,13 @@ class BookAppointmentForSubmissionTest(TestCase):
                 "components": [
                     {
                         "key": "lastName",
+                        "type": "textfield",
                         "appointments": {"lastName": True},
                         "label": "Last Name",
                     },
                     {
                         "key": "birthDate",
+                        "type": "textfield",
                         "appointments": {"birthDate": True},
                         "label": "Date of Birth",
                     },
@@ -179,16 +187,19 @@ class BookAppointmentForSubmissionTest(TestCase):
                 "components": [
                     {
                         "key": "product",
+                        "type": "textfield",
                         "appointments": {"showProducts": True},
                         "label": "Product",
                     },
                     {
                         "key": "location",
+                        "type": "textfield",
                         "appointments": {"showLocations": True},
                         "label": "Location",
                     },
                     {
                         "key": "time",
+                        "type": "textfield",
                         "appointments": {"showTimes": True},
                         "label": "Time",
                     },
@@ -201,11 +212,13 @@ class BookAppointmentForSubmissionTest(TestCase):
                 "components": [
                     {
                         "key": "lastName",
+                        "type": "textfield",
                         "appointments": {"lastName": True},
                         "label": "Last Name",
                     },
                     {
                         "key": "birthDate",
+                        "type": "textfield",
                         "appointments": {"birthDate": True},
                         "label": "Date of Birth",
                     },
@@ -279,26 +292,31 @@ class BookAppointmentForSubmissionTest(TestCase):
             components_list=[
                 {
                     "key": "product",
+                    "type": "textfield",
                     "appointments": {"showProducts": True},
                     "label": "Product",
                 },
                 {
                     "key": "location",
+                    "type": "textfield",
                     "appointments": {"showLocations": True},
                     "label": "Location",
                 },
                 {
                     "key": "time",
+                    "type": "textfield",
                     "appointments": {"showTimes": True},
                     "label": "Time",
                 },
                 {
                     "key": "lastName",
+                    "type": "textfield",
                     "appointments": {"lastName": True},
                     "label": "Last Name",
                 },
                 {
                     "key": "birthDate",
+                    "type": "textfield",
                     "appointments": {"birthDate": True},
                     "label": "Date of Birth",
                 },
@@ -362,16 +380,19 @@ class BookAppointmentForSubmissionTest(TestCase):
                 "components": [
                     {
                         "key": "product",
+                        "type": "textfield",
                         "appointments": {"showProducts": True},
                         "label": "Product",
                     },
                     {
                         "key": "location",
+                        "type": "textfield",
                         "appointments": {"showLocations": True},
                         "label": "Location",
                     },
                     {
                         "key": "time",
+                        "type": "textfield",
                         "appointments": {"showTimes": True},
                         "label": "Time",
                     },
@@ -384,11 +405,13 @@ class BookAppointmentForSubmissionTest(TestCase):
                 "components": [
                     {
                         "key": "lastName",
+                        "type": "textfield",
                         "appointments": {"lastName": True},
                         "label": "Last Name",
                     },
                     {
                         "key": "birthDate",
+                        "type": "textfield",
                         "appointments": {"birthDate": True},
                         "label": "Date of Birth",
                     },
@@ -456,16 +479,19 @@ class BookAppointmentForSubmissionTest(TestCase):
                 "components": [
                     {
                         "key": "product",
+                        "type": "textfield",
                         "appointments": {"showProducts": True},
                         "label": "Product",
                     },
                     {
                         "key": "location",
+                        "type": "textfield",
                         "appointments": {"showLocations": True},
                         "label": "Location",
                     },
                     {
                         "key": "time",
+                        "type": "textfield",
                         "appointments": {"showTimes": True},
                         "label": "Time",
                     },
@@ -478,11 +504,13 @@ class BookAppointmentForSubmissionTest(TestCase):
                 "components": [
                     {
                         "key": "lastName",
+                        "type": "textfield",
                         "appointments": {"lastName": True},
                         "label": "Last Name",
                     },
                     {
                         "key": "birthDate",
+                        "type": "textfield",
                         "appointments": {"birthDate": True},
                         "label": "Date of Birth",
                     },
@@ -618,11 +646,13 @@ class UtilsTests(TestCase):
             components_list=[
                 {
                     "key": "product",
+                    "type": "textfield",
                     "appointments": {"showProducts": True},
                     "label": "Product",
                 },
                 {
                     "key": "time",
+                    "type": "textfield",
                     "appointments": {"showTimes": True},
                     "label": "Time",
                 },

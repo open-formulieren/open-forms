@@ -7,16 +7,42 @@ from openforms.submissions.tests.factories import (
     SubmissionStepFactory,
 )
 
+from .mixins import VariablesTestMixin
 
-class SubmissionConfirmationPageTests(APITestCase):
+
+class SubmissionConfirmationPageTests(VariablesTestMixin, APITestCase):
     def test_global_template_used(self):
         config = GlobalConfiguration.get_solo()
         config.submission_confirmation_template = "Dear {{ name|title }} {{ last_name|title }}, Thank you for submitting this form."
         config.save()
 
         form = FormFactory.create()
-        step1 = FormStepFactory.create(form=form)
-        step2 = FormStepFactory.create(form=form)
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "name",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "last_name",
+                    },
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "favourite_icecream",
+                    }
+                ]
+            },
+        )
         submission = SubmissionFactory.create(form=form)
 
         SubmissionStepFactory.create(
@@ -45,8 +71,32 @@ class SubmissionConfirmationPageTests(APITestCase):
         form = FormFactory.create(
             submission_confirmation_template="Dear {{ name|title }} {{ last_name|title }}, {{ favourite_icecream }} is a great ice cream choice!"
         )
-        step1 = FormStepFactory.create(form=form)
-        step2 = FormStepFactory.create(form=form)
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "name",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "last_name",
+                    },
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "favourite_icecream",
+                    }
+                ]
+            },
+        )
         submission = SubmissionFactory.create(form=form)
 
         SubmissionStepFactory.create(

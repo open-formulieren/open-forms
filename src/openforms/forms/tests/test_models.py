@@ -62,7 +62,12 @@ class FormTestCase(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "aaa", "label": "AAA", "confirmationRecipient": True},
+                    {
+                        "key": "aaa",
+                        "type": "textfield",
+                        "label": "AAA",
+                        "confirmationRecipient": True,
+                    },
                 ],
             }
         )
@@ -72,6 +77,7 @@ class FormTestCase(TestCase):
                 "components": [
                     {
                         "key": "bbb",
+                        "type": "textfield",
                         "label": "BBB",
                         "confirmationRecipient": True,
                         "multiple": True,
@@ -92,7 +98,11 @@ class FormTestCase(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "aaa", "label": "AAA"},
+                    {
+                        "key": "aaa",
+                        "label": "AAA",
+                        "type": "textfield",
+                    },
                 ],
             }
         )
@@ -103,10 +113,12 @@ class FormTestCase(TestCase):
                     {
                         "key": "bbb",
                         "label": "BBB",
+                        "type": "textfield",
                         "multiple": True,
                         "components": [
                             {
                                 "key": "ccc",
+                                "type": "textfield",
                                 "label": "CCC",
                                 "multiple": True,
                             },
@@ -121,14 +133,20 @@ class FormTestCase(TestCase):
         with self.subTest("recursive"):
             actual = list(form.iter_components(recursive=True))
             expected = [
-                {"key": "aaa", "label": "AAA"},
+                {
+                    "key": "aaa",
+                    "label": "AAA",
+                    "type": "textfield",
+                },
                 {
                     "key": "bbb",
+                    "type": "textfield",
                     "label": "BBB",
                     "multiple": True,
                     "components": [
                         {
                             "key": "ccc",
+                            "type": "textfield",
                             "label": "CCC",
                             "multiple": True,
                         },
@@ -137,6 +155,7 @@ class FormTestCase(TestCase):
                 {
                     "key": "ccc",
                     "label": "CCC",
+                    "type": "textfield",
                     "multiple": True,
                 },
             ]
@@ -146,14 +165,20 @@ class FormTestCase(TestCase):
         with self.subTest("non-recursive"):
             actual = list(form.iter_components(recursive=False))
             expected = [
-                {"key": "aaa", "label": "AAA"},
+                {
+                    "key": "aaa",
+                    "label": "AAA",
+                    "type": "textfield",
+                },
                 {
                     "key": "bbb",
+                    "type": "textfield",
                     "label": "BBB",
                     "multiple": True,
                     "components": [
                         {
                             "key": "ccc",
+                            "type": "textfield",
                             "label": "CCC",
                             "multiple": True,
                         },
@@ -171,7 +196,11 @@ class FormTestCase(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "bbb", "label": "BBB"},
+                    {
+                        "key": "bbb",
+                        "label": "BBB",
+                        "type": "textfield",
+                    },
                 ],
             }
         )
@@ -179,7 +208,11 @@ class FormTestCase(TestCase):
             configuration={
                 "display": "form",
                 "components": [
-                    {"key": "aaa", "label": "AAA"},
+                    {
+                        "key": "aaa",
+                        "label": "AAA",
+                        "type": "textfield",
+                    },
                 ],
             }
         )
@@ -192,8 +225,16 @@ class FormTestCase(TestCase):
         # check we fixed the ordering of form steps
         actual = list(form.iter_components(recursive=True))
         expected = [
-            {"key": "aaa", "label": "AAA"},
-            {"key": "bbb", "label": "BBB"},
+            {
+                "key": "aaa",
+                "label": "AAA",
+                "type": "textfield",
+            },
+            {
+                "key": "bbb",
+                "label": "BBB",
+                "type": "textfield",
+            },
         ]
 
         self.assertEqual(actual, expected)

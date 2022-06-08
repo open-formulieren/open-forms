@@ -4,6 +4,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
+from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ...utils import iter_components
 from ..printable import filter_printable
@@ -24,7 +25,7 @@ def _get_printable_data(submission):
     return printable_data
 
 
-class KitchensinkFormatterTestCase(BaseFormatterTestCase):
+class KitchensinkFormatterTestCase(VariablesTestMixin, BaseFormatterTestCase):
     def test_kitchensink_formio(self):
         self.run_kitchensink_test("kitchensink_data", "kitchensink_printable_text")
 

@@ -13,11 +13,12 @@ from openforms.forms.tests.factories import FormDefinitionFactory
 from ..models import SubmissionReport, TemporaryFileUpload
 from ..tasks import on_completion
 from .factories import SubmissionFactory, SubmissionFileAttachmentFactory
+from .mixins import VariablesTestMixin
 
 
 @temp_private_root()
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-class OnCompletionTests(TestCase):
+class OnCompletionTests(VariablesTestMixin, TestCase):
     def test_submission_form_without_appointment(self):
         submission = SubmissionFactory.from_components(
             completed=True,

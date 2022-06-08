@@ -9,6 +9,7 @@ from .submission_files import (
 )
 from .submission_report import SubmissionReport
 from .submission_step import SubmissionStep
+from .submission_value_variable import SubmissionValueVariable
 
 __all__ = [
     "Submission",
@@ -17,6 +18,7 @@ __all__ = [
     "SubmissionFileAttachment",
     "SubmissionFileAttachmentManager",
     "SubmissionFileAttachmentQuerySet",
+    "SubmissionValueVariable",
     "TemporaryFileUpload",
     "submission_file_upload_to",
     "temporary_file_upload_to",

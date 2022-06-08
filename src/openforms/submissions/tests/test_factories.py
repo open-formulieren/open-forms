@@ -4,9 +4,11 @@ from privates.test import temp_private_root
 
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from .mixins import VariablesTestMixin
+
 
 @temp_private_root()
-class SubmissionFactoryTests(TestCase):
+class SubmissionFactoryTests(VariablesTestMixin, TestCase):
     def test_from_components__simple(self):
         submission = SubmissionFactory.from_components(
             [
@@ -62,10 +64,7 @@ class SubmissionFactoryTests(TestCase):
         )
 
         actual = submission.get_merged_data()
-        expected = {
-            "foo": 1,
-            "bar": 2,
-        }
+        expected = {"foo": 1, "bar": 2}
         self.assertEqual(actual, expected)
 
     def test_from_components__kwargs(self):

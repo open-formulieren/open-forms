@@ -75,7 +75,7 @@ const DEFAULT_STATIC_VARIABLES = [
   {
     name: 'Now',
     key: 'now',
-    source: 'component',
+    source: 'static',
     dataType: 'datetime',
     initial_value: 'now',
   },

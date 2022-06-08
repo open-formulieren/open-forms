@@ -35,12 +35,3 @@ class FormVariableAdmin(admin.ModelAdmin):
         "is_sensitive_data",
         "initial_value",
     )
-
-    def has_delete_permission(self, request, obj=None):
-        can_delete = super().has_delete_permission(request, obj)
-
-        if can_delete and obj:
-            if obj.source != FormVariableSources.user_defined:
-                return False
-
-        return can_delete

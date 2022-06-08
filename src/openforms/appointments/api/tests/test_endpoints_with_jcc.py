@@ -9,7 +9,7 @@ from zeep.exceptions import Error as ZeepError
 
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.submissions.tests.mixins import SubmissionsMixin
+from openforms.submissions.tests.mixins import SubmissionsMixin, VariablesTestMixin
 from stuf.tests.factories import SoapServiceFactory
 
 from ...constants import AppointmentDetailsStatus
@@ -237,7 +237,7 @@ class TimesListTests(SubmissionsMixin, TestCase):
         self.assertEqual(response.status_code, 403)
 
 
-class CancelAppointmentTests(SubmissionsMixin, TestCase):
+class CancelAppointmentTests(VariablesTestMixin, SubmissionsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         appointments_config = AppointmentsConfig.get_solo()

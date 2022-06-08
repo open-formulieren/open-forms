@@ -16,6 +16,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
+from openforms.submissions.tests.mixins import VariablesTestMixin
 from stuf.stuf_zds.client import nsmap
 from stuf.stuf_zds.models import StufZDSConfig
 from stuf.tests.factories import StufServiceFactory
@@ -202,12 +203,14 @@ class StufZDSHelperTests(StufTestBase):
 @freeze_time("2020-12-22")
 @temp_private_root()
 @requests_mock.Mocker()
-class StufZDSPluginTests(StufTestBase):
+class StufZDSPluginTests(VariablesTestMixin, StufTestBase):
     """
     test the plugin function
     """
 
     def setUp(self):
+        super().setUp()
+
         self.service = StufServiceFactory.create()
         config = StufZDSConfig.get_solo()
         config.service = self.service
@@ -219,24 +222,28 @@ class StufZDSPluginTests(StufTestBase):
             [
                 {
                     "key": "voornaam",
+                    "type": "textfield",
                     "registration": {
                         "attribute": RegistrationAttribute.initiator_voornamen,
                     },
                 },
                 {
                     "key": "achternaam",
+                    "type": "textfield",
                     "registration": {
                         "attribute": RegistrationAttribute.initiator_geslachtsnaam,
                     },
                 },
                 {
                     "key": "tussenvoegsel",
+                    "type": "textfield",
                     "registration": {
                         "attribute": RegistrationAttribute.initiator_tussenvoegsel,
                     },
                 },
                 {
                     "key": "geboortedatum",
+                    "type": "date",
                     "registration": {
                         "attribute": RegistrationAttribute.initiator_geboortedatum,
                     },
@@ -417,12 +424,14 @@ class StufZDSPluginTests(StufTestBase):
             [
                 {
                     "key": "voornaam",
+                    "type": "textfield",
                     "registration": {
                         "attribute": RegistrationAttribute.initiator_voornamen,
                     },
                 },
                 {
                     "key": "achternaam",
+                    "type": "textfield",
                     "registration": {
                         "attribute": RegistrationAttribute.initiator_geslachtsnaam,
                     },

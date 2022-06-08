@@ -15,11 +15,12 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormPriceLogicFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
 from openforms.logging.models import TimelineLogProxy
 
 from .factories import SubmissionFactory, SubmissionStepFactory
-from .mixins import SubmissionsMixin
+from .mixins import SubmissionsMixin, VariablesTestMixin
 
 
 class SubmissionReadTests(SubmissionsMixin, APITestCase):
@@ -143,7 +144,9 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
             self.assertTrue(response.json()["isAuthenticated"])
 
 
-class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
+class SubmissionReadPaymentInformationTests(
+    VariablesTestMixin, SubmissionsMixin, APITestCase
+):
     def test_submission_payment_information_no_payment_required(self):
         submission = SubmissionFactory.create(
             completed=True,
@@ -202,6 +205,11 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
             form__formstep__optional=True,
             form__product__price=Decimal("123.45"),
             form__payment_backend="demo",
+        )
+        FormVariableFactory.create(
+            key="test-key",
+            form=submission.form,
+            form_definition=submission.form.formstep_set.get().form_definition,
         )
         SubmissionStepFactory.create(
             submission=submission,

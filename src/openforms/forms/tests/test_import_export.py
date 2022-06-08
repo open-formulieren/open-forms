@@ -111,7 +111,9 @@ class ImportExportTests(TestCase):
             payment_backend="ogone-legacy",
             payment_backend_options={"merchant_id": merchant.id},
         )
-        form_definition = FormDefinitionFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={"components": [{"key": "test-key", "type": "textfield"}]}
+        )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
         form_logic = FormLogicFactory.create(form=form)
 
@@ -200,7 +202,9 @@ class ImportExportTests(TestCase):
     def test_import_form_slug_already_exists(self):
         product = ProductFactory.create()
         form = FormFactory.create(product=product, slug="my-slug")
-        form_definition = FormDefinitionFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={"components": [{"key": "test-key", "type": "textfield"}]}
+        )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
         form_logic = FormLogicFactory.create(form=form)
 
@@ -222,7 +226,9 @@ class ImportExportTests(TestCase):
     def test_import_form_definition_slug_already_exists_configuration_duplicate(self):
         product = ProductFactory.create()
         form = FormFactory.create(product=product)
-        form_definition = FormDefinitionFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={"components": [{"key": "test-key", "type": "textfield"}]}
+        )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
         form_logic = FormLogicFactory.create(form=form)
 
@@ -282,7 +288,9 @@ class ImportExportTests(TestCase):
     def test_import_form_definition_slug_already_exists_configuration_different(self):
         product = ProductFactory.create()
         form = FormFactory.create(product=product)
-        form_definition = FormDefinitionFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={"components": [{"key": "test-key", "type": "textfield"}]}
+        )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
         form_logic = FormLogicFactory.create(form=form)
 

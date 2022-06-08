@@ -28,10 +28,11 @@ from .factories import (
     SubmissionStepFactory,
     TemporaryFileUploadFactory,
 )
+from .mixins import VariablesTestMixin
 
 
 @temp_private_root()
-class SubmissionAttachmentTest(TestCase):
+class SubmissionAttachmentTest(VariablesTestMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_image_path = os.path.join(

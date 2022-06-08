@@ -58,16 +58,18 @@ class TimelineLogProxyTests(TestCase):
     def test_get_formatted_fields(self):
         submission = SubmissionFactory.from_components(
             components_list=[
-                {"key": "email", "label": "Email"},
+                {"key": "email", "type": "textfield", "label": "Email"},
                 {
                     "key": "theBSN",
+                    "type": "textfield",
                     "label": "The BSN",
                     "prefill": {"attribute": "bsn"},
                     "components": [
                         {
                             "key": "theFirstName",
+                            "type": "textfield",
                             "label": "The First Name",
-                            "prefill": {"attribute": "voornamen"},
+                            "prefill": {"plugin": "myplugin", "attribute": "voornamen"},
                         }
                     ],
                 },
@@ -91,16 +93,22 @@ class TimelineLogProxyTests(TestCase):
     def test_format_fields(self):
         submission = SubmissionFactory.from_components(
             components_list=[
-                {"key": "email", "label": "Email"},
+                {
+                    "key": "email",
+                    "label": "Email",
+                    "type": "textfield",
+                },
                 {
                     "key": "theBSN",
+                    "type": "textfield",
                     "label": "The BSN",
                     "prefill": {"attribute": "bsn"},
                     "components": [
                         {
                             "key": "theFirstName",
+                            "type": "textfield",
                             "label": "The First Name",
-                            "prefill": {"attribute": "voornamen"},
+                            "prefill": {"plugin": "myplugin", "attribute": "voornamen"},
                         }
                     ],
                 },

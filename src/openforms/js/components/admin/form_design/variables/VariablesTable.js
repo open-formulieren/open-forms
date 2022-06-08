@@ -52,7 +52,7 @@ const VariableRow = ({index, variable}) => {
       <td>
         <SensitiveData isSensitive={variable.isSensitiveData} />
       </td>
-      <td>{variable.initialValue}</td>
+      <td>{JSON.stringify(variable.initialValue)}</td>
       <td>{variable.dataFormat}</td>
     </tr>
   );

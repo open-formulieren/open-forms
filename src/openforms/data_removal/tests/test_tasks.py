@@ -5,23 +5,29 @@ from django.test import TestCase
 from django.utils import timezone
 
 from openforms.config.models import GlobalConfiguration
+from openforms.forms.models import FormStep
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
-from openforms.submissions.constants import RegistrationStatuses
-from openforms.submissions.models import Submission
+from openforms.submissions.constants import (
+    RegistrationStatuses,
+    SubmissionValueVariableSources,
+)
+from openforms.submissions.models import Submission, SubmissionValueVariable
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
+from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ..constants import RemovalMethods
 from ..tasks import delete_submissions, make_sensitive_data_anonymous
 
 
-class DeleteSubmissionsTask(TestCase):
+class DeleteSubmissionsTask(VariablesTestMixin, TestCase):
     def test_successful_submissions_correctly_deleted(self):
         config = GlobalConfiguration.get_solo()
 
@@ -347,22 +353,38 @@ class DeleteSubmissionsTask(TestCase):
             submission_to_be_deleted.refresh_from_db()
 
 
-class MakeSensitiveDataAnonymousTask(TestCase):
+class MakeSensitiveDataAnonymousTask(VariablesTestMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.form_definition = FormDefinitionFactory.create(
             configuration={
                 "components": [
-                    {"key": "textFieldSensitive", "isSensitiveData": True},
-                    {"key": "textFieldNotSensitive", "isSensitiveData": False},
+                    {
+                        "key": "textFieldSensitive",
+                        "type": "textfield",
+                        "isSensitiveData": True,
+                    },
+                    {
+                        "key": "textFieldNotSensitive",
+                        "type": "textfield",
+                        "isSensitiveData": False,
+                    },
                 ],
             }
         )
         cls.form_definition_2 = FormDefinitionFactory.create(
             configuration={
                 "components": [
-                    {"key": "textFieldSensitive2", "isSensitiveData": True},
-                    {"key": "textFieldNotSensitive2", "isSensitiveData": False},
+                    {
+                        "key": "textFieldSensitive2",
+                        "type": "textfield",
+                        "isSensitiveData": True,
+                    },
+                    {
+                        "key": "textFieldNotSensitive2",
+                        "type": "textfield",
+                        "isSensitiveData": False,
+                    },
                 ],
             }
         )
@@ -377,6 +399,12 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         cls.step2 = FormStepFactory.create(
             form=cls.form, form_definition=cls.form_definition_2
         )
+
+    def _add_form_steps(self, form):
+        if not form.formstep_set.exists():
+            # Creates also the form variables
+            FormStepFactory.create(form=form, form_definition=self.form_definition)
+            FormStepFactory.create(form=form, form_definition=self.form_definition_2)
 
     def test_certain_successful_submissions_have_sensitive_data_removed(self):
         config = GlobalConfiguration.get_solo()
@@ -408,6 +436,8 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         delete_submission.save()
         submission_to_be_anonymous.save()
 
+        self._add_form_steps(delete_submission.form)
+
         for submission in [
             not_successful,
             too_recent,
@@ -419,7 +449,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
                 },
-                form_step=self.step1,
+                form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
             SubmissionStepFactory.create(
@@ -427,7 +457,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
                 },
-                form_step=self.step2,
+                form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
             )
 
@@ -441,45 +471,63 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         for submission in [not_successful, too_recent, delete_submission]:
             with self.subTest(submission=submission):
                 self.assertEqual(
-                    submission.submissionstep_set.first().data["textFieldSensitive"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldSensitive", submission=submission
+                    ).value,
                     "This is sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.first().data["textFieldNotSensitive"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldNotSensitive", submission=submission
+                    ).value,
                     "This is not sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.last().data["textFieldSensitive2"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldSensitive2", submission=submission
+                    ).value,
                     "This is also sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.last().data["textFieldNotSensitive2"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldNotSensitive2", submission=submission
+                    ).value,
                     "This is also not sensitive",
                 )
 
         with self.subTest(submission=submission_to_be_anonymous):
+            sensitive_variable1 = SubmissionValueVariable.objects.get(
+                key="textFieldSensitive", submission=submission_to_be_anonymous
+            )
             self.assertEqual(
-                submission_to_be_anonymous.submissionstep_set.first().data[
-                    "textFieldSensitive"
-                ],
+                sensitive_variable1.value,
                 "",
             )
             self.assertEqual(
-                submission_to_be_anonymous.submissionstep_set.first().data[
-                    "textFieldNotSensitive"
-                ],
+                sensitive_variable1.source,
+                SubmissionValueVariableSources.sensitive_data_cleaner,
+            )
+            self.assertEqual(
+                SubmissionValueVariable.objects.get(
+                    key="textFieldNotSensitive", submission=submission_to_be_anonymous
+                ).value,
                 "This is not sensitive",
             )
+            sensitive_variable2 = SubmissionValueVariable.objects.get(
+                key="textFieldSensitive2", submission=submission_to_be_anonymous
+            )
             self.assertEqual(
-                submission_to_be_anonymous.submissionstep_set.last().data[
-                    "textFieldSensitive2"
-                ],
+                sensitive_variable2.value,
                 "",
             )
             self.assertEqual(
-                submission_to_be_anonymous.submissionstep_set.last().data[
-                    "textFieldNotSensitive2"
-                ],
+                sensitive_variable2.source,
+                SubmissionValueVariableSources.sensitive_data_cleaner,
+            )
+            self.assertEqual(
+                SubmissionValueVariable.objects.get(
+                    key="textFieldNotSensitive2", submission=submission_to_be_anonymous
+                ).value,
                 "This is also not sensitive",
             )
             self.assertTrue(submission_to_be_anonymous._is_cleaned)
@@ -527,6 +575,9 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         delete_submission.save()
         submission_to_be_anonymous.save()
 
+        self._add_form_steps(override_form)
+        self._add_form_steps(delete_submission.form)
+
         for submission in [
             not_successful,
             too_recent,
@@ -539,7 +590,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
                 },
-                form_step=self.step1,
+                form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
             SubmissionStepFactory.create(
@@ -547,7 +598,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
                 },
-                form_step=self.step2,
+                form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
             )
 
@@ -566,45 +617,63 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         ]:
             with self.subTest(submission=submission):
                 self.assertEqual(
-                    submission.submissionstep_set.first().data["textFieldSensitive"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldSensitive", submission=submission
+                    ).value,
                     "This is sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.first().data["textFieldNotSensitive"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldNotSensitive", submission=submission
+                    ).value,
                     "This is not sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.last().data["textFieldSensitive2"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldSensitive2", submission=submission
+                    ).value,
                     "This is also sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.last().data["textFieldNotSensitive2"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldNotSensitive2", submission=submission
+                    ).value,
                     "This is also not sensitive",
                 )
 
         with self.subTest(submission=submission_to_be_anonymous):
+            sensitive_variable1 = SubmissionValueVariable.objects.get(
+                key="textFieldSensitive", submission=submission_to_be_anonymous
+            )
             self.assertEqual(
-                submission_to_be_anonymous.submissionstep_set.first().data[
-                    "textFieldSensitive"
-                ],
+                sensitive_variable1.value,
                 "",
             )
             self.assertEqual(
-                submission_to_be_anonymous.submissionstep_set.first().data[
-                    "textFieldNotSensitive"
-                ],
+                sensitive_variable1.source,
+                SubmissionValueVariableSources.sensitive_data_cleaner,
+            )
+            self.assertEqual(
+                SubmissionValueVariable.objects.get(
+                    key="textFieldNotSensitive", submission=submission_to_be_anonymous
+                ).value,
                 "This is not sensitive",
             )
+            sensitive_variable2 = SubmissionValueVariable.objects.get(
+                key="textFieldSensitive2", submission=submission_to_be_anonymous
+            )
             self.assertEqual(
-                submission_to_be_anonymous.submissionstep_set.last().data[
-                    "textFieldSensitive2"
-                ],
+                sensitive_variable2.value,
                 "",
             )
             self.assertEqual(
-                submission_to_be_anonymous.submissionstep_set.last().data[
-                    "textFieldNotSensitive2"
-                ],
+                sensitive_variable2.source,
+                SubmissionValueVariableSources.sensitive_data_cleaner,
+            )
+            self.assertEqual(
+                SubmissionValueVariable.objects.get(
+                    key="textFieldNotSensitive2", submission=submission_to_be_anonymous
+                ).value,
                 "This is also not sensitive",
             )
             self.assertTrue(submission_to_be_anonymous._is_cleaned)
@@ -658,6 +727,9 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         in_progress_delete_submission.save()
         in_progress_submission_to_be_anonymous.save()
 
+        self._add_form_steps(pending_delete_submission.form)
+        self._add_form_steps(in_progress_delete_submission.form)
+
         for submission in [
             not_successful,
             pending_too_recent,
@@ -672,7 +744,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
                 },
-                form_step=self.step1,
+                form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
             SubmissionStepFactory.create(
@@ -680,7 +752,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
                 },
-                form_step=self.step2,
+                form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
             )
 
@@ -703,19 +775,27 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         ]:
             with self.subTest(submission=submission):
                 self.assertEqual(
-                    submission.submissionstep_set.first().data["textFieldSensitive"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldSensitive", submission=submission
+                    ).value,
                     "This is sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.first().data["textFieldNotSensitive"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldNotSensitive", submission=submission
+                    ).value,
                     "This is not sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.last().data["textFieldSensitive2"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldSensitive2", submission=submission
+                    ).value,
                     "This is also sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.last().data["textFieldNotSensitive2"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldNotSensitive2", submission=submission
+                    ).value,
                     "This is also not sensitive",
                 )
 
@@ -724,20 +804,38 @@ class MakeSensitiveDataAnonymousTask(TestCase):
             pending_submission_to_be_anonymous,
         ]:
             with self.subTest(submission=submission):
+                sensitive_variable1 = SubmissionValueVariable.objects.get(
+                    key="textFieldSensitive", submission=submission
+                )
                 self.assertEqual(
-                    submission.submissionstep_set.first().data["textFieldSensitive"],
+                    sensitive_variable1.value,
                     "",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.first().data["textFieldNotSensitive"],
+                    sensitive_variable1.source,
+                    SubmissionValueVariableSources.sensitive_data_cleaner,
+                )
+                self.assertEqual(
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldNotSensitive", submission=submission
+                    ).value,
                     "This is not sensitive",
                 )
+                sensitive_variable2 = SubmissionValueVariable.objects.get(
+                    key="textFieldSensitive2", submission=submission
+                )
                 self.assertEqual(
-                    submission.submissionstep_set.last().data["textFieldSensitive2"],
+                    sensitive_variable2.value,
                     "",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.last().data["textFieldNotSensitive2"],
+                    sensitive_variable2.source,
+                    SubmissionValueVariableSources.sensitive_data_cleaner,
+                )
+                self.assertEqual(
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldNotSensitive2", submission=submission
+                    ).value,
                     "This is also not sensitive",
                 )
                 self.assertTrue(submission._is_cleaned)
@@ -806,6 +904,10 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         in_progress_delete_submission.save()
         in_progress_submission_to_be_anonymous.save()
 
+        self._add_form_steps(override_form)
+        self._add_form_steps(pending_delete_submission.form)
+        self._add_form_steps(in_progress_delete_submission.form)
+
         for submission in [
             not_successful,
             pending_too_recent,
@@ -822,7 +924,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
                 },
-                form_step=self.step1,
+                form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
             SubmissionStepFactory.create(
@@ -830,7 +932,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
                 },
-                form_step=self.step2,
+                form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
             )
 
@@ -857,19 +959,27 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         ]:
             with self.subTest(submission=submission):
                 self.assertEqual(
-                    submission.submissionstep_set.first().data["textFieldSensitive"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldSensitive", submission=submission
+                    ).value,
                     "This is sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.first().data["textFieldNotSensitive"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldNotSensitive", submission=submission
+                    ).value,
                     "This is not sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.last().data["textFieldSensitive2"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldSensitive2", submission=submission
+                    ).value,
                     "This is also sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.last().data["textFieldNotSensitive2"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldNotSensitive2", submission=submission
+                    ).value,
                     "This is also not sensitive",
                 )
 
@@ -878,20 +988,38 @@ class MakeSensitiveDataAnonymousTask(TestCase):
             pending_submission_to_be_anonymous,
         ]:
             with self.subTest(submission=submission):
+                sensitive_variable1 = SubmissionValueVariable.objects.get(
+                    key="textFieldSensitive", submission=submission
+                )
                 self.assertEqual(
-                    submission.submissionstep_set.first().data["textFieldSensitive"],
+                    sensitive_variable1.value,
                     "",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.first().data["textFieldNotSensitive"],
+                    sensitive_variable1.source,
+                    SubmissionValueVariableSources.sensitive_data_cleaner,
+                )
+                self.assertEqual(
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldNotSensitive", submission=submission
+                    ).value,
                     "This is not sensitive",
                 )
+                sensitive_variable2 = SubmissionValueVariable.objects.get(
+                    key="textFieldSensitive2", submission=submission
+                )
                 self.assertEqual(
-                    submission.submissionstep_set.last().data["textFieldSensitive2"],
+                    sensitive_variable2.value,
                     "",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.last().data["textFieldNotSensitive2"],
+                    sensitive_variable2.source,
+                    SubmissionValueVariableSources.sensitive_data_cleaner,
+                )
+                self.assertEqual(
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldNotSensitive2", submission=submission
+                    ).value,
                     "This is also not sensitive",
                 )
                 self.assertTrue(submission._is_cleaned)
@@ -926,6 +1054,8 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         delete_submission.save()
         submission_to_be_anonymous.save()
 
+        self._add_form_steps(delete_submission.form)
+
         for submission in [
             not_failed,
             too_recent,
@@ -937,7 +1067,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
                 },
-                form_step=self.step1,
+                form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
             SubmissionStepFactory.create(
@@ -945,7 +1075,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
                 },
-                form_step=self.step2,
+                form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
             )
 
@@ -959,45 +1089,63 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         for submission in [not_failed, too_recent, delete_submission]:
             with self.subTest(submission=submission):
                 self.assertEqual(
-                    submission.submissionstep_set.first().data["textFieldSensitive"],
+                    submission.submissionvaluevariable_set.get(
+                        key="textFieldSensitive"
+                    ).value,
                     "This is sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.first().data["textFieldNotSensitive"],
+                    submission.submissionvaluevariable_set.get(
+                        key="textFieldNotSensitive"
+                    ).value,
                     "This is not sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.last().data["textFieldSensitive2"],
+                    submission.submissionvaluevariable_set.get(
+                        key="textFieldSensitive2"
+                    ).value,
                     "This is also sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.last().data["textFieldNotSensitive2"],
+                    submission.submissionvaluevariable_set.get(
+                        key="textFieldNotSensitive2"
+                    ).value,
                     "This is also not sensitive",
                 )
 
         with self.subTest(submission=submission_to_be_anonymous):
+            sensitive_variable1 = SubmissionValueVariable.objects.get(
+                key="textFieldSensitive", submission=submission_to_be_anonymous
+            )
             self.assertEqual(
-                submission_to_be_anonymous.submissionstep_set.first().data[
-                    "textFieldSensitive"
-                ],
+                sensitive_variable1.value,
                 "",
             )
             self.assertEqual(
-                submission_to_be_anonymous.submissionstep_set.first().data[
-                    "textFieldNotSensitive"
-                ],
+                sensitive_variable1.source,
+                SubmissionValueVariableSources.sensitive_data_cleaner,
+            )
+            self.assertEqual(
+                SubmissionValueVariable.objects.get(
+                    key="textFieldNotSensitive", submission=submission_to_be_anonymous
+                ).value,
                 "This is not sensitive",
             )
+            sensitive_variable2 = SubmissionValueVariable.objects.get(
+                key="textFieldSensitive2", submission=submission_to_be_anonymous
+            )
             self.assertEqual(
-                submission_to_be_anonymous.submissionstep_set.last().data[
-                    "textFieldSensitive2"
-                ],
+                sensitive_variable2.value,
                 "",
             )
             self.assertEqual(
-                submission_to_be_anonymous.submissionstep_set.last().data[
-                    "textFieldNotSensitive2"
-                ],
+                sensitive_variable2.source,
+                SubmissionValueVariableSources.sensitive_data_cleaner,
+            )
+            self.assertEqual(
+                SubmissionValueVariable.objects.get(
+                    key="textFieldNotSensitive2", submission=submission_to_be_anonymous
+                ).value,
                 "This is also not sensitive",
             )
             self.assertTrue(submission_to_be_anonymous._is_cleaned)
@@ -1045,6 +1193,9 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         delete_submission.save()
         submission_to_be_anonymous.save()
 
+        self._add_form_steps(override_form)
+        self._add_form_steps(delete_submission.form)
+
         for submission in [
             not_failed,
             too_recent,
@@ -1057,7 +1208,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive": "This is sensitive",
                     "textFieldNotSensitive": "This is not sensitive",
                 },
-                form_step=self.step1,
+                form_step=submission.form.formstep_set.all()[0],
                 submission=submission,
             )
             SubmissionStepFactory.create(
@@ -1065,7 +1216,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
                     "textFieldSensitive2": "This is also sensitive",
                     "textFieldNotSensitive2": "This is also not sensitive",
                 },
-                form_step=self.step2,
+                form_step=submission.form.formstep_set.all()[1],
                 submission=submission,
             )
 
@@ -1084,45 +1235,63 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         ]:
             with self.subTest(submission=submission):
                 self.assertEqual(
-                    submission.submissionstep_set.first().data["textFieldSensitive"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldSensitive", submission=submission
+                    ).value,
                     "This is sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.first().data["textFieldNotSensitive"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldNotSensitive", submission=submission
+                    ).value,
                     "This is not sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.last().data["textFieldSensitive2"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldSensitive2", submission=submission
+                    ).value,
                     "This is also sensitive",
                 )
                 self.assertEqual(
-                    submission.submissionstep_set.last().data["textFieldNotSensitive2"],
+                    SubmissionValueVariable.objects.get(
+                        key="textFieldNotSensitive2", submission=submission
+                    ).value,
                     "This is also not sensitive",
                 )
 
         with self.subTest(submission=submission_to_be_anonymous):
+            sensitive_variable1 = SubmissionValueVariable.objects.get(
+                key="textFieldSensitive", submission=submission_to_be_anonymous
+            )
             self.assertEqual(
-                submission_to_be_anonymous.submissionstep_set.first().data[
-                    "textFieldSensitive"
-                ],
+                sensitive_variable1.value,
                 "",
             )
             self.assertEqual(
-                submission_to_be_anonymous.submissionstep_set.first().data[
-                    "textFieldNotSensitive"
-                ],
+                sensitive_variable1.source,
+                SubmissionValueVariableSources.sensitive_data_cleaner,
+            )
+            self.assertEqual(
+                SubmissionValueVariable.objects.get(
+                    key="textFieldNotSensitive", submission=submission_to_be_anonymous
+                ).value,
                 "This is not sensitive",
             )
+            sensitive_variable2 = SubmissionValueVariable.objects.get(
+                key="textFieldSensitive2", submission=submission_to_be_anonymous
+            )
             self.assertEqual(
-                submission_to_be_anonymous.submissionstep_set.last().data[
-                    "textFieldSensitive2"
-                ],
+                sensitive_variable2.value,
                 "",
             )
             self.assertEqual(
-                submission_to_be_anonymous.submissionstep_set.last().data[
-                    "textFieldNotSensitive2"
-                ],
+                sensitive_variable2.source,
+                SubmissionValueVariableSources.sensitive_data_cleaner,
+            )
+            self.assertEqual(
+                SubmissionValueVariable.objects.get(
+                    key="textFieldNotSensitive2", submission=submission_to_be_anonymous
+                ).value,
                 "This is also not sensitive",
             )
             self.assertTrue(submission_to_be_anonymous._is_cleaned)

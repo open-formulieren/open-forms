@@ -6,11 +6,8 @@ from io import StringIO
 from django.core.management import call_command
 from django.test import TestCase
 
-from openforms.submissions.rendering import Renderer, RenderModes
-from openforms.submissions.tests.factories import (
-    SubmissionFactory,
-    SubmissionStepFactory,
-)
+from ..factories import SubmissionFactory
+from ..mixins import VariablesTestMixin
 
 FORMIO_CONFIGURATION_COMPONENTS = [
     # visible component, leaf node
@@ -36,6 +33,7 @@ FORMIO_CONFIGURATION_COMPONENTS = [
     # container: visible fieldset with visible children
     {
         "type": "fieldset",
+        "key": "fieldsetVisibleChildren",
         "label": "A container with visible children",
         "hidden": False,
         "components": [
@@ -65,29 +63,26 @@ FORMIO_CONFIGURATION_COMPONENTS = [
 ]
 
 
-class CLIRendererIntegrationTests(TestCase):
+class CLIRendererIntegrationTests(VariablesTestMixin, TestCase):
     maxDiff = None
 
     def test_render_submission_in_cli_no_html(self):
-        submission = SubmissionFactory.create(
-            form__name="public name",
-            form__internal_name="internal name",
-            form__generate_minimal_setup=True,
-            form__formstep__form_definition__name="Stap 1",
-            form__formstep__form_definition__configuration={
-                "components": FORMIO_CONFIGURATION_COMPONENTS
-            },
-        )
-        SubmissionStepFactory.create(
-            submission=submission,
-            form_step=submission.form.formstep_set.get(),
-            data={
+        submission = SubmissionFactory.from_components(
+            components_list=FORMIO_CONFIGURATION_COMPONENTS,
+            submitted_data={
                 "input1": "first input",
                 "input2": "second input",
                 "amount": 1234.56,
                 "input4": "fourth input",
             },
+            form__name="public name",
+            form__internal_name="internal name",
         )
+
+        form_definition = submission.steps[0].form_step.form_definition
+        form_definition.name = "Stap 1"
+        form_definition.save()
+
         stdout, stderr = StringIO(), StringIO()
 
         call_command(
@@ -117,25 +112,22 @@ Submission {submission.id} - public name
         self.assertEqual(output, expected)
 
     def test_render_submission_in_cli_with_html(self):
-        submission = SubmissionFactory.create(
-            form__name="public name",
-            form__internal_name="internal name",
-            form__generate_minimal_setup=True,
-            form__formstep__form_definition__name="Stap 1",
-            form__formstep__form_definition__configuration={
-                "components": FORMIO_CONFIGURATION_COMPONENTS
-            },
-        )
-        SubmissionStepFactory.create(
-            submission=submission,
-            form_step=submission.form.formstep_set.get(),
-            data={
+        submission = SubmissionFactory.from_components(
+            components_list=FORMIO_CONFIGURATION_COMPONENTS,
+            submitted_data={
                 "input1": "first input",
                 "input2": "second input",
                 "amount": 1234.56,
                 "input4": "fourth input",
             },
+            form__name="public name",
+            form__internal_name="internal name",
         )
+
+        form_definition = submission.steps[0].form_step.form_definition
+        form_definition.name = "Stap 1"
+        form_definition.save()
+
         stdout, stderr = StringIO(), StringIO()
 
         call_command(

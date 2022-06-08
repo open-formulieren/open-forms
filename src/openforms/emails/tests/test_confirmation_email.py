@@ -30,6 +30,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
+from openforms.submissions.tests.mixins import VariablesTestMixin
 from openforms.submissions.utils import send_confirmation_email
 from openforms.tests.utils import NOOP_CACHES
 from openforms.utils.tests.html_assert import HTMLAssertMixin, strip_all_attributes
@@ -110,7 +111,7 @@ class FixedCancelAndChangeLinkPlugin(TestPlugin):
 
 
 @override_settings(CACHES=NOOP_CACHES)
-class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
+class ConfirmationEmailTests(VariablesTestMixin, HTMLAssertMixin, TestCase):
     def test_validate_content_syntax(self):
         email = ConfirmationEmailTemplate(subject="foo", content="{{{}}}")
 
@@ -174,15 +175,14 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         self.assertIsNotNone(submission.pk)
 
     def test_nested_components(self):
-        form_step = FormStepFactory.create(
-            form_definition__configuration=NESTED_COMPONENT_CONF
+        submission = SubmissionFactory.from_components(
+            components_list=NESTED_COMPONENT_CONF["components"],
+            submitted_data={
+                "name": "Jane",
+                "lastName": "Doe",
+                "email": "test@example.com",
+            },
         )
-        submission_step = SubmissionStepFactory.create(
-            data={"name": "Jane", "lastName": "Doe", "email": "test@example.com"},
-            form_step=form_step,
-            submission__form=form_step.form,
-        )
-        submission = submission_step.submission
         email = ConfirmationEmailTemplate(content="{% summary %}")
         context = get_confirmation_email_context_data(submission)
         rendered_content = render_confirmation_email_template(email.content, context)
@@ -203,9 +203,9 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                 "showInEmail": True,
             }
         )
-        form_step = FormStepFactory.create(form_definition__configuration=conf)
-        submission_step = SubmissionStepFactory.create(
-            data={
+        submission = SubmissionFactory.from_components(
+            components_list=conf["components"],
+            submitted_data={
                 "name": "Jane",
                 "lastName": "Doe",
                 "email": "test@example.com",
@@ -228,10 +228,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                     }
                 ],
             },
-            form_step=form_step,
-            submission__form=form_step.form,
         )
-        submission = submission_step.submission
         context = get_confirmation_email_context_data(submission)
         rendered_content = render_confirmation_email_template("{% summary %}", context)
 
@@ -431,7 +428,9 @@ class TestAppointmentPlugin(BasePlugin):
 
 
 @override_settings(DEFAULT_FROM_EMAIL="foo@sender.com")
-class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
+class ConfirmationEmailRenderingIntegrationTest(
+    VariablesTestMixin, HTMLAssertMixin, TestCase
+):
     template = """
     <p>Geachte heer/mevrouw,</p>
 

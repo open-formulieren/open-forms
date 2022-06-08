@@ -1,12 +1,20 @@
+from unittest.mock import patch
+
 from django.test import TestCase
 
 from rest_framework.reverse import reverse
 
+from openforms.config.models import GlobalConfiguration
+from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ...rendering import Renderer, RenderModes
 from ...rendering.nodes import FormNode, SubmissionStepNode
-from ..factories import SubmissionFactory, SubmissionStepFactory
+from ..factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+    SubmissionValueVariableFactory,
+)
 from ..form_logic.factories import FormLogicFactory
 
 
@@ -90,6 +98,15 @@ class FormNodeTests(TestCase):
         # set up data that marks step as not-applicable
         self.sstep1.data = {"input1": "disabled-step-2"}
         self.sstep1.save()
+
+        form_var1 = FormVariable.objects.get(key="input1")
+        SubmissionValueVariableFactory.create(
+            submission=self.submission,
+            key=form_var1.key,
+            value="disabled-step-2",
+            form_variable=form_var1,
+        )
+
         renderer = Renderer(
             submission=self.submission, mode=RenderModes.pdf, as_html=True
         )
@@ -104,10 +121,13 @@ class FormNodeTests(TestCase):
         enabled_step_node = nodes[1]
         self.assertEqual(enabled_step_node.step, self.sstep1)
 
-    def test_performance_num_queries(self):
+    @patch("openforms.formio.service.GlobalConfiguration.get_solo")
+    def test_performance_num_queries(self, m_conf):
         """
         Assert that the number of queries stays low while rendering a submission.
         """
+        m_conf.return_value = GlobalConfiguration(enable_form_variables=False)
+
         renderer = Renderer(
             submission=self.submission, mode=RenderModes.pdf, as_html=True
         )

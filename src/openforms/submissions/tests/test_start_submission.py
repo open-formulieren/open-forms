@@ -10,6 +10,8 @@ Functional requirements are:
 * data of different submissions should not affect each other
 * "login" makes no sense, as we are usually dealing with anonymous users
 """
+from unittest.mock import patch
+
 from django.test import override_settings
 
 from rest_framework import status
@@ -17,10 +19,16 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.config.models import GlobalConfiguration
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormStepFactory,
+    FormVariableFactory,
+)
 
-from ..constants import SUBMISSIONS_SESSION_KEY
-from ..models import Submission
+from ..constants import SUBMISSIONS_SESSION_KEY, SubmissionValueVariableSources
+from ..models import Submission, SubmissionValueVariable
+from .mixins import VariablesTestMixin
 
 
 @override_settings(
@@ -28,7 +36,7 @@ from ..models import Submission
     ALLOWED_HOSTS=["*"],
     CORS_ALLOWED_ORIGINS=["http://testserver.com"],
 )
-class SubmissionStartTests(APITestCase):
+class SubmissionStartTests(VariablesTestMixin, APITestCase):
     endpoint = reverse_lazy("api:submission-list")
 
     @classmethod
@@ -38,6 +46,12 @@ class SubmissionStartTests(APITestCase):
         # ensure there is a form definition
         cls.form = FormFactory.create()
         cls.step = FormStepFactory.create(form=cls.form)
+        cls.form_variable = FormVariableFactory.create(
+            form=cls.form,
+            form_definition=cls.step.form_definition,
+            prefill_plugin="demo",
+            prefill_attribute="random_string",
+        )
         cls.form_url = reverse(
             "api:form-detail", kwargs={"uuid_or_slug": cls.form.uuid}
         )
@@ -167,3 +181,27 @@ class SubmissionStartTests(APITestCase):
         response = self.client.post(self.endpoint, body)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_start_submission_with_prefill(self):
+        body = {
+            "form": f"http://testserver.com{self.form_url}",
+            "formUrl": "http://testserver.com/my-form",
+        }
+
+        response = self.client.post(self.endpoint, body, HTTP_HOST="testserver.com")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        submission = Submission.objects.get()
+        submission_variables = SubmissionValueVariable.objects.filter(
+            submission=submission
+        )
+
+        self.assertEqual(1, submission_variables.count())
+
+        prefilled_variable = submission_variables.get()
+
+        self.assertTrue(prefilled_variable.value != "")
+        self.assertEqual(
+            SubmissionValueVariableSources.prefill, prefilled_variable.source
+        )

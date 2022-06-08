@@ -3,13 +3,14 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ..factories import SubmissionFactory, SubmissionStepFactory
 from ..mixins import SubmissionsMixin
 from .factories import FormLogicFactory
 
 
-class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
+class CheckLogicEndpointTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
     def test_update_not_applicable_steps(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(

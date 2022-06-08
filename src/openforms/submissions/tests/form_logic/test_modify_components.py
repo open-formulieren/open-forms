@@ -10,11 +10,11 @@ from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory
-from ..mixins import SubmissionsMixin
+from ..mixins import SubmissionsMixin, VariablesTestMixin
 from .factories import FormLogicFactory
 
 
-class ComponentModificationTests(TestCase):
+class ComponentModificationTests(VariablesTestMixin, TestCase):
     def test_change_component_to_hidden(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(
@@ -768,7 +768,7 @@ class ComponentModificationTests(TestCase):
         )
 
 
-class StepModificationTests(TestCase):
+class StepModificationTests(VariablesTestMixin, TestCase):
     def test_next_button_disabled(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(
@@ -1022,7 +1022,7 @@ class StepModificationTests(TestCase):
         )
         submission = SubmissionFactory.create(form=form)
         submission_step = SubmissionStepFactory.create(
-            submission=submission, form_step=step, data=None
+            submission=submission, form_step=step, data={}
         )
         dirty_data = {
             "name": "john",
@@ -1201,7 +1201,7 @@ class StepModificationTests(TestCase):
         )
 
 
-class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
+class CheckLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestCase):
     def test_response_contains_submission(self):
         form = FormFactory.create()
         form_step1 = FormStepFactory.create(
@@ -1425,7 +1425,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             )
 
 
-class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
+class EvaluateLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestCase):
     def test_evaluate_logic_with_default_values(self):
         form = FormFactory.create(
             generate_minimal_setup=True,

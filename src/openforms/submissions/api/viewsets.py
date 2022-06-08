@@ -1,5 +1,4 @@
 import logging
-from re import sub
 
 from django.db import transaction
 from django.utils import timezone
@@ -16,10 +15,12 @@ from rest_framework.reverse import reverse
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer
+from openforms.config.models import GlobalConfiguration
 from openforms.logging import logevent
+from openforms.prefill import prefill_variables
+from openforms.utils.api.throttle_classes import PollingRateThrottle
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
-from ...utils.api.throttle_classes import PollingRateThrottle
 from ..attachments import attach_uploads_to_submission_step
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionStep
@@ -111,6 +112,10 @@ class SubmissionViewSet(
         add_submmission_to_session(serializer.instance, self.request.session)
 
         logevent.submission_start(serializer.instance)
+
+        conf = GlobalConfiguration.get_solo()
+        if conf.enable_form_variables:
+            prefill_variables(serializer.instance)
 
     @extend_schema(
         summary=_("Retrieve co-sign state"),
@@ -421,6 +426,7 @@ class SubmissionStepViewSet(
     )
     def logic_check(self, request, *args, **kwargs):
         submission_step = self.get_object()
+        submission = submission_step.submission
 
         form_data_serializer = FormDataSerializer(data=request.data)
         form_data_serializer.is_valid(raise_exception=True)
@@ -430,10 +436,11 @@ class SubmissionStepViewSet(
             # TODO: probably we should use a recursive merge here, in the event that
             # keys like ``foo.bar`` and ``foo.baz`` are used which construct a foo object
             # with keys bar and baz.
-            merged_data = {**submission_step.submission.data, **data}
+            merged_data = {**submission.data, **data}
             submission_step.data = data
+
             new_configuration = evaluate_form_logic(
-                submission_step.submission,
+                submission,
                 submission_step,
                 merged_data,
                 dirty=True,
@@ -442,9 +449,7 @@ class SubmissionStepViewSet(
             submission_step.form_step.form_definition.configuration = new_configuration
 
         submission_state_logic_serializer = SubmissionStateLogicSerializer(
-            instance=SubmissionStateLogic(
-                submission=submission_step.submission, step=submission_step
-            ),
+            instance=SubmissionStateLogic(submission=submission, step=submission_step),
             context={"request": request, "unsaved_data": data},
         )
         return Response(submission_state_logic_serializer.data)

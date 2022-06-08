@@ -128,7 +128,17 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         help_text=_("Temporary upload this file is sourced to."),
         related_name="attachments",
     )
+
+    # TODO remove form_key when using variables
     form_key = models.CharField(_("form component key"), max_length=255)
+    submission_variable = models.ForeignKey(
+        verbose_name=_("submission variable"),
+        help_text=_("submission value variable for the form component"),
+        to="SubmissionValueVariable",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
 
     content = PrivateMediaFileField(
         verbose_name=_("content"),

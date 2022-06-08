@@ -5,19 +5,23 @@ from typing import List
 from django.utils import timezone
 
 import factory
+from glom import PathAccessError, glom
 
+from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
 
-from ..constants import RegistrationStatuses
+from ..constants import RegistrationStatuses, SubmissionValueVariableSources
 from ..models import (
     Submission,
     SubmissionFileAttachment,
     SubmissionReport,
     SubmissionStep,
+    SubmissionValueVariable,
     TemporaryFileUpload,
 )
 
@@ -82,7 +86,8 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         **kwargs,
     ) -> Submission:
         """
-        generate a complete Form/FormStep/FormDefinition + Submission/SubmissionStep
+        generate a complete
+        Form/FormStep/FormDefinition/FormVariable + Submission/SubmissionStep/SubmissionValueVariable
         tree from a list of formio components
 
         remember to generate from privates.test import temp_private_root
@@ -110,10 +115,15 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             name=f"definition-{key}", configuration=configuration
         )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+
+        data = submitted_data or {}
         SubmissionStepFactory.create(
-            submission=submission, form_step=form_step, data=submitted_data
+            submission=submission, form_step=form_step, data=data
         )
 
+        # When the submission was initially created, the method calculate_price has already
+        # loaded the submission_value_variables_state, but no submission variables existed at that point.
+        submission.load_submission_value_variables_state(refresh=True)
         return submission
 
     @staticmethod
@@ -139,6 +149,32 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = SubmissionStep
+
+    @classmethod
+    def create(
+        cls,
+        **kwargs,
+    ) -> SubmissionStep:
+
+        step_data = kwargs.pop("data", {})
+        submission_step = super().create(**kwargs)
+
+        form_variables = submission_step.submission.form.formvariable_set.all()
+
+        for variable in form_variables:
+            try:
+                value = glom(step_data, variable.key)
+            except PathAccessError:
+                continue
+
+            SubmissionValueVariableFactory.create(
+                submission=submission_step.submission,
+                key=variable.key,
+                value=value,
+                form_variable=variable,
+            )
+
+        return submission_step
 
 
 class SubmissionReportFactory(factory.django.DjangoModelFactory):
@@ -170,3 +206,47 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = SubmissionFileAttachment
+
+    @classmethod
+    def create(
+        cls,
+        **kwargs,
+    ) -> SubmissionFileAttachment:
+        file_attachment = super().create(**kwargs)
+
+        submission = file_attachment.submission_step.submission
+        form_variable = submission.form.formvariable_set.filter(
+            key=file_attachment.form_key
+        ).first()
+
+        if not form_variable:
+            form_variable = FormVariableFactory.create(
+                form=submission.form,
+                form_definition=file_attachment.submission_step.form_step.form_definition,
+                key=file_attachment.form_key,
+            )
+
+        submission_variable = submission.submissionvaluevariable_set.filter(
+            key=file_attachment.form_key
+        ).first()
+        if not submission_variable:
+            submission_variable = SubmissionValueVariableFactory.create(
+                submission=submission,
+                key=file_attachment.form_key,
+                form_variable=form_variable,
+            )
+
+        file_attachment.submission_variable = submission_variable
+        file_attachment.save()
+
+        return file_attachment
+
+
+class SubmissionValueVariableFactory(factory.django.DjangoModelFactory):
+    submission = factory.SubFactory(SubmissionFactory)
+    form_variable = factory.SubFactory(FormVariableFactory)
+    key = factory.SelfAttribute("form_variable.key")
+    source = SubmissionValueVariableSources.user_input
+
+    class Meta:
+        model = SubmissionValueVariable

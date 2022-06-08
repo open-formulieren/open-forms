@@ -29,17 +29,17 @@ So, to recap:
 import logging
 from collections import defaultdict
 from copy import deepcopy
-from datetime import date, datetime
 from itertools import groupby
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 
 import elasticapm
-from glom import GlomError, Path, assign, glom
+from glom import GlomError, Path, PathAccessError, assign, glom
 from zgw_consumers.concurrent import parallel
 
-from openforms.formio.utils import iter_components
+from openforms.formio.utils import format_date_value, iter_components
 from openforms.logging import logevent
 from openforms.plugins.exceptions import PluginNotEnabled
+from openforms.submissions.constants import SubmissionValueVariableSources
 from openforms.typing import JSONObject
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -195,22 +195,6 @@ def _group_prefills_by_plugin(fields: List[Dict[str, str]]) -> Dict[str, list]:
     return grouper
 
 
-def format_date_value(date_value: str) -> str:
-    try:
-        parsed_date = date.fromisoformat(date_value)
-    except ValueError:
-        try:
-            parsed_date = datetime.strptime(date_value, "%Y%m%d").date()
-        except ValueError:
-            logger.info(
-                "Invalid date %s for prefill of date field. Using empty value.",
-                date_value,
-            )
-            return ""
-
-    return parsed_date.isoformat()
-
-
 def _set_default_values(
     configuration: JSONObject, prefilled_values: Dict[str, Dict[str, Any]]
 ) -> None:
@@ -250,3 +234,51 @@ def _set_default_values(
         component["defaultValue"] = prefill_value
         if component["type"] == "date":
             component["defaultValue"] = format_date_value(prefill_value)
+
+
+def prefill_variables(submission: "Submission", register=None) -> None:
+    from openforms.submissions.models import SubmissionValueVariable
+
+    from .registry import register as default_register
+
+    register = register or default_register
+
+    state = submission.load_submission_value_variables_state()
+
+    grouped_fields = {}
+    variables_to_prefill = []
+    for key, submission_value_variable in state.variables.items():
+        prefill_plugin = submission_value_variable.form_variable.prefill_plugin
+        if prefill_plugin == "":
+            continue
+
+        if prefill_plugin in grouped_fields:
+            grouped_fields[prefill_plugin] += [
+                submission_value_variable.form_variable.prefill_attribute
+            ]
+        else:
+            grouped_fields[prefill_plugin] = [
+                submission_value_variable.form_variable.prefill_attribute
+            ]
+
+        variables_to_prefill.append(submission_value_variable)
+
+    results = _fetch_prefill_values(grouped_fields, submission, register)
+
+    for variable in variables_to_prefill:
+        try:
+            prefill_value = glom(
+                results,
+                Path(
+                    variable.form_variable.prefill_plugin,
+                    variable.form_variable.prefill_attribute,
+                ),
+            )
+        except PathAccessError:
+            continue
+
+        variable.value = prefill_value
+        variable.source = SubmissionValueVariableSources.prefill
+
+    # Prefill variables is invoked once at the beginning od the submission, so no need to worry about updates
+    SubmissionValueVariable.objects.bulk_create(variables_to_prefill)

@@ -305,6 +305,7 @@ class FormAdmin(
                     formstep__form=form, is_reusable=False
                 ).values_list("id", flat=True)
             )
+
             form.delete()
             FormDefinition.objects.filter(id__in=fds).delete()
 
@@ -360,6 +361,18 @@ class FormAdmin(
         return super().change_view(
             request,
             object_id,
+            form_url,
+            extra_context=extra_context,
+        )
+
+    def add_view(self, request, form_url="", extra_context=None):
+        extra_context = extra_context or {}
+        config = GlobalConfiguration.get_solo()
+        extra_context["feature_flags"] = {
+            "enable_form_variables": config.enable_form_variables
+        }
+        return super().add_view(
+            request,
             form_url,
             extra_context=extra_context,
         )
