@@ -1,9 +1,9 @@
 {% extends 'ui/views/abstract/list.html' %}
-{% load i18n %}
+{% load i18n openforms %}
 
 
 {% block card %}
-    {% firstof request.GET.referer request.headers.referer as referer %}
+    {% get_allowed_redirect_url request.GET.referer request.headers.referer as referer %}
     <header class="card__header">
         <h1 class="title">{% trans "Cookies" %}</h1>
     </header>
