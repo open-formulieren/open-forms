@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("forms", "0025_formvariable_valid prefill configuration"),
+        ("forms", "0025_formvariable_valid_prefill_configuration"),
         ("submissions", "0053_submission_registration_attempts"),
     ]
 

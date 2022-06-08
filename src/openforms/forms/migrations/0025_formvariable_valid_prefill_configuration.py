@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                         _connector="OR",
                     )
                 ),
-                name="Valid prefill configuration",
+                name="prefill_config_empty_or_complete",
             ),
         ),
     ]

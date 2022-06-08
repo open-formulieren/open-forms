@@ -73,7 +73,7 @@ class SubmissionStep(models.Model):
         config = GlobalConfiguration.get_solo()
         if config.enable_form_variables:
             if isinstance(data, DirtyData):
-                self._unsaved_data = data.data
+                self._unsaved_data = data
             else:
                 from .submission_value_variable import SubmissionValueVariable
 
@@ -81,14 +81,8 @@ class SubmissionStep(models.Model):
                     self, data, update_missing_variables=True
                 )
         else:
-            if isinstance(data, DirtyData):
-                self._data = data.data
-            else:
-                self._data = data
+            self._data = data
 
 
-class DirtyData:
-    data = None
-
-    def __init__(self, data: dict):
-        self.data = data
+class DirtyData(dict):
+    pass

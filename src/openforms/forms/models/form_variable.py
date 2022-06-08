@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, List
 
-from django.db import models
+from django.db import models, transaction
 from django.db.models import CheckConstraint, Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -44,13 +44,13 @@ INITIAL_VALUES = {
 
 
 class FormVariableManager(models.Manager):
-    def create_for_form(self, form: "Form") -> List["FormVariable"]:
+    @transaction.atomic
+    def create_for_form(self, form: "Form") -> None:
         form_steps = form.formstep_set.select_related("form_definition")
 
         for form_step in form_steps:
             # TODO deal with duplicate keys!
             self.create_for_formstep(form_step)
-            return form_step
 
     def create_for_formstep(self, form_step: "FormStep") -> List["FormVariable"]:
         form_definition_configuration = form_step.form_definition.configuration
@@ -189,7 +189,7 @@ class FormVariable(models.Model):
                     (Q(prefill_plugin="") & Q(prefill_attribute=""))
                     | (~Q(prefill_plugin="") & ~Q(prefill_attribute=""))
                 ),
-                name="Valid prefill configuration",
+                name="prefill_config_empty_or_complete",
             )
         ]
 

@@ -73,7 +73,7 @@ def evaluate_form_logic(
     data = {**defaults, **data}
 
     if not step.data:
-        step.data = DirtyData(data={})
+        step.data = DirtyData({})
 
     # ensure this function is idempotent
     _evaluated = getattr(step, "_form_logic_evaluated", False)
@@ -118,7 +118,7 @@ def evaluate_form_logic(
                         action["form_step"]
                     )
                     submission_step_to_modify._is_applicable = False
-                    # This clears data in the database to make sure that saved steps later become
+                    # This clears data in the database to make sure that saved steps which later become
                     # not-applicable don't have old data
                     submission_step_to_modify.data = {}
                     if submission_step_to_modify == step:

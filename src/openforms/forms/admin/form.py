@@ -305,13 +305,9 @@ class FormAdmin(
                     formstep__form=form, is_reusable=False
                 ).values_list("id", flat=True)
             )
-            # Delete all form variables related to the form
-            # For reusable form definitions, there will be multiple FormVariables (a set for each form)
-            form_variables = form.formvariable_set.filter()
 
             form.delete()
             FormDefinition.objects.filter(id__in=fds).delete()
-            form_variables.delete()
 
     def delete_queryset(self, request, queryset):
         """

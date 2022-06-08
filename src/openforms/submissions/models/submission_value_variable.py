@@ -186,7 +186,7 @@ class SubmissionValueVariable(models.Model):
 
     def __str__(self):
         if self.form_variable:
-            return _("Submission value variable %(name)s").format(
+            return _("Submission value variable {name}").format(
                 name=self.form_variable.name
             )
-        return _("Submission value variable %(key)s").format(key=self.key)
+        return _("Submission value variable {key}").format(key=self.key)
