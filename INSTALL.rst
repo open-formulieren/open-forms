@@ -17,13 +17,14 @@ You need the following libraries and/or programs:
 * `Python`_ 3.8 or above
 * Python `Virtualenv`_ and `Pip`_
 * `PostgreSQL`_ 10 or above
-* `Node.js`_ (LTS version, see the Dockerfile for version information)
+* `Node.js`_ (LTS version, see ``.nvmrc`` for version information)
 * `npm`_
 * `yarn`_
 
 You will also need the following libraries:
 
 * pkg-config
+* libmagic1
 * libxml2-dev
 * libxmlsec1-dev
 * libxmlsec1-openssl
