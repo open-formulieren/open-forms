@@ -9,11 +9,12 @@ html5lib
 lxml
 O365  # microsoft graph
 Pillow  # handle images
+portalocker[redis]
 psycopg2  # database driver
 pytz  # handle timezones
 python-dotenv  # environment variables for secrets
 python-decouple  # processing of envvar configs
-portalocker[redis]
+python-magic
 tablib[xlsx]
 xmltodict
 self-certifi

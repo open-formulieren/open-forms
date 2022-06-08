@@ -347,16 +347,21 @@ class SubmissionAttachmentTest(TestCase):
         configuration.
         """
         with open(TEST_FILES_DIR / "image-256x256.pdf", "rb") as infile:
-            upload = TemporaryFileUploadFactory.create(
-                file_name="my-pdf.pdf", content=File(infile)
+            upload1 = TemporaryFileUploadFactory.create(
+                file_name="my-pdf.pdf",
+                content=File(infile),
+                content_type="application/pdf",
+            )
+            upload2 = TemporaryFileUploadFactory.create(
+                file_name="my-pdf2.pdf", content=File(infile), content_type="image/png"
             )
 
         data = {
             "my_file": [
                 {
-                    "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                    "url": f"http://server/api/v1/submissions/files/{upload1.uuid}",
                     "data": {
-                        "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                        "url": f"http://server/api/v1/submissions/files/{upload1.uuid}",
                         "form": "",
                         "name": "my-pdf.pdf",
                         "size": 585,
@@ -368,12 +373,29 @@ class SubmissionAttachmentTest(TestCase):
                     "type": "application/pdf",  # we are lying!
                     "storage": "url",
                     "originalName": "my-pdf.pdf",
-                }
+                },
+                {
+                    "url": f"http://server/api/v1/submissions/files/{upload2.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v1/submissions/files/{upload2.uuid}",
+                        "form": "",
+                        "name": "my-pdf2.pdf",
+                        "size": 585,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "my-pdf2-12305610-2da4-4694-a341-ccb919c3d543.png",
+                    "size": 585,
+                    "type": "image/png",  # we are lying!
+                    "storage": "url",
+                    "originalName": "my-pdf2.pdf",
+                },
             ],
         }
         formio_components = {
             "key": "my_file",
             "type": "file",
+            "multiple": True,
             "file": {
                 "name": "",
                 "type": ["application/pdf"],
@@ -389,6 +411,9 @@ class SubmissionAttachmentTest(TestCase):
 
         with self.assertRaises(ValidationError) as err_context:
             attach_uploads_to_submission_step(submission_step)
+
+        validation_error = err_context.exception.get_full_details()
+        self.assertEqual(len(validation_error["my_file"]), 2)
 
     @disable_2fa
     def test_attachment_retrieve_view_requires_permission(self):

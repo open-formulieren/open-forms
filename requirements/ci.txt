@@ -615,6 +615,10 @@ python-dotenv==0.14.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+python-magic==0.4.27
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 python3-saml @ git+https://github.com/maykinmedia/python3-saml.git@f587f77b78be79d51139f29a957b406072e2b537
     # via
     #   -c requirements/base.txt
