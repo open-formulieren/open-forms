@@ -8,6 +8,7 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.db import transaction
+from django.db.models import Q
 
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
@@ -18,14 +19,17 @@ from .api.serializers import (
     FormLogicSerializer,
     FormSerializer,
     FormStepSerializer,
+    FormVariableSerializer,
 )
-from .models import Form, FormDefinition, FormLogic, FormStep
+from .constants import FormVariableSources
+from .models import Form, FormDefinition, FormLogic, FormStep, FormVariable
 
 IMPORT_ORDER = {
     "formDefinitions": FormDefinition,
     "forms": Form,
     "formSteps": FormStep,
     "formLogic": FormLogic,
+    "formVariables": FormVariable,
 }
 
 SERIALIZERS = {
@@ -33,6 +37,7 @@ SERIALIZERS = {
     "forms": FormSerializer,
     "formSteps": FormStepSerializer,
     "formLogic": FormLogicSerializer,
+    "formVariables": FormVariableSerializer,
 }
 
 
@@ -63,6 +68,12 @@ def form_to_json(form_id: int) -> dict:
 
     form_logic = FormLogic.objects.filter(form=form)
 
+    # Export only user defined variables and static variables
+    # The component variables should be regenerated from the form definition configuration
+    form_variables = form.formvariable_set.filter(
+        ~Q(source=FormVariableSources.component)
+    )
+
     request = _get_mock_request()
 
     forms = [FormExportSerializer(instance=form, context={"request": request}).data]
@@ -77,12 +88,16 @@ def form_to_json(form_id: int) -> dict:
     form_logic = FormLogicSerializer(
         instance=form_logic, many=True, context={"request": request}
     ).data
+    form_variables = FormVariableSerializer(
+        instance=form_variables, many=True, context={"request": request}
+    ).data
 
     resources = {
         "forms": json.dumps(forms),
         "formSteps": json.dumps(form_steps),
         "formDefinitions": json.dumps(form_definitions),
         "formLogic": json.dumps(form_logic),
+        "formVariables": json.dumps(form_variables),
     }
 
     return resources
@@ -125,8 +140,12 @@ def import_form_data(
     if existing_form_instance:
         FormStep.objects.filter(form=existing_form_instance).delete()
         FormLogic.objects.filter(form=existing_form_instance).delete()
+        FormVariable.objects.filter(form=existing_form_instance).delete()
 
     for resource, model in IMPORT_ORDER.items():
+        if resource not in import_data:
+            continue
+
         data = import_data[resource]
         for old, new in uuid_mapping.items():
             data = data.replace(old, new)
@@ -161,6 +180,10 @@ def import_form_data(
                 deserialized.save()
                 if resource == "forms":
                     created_form = deserialized.instance
+                if resource == "formSteps":
+                    # Once the form steps have been created, we create the component FormVariables
+                    # based on the form definition configurations.
+                    FormVariable.objects.create_for_form(created_form)
 
                 # The FormSerializer/FormStepSerializer/FormLogicSerializer have the uuid as a read only field.
                 # So the mapping between the old uuid and the new needs to be done after the instance is saved.
