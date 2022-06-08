@@ -1,17 +1,21 @@
+import copy
 import datetime
+import json
 
 from django.test import TestCase
 from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
 
-from openforms.forms.models import FormDefinition, FormStep, FormVersion
+from openforms.forms.models import FormDefinition, FormStep, FormVariable, FormVersion
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
 
+from ..constants import FormVariableDataTypes, FormVariableSources
 from .factories import FormVersionFactory
 from .utils import EXPORT_BLOB
 
@@ -294,3 +298,204 @@ class RestoreVersionTest(TestCase):
             },
         )
         self.assertFalse(form_steps[1].form_definition.is_reusable)
+
+
+FORM_STEP = [
+    {
+        "form": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+        "form_definition": "http://testserver/api/v1/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+        "index": 0,
+        "slug": "icecream-form-step",
+        "uuid": "3ca01601-cd20-4746-bce5-baab47636823",
+    }
+]
+
+FORM = [
+    {
+        "active": True,
+        "authentication_backends": [],
+        "is_deleted": False,
+        "login_required": False,
+        "maintenance_mode": False,
+        "name": "Icecream questionnaire",
+        "internal_name": "Icecream questionnaire",
+        "product": None,
+        "show_progress_indicator": True,
+        "slug": "icecream-questionnaire",
+        "url": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+        "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+    }
+]
+
+FORM_DEFINITION = [
+    {
+        "configuration": {
+            "components": [{"key": "favouriteFlavour", "type": "textfield"}]
+        },
+        "name": "Icecream questions",
+        "internal_name": "Icecream questions",
+        "slug": "icecream-questions",
+        "url": "http://testserver/api/v1/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+        "uuid": "f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+    }
+]
+
+FORM_VARIABLES = [
+    {
+        "form": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+        "name": "CO2 footprint",
+        "key": "co2-footprint",
+        "source": FormVariableSources.user_defined,
+        "data_type": FormVariableDataTypes.float,
+    }
+]
+
+
+class RestoreVersionsWithVariablesTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.export_blob = {
+            "forms": json.dumps(FORM),
+            "formDefinitions": json.dumps(FORM_DEFINITION),
+            "formSteps": json.dumps(FORM_STEP),
+            "formLogic": json.dumps([]),
+        }
+
+    def test_restore_form_with_static_variables(self):
+        form_definition = FormDefinitionFactory.create(
+            name="Icecream questionnaire",
+            internal_name="Icecream questionnaire",
+            configuration={
+                "components": [
+                    {"key": "favouriteFlavour", "type": "textfield"},
+                ]
+            },
+        )
+        form = FormFactory.create(name="Icecream questions")
+        FormStepFactory.create(form=form, form_definition=form_definition)
+        FormVariableFactory.create(
+            source=FormVariableSources.static, key="now", initial_value="now", form=form
+        )
+
+        static_vars = form.formvariable_set.filter(source=FormVariableSources.static)
+        self.assertEqual(1, static_vars.count())
+        self.assertEqual("now", static_vars.first().key)
+
+        export_with_user_defined_var = copy.deepcopy(self.export_blob)
+        export_with_user_defined_var["formVariables"] = json.dumps(
+            [
+                {
+                    "form": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "name": "Right now",
+                    "key": "right-now",
+                    "source": FormVariableSources.static,
+                    "data_type": FormVariableDataTypes.datetime,
+                }
+            ]
+        )
+        version = FormVersion.objects.create(
+            form=form,
+            created=datetime.datetime(2021, 7, 21, 12, 00, 00),
+            export_blob=export_with_user_defined_var,
+        )
+
+        form.restore_old_version(version.uuid)
+        form.refresh_from_db()
+
+        restored_static_vars = form.formvariable_set.filter(
+            source=FormVariableSources.static
+        )
+        self.assertEqual(1, restored_static_vars.count())
+        self.assertEqual("right-now", restored_static_vars.first().key)
+
+    def test_restore_form_with_more_component_variables(self):
+        form_definition = FormDefinitionFactory.create(
+            name="Icecream questionnaire",
+            internal_name="Icecream questionnaire",
+            configuration={"components": []},
+        )
+        form = FormFactory.create(name="Icecream questions")
+        FormStepFactory.create(form=form, form_definition=form_definition)
+
+        version = FormVersion.objects.create(
+            form=form,
+            created=datetime.datetime(2021, 7, 21, 12, 00, 00),
+            export_blob=self.export_blob,
+        )
+
+        self.assertEqual(0, form.formvariable_set.count())
+
+        form.restore_old_version(version.uuid)
+        form.refresh_from_db()
+
+        self.assertEqual(1, form.formvariable_set.count())
+
+    def test_restore_form_with_fewer_component_variables(self):
+        form_definition = FormDefinitionFactory.create(
+            name="Icecream questionnaire",
+            internal_name="Icecream questionnaire",
+            configuration={
+                "components": [
+                    {"key": "favouriteFlavour", "type": "textfield"},
+                    {
+                        "key": "whippedCream",
+                        "type": "checkbox",
+                        "defaultValue": False,
+                    },
+                ]
+            },
+        )
+        form = FormFactory.create(name="Icecream questions")
+        FormStepFactory.create(form=form, form_definition=form_definition)
+
+        version = FormVersion.objects.create(
+            form=form,
+            created=datetime.datetime(2021, 7, 21, 12, 00, 00),
+            export_blob=self.export_blob,
+        )
+
+        self.assertEqual(2, form.formvariable_set.count())
+
+        form.restore_old_version(version.uuid)
+        form.refresh_from_db()
+
+        self.assertEqual(1, form.formvariable_set.count())
+
+    def test_restore_form_with_user_defined_variables(self):
+        form_definition = FormDefinitionFactory.create(
+            name="Icecream questionnaire",
+            internal_name="Icecream questionnaire",
+            configuration={
+                "components": [
+                    {"key": "favouriteFlavour", "type": "textfield"},
+                ]
+            },
+        )
+        form = FormFactory.create(name="Icecream questions")
+        FormStepFactory.create(form=form, form_definition=form_definition)
+        FormVariableFactory.create(
+            source=FormVariableSources.user_defined, key="customer-points", form=form
+        )
+
+        user_defined_vars = form.formvariable_set.filter(
+            source=FormVariableSources.user_defined
+        )
+        self.assertEqual(1, user_defined_vars.count())
+        self.assertEqual("customer-points", user_defined_vars.first().key)
+
+        export_with_user_defined_var = copy.deepcopy(self.export_blob)
+        export_with_user_defined_var["formVariables"] = json.dumps(FORM_VARIABLES)
+        version = FormVersion.objects.create(
+            form=form,
+            created=datetime.datetime(2021, 7, 21, 12, 00, 00),
+            export_blob=export_with_user_defined_var,
+        )
+
+        form.restore_old_version(version.uuid)
+        form.refresh_from_db()
+
+        restored_user_defined_vars = form.formvariable_set.filter(
+            source=FormVariableSources.user_defined
+        )
+        self.assertEqual(1, restored_user_defined_vars.count())
+        self.assertEqual("co2-footprint", restored_user_defined_vars.first().key)
