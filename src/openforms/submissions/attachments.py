@@ -1,5 +1,6 @@
 import os.path
 import re
+from collections import defaultdict
 from datetime import timedelta
 from typing import Iterable, Optional, Tuple
 from urllib.parse import urlparse
@@ -9,9 +10,11 @@ from django.core.files.temp import NamedTemporaryFile
 from django.urls import Resolver404, resolve
 from django.utils.translation import gettext as _
 
+import magic
 import PIL
 from glom import glom
 from PIL import Image
+from rest_framework.exceptions import ValidationError
 
 from openforms.api.exceptions import RequestEntityTooLarge
 from openforms.conf.utils import Filesize
@@ -85,6 +88,7 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
     uploads = resolve_uploads_from_data(components, submission_step.data)
 
     result = list()
+    validation_errors = defaultdict(list)
     for key, (component, uploads) in uploads.items():
         # grab resize settings
         resize_apply = glom(component, "of.image.resize.apply", default=False)
@@ -94,6 +98,7 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
                 component, "of.image.resize.height", default=DEFAULT_IMAGE_MAX_SIZE[1]
             ),
         )
+        allowed_mime_types = glom(component, "file.type", default=[])
         file_max_size = file_size_cast(
             glom(component, "fileMaxSize", default="") or settings.MAX_FILE_UPLOAD_SIZE
         )
@@ -112,6 +117,28 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
                     ),
                 )
 
+            # perform content type validation
+            with upload.content.open("rb") as infile:
+                # 2048 bytes per recommendation of python-magic
+                file_mime_type = magic.from_buffer(infile.read(2048), mime=True)
+
+            invalid_file_type_error = ValidationError(
+                _("The file '{filename}' is not a valid file type.").format(
+                    filename=upload.file_name
+                ),
+                code="invalid",
+            )
+
+            if upload.content_type != file_mime_type:
+                validation_errors[key].append(invalid_file_type_error)
+                continue
+
+            # if no allowed_mime_types are defined on the file component, then all filetypes
+            # are allowed and we skip validation.
+            if allowed_mime_types and file_mime_type not in allowed_mime_types:
+                validation_errors[key].append(invalid_file_type_error)
+                continue
+
             file_name = append_file_num_postfix(
                 upload.file_name, base_name, i, len(uploads)
             )
@@ -125,6 +152,9 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
                 # NOTE there is a possible race-condition if user completes a submission before this resize task is done
                 # see https://github.com/open-formulieren/open-forms/issues/507
                 resize_submission_attachment.delay(attachment.id, resize_size)
+
+    if validation_errors:
+        raise ValidationError(validation_errors)
 
     return result
 
