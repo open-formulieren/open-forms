@@ -63,7 +63,7 @@
                             {% render_spacers category.get_depth|add:"-1" classname="form-category__spacer" %}
                             <span class="form-category__icon form-category__icon--collapsed">▶</span>
                             <span class="form-category__icon form-category__icon--expanded">▼</span>
-                            {{ category }} ({{ category.form_count }})
+                            {{ category }} ({{ category.form_count }}/{{ category.total_form_count }})
                         </th>
                     </tr>
 
@@ -89,7 +89,7 @@
                     <th colspan="{{ result_headers|length }}" scope="col" class="form-category__name">
                         <span class="form-category__icon form-category__icon--collapsed">▶</span>
                         <span class="form-category__icon form-category__icon--expanded">▼</span>
-                        {% trans "Forms without category" %} ({{ count_no_category }})
+                        {% trans "Forms without category" %} ({{ count_no_category }}/{{ total_count_no_category }})
                     </th>
                 </tr>
 

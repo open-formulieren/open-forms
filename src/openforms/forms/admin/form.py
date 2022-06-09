@@ -136,9 +136,8 @@ class FormAdmin(
             return self._async_changelist_view(request)
 
         extra_context = extra_context or {}
-        # TODO: evaluate the changelist queryset filters in the count annotation
         categories_qs = Category.get_tree(parent=None).annotate(
-            form_count=Count("form")
+            total_form_count=Count("form")
         )
         extra_context["categories"] = categories_qs
 
@@ -146,17 +145,24 @@ class FormAdmin(
 
         changelist_instance = response.context_data.get("cl")
         if changelist_instance:
-            num_without_category = (
-                changelist_instance.get_queryset(request)
-                .filter(category__isnull=True)
-                .count()
-            )
+            changelist_queryset = changelist_instance.get_queryset(request)
+            num_without_category = changelist_queryset.filter(
+                category__isnull=True
+            ).count()
             response.context_data.update(
                 {
+                    "total_count_no_category": self.get_queryset(request)
+                    .filter(category__isnull=True)
+                    .count(),
                     "count_no_category": num_without_category,
                     "result_headers": list(result_headers(changelist_instance)),
+                    # apply filter context to count
+                    "categories": categories_qs.annotate(
+                        form_count=Count("form", filter=changelist_queryset.query.where)
+                    ),
                 }
             )
+
         return response
 
     def _async_changelist_view(self, request):
