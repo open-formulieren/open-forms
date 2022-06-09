@@ -141,7 +141,7 @@ class FormAdmin(
         categories_qs = Category.get_tree(parent=None).annotate(
             form_count=Count("form")
         )
-        extra_context["categories"] = Category.get_annotated_list_qs(categories_qs)
+        extra_context["categories"] = categories_qs
 
         response = super().changelist_view(request, extra_context)
 

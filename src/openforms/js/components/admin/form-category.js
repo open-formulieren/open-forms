@@ -19,11 +19,33 @@ const init = async () => {
 
 const loadFormsForCategory = async (node, GETParams) => {
   // node is a table row, after which we have to inject the forms.
-  const {id, depth} = node.dataset;
+  const {id, depth: _depth} = node.dataset;
+  const depth = parseInt(_depth);
   const query = new URLSearchParams({
     ...GETParams,
     _async: 1,
     category: id,
+  });
+
+  node.addEventListener('click', event => {
+    event.preventDefault();
+    node.classList.toggle('form-category--collapsed');
+
+    // check the siblings and extract the rows that are children of the current node
+    let tableBody = node.parentNode.nextElementSibling;
+
+    // loop over all next table bodies and check the form category rows for their depth.
+    // as soon as the depth value falls below our own depth value, we are done collapsing
+    // child nodes.
+    while (tableBody) {
+      const categoryRow = tableBody.querySelector('.form-category');
+      if (parseInt(categoryRow.dataset.depth) <= depth) {
+        break;
+      }
+      categoryRow.classList.toggle('form-category--hidden');
+      categoryRow.classList.add('form-category--collapsed');
+      tableBody = tableBody.nextElementSibling;
+    }
   });
 
   // TODO: handle pagination
@@ -39,6 +61,7 @@ const loadFormsForCategory = async (node, GETParams) => {
   const fragment = document.createDocumentFragment();
   for (const row of rows) {
     row.dataset['depth'] = depth;
+    row.dataset['category'] = id;
     row.classList.add('form-category__item');
     fragment.appendChild(row);
   }

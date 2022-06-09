@@ -52,12 +52,17 @@
             </thead>
 
             {# Output the category tree structure, where we will later inject the form list per category #}
-            {% for category, info in categories %}
+            {% for category in categories %}
                 <tbody>
-                    <tr class="form-category {% if category.form_count %}form-category--has-children{% endif %} {% if category.is_leaf %}form-category--leaf{% endif %}" data-id="{{ category.id }}" data-depth="{{ category.get_depth }}">
+                    <tr
+                        class="form-category {% if not category.is_leaf or category.form_count %}form-category--has-children{% endif %} {% if category.is_leaf %}form-category--leaf{% endif %} {% if category.is_leaf and category.depth > 1 %}form-category--collapsed{% endif %}"
+                        data-id="{{ category.id }}"
+                        data-depth="{{ category.get_depth }}">
                         {# span action checkbox + first column #}
                         <th colspan="{{ result_headers|length }}" scope="col" class="form-category__name">
                             {% render_spacers category.get_depth|add:"-1" classname="form-category__spacer" %}
+                            <span class="form-category__icon form-category__icon--collapsed">▶</span>
+                            <span class="form-category__icon form-category__icon--expanded">▼</span>
                             {{ category }} ({{ category.form_count }})
                         </th>
                     </tr>
@@ -69,6 +74,8 @@
             <tbody>
                 <tr class="form-category form-category--leaf {% if count_no_category %}form-category--has-children{% endif %}" data-id="" data-depth="0">
                     <th colspan="{{ result_headers|length }}" scope="col" class="form-category__name">
+                        <span class="form-category__icon form-category__icon--collapsed">▶</span>
+                        <span class="form-category__icon form-category__icon--expanded">▼</span>
                         {% trans "Forms without category" %} ({{ count_no_category }})
                     </th>
                 </tr>
