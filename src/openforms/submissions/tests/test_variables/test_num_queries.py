@@ -14,14 +14,7 @@ from ...models.submission_value_variable import (
     SubmissionValueVariablesState,
 )
 from ...rendering import Renderer, RenderModes
-from ...rendering.nodes import FormNode, SubmissionStepNode
 from ..mixins import VariablesTestMixin
-
-# import logging
-#
-# logger = logging.getLogger('django.db.backends')
-# logger.setLevel(logging.DEBUG)
-# logger.addHandler(logging.StreamHandler())
 
 
 class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
