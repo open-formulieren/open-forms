@@ -20,6 +20,7 @@ const init = async () => {
 const loadFormsForCategory = async (node, GETParams) => {
   // node is a table row, after which we have to inject the forms.
   const {id, depth: _depth} = node.dataset;
+  const loader = node.parentNode.querySelector('.form-category__loader');
   const depth = parseInt(_depth);
   const query = {
     ...GETParams,
@@ -80,6 +81,7 @@ const loadFormsForCategory = async (node, GETParams) => {
       fragment.appendChild(row);
     }
   }
+  loader && node.parentNode.removeChild(loader);
   node.after(fragment);
 };
 

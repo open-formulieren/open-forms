@@ -66,6 +66,19 @@
                             {{ category }} ({{ category.form_count }})
                         </th>
                     </tr>
+
+                    {% if category.form_count %}
+                        <tr class="form-category__loader">
+                            <td colspan="{{ result_headers|length }}">
+                                <div class="box-loader">
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+
                     {# content managed asynchronously via JS #}
                 </tbody>
             {% endfor %}
@@ -79,6 +92,19 @@
                         {% trans "Forms without category" %} ({{ count_no_category }})
                     </th>
                 </tr>
+
+                {% if count_no_category %}
+                    <tr class="form-category__loader">
+                        <td colspan="{{ result_headers|length }}">
+                            <div class="box-loader">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+
                 {# content managed asynchronously via JS #}
             </tbody>
 

@@ -79,4 +79,10 @@
       }
     }
   }
+
+  &__loader {
+    .box-loader {
+      margin: 0 auto;
+    }
+  }
 }
