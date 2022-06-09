@@ -1,12 +1,20 @@
 import jsonScriptToVar from '../../utils/json-script';
 import {apiCall} from '../../utils/fetch';
 
-const init = () => {
+const init = async () => {
   const nodes = document.querySelectorAll('.form-category.form-category--has-children');
   if (!nodes.length) return;
   // read the original GET params so we can include them in the async calls
   const GETParams = jsonScriptToVar('request-GET');
-  nodes.forEach(node => loadFormsForCategory(node, GETParams));
+
+  const promises = Array.from(nodes).map(node => loadFormsForCategory(node, GETParams));
+  await Promise.all(promises);
+
+  // from admin/js/actions.js
+  const actionsEls = document.querySelectorAll('tr input.action-select');
+  if (actionsEls.length > 0) {
+    window.Actions(actionsEls);
+  }
 };
 
 const loadFormsForCategory = async (node, GETParams) => {
@@ -37,6 +45,8 @@ const loadFormsForCategory = async (node, GETParams) => {
   node.after(fragment);
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState !== 'loading') {
   init();
-});
+} else {
+  document.addEventListener('DOMContentLoaded', init);
+}
