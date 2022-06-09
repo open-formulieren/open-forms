@@ -46,6 +46,8 @@ INITIAL_VALUES = {
 
 
 class FormVariableManager(models.Manager):
+    use_in_migrations = True
+
     @transaction.atomic
     def create_for_form(self, form: "Form") -> None:
         form_steps = form.formstep_set.select_related("form_definition")
