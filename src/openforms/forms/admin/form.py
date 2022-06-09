@@ -114,7 +114,6 @@ class FormAdmin(
         "get_registration_backend_display",
         "get_object_actions",
     )
-    # list_per_page = 5
     prepopulated_fields = {"slug": ("name",)}
     actions = [
         "make_copies",
@@ -178,8 +177,17 @@ class FormAdmin(
             "cl": cl,
             "opts": cl.opts,
         }
+
         return TemplateResponse(
-            request, "admin/forms/form/category_form_list.html", context
+            request,
+            "admin/forms/form/category_form_list.html",
+            context,
+            headers={
+                "X-Pagination-Count": cl.paginator.count,
+                "X-Pagination-Pages": ",".join(
+                    [str(p) for p in cl.paginator.page_range]
+                ),
+            },
         )
 
     def get_queryset(self, request):

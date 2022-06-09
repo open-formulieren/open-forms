@@ -21,11 +21,11 @@ const loadFormsForCategory = async (node, GETParams) => {
   // node is a table row, after which we have to inject the forms.
   const {id, depth: _depth} = node.dataset;
   const depth = parseInt(_depth);
-  const query = new URLSearchParams({
+  const query = {
     ...GETParams,
     _async: 1,
     category: id,
-  });
+  };
 
   node.addEventListener('click', event => {
     event.preventDefault();
@@ -49,21 +49,36 @@ const loadFormsForCategory = async (node, GETParams) => {
   });
 
   // TODO: handle pagination
-  const response = await apiCall(`.?${query}`);
-  const htmlBlob = await response.text();
+  const response = await apiCall(`.?${new URLSearchParams(query)}`);
+  // handle pagination
+  const pageNumbers = response.headers
+    .get('X-Pagination-Pages')
+    .split(',')
+    .map(p => parseInt(p));
+  const extraPageNumbers = pageNumbers.slice(1); // we already fetched the first page just now
+
+  // set up extra requests for the additional pages
+  const promises = extraPageNumbers.map(async page => {
+    const pageQuery = new URLSearchParams({...query, p: page});
+    const response = await apiCall(`.?${pageQuery}`);
+    return await response.text();
+  });
+
+  const htmlBlobs = [await response.text(), ...(await Promise.all(promises))];
 
   // create a dom element in memory to render the table, and then take out only what's
   // relevant
-  const container = document.createElement('div');
-  container.insertAdjacentHTML('afterbegin', htmlBlob);
-  const rows = container.querySelectorAll('tbody tr');
-  if (!rows.length) return;
   const fragment = document.createDocumentFragment();
-  for (const row of rows) {
-    row.dataset['depth'] = depth;
-    row.dataset['category'] = id;
-    row.classList.add('form-category__item');
-    fragment.appendChild(row);
+  for (const htmlBlob of htmlBlobs) {
+    const container = document.createElement('div');
+    container.insertAdjacentHTML('afterbegin', htmlBlobs[0]);
+    const rows = container.querySelectorAll('tbody tr');
+    for (const row of rows) {
+      row.dataset['depth'] = depth;
+      row.dataset['category'] = id;
+      row.classList.add('form-category__item');
+      fragment.appendChild(row);
+    }
   }
   node.after(fragment);
 };
