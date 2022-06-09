@@ -4,15 +4,17 @@ from unittest import skip
 from unittest.mock import patch
 from zipfile import ZipFile
 
+from django.apps import apps
 from django.contrib import admin
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
+from django.utils.module_loading import import_string
 from django.utils.translation import ugettext as _
 
 from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
-from openforms.config.models import GlobalConfiguration
+from openforms.config.models import GlobalConfiguration, RichTextColor
 from openforms.submissions.tests.form_logic.factories import FormLogicFactory
 from openforms.tests.utils import disable_2fa
 from openforms.utils.admin import SubmitActions
@@ -721,6 +723,12 @@ class FormEditTests(WebTest):
         self.assertEqual("true", required_default)
 
     def test_rich_text_colors_configuration(self):
+        # delete defaults from migrations, if present
+        RichTextColor.objects.all().delete()
+        forward_migration = import_string(
+            "openforms.config.migrations.0025_richtextcolordefaults.add_colors"
+        )
+        forward_migration(apps, schema_editor=None)
         change_page = self.app.get(
             reverse("admin:forms_form_change", args=(self.form.pk,)),
             user=self.admin_user,
