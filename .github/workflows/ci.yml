@@ -59,7 +59,7 @@ jobs:
 
       - name: Build frontend
         run: |
-          npm ci
+          npm ci --legacy-peer-deps
           npm run build
 
       - name: Run tests
