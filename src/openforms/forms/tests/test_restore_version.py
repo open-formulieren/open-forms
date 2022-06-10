@@ -354,6 +354,8 @@ FORM_VARIABLES = [
 class RestoreVersionsWithVariablesTest(TestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         cls.export_blob = {
             "forms": json.dumps(FORM),
             "formDefinitions": json.dumps(FORM_DEFINITION),
