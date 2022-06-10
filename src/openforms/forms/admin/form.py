@@ -213,17 +213,14 @@ class FormAdmin(
             .annotate(anno_name=FirstNotBlank("internal_name", "name"))
         )
 
+    @admin.display(description=_("Actions"))
     def get_object_actions(self, obj) -> str:
         links = ((obj.get_absolute_url(), _("Show form")),)
         return format_html_join(" | ", '<a href="{}" target="_blank">{}</a>', links)
 
-    get_object_actions.short_description = _("Actions")
-
-    def anno_name(self, obj):
+    @admin.display(description=_("name"), ordering="anno_name")
+    def anno_name(self, obj) -> str:
         return obj.admin_name
-
-    anno_name.admin_order_field = "anno_name"
-    anno_name.short_description = _("name")
 
     def get_form(self, request, *args, **kwargs):
         if kwargs.get("change"):
@@ -308,6 +305,7 @@ class FormAdmin(
         ]
         return my_urls + urls
 
+    @admin.action(description=_("Copy selected %(verbose_name_plural)s"))
     def make_copies(self, request, queryset):
         for instance in queryset:
             instance.copy()
@@ -325,8 +323,9 @@ class FormAdmin(
             ),
         )
 
-    make_copies.short_description = _("Copy selected %(verbose_name_plural)s")
-
+    @admin.action(
+        description=_("Set selected %(verbose_name_plural)s to maintenance mode")
+    )
     def set_to_maintenance_mode(self, request, queryset):
         count = queryset.filter(maintenance_mode=False).update(maintenance_mode=True)
         messages.success(
@@ -342,10 +341,7 @@ class FormAdmin(
             ),
         )
 
-    set_to_maintenance_mode.short_description = _(
-        "Set selected %(verbose_name_plural)s to maintenance mode"
-    )
-
+    @admin.action(description=_("Remove %(verbose_name_plural)s from maintenance mode"))
     def remove_from_maintenance_mode(self, request, queryset):
         count = queryset.filter(maintenance_mode=True).update(maintenance_mode=False)
         messages.success(
@@ -360,10 +356,6 @@ class FormAdmin(
                 verbose_name_plural=queryset.model._meta.verbose_name_plural,
             ),
         )
-
-    remove_from_maintenance_mode.short_description = _(
-        "Remove %(verbose_name_plural)s from maintenance mode"
-    )
 
     def delete_model(self, request, form):
         """

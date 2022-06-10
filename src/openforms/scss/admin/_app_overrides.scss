@@ -224,3 +224,12 @@ $djai-border-width: 8px;
     }
   }
 }
+
+/**
+ * django-treebeard headers padding/markup is inconsistent
+ */
+body.app-forms.model-category.change-list {
+  #changelist table thead th {
+    padding: 8px 10px;
+  }
+}
