@@ -22,31 +22,5 @@ class Category(MP_Node):
         verbose_name = _("category")
         verbose_name_plural = _("categories")
 
-    def get_admin_changelist_link(self, model, *, text=None, field_name="category"):
-        url = self.get_admin_changelist_url(model, field_name=field_name)
-        text = text or self.name
-        link = format_html('<a href="{url}">{text}</a>', url=url, text=text)
-        return link
-
-    def get_admin_changelist_url(self, model, *, field_name="category"):
-        url = reverse(
-            "admin:%s_%s_changelist" % (model._meta.app_label, model._meta.model_name),
-        )
-        f = furl(url)
-        f.args[f"{field_name}__id__exact"] = self.id
-        return str(f)
-
-    def get_edit_link(self):
-        url = reverse(
-            "admin:%s_%s_change" % (self._meta.app_label, self._meta.model_name),
-            args=[self.id],
-        )
-        text = _("Edit category")
-        link = format_html('<a href="{url}">{text}</a>', url=url, text=text)
-        return link
-
-    def get_branch_ids(self):
-        return [self.id] + [c.id for c in self.get_descendants()]
-
     def __str__(self):
         return self.name
