@@ -285,6 +285,7 @@ const TEXT_VALIDATION = {
       type: 'number',
       tooltip: 'The maximum length requirement this field must meet.',
       input: true,
+      defaultValue: 1000 * 10,
     },
     REGEX_VALIDATION,
   ],
