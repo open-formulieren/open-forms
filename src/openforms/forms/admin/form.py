@@ -135,13 +135,22 @@ class FormAdmin(
         if request.GET.get("_async"):
             return self._async_changelist_view(request)
 
+        # get the category tree and extra permission info for the custom import button
         extra_context = extra_context or {}
         categories_qs = Category.get_tree(parent=None).annotate(
             total_form_count=Count("form")
         )
-        extra_context["categories"] = categories_qs
-
+        extra_context.update(
+            {
+                "categories": categories_qs,
+                "has_change_permission": self.has_change_permission(request),
+            }
+        )
+        # rely on the TemplateResponse not being rendered to alter the template
+        # context
         response = super().changelist_view(request, extra_context)
+        if not isinstance(response, TemplateResponse):
+            return response
 
         changelist_instance = response.context_data.get("cl")
         if changelist_instance:
