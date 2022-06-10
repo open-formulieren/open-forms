@@ -77,7 +77,7 @@ class SubmissionStep(models.Model):
             else:
                 from .submission_value_variable import SubmissionValueVariable
 
-                SubmissionValueVariable.objects.bulk_create_or_update(
+                SubmissionValueVariable.objects.bulk_create_or_update_from_data(
                     self, data, update_missing_variables=True
                 )
         else:

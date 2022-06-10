@@ -10,6 +10,8 @@ from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
 from openforms.prefill import JSONObject
 
+from .constants import SubmissionValueVariableSources
+from .models import SubmissionValueVariable
 from .models.submission_step import DirtyData
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -90,12 +92,15 @@ def evaluate_form_logic(
         submission.form._cached_logic_rules = rules
 
     submission_state = submission.load_execution_state()
+    submission_variable_state = submission.load_submission_value_variables_state()
+    submission_variables_to_update = []
 
     updated_data = deepcopy(step.data)
     for rule in rules:
         if jsonLogic(rule.json_logic_trigger, data):
             for action in rule.actions:
                 action_details = action["action"]
+                # TODO this will be replaced by changing the value of variables
                 if action_details["type"] == LogicActionTypes.value:
                     new_value = jsonLogic(action_details["value"], data)
                     configuration = set_property_value(
@@ -124,7 +129,35 @@ def evaluate_form_logic(
                     if submission_step_to_modify == step:
                         updated_data = {}
                         step._is_applicable = False
+                elif action_details["type"] == LogicActionTypes.variable:
+                    new_value = jsonLogic(action_details["value"], data)
+                    submission_variable = submission_variable_state.get_variable(
+                        action["variable"]
+                    )
+                    variable_form_definition = (
+                        submission_variable.form_variable.form_definition
+                    )
+                    if (
+                        not variable_form_definition
+                        or variable_form_definition != step.form_step.form_definition
+                    ):
+                        # Case 1: The variable is not related to a particular step
+                        # Case 2: The variable being changed is part of a different step than the step currently being edited
+                        # In these cases, the changes are persisted to the database
+                        submission_variable.value = new_value
+                        submission_variable.source = (
+                            SubmissionValueVariableSources.logic
+                        )
+                        submission_variables_to_update.append(submission_variable)
+                    else:
+                        # The variable being changed is part of the step currently being edited
+                        # The unsaved data will be persisted when the step is saved
+                        updated_data[action["variable"]] = new_value
+
     step.data = DirtyData(updated_data)
+    SubmissionValueVariable.objects.bulk_create_or_update(
+        submission_variables_to_update, fields=["value", "source"]
+    )
 
     if dirty:
         # only keep the changes in the data, so that old values do not overwrite otherwise

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from django.db import models
 from django.db.models import Q
@@ -22,6 +22,9 @@ class SubmissionValueVariablesState:
 
     def get_variable(self, key: str) -> Optional["SubmissionValueVariable"]:
         return self.variables[key]
+
+    def set_variable(self, key: str, value: Any) -> None:
+        self.variables[key].value = value
 
     def get_data(self, submission_step: Optional["SubmissionStep"] = None) -> dict:
         submission_variables = self.variables
@@ -93,7 +96,19 @@ class SubmissionValueVariablesState:
 
 
 class SubmissionValueVariableManager(models.Manager):
-    def bulk_create_or_update(
+    def bulk_create_or_update(self, variables: List["SubmissionValueVariable"], fields):
+        variables_to_create = []
+        variables_to_update = []
+        for variable in variables:
+            if not variable.pk:
+                variables_to_create.append(variable)
+            else:
+                variables_to_update.append(variable)
+
+        self.bulk_create(variables_to_create)
+        self.bulk_update(variables_to_update, fields=fields)
+
+    def bulk_create_or_update_from_data(
         self, submission_step, data, update_missing_variables: bool = False
     ):
         submission = submission_step.submission
