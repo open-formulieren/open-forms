@@ -31,9 +31,7 @@ class CategoryAdmin(TreeAdmin):
         return qs
 
     @admin.display(description=_("form count"))
-    def form_count(self, category=None):
-        if not category:
-            return
+    def form_count(self, category: Category):
         return category.form_count
 
     @admin.display(description=_("Actions"))

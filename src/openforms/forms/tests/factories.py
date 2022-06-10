@@ -146,10 +146,13 @@ class FormVariableFactory(factory.django.DjangoModelFactory):
 class CategoryFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: "Category %03d" % n)
 
-    # NOTE currently this just generates root nodes
-    depth = 1
-    numchild = 0
-    path = factory.Sequence(lambda n: "%04d" % (n + 1))
-
     class Meta:
         model = Category
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        # defer creation to treebeard instead of fuzzing the underlying DB fields
+        parent = kwargs.pop("parent", None)
+        if parent is not None:
+            return parent.add_child(**kwargs)
+        return model_class.add_root(**kwargs)
