@@ -95,19 +95,18 @@ class SubmissionFileAttachmentManager(models.Manager):
                 False,
             )
         except self.model.DoesNotExist:
-            return (
-                self.create(
+            with upload.content.open("rb") as content:
+                instance = self.create(
                     submission_step=submission_step,
                     temporary_file=upload,
                     form_key=form_key,
                     # wrap in File() so it will be physically copied
-                    content=File(upload.content, name=upload.file_name),
+                    content=File(content, name=upload.file_name),
                     content_type=upload.content_type,
                     original_name=upload.file_name,
                     file_name=file_name,
-                ),
-                True,
-            )
+                )
+            return (instance, True)
 
 
 class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):

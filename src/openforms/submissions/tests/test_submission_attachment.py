@@ -1,12 +1,14 @@
 import os
+from pathlib import Path
 from unittest.mock import patch
 
 from django.core.files import File
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 from django.urls import reverse
 
 from PIL import Image, UnidentifiedImageError
 from privates.test import temp_private_root
+from rest_framework.exceptions import ValidationError
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.api.exceptions import RequestEntityTooLarge
@@ -30,14 +32,16 @@ from .factories import (
 )
 from .mixins import VariablesTestMixin
 
+TEST_FILES_DIR = Path(__file__).parent / "files"
+
 
 @temp_private_root()
 class SubmissionAttachmentTest(VariablesTestMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_image_path = os.path.join(
-            os.path.dirname(__file__), "files", "image-256x256.png"
-        )
+        super().setUpTestData()
+
+        cls.test_image_path = (TEST_FILES_DIR / "image-256x256.png").resolve()
 
     def test_resolve_uploads_from_formio_data(self):
         upload = TemporaryFileUploadFactory.create()
@@ -331,6 +335,165 @@ class SubmissionAttachmentTest(VariablesTestMixin, TestCase):
 
         with self.assertRaises(RequestEntityTooLarge):
             attach_uploads_to_submission_step(submission_step)
+
+    @tag("GHSA-h85r-xv4w-cg8g")
+    def test_attach_upload_validates_file_content_types_malicious_content(self):
+        """
+        Regression test for CVE-2022-31041 to ensure the file content is validated
+        against the formio configuration.
+
+        We cannot rely on file extension or browser mime-type. Therefore, we have a test
+        file that claims to be a PDF but is actually an image that we put in the upload
+        data. The step attaching the uploads to the form data must validate the
+        configuration.
+        """
+        with open(TEST_FILES_DIR / "image-256x256.pdf", "rb") as infile:
+            upload1 = TemporaryFileUploadFactory.create(
+                file_name="my-pdf.pdf",
+                content=File(infile),
+                content_type="application/pdf",
+            )
+            upload2 = TemporaryFileUploadFactory.create(
+                file_name="my-pdf2.pdf", content=File(infile), content_type="image/png"
+            )
+
+        data = {
+            "my_file": [
+                {
+                    "url": f"http://server/api/v1/submissions/files/{upload1.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v1/submissions/files/{upload1.uuid}",
+                        "form": "",
+                        "name": "my-pdf.pdf",
+                        "size": 585,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "my-pdf-12305610-2da4-4694-a341-ccb919c3d543.png",
+                    "size": 585,
+                    "type": "application/pdf",  # we are lying!
+                    "storage": "url",
+                    "originalName": "my-pdf.pdf",
+                },
+                {
+                    "url": f"http://server/api/v1/submissions/files/{upload2.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v1/submissions/files/{upload2.uuid}",
+                        "form": "",
+                        "name": "my-pdf2.pdf",
+                        "size": 585,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "my-pdf2-12305610-2da4-4694-a341-ccb919c3d543.png",
+                    "size": 585,
+                    "type": "image/png",  # we are lying!
+                    "storage": "url",
+                    "originalName": "my-pdf2.pdf",
+                },
+            ],
+        }
+        formio_components = {
+            "key": "my_file",
+            "type": "file",
+            "multiple": True,
+            "file": {
+                "name": "",
+                "type": ["application/pdf"],
+            },
+            "filePattern": "application/pdf",
+        }
+
+        submission = SubmissionFactory.from_components(
+            [formio_components],
+            submitted_data=data,
+        )
+        submission_step = submission.submissionstep_set.get()
+
+        with self.assertRaises(ValidationError) as err_context:
+            attach_uploads_to_submission_step(submission_step)
+
+        validation_error = err_context.exception.get_full_details()
+        self.assertEqual(len(validation_error["my_file"]), 2)
+
+    @tag("GHSA-h85r-xv4w-cg8g")
+    def test_attach_upload_validates_file_content_types_ok(self):
+        """
+        Regression test for CVE-2022-31041 to ensure the file content is validated
+        against the formio configuration.
+
+        We cannot rely on file extension or browser mime-type. Therefore, we have a test
+        file that claims to be a PDF but is actually an image that we put in the upload
+        data. The step attaching the uploads to the form data must validate the
+        configuration.
+        """
+        with open(TEST_FILES_DIR / "image-256x256.png", "rb") as infile:
+            upload1 = TemporaryFileUploadFactory.create(
+                file_name="my-img.png",
+                content=File(infile),
+                content_type="image/png",
+            )
+            upload2 = TemporaryFileUploadFactory.create(
+                file_name="my-img2.png", content=File(infile), content_type="image/png"
+            )
+
+        data = {
+            "my_file": [
+                {
+                    "url": f"http://server/api/v1/submissions/files/{upload1.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v1/submissions/files/{upload1.uuid}",
+                        "form": "",
+                        "name": "my-img.png",
+                        "size": 585,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "my-img-12305610-2da4-4694-a341-ccb919c3d543.png",
+                    "size": 585,
+                    "type": "image/png",  # we are lying!
+                    "storage": "url",
+                    "originalName": "my-img.png",
+                },
+                {
+                    "url": f"http://server/api/v1/submissions/files/{upload2.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v1/submissions/files/{upload2.uuid}",
+                        "form": "",
+                        "name": "my-img2.png",
+                        "size": 585,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "my-img2-12305610-2da4-4694-a341-ccb919c3d543.png",
+                    "size": 585,
+                    "type": "image/png",  # we are lying!
+                    "storage": "url",
+                    "originalName": "my-img2.png",
+                },
+            ],
+        }
+        formio_components = {
+            "key": "my_file",
+            "type": "file",
+            "multiple": True,
+            "file": {
+                "name": "",
+                "type": ["image/png", "image/jpeg"],
+            },
+            "filePattern": "image/png,image/jpeg",
+        }
+
+        submission = SubmissionFactory.from_components(
+            [formio_components],
+            submitted_data=data,
+        )
+        submission_step = submission.submissionstep_set.get()
+
+        try:
+            attach_uploads_to_submission_step(submission_step)
+        except ValidationError:
+            self.fail("Uploads should be accepted since the content types are valid")
 
     @disable_2fa
     def test_attachment_retrieve_view_requires_permission(self):
