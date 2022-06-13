@@ -74,6 +74,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         vim \
         mime-support \
         postgresql-client \
+        libmagic1 \
         libxmlsec1 \
         libxmlsec1-openssl \
         gettext \

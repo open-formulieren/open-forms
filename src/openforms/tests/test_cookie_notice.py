@@ -1,12 +1,14 @@
 from io import StringIO
 
 from django.core.management import call_command
-from django.test import override_settings
+from django.test import override_settings, tag
 from django.urls import reverse
+from django.utils.translation import gettext as _
 
 from cookie_consent.cache import delete_cache
 from cookie_consent.models import CookieGroup
 from django_webtest import WebTest
+from furl import furl
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory
@@ -122,3 +124,46 @@ class CookieNoticeTests(WebTest):
             self.assertTemplateUsed(
                 refreshed_form_page, "includes/analytics/all_bottom.html"
             )
+
+    @tag("GHSA-c97h-m5qf-j8mf")
+    @override_settings(
+        CORS_ALLOW_ALL_ORIGINS=False,
+        CORS_ALLOWED_ORIGINS=["https://external.domain.com"],
+        ALLOWED_HOSTS=["testserver", "example.com"],
+        IS_HTTPS=True,
+    )
+    def test_accept_reject_does_not_allow_open_redirect(self):
+        url = reverse("cookie_consent_cookie_group_list")
+        allowed_redirects = (
+            "https://example.com/foo/bar",
+            "https://testserver/admin/",
+            "/admin/",
+        )
+        blocked_redirects = (
+            "http://example.com",
+            "https://evil.com",
+        )
+
+        for allowed in allowed_redirects:
+            with self.subTest(f"Allowed redirect to '{allowed}'"):
+                self.renew_app()
+
+                cookies_page = self.app.get(url, {"referer": allowed})
+
+                button = cookies_page.pyquery.find("a.button--primary")
+                self.assertEqual(button.attr["href"], allowed)
+                self.assertEqual(button.text(), _("Close"))
+
+        for blocked in blocked_redirects:
+            with self.subTest(f"Blockedredirect to '{blocked}'"):
+                self.renew_app()
+
+                cookies_page = self.app.get(url, {"referer": blocked})
+
+                button = cookies_page.pyquery.find("a.button--primary")
+                self.assertFalse(button)
+
+                for form in cookies_page.forms.values():
+                    next_url = furl(form["next"].value)
+
+                    self.assertEqual(next_url.args.get("referer", ""), "")
