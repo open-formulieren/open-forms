@@ -111,7 +111,7 @@ Licensed under the `EUPL`_.
     :alt: Code style
     :target: https://github.com/psf/black
 
-.. |docker| image:: https://img.shields.io/docker/v/openformulieren/open-forms
+.. |docker| image:: https://img.shields.io/docker/v/openformulieren/open-forms?sort=semver
     :alt: Docker image
     :target: https://hub.docker.com/r/openformulieren/open-forms
 
