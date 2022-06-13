@@ -2,6 +2,18 @@
 Changelog
 =========
 
+1.1.1 (2022-06-13)
+==================
+
+Security release (CVE-2022-31040, CVE-2022-31041)
+
+This bugfix release fixes two security issues in Open Forms. We recommend upgrading
+as soon as possible.
+
+* [CVE-2022-31040] Fixed open redirect in cookie-consent 'close' button
+* [CVE-2022-31041] Perform upload content validation against allowed file types
+* [#1670] Update error message for number validation
+
 1.1.0 (2022-05-24)
 ==================
 
