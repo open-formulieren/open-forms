@@ -58,6 +58,10 @@ VERSION_PARAMETER = OpenApiParameter(
 @extend_schema_view(
     get=extend_schema(
         summary=_("List available decision plugins"),
+        responses={
+            200: DecisionPluginSerializer,
+            403: ExceptionSerializer,
+        },
     ),
 )
 class PluginListView(ListMixin, APIView):
@@ -80,6 +84,7 @@ class PluginListView(ListMixin, APIView):
         responses={
             200: DecisionDefinitionSerializer(many=True),
             400: ValidationErrorSerializer,
+            403: ExceptionSerializer,
         },
     ),
 )
@@ -109,6 +114,7 @@ class DecisionDefinitionListView(
         responses={
             200: DecisionDefinitionVersionSerializer(many=True),
             400: ValidationErrorSerializer,
+            403: ExceptionSerializer,
         },
     ),
 )
@@ -147,6 +153,7 @@ class DecisionDefinitionVersionListView(
         responses={
             200: DecisionDefinitionXMLSerializer,
             400: ValidationErrorSerializer,
+            403: ExceptionSerializer,
         },
     ),
 )
