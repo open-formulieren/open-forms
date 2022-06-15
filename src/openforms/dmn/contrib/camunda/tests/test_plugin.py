@@ -1,0 +1,93 @@
+"""
+Camunda plugin tests.
+
+These tests assume the configuration from the include docker-compose::
+
+    cd /path/to/root/of/repo
+    cd docker
+    docker-compose -f docker-compose.camunda.yml up -d
+
+The default demo image contains a couple of decision definitions that we can use for
+tests. Note that these tests are skipped if Camunda is not available.
+
+You can also point to a different host/URL and/or credentials through environment
+variables, see :module:`openforms.contrib.camunda.tests.utils`.
+"""
+from unittest.mock import patch
+
+from django.test import TestCase
+
+from lxml import etree
+
+from openforms.contrib.camunda.tests.utils import get_camunda_client, require_camunda
+
+from ....registry import register
+
+plugin = register["camunda"]
+
+
+@require_camunda
+class CamundaDMNTests(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        # patch the get_client call to return our configured client
+        self.camunda_client = get_camunda_client()
+        patcher = patch(
+            "openforms.dmn.contrib.camunda.plugin.get_client",
+            return_value=self.camunda_client,
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def test_list_process_definitions(self):
+        definitions = plugin.get_available_decision_definitions()
+
+        # default camunda demo image contains 2 decision definitions, there *may* be
+        # additional images deployed for local testing/development
+        self.assertGreaterEqual(len(definitions), 2)
+        identifiers = {definition.identifier for definition in definitions}
+        self.assertTrue(
+            {"invoice-assign-approver", "invoiceClassification"}.issubset(identifiers)
+        )
+
+    def test_get_decision_definition_versions(self):
+        versions = plugin.get_decision_definition_versions("invoiceClassification")
+
+        # 2 versions deployed by default by Camunda, could be more due to local testing
+        self.assertGreaterEqual(len(versions), 2)
+        versions = {version.id for version in versions}
+        self.assertTrue({"1", "2"}.issubset(versions))
+
+    def test_retrieve_xml_looks_like_xml(self):
+        xml = plugin.get_definition_xml("invoiceClassification", version="1")
+
+        self.assertIsInstance(xml, str)
+        self.assertNotEqual(xml, "")
+        # check that it can be parsed with lxml
+        tree = etree.fromstring(xml.encode("utf-8"))
+        default_ns = tree.nsmap[None]
+        self.assertEqual(tree.tag, f"{{{default_ns}}}definitions")
+
+    def test_evaluate_without_pinned_version(self):
+        result = plugin.evaluate(
+            "invoiceClassification",
+            input_values={
+                "invoiceCategory": "Travel Expenses",
+                "amount": 30.0,
+            },
+        )
+
+        self.assertEqual(result, {"invoiceClassification": "day-to-day expense"})
+
+    def test_evaluate_with_pinned_version(self):
+        result = plugin.evaluate(
+            "invoiceClassification",
+            version="1",
+            input_values={
+                "invoiceCategory": "Misc",
+                "amount": 752.2,
+            },
+        )
+
+        self.assertEqual(result, {"invoiceClassification": "budget"})

@@ -16,15 +16,17 @@ CAMUNDA_API_BASE_URL = os.getenv(
 )
 
 
-def require_camunda():
+def require_camunda(func):
     """
     Decorator to skip test(s) if Camunda is not available.
     """
     parsed = urlparse(CAMUNDA_API_BASE_URL)
     conn_available = can_connect(parsed.netloc)
-    return skipIf(
-        not conn_available, f"Cannot connect to Camunda host '{CAMUNDA_API_BASE_URL}'"
+    reason = (
+        f"Cannot connect to Camunda host '{CAMUNDA_API_BASE_URL}'. You can bring "
+        "the services up with docker-compose, see the 'docker/camunda' folder."
     )
+    return skipIf(not conn_available, reason)(func)
 
 
 def get_camunda_client() -> Camunda:
