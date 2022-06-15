@@ -7,12 +7,20 @@ from openforms.plugins.plugin import AbstractBasePlugin
 
 @dataclass
 class DecisionDefinition:
+    """
+    Represent a single decision definition.
+    """
+
     identifier: str
     label: str
 
 
 @dataclass
 class DecisionDefinitionVersion:
+    """
+    Represent a version of a decision definition.
+    """
+
     id: str
     label: str
 
@@ -23,7 +31,7 @@ class BasePlugin(ABC, AbstractBasePlugin):
         """
         Get a collection of all the available decision definitions.
 
-        The end-user configuring the component selects one of the available choices.
+        The end-user configuring the evaluation selects one of the available choices.
         Note that different versions of the same definition must be filtered out, as
         specifying a particular version is a separate action.
         """
