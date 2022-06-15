@@ -5,7 +5,6 @@ from django.core.management import BaseCommand
 from tabulate import tabulate
 
 from ...registry import register
-from ...service import evaluate_dmn
 
 
 class Command(BaseCommand):
@@ -61,7 +60,7 @@ class Command(BaseCommand):
                 for version in versions:
                     data.append(["", "", version.id, version.label])
 
-        self.stdout.write(f"Found {len(definitions)} definitions.\n\n")
+        self.stdout.write(f"Found {len(definitions)} definition(s).\n\n")
 
         table = tabulate(data, headers=headers)
         for line in table.splitlines():

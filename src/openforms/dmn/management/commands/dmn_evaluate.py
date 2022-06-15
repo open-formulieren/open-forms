@@ -46,6 +46,7 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             "--definition-version",
+            default="",
             help=(
                 "Optional definition version to evaluate. If not specified, the latest "
                 "version should be used."
@@ -65,7 +66,7 @@ class Command(BaseCommand):
         engine = options["engine"]
         definition_id = options["definition_id"]
         version = options["definition_version"]
-        variables = options["vars"]
+        variables = options["vars"] or ()
 
         result = evaluate_dmn(
             engine, definition_id, version=version, input_values=dict(variables)
