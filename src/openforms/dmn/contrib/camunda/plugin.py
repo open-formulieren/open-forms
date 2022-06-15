@@ -1,8 +1,12 @@
+import json
 import logging
+from contextlib import contextmanager
 from typing import Any, Dict, List
 
 from django.utils.translation import gettext_lazy as _
 
+import requests
+import simplejson  # dependency pulled in via mail-parser...
 from django_camunda.client import Camunda, get_client
 from django_camunda.dmn import evaluate_dmn
 
@@ -35,6 +39,19 @@ def _get_decision_definition_id(client: Camunda, key: str, version: str = ""):
     return results[0]["id"]
 
 
+def handle_camunda_error(error: requests.HTTPError):
+    logger.exception("Error occurred while calling Camunda API", exc_info=error)
+    if error.response is None:
+        raise
+
+    try:
+        response_body = error.response.json()
+    except (json.JSONDecodeError, simplejson.JSONDecodeError):
+        logger.exception("Could not decode JSON data in error response body")
+    else:
+        logger.error("Camunda error information: %r", response_body)
+
+
 @register("camunda")
 class Plugin(BasePlugin):
     verbose_name = _("Camunda")
@@ -59,12 +76,16 @@ class Plugin(BasePlugin):
     ) -> Dict[str, Any]:
         with get_client() as client:
             camunda_id = _get_decision_definition_id(client, definition_id, version)
-            result = evaluate_dmn(
-                dmn_key=definition_id,
-                dmn_id=camunda_id,
-                input_values=input_values,
-                client=client,
-            )
+            try:
+                result = evaluate_dmn(
+                    dmn_key=definition_id,
+                    dmn_id=camunda_id,
+                    input_values=input_values,
+                    client=client,
+                )
+            except requests.HTTPError as error:
+                handle_camunda_error(error)
+                return {}
         return result
 
     @staticmethod

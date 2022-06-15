@@ -13,11 +13,14 @@ tests. Note that these tests are skipped if Camunda is not available.
 You can also point to a different host/URL and/or credentials through environment
 variables, see :module:`openforms.contrib.camunda.tests.utils`.
 """
+import logging
 from unittest.mock import patch
 
 from django.test import TestCase
 
+import requests_mock
 from lxml import etree
+from testfixtures import LogCapture
 
 from openforms.contrib.camunda.tests.utils import get_camunda_client, require_camunda
 
@@ -91,3 +94,55 @@ class CamundaDMNTests(TestCase):
         )
 
         self.assertEqual(result, {"invoiceClassification": "budget"})
+
+    def test_evaluation_bad_input(self):
+        with self.subTest("Camunda 500"):
+            with LogCapture(
+                level=logging.ERROR, names="openforms.dmn.contrib.camunda.plugin"
+            ) as capture:
+                result = plugin.evaluate(
+                    "invoiceClassification",
+                    # invoiceCategory value is missing
+                    input_values={"amount": 30.0},
+                )
+
+            self.assertEqual(result, {})
+
+            self.assertEqual(len(capture.records), 2)
+            self.assertEqual(
+                capture.records[0].msg, "Error occurred while calling Camunda API"
+            )
+            self.assertRegex(capture.records[1].msg, r"^Camunda error information: .*")
+
+        with self.subTest(
+            "Mocked 500 without JSON response body"
+        ), requests_mock.Mocker() as m:
+            m.get(
+                f"{self.camunda_client.root_url}decision-definition",
+                json=[{"id": "mocked-id"}],
+            )
+            m.post(
+                f"{self.camunda_client.root_url}decision-definition/mocked-id/evaluate",
+                status_code=500,
+                text="errored",
+            )
+
+            with LogCapture(
+                level=logging.ERROR, names="openforms.dmn.contrib.camunda.plugin"
+            ) as capture:
+                result = plugin.evaluate(
+                    "invoiceClassification",
+                    # invoiceCategory value is missing
+                    input_values={"amount": 30.0},
+                )
+
+            self.assertEqual(result, {})
+
+            self.assertEqual(len(capture.records), 2)
+            self.assertEqual(
+                capture.records[0].msg, "Error occurred while calling Camunda API"
+            )
+            self.assertEqual(
+                capture.records[1].msg,
+                "Could not decode JSON data in error response body",
+            )
