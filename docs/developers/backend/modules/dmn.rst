@@ -18,9 +18,12 @@ implemented in the plugins.
 Python API
 ----------
 
-The public Python API is an abstraction over the various engines.
+The public API serves as an abstraction over the various engines.
 
-.. todo:: Implement public API
+**Reference**
+
+.. automodule:: openforms.dmn.service
+   :members:
 
 -------------------------
 Available implementations

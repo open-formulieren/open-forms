@@ -14,6 +14,7 @@ You can also point to a different host/URL and/or credentials through environmen
 variables, see :module:`openforms.contrib.camunda.tests.utils`.
 """
 import logging
+from functools import partial
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -25,7 +26,9 @@ from testfixtures import LogCapture
 from openforms.contrib.camunda.tests.utils import get_camunda_client, require_camunda
 
 from ....registry import register
+from ....service import evaluate_dmn
 
+_evaluate_dmn = partial(evaluate_dmn, "camunda")
 plugin = register["camunda"]
 
 
@@ -73,7 +76,7 @@ class CamundaDMNTests(TestCase):
         self.assertEqual(tree.tag, f"{{{default_ns}}}definitions")
 
     def test_evaluate_without_pinned_version(self):
-        result = plugin.evaluate(
+        result = _evaluate_dmn(
             "invoiceClassification",
             input_values={
                 "invoiceCategory": "Travel Expenses",
@@ -84,7 +87,7 @@ class CamundaDMNTests(TestCase):
         self.assertEqual(result, {"invoiceClassification": "day-to-day expense"})
 
     def test_evaluate_with_pinned_version(self):
-        result = plugin.evaluate(
+        result = _evaluate_dmn(
             "invoiceClassification",
             version="1",
             input_values={
@@ -100,7 +103,7 @@ class CamundaDMNTests(TestCase):
             with LogCapture(
                 level=logging.ERROR, names="openforms.dmn.contrib.camunda.plugin"
             ) as capture:
-                result = plugin.evaluate(
+                result = _evaluate_dmn(
                     "invoiceClassification",
                     # invoiceCategory value is missing
                     input_values={"amount": 30.0},
@@ -130,7 +133,7 @@ class CamundaDMNTests(TestCase):
             with LogCapture(
                 level=logging.ERROR, names="openforms.dmn.contrib.camunda.plugin"
             ) as capture:
-                result = plugin.evaluate(
+                result = _evaluate_dmn(
                     "invoiceClassification",
                     # invoiceCategory value is missing
                     input_values={"amount": 30.0},
