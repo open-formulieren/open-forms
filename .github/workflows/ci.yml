@@ -14,6 +14,9 @@ on:
 env:
   IMAGE_NAME: openformulieren/open-forms
   DJANGO_SETTINGS_MODULE: openforms.conf.ci
+  CAMUNDA_API_BASE_URL: http://localhost:8080/engine-rest/
+  CAMUNDA_USER: demo
+  CAMUNDA_PASSWORD: demo
 
 jobs:
   tests:
@@ -56,6 +59,7 @@ jobs:
       - name: Start CI docker services
         run: |
           docker-compose -f docker-compose.ci.yml up -d
+          docker-compose -f docker-compose.camunda.yml up -d
         working-directory: docker
 
       - name: Install dependencies
@@ -67,6 +71,19 @@ jobs:
         run: |
           npm ci --legacy-peer-deps
           npm run build
+
+      - name: Wait for Camunda to be up
+        run: |
+          endpoint="${CAMUNDA_API_BASE_URL}version"
+          version=""
+
+          until [ $version ]; do
+            echo "Checking if Camunda at ${CAMUNDA_API_BASE_URL} is up..."
+            version=$(curl -u ${CAMUNDA_USER}:${CAMUNDA_PASSWORD} "$endpoint" -s | jq -r ".version")
+            sleep 2
+          done
+
+          echo "Running Camunda $version"
 
       - name: Run tests
         run: |
