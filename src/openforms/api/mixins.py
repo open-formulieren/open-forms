@@ -15,9 +15,12 @@ class ValidateQueryStringParametersMixin:
         for param in self.validate_params:
             value = self.request.GET.get(param.name)
             if not value and param.required:
-                errors[param.name] = _(
-                    "The '{param}' query parameter is required."
-                ).format(param=param.name)
+                error_message = _("The '{param}' query parameter is required.").format(
+                    param=param.name
+                )
+                errors[param.name] = serializers.ErrorDetail(
+                    error_message, code="required"
+                )
             elif value and param.enum and value not in param.enum:
                 errors[param.name] = _(
                     "The value '{value}' is not a valid value for the '{param}' query "

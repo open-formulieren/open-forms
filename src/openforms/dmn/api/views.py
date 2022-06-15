@@ -117,6 +117,7 @@ class DecisionDefinitionVersionListView(
 ):
     """
     List the available versions of a given definition.
+
     If the selected engine supports multiple versions of decision definitions, they can
     be retrieved through this endpoint. You must specify the engine and selected
     definition ID.
@@ -138,7 +139,7 @@ class DecisionDefinitionVersionListView(
 
 @extend_schema_view(
     get=extend_schema(
-        summary=_("List available decision definition versions"),
+        summary=_("Retrieve the decision definition XML"),
         parameters=[
             ENGINE_PARAMETER,
             VERSION_PARAMETER,
