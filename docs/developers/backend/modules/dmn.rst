@@ -43,6 +43,18 @@ Configuration is done in the admin via **Configuratie** > **Camunda configuratio
 Plugin developer reference
 --------------------------
 
+Management commands
+-------------------
+
+Open Forms provides two management commands for introspection and (local) testing.
+Please see the ``--help`` for each command for detailed information.
+
+* ``dmn_list_definitions``: retrieve the available decision definitions and their versions
+* ``dmn_evaluate``: evaluate a particular decision table with provided input variables
+
+Python API
+----------
+
 This section serves as a reference for DMN plugins.
 
 .. automodule:: openforms.dmn.base
