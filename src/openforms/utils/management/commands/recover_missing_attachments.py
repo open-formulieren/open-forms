@@ -49,6 +49,7 @@ class Command(BaseCommand):
         )
 
         affected_submissions = set()
+        not_affected_submissions = set()
 
         for submission in potentially_affected_submissions:
             for submission_step in submission.submissionstep_set.all():
@@ -56,6 +57,8 @@ class Command(BaseCommand):
                     results = attach_uploads_to_submission_step(submission_step)
                     if any(created for (_, created) in results):
                         affected_submissions.add(submission)
+                    else:
+                        not_affected_submissions.add(submission)
                 except ValidationError as exc:
                     self.stderr.write(
                         f"Submission {get_ref(submission)} with ID {submission.id} has invalid file uploads. Errors: {exc}"
@@ -69,5 +72,12 @@ class Command(BaseCommand):
             )
             for submission in sorted(
                 affected_submissions, key=lambda sub: sub.created_on
+            ):
+                self.stdout.write(f"  {get_ref(submission)}, ID: {submission.id}")
+
+        if len(not_affected_submissions):
+            self.stdout.write("Submissions that were not affected:")
+            for submission in sorted(
+                not_affected_submissions, key=lambda sub: sub.created_on
             ):
                 self.stdout.write(f"  {get_ref(submission)}, ID: {submission.id}")
