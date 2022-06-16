@@ -1,3 +1,4 @@
+import logging
 import os.path
 import re
 from collections import defaultdict
@@ -18,12 +19,15 @@ from rest_framework.exceptions import ValidationError
 
 from openforms.api.exceptions import RequestEntityTooLarge
 from openforms.conf.utils import Filesize
+from openforms.formio.service import mimetype_allowed
 from openforms.submissions.models import (
     Submission,
     SubmissionFileAttachment,
     SubmissionStep,
     TemporaryFileUpload,
 )
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_IMAGE_MAX_SIZE = (10000, 10000)
 
@@ -135,7 +139,11 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
 
             # if no allowed_mime_types are defined on the file component, then all filetypes
             # are allowed and we skip validation.
-            if allowed_mime_types and file_mime_type not in allowed_mime_types:
+            if not mimetype_allowed(file_mime_type, allowed_mime_types):
+                logger.warning(
+                    "Blocking submission upload %d because of invalid mime type check",
+                    upload.id,
+                )
                 validation_errors[key].append(invalid_file_type_error)
                 continue
 

@@ -1,4 +1,4 @@
-from typing import Any, Dict, Iterator
+from typing import Any, Dict, Iterator, List
 
 from .typing import Component
 
@@ -36,3 +36,18 @@ def get_default_values(configuration: dict) -> Dict[str, Any]:
         defaults[component["key"]] = component["defaultValue"]
 
     return defaults
+
+
+def mimetype_allowed(mime_type: str, allowed_mime_types: List[str]) -> bool:
+    """
+    Test if the file mime type passes the allowed_mime_types Formio configuration.
+    """
+    #  no allowlist specified -> everything is allowed
+    if not allowed_mime_types:
+        return True
+
+    # wildcard specified -> everything is allowed
+    if "*" in allowed_mime_types:
+        return True
+
+    return mime_type in allowed_mime_types

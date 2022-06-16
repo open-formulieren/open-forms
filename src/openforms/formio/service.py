@@ -3,10 +3,11 @@ from django.urls import reverse
 import elasticapm
 from rest_framework.request import Request
 
-from openforms.formio.utils import iter_components
 from openforms.forms.custom_field_types import handle_custom_types
 from openforms.prefill import apply_prefill
 from openforms.submissions.models import Submission
+
+from .utils import iter_components, mimetype_allowed  # noqa
 
 
 # TODO: it might be beneficial to memoize this function if it runs multiple times in
