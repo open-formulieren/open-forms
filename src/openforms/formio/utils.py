@@ -1,6 +1,6 @@
 import logging
 from datetime import date, datetime
-from typing import Any, Dict, Iterator
+from typing import Any, Dict, Iterator, List
 
 from .constants import COMPONENT_DATATYPES
 from .typing import Component
@@ -79,3 +79,18 @@ def format_date_value(date_value: str) -> str:
 def get_component_datatype(component):
     component_type = component["type"]
     return COMPONENT_DATATYPES.get(component_type, "string")
+
+
+def mimetype_allowed(mime_type: str, allowed_mime_types: List[str]) -> bool:
+    """
+    Test if the file mime type passes the allowed_mime_types Formio configuration.
+    """
+    #  no allowlist specified -> everything is allowed
+    if not allowed_mime_types:
+        return True
+
+    # wildcard specified -> everything is allowed
+    if "*" in allowed_mime_types:
+        return True
+
+    return mime_type in allowed_mime_types

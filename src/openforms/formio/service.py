@@ -6,10 +6,11 @@ import elasticapm
 from rest_framework.request import Request
 
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.utils import format_date_value, iter_components
 from openforms.forms.custom_field_types import handle_custom_types
 from openforms.prefill import _set_default_values, apply_prefill
 from openforms.submissions.models import Submission, SubmissionValueVariable
+
+from .utils import format_date_value, iter_components, mimetype_allowed  # noqa
 
 
 # TODO: it might be beneficial to memoize this function if it runs multiple times in

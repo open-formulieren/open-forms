@@ -497,6 +497,65 @@ class SubmissionAttachmentTest(VariablesTestMixin, TestCase):
         except ValidationError:
             self.fail("Uploads should be accepted since the content types are valid")
 
+    @tag("GHSA-h85r-xv4w-cg8g")
+    def test_attach_upload_validates_file_content_types_wildcard(self):
+        """
+        Regression test for the initial CVE-2022-31041 patch.
+
+        Assert that file uploads are allowed if the "All" file types in the file
+        configuration tab is used, which presents as a '*' entry.
+        """
+        with open(TEST_FILES_DIR / "image-256x256.png", "rb") as infile:
+            upload = TemporaryFileUploadFactory.create(
+                file_name="my-img.png",
+                content=File(infile),
+                content_type="image/png",
+            )
+
+        data = {
+            "my_file": [
+                {
+                    "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                        "form": "",
+                        "name": "my-img.png",
+                        "size": 585,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "my-img-12305610-2da4-4694-a341-ccb919c3d543.png",
+                    "size": 585,
+                    "type": "image/png",  # we are lying!
+                    "storage": "url",
+                    "originalName": "my-img.png",
+                },
+            ],
+        }
+        formio_components = {
+            "key": "my_file",
+            "type": "file",
+            "multiple": True,
+            "file": {
+                "name": "",
+                "type": ["*"],
+            },
+            "filePattern": "*",
+        }
+
+        submission = SubmissionFactory.from_components(
+            [formio_components],
+            submitted_data=data,
+        )
+        submission_step = submission.submissionstep_set.get()
+
+        try:
+            attach_uploads_to_submission_step(submission_step)
+        except ValidationError:
+            self.fail(
+                "Uploads should be accepted since the content types match the wildcard"
+            )
+
     @disable_2fa
     def test_attachment_retrieve_view_requires_permission(self):
         attachment = SubmissionFileAttachmentFactory.create()
