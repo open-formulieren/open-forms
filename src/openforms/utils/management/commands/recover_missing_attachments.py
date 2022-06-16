@@ -71,5 +71,3 @@ class Command(BaseCommand):
                 affected_submissions, key=lambda sub: sub.created_on
             ):
                 self.stdout.write(f"  {get_ref(submission)}, ID: {submission.id}")
-
-        raise Exception
