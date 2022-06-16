@@ -2,6 +2,35 @@
 Changelog
 =========
 
+1.0.10 (2022-06-16)
+===================
+
+Hotfix following 1.0.9
+
+The patch validating uploaded file content types did not anticipate the explicit
+wildcard configuration option in Formio to allow all file types. This caused files
+uploaded by end-users to not be attached to the submission.
+
+We've fixed the wildcard behaviour, but you should check your instances for incomplete
+data. This involves a couple of steps with some pointers below.
+
+1. The temporary uploads are automatically removed by the cronjobs at 3:30 UTC. The
+   default setting is to do this after 2 days (48 hours). We have provided an example
+   `management command <https://github.com/open-formulieren/open-forms/blob/issue/recover-missing-submission-attachments/src/openforms/utils/management/commands/check_restore_needed.py>`_ that you can use to check if you need to partially
+   restore backups. Make sure to tweak the ``WINDOW_START`` and ``WINDOW_END`` variables
+   to your specific situation - the start would be when you started deploying version
+   1.0.9, and the end would be ``most recent 3:30 minus 48 hours``.
+
+2. If you need to do partial restores, you should recover the records from the
+   ``submissions_temporaryfileupload`` database table where the ``created_on`` timestamp
+   lies in your interval. Additionally, you need to recover the file uploads of those
+   relevant records. The paths are given by the column ``content``. You find those files
+   in the ``private_media`` directory.
+
+3. Finally, you can run the management command ``recover_missing_attachments``, which
+   will report any issues and print out the references and IDs of the affected
+   submissions.
+
 1.0.9 (2022-06-13)
 ==================
 
