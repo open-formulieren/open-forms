@@ -1,0 +1,88 @@
+.form-category-tree {
+  --spacer-width: 1em;
+
+  // override django admin row styling
+  tbody tr:nth-child(odd) {
+    background: var(--darkened-bg);
+  }
+
+  tbody tr:nth-child(even) {
+    background: var(--body-bg);
+  }
+}
+
+.form-category {
+  td,
+  th {
+    border-bottom: 2px solid var(--hairline-color);
+  }
+
+  &__icon {
+    padding-right: 0.5em;
+
+    &#{&}--collapsed {
+      display: none;
+    }
+
+    &#{&}--expanded {
+      display: inline;
+    }
+  }
+
+  &#{&}--has-children * {
+    cursor: pointer;
+  }
+
+  &#{&}--hidden {
+    display: none;
+  }
+
+  &#{&}--collapsed {
+    & ~ .form-category__item {
+      display: none;
+    }
+
+    .form-category__icon--collapsed {
+      display: inline;
+    }
+
+    .form-category__icon--expanded {
+      display: none;
+    }
+  }
+
+  &__spacer {
+    display: inline-block;
+    width: var(--spacer-width);
+  }
+
+  &__name {
+    padding: 8px 10px;
+    background: var(--darkened-bg);
+    color: var(--body-quiet-color);
+    font-weight: 600;
+  }
+
+  &__item {
+    --depth: 0;
+
+    .field-anno_name {
+      padding-left: calc(1.1 * var(--spacer-width) * var(--depth) + 8px);
+    }
+
+    // hack because `attr` is not properly supported yet :(, see
+    // https://stackoverflow.com/a/40815884
+    // arbitrary max depth of 20 support
+    @for $depth from 1 through 20 {
+      &[data-depth='#{$depth}'] {
+        --depth: #{$depth - 1};
+      }
+    }
+  }
+
+  &__loader {
+    .box-loader {
+      margin: 0 auto;
+    }
+  }
+}

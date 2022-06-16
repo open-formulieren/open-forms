@@ -39,6 +39,20 @@ export const SUMBISSION_ALLOWED_CHOICES = [
   ],
 ];
 
+const getCategoryChoices = available => {
+  const choices = [['', '----']];
+
+  for (let category of available) {
+    let label = category.name;
+    // join parts like a path
+    for (let ancestor of category.ancestors.concat().reverse()) {
+      label = ancestor.name + ' / ' + label;
+    }
+    choices.push([category.url, label]);
+  }
+  return choices;
+};
+
 /**
  * Component to render the metadata admin form for an Open Forms form.
  */
@@ -48,6 +62,7 @@ const FormMetaFields = ({
   availableAuthPlugins,
   selectedAuthPlugins,
   onAuthPluginChange,
+  availableCategories,
 }) => {
   const {
     uuid,
@@ -56,6 +71,7 @@ const FormMetaFields = ({
     slug,
     showProgressIndicator,
     active,
+    category,
     isDeleted,
     maintenanceMode,
     submissionAllowed,
@@ -146,6 +162,27 @@ const FormMetaFields = ({
           required
         >
           <TextInput value={slug} onChange={onChange} />
+        </Field>
+      </FormRow>
+
+      <FormRow>
+        <Field
+          name="form.category"
+          label={
+            <FormattedMessage defaultMessage="Category" description="Form category field label" />
+          }
+          helpText={
+            <FormattedMessage
+              defaultMessage="Optional category for internal organisation."
+              description="Form category field help text"
+            />
+          }
+        >
+          <Select
+            choices={getCategoryChoices(availableCategories)}
+            value={category}
+            onChange={onChange}
+          />
         </Field>
       </FormRow>
 

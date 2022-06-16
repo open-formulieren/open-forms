@@ -1,4 +1,6 @@
 from django.contrib import admin, messages
+from django.contrib.admin.templatetags.admin_list import result_headers
+from django.db.models import Count
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
@@ -12,7 +14,7 @@ from openforms.payments.admin import PaymentBackendChoiceFieldMixin
 from openforms.registrations.admin import RegistrationBackendFieldMixin
 from openforms.utils.expressions import FirstNotBlank
 
-from ..models import Form, FormDefinition, FormStep
+from ..models import Category, Form, FormDefinition, FormStep
 from ..models.form import FormsExport
 from ..utils import export_form, get_duplicates_keys_for_form
 from .mixins import FormioConfigMixin
@@ -119,17 +121,89 @@ class FormAdmin(
         "remove_from_maintenance_mode",
         "export_forms",
     ]
-    list_filter = ("active", "maintenance_mode", FormDeletedListFilter)
+    list_select = ("category",)
+    list_filter = (
+        "active",
+        "maintenance_mode",
+        FormDeletedListFilter,
+    )
     search_fields = ("name", "internal_name")
 
     change_list_template = "admin/forms/form/change_list.html"
 
     def changelist_view(self, request, extra_context=None):
+        if request.GET.get("_async"):
+            return self._async_changelist_view(request)
+
+        # get the category tree and extra permission info for the custom import button
+        extra_context = extra_context or {}
+        categories_qs = Category.get_tree(parent=None).annotate(
+            total_form_count=Count("form")
+        )
+        extra_context.update(
+            {
+                "categories": categories_qs,
+                "has_change_permission": self.has_change_permission(request),
+            }
+        )
+        # rely on the TemplateResponse not being rendered to alter the template
+        # context
+        response = super().changelist_view(request, extra_context)
+        if not isinstance(response, TemplateResponse):
+            return response
+
+        changelist_instance = response.context_data.get("cl")
+        if changelist_instance:
+            changelist_queryset = changelist_instance.get_queryset(request)
+            num_without_category = changelist_queryset.filter(
+                category__isnull=True
+            ).count()
+            response.context_data.update(
+                {
+                    "total_count_no_category": self.get_queryset(request)
+                    .filter(category__isnull=True)
+                    .count(),
+                    "count_no_category": num_without_category,
+                    "result_headers": list(result_headers(changelist_instance)),
+                    # apply filter context to count
+                    "categories": categories_qs.annotate(
+                        form_count=Count("form", filter=changelist_queryset.query.where)
+                    ),
+                }
+            )
+
+        return response
+
+    def _async_changelist_view(self, request):
+        # YOLO
+        request.GET._mutable = True
+        del request.GET["_async"]
+
+        if request.GET["category"] == "":
+            del request.GET["category"]
+            request.GET["category__isnull"] = "1"
+
+        opts = self.model._meta
+        cl = self.get_changelist_instance(request)
+        cl.formset = None
         context = {
-            "has_change_permission": self.has_change_permission(request),
+            **self.admin_site.each_context(request),
+            "module_name": str(opts.verbose_name_plural),
+            "cl": cl,
+            "opts": cl.opts,
         }
-        context.update(extra_context or {})
-        return super().changelist_view(request, context)
+
+        return TemplateResponse(
+            request,
+            "admin/forms/form/category_form_list.html",
+            context,
+            headers={
+                "X-Pagination-Count": cl.paginator.count,
+                "X-Pagination-Pages": ",".join(
+                    [str(p) for p in cl.paginator.page_range]
+                ),
+            },
+        )
 
     def get_queryset(self, request):
         # annotate .name for ordering
@@ -139,17 +213,14 @@ class FormAdmin(
             .annotate(anno_name=FirstNotBlank("internal_name", "name"))
         )
 
+    @admin.display(description=_("Actions"))
     def get_object_actions(self, obj) -> str:
         links = ((obj.get_absolute_url(), _("Show form")),)
         return format_html_join(" | ", '<a href="{}" target="_blank">{}</a>', links)
 
-    get_object_actions.short_description = _("Actions")
-
-    def anno_name(self, obj):
+    @admin.display(description=_("name"), ordering="anno_name")
+    def anno_name(self, obj) -> str:
         return obj.admin_name
-
-    anno_name.admin_order_field = "anno_name"
-    anno_name.short_description = _("name")
 
     def get_form(self, request, *args, **kwargs):
         if kwargs.get("change"):
@@ -234,6 +305,7 @@ class FormAdmin(
         ]
         return my_urls + urls
 
+    @admin.action(description=_("Copy selected %(verbose_name_plural)s"))
     def make_copies(self, request, queryset):
         for instance in queryset:
             instance.copy()
@@ -251,8 +323,9 @@ class FormAdmin(
             ),
         )
 
-    make_copies.short_description = _("Copy selected %(verbose_name_plural)s")
-
+    @admin.action(
+        description=_("Set selected %(verbose_name_plural)s to maintenance mode")
+    )
     def set_to_maintenance_mode(self, request, queryset):
         count = queryset.filter(maintenance_mode=False).update(maintenance_mode=True)
         messages.success(
@@ -268,10 +341,7 @@ class FormAdmin(
             ),
         )
 
-    set_to_maintenance_mode.short_description = _(
-        "Set selected %(verbose_name_plural)s to maintenance mode"
-    )
-
+    @admin.action(description=_("Remove %(verbose_name_plural)s from maintenance mode"))
     def remove_from_maintenance_mode(self, request, queryset):
         count = queryset.filter(maintenance_mode=True).update(maintenance_mode=False)
         messages.success(
@@ -286,10 +356,6 @@ class FormAdmin(
                 verbose_name_plural=queryset.model._meta.verbose_name_plural,
             ),
         )
-
-    remove_from_maintenance_mode.short_description = _(
-        "Remove %(verbose_name_plural)s from maintenance mode"
-    )
 
     def delete_model(self, request, form):
         """

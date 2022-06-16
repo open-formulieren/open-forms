@@ -20,8 +20,48 @@ from openforms.tests.utils import disable_2fa
 from openforms.utils.admin import SubmitActions
 
 from ...admin.form import FormAdmin
-from ...models import Form, FormDefinition, FormStep, FormVariable
+from ...models import Category, Form, FormDefinition, FormStep, FormVariable
 from ...tests.factories import FormDefinitionFactory, FormFactory, FormStepFactory
+
+
+class FormListAjaxMixin:
+    def _get_form_changelist(self, query=None, **kwargs):
+        """
+        Utility to mimick the ajax-loading of form tables per category.
+        """
+        query = query or {}
+
+        url = reverse("admin:forms_form_changelist")
+        # get the server rendered scaffolding
+        changelist = self.app.get(url, params=query, **kwargs)
+
+        return self._load_async_category_form_lists(changelist, **kwargs)
+
+    def _load_async_category_form_lists(self, response, query=None, **kwargs):
+        url = reverse("admin:forms_form_changelist")
+        query = dict(response.request.params)
+
+        # get the ajax call responses
+        category_ids = [""] + list(Category.objects.values_list("id", flat=True))
+        for category_id in category_ids:
+            ajax_response = self.app.get(
+                url, params={**query, "_async": 1, "category": category_id}, **kwargs
+            )
+            if not ajax_response.text.strip():
+                continue
+
+            pq = response.pyquery("html")
+            rows = ajax_response.pyquery("tbody")
+            if not rows:
+                continue
+
+            # rewrite the response body with the new HTML as if injected by JS
+            pq("table").append(rows.html())
+            response.text = pq.html()
+
+        response._forms_indexed = None
+
+        return response
 
 
 @disable_2fa
@@ -347,8 +387,9 @@ class FormAdminCopyTests(TestCase):
 
 
 @disable_2fa
-class FormAdminActionsTests(WebTest):
+class FormAdminActionsTests(FormListAjaxMixin, WebTest):
     def setUp(self) -> None:
+        super().setUp()
         self.form = FormFactory.create(internal_name="foo")
         self.user = SuperUserFactory.create(app=self.app)
 
@@ -356,7 +397,7 @@ class FormAdminActionsTests(WebTest):
         logic = FormLogicFactory.create(
             form=self.form,
         )
-        response = self.app.get(reverse("admin:forms_form_changelist"), user=self.user)
+        response = self._get_form_changelist(user=self.user)
 
         html_form = response.forms["changelist-form"]
         html_form["action"] = "make_copies"
@@ -376,7 +417,7 @@ class FormAdminActionsTests(WebTest):
         self.assertNotEqual(copied_logic.pk, logic.pk)
 
     def test_set_to_maintenance_mode_sets_form_maintenance_mode_field_to_True(self):
-        response = self.app.get(reverse("admin:forms_form_changelist"), user=self.user)
+        response = self._get_form_changelist(user=self.user)
 
         html_form = response.forms["changelist-form"]
         html_form["action"] = "set_to_maintenance_mode"
@@ -392,7 +433,7 @@ class FormAdminActionsTests(WebTest):
         self.form.maintenance_mode = True
         self.form.save()
 
-        response = self.app.get(reverse("admin:forms_form_changelist"), user=self.user)
+        response = self._get_form_changelist(user=self.user)
 
         html_form = response.forms["changelist-form"]
         html_form["action"] = "remove_from_maintenance_mode"
@@ -409,7 +450,7 @@ class FormAdminActionsTests(WebTest):
         form2 = FormFactory.create(internal_name="bar")
         form3 = FormFactory.create(internal_name="bat")
 
-        response = self.app.get(reverse("admin:forms_form_changelist"), user=user)
+        response = self._get_form_changelist(user=user)
 
         html_form = response.forms["changelist-form"]
         html_form["action"] = "export_forms"
@@ -430,7 +471,7 @@ class FormAdminActionsTests(WebTest):
         form2 = FormFactory.create(internal_name="bar")
         form3 = FormFactory.create(internal_name="bat")
 
-        response = self.app.get(reverse("admin:forms_form_changelist"), user=user)
+        response = self._get_form_changelist(user=user)
 
         html_form = response.forms["changelist-form"]
         html_form["action"] = "export_forms"
@@ -861,7 +902,7 @@ class FormChangeTests(WebTest):
 
 
 @disable_2fa
-class FormDeleteTests(WebTest):
+class FormDeleteTests(FormListAjaxMixin, WebTest):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -871,9 +912,8 @@ class FormDeleteTests(WebTest):
         form = FormFactory.create(generate_minimal_setup=True)
         with self.subTest("check test setup"):
             self.assertFalse(form._is_deleted)
-        changelist = self.app.get(
-            reverse("admin:forms_form_changelist"), user=self.user
-        )
+
+        changelist = self._get_form_changelist(user=self.user)
         html_form = changelist.forms["changelist-form"]
 
         # mark the form for deletion - there is only one
@@ -888,10 +928,14 @@ class FormDeleteTests(WebTest):
 
     def test_second_changelist_delete_permanently_deleted(self):
         form = FormFactory.create(generate_minimal_setup=True, deleted_=True)
-        changelist = self.app.get(
-            reverse("admin:forms_form_changelist"), user=self.user
-        ).click(description=_("Deleted forms"))
-        html_form = changelist.forms["changelist-form"]
+        initial_changelist = self._get_form_changelist(user=self.user)
+        soft_deletes_changelist = initial_changelist.click(
+            description=_("Deleted forms")
+        )
+        soft_deletes_changelist = self._load_async_category_form_lists(
+            soft_deletes_changelist, user=self.user
+        )
+        html_form = soft_deletes_changelist.forms["changelist-form"]
 
         # mark the form for deletion - there is only one
         html_form["action"] = "delete_selected"
@@ -911,10 +955,14 @@ class FormDeleteTests(WebTest):
             deleted_=True,
             formstep__form_definition__is_reusable=True,
         )
-        changelist = self.app.get(
-            reverse("admin:forms_form_changelist"), user=self.user
-        ).click(description=_("Deleted forms"))
-        html_form = changelist.forms["changelist-form"]
+        initial_changelist = self._get_form_changelist(user=self.user)
+        soft_deletes_changelist = initial_changelist.click(
+            description=_("Deleted forms")
+        )
+        soft_deletes_changelist = self._load_async_category_form_lists(
+            soft_deletes_changelist, user=self.user
+        )
+        html_form = soft_deletes_changelist.forms["changelist-form"]
 
         # mark the form for deletion - there is only one
         html_form["action"] = "delete_selected"

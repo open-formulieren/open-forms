@@ -102,6 +102,7 @@ django==3.2.13
     #   django-sendfile2
     #   django-solo
     #   django-timeline-logger
+    #   django-treebeard
     #   djangorestframework
     #   drf-jsonschema
     #   drf-nested-routers
@@ -181,6 +182,8 @@ django-solo==2.0.0
 django-timeline-logger==2.1.0
     # via -r requirements/base.in
 django-tinymce==3.4.0
+    # via -r requirements/base.in
+django-treebeard==4.5.1
     # via -r requirements/base.in
 django-yubin==1.7.1
     # via -r requirements/base.in

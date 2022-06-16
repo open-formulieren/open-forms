@@ -60,6 +60,9 @@ class Form(models.Model):
     product = models.ForeignKey(
         "products.Product", null=True, blank=True, on_delete=models.CASCADE
     )
+    category = models.ForeignKey(
+        "forms.Category", null=True, blank=True, on_delete=models.PROTECT
+    )
 
     # backend integration - which registration to use?
     registration_backend = RegistrationBackendChoiceField(

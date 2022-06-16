@@ -4,7 +4,7 @@ from factory import post_generation
 from openforms.products.tests.factories import ProductFactory
 
 from ..constants import FormVariableDataTypes, FormVariableSources
-from ..models import Form, FormDefinition, FormStep, FormVariable, FormVersion
+from ..models import Category, Form, FormDefinition, FormStep, FormVariable, FormVersion
 from ..utils import form_to_json
 
 
@@ -13,6 +13,7 @@ class FormFactory(factory.django.DjangoModelFactory):
     slug = factory.Faker("word")
     active = True
     product = factory.SubFactory(ProductFactory)
+    category = factory.SubFactory("openforms.forms.tests.factories.CategoryFactory")
     payment_backend = ""
     # factory-boy ignores attributes starting with an underscore so we'll use Meta.rename
     deleted_ = False
@@ -140,3 +141,18 @@ class FormVariableFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = FormVariable
+
+
+class CategoryFactory(factory.django.DjangoModelFactory):
+    name = factory.Sequence(lambda n: "Category %03d" % n)
+
+    class Meta:
+        model = Category
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        # defer creation to treebeard instead of fuzzing the underlying DB fields
+        parent = kwargs.pop("parent", None)
+        if parent is not None:
+            return parent.add_child(**kwargs)
+        return model_class.add_root(**kwargs)

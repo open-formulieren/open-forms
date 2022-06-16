@@ -1,3 +1,4 @@
+from . import category  # noqa
 from . import form  # noqa
 from . import form_definition  # noqa
 from . import form_variable  # noqa

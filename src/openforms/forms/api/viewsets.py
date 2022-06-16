@@ -23,6 +23,7 @@ from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSet
 
 from ..messages import add_success_message
 from ..models import (
+    Category,
     Form,
     FormDefinition,
     FormLogic,
@@ -52,6 +53,7 @@ from .serializers import (
     FormVariableSerializer,
     FormVersionSerializer,
 )
+from .serializers.category import CategorySerializer
 
 
 @extend_schema(
@@ -197,7 +199,6 @@ UUID_OR_SLUG_PARAMETER = OpenApiParameter(
     type=str,
     description=_("Either a UUID4 or a slug identifiying the form."),
 )
-
 
 _FORM_ADMIN_FIELDS_MARKDOWN = "\n".join(
     [f"- `{field}`" for field in FormSerializer._get_admin_field_names()]
@@ -584,3 +585,12 @@ class FormsImportAPIView(views.APIView):
         import_form(serializer.validated_data["file"])
 
         return response.Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    # TODO this permission isn't ideal with its mix of public and write access
+    permission_classes = [FormAPIPermissions]
+    pagination_class = None
+    lookup_field = "uuid"

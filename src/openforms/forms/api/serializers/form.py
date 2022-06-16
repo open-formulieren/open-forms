@@ -21,7 +21,7 @@ from openforms.products.models import Product
 from openforms.registrations.registry import register as registration_register
 
 from ...constants import ConfirmationEmailOptions
-from ...models import Form
+from ...models import Category, Form
 from .button_text import ButtonTextSerializer
 from .form_step import MinimalFormStepSerializer
 
@@ -78,6 +78,15 @@ class FormSerializer(serializers.ModelSerializer):
         ),
     )
 
+    category = serializers.HyperlinkedRelatedField(
+        label=_("category"),
+        queryset=Category.objects.all(),
+        required=False,
+        allow_null=True,
+        view_name="api:categories-detail",
+        lookup_field="uuid",
+        help_text=_("URL to the category in the Open Forms API"),
+    )
     product = serializers.HyperlinkedRelatedField(
         label=_("product"),
         queryset=Product.objects.all(),
@@ -124,6 +133,7 @@ class FormSerializer(serializers.ModelSerializer):
             "product",
             "slug",
             "url",
+            "category",
             "steps",
             "show_progress_indicator",
             "maintenance_mode",
