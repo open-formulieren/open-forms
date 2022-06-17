@@ -34,7 +34,6 @@ def check_config(plugin):
                 _("Could not retrieve the available decision definitions.")
             ) from exc
 
-        num_defs = len(get_process_definitions())
         if num_defs <= 0:
             raise InvalidPluginConfiguration(
                 _(
