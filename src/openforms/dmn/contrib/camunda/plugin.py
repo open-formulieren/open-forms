@@ -12,6 +12,7 @@ from django_camunda.dmn import evaluate_dmn
 
 from ...base import BasePlugin, DecisionDefinition, DecisionDefinitionVersion
 from ...registry import register
+from .checks import check_config
 
 logger = logging.getLogger(__name__)
 
@@ -119,3 +120,6 @@ class Plugin(BasePlugin):
             camunda_id = _get_decision_definition_id(client, definition_id, version)
             xml_response = client.get(f"decision-definition/{camunda_id}/xml")
         return xml_response["dmn_xml"]
+
+    def check_config(self):
+        check_config(self)
