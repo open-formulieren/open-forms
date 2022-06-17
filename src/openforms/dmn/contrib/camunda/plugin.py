@@ -52,7 +52,7 @@ def handle_camunda_error(error: requests.HTTPError):
         logger.error("Camunda error information: %r", response_body)
 
 
-@register("camunda")
+@register("camunda7")
 class Plugin(BasePlugin):
     verbose_name = _("Camunda")
 

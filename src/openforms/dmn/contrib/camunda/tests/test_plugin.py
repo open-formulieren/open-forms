@@ -28,8 +28,8 @@ from openforms.contrib.camunda.tests.utils import get_camunda_client, require_ca
 from ....registry import register
 from ....service import evaluate_dmn
 
-_evaluate_dmn = partial(evaluate_dmn, "camunda")
-plugin = register["camunda"]
+_evaluate_dmn = partial(evaluate_dmn, "camunda7")
+plugin = register["camunda7"]
 
 
 @require_camunda
