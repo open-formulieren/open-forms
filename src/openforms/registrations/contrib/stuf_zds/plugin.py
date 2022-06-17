@@ -151,7 +151,6 @@ class StufZDSRegistration(BasePlugin):
         config.apply_defaults_to(options)
 
         options["omschrijving"] = submission.form.admin_name
-        options["referentienummer"] = str(submission.uuid)
 
         client = config.get_client(options)
 
@@ -224,7 +223,6 @@ class StufZDSRegistration(BasePlugin):
 
         options = {
             "omschrijving": "MyForm",
-            "referentienummer": "123",
             "zds_zaaktype_code": "test",
             "zds_zaaktype_omschrijving": "test",
             "zds_zaaktype_status_code": "test",

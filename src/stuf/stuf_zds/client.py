@@ -4,6 +4,7 @@ import os
 from collections import OrderedDict
 from datetime import timedelta
 from typing import Tuple
+from uuid import uuid4
 
 from django.template import loader
 from django.utils import timezone
@@ -124,7 +125,7 @@ class StufZDSClient:
             "zds_documenttype_omschrijving_inzending": self.options[
                 "zds_documenttype_omschrijving_inzending"
             ],
-            "referentienummer": self.options["referentienummer"],
+            "referentienummer": str(uuid4()),
             "global_config": self._global_config,
         }
 
@@ -161,6 +162,7 @@ class StufZDSClient:
         url = self.service.get_endpoint(endpoint_type)
 
         logger.debug("SOAP-request:\n%s\n%s", url, request_data)
+        ref_nr = context["referentienummer"]
 
         try:
             stuf_zds_request(self.service, url)
@@ -181,8 +183,8 @@ class StufZDSClient:
                 logger.debug("SOAP-response:\n%s", response.content)
                 error_text = parse_soap_error_text(response)
                 logger.error(
-                    "bad response for referentienummer/submission '%s'\n%s",
-                    self.options["referentienummer"],
+                    "bad response for referentienummer '%s'\n%s",
+                    ref_nr,
                     error_text,
                 )
                 stuf_zds_failure_response(self.service, url)
@@ -194,8 +196,8 @@ class StufZDSClient:
                 logger.debug("SOAP-response:\n%s", response.content)
         except RequestException as e:
             logger.error(
-                "bad request for referentienummer/submission '%s'",
-                self.options["referentienummer"],
+                "bad request for referentienummer '%s'",
+                ref_nr,
             )
             stuf_zds_failure_response(self.service, url)
             raise RegistrationFailed("error while making backend request") from e
