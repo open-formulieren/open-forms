@@ -125,7 +125,6 @@ class StufZDSClientTests(StufTestBase):
             "zds_zaaktype_status_code": "zt-st-code",
             "zds_zaaktype_status_omschrijving": "zt-st-omschrijving",
             "zds_documenttype_omschrijving_inzending": "dt-omschrijving",
-            "referentienummer": str(uuid.uuid4()),
         }
         self.client = StufZDSClient(self.service, self.options)
 
