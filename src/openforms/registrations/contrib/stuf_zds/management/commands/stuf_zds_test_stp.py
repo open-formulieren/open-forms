@@ -42,7 +42,6 @@ class Command(BaseCommand):
             "zds_zaaktype_status_code": "zt-st-code",
             "zds_zaaktype_status_omschrijving": "zt-st-omschrijving",
             "zds_documenttype_omschrijving_inzending": "dt-omschrijving",
-            "referentienummer": str(uuid.uuid4()),
         }
 
         client = StufZDSClient(service, client_options)
