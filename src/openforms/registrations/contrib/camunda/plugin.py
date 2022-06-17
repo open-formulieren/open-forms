@@ -16,7 +16,7 @@ from django_camunda.api import get_process_definitions
 from django_camunda.models import CamundaConfig
 from django_camunda.tasks import start_process
 from django_camunda.types import ProcessVariables
-from django_camunda.utils import serialize_variable
+from django_camunda.utils import serialize_variables
 
 from openforms.submissions.models import Submission
 
@@ -29,12 +29,6 @@ from .serializers import CamundaOptionsSerializer
 from .type_mapping import to_python
 
 logger = logging.getLogger(__name__)
-
-
-def serialize_variables(variables: Optional[Dict[str, Any]]) -> ProcessVariables:
-    if variables is None:
-        return {}
-    return {key: serialize_variable(value) for key, value in variables.items()}
 
 
 def get_process_variables(
@@ -85,7 +79,7 @@ class CamundaRegistration(BasePlugin):
 
     def register_submission(
         self, submission: Submission, options: dict
-    ) -> Dict[str, str]:
+    ) -> Dict[str, Any]:
         process_definition = options["process_definition"]
         version = options["process_definition_version"]
 

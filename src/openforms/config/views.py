@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -10,6 +10,7 @@ from django.views.generic import TemplateView
 from openforms.appointments.checks import check_configs as check_appointment_configs
 from openforms.config.data import Entry
 from openforms.contrib.kvk.checks import check_kvk_remote_validator
+from openforms.dmn.registry import register as dmn_register
 from openforms.payments.registry import register as payments_register
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.prefill.registry import register as prefill_register
@@ -17,7 +18,7 @@ from openforms.registrations.registry import register as registrations_register
 from openforms.utils.mixins import UserIsStaffMixin
 
 
-def _subset_match(requested: str, checking: str) -> bool:
+def _subset_match(requested: Optional[str], checking: str) -> bool:
     if not requested:
         return True
     return requested == checking
@@ -67,6 +68,7 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
             ("registrations", _("Registration plugins"), registrations_register),
             ("prefill", _("Prefill plugins"), prefill_register),
             ("payments", _("Payment plugins"), payments_register),
+            ("dmn", _("DMN plugins"), dmn_register),
         ]
 
         for registry_module, name, register in plugin_registries:
