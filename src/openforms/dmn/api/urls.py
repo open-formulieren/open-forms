@@ -20,7 +20,7 @@ urlpatterns = [
         name="dmn-definition-version-list",
     ),
     path(
-        "decision-definitions/<str:definition>/xml",
+        "decision-definitions/xml",
         DecisionDefinitionXMLView.as_view(),
         name="dmn-definition-xml",
     ),

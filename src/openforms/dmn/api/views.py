@@ -59,7 +59,7 @@ VERSION_PARAMETER = OpenApiParameter(
     get=extend_schema(
         summary=_("List available decision plugins"),
         responses={
-            200: DecisionPluginSerializer,
+            200: DecisionPluginSerializer(many=True),
             403: ExceptionSerializer,
         },
     ),
@@ -148,6 +148,7 @@ class DecisionDefinitionVersionListView(
         summary=_("Retrieve the decision definition XML"),
         parameters=[
             ENGINE_PARAMETER,
+            DEFINITION_PARAMETER,
             VERSION_PARAMETER,
         ],
         responses={
@@ -160,13 +161,14 @@ class DecisionDefinitionVersionListView(
 class DecisionDefinitionXMLView(ValidateQueryStringParametersMixin, APIView):
     authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
-    validate_params = (ENGINE_PARAMETER, VERSION_PARAMETER)
+    validate_params = (ENGINE_PARAMETER, DEFINITION_PARAMETER, VERSION_PARAMETER)
 
-    def get(self, request, definition: str, **kwargs):
+    def get(self, request, **kwargs):
         query_params = self.validate_query_parameters()
         engine = query_params[ENGINE_PARAMETER]
+        definition_id = query_params[DEFINITION_PARAMETER]
         version = query_params[VERSION_PARAMETER]
         plugin = register[engine]
-        xml = plugin.get_definition_xml(definition, version=version) or ""
+        xml = plugin.get_definition_xml(definition_id, version=version) or ""
         serializer = DecisionDefinitionXMLSerializer(instance={"xml": xml})
         return Response(serializer.data)

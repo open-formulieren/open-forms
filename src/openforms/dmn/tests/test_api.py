@@ -122,7 +122,7 @@ class AccessControlTests(MockRegistryMixin, APITestCase):
             self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
 
     def test_definition_xml(self):
-        endpoint = reverse("api:dmn-definition-xml", kwargs={"definition": "test-1"})
+        endpoint = reverse("api:dmn-definition-xml")
 
         with self.subTest("anonymous"):
             response = self.client.get(endpoint)
@@ -245,7 +245,7 @@ class XMLRetrieveTests(APITestAssertions, MockRegistryMixin, APITestCase):
         cls.user = StaffUserFactory.create()
 
     def test_retrieve_xml_endpoint(self):
-        endpoint = reverse("api:dmn-definition-xml", kwargs={"definition": "test-1"})
+        endpoint = reverse("api:dmn-definition-xml")
         self.client.force_authenticate(user=self.user)
 
         with self.subTest("Engine param is required"):
@@ -254,7 +254,15 @@ class XMLRetrieveTests(APITestAssertions, MockRegistryMixin, APITestCase):
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
             self.assertValidationErrorCode(response, "engine", "required")
 
-        with self.subTest("No XML available"):
+        with self.subTest("Definition param is required"):
             response = self.client.get(endpoint, {"engine": "test"})
+
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertValidationErrorCode(response, "definition", "required")
+
+        with self.subTest("No XML available"):
+            response = self.client.get(
+                endpoint, {"engine": "test", "definition": "test-1"}
+            )
 
             self.assertEqual(response.json(), {"xml": ""})
