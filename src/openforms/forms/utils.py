@@ -8,7 +8,6 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.db import transaction
-from django.db.models import Q
 
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
@@ -21,7 +20,7 @@ from .api.serializers import (
     FormStepSerializer,
     FormVariableSerializer,
 )
-from .constants import FormVariableSources
+from .constants import FormVariableDataTypes, FormVariableSources
 from .models import Form, FormDefinition, FormLogic, FormStep, FormVariable
 
 IMPORT_ORDER = {
@@ -68,10 +67,11 @@ def form_to_json(form_id: int) -> dict:
 
     form_logic = FormLogic.objects.filter(form=form)
 
-    # Export only user defined variables and static variables
+    # Export only user defined variables
     # The component variables should be regenerated from the form definition configuration
+    # The static variables should be created for each form
     form_variables = form.formvariable_set.filter(
-        ~Q(source=FormVariableSources.component)
+        source=FormVariableSources.user_defined
     )
 
     request = _get_mock_request()
@@ -122,6 +122,13 @@ def import_form(import_file, existing_form_instance=None):
                 import_data[resource] = zip_file.read(f"{resource}.json").decode()
 
     return import_form_data(import_data, existing_form_instance)
+
+
+def create_static_variables(form: "Form") -> None:
+    variables_to_create = FormVariable.get_default_static_variables()
+    for variable in variables_to_create:
+        variable.form = form
+    FormVariable.objects.bulk_create(variables_to_create)
 
 
 @transaction.atomic
@@ -180,6 +187,7 @@ def import_form_data(
                 deserialized.save()
                 if resource == "forms":
                     created_form = deserialized.instance
+                    create_static_variables(created_form)
                 if resource == "formSteps":
                     # Once the form steps have been created, we create the component FormVariables
                     # based on the form definition configurations.
