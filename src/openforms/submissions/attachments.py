@@ -15,7 +15,7 @@ import magic
 import PIL
 from glom import glom
 from PIL import Image
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ErrorDetail, ValidationError
 
 from openforms.api.exceptions import RequestEntityTooLarge
 from openforms.conf.utils import Filesize
@@ -126,7 +126,7 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
                 # 2048 bytes per recommendation of python-magic
                 file_mime_type = magic.from_buffer(infile.read(2048), mime=True)
 
-            invalid_file_type_error = ValidationError(
+            invalid_file_type_error = ErrorDetail(
                 _("The file '{filename}' is not a valid file type.").format(
                     filename=upload.file_name
                 ),
