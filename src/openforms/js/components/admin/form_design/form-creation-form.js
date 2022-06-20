@@ -34,6 +34,7 @@ import {
   LOGICS_ENDPOINT,
   PRICE_RULES_ENDPOINT,
   CATEGORIES_ENDPOINT,
+  STATIC_VARIABLES_ENDPOINT,
 } from './constants';
 import {
   loadPlugins,
@@ -64,7 +65,7 @@ import {
 } from './utils';
 import {updateFormVariables} from './variables/utils';
 import VariablesEditor from './variables/VariablesEditor';
-import {DEFAULT_STATIC_VARIABLES, EMPTY_VARIABLE} from './variables/constants';
+import {EMPTY_VARIABLE} from './variables/constants';
 
 const initialFormState = {
   form: {
@@ -586,7 +587,7 @@ function reducer(draft, action) {
       break;
     }
     case 'ADD_STATIC_VARIABLES': {
-      draft.formVariables = [...DEFAULT_STATIC_VARIABLES];
+      draft.formVariables = [...action.payload];
       break;
     }
 
@@ -709,7 +710,15 @@ const getFormData = async (formUuid, dispatch) => {
       type: 'FORM_STEPS_LOADED',
       payload: [],
     });
-    dispatch({type: 'ADD_STATIC_VARIABLES'});
+
+    let staticVariablesResponse;
+    try {
+      staticVariablesResponse = await get(STATIC_VARIABLES_ENDPOINT);
+    } catch (e) {
+      dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
+    }
+
+    dispatch({type: 'ADD_STATIC_VARIABLES', payload: staticVariablesResponse.data});
     return;
   }
 
