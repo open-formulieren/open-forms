@@ -2,8 +2,9 @@ import logging
 import os.path
 import re
 from collections import defaultdict
+from dataclasses import dataclass
 from datetime import timedelta
-from typing import Iterable, Optional, Tuple
+from typing import Iterable, Iterator, Optional, Tuple
 from urllib.parse import urlparse
 
 from django.conf import settings
@@ -20,6 +21,7 @@ from rest_framework.exceptions import ErrorDetail, ValidationError
 from openforms.api.exceptions import RequestEntityTooLarge
 from openforms.conf.utils import Filesize
 from openforms.formio.service import mimetype_allowed
+from openforms.formio.typing import Component
 from openforms.submissions.models import (
     Submission,
     SubmissionFileAttachment,
@@ -81,6 +83,80 @@ def append_file_num_postfix(
         digits = len(str(max))
         postfix = f"-{num:0{digits}}"
     return f"{new_name}{postfix}{ext}"
+
+
+@dataclass
+class UploadContext:
+    upload: TemporaryFileUpload
+    component: Component
+    index: int  # one-based
+    form_key: str  # formio key
+
+
+def iter_step_uploads(
+    submission_step: SubmissionStep, data=None
+) -> Iterator[UploadContext]:
+    """
+    Iterate over all the uploads for a given submission step.
+
+    Yield every uploaded file and its context within the form step for further
+    processing.
+    """
+    data = data or submission_step.data
+    components = list(submission_step.form_step.iter_components(recursive=True))
+    uploads = resolve_uploads_from_data(components, data)
+    for key, (component, uploads) in uploads.items():
+        # formio sends a list of uploads even with multiple=False
+        for i, upload in enumerate(uploads, start=1):
+            yield UploadContext(
+                upload=upload, form_key=key, component=component, index=i
+            )
+
+
+def validate_uploads(submission_step: SubmissionStep, data: Optional[dict]) -> None:
+    """
+    Validate the file uploads in the submission step data.
+
+    File uploads are stored in a temporary file uploads table and the references to them
+    are included in the step submission data. This function validates that the actual
+    content and metadata of files conforms to the configured file upload components.
+    """
+    validation_errors = defaultdict(list)
+    for upload_context in iter_step_uploads(submission_step, data=data):
+        upload, component, key = (
+            upload_context.upload,
+            upload_context.component,
+            upload_context.form_key,
+        )
+        allowed_mime_types = glom(component, "file.type", default=[])
+
+        # perform content type validation
+        with upload.content.open("rb") as infile:
+            # 2048 bytes per recommendation of python-magic
+            file_mime_type = magic.from_buffer(infile.read(2048), mime=True)
+
+        invalid_file_type_error = ErrorDetail(
+            _("The file '{filename}' is not a valid file type.").format(
+                filename=upload.file_name
+            ),
+            code="invalid",
+        )
+
+        if upload.content_type != file_mime_type:
+            validation_errors[key].append(invalid_file_type_error)
+            continue
+
+        # validate that the mime type passes the allowlist
+        if not mimetype_allowed(file_mime_type, allowed_mime_types):
+            logger.warning(
+                "Blocking submission upload %d because of invalid mime type check",
+                upload.id,
+            )
+            validation_errors[key].append(invalid_file_type_error)
+            continue
+
+    if validation_errors:
+        raise ValidationError(validation_errors)
 
 
 def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:

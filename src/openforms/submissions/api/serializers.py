@@ -26,6 +26,7 @@ from openforms.forms.validators import (
 )
 
 from ...utils.urls import build_absolute_uri
+from ..attachments import validate_uploads
 from ..constants import ProcessingResults, ProcessingStatuses
 from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep, TemporaryFileUpload
@@ -273,6 +274,10 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         # update the config for serialization
         instance.form_step.form_definition.configuration = new_configuration
         return super().to_representation(instance)
+
+    def validate_data(self, data: dict):
+        validate_uploads(self.instance, data=data)
+        return data
 
 
 class FormDataSerializer(serializers.Serializer):
