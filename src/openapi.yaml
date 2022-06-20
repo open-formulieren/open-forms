@@ -2187,6 +2187,59 @@ paths:
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
+  /api/v1/submissions/{submission_uuid}/steps/{step_uuid}/validate:
+    post:
+      operationId: submissions_steps_validate_create
+      description: |-
+        Validate the submission step data before persisting.
+
+        This endpoint runs the same validation logic as the PUT endpoint to store the
+        data. For invalid data, you will get an HTTP 400 response with error details.
+      summary: Store submission step data
+      parameters:
+      - in: path
+        name: step_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: submission_uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - submissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmissionStep'
+      responses:
+        '204':
+          description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
   /api/v1/submissions/{uuid}:
     get:
       operationId: submissions_retrieve
