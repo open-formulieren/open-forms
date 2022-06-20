@@ -75,7 +75,7 @@ class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
         )
         self.assertEqual(submission_step.data, {"some": "example data"})
 
-    @patch("openforms.submissions.api.viewsets.validate_uploads")
+    @patch("openforms.submissions.api.serializers.validate_uploads")
     def test_validation_hook_called(self, mock_validate):
         self._add_submission_to_session(self.submission)
         endpoint = reverse(

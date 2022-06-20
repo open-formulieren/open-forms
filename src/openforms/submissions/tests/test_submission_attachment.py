@@ -32,8 +32,6 @@ from .factories import (
     TemporaryFileUploadFactory,
 )
 
-TEST_FILES_DIR = Path(__file__).parent / "files"
-
 
 @temp_private_root()
 class SubmissionAttachmentTest(TestCase):
@@ -494,6 +492,58 @@ class SubmissionAttachmentTest(TestCase):
             validate_uploads(submission_step, data=data)
         except ValidationError:
             self.fail("Uploads should be accepted since the content types are valid")
+
+    @tag("GHSA-h85r-xv4w-cg8g")
+    def test_attach_upload_validates_file_content_types_implicit_wildcard(self):
+        with open(TEST_FILES_DIR / "image-256x256.png", "rb") as infile:
+            upload = TemporaryFileUploadFactory.create(
+                file_name="my-img.png",
+                content=File(infile),
+                content_type="image/png",
+            )
+
+        data = {
+            "my_file": [
+                {
+                    "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                        "form": "",
+                        "name": "my-img.png",
+                        "size": 585,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "my-img-12305610-2da4-4694-a341-ccb919c3d543.png",
+                    "size": 585,
+                    "type": "image/png",  # we are lying!
+                    "storage": "url",
+                    "originalName": "my-img.png",
+                },
+            ],
+        }
+        formio_components = {
+            "key": "my_file",
+            "type": "file",
+            "multiple": True,
+            "file": {
+                "name": "",
+            },
+            "filePattern": "",
+        }
+
+        submission = SubmissionFactory.from_components(
+            [formio_components],
+            submitted_data=data,
+        )
+        submission_step = submission.submissionstep_set.get()
+
+        try:
+            validate_uploads(submission_step, data=data)
+        except ValidationError:
+            self.fail(
+                "Uploads should be accepted since the content types match the wildcard"
+            )
 
     @tag("GHSA-h85r-xv4w-cg8g")
     def test_attach_upload_validates_file_content_types_wildcard(self):
