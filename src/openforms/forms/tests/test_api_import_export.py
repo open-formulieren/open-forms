@@ -89,11 +89,9 @@ class ImportExportAPITests(APITestCase):
         self.assertEqual(form_steps[0]["configuration"], form_definition.configuration)
 
         form_variables = json.loads(zf.read("formVariables.json"))
-        # Only static and user defined form variables are included in the export
-        self.assertEqual(len(form_variables), 2)
-        sources = [variable["source"] for variable in form_variables]
-        self.assertIn(FormVariableSources.static, sources)
-        self.assertIn(FormVariableSources.user_defined, sources)
+        # Only user defined form variables are included in the export
+        self.assertEqual(len(form_variables), 1)
+        self.assertEqual(FormVariableSources.user_defined, form_variables[0]["source"])
 
     def test_form_export_token_auth_required(self):
         form, _ = FormFactory.create_batch(2)
