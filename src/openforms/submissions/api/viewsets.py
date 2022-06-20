@@ -14,7 +14,7 @@ from rest_framework.reverse import reverse
 
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
-from openforms.api.serializers import ExceptionSerializer
+from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.logging import logevent
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
@@ -351,7 +351,14 @@ class SubmissionStepViewSet(
         self.check_object_permissions(self.request, submission_step)
         return submission_step
 
-    @extend_schema(summary=_("Store submission step data"))
+    @extend_schema(
+        summary=_("Store submission step data"),
+        responses={
+            200: SubmissionStepSerializer,
+            400: ValidationErrorSerializer,
+            403: ExceptionSerializer,
+        },
+    )
     def update(self, request, *args, **kwargs):
         """
         The submission data is either created or updated, depending on whether there was
