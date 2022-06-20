@@ -22,6 +22,7 @@ from ..attachments import (
     cleanup_submission_temporary_uploaded_files,
     resize_attachment,
     resolve_uploads_from_data,
+    validate_uploads,
 )
 from ..models import SubmissionFileAttachment
 from .factories import (
@@ -410,7 +411,7 @@ class SubmissionAttachmentTest(TestCase):
         submission_step = submission.submissionstep_set.get()
 
         with self.assertRaises(ValidationError) as err_context:
-            attach_uploads_to_submission_step(submission_step)
+            validate_uploads(submission_step, data=data)
 
         validation_error = err_context.exception.get_full_details()
         self.assertEqual(len(validation_error["my_file"]), 2)
@@ -490,7 +491,7 @@ class SubmissionAttachmentTest(TestCase):
         submission_step = submission.submissionstep_set.get()
 
         try:
-            attach_uploads_to_submission_step(submission_step)
+            validate_uploads(submission_step, data=data)
         except ValidationError:
             self.fail("Uploads should be accepted since the content types are valid")
 
@@ -547,7 +548,7 @@ class SubmissionAttachmentTest(TestCase):
         submission_step = submission.submissionstep_set.get()
 
         try:
-            attach_uploads_to_submission_step(submission_step)
+            validate_uploads(submission_step, data=data)
         except ValidationError:
             self.fail(
                 "Uploads should be accepted since the content types match the wildcard"

@@ -91,6 +91,7 @@ class UploadContext:
     component: Component
     index: int  # one-based
     form_key: str  # formio key
+    num_uploads: int
 
 
 def iter_step_uploads(
@@ -105,11 +106,15 @@ def iter_step_uploads(
     data = data or submission_step.data
     components = list(submission_step.form_step.iter_components(recursive=True))
     uploads = resolve_uploads_from_data(components, data)
-    for key, (component, uploads) in uploads.items():
+    for key, (component, upload_instances) in uploads.items():
         # formio sends a list of uploads even with multiple=False
-        for i, upload in enumerate(uploads, start=1):
+        for i, upload in enumerate(upload_instances, start=1):
             yield UploadContext(
-                upload=upload, form_key=key, component=component, index=i
+                upload=upload,
+                form_key=key,
+                component=component,
+                index=i,
+                num_uploads=len(upload_instances),
             )
 
 
@@ -163,13 +168,15 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
     # circular import
     from .tasks import resize_submission_attachment
 
-    components = list(submission_step.form_step.iter_components(recursive=True))
-
-    uploads = resolve_uploads_from_data(components, submission_step.data)
-
     result = list()
-    validation_errors = defaultdict(list)
-    for key, (component, uploads) in uploads.items():
+
+    for upload_context in iter_step_uploads(submission_step):
+        upload, component, key = (
+            upload_context.upload,
+            upload_context.component,
+            upload_context.form_key,
+        )
+
         # grab resize settings
         resize_apply = glom(component, "of.image.resize.apply", default=False)
         resize_size = (
@@ -178,67 +185,38 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
                 component, "of.image.resize.height", default=DEFAULT_IMAGE_MAX_SIZE[1]
             ),
         )
-        allowed_mime_types = glom(component, "file.type", default=[])
         file_max_size = file_size_cast(
             glom(component, "fileMaxSize", default="") or settings.MAX_FILE_UPLOAD_SIZE
         )
 
         base_name = glom(component, "file.name", default="")
 
-        # formio sends a list of uploads even with multiple=False
-        for i, upload in enumerate(uploads, start=1):
-            if upload.file_size > file_max_size:
-                raise RequestEntityTooLarge(
-                    _(
-                        "Upload {uuid} exceeds the maximum upload size of {max_size}b"
-                    ).format(
-                        uuid=upload.uuid,
-                        max_size=file_max_size,
-                    ),
-                )
-
-            # perform content type validation
-            with upload.content.open("rb") as infile:
-                # 2048 bytes per recommendation of python-magic
-                file_mime_type = magic.from_buffer(infile.read(2048), mime=True)
-
-            invalid_file_type_error = ErrorDetail(
-                _("The file '{filename}' is not a valid file type.").format(
-                    filename=upload.file_name
+        if upload.file_size > file_max_size:
+            raise RequestEntityTooLarge(
+                _(
+                    "Upload {uuid} exceeds the maximum upload size of {max_size}b"
+                ).format(
+                    uuid=upload.uuid,
+                    max_size=file_max_size,
                 ),
-                code="invalid",
             )
 
-            if upload.content_type != file_mime_type:
-                validation_errors[key].append(invalid_file_type_error)
-                continue
+        file_name = append_file_num_postfix(
+            upload.file_name,
+            base_name,
+            upload_context.index,
+            upload_context.num_uploads,
+        )
 
-            # if no allowed_mime_types are defined on the file component, then all filetypes
-            # are allowed and we skip validation.
-            if not mimetype_allowed(file_mime_type, allowed_mime_types):
-                logger.warning(
-                    "Blocking submission upload %d because of invalid mime type check",
-                    upload.id,
-                )
-                validation_errors[key].append(invalid_file_type_error)
-                continue
+        attachment, created = SubmissionFileAttachment.objects.create_from_upload(
+            submission_step, key, upload, file_name=file_name
+        )
+        result.append((attachment, created))
 
-            file_name = append_file_num_postfix(
-                upload.file_name, base_name, i, len(uploads)
-            )
-
-            attachment, created = SubmissionFileAttachment.objects.create_from_upload(
-                submission_step, key, upload, file_name=file_name
-            )
-            result.append((attachment, created))
-
-            if created and resize_apply and resize_size:
-                # NOTE there is a possible race-condition if user completes a submission before this resize task is done
-                # see https://github.com/open-formulieren/open-forms/issues/507
-                resize_submission_attachment.delay(attachment.id, resize_size)
-
-    if validation_errors:
-        raise ValidationError(validation_errors)
+        if created and resize_apply and resize_size:
+            # NOTE there is a possible race-condition if user completes a submission before this resize task is done
+            # see https://github.com/open-formulieren/open-forms/issues/507
+            resize_submission_attachment.delay(attachment.id, resize_size)
 
     return result
 
