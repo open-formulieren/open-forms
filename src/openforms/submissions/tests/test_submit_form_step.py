@@ -97,7 +97,7 @@ class FormStepSubmissionTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
         self.assertEqual("example data", variable.value)
         self.assertEqual("2022-05-25T10:53:19+00:00", variable.created_at.isoformat())
 
-    @patch("openforms.submissions.api.viewsets.validate_uploads")
+    @patch("openforms.submissions.api.serializers.validate_uploads")
     def test_validation_hook_called(self, mock_validate):
         self._add_submission_to_session(self.submission)
         endpoint = reverse(
