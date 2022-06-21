@@ -201,3 +201,15 @@ class FormVariable(models.Model):
             return STATIC_INITIAL_VALUES[self.initial_value]()
         else:
             return self.initial_value or INITIAL_VALUES[self.data_type]
+
+    @staticmethod
+    def get_default_static_variables() -> List["FormVariable"]:
+        now = FormVariable(
+            name="Now",
+            key="now",
+            source=FormVariableSources.static,
+            data_type=FormVariableDataTypes.datetime,
+            initial_value="now",
+        )
+
+        return [now]

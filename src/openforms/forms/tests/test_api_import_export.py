@@ -15,9 +15,14 @@ from rest_framework.test import APITestCase
 from openforms.accounts.tests.factories import TokenFactory, UserFactory
 
 from ...emails.tests.factories import ConfirmationEmailTemplateFactory
-from ..constants import ConfirmationEmailOptions
+from ..constants import ConfirmationEmailOptions, FormVariableSources
 from ..models import Form, FormDefinition, FormStep
-from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
+from .factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormStepFactory,
+    FormVariableFactory,
+)
 
 
 class ImportExportAPITests(APITestCase):
@@ -32,10 +37,15 @@ class ImportExportAPITests(APITestCase):
 
         form, _ = FormFactory.create_batch(2)
         form_definition, _ = FormDefinitionFactory.create_batch(2)
-        form_step, _ = FormStepFactory.create_batch(2)
-        form_step.form = form
-        form_step.form_definition = form_definition
-        form_step.save()
+        # This creates one form variable for the component in the default definition
+        FormStepFactory.create(form=form, form_definition=form_definition)
+        FormStepFactory.create()
+        FormVariableFactory.create(
+            form=form, source=FormVariableSources.user_defined, key="test-user-defined"
+        )
+        FormVariableFactory.create(
+            form=form, source=FormVariableSources.static, key="test-static"
+        )
 
         url = reverse("api:form-export", args=(form.uuid,))
         response = self.client.post(
@@ -47,7 +57,13 @@ class ImportExportAPITests(APITestCase):
         zf = ZipFile(BytesIO(response.content))
         self.assertEqual(
             zf.namelist(),
-            ["forms.json", "formSteps.json", "formDefinitions.json", "formLogic.json"],
+            [
+                "forms.json",
+                "formSteps.json",
+                "formDefinitions.json",
+                "formLogic.json",
+                "formVariables.json",
+            ],
         )
 
         forms = json.loads(zf.read("forms.json"))
@@ -71,6 +87,11 @@ class ImportExportAPITests(APITestCase):
         form_steps = json.loads(zf.read("formSteps.json"))
         self.assertEqual(len(form_steps), 1)
         self.assertEqual(form_steps[0]["configuration"], form_definition.configuration)
+
+        form_variables = json.loads(zf.read("formVariables.json"))
+        # Only user defined form variables are included in the export
+        self.assertEqual(len(form_variables), 1)
+        self.assertEqual(FormVariableSources.user_defined, form_variables[0]["source"])
 
     def test_form_export_token_auth_required(self):
         form, _ = FormFactory.create_batch(2)

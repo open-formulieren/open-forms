@@ -71,16 +71,6 @@ const DATATYPES_CHOICES = [
   ],
 ];
 
-const DEFAULT_STATIC_VARIABLES = [
-  {
-    name: 'Now',
-    key: 'now',
-    source: 'static',
-    dataType: 'datetime',
-    initial_value: 'now',
-  },
-];
-
 const VARIABLE_SOURCES = {
   static: 'static',
   component: 'component',
@@ -99,10 +89,4 @@ const EMPTY_VARIABLE = {
   initial_value: '',
 };
 
-export {
-  COMPONENT_DATATYPES,
-  DEFAULT_STATIC_VARIABLES,
-  VARIABLE_SOURCES,
-  DATATYPES_CHOICES,
-  EMPTY_VARIABLE,
-};
+export {COMPONENT_DATATYPES, VARIABLE_SOURCES, DATATYPES_CHOICES, EMPTY_VARIABLE};

@@ -90,6 +90,7 @@ urlpatterns = [
                 path("payment/", include("openforms.payments.api.urls")),
                 path("dmn/", include("openforms.dmn.api.urls")),
                 path("translations/", include("openforms.translations.urls")),
+                path("variables/", include("openforms.variables.urls")),
                 path(
                     "appointments/",
                     include("openforms.appointments.api.urls"),
