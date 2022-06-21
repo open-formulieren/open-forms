@@ -1,8 +1,10 @@
 from typing import TYPE_CHECKING, List
 
+from django.core.validators import RegexValidator
 from django.db import models, transaction
 from django.db.models import CheckConstraint, Q
 from django.utils import timezone
+from django.utils.regex_helper import _lazy_re_compile
 from django.utils.translation import gettext_lazy as _
 
 from glom import Path, glom
@@ -123,10 +125,22 @@ class FormVariable(models.Model):
         help_text=_("Name of the variable"),
         max_length=100,
     )
-    key = models.SlugField(
+    key = models.CharField(
         verbose_name=_("key"),
         help_text=_("Key of the variable, should be unique with the form."),
         max_length=100,
+        validators=[
+            # Regex and message adapted from
+            # https://github.com/formio/formio.js/blob/4.13.x/src/components/_classes/component/editForm/Component.edit.api.js#L10
+            RegexValidator(
+                regex=_lazy_re_compile(r"^\w[\w.\-]*\w$"),
+                message=_(
+                    "Invalid variable key. "
+                    "It must only contain alphanumeric characters, underscores, "
+                    "dots and dashes and should not be ended by dash or dot."
+                ),
+            )
+        ],
     )
     source = models.CharField(
         verbose_name=_("source"),
