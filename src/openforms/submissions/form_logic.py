@@ -137,22 +137,21 @@ def evaluate_form_logic(
                     variable_form_definition = (
                         submission_variable.form_variable.form_definition
                     )
+                    updated_data[action["variable"]] = new_value
+
                     if (
                         not variable_form_definition
                         or variable_form_definition != step.form_step.form_definition
                     ):
-                        # Case 1: The variable is not related to a particular step
-                        # Case 2: The variable being changed is part of a different step than the step currently being edited
+                        # Cases where either:
+                        # 1. The variable is not related to a particular step
+                        # 2. The variable being changed is part of a different step than the step currently being edited
                         # In these cases, the changes are persisted to the database
                         submission_variable.value = new_value
                         submission_variable.source = (
                             SubmissionValueVariableSources.logic
                         )
                         submission_variables_to_update.append(submission_variable)
-                    else:
-                        # The variable being changed is part of the step currently being edited
-                        # The unsaved data will be persisted when the step is saved
-                        updated_data[action["variable"]] = new_value
 
     step.data = DirtyData(updated_data)
     SubmissionValueVariable.objects.bulk_create_or_update(

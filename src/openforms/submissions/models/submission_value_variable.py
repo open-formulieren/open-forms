@@ -50,7 +50,8 @@ class SubmissionValueVariablesState:
         return {
             variable_key: variable
             for variable_key, variable in self.variables.items()
-            if variable.form_variable.form_definition == form_definition
+            if variable.form_variable
+            and variable.form_variable.form_definition == form_definition
         }
 
     @classmethod
