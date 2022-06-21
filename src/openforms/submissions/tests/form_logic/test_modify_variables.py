@@ -1,6 +1,5 @@
 from django.test import TestCase
 
-
 from openforms.forms.constants import FormVariableDataTypes, FormVariableSources
 from openforms.forms.tests.factories import (
     FormFactory,

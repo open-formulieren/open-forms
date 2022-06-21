@@ -921,6 +921,68 @@ class FormLogicAPITests(APITestCase):
         )
         self.assertEqual("blank", response.json()["invalidParams"][0]["code"])
 
+    def test_cant_have_empty_variable_in_variable_action(self):
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "nLargeBoxes",
+                    },
+                    {
+                        "type": "number",
+                        "key": "nGiganticBoxes",
+                    },
+                ]
+            },
+        )
+
+        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_logic_data = {
+            "form": f"http://testserver{form_url}",
+            "json_logic_trigger": {
+                "and": [
+                    {
+                        "!=": [
+                            {"var": "nLargeBoxes"},
+                            "",
+                        ]
+                    },
+                    {
+                        "!=": [
+                            {"var": "nGiganticBoxes"},
+                            "",
+                        ]
+                    },
+                ]
+            },
+            "actions": [
+                {
+                    "variable": "",  # Empty Variable
+                    "action": {
+                        "name": "Sum boxes",
+                        "type": "variable",
+                        "value": {
+                            "+": [{"var": "nLargeBoxes"}, {"var": "nGiganticBoxes"}]
+                        },
+                    },
+                }
+            ],
+            "is_advanced": False,
+        }
+        url = reverse("api:form-logics-list")
+
+        response = self.client.post(url, data=form_logic_data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            "actions.0.variable", response.json()["invalidParams"][0]["name"]
+        )
+        self.assertEqual("blank", response.json()["invalidParams"][0]["code"])
+
     def test_cant_have_empty_state_in_property_action(self):
         user = SuperUserFactory.create()
         self.client.force_authenticate(user=user)
