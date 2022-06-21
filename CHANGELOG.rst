@@ -2,6 +2,17 @@
 Changelog
 =========
 
+1.1.3 (2022-06-??)
+==================
+
+Periodic bugfix release (in-development release notes)
+
+* [#1681] Use a unique reference number every time for StUF-ZDS requests
+* [#1687] Added explicit submission step validate endpoint
+* Fixed unintended camelization of response data
+* Bumped API version to 1.1.1
+* ...
+
 1.1.2 (2022-06-16)
 ==================
 
