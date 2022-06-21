@@ -749,6 +749,11 @@
     "description": "Variable table initial value title",
     "originalDefault": "Initial value"
   },
+  "RvJXSo": {
+    "defaultMessage": "change the value of a variable/component",
+    "description": "action type \"variable\" label",
+    "originalDefault": "change the value of a variable/component"
+  },
   "S6eF5o": {
     "defaultMessage": "Gegevens opschonen",
     "description": "Data removal tab title",
@@ -999,6 +1004,11 @@
     "description": "Export form button title",
     "originalDefault": "Export this form"
   },
+  "dWNClE": {
+    "defaultMessage": "Optional category for internal organisation.",
+    "description": "Form category field help text",
+    "originalDefault": "Optional category for internal organisation."
+  },
   "ddDA6+": {
     "defaultMessage": "Lijst (array)",
     "description": "JSON variable type \"array\" representation",
@@ -1179,6 +1189,11 @@
     "description": "Form list 'name' column header",
     "originalDefault": "Name"
   },
+  "k5JYxu": {
+    "defaultMessage": "Show form",
+    "description": "Show form button",
+    "originalDefault": "Show form"
+  },
   "k9CT3p": {
     "defaultMessage": "Toon op de formulierbevestigingspagina een link om terug te gaan naar de hoofdwebsite. Deze is enkel zichtbaar als er geen betaling vereist is.",
     "description": "Display main website link help text",
@@ -1193,6 +1208,11 @@
     "defaultMessage": "uitgeschakeld",
     "description": "component property \"disabled\" label",
     "originalDefault": "disabled"
+  },
+  "koVh3m": {
+    "defaultMessage": "Category",
+    "description": "Form category field label",
+    "originalDefault": "Category"
   },
   "l1fi1t": {
     "defaultMessage": "(ontbrekende informatie)",

@@ -1063,6 +1063,12 @@
       "value": "Initial value"
     }
   ],
+  "RvJXSo": [
+    {
+      "type": 0,
+      "value": "change the value of a variable/component"
+    }
+  ],
   "S6eF5o": [
     {
       "type": 0,
@@ -1413,6 +1419,12 @@
       "value": "Export this form"
     }
   ],
+  "dWNClE": [
+    {
+      "type": 0,
+      "value": "Optional category for internal organisation."
+    }
+  ],
   "ddDA6+": [
     {
       "type": 0,
@@ -1633,6 +1645,12 @@
       "value": "Name"
     }
   ],
+  "k5JYxu": [
+    {
+      "type": 0,
+      "value": "Show form"
+    }
+  ],
   "k9CT3p": [
     {
       "type": 0,
@@ -1649,6 +1667,12 @@
     {
       "type": 0,
       "value": "disabled"
+    }
+  ],
+  "koVh3m": [
+    {
+      "type": 0,
+      "value": "Category"
     }
   ],
   "l1fi1t": [
