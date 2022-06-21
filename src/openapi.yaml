@@ -4450,8 +4450,8 @@ components:
         key:
           type: string
           description: Key of the variable, should be unique with the form.
+          pattern: ^\w[\w.\-]*\w$
           maxLength: 100
-          pattern: ^[-a-zA-Z0-9_]+$
         source:
           allOf:
           - $ref: '#/components/schemas/SourceEnum'
