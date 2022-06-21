@@ -7,22 +7,16 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
-    FormFactory,
-    FormStepFactory,
-    FormVariableFactory,
-)
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
-from ..models import SubmissionValueVariable
 from .factories import SubmissionFactory, TemporaryFileUploadFactory
-from .mixins import SubmissionsMixin, VariablesTestMixin
+from .mixins import SubmissionsMixin
 
 TEST_FILES_DIR = Path(__file__).parent / "files"
 
 
 @temp_private_root()
-class SubmissionStepValidationTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
+class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

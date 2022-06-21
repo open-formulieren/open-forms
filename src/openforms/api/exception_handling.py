@@ -28,6 +28,11 @@ def _translate_exceptions(exc):
 
 # TODO: see if we can re-use openforms.submissions.parsers.IgnoreDataJSONRenderer for
 # the camelize keys skipping?
+#
+# We are ignoring the 'data' key in snake -> camel case conversion. This is the key
+# that's used to submit formio data to the backend, which contains sub-keys set by
+# end-users and can't be automatically converted. Consequently, error messages for
+# those sub-keys should not be transformed.
 def get_validation_errors(validation_errors: dict, camelize=True):
     for field_name, error_list in validation_errors.items():
         new_name = underscore_to_camel(field_name) if camelize else field_name
