@@ -32,6 +32,8 @@ from .factories import (
     TemporaryFileUploadFactory,
 )
 
+TEST_FILES_DIR = Path(__file__).parent / "files"
+
 
 @temp_private_root()
 class SubmissionAttachmentTest(TestCase):
