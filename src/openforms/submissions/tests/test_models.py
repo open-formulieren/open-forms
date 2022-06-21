@@ -17,7 +17,7 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
 )
 
-from ..models import Submission, SubmissionFileAttachment
+from ..models import Submission, SubmissionFileAttachment, SubmissionValueVariable
 from .factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -601,3 +601,76 @@ class SubmissionTests(VariablesTestMixin, TestCase):
                 current_val = getattr(submission, attr)
                 self.assertNotEqual(current_val, original_value)
                 self.assertTrue(current_val.startswith("pbkdf2_sha256$"))
+
+    def test_submission_data_with_dotted_keys(self):
+        form_step = FormStepFactory.create(
+            form_definition__configuration={
+                "display": "form",
+                "components": [
+                    {"key": "person.name", "type": "textfield", "label": "Name"},
+                    {"key": "person.surname", "type": "textfield", "label": "Surname"},
+                    {
+                        "key": "person.pets",
+                        "type": "selectboxes",
+                        "label": "Pets",
+                        "values": [
+                            {"value": "cat", "label": "Cat"},
+                            {"value": "dog", "label": "Dog"},
+                            {"value": "bird", "label": "Bird"},
+                        ],
+                    },
+                ],
+            }
+        )
+        submission = SubmissionFactory.create(form=form_step.form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={
+                "person": {
+                    "name": "Jo",
+                    "surname": "Doe",
+                    "pets": {
+                        "cat": True,
+                        "dog": False,
+                        "bird": False,
+                    },
+                }
+            },
+            form_step=form_step,
+        )
+
+        name_variable = SubmissionValueVariable.objects.get(
+            submission=submission, key="person.name"
+        )
+        surname_variable = SubmissionValueVariable.objects.get(
+            submission=submission, key="person.surname"
+        )
+        pet_variable = SubmissionValueVariable.objects.get(
+            submission=submission, key="person.pets"
+        )
+
+        self.assertEqual(name_variable.value, "Jo")
+        self.assertEqual(surname_variable.value, "Doe")
+        self.assertEqual(
+            pet_variable.value,
+            {
+                "cat": True,
+                "dog": False,
+                "bird": False,
+            },
+        )
+
+        self.assertEqual(
+            {
+                "person": {
+                    "name": "Jo",
+                    "surname": "Doe",
+                    "pets": {
+                        "cat": True,
+                        "dog": False,
+                        "bird": False,
+                    },
+                }
+            },
+            submission.data,
+        )
