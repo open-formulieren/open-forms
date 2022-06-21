@@ -14,6 +14,7 @@ from openforms.forms.tests.factories import (
 )
 
 
+@override_settings(LANGUAGE_CODE="en")
 class FormVariableViewsetTest(APITestCase):
     def test_auth_required(self):
         form = FormFactory.create()
@@ -109,7 +110,6 @@ class FormVariableViewsetTest(APITestCase):
         self.assertTrue(form_variables.filter(key="variable1").exists())
         self.assertFalse(form_variables.filter(key="variable2").exists())
 
-    @override_settings(LANGUAGE_CODE="en")
     def test_unique_together_key_form(self):
         user = StaffUserFactory.create(user_permissions=["change_form"])
         form = FormFactory.create()
@@ -193,3 +193,94 @@ class FormVariableViewsetTest(APITestCase):
 
         self.assertIn(form_variable1.key, variables_keys)
         self.assertIn(form_variable2.key, variables_keys)
+
+    def test_dotted_variable_keys(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create()
+
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver.com{form_path}"
+
+        form_definition_path = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
+        )
+        form_definition_url = f"http://testserver.com{form_definition_path}"
+
+        data_valid = [
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "test-with_dots.valid",
+                "name": "Valid with dots",
+                "source": FormVariableSources.component,
+                "data_type": FormVariableDataTypes.string,
+                "initial_value": "",
+            },
+        ]
+
+        data_invalid = [
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "test-with_dots.invalid.",
+                "name": "Valid with dots",
+                "source": FormVariableSources.component,
+                "data_type": FormVariableDataTypes.string,
+                "initial_value": "",
+            },
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "normal_key",
+                "name": "",  # missing name
+                "source": FormVariableSources.component,
+                "data_type": FormVariableDataTypes.string,
+                "initial_value": "",
+            },
+        ]
+
+        self.client.force_authenticate(user)
+
+        with self.subTest("Valid key"):
+            response = self.client.put(
+                reverse(
+                    "api:form-variables",
+                    kwargs={"uuid_or_slug": form.uuid},
+                ),
+                data=data_valid,
+            )
+
+            self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        with self.subTest("Invalid key"):
+            response = self.client.put(
+                reverse(
+                    "api:form-variables",
+                    kwargs={"uuid_or_slug": form.uuid},
+                ),
+                data=data_invalid,
+            )
+
+            self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+            error = response.json()
+
+            self.assertEqual(error["code"], "invalid")
+            self.assertEqual(
+                error["invalidParams"][0]["name"],
+                "0.key",
+            )
+            self.assertEqual(
+                error["invalidParams"][0]["reason"],
+                "Invalid variable key. It must only contain alphanumeric characters, underscores, "
+                "dots and dashes and should not be ended by dash or dot.",
+            )
+            self.assertEqual(
+                error["invalidParams"][1]["name"],
+                "1.name",
+            )
+            self.assertEqual(
+                error["invalidParams"][1]["code"],
+                "blank",
+            )
