@@ -26,22 +26,31 @@ def _translate_exceptions(exc):
     return exc
 
 
-def get_validation_errors(validation_errors: dict):
+# TODO: see if we can re-use openforms.submissions.parsers.IgnoreDataJSONRenderer for
+# the camelize keys skipping?
+#
+# We are ignoring the 'data' key in snake -> camel case conversion. This is the key
+# that's used to submit formio data to the backend, which contains sub-keys set by
+# end-users and can't be automatically converted. Consequently, error messages for
+# those sub-keys should not be transformed.
+def get_validation_errors(validation_errors: dict, camelize=True):
     for field_name, error_list in validation_errors.items():
+        new_name = underscore_to_camel(field_name) if camelize else field_name
+
         # nested validation for fields where many=True
         if isinstance(error_list, list):
             for i, nested_error_dict in enumerate(error_list):
                 if isinstance(nested_error_dict, dict):
-                    for err in get_validation_errors(nested_error_dict):
-                        err[
-                            "name"
-                        ] = f"{underscore_to_camel(field_name)}.{i}.{err['name']}"
+                    for err in get_validation_errors(
+                        nested_error_dict, camelize=field_name != "data"
+                    ):
+                        err["name"] = f"{new_name}.{i}.{err['name']}"
                         yield err
 
         # nested validation - recursively call the function
         if isinstance(error_list, dict):
-            for err in get_validation_errors(error_list):
-                err["name"] = f"{underscore_to_camel(field_name)}.{err['name']}"
+            for err in get_validation_errors(error_list, camelize=field_name != "data"):
+                err["name"] = f"{new_name}.{err['name']}"
                 yield err
             continue
 
@@ -58,7 +67,12 @@ def get_validation_errors(validation_errors: dict):
                         [
                             # see https://tools.ietf.org/html/rfc7807#section-3.1
                             # ('type', 'about:blank'),
-                            ("name", underscore_to_camel(field_name)),
+                            (
+                                "name",
+                                underscore_to_camel(field_name)
+                                if camelize
+                                else field_name,
+                            ),
                             ("code", err.code),
                             ("reason", str(err)),
                         ]
@@ -68,7 +82,10 @@ def get_validation_errors(validation_errors: dict):
                     [
                         # see https://tools.ietf.org/html/rfc7807#section-3.1
                         # ('type', 'about:blank'),
-                        ("name", underscore_to_camel(field_name)),
+                        (
+                            "name",
+                            underscore_to_camel(field_name) if camelize else field_name,
+                        ),
                         ("code", error.code),
                         ("reason", str(error)),
                     ]

@@ -1,4 +1,5 @@
 import logging
+from typing import Tuple
 
 from django.db import transaction
 from django.utils import timezone
@@ -6,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from rest_framework import authentication, mixins, status, viewsets
+from rest_framework import authentication, mixins, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
@@ -14,7 +15,7 @@ from rest_framework.reverse import reverse
 
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
-from openforms.api.serializers import ExceptionSerializer
+from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.config.models import GlobalConfiguration
 from openforms.logging import logevent
 from openforms.prefill import prefill_variables
@@ -361,7 +362,15 @@ class SubmissionStepViewSet(
         self.check_object_permissions(self.request, submission_step)
         return submission_step
 
-    @extend_schema(summary=_("Store submission step data"))
+    @extend_schema(
+        summary=_("Store submission step data"),
+        responses={
+            200: SubmissionStepSerializer,
+            400: ValidationErrorSerializer,
+            403: ExceptionSerializer,
+        },
+    )
+    @transaction.atomic()
     def update(self, request, *args, **kwargs):
         """
         The submission data is either created or updated, depending on whether there was
@@ -372,12 +381,8 @@ class SubmissionStepViewSet(
         in the future. I.e. - a step that is marked as not available will still be submitted
         at the time being.
         """
-        instance = self.get_object()
+        instance, serializer = self._validate_step_input(request)
         create = instance.pk is None
-        if create:
-            instance.uuid = SubmissionStep._meta.get_field("uuid").default()
-        serializer = self.get_serializer(instance, data=request.data)
-        serializer.is_valid(raise_exception=True)
         serializer.save()
 
         logevent.submission_step_fill(instance)
@@ -411,6 +416,38 @@ class SubmissionStepViewSet(
 
         status_code = status.HTTP_200_OK if not create else status.HTTP_201_CREATED
         return Response(serializer.data, status=status_code)
+
+    @extend_schema(
+        summary=_("Store submission step data"),
+        request=SubmissionStepSerializer,
+        responses={
+            204: None,
+            400: ValidationErrorSerializer,
+            403: ExceptionSerializer,
+        },
+    )
+    @action(detail=True, methods=["post"])
+    def validate(self, request, *args, **kwargs):
+        """
+        Validate the submission step data before persisting.
+
+        This endpoint runs the same validation logic as the PUT endpoint to store the
+        data. For invalid data, you will get an HTTP 400 response with error details.
+        """
+        self._validate_step_input(request)
+        # if no validation errors were raised, signal an OK to the client
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def _validate_step_input(
+        self, request
+    ) -> Tuple[SubmissionStep, SubmissionStepSerializer]:
+        instance = self.get_object()
+        create = instance.pk is None
+        if create:
+            instance.uuid = SubmissionStep._meta.get_field("uuid").default()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return instance, serializer
 
     @extend_schema(
         summary=_("Apply/check form logic"),
