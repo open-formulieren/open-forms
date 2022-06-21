@@ -22,6 +22,9 @@ FormContext.displayName = 'FormContext';
 const FeatureFlagsContext = React.createContext({});
 FeatureFlagsContext.displayName = 'FeatureFlagsContext';
 
+const FormVariablesContext = React.createContext({});
+FormVariablesContext.displayName = 'FormVariablesContext';
+
 export {
   FormContext,
   FormDefinitionsContext,
@@ -29,4 +32,5 @@ export {
   PluginsContext,
   TinyMceContext,
   FeatureFlagsContext,
+  FormVariablesContext,
 };

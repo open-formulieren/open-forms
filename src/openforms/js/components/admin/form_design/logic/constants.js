@@ -79,6 +79,13 @@ const ACTION_TYPES = [
     }),
   ],
   [
+    'variable',
+    defineMessage({
+      description: 'action type "variable" label',
+      defaultMessage: 'change the value of a variable/component',
+    }),
+  ],
+  [
     'step-not-applicable',
     defineMessage({
       description: 'action type "step-not-applicable" label',
