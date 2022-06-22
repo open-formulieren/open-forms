@@ -246,8 +246,70 @@ Commands can be executed using:
 
     $ python src/manage.py <command>
 
-There are no specific commands for the project. See
-`Django framework commands`_ for all default commands, or type
-``python src/manage.py --help``.
+You can always get a full list of available commands by running:
 
-.. _Django framework commands: https://docs.djangoproject.com/en/dev/ref/django-admin/#available-commands
+.. code-block:: bash
+
+    $ python src/manage.py help
+
+There are a number of developer management commands available in this project.
+
+``appointment``
+---------------
+
+Performs various appointment plugin calls.
+
+``dmn_evaluate``
+----------------
+
+Evaluate a particular decision definition.
+
+``dmn_list_definitions``
+------------------------
+
+List the available decision definitions for a given engine.
+
+``check_duplicate_component_keys``
+----------------------------------
+
+Check all forms and report duplicated component keys.
+
+``export``
+----------
+
+Export a form.
+
+``import``
+----------
+
+Import a form.
+
+``msgraph_list_files``
+----------------------
+
+List the files in MS Sharepoint.
+
+``list_prefill_plugins``
+------------------------
+
+List the registered prefill plugins and the attributes they expose.
+
+``register_submission``
+-----------------------
+
+Execute the registration machinery for a given submission.
+
+``render_confirmation_pdf``
+---------------------------
+
+Render the summary/confirmation into a PDF for a given submission.
+
+``render_report``
+-----------------
+
+Render a summary for a given submission in a particular render mode.
+
+``test_submission_completion``
+------------------------------
+
+Generate a submission and test the completion process flow.
