@@ -97,7 +97,9 @@ class SubmissionValueVariablesState:
 
 
 class SubmissionValueVariableManager(models.Manager):
-    def bulk_create_or_update(self, variables: List["SubmissionValueVariable"], fields):
+    def bulk_create_or_update(
+        self, variables: List["SubmissionValueVariable"], fields: list
+    ) -> None:
         variables_to_create = []
         variables_to_update = []
         for variable in variables:
@@ -110,8 +112,11 @@ class SubmissionValueVariableManager(models.Manager):
         self.bulk_update(variables_to_update, fields=fields)
 
     def bulk_create_or_update_from_data(
-        self, submission_step, data, update_missing_variables: bool = False
-    ):
+        self,
+        submission_step: "SubmissionStep",
+        data: dict,
+        update_missing_variables: bool = False,
+    ) -> None:
         submission = submission_step.submission
 
         submission_value_variables_state = (

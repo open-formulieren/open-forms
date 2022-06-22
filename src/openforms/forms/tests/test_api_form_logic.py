@@ -948,13 +948,13 @@ class FormLogicAPITests(APITestCase):
                     {
                         "!=": [
                             {"var": "nLargeBoxes"},
-                            "",
+                            None,
                         ]
                     },
                     {
                         "!=": [
                             {"var": "nGiganticBoxes"},
-                            "",
+                            None,
                         ]
                     },
                 ]

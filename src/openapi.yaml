@@ -4614,6 +4614,7 @@ components:
           property: '#/components/schemas/LogicActionPolymorphicLogicPropertyAction'
           value: '#/components/schemas/LogicActionPolymorphicLogicValueAction'
           step-not-applicable: '#/components/schemas/LogicActionPolymorphicGenericObject'
+          variable: '#/components/schemas/LogicActionPolymorphicLogicValueAction'
     LogicActionPolymorphicGenericObject:
       allOf:
       - $ref: '#/components/schemas/LogicActionPolymorphicShared'
@@ -4659,6 +4660,7 @@ components:
       - disable-next
       - property
       - value
+      - variable
       type: string
     LogicComponentAction:
       type: object
@@ -4669,6 +4671,10 @@ components:
           description: 'Sleutel van de Form.io-component waarop de actie van toepassing
             is. Dit veld is optioneel als het actietype `disable-next` is, anders
             vereist. '
+        variable:
+          type: string
+          title: Key of the target variable
+          description: Key of the target variable whose value will be changed.
         formStep:
           type: string
           format: uri
