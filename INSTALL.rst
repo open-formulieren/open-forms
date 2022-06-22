@@ -8,20 +8,20 @@ the documentation.
 
 The project is developed in `Python`_ using the `Django framework`_.
 
-
 Prerequisites
 =============
 
 You need the following libraries and/or programs:
 
-* `Python`_ 3.8 or above
+* `Python`_ 3.8
 * Python `Virtualenv`_ and `Pip`_
 * `PostgreSQL`_ 10 or above
+* `Redis`_ for `Celery`_ to work
 * `Node.js`_ (LTS version, see ``.nvmrc`` for version information)
 * `npm`_
 * `yarn`_
 
-You will also need the following libraries:
+You will also need the following operating-system libraries:
 
 * pkg-config
 * libmagic1
@@ -29,8 +29,6 @@ You will also need the following libraries:
 * libxmlsec1-dev
 * libxmlsec1-openssl
 * libpq-dev
-
-You will also need to have `Redis`_ for `Celery`_ to work.
 
 .. _Python: https://www.python.org/
 .. _Django framework: https://www.djangoproject.com/
@@ -94,7 +92,9 @@ development machine.
 
        $ python src/manage.py runserver
 
-8. Create a .env file with database settings. See dotenv.example for an example.
+8. Create a ``.env`` file with database settings. See dotenv.example for an example.
+
+   .. code-block:: bash
 
         $ cp dotenv.example .env
 
@@ -211,6 +211,31 @@ All settings for the project can be found in
 ``src/openforms/conf``.
 The file ``local.py`` overwrites settings from the base configuration.
 
+Celery
+======
+
+You can run celery beat and worker(s) in a shell too to have the asynchronous task
+queue processing active:
+
+To start beat which triggers periodic tasks:
+
+.. code-block:: bash
+
+   $ ./bin/celery_beat.sh
+
+To start the background workers executing background tasks:
+
+.. code-block:: bash
+
+   $ CELERY_WORKER_CONCURRENCY=4 ./bin/celery_worker.sh
+
+.. note:: You can tweak ``CELERY_WORKER_CONCURRENCY`` to your liking, the default is 1.
+
+To start flower for task monitoring:
+
+.. code-block:: bash
+
+   $ ./bin/celery_flower.sh
 
 Commands
 ========
