@@ -134,14 +134,15 @@ def evaluate_form_logic(
                     submission_variable = submission_variable_state.get_variable(
                         action["variable"]
                     )
-                    variable_form_definition = (
-                        submission_variable.form_variable.form_definition
-                    )
                     updated_data[action["variable"]] = new_value
 
+                    form_variable = submission_variable.form_variable
+
                     if (
-                        not variable_form_definition
-                        or variable_form_definition != step.form_step.form_definition
+                        not form_variable
+                        or not form_variable.form_definition
+                        or form_variable.form_definition
+                        != step.form_step.form_definition
                     ):
                         # Cases where either:
                         # 1. The variable is not related to a particular step
