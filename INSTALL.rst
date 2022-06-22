@@ -313,3 +313,72 @@ Render a summary for a given submission in a particular render mode.
 ------------------------------
 
 Generate a submission and test the completion process flow.
+
+Utility scripts
+===============
+
+The ``bin`` folder contains some utility scripts sporadically used.
+
+``bin/bumpversion.sh``
+----------------------
+
+Wrapper around ``bumpversion`` which takes care of ``package-lock.json`` too.
+
+This allows bumping the version according to semver, e.g.:
+
+.. code-block:: bash
+
+   ./bin/bumpversion.sh minor
+
+``bin/compile_dependencies.sh``
+-------------------------------
+
+Wrapper script around ``pip-compile``. New dependencies should be added to the
+relevant ``.in`` file in ``requirements``, and then you run the compile script:
+
+.. code-block:: bash
+
+   ./bin/compile_dependencies.sh
+
+You should also use this to *upgrade* existing dependencies to a newer version, for
+example:
+
+.. code-block:: bash
+
+   ./bin/compile_dependencies.sh -P django
+
+Any additional argument passed to the script are passed down to the underlying
+``pip-compile`` call.
+
+``bin/find_untranslated_js.py``
+-------------------------------
+
+A utility that checks the JavaScript translation catalogs and detects strings that
+may still need translation.
+
+``bin/generate_admin_index_fixture.sh``
+---------------------------------------
+
+After configuring the application groups in the admin through point-and-click, you
+call this script to dump the configuration into a fixture which will be loaded on
+all other installations.
+
+``bin/generate_default_groups_fixtures.sh``
+-------------------------------------------
+
+After configuring the user groups with the appropriate permissions in the admin,
+you can this script to dump the configuration into a fixture which will be loaded on
+all other installations.
+
+``bin/generate_oas.sh``
+-----------------------
+
+This script generates the OpenAPI specification from the API endpoint implementations.
+
+You must call this after making changes to the (public) API.
+
+``bin/makemessages.sh``
+-----------------------
+
+Script to extract the backend and frontend translation messages into their catalogs
+for translation.
