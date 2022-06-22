@@ -10,6 +10,11 @@ const getComponentDatatype = component => {
   return COMPONENT_DATATYPES[component.type] || 'string';
 };
 
+const isLayoutOrContentComponent = component => {
+  // Issue #1695: content components are not considered layout components
+  return FormioUtils.isLayoutComponent(component) || component.type === 'content';
+};
+
 const updateFormVariables = (
   formDefinition,
   mutationType,
@@ -18,7 +23,7 @@ const updateFormVariables = (
   currentFormVariables
 ) => {
   // Not all components are associated with variables
-  if (FormioUtils.isLayoutComponent(newComponent)) return currentFormVariables;
+  if (isLayoutOrContentComponent(newComponent)) return currentFormVariables;
 
   let updatedFormVariables = _.cloneDeep(currentFormVariables);
   const existingKeys = updatedFormVariables
