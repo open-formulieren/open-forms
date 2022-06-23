@@ -267,7 +267,7 @@ django-ipware==3.0.1
     #   django-axes
 django-jenkins==0.110.0
     # via -r requirements/test-tools.in
-django-ordered-model==3.5
+django-ordered-model==3.6
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

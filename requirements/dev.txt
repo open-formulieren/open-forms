@@ -302,7 +302,7 @@ django-jenkins==0.110.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-ordered-model==3.5
+django-ordered-model==3.6
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
