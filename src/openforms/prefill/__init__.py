@@ -210,6 +210,8 @@ def _set_default_values(
     is inspected for prefill configuration, which is then looked up in
     ``prefilled_values`` to set the component ``defaultValue``.
     """
+    from openforms.formio.service import normalize_value_for_component
+
     for component in iter_components(configuration, recursive=True):
         if not (prefill := component.get("prefill")):
             continue
@@ -221,9 +223,15 @@ def _set_default_values(
         default_value = component.get("defaultValue")
         glom_path = Path(plugin, attribute)
         prefill_value = glom(prefilled_values, glom_path, default=None)
+
         if prefill_value is None:
             logger.debug("Prefill value for component %r is None, skipping.", component)
             continue
+
+        # 1693: we need to normalize values according to the format expected by the
+        # component. For example, (some) prefill plugins return postal codes without
+        # space between the digits and the letters.
+        prefill_value = normalize_value_for_component(component, prefill_value)
 
         if prefill_value != default_value and default_value is not None:
             logger.info(
