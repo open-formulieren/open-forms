@@ -64,8 +64,9 @@ class LogicActionPolymorphicSerializer(PolymorphicSerializer):
     serializer_mapping = {
         LogicActionTypes.disable_next: serializers.Serializer,
         LogicActionTypes.property: LogicPropertyActionSerializer,
-        LogicActionTypes.value: LogicValueActionSerializer,
+        LogicActionTypes.value: LogicValueActionSerializer,  # TODO remove once only variables are used
         LogicActionTypes.step_not_applicable: serializers.Serializer,
+        LogicActionTypes.variable: LogicValueActionSerializer,
     }
 
 
@@ -79,6 +80,12 @@ class LogicComponentActionSerializer(serializers.Serializer):
             "Key of the Form.io component that the action applies to. This field is "
             "optional if the action type is `{action_type}`, otherwise required."
         ).format(action_type=LogicActionTypes.disable_next),
+    )
+    variable = serializers.CharField(
+        required=False,  # validated against the action.type
+        allow_blank=True,
+        label=_("Key of the target variable"),
+        help_text=_("Key of the target variable whose value will be changed."),
     )
     form_step = URLRelatedField(
         allow_null=True,
@@ -103,6 +110,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
         action_type = data.get("action", {}).get("type")
         component = data.get("component")
         form_step = data.get("form_step")
+        variable = data.get("variable")
 
         if (
             action_type
@@ -111,6 +119,16 @@ class LogicComponentActionSerializer(serializers.Serializer):
         ):
             raise serializers.ValidationError(
                 {"component": self.fields["component"].error_messages["blank"]},
+                code="blank",
+            )
+
+        if (
+            action_type
+            and action_type in LogicActionTypes.requires_variable
+            and not variable
+        ):
+            raise serializers.ValidationError(
+                {"variable": self.fields["variable"].error_messages["blank"]},
                 code="blank",
             )
 

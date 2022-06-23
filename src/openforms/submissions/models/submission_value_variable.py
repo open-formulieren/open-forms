@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from django.db import models
 from django.db.models import Q
@@ -12,7 +12,7 @@ from openforms.forms.models.form_variable import FormVariable
 from ..constants import SubmissionValueVariableSources
 from .submission import Submission
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from .submission_step import SubmissionStep
 
 
@@ -47,7 +47,8 @@ class SubmissionValueVariablesState:
         return {
             variable_key: variable
             for variable_key, variable in self.variables.items()
-            if variable.form_variable.form_definition == form_definition
+            if variable.form_variable
+            and variable.form_variable.form_definition == form_definition
         }
 
     @classmethod
@@ -93,23 +94,28 @@ class SubmissionValueVariablesState:
 
 
 class SubmissionValueVariableManager(models.Manager):
-    def bulk_create_or_update(
-        self, submission_step, data, update_missing_variables: bool = False
-    ):
-        submission = submission_step.submission
+    def bulk_create_or_update_from_data(
+        self,
+        data: dict,
+        submission: "Submission",
+        submission_step: "SubmissionStep" = None,
+        update_missing_variables: bool = False,
+    ) -> None:
 
         submission_value_variables_state = (
             submission.load_submission_value_variables_state()
         )
-        submission_step_variables = (
-            submission_value_variables_state.get_variables_in_submission_step(
-                submission_step
+        submission_variables = submission_value_variables_state.variables
+        if submission_step:
+            submission_variables = (
+                submission_value_variables_state.get_variables_in_submission_step(
+                    submission_step
+                )
             )
-        )
 
         variables_to_create = []
         variables_to_update = []
-        for key, variable in submission_step_variables.items():
+        for key, variable in submission_variables.items():
             try:
                 variable.value = glom(data, key)
             except PathAccessError:

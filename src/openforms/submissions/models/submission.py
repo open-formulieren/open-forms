@@ -33,7 +33,7 @@ from ..query import SubmissionManager
 from ..serializers import CoSignDataSerializer
 from .submission_step import SubmissionStep
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from .submission_files import (
         SubmissionFileAttachment,
         SubmissionFileAttachmentQuerySet,

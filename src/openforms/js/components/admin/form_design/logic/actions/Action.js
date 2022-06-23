@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import {useIntl} from 'react-intl';
@@ -10,10 +10,13 @@ import DataPreview from '../DataPreview';
 import {ActionComponent} from './Actions';
 import {Action as ActionType, ActionError} from './types';
 import DSLEditorNode from '../DSLEditorNode';
+import {FeatureFlagsContext} from '../../Context';
 
 const Action = ({prefixText, action, errors = {}, onChange, onDelete}) => {
   const intl = useIntl();
   const hasErrors = Object.entries(errors).length > 0;
+
+  const featureFlags = useContext(FeatureFlagsContext);
 
   return (
     <div className="logic-action">
@@ -37,7 +40,10 @@ const Action = ({prefixText, action, errors = {}, onChange, onDelete}) => {
             <DSLEditorNode errors={errors.action?.type}>
               <Select
                 name="action.type"
-                choices={ACTION_TYPES}
+                choices={ACTION_TYPES.filter(actionType => {
+                  if (!featureFlags.enable_form_variables) return actionType[0] !== 'variable';
+                  return true;
+                })}
                 translateChoices
                 allowBlank
                 onChange={onChange}
