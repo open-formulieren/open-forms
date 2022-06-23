@@ -14,8 +14,9 @@ from openforms.emails.confirmation_emails import (
 from openforms.emails.utils import send_mail_html, strip_tags_plus
 from openforms.logging import logevent
 
+from ..forms.models import FormVariable
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
-from .models import Submission, TemporaryFileUpload
+from .models import Submission, SubmissionValueVariable, TemporaryFileUpload
 from .query import SubmissionQuerySet
 
 logger = logging.getLogger(__name__)
@@ -147,3 +148,18 @@ def send_confirmation_email(submission: Submission):
     submission.save(update_fields=("confirmation_email_sent",))
 
     logevent.confirmation_email_success(submission)
+
+
+def persist_submission_variables_unrelated_to_a_step(
+    data: dict, submission: Submission
+) -> None:
+    keys_in_data = [key for key, value in data.items()]
+    form_vars_keys = FormVariable.objects.filter(
+        form=submission.form, key__in=keys_in_data, form_definition__isnull=True
+    ).values_list("key", flat=True)
+    filtered_data = {key: value for key, value in data.items() if key in form_vars_keys}
+
+    if filtered_data:
+        SubmissionValueVariable.objects.bulk_create_or_update_from_data(
+            filtered_data, submission
+        )

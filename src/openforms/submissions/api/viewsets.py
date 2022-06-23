@@ -25,6 +25,7 @@ from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSet
 from ..attachments import attach_uploads_to_submission_step
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionStep
+from ..models.submission_step import DirtyData
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser, IgnoreDataJSONRenderer
 from ..signals import submission_complete, submission_start
 from ..status import SubmissionProcessingStatus
@@ -32,6 +33,7 @@ from ..tasks import on_completion
 from ..tokens import submission_status_token_generator
 from ..utils import (
     add_submmission_to_session,
+    persist_submission_variables_unrelated_to_a_step,
     remove_submission_from_session,
     remove_submission_uploads_from_session,
 )
@@ -366,6 +368,7 @@ class SubmissionStepViewSet(
         summary=_("Store submission step data"),
         responses={
             200: SubmissionStepSerializer,
+            201: SubmissionStepSerializer,
             400: ValidationErrorSerializer,
             403: ExceptionSerializer,
         },
@@ -387,6 +390,9 @@ class SubmissionStepViewSet(
 
         logevent.submission_step_fill(instance)
 
+        persist_submission_variables_unrelated_to_a_step(
+            serializer.validated_data["data"], instance.submission
+        )
         attach_uploads_to_submission_step(instance)
 
         # See #1480 - if there is navigation between steps and original form field values
@@ -474,7 +480,7 @@ class SubmissionStepViewSet(
             # keys like ``foo.bar`` and ``foo.baz`` are used which construct a foo object
             # with keys bar and baz.
             merged_data = {**submission.data, **data}
-            submission_step.data = data
+            submission_step.data = DirtyData(data)
 
             new_configuration = evaluate_form_logic(
                 submission,

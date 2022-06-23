@@ -88,25 +88,28 @@ def evaluate_form_logic(
     # on that.
     rules = getattr(submission.form, "_cached_logic_rules", None)
     if rules is None:
-        rules = FormLogic.objects.filter(form=submission.form)
+        # TODO the ordering on PK will be replaced by ordering on an order field once it's implemented
+        rules = FormLogic.objects.filter(form=submission.form).order_by("pk")
         submission.form._cached_logic_rules = rules
 
     submission_state = submission.load_execution_state()
-    submission_variable_state = submission.load_submission_value_variables_state()
-    submission_variables_to_update = []
 
-    updated_data = deepcopy(step.data)
+    updated_step_data = deepcopy(step.data)
+    updated_submission_data = deepcopy(data)
     for rule in rules:
-        if jsonLogic(rule.json_logic_trigger, data):
+        if jsonLogic(rule.json_logic_trigger, updated_submission_data):
             for action in rule.actions:
                 action_details = action["action"]
-                # TODO this will be replaced by changing the value of variables
+                # TODO this action will be replaced by changing the value of variables
                 if action_details["type"] == LogicActionTypes.value:
-                    new_value = jsonLogic(action_details["value"], data)
+                    new_value = jsonLogic(
+                        action_details["value"], updated_submission_data
+                    )
                     configuration = set_property_value(
                         configuration, action["component"], "value", new_value
                     )
-                    updated_data[action["component"]] = new_value
+                    updated_step_data[action["component"]] = new_value
+                    updated_submission_data = {**data, **updated_step_data}
                 elif action_details["type"] == LogicActionTypes.property:
                     property_name = action_details["property"]["value"]
                     property_value = action_details["state"]
@@ -127,37 +130,17 @@ def evaluate_form_logic(
                     # not-applicable don't have old data
                     submission_step_to_modify.data = {}
                     if submission_step_to_modify == step:
-                        updated_data = {}
+                        updated_step_data = {}
                         step._is_applicable = False
                 elif action_details["type"] == LogicActionTypes.variable:
-                    new_value = jsonLogic(action_details["value"], data)
-                    submission_variable = submission_variable_state.get_variable(
-                        action["variable"]
+                    new_value = jsonLogic(
+                        action_details["value"], updated_submission_data
                     )
-                    updated_data[action["variable"]] = new_value
+                    variable_key = action["variable"]
+                    updated_step_data[variable_key] = new_value
+                    updated_submission_data = {**data, **updated_step_data}
 
-                    form_variable = submission_variable.form_variable
-
-                    if (
-                        not form_variable
-                        or not form_variable.form_definition
-                        or form_variable.form_definition
-                        != step.form_step.form_definition
-                    ):
-                        # Cases where either:
-                        # 1. The variable is not related to a particular step
-                        # 2. The variable being changed is part of a different step than the step currently being edited
-                        # In these cases, the changes are persisted to the database
-                        submission_variable.value = new_value
-                        submission_variable.source = (
-                            SubmissionValueVariableSources.logic
-                        )
-                        submission_variables_to_update.append(submission_variable)
-
-    step.data = DirtyData(updated_data)
-    SubmissionValueVariable.objects.bulk_create_or_update(
-        submission_variables_to_update, fields=["value", "source"]
-    )
+    step.data = DirtyData(updated_step_data)
 
     if dirty:
         # only keep the changes in the data, so that old values do not overwrite otherwise

@@ -113,24 +113,26 @@ class SubmissionValueVariableManager(models.Manager):
 
     def bulk_create_or_update_from_data(
         self,
-        submission_step: "SubmissionStep",
         data: dict,
+        submission: "Submission",
+        submission_step: "SubmissionStep" = None,
         update_missing_variables: bool = False,
     ) -> None:
-        submission = submission_step.submission
 
         submission_value_variables_state = (
             submission.load_submission_value_variables_state()
         )
-        submission_step_variables = (
-            submission_value_variables_state.get_variables_in_submission_step(
-                submission_step
+        submission_variables = submission_value_variables_state.variables
+        if submission_step:
+            submission_variables = (
+                submission_value_variables_state.get_variables_in_submission_step(
+                    submission_step
+                )
             )
-        )
 
         variables_to_create = []
         variables_to_update = []
-        for key, variable in submission_step_variables.items():
+        for key, variable in submission_variables.items():
             try:
                 variable.value = glom(data, key)
             except PathAccessError:
