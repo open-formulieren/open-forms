@@ -1,8 +1,11 @@
+from threading import Thread
+
+from django.db import close_old_connections
 from django.urls import reverse
 
 from furl import furl
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APITransactionTestCase
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.forms.models import FormLogic
@@ -23,12 +26,8 @@ class FormLogicAPITests(APITestCase):
         form1 = FormFactory.create()
         form2 = FormFactory.create()
 
-        FormLogicFactory.create(
-            form=form1,
-        )
-        FormLogicFactory.create(
-            form=form2,
-        )
+        FormLogicFactory.create(form=form1)
+        FormLogicFactory.create(form=form2)
 
         self.client.force_authenticate(user)
         url = reverse("api:form-logics-list")
@@ -58,6 +57,7 @@ class FormLogicAPITests(APITestCase):
 
         form_logic_data = {
             "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+            "order": 0,
             "json_logic_trigger": {
                 "==": [
                     {"var": "step1_textfield1"},
@@ -108,6 +108,7 @@ class FormLogicAPITests(APITestCase):
 
         form_logic_data = {
             "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+            "order": 0,
             "json_logic_trigger": {
                 ">": [
                     {"date": {"var": "dateOfBirth"}},
@@ -154,6 +155,7 @@ class FormLogicAPITests(APITestCase):
 
         form_logic_data = {
             "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+            "order": 0,
             "json_logic_trigger": {
                 ">": [
                     {"date": {"var": "dateOfBirth"}},
@@ -199,6 +201,7 @@ class FormLogicAPITests(APITestCase):
         form_logic_data = {
             "form_step": f"http://testserver{reverse('api:form-steps-detail', kwargs={'form_uuid_or_slug': form.uuid, 'uuid': step.uuid})}",
             "component": "step1_textfield1",
+            "order": 0,
             "json_logic_trigger": {
                 "==": [
                     {"var": "step1_textfield1"},
@@ -321,6 +324,7 @@ class FormLogicAPITests(APITestCase):
 
         form_logic_data = {
             "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+            "order": 0,
             "json_logic_trigger": {
                 "invalid_op": [
                     {"var": "step1_textfield1"},
@@ -375,6 +379,7 @@ class FormLogicAPITests(APITestCase):
             with self.subTest(trigger=trigger):
                 form_logic_data = {
                     "form": f"http://testserver{form_path}",
+                    "order": 0,
                     "json_logic_trigger": trigger,
                     "actions": [
                         {
@@ -417,6 +422,7 @@ class FormLogicAPITests(APITestCase):
 
         form_logic_data = {
             "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+            "order": 0,
             "json_logic_trigger": {"==": [{"var": "name"}, "John"]},
             "actions": [
                 {
@@ -460,6 +466,7 @@ class FormLogicAPITests(APITestCase):
 
         form_logic_1 = {
             "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+            "order": 0,
             "json_logic_trigger": {
                 "==": [
                     {"var": "foo.bar.option1"},
@@ -481,6 +488,7 @@ class FormLogicAPITests(APITestCase):
 
         form_logic_2 = {
             "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+            "order": 1,
             "json_logic_trigger": {
                 "==": [
                     {"var": "fuu.ber"},
@@ -530,6 +538,7 @@ class FormLogicAPITests(APITestCase):
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_logic_data = {
             "form": f"http://testserver{form_url}",
+            "order": 0,
             "json_logic_trigger": {
                 "and": [
                     {"==": [{"var": "text1"}, "foo"]},
@@ -565,6 +574,7 @@ class FormLogicAPITests(APITestCase):
         self.client.force_authenticate(user=user)
         form_logic_data = {
             "form": "invalid",
+            "order": 0,
             "json_logic_trigger": {
                 "invalid_op": [
                     {"==": [{"var": "text1"}, "foo"]},
@@ -614,6 +624,7 @@ class FormLogicAPITests(APITestCase):
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_logic_data = {
             "form": f"http://testserver{form_url}",
+            "order": 0,
             "json_logic_trigger": {
                 "==": [{"var": "text42"}, "foo"],
             },
@@ -663,6 +674,7 @@ class FormLogicAPITests(APITestCase):
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_logic_data = {
             "form": f"http://testserver{form_url}",
+            "order": 0,
             "json_logic_trigger": {
                 "==": [{"var": "text1"}, {"var": ""}]
             },  # Empty comparison component
@@ -712,6 +724,7 @@ class FormLogicAPITests(APITestCase):
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_logic_data = {
             "form": f"http://testserver{form_url}",
+            "order": 0,
             "json_logic_trigger": {
                 "==": [{"var": ""}, {"var": "text1"}]
             },  # Empty comparison component
@@ -761,6 +774,7 @@ class FormLogicAPITests(APITestCase):
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_logic_data = {
             "form": f"http://testserver{form_url}",
+            "order": 0,
             "json_logic_trigger": {"==": [{"var": "text1"}, {"var": "text2"}]},
             "actions": [
                 {
@@ -804,6 +818,7 @@ class FormLogicAPITests(APITestCase):
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_logic_data = {
             "form": f"http://testserver{form_url}",
+            "order": 0,
             "json_logic_trigger": {"==": [{"var": "text1"}, {"var": "text2"}]},
             "actions": [
                 {
@@ -850,6 +865,7 @@ class FormLogicAPITests(APITestCase):
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_logic_data = {
             "form": f"http://testserver{form_url}",
+            "order": 0,
             "json_logic_trigger": {"==": [{"var": "text1"}, {"var": "text2"}]},
             "actions": [
                 {
@@ -897,6 +913,7 @@ class FormLogicAPITests(APITestCase):
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_logic_data = {
             "form": f"http://testserver{form_url}",
+            "order": 0,
             "json_logic_trigger": {"==": [{"var": "text1"}, {"var": "text2"}]},
             "actions": [
                 {
@@ -943,6 +960,7 @@ class FormLogicAPITests(APITestCase):
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_logic_data = {
             "form": f"http://testserver{form_url}",
+            "order": 0,
             "json_logic_trigger": {
                 "and": [
                     {
@@ -1005,6 +1023,7 @@ class FormLogicAPITests(APITestCase):
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_logic_data = {
             "form": f"http://testserver{form_url}",
+            "order": 0,
             "json_logic_trigger": {"==": [{"var": "text1"}, {"var": "text2"}]},
             "actions": [
                 {
@@ -1051,6 +1070,7 @@ class FormLogicAPITests(APITestCase):
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_logic_data = {
             "form": f"http://testserver{form_url}",
+            "order": 0,
             "json_logic_trigger": {"==": [{"var": "text1"}, {"var": "text2"}]},
             "actions": [
                 {
@@ -1074,3 +1094,61 @@ class FormLogicAPITests(APITestCase):
             "actions.0.formStep", response.json()["invalidParams"][0]["name"]
         )
         self.assertEqual("blank", response.json()["invalidParams"][0]["code"])
+
+
+class FormLogicTransactionTests(APITransactionTestCase):
+    def test_reorder_logic_rules(self):
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "component",
+                    }
+                ]
+            },
+        )
+        # create some existing rules, we'll use patch requests to only modify the order
+        common_kwargs = {
+            "json_logic_trigger": {"==": [{"var": "component"}, "1"]},
+            "form": form,
+        }
+        fl1 = FormLogicFactory.create(order=0, **common_kwargs)
+        fl2 = FormLogicFactory.create(order=1, **common_kwargs)
+        fl3 = FormLogicFactory.create(order=2, **common_kwargs)
+
+        # make a couple of requests in parallel, simulating the UI firing multiple
+        # API calls shortly after each other
+
+        def _thread(form_logic, new_order):
+            endpoint = reverse(
+                "api:form-logics-detail", kwargs={"uuid": form_logic.uuid}
+            )
+            response = self.client.patch(endpoint, {"order": new_order})
+            close_old_connections()
+            self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
+
+        threads = [
+            Thread(target=_thread, args=(fl1, 1)),
+            Thread(target=_thread, args=(fl3, 0)),
+            Thread(target=_thread, args=(fl2, 2)),
+        ]
+
+        for t in threads:
+            t.start()
+
+        for t in threads:
+            t.join()
+
+        # check that the race conditions are not a problem and the API endpoints
+        # are idempotent
+        fl1.refresh_from_db()
+        fl2.refresh_from_db()
+        fl3.refresh_from_db()
+
+        self.assertEqual(fl1.order, 1)
+        self.assertEqual(fl2.order, 2)
+        self.assertEqual(fl3.order, 0)

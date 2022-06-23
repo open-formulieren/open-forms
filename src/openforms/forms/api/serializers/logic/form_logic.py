@@ -1,5 +1,6 @@
 from django.utils.translation import ugettext_lazy as _
 
+from ordered_model.serializers import OrderedModelSerializer
 from rest_framework import serializers
 
 from ....models import FormLogic
@@ -38,7 +39,7 @@ class FormLogicBaseSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
-class FormLogicSerializer(FormLogicBaseSerializer):
+class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
     actions = LogicComponentActionSerializer(
         many=True,
         label=_("Actions"),
@@ -49,11 +50,24 @@ class FormLogicSerializer(FormLogicBaseSerializer):
 
     class Meta(FormLogicBaseSerializer.Meta):
         model = FormLogic
-        fields = FormLogicBaseSerializer.Meta.fields + ("actions", "is_advanced")
+        fields = FormLogicBaseSerializer.Meta.fields + (
+            "order",
+            "actions",
+            "is_advanced",
+        )
         extra_kwargs = {
             **FormLogicBaseSerializer.Meta.extra_kwargs,
             "url": {
                 "view_name": "api:form-logics-detail",
                 "lookup_field": "uuid",
+            },
+            "order": {
+                "read_only": False,
+                "help_text": _(
+                    "Order of the rule relative to the form it belongs to. Logic rules "
+                    "are evaluated in this order. Note that specifying a value for the "
+                    "order here will cause the rules before/after this rule to be "
+                    "re-calculated."
+                ),
             },
         }
