@@ -5,13 +5,18 @@ import {useIntl} from 'react-intl';
 
 import {TextArea} from './Inputs';
 
+// dump JSON in a readable form
+const jsonFormat = value => {
+  return JSON.stringify(value, null, 2);
+};
+
 const JsonWidget = ({name, logic, onChange}) => {
   const intl = useIntl();
   const [jsonError, setJsonError] = useState('');
-  const [editorValue, setEditorValue] = useState(JSON.stringify(logic));
+  const [editorValue, setEditorValue] = useState(jsonFormat(logic));
 
   useEffect(() => {
-    setEditorValue(JSON.stringify(logic));
+    setEditorValue(jsonFormat(logic));
   }, [logic]);
 
   const invalidSyntaxMessage = intl.formatMessage({
