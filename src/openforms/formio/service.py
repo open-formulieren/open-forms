@@ -10,6 +10,7 @@ from openforms.forms.custom_field_types import handle_custom_types
 from openforms.prefill import _set_default_values, apply_prefill
 from openforms.submissions.models import Submission, SubmissionValueVariable
 
+from .normalization import normalize_value_for_component  # noqa
 from .utils import format_date_value, iter_components, mimetype_allowed  # noqa
 
 
