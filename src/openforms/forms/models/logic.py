@@ -32,4 +32,5 @@ class FormLogic(OrderedModel):
     order_with_respect_to = "form"
 
     class Meta(OrderedModel.Meta):
-        pass
+        verbose_name = _("form logic")
+        verbose_name_plural = _("form logic rules")
