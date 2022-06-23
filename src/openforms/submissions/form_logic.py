@@ -10,8 +10,6 @@ from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
 from openforms.prefill import JSONObject
 
-from .constants import SubmissionValueVariableSources
-from .models import SubmissionValueVariable
 from .models.submission_step import DirtyData
 
 if TYPE_CHECKING:  # pragma: nocover
