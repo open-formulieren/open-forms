@@ -169,9 +169,7 @@ class VariableModificationTests(VariablesTestMixin, TestCase):
 
         evaluate_form_logic(submission, submission_step2, submission.data)
 
-        updated_variable = SubmissionValueVariable.objects.get(key="nTotalBoxes")
-
-        self.assertEqual(7, updated_variable.value)
+        self.assertEqual(7, submission_step2.data["nTotalBoxes"])
 
     def test_modify_variable_not_related_to_a_step(self):
         form = FormFactory.create()
@@ -248,7 +246,4 @@ class VariableModificationTests(VariablesTestMixin, TestCase):
 
         evaluate_form_logic(submission, submission_step2, submission.data)
 
-        submission_variable_state = submission.load_submission_value_variables_state()
-        updated_variable = submission_variable_state.get_variable("nTotalBoxes")
-
-        self.assertEqual(7, updated_variable.value)
+        self.assertEqual(7, submission_step2.data["nTotalBoxes"])

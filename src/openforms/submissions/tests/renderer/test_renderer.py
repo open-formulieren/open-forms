@@ -137,6 +137,5 @@ class FormNodeTests(TestCase):
         # 2. Getting the submission steps for the given submission
         # 3. Query the form logic rules for the submission form (and this is cached)
         # 4. & 5. Loading the submission execution state
-        # 6. & 7. Load the submission variables state
-        with self.assertNumQueries(7):
+        with self.assertNumQueries(5):
             list(renderer)
