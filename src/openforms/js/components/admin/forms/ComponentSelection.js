@@ -2,12 +2,13 @@ import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 
 import Select from './Select';
-import {ComponentsContext} from './Context';
+import {FormContext} from '../form_design/Context';
 
 const allowAny = () => true;
 
 const ComponentSelection = ({name, value, onChange, filter = allowAny}) => {
-  const allComponents = useContext(ComponentsContext);
+  const formContext = useContext(FormContext);
+  const allComponents = formContext.components;
   const choices = Object.entries(allComponents)
     // turn components map of {key: component} into choices list [key, component]
     .map(([key, comp]) => [key, comp.stepLabel || comp.label || comp.key])

@@ -6,11 +6,10 @@ import Select from '../../../forms/Select';
 import {MODIFIABLE_PROPERTIES, STRING_TO_TYPE, TYPE_TO_STRING} from '../constants';
 import OperandTypeSelection from '../OperandTypeSelection';
 import LiteralValueInput from '../LiteralValueInput';
-import {ComponentsContext} from '../../../forms/Context';
 import StepSelection from '../StepSelection';
 import {Action as ActionType, ActionError} from './types';
 import DSLEditorNode from '../DSLEditorNode';
-import {FeatureFlagsContext, FormVariablesContext} from '../../Context';
+import {FormContext} from '../../Context';
 import JsonWidget from '../../../forms/JsonWidget';
 
 const ActionProperty = ({action, errors, onChange}) => {
@@ -81,7 +80,8 @@ const ActionProperty = ({action, errors, onChange}) => {
 };
 
 const ActionValue = ({action, errors, onChange}) => {
-  const allComponents = useContext(ComponentsContext);
+  const formContext = useContext(FormContext);
+  const allComponents = formContext.components;
   const componentType = allComponents[action.component]?.type;
 
   const getValueSource = action => {
@@ -136,7 +136,8 @@ const ActionValue = ({action, errors, onChange}) => {
 };
 
 const ActionVariableValue = ({action, errors, onChange}) => {
-  const allVariables = useContext(FormVariablesContext);
+  const formContext = useContext(FormContext);
+  const allVariables = formContext.formVariables;
 
   const getVariableChoices = variables => {
     return variables.map(variable => [variable.key, variable.name]);

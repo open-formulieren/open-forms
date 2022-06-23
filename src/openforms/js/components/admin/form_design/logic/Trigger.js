@@ -7,7 +7,6 @@ import jsonLogic from 'json-logic-js';
 import {getTranslatedChoices} from '../../../../utils/i18n';
 import ArrayInput from '../../forms/ArrayInput';
 import ComponentSelection from '../../forms/ComponentSelection';
-import {ComponentsContext} from '../../forms/Context';
 import Select from '../../forms/Select';
 
 import {OPERATORS, COMPONENT_TYPE_TO_OPERATORS, COMPONENT_TYPE_TO_OPERAND_TYPE} from './constants';
@@ -17,11 +16,13 @@ import DataPreview from './DataPreview';
 import DSLEditorNode from './DSLEditorNode';
 import {useOnChanged} from './hooks';
 import Today from './Today';
+import {FormContext} from '../Context';
 
 const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
   const intl = useIntl();
   // check the component type, which is used to filter the possible choices
-  const allComponents = useContext(ComponentsContext);
+  const formContext = useContext(FormContext);
+  const allComponents = formContext.components;
   const componentType = allComponents[selectedComponent]?.type;
 
   // only keep the relevant choices

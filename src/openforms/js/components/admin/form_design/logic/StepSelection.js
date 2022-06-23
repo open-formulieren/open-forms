@@ -2,10 +2,11 @@ import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 
 import Select from '../../forms/Select';
-import {FormStepsContext} from '../Context';
+import {FormContext} from '../Context';
 
 const StepSelection = ({name, value, onChange}) => {
-  const formSteps = useContext(FormStepsContext);
+  const formContext = useContext(FormContext);
+  const formSteps = formContext.formSteps;
   const formStepChoices = formSteps.map((step, index) => [
     step.url,
     step.internalName || step.name,

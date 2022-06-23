@@ -1,36 +1,19 @@
 import React from 'react';
 
-const FormDefinitionsContext = React.createContext([]);
-FormDefinitionsContext.displayName = 'FormDefinitionsContext';
-
-const FormStepsContext = React.createContext([]);
-FormStepsContext.displayName = 'FormStepsContext';
-
-const PluginsContext = React.createContext({
-  availableAuthPlugins: [],
-  selectedAuthPlugins: [],
-  availablePrefillPlugins: [],
-});
-PluginsContext.displayName = 'PluginsContext';
-
 const TinyMceContext = React.createContext('');
 TinyMceContext.displayName = 'TinyMceContext';
-
-const FormContext = React.createContext({url: ''});
-FormContext.displayName = 'FormContext';
 
 const FeatureFlagsContext = React.createContext({});
 FeatureFlagsContext.displayName = 'FeatureFlagsContext';
 
-const FormVariablesContext = React.createContext({});
-FormVariablesContext.displayName = 'FormVariablesContext';
+const FormContext = React.createContext({
+  form: {url: ''},
+  components: {},
+  formSteps: [],
+  formDefinitions: [],
+  formVariables: {},
+  plugins: {},
+});
+FormContext.displayName = 'FormContext';
 
-export {
-  FormContext,
-  FormDefinitionsContext,
-  FormStepsContext,
-  PluginsContext,
-  TinyMceContext,
-  FeatureFlagsContext,
-  FormVariablesContext,
-};
+export {FormContext, TinyMceContext, FeatureFlagsContext};

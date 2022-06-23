@@ -2,12 +2,12 @@ import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
-import {PluginsContext} from './Context';
+import {FormContext} from './Context';
 import MessageList from './warnings/MessageList';
 
 const PluginWarning = ({loginRequired, configuration}) => {
-  const {availableAuthPlugins, selectedAuthPlugins, availablePrefillPlugins} =
-    useContext(PluginsContext);
+  const formContext = useContext(FormContext);
+  const {availableAuthPlugins, selectedAuthPlugins, availablePrefillPlugins} = formContext.plugins;
 
   let warnings = [];
 
