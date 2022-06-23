@@ -1,8 +1,10 @@
+import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {useIntl, FormattedMessage} from 'react-intl';
 
 import DeleteIcon from '../DeleteIcon';
+import FAIcon from '../FAIcon';
 import Trigger from './logic/Trigger';
 import ActionSet from './logic/actions/ActionSet';
 import ButtonContainer from '../forms/ButtonContainer';
@@ -14,6 +16,7 @@ const EMPTY_RULE = {
   uuid: '',
   _generatedId: '', // consumers should generate this, as it's used for the React key prop if no uuid exists
   form: '',
+  order: null,
   jsonLogicTrigger: {'': [{var: ''}, null]},
   isAdvanced: false,
   actions: [],
@@ -31,50 +34,19 @@ const parseValidationErrors = errors => {
 };
 
 const FormLogic = ({logicRules = [], onChange, onDelete, onAdd}) => {
-  const filterLogicRules = rules => {
-    let basicRules = [];
-    let advancedRules = [];
-    rules.map((rule, index) => {
-      if (rule.isAdvanced) {
-        advancedRules.push([index, rule]);
-      } else {
-        basicRules.push([index, rule]);
-      }
-    });
-
-    return [basicRules, advancedRules];
-  };
-
-  const [basicLogicRules, advancedLogicRules] = filterLogicRules(logicRules);
-
+  // ensure they're sorted
+  logicRules = sortBy(logicRules, ['order']);
   return (
-    <>
-      <Fieldset
-        title={<FormattedMessage description="Logic fieldset title" defaultMessage="Logic" />}
-      >
-        <FormLogicRules
-          rules={basicLogicRules}
-          onAdd={() => onAdd({isAdvanced: false})}
-          onChange={onChange}
-          onDelete={onDelete}
-        />
-      </Fieldset>
-      <Fieldset
-        title={
-          <FormattedMessage
-            description="Advanced logic fieldset title"
-            defaultMessage="Advanced Logic"
-          />
-        }
-      >
-        <FormLogicRules
-          rules={advancedLogicRules}
-          onAdd={() => onAdd({isAdvanced: true})}
-          onChange={onChange}
-          onDelete={onDelete}
-        />
-      </Fieldset>
-    </>
+    <Fieldset
+      title={<FormattedMessage description="Logic fieldset title" defaultMessage="Logic" />}
+    >
+      <FormLogicRules
+        rules={logicRules}
+        onAdd={() => onAdd({isAdvanced: false})} /* TODO -> make configurable on the rule itself  */
+        onChange={onChange}
+        onDelete={onDelete}
+      />
+    </Fieldset>
   );
 };
 
@@ -87,9 +59,12 @@ FormLogic.propTypes = {
 
 const FormLogicRules = ({rules, onAdd, onChange, onDelete}) => {
   const validationErrors = parseValidationErrors(useContext(ValidationErrorContext));
+  // FIXME - getting the validation errors by index breaks if you then delete rules/reorder
+  // rules -> they're displayed for the wrong rule. When deleting/reordering rules, the
+  // validation errors state needs to be re-ordered the same way.
   return (
     <>
-      {rules.map(([index, rule], _) => {
+      {rules.map((rule, index) => {
         return (
           <Rule
             key={rule.uuid || rule._generatedId}
@@ -108,7 +83,7 @@ const FormLogicRules = ({rules, onAdd, onChange, onDelete}) => {
 };
 
 FormLogicRules.propTypes = {
-  rules: PropTypes.arrayOf(PropTypes.array).isRequired,
+  rules: PropTypes.arrayOf(PropTypes.object).isRequired,
   onChange: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
@@ -127,6 +102,9 @@ const Rule = ({jsonLogicTrigger, actions, isAdvanced, onChange, onDelete, errors
     <div className="logic-rule">
       <div className="logic-rule__actions">
         <DeleteIcon onConfirm={onDelete} message={deleteConfirmMessage} />
+        {isAdvanced && (
+          <FAIcon icon="brain" extraClassname="icon icon--no-pointer" title="advanced" />
+        )}
       </div>
 
       <div className="logic-rule__rule">

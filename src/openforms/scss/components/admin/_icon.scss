@@ -5,4 +5,8 @@
   &--danger {
     @include color-danger;
   }
+
+  &--no-pointer {
+    cursor: default;
+  }
 }

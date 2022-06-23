@@ -493,6 +493,8 @@ function reducer(draft, action) {
       } = draft;
       const ruleOverrides = action.payload;
 
+      // TODO: set order!
+
       draft.logicRules.push({
         ...EMPTY_RULE,
         ...ruleOverrides,
