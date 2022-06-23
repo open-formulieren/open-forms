@@ -3,8 +3,10 @@ import uuid as _uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from ordered_model.models import OrderedModel
 
-class FormLogic(models.Model):
+
+class FormLogic(OrderedModel):
     uuid = models.UUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
     form = models.ForeignKey(
         to="forms.Form",
@@ -26,3 +28,8 @@ class FormLogic(models.Model):
         ),
         default=False,
     )
+
+    order_with_respect_to = "form"
+
+    class Meta(OrderedModel.Meta):
+        pass

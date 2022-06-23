@@ -22,7 +22,6 @@ def forwards_func(apps, schema_editor):
 
         if changed:
             form_definition.save()
-            print(f"updated of.image for {form_definition}")
 
 
 class Migration(migrations.Migration):
