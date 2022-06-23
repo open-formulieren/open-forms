@@ -126,3 +126,23 @@ When you're using a pinned version, such as ``1.0.0``, the assets are available 
 directory: ``http://localhost:8080/1.0.0/open-forms-sdk.js``.
 
 The SDK follows semantic versioning.
+
+Cross Origin Resource Sharing (CORS)
+------------------------------------
+
+Note that the backend must be configured to allow cross origin requests from the domains
+that embed the SDK.
+
+Additionally, you need to configure your infrastructure to allow CORS requests for the
+font-files. An example nginx rule looks like this:
+
+.. code-block:: nginx
+
+    location ~* ^/static/.*\.(eot|ttf|woff|woff2|svg)$ {
+        add_header Access-Control-Allow-Origin *;  # this header is crucial
+        # delegate to uwsgi backend
+        proxy_pass http://open-forms-backend:8000;
+    }
+
+Failing to configure this will result in the font files not being loaded and the UI
+looking weird. Icons may also be broken.
