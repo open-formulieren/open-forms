@@ -4364,6 +4364,11 @@ components:
           description: The trigger expression to determine if the actions should execute
             or not. Note that this must be a valid JsonLogic expression, and the first
             operand must be a reference to a component in the form.
+        order:
+          type: integer
+          description: Order of the rule relative to the form it belongs to. Logic
+            rules are evaluated in this order. Note that specifying a value for the
+            order here will cause the rules before/after this rule to be re-calculated.
         actions:
           type: array
           items:
@@ -4378,6 +4383,7 @@ components:
       - actions
       - form
       - jsonLogicTrigger
+      - order
       - url
       - uuid
     FormPriceLogic:
@@ -5089,6 +5095,11 @@ components:
           description: The trigger expression to determine if the actions should execute
             or not. Note that this must be a valid JsonLogic expression, and the first
             operand must be a reference to a component in the form.
+        order:
+          type: integer
+          description: Order of the rule relative to the form it belongs to. Logic
+            rules are evaluated in this order. Note that specifying a value for the
+            order here will cause the rules before/after this rule to be re-calculated.
         actions:
           type: array
           items:
