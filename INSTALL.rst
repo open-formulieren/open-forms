@@ -39,7 +39,6 @@ You will also need the following operating-system libraries:
 .. _npm: https://www.npmjs.com/
 .. _yarn: https://yarnpkg.com/
 .. _Redis: https://redis.io/
-.. _Celery: https://docs.celeryproject.org/en/stable/
 
 
 Getting started
@@ -207,15 +206,17 @@ file or as part of the ``(post)activate`` of your virtualenv.
 Settings
 ========
 
-All settings for the project can be found in
-``src/openforms/conf``.
+All settings for the project can be found in ``src/openforms/conf``.
+
 The file ``local.py`` overwrites settings from the base configuration.
 
-Celery
-======
+Running background and periodic tasks
+=====================================
 
-You can run celery beat and worker(s) in a shell too to have the asynchronous task
-queue processing active:
+We use `Celery`_ as background task queue.
+
+You can run celery beat and worker(s) in a shell to activate the asynchronous task
+queue processing:
 
 To start beat which triggers periodic tasks:
 
@@ -223,7 +224,7 @@ To start beat which triggers periodic tasks:
 
    $ ./bin/celery_beat.sh
 
-To start the background workers executing background tasks:
+To start the background workers executing tasks:
 
 .. code-block:: bash
 
@@ -382,3 +383,6 @@ You must call this after making changes to the (public) API.
 
 Script to extract the backend and frontend translation messages into their catalogs
 for translation.
+
+
+.. _Celery: https://docs.celeryq.dev/en/stable/
