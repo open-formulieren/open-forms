@@ -8,20 +8,20 @@ the documentation.
 
 The project is developed in `Python`_ using the `Django framework`_.
 
-
 Prerequisites
 =============
 
 You need the following libraries and/or programs:
 
-* `Python`_ 3.8 or above
+* `Python`_ 3.8
 * Python `Virtualenv`_ and `Pip`_
 * `PostgreSQL`_ 10 or above
+* `Redis`_ for `Celery`_ to work
 * `Node.js`_ (LTS version, see ``.nvmrc`` for version information)
 * `npm`_
 * `yarn`_
 
-You will also need the following libraries:
+You will also need the following operating-system libraries:
 
 * pkg-config
 * libmagic1
@@ -29,8 +29,6 @@ You will also need the following libraries:
 * libxmlsec1-dev
 * libxmlsec1-openssl
 * libpq-dev
-
-You will also need to have `Redis`_ for `Celery`_ to work.
 
 .. _Python: https://www.python.org/
 .. _Django framework: https://www.djangoproject.com/
@@ -41,7 +39,6 @@ You will also need to have `Redis`_ for `Celery`_ to work.
 .. _npm: https://www.npmjs.com/
 .. _yarn: https://yarnpkg.com/
 .. _Redis: https://redis.io/
-.. _Celery: https://docs.celeryproject.org/en/stable/
 
 
 Getting started
@@ -94,7 +91,9 @@ development machine.
 
        $ python src/manage.py runserver
 
-8. Create a .env file with database settings. See dotenv.example for an example.
+8. Create a ``.env`` file with database settings. See dotenv.example for an example.
+
+   .. code-block:: bash
 
         $ cp dotenv.example .env
 
@@ -207,10 +206,37 @@ file or as part of the ``(post)activate`` of your virtualenv.
 Settings
 ========
 
-All settings for the project can be found in
-``src/openforms/conf``.
+All settings for the project can be found in ``src/openforms/conf``.
+
 The file ``local.py`` overwrites settings from the base configuration.
 
+Running background and periodic tasks
+=====================================
+
+We use `Celery`_ as background task queue.
+
+You can run celery beat and worker(s) in a shell to activate the asynchronous task
+queue processing:
+
+To start beat which triggers periodic tasks:
+
+.. code-block:: bash
+
+   $ ./bin/celery_beat.sh
+
+To start the background workers executing tasks:
+
+.. code-block:: bash
+
+   $ CELERY_WORKER_CONCURRENCY=4 ./bin/celery_worker.sh
+
+.. note:: You can tweak ``CELERY_WORKER_CONCURRENCY`` to your liking, the default is 1.
+
+To start flower for task monitoring:
+
+.. code-block:: bash
+
+   $ ./bin/celery_flower.sh
 
 Commands
 ========
@@ -221,8 +247,142 @@ Commands can be executed using:
 
     $ python src/manage.py <command>
 
-There are no specific commands for the project. See
-`Django framework commands`_ for all default commands, or type
-``python src/manage.py --help``.
+You can always get a full list of available commands by running:
 
-.. _Django framework commands: https://docs.djangoproject.com/en/dev/ref/django-admin/#available-commands
+.. code-block:: bash
+
+    $ python src/manage.py help
+
+There are a number of developer management commands available in this project.
+
+``appointment``
+---------------
+
+Performs various appointment plugin calls.
+
+``dmn_evaluate``
+----------------
+
+Evaluate a particular decision definition.
+
+``dmn_list_definitions``
+------------------------
+
+List the available decision definitions for a given engine.
+
+``check_duplicate_component_keys``
+----------------------------------
+
+Check all forms and report duplicated component keys.
+
+``export``
+----------
+
+Export a form.
+
+``import``
+----------
+
+Import a form.
+
+``msgraph_list_files``
+----------------------
+
+List the files in MS Sharepoint.
+
+``list_prefill_plugins``
+------------------------
+
+List the registered prefill plugins and the attributes they expose.
+
+``register_submission``
+-----------------------
+
+Execute the registration machinery for a given submission.
+
+``render_confirmation_pdf``
+---------------------------
+
+Render the summary/confirmation into a PDF for a given submission.
+
+``render_report``
+-----------------
+
+Render a summary for a given submission in a particular render mode.
+
+``test_submission_completion``
+------------------------------
+
+Generate a submission and test the completion process flow.
+
+Utility scripts
+===============
+
+The ``bin`` folder contains some utility scripts sporadically used.
+
+``bin/bumpversion.sh``
+----------------------
+
+Wrapper around ``bumpversion`` which takes care of ``package-lock.json`` too.
+
+This allows bumping the version according to semver, e.g.:
+
+.. code-block:: bash
+
+   ./bin/bumpversion.sh minor
+
+``bin/compile_dependencies.sh``
+-------------------------------
+
+Wrapper script around ``pip-compile``. New dependencies should be added to the
+relevant ``.in`` file in ``requirements``, and then you run the compile script:
+
+.. code-block:: bash
+
+   ./bin/compile_dependencies.sh
+
+You should also use this to *upgrade* existing dependencies to a newer version, for
+example:
+
+.. code-block:: bash
+
+   ./bin/compile_dependencies.sh -P django
+
+Any additional argument passed to the script are passed down to the underlying
+``pip-compile`` call.
+
+``bin/find_untranslated_js.py``
+-------------------------------
+
+A utility that checks the JavaScript translation catalogs and detects strings that
+may still need translation.
+
+``bin/generate_admin_index_fixture.sh``
+---------------------------------------
+
+After configuring the application groups in the admin through point-and-click, you
+call this script to dump the configuration into a fixture which will be loaded on
+all other installations.
+
+``bin/generate_default_groups_fixtures.sh``
+-------------------------------------------
+
+After configuring the user groups with the appropriate permissions in the admin,
+you can this script to dump the configuration into a fixture which will be loaded on
+all other installations.
+
+``bin/generate_oas.sh``
+-----------------------
+
+This script generates the OpenAPI specification from the API endpoint implementations.
+
+You must call this after making changes to the (public) API.
+
+``bin/makemessages.sh``
+-----------------------
+
+Script to extract the backend and frontend translation messages into their catalogs
+for translation.
+
+
+.. _Celery: https://docs.celeryq.dev/en/stable/

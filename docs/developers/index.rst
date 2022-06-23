@@ -22,6 +22,7 @@ familiarize yourself with the design principles.
    :maxdepth: 2
 
    architecture
+   installation
    backend/index
    sdk/index
    plugins/index
