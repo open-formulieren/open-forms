@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import SuperUserFactory
-from openforms.forms.models.form import FormLogic
+from openforms.forms.models import FormLogic
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.submissions.tests.form_logic.factories import FormLogicFactory
 
