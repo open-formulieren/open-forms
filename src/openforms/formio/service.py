@@ -7,6 +7,7 @@ from openforms.forms.custom_field_types import handle_custom_types
 from openforms.prefill import apply_prefill
 from openforms.submissions.models import Submission
 
+from .normalization import normalize_value_for_component  # noqa
 from .utils import iter_components, mimetype_allowed  # noqa
 
 
