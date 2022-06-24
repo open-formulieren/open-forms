@@ -1,9 +1,8 @@
 import isEqual from 'lodash/isEqual';
-import {useContext, useState, useEffect} from 'react';
+import {useContext, useState} from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 
 import {get} from '../../../utils/fetch';
-import {FORM_DEFINITIONS_ENDPOINT} from './constants';
 import {FormContext} from './Context';
 import {stripIdFromComponents} from './utils';
 
@@ -11,7 +10,8 @@ import {stripIdFromComponents} from './utils';
 const DEBOUNCE_MS = 100;
 
 const useDetectConfigurationChanged = (url, configuration) => {
-  const {url: formUrl} = useContext(FormContext);
+  const formContext = useContext(FormContext);
+  const {url: formUrl} = formContext.form;
   const [changed, setChanged] = useState(false);
   const [affectedForms, setAffectedForms] = useState([]);
 

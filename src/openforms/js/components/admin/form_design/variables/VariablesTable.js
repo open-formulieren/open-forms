@@ -6,7 +6,7 @@ import {Checkbox, TextInput} from '../../forms/Inputs';
 import Select from '../../forms/Select';
 import {DATATYPES_CHOICES} from './constants';
 import DeleteIcon from '../../DeleteIcon';
-import {FormStepsContext, PluginsContext} from '../Context';
+import {FormContext} from '../Context';
 import {get} from '../../../../utils/fetch';
 import FAIcon from '../../FAIcon';
 import {ChangelistTableWrapper, HeadColumn} from '../../tables';
@@ -30,7 +30,8 @@ const SensitiveData = ({isSensitive}) => {
 };
 
 const VariableRow = ({index, variable}) => {
-  const formSteps = useContext(FormStepsContext);
+  const formContext = useContext(FormContext);
+  const formSteps = formContext.formSteps;
 
   const getFormDefinitionName = formDefinition => {
     for (const step of formSteps) {
@@ -65,11 +66,13 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
     defaultMessage: 'Are you sure you want to delete this variable?',
   });
 
-  const {availablePrefillPlugins} = useContext(PluginsContext);
+  const formContext = useContext(FormContext);
+
+  const {availablePrefillPlugins} = formContext.plugins;
   const prefillPluginChoices = availablePrefillPlugins.map(plugin => [plugin.id, plugin.label]);
   const [prefillAttributeChoices, setPrefillAttributeChoices] = useState([]);
 
-  const formSteps = useContext(FormStepsContext);
+  const formSteps = formContext.formSteps;
   const formStepsChoices = formSteps.map(step => {
     if (step.formDefinition) return [step.formDefinition, step.name];
 

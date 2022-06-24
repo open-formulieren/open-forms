@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 
-import {ComponentsContext} from './forms/Context';
+import {FormContext} from './form_design/Context';
 
 /**
  * Render a string representation of a component identified by its key.
@@ -12,7 +12,8 @@ import {ComponentsContext} from './forms/Context';
  *                              and as a last resort the key itself is rendered.
  */
 const FormioComponentRepresentation = ({componentKey}) => {
-  const allComponents = useContext(ComponentsContext);
+  const formContext = useContext(FormContext);
+  const allComponents = formContext.components;
   const component = allComponents[componentKey];
   const {stepLabel, label} = component;
   return stepLabel || label || componentKey;

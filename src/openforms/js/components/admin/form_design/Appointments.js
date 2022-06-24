@@ -4,10 +4,10 @@ import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
 import ComponentSelection from '../forms/ComponentSelection';
-import {ComponentsContext} from '../forms/Context';
 import Field from '../forms/Field';
 import FormRow from '../forms/FormRow';
 import Fieldset from '../forms/Fieldset';
+import {FormContext} from './Context';
 
 const PREFIX = 'appointments'; // prefix to use in the Formio.js component JSON
 
@@ -43,7 +43,8 @@ AppointmentConfigurationComponentSelection.propTypes = {
 };
 
 const Appointments = ({onChange}) => {
-  const availableComponents = useContext(ComponentsContext);
+  const formContext = useContext(FormContext);
+  const availableComponents = formContext.components;
 
   // extract the current values from the component definitions
   const configuration = {}; // key: appointment configuration key, value: component key
