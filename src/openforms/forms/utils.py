@@ -12,6 +12,8 @@ from django.db import transaction
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
+from openforms.config.models import GlobalConfiguration
+
 from .api.serializers import (
     FormDefinitionSerializer,
     FormExportSerializer,
@@ -20,7 +22,7 @@ from .api.serializers import (
     FormStepSerializer,
     FormVariableSerializer,
 )
-from .constants import FormVariableDataTypes, FormVariableSources
+from .constants import FormVariableSources
 from .models import Form, FormDefinition, FormLogic, FormStep, FormVariable
 
 IMPORT_ORDER = {
@@ -135,6 +137,8 @@ def create_static_variables(form: "Form") -> None:
 def import_form_data(
     import_data: dict, existing_form_instance: Form = None
 ) -> List[FormDefinition]:
+    config = GlobalConfiguration.get_solo()
+
     uuid_mapping = {}
 
     request = _get_mock_request()
@@ -188,7 +192,7 @@ def import_form_data(
                 if resource == "forms":
                     created_form = deserialized.instance
                     create_static_variables(created_form)
-                if resource == "formSteps":
+                if resource == "formSteps" and config.enable_form_variables:
                     # Once the form steps have been created, we create the component FormVariables
                     # based on the form definition configurations.
                     FormVariable.objects.create_for_form(created_form)
