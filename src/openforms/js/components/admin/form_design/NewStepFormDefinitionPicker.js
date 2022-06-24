@@ -78,7 +78,7 @@ const NewStepFormDefinitionPicker = ({onReplace}) => {
         }}
       >
         <FAIcon
-          icon="pencil-square-o"
+          icon="pen-to-square"
           extraClassname="fa-2x"
           title={intl.formatMessage({
             description: 'create form definition icon title',
