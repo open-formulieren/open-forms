@@ -1,7 +1,8 @@
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import RequestFactory, TestCase
 
+from openforms.formio.service import get_dynamic_configuration
 from openforms.forms.tests.factories import FormStepFactory, FormVariableFactory
 from openforms.submissions.constants import SubmissionValueVariableSources
 from openforms.submissions.tests.factories import (
@@ -70,3 +71,42 @@ class PrefillVariablesTests(TestCase):
         self.assertEqual(
             SubmissionValueVariableSources.prefill, submission_variable2.source
         )
+
+    @patch(
+        "openforms.prefill._fetch_prefill_values",
+        return_value={"postcode": {"static": "1015CJ"}},
+    )
+    def test_normalization_applied(self, m_prefill):
+        form_step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "postcode",
+                        "key": "postcode",
+                        "inputMask": "9999 AA",
+                        "prefill": {
+                            "plugin": "postcode",
+                            "attribute": "static",
+                        },
+                        "defaultValue": "",
+                    }
+                ]
+            }
+        )
+        submission_step = SubmissionStepFactory.create(
+            submission__form=form_step.form,
+            form_step=form_step,
+        )
+
+        prefill_variables(submission=submission_step.submission)
+
+        request = RequestFactory().get("/foo")
+        configuration = get_dynamic_configuration(
+            submission_step.form_step.form_definition.configuration,
+            request=request,
+            submission=submission_step.submission,
+        )
+
+        component = configuration["components"][0]
+        self.assertEqual(component["type"], "postcode")
+        self.assertEqual(component["defaultValue"], "1015 CJ")
