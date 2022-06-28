@@ -62,7 +62,6 @@ const ActionProperty = ({action, errors, onChange}) => {
             name="action.state"
             choices={MODIFIABLE_PROPERTIES[action.action.property.value].options}
             translateChoices
-            allowBlank
             onChange={event => {
               onChange({
                 target: {
