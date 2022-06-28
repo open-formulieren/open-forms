@@ -147,10 +147,9 @@ class SubmissionValueVariable(models.Model):
     )
     # Added for the case where a FormVariable has been deleted, but there is still a SubmissionValueValue.
     # Having a key will help debug where the SubmissionValueValue came from
-    key = models.SlugField(
+    key = models.TextField(
         verbose_name=_("key"),
         help_text=_("Key of the variable"),
-        max_length=100,
     )
     value = models.JSONField(
         verbose_name=_("value"),
