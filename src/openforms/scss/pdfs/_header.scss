@@ -1,6 +1,7 @@
 @use 'sass:math';
 
 @import '~microscope-sass/lib/typography';
+@import './vars';
 
 $padding-size: 10mm;
 
@@ -20,10 +21,6 @@ $padding-size: 10mm;
     page: haslogo;
   }
 
-  &:not(&--has-logo) {
-    display: none;
-  }
-
   &__logo {
     min-width: 100px;
     min-height: 50px;
@@ -31,5 +28,10 @@ $padding-size: 10mm;
 
     width: var(--of-header-logo-width, auto);
     height: var(--of-header-logo-height, 50px);
+    background-image: $page-header-logo-url;
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    display: block;
   }
 }
