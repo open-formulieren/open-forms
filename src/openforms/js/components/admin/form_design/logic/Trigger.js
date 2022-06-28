@@ -154,7 +154,8 @@ const reducer = (draft, action) => {
 };
 
 const Trigger = ({name, logic, onChange, error, children}) => {
-  const allComponents = useContext(ComponentsContext);
+  const formContext = useContext(FormContext);
+  const allComponents = formContext.components;
   // break down the json logic back into variables that can be managed by components state
   const parsedLogic = parseJsonLogic(logic, allComponents);
   const [state, dispatch] = useImmerReducer(reducer, {...initialState, ...parsedLogic});
