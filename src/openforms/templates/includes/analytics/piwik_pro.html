@@ -8,7 +8,7 @@
   _paq.push(["trackPageView"]);
   _paq.push(["enableLinkTracking"]);
   (function() {
-    var u="https://your-instance-name.piwik.pro/";
+    var u="{{ config.piwik_pro_url }}";
     _paq.push(["setTrackerUrl", u+"ppms.php"]);
     _paq.push(["setSiteId", "{{ config.piwik_pro_id }}"]);
     var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0];
