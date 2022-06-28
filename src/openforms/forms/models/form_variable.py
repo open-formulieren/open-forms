@@ -120,15 +120,13 @@ class FormVariable(models.Model):
         null=True,
         blank=True,
     )
-    name = models.CharField(
+    name = models.TextField(
         verbose_name=_("name"),
         help_text=_("Name of the variable"),
-        max_length=100,
     )
-    key = models.CharField(
+    key = models.TextField(
         verbose_name=_("key"),
         help_text=_("Key of the variable, should be unique with the form."),
-        max_length=100,
         validators=[
             # Regex and message adapted from
             # https://github.com/formio/formio.js/blob/4.13.x/src/components/_classes/component/editForm/Component.edit.api.js#L10
