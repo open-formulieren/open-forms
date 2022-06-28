@@ -3,7 +3,7 @@
 Analytics
 =========
 
-By default, Open Forms does not enable any form of external data analytics 
+By default, Open Forms does not enable any form of external data analytics
 tools. However, you can enable these tools within Open Forms. Below, we list
 the integration possibilities within Open Forms.
 
@@ -13,8 +13,8 @@ the integration possibilities within Open Forms.
     :ref:`cookie policy <configuration_general_cookies>` in accordance with
     the `GDPR`_ and your local privacy authority.
 
-    Also, these data analytics tools will **only work** if the user allowed 
-    these cookies. If you do not set up cookies, these tools will simply not 
+    Also, these data analytics tools will **only work** if the user allowed
+    these cookies. If you do not set up cookies, these tools will simply not
     work because the user never allowed their cookies.
 
 .. _`GDPR`: https://gdpr.eu/
@@ -29,15 +29,15 @@ The following tools are supported out of the box with Open Forms.
 
 
 * `Google Analytics <https://marketingplatform.google.com/about/analytics/>`__
-* `Google Tag Manager <https://marketingplatform.google.com/about/tag-manager/>`__ 
+* `Google Tag Manager <https://marketingplatform.google.com/about/tag-manager/>`__
 * `Matomo (Piwik) <https://matomo.org/>`__ (cloud and on-premise support)
+* `Piwik PRO  <https://piwikpro.nl/>`__
 * `SiteImprove <https://siteimprove.com/en/analytics/>`__
 
 .. note::
 
-    Matomo was formerly known as Piwik. Do not confuse Piwik with Piwik PRO, 
-    which is a different product from a different company. Currently, there is
-    no support for Piwik PRO.
+    Matomo was formerly known as Piwik. Do not confuse Piwik with Piwik PRO,
+    which is a different product from a different company.
 
 
 Configuration
