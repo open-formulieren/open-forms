@@ -61,3 +61,30 @@ Configuration
        If you don't do this, the data analytics tools will not work!
 
 6. Scroll to the bottom and click **Save**.
+
+Content Security Policy (CSP)
+-----------------------------
+
+Piwik PRO
+"""""""""
+
+* Required to enable Piwik PRO's nonce mechanism: ``script-src``.
+
+* Required to load all necessary assets from Piwik PRO's Tag Manager: ``img-src``, ``font-src`` and ``style-src``.
+
+* Required if your website is GDPR compliant: ``connect-src``, ``style-src`` and ``img-src``.
+
+Example:
+
+.. code-block:: text
+
+    Content-Security-Policy: default-src 'self';
+                             script-src  'self' client.piwik.pro 'nonce-nceIOfn39fn3e9h3sd';
+                             connect-src 'self' client.containers.piwik.pro client.piwik.pro;
+                             img-src     'self' client.containers.piwik.pro client.piwik.pro;
+                             font-src    'self' client.containers.piwik.pro;
+                             style-src   'self' client.containers.piwik.pro 'nonce-nceIOfn39fn3e9h3sd';
+
+Please refer to the `Piwik PRO CSP documentation`_ for more information.
+
+.. _`Piwik PRO CSP documentation`: https://developers.piwik.pro/en/latest/tag_manager/content_security_policy.html
