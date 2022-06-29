@@ -37,16 +37,16 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         help_text=_("Zaaktype code for newly created Zaken in StUF-ZDS"),
     )
     zds_zaaktype_omschrijving = serializers.CharField(
-        required=True,
+        required=False,
         help_text=_("Zaaktype description for newly created Zaken in StUF-ZDS"),
     )
 
     zds_zaaktype_status_code = serializers.CharField(
-        required=True,
+        required=False,
         help_text=_("Zaaktype status code for newly created zaken in StUF-ZDS"),
     )
     zds_zaaktype_status_omschrijving = serializers.CharField(
-        required=True,
+        required=False,
         help_text=_("Zaaktype status omschrijving for newly created zaken in StUF-ZDS"),
     )
 
