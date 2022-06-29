@@ -51,7 +51,7 @@ class StufBGClient:
 
         response = requests.post(
             url,
-            data=data,
+            data=data.encode("utf-8"),
             headers={
                 "Content-Type": SOAP_VERSION_CONTENT_TYPES.get(
                     self.service.soap_service.soap_version
