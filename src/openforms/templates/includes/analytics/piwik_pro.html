@@ -8,9 +8,9 @@
   _paq.push(["trackPageView"]);
   _paq.push(["enableLinkTracking"]);
   (function() {
-    var u="{{ config.piwik_pro_url }}";
+    var u="{{ config.piwik_pro_url|escapejs }}";
     _paq.push(["setTrackerUrl", u+"ppms.php"]);
-    _paq.push(["setSiteId", "{{ config.piwik_pro_id }}"]);
+    _paq.push(["setSiteId", "{{ config.piwik_pro_id|escapejs }}"]);
     var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0];
     g.type="text/javascript"; g.async=true; g.defer=true; g.src=u+"ppms.js"; s.parentNode.insertBefore(g,s);
   })();

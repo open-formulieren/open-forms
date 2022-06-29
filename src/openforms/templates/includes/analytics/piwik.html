@@ -16,6 +16,6 @@ var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", {{ config.piwik_sit
 piwikTracker.trackPageView();
 piwikTracker.enableLinkTracking();
 } catch( err ) {}
-</script><noscript><p><img src="http://{{ analytics_url }}/piwik.php?idsite={{ config.piwik_site_id }}" style="border:0" alt="" /></p></noscript>
+</script><noscript><p><img src="http://{{ analytics_url }}/piwik.php?idsite={{ config.piwik_site_id|escapejs }}" style="border:0" alt="" /></p></noscript>
 <!-- End Piwik Tracking Code -->
 {% endif %}
