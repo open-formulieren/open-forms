@@ -80,7 +80,7 @@ class StufBGConfigTests(TestCase):
             xmlschema_doc = etree.parse(f)
             xmlschema = etree.XMLSchema(xmlschema_doc)
 
-            doc = etree.parse(BytesIO(bytes(m.last_request.body, encoding="UTF-8")))
+            doc = etree.parse(BytesIO(m.last_request.body))
             el = (
                 doc.getroot()
                 .xpath(

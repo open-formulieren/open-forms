@@ -168,7 +168,9 @@ class StufZDSClient:
             stuf_zds_request(self.service, url)
             response = requests.post(
                 url,
-                data=request_data,
+                data=request_data.encode(
+                    "utf-8"
+                ),  # TODO: this should be shared in a generic StUF client base class, see #388
                 headers={
                     "Content-Type": SOAP_VERSION_CONTENT_TYPES.get(
                         self.service.soap_service.soap_version
