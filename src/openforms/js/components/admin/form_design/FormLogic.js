@@ -10,11 +10,13 @@ import ActionSet from './logic/actions/ActionSet';
 import ButtonContainer from '../forms/ButtonContainer';
 import Fieldset from '../forms/Fieldset';
 import AdvancedTrigger from './logic/AdvancedTrigger';
+import LogicTypeSelection from './logic/LogicTypeSelection';
 import {ValidationErrorContext} from '../forms/ValidationErrors';
 
 const EMPTY_RULE = {
   uuid: '',
   _generatedId: '', // consumers should generate this, as it's used for the React key prop if no uuid exists
+  _logicType: '',
   form: '',
   order: null,
   jsonLogicTrigger: {'': [{var: ''}, null]},
@@ -40,12 +42,7 @@ const FormLogic = ({logicRules = [], onChange, onDelete, onAdd}) => {
     <Fieldset
       title={<FormattedMessage description="Logic fieldset title" defaultMessage="Logic" />}
     >
-      <FormLogicRules
-        rules={logicRules}
-        onAdd={() => onAdd({isAdvanced: false})} /* TODO -> make configurable on the rule itself  */
-        onChange={onChange}
-        onDelete={onDelete}
-      />
+      <FormLogicRules rules={logicRules} onAdd={onAdd} onChange={onChange} onDelete={onDelete} />
     </Fieldset>
   );
 };
@@ -89,12 +86,31 @@ FormLogicRules.propTypes = {
   onAdd: PropTypes.func.isRequired,
 };
 
-const Rule = ({jsonLogicTrigger, actions, isAdvanced, onChange, onDelete, errors = {}}) => {
+const Rule = ({
+  _logicType,
+  jsonLogicTrigger,
+  actions,
+  isAdvanced,
+  onChange,
+  onDelete,
+  errors = {},
+}) => {
   const intl = useIntl();
   const deleteConfirmMessage = intl.formatMessage({
     description: 'Logic rule deletion confirm message',
     defaultMessage: 'Are you sure you want to delete this rule?',
   });
+
+  // if no logicType has been set yet, we first present the type selection before the
+  // actual rule can be set up.
+  if (!_logicType) {
+    return (
+      <LogicTypeSelection
+        onChange={selectedType => onChange({target: {name: '_logicType', value: selectedType}})}
+        onCancel={onDelete}
+      />
+    );
+  }
 
   const TriggerComponent = isAdvanced ? AdvancedTrigger : Trigger;
 
@@ -121,6 +137,7 @@ const Rule = ({jsonLogicTrigger, actions, isAdvanced, onChange, onDelete, errors
 };
 
 Rule.propTypes = {
+  _logicType: PropTypes.oneOf(['', 'simple', 'advanced']), // TODO: dmn in the future
   jsonLogicTrigger: PropTypes.object,
   actions: PropTypes.arrayOf(PropTypes.object),
   isAdvanced: PropTypes.bool.isRequired,

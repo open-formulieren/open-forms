@@ -91,6 +91,12 @@
       "value": "Opties"
     }
   ],
+  "2emuJW": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
   "2uIYst": [
     {
       "type": 0,
@@ -349,6 +355,12 @@
       "value": "Is not sensitive"
     }
   ],
+  "9AQi2/": [
+    {
+      "type": 0,
+      "value": "Please select the logic type:"
+    }
+  ],
   "9N67XB": [
     {
       "type": 0,
@@ -587,12 +599,6 @@
       "value": "Sessie vervallen"
     }
   ],
-  "Dwnqdq": [
-    {
-      "type": 0,
-      "value": "Geavanceerde logica"
-    }
-  ],
   "DxGKNm": [
     {
       "type": 0,
@@ -629,6 +635,12 @@
       "value": "Modus"
     }
   ],
+  "FayNPY": [
+    {
+      "type": 0,
+      "value": "Simple"
+    }
+  ],
   "FceidS": [
     {
       "type": 0,
@@ -639,6 +651,12 @@
     {
       "type": 0,
       "value": "Tekst"
+    }
+  ],
+  "G1JHUM": [
+    {
+      "type": 0,
+      "value": "Cancel rule creation"
     }
   ],
   "G2rpx2": [
@@ -955,6 +973,12 @@
     {
       "type": 0,
       "value": ". Verleng uw sessie indien u wenst door te gaan."
+    }
+  ],
+  "OobRu3": [
+    {
+      "type": 0,
+      "value": "Advanced"
     }
   ],
   "OvqnXR": [
@@ -1361,6 +1385,12 @@
     {
       "type": 0,
       "value": "Verplaats omhoog"
+    }
+  ],
+  "c0dfYJ": [
+    {
+      "type": 0,
+      "value": "Build a JsonLogic expression using raw JSON."
     }
   ],
   "c1XyJ4": [
@@ -1875,6 +1905,12 @@
     {
       "type": 0,
       "value": "Formulier configureren"
+    }
+  ],
+  "tRCXsR": [
+    {
+      "type": 0,
+      "value": "Select components and conditions using drop-downs to build a JsonLogic expression."
     }
   ],
   "tjRtQk": [

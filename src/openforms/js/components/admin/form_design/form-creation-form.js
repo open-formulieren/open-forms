@@ -491,13 +491,11 @@ function reducer(draft, action) {
       const {
         form: {url},
       } = draft;
-      const ruleOverrides = action.payload;
 
       // TODO: set order!
 
       draft.logicRules.push({
         ...EMPTY_RULE,
-        ...ruleOverrides,
         form: url,
         _generatedId: getUniqueRandomString(),
       });
@@ -506,6 +504,12 @@ function reducer(draft, action) {
     case 'CHANGED_RULE': {
       const {index, name, value} = action.payload;
       draft.logicRules[index][name] = value;
+
+      // check if the type was set & if we need to update the advanced logic flag:
+      if (name === '_logicType') {
+        const isAdvanced = value === 'advanced';
+        draft.logicRules[index].isAdvanced = isAdvanced;
+      }
 
       // Remove the validation error for the updated field
       // If there are multiple actions with errors in one rule, updating it will clear the error also for the
@@ -1327,7 +1331,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
               logicRules={state.logicRules}
               onChange={onRuleChange}
               onDelete={index => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
-              onAdd={ruleOverrides => dispatch({type: 'ADD_RULE', payload: ruleOverrides})}
+              onAdd={() => dispatch({type: 'ADD_RULE'})}
             />
           </TabPanel>
 

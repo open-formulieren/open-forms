@@ -1,0 +1,21 @@
+.logic-type-selection {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  padding: 1em;
+  border-bottom: dashed 1px #eee;
+
+  &__label {
+    font-weight: bold;
+    width: auto !important;
+    padding: 0 !important;
+    margin: 0 2em 0 0;
+    float: none !important;
+  }
+
+  &__cancel {
+    text-align: right;
+    margin-left: auto;
+  }
+}
