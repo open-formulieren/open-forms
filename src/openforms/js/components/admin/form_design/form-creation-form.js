@@ -216,6 +216,17 @@ function reducer(draft, action) {
     }
     case 'PLUGINS_LOADED': {
       const {stateVar, data} = action.payload;
+
+      // post processing for the specific state var
+      switch (stateVar) {
+        case 'logicRules': {
+          for (const rule of data) {
+            rule._logicType = rule.isAdvanced ? 'simple' : 'advanced';
+          }
+          break;
+        }
+      }
+
       draft[stateVar] = data;
       break;
     }
@@ -492,13 +503,18 @@ function reducer(draft, action) {
         form: {url},
       } = draft;
 
-      // TODO: set order!
-
-      draft.logicRules.push({
+      const newRule = {
         ...EMPTY_RULE,
         form: url,
         _generatedId: getUniqueRandomString(),
-      });
+      };
+
+      // append to the end if no explicit order is given
+      if (!newRule.order) {
+        newRule.order = draft.logicRules.length;
+      }
+
+      draft.logicRules.push(newRule);
       break;
     }
     case 'CHANGED_RULE': {
