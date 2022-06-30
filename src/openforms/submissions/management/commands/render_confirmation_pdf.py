@@ -1,3 +1,5 @@
+import webbrowser
+
 from django.conf import settings
 from django.core.management import BaseCommand, CommandError
 
@@ -13,6 +15,9 @@ class Command(BaseCommand):
             type=int,
             help="Submission ID to generate the report for.",
         )
+        parser.add_argument(
+            "--open", action="store_true", help="Automatically open the resulting PDF"
+        )
 
     def handle(self, **options):
         if not settings.DEBUG:
@@ -22,4 +27,7 @@ class Command(BaseCommand):
         report, _ = SubmissionReport.objects.get_or_create(submission=submission)
 
         report.generate_submission_report_pdf()
-        self.stdout.write(f"Generated pdf: {report.content.path}")
+        filepath = report.content.path
+        self.stdout.write(f"Generated pdf: {filepath}")
+        if options["open"]:
+            webbrowser.open_new_tab(filepath)
