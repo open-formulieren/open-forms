@@ -68,7 +68,7 @@ development machine.
 
    .. code-block:: bash
 
-       $ npm ci
+       $ npm ci --legacy-peer-deps
        $ npm run build
 
 5. Activate your virtual environment and create the statics and database:
@@ -122,7 +122,7 @@ this particular SDK build for local backend dev and testing.
    .. code-block:: bash
 
       cd /path/to/code/
-      git checkout git@github.com:open-formulieren/open-forms-sdk.git
+      git clone git@github.com:open-formulieren/open-forms-sdk.git
       cd open-forms-sdk
       yarn install
       yarn build
