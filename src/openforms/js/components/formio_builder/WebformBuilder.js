@@ -120,8 +120,10 @@ class WebformBuilder extends WebformBuilderFormio {
       this.updateComponent(event.data.componentJson || event.data, event.changed);
     };
 
-    this.editForm.events._events['formio.change'][existingOnChangeHandlers.length - 1].fn =
-      modifiedOnChangeCallback;
+    if (existingOnChangeHandlers.length) {
+      this.editForm.events._events['formio.change'][existingOnChangeHandlers.length - 1].fn =
+        modifiedOnChangeCallback;
+    }
     return parentEditResult;
   }
 }
