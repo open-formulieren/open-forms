@@ -1937,6 +1937,26 @@
       "value": "Aantal dagen dat een voltooide inzending bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
     }
   ],
+  "uiliGe": [
+    {
+      "type": 0,
+      "value": "The logic rules you set up here are executed in the order that they are defined. Please consult the "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "manual"
+        }
+      ],
+      "type": 8,
+      "value": "docs"
+    },
+    {
+      "type": 0,
+      "value": " for more information."
+    }
+  ],
   "ukFB7B": [
     {
       "type": 0,

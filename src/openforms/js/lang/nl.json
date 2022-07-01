@@ -1429,6 +1429,11 @@
     "description": "Successful Submissions Removal Limit help text",
     "originalDefault": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
   },
+  "uiliGe": {
+    "defaultMessage": "The logic rules you set up here are executed in the order that they are defined. Please consult the <docs>manual</docs> for more information.",
+    "description": "Logic rules introduction/explanation",
+    "originalDefault": "The logic rules you set up here are executed in the order that they are defined. Please consult the <docs>manual</docs> for more information."
+  },
   "ukFB7B": {
     "defaultMessage": "Selecteer naar welke authenticatiemethode de gebruiker automatisch doorgestuurd moet worden.",
     "description": "Auto-login field help text",

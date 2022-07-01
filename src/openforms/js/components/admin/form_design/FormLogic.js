@@ -61,6 +61,27 @@ const FormLogicRules = ({rules, onAdd, onChange, onDelete}) => {
   // validation errors state needs to be re-ordered the same way.
   return (
     <>
+      <p style={{padding: '1em 0 0', color: 'var(--body-quiet-color)'}}>
+        <FormattedMessage
+          description="Logic rules introduction/explanation"
+          defaultMessage={`
+          The logic rules you set up here are executed in the order that they are defined.
+          Please consult the <docs>manual</docs> for more information.
+        `}
+          values={{
+            docs: chunks => (
+              <a
+                href="https://open-forms.readthedocs.io/en/stable/manual/forms/logic.html"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {chunks}
+              </a>
+            ),
+          }}
+        />
+      </p>
+
       {rules.map((rule, index) => {
         return (
           <Rule
