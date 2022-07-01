@@ -88,6 +88,7 @@ FormLogicRules.propTypes = {
 
 const Rule = ({
   _logicType,
+  order,
   jsonLogicTrigger,
   actions,
   isAdvanced,
@@ -116,8 +117,32 @@ const Rule = ({
 
   return (
     <div className="logic-rule">
-      <div className="logic-rule__actions">
-        <DeleteIcon onConfirm={onDelete} message={deleteConfirmMessage} />
+      <div className="logic-rule__actions actions actions--vertical actions--align-top">
+        <div className="actions__action-group">
+          <FAIcon
+            icon="sort-up"
+            title={intl.formatMessage({
+              description: 'Move up icon title',
+              defaultMessage: 'Move up',
+            })}
+            extraClassname="fa-lg actions__action"
+            onClick={() => onChange({target: {name: 'order', value: order - 1}})}
+          />
+          <FAIcon
+            icon="sort-down"
+            title={intl.formatMessage({
+              description: 'Move down icon title',
+              defaultMessage: 'Move down',
+            })}
+            extraClassname="fa-lg actions__action"
+            onClick={() => onChange({target: {name: 'order', value: order + 1}})}
+          />
+        </div>
+        <DeleteIcon
+          onConfirm={onDelete}
+          message={deleteConfirmMessage}
+          extraClassname="actions__action"
+        />
         {isAdvanced && (
           <FAIcon icon="brain" extraClassname="icon icon--no-pointer" title="advanced" />
         )}
@@ -138,6 +163,7 @@ const Rule = ({
 
 Rule.propTypes = {
   _logicType: PropTypes.oneOf(['', 'simple', 'advanced']), // TODO: dmn in the future
+  order: PropTypes.number.isRequired,
   jsonLogicTrigger: PropTypes.object,
   actions: PropTypes.arrayOf(PropTypes.object),
   isAdvanced: PropTypes.bool.isRequired,
