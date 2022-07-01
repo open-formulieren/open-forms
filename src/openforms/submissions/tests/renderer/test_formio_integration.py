@@ -5,10 +5,7 @@ Test the vendor-agnostic renderer interface with FormIO components.
 from django.test import TestCase
 
 from openforms.submissions.rendering import Renderer, RenderModes
-from openforms.submissions.tests.factories import (
-    SubmissionFactory,
-    SubmissionStepFactory,
-)
+from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import VariablesTestMixin
 
 FORMIO_CONFIGURATION_COMPONENTS = [

@@ -182,7 +182,7 @@ class Command(BaseCommand):
             if do_cancel == "y":
                 try:
                     self.client.delete_appointment(booking_id)
-                    self.stdout.write(f"Appointment cancelled succesfully.")
+                    self.stdout.write("Appointment cancelled succesfully.")
                 except Exception as exc:
                     self.stderr.write(f"Failed to cancel appointment: {exc}")
                 break

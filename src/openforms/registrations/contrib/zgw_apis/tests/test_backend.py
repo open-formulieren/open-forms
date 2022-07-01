@@ -1,4 +1,3 @@
-from datetime import date
 from decimal import Decimal
 
 from django.test import TestCase
@@ -470,12 +469,12 @@ class ZGWBackendTests(VariablesTestMixin, TestCase):
             vertrouwelijkheidaanduiding="openbaar",
         )
 
-        attachment1 = SubmissionFileAttachmentFactory.create(
+        SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
             file_name="attachment1.jpg",
             form_key="field1",
         )
-        attachment2 = SubmissionFileAttachmentFactory.create(
+        SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
             file_name="attachment2.jpg",
             form_key="field2",
@@ -484,7 +483,7 @@ class ZGWBackendTests(VariablesTestMixin, TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
-        result = plugin.register_submission(submission, zgw_form_options)
+        plugin.register_submission(submission, zgw_form_options)
 
         document_create_attachment1 = m.request_history[-2]
         document_create_attachment2 = m.request_history[-4]

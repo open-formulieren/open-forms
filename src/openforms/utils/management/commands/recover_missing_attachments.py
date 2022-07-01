@@ -2,10 +2,9 @@ from datetime import datetime
 
 from django.core.management import BaseCommand
 from django.db import transaction
-from django.db.models import Prefetch, Q
+from django.db.models import Prefetch
 from django.utils import timezone
 
-from glom import glom
 from rest_framework.exceptions import ValidationError
 
 from openforms.forms.models import Form, FormStep

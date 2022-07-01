@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-from ..constants import FormVariableSources
 from ..models.form_variable import FormVariable
 
 

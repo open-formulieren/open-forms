@@ -123,7 +123,7 @@ class MSGraphRegistrationBackendTests(TestCase):
             public_registration_reference="abc123",
             registration_success=True,
         )
-        submission_step = SubmissionStepFactory.create(submission=submission, data=data)
+        SubmissionStepFactory.create(submission=submission, data=data)
         submission.save()
 
         SubmissionPaymentFactory.for_submission(

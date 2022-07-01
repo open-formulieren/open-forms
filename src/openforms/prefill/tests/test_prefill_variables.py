@@ -3,12 +3,9 @@ from unittest.mock import patch
 from django.test import RequestFactory, TestCase
 
 from openforms.formio.service import get_dynamic_configuration
-from openforms.forms.tests.factories import FormStepFactory, FormVariableFactory
+from openforms.forms.tests.factories import FormStepFactory
 from openforms.submissions.constants import SubmissionValueVariableSources
-from openforms.submissions.tests.factories import (
-    SubmissionFactory,
-    SubmissionStepFactory,
-)
+from openforms.submissions.tests.factories import SubmissionStepFactory
 
 from .. import prefill_variables
 

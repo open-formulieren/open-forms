@@ -52,9 +52,9 @@ class TestSubmissionExportAdmin(VariablesTestMixin, WebTest):
                 "multi_str": ["aaa", "bbb"],
                 "my_file": [
                     {
-                        "url": f"http://server/api/v1/submissions/files/uuid-uuid-uuid",
+                        "url": "http://server/api/v1/submissions/files/uuid-uuid-uuid",
                         "data": {
-                            "url": f"http://server/api/v1/submissions/files/uuid-uuid-uuid",
+                            "url": "http://server/api/v1/submissions/files/uuid-uuid-uuid",
                             "form": "",
                             "name": "my-image.jpg",
                             "size": 46114,

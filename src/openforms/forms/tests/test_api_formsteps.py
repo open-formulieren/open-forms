@@ -1,9 +1,7 @@
 import uuid
 from unittest.mock import patch
 
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
-from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.translation import gettext as _
 

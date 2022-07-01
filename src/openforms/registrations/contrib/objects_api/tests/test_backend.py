@@ -967,10 +967,10 @@ class ObjectsAPIBackendTests(VariablesTestMixin, TestCase):
             },
         )
 
-        attachment1 = SubmissionFileAttachmentFactory.create(
+        SubmissionFileAttachmentFactory.create(
             submission_step__submission=submission, file_name="attachment1.jpg"
         )
-        attachment2 = SubmissionFileAttachmentFactory.create(
+        SubmissionFileAttachmentFactory.create(
             submission_step__submission=submission, file_name="attachment2.jpg"
         )
 
@@ -1196,12 +1196,12 @@ class ObjectsAPIBackendTests(VariablesTestMixin, TestCase):
             },
         )
 
-        attachment1 = SubmissionFileAttachmentFactory.create(
+        SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
             file_name="attachment1.jpg",
             form_key="field1",
         )
-        attachment2 = SubmissionFileAttachmentFactory.create(
+        SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
             file_name="attachment2.jpg",
             form_key="field2",

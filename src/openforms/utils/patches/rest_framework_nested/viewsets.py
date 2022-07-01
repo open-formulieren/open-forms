@@ -1,12 +1,10 @@
 import rest_framework_nested
-
-assert rest_framework_nested.__version__ == "0.93.4"
-
-
 from rest_framework_nested.viewsets import (
     NestedViewSetMixin as _NestedViewSetMixin,
     _force_mutable,
 )
+
+assert rest_framework_nested.__version__ == "0.93.4"
 
 
 class NestedViewSetMixin(_NestedViewSetMixin):

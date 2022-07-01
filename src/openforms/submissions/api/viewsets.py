@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
-from rest_framework import authentication, mixins, serializers, status, viewsets
+from rest_framework import authentication, mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
@@ -402,9 +402,8 @@ class SubmissionStepViewSet(
         merged_data = submission.data
         execution_state = submission.load_execution_state()
         current_step_index = execution_state.submission_steps.index(instance)
-        for subsequent_step in execution_state.submission_steps[
-            current_step_index + 1 :
-        ]:
+        subsequent_steps = execution_state.submission_steps[current_step_index + 1 :]
+        for subsequent_step in subsequent_steps:
             if not subsequent_step.pk:
                 continue
 

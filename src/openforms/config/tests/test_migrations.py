@@ -30,7 +30,7 @@ class DesignTokenMigrationTests(TestMigrations):
 
 
 @override_settings(SOLO_CACHE=None)
-class DesignTokenMigrationTests(TestMigrations):
+class DesignTokenMigrationTests2(TestMigrations):
     app = "config"
     migrate_from = "0028_auto_20220601_1422"
     migrate_to = "0029_rename_design_tokens"

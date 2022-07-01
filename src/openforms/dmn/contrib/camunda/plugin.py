@@ -1,6 +1,5 @@
 import json
 import logging
-from contextlib import contextmanager
 from typing import Any, Dict, List
 
 from django.utils.translation import gettext_lazy as _

@@ -1,5 +1,3 @@
-import logging
-from functools import partial
 from unittest.mock import patch
 
 from django.test import TestCase

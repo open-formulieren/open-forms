@@ -206,7 +206,7 @@ class CheckEmailSettingsAdminViewTest(WebTestPyQueryMixin, WebTest):
         response = self.app.get(url, status=200)
 
         self.assertPyQueryExists(response, f"form[action='{url}']")
-        self.assertPyQueryExists(response, f"input[name='recipient']")
+        self.assertPyQueryExists(response, "input[name='recipient']")
 
         # send the form
         form = [f for f in response.forms.values() if f.action == url][0]
@@ -244,7 +244,7 @@ class CheckEmailSettingsAdminViewTest(WebTestPyQueryMixin, WebTest):
             response = self.app.get(url, status=200)
 
             self.assertPyQueryExists(response, f"form[action='{url}']")
-            self.assertPyQueryExists(response, f"input[name='recipient']")
+            self.assertPyQueryExists(response, "input[name='recipient']")
 
             # send the form
             form = [f for f in response.forms.values() if f.action == url][0]
@@ -266,5 +266,5 @@ class CheckEmailSettingsAdminViewTest(WebTestPyQueryMixin, WebTest):
             )
             self.assertPyQueryExists(
                 response,
-                f"table[class='result-table'] tr td code:contains('Foo Exception')",
+                "table[class='result-table'] tr td code:contains('Foo Exception')",
             )

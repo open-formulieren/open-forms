@@ -189,7 +189,7 @@ class RestoreVersionTest(TestCase):
             export_blob=EXPORT_BLOB,
         )
 
-        for _ in range(2):
+        for i in range(2):
             form.restore_old_version(version.uuid)
             form.refresh_from_db()
 

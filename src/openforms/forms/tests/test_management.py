@@ -1,8 +1,5 @@
-from datetime import date
-
 from django.core.management import call_command
 from django.test import TestCase, override_settings
-from django.utils import timezone
 
 from django_capture_on_commit_callbacks import capture_on_commit_callbacks
 from freezegun import freeze_time

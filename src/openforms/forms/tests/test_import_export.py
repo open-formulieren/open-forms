@@ -206,7 +206,7 @@ class ImportExportTests(TestCase):
         product = ProductFactory.create()
         form = FormFactory.create(product=product)
         form_definition = FormDefinitionFactory.create()
-        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
+        FormStepFactory.create(form=form, form_definition=form_definition)
 
         call_command("export", form.pk, self.filepath)
 
@@ -223,8 +223,8 @@ class ImportExportTests(TestCase):
         form_definition = FormDefinitionFactory.create(
             configuration={"components": [{"key": "test-key", "type": "textfield"}]}
         )
-        form_step = FormStepFactory.create(form=form, form_definition=form_definition)
-        form_logic = FormLogicFactory.create(form=form)
+        FormStepFactory.create(form=form, form_definition=form_definition)
+        FormLogicFactory.create(form=form)
 
         call_command("export", form.pk, self.filepath)
 

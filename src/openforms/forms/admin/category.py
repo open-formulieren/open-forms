@@ -8,7 +8,7 @@ from furl import furl
 from treebeard.admin import TreeAdmin
 from treebeard.forms import movenodeform_factory
 
-from openforms.forms.models import Category, Form
+from openforms.forms.models import Category
 
 
 @admin.register(Category)

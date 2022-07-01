@@ -5,7 +5,6 @@ from django_webtest import WebTest
 
 from digid_eherkenning_oidc_generics.models import OpenIDConnectPublicConfig
 from openforms.accounts.tests.factories import SuperUserFactory
-from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory
 
 default_config = dict(

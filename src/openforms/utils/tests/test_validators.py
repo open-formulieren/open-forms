@@ -86,13 +86,13 @@ class DjangoTemplateValidatorTest(SimpleTestCase):
             (
                 "",
                 _("Missing required template-tag {tag}").format(
-                    tag="\{% csrf_token %}"
+                    tag=r"\{% csrf_token %}"
                 ),
             ),
             (
                 "{% load i18n %} aa {{ aa.bb.cc }}",
                 _("Missing required template-tag {tag}").format(
-                    tag="\{% csrf_token %}"
+                    tag=r"\{% csrf_token %}"
                 ),
             ),
         ]

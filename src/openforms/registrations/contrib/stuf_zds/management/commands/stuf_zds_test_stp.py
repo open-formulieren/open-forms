@@ -1,5 +1,3 @@
-import uuid
-
 from django.core.management import BaseCommand
 
 from openforms.registrations.contrib.stuf_zds.client import StufZDSClient

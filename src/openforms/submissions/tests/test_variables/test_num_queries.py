@@ -181,7 +181,7 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
         # 1. load_submission_state: retrieve form variables
         # 2. load_submission_state: retrieve submission value variables
         with self.assertNumQueries(2):
-            data = submission_step.data
+            submission_step.data
 
     def test_get_variables_state_no_submission_variables(self):
         form = FormFactory.create()
@@ -382,4 +382,4 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
             nodes = [node for node in renderer]
 
         with self.assertNumQueries(0):
-            rendered = [node.render() for node in nodes]
+            [node.render() for node in nodes]
