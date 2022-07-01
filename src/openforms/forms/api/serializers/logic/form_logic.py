@@ -3,7 +3,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from ordered_model.serializers import OrderedModelSerializer
 from rest_framework import serializers
-from treebeard.mp_tree import transaction
 
 from openforms.api.utils import get_from_serializer_data_or_instance
 
@@ -91,7 +90,7 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
         the involved form.
         """
         # taken from drf BaseSerializer.save
-        validated_data = validated_data = {**self.validated_data, **kwargs}
+        validated_data = {**self.validated_data, **kwargs}
         form = get_from_serializer_data_or_instance("form", validated_data, self)
         logic_rules = form.formlogic_set.all()
 

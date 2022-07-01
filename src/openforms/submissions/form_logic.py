@@ -86,8 +86,7 @@ def evaluate_form_logic(
     # on that.
     rules = getattr(submission.form, "_cached_logic_rules", None)
     if rules is None:
-        # TODO the ordering on PK will be replaced by ordering on an order field once it's implemented
-        rules = FormLogic.objects.filter(form=submission.form).order_by("pk")
+        rules = FormLogic.objects.filter(form=submission.form)
         submission.form._cached_logic_rules = rules
 
     submission_state = submission.load_execution_state()

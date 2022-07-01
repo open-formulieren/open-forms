@@ -382,6 +382,8 @@ class Form(models.Model):
         return list(return_keys)
 
     def iter_components(self, recursive=True):
+        # steps are ordered on the 'order' field because of django-ordered-model through
+        # the FormStep.Meta configuration
         for form_step in self.formstep_set.select_related("form_definition"):
             yield from form_step.iter_components(recursive=recursive)
 

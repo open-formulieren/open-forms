@@ -585,7 +585,7 @@ function reducer(draft, action) {
       updatedRules.splice(index, 1);
       draft.logicRules = updatedRules;
 
-      // update the rules above this rule
+      // update the rules following this rule
       draft.logicRules.filter(rule => rule.order > ruleOrder).forEach(rule => (rule.order -= 1));
 
       // delete the validation errors (if present)
