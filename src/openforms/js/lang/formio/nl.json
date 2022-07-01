@@ -239,7 +239,7 @@
   "minLength": "Er zijn te weinig karakters opgegeven.",
   "maxWords": "Er zijn te veel woorden opgegeven.",
   "minWords": "Er zijn te weinug woorden opgegeven.",
-  "invalid_email": "Ongeldige e-mailadres",
+  "invalid_email": "Ongeldig e-mailadres",
   "invalid_url": "Ongeldige URL",
   "invalid_date": "Ongeldige datum",
   "invalid_day": "Ongeldige dag",
