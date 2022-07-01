@@ -2,7 +2,7 @@
 Open Formulieren
 ================
 
-:Version: 1.1.2
+:Version: 1.1.3
 :Source: https://github.com/maykinmedia/open-forms
 :Keywords: e-Formulieren, Common Ground, FormIO, API
 
@@ -54,6 +54,8 @@ Versie          Release date    API specificatie
 ==============  ==============  =============================
 latest          n/a             `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/master/src/openapi.yaml>`_,
                                 `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/master/src/openapi.yaml>`_
+1.1.1           2022-07-01      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/1.1.3/src/openapi.yaml>`_,
+                                `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/1.1.3/src/openapi.yaml>`_
 1.1.0           2022-05-24      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/1.1.0/src/openapi.yaml>`_,
                                 `Swagger <https://petstore.swagger.io/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/1.1.0/src/openapi.yaml>`_
 1.0.1           2022-05-16      `ReDoc <https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/open-formulieren/open-forms/1.0.8/src/openapi.yaml>`_,
