@@ -44,6 +44,7 @@ nsmap = OrderedDict(
         ("zds", "http://www.stufstandaarden.nl/koppelvlak/zds0120"),
         ("gml", "http://www.opengis.net/gml"),
         ("xsi", "http://www.w3.org/2001/XMLSchema-instance"),
+        ("xmime", "http://www.w3.org/2005/05/xmlmime"),
     )
 )
 
