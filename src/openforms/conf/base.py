@@ -1,5 +1,6 @@
 import json
 import os
+from ast import literal_eval
 
 # Django-hijack (and Django-hijack-admin)
 from django.urls import reverse_lazy
@@ -760,6 +761,11 @@ REST_FRAMEWORK = {
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
     "DEFAULT_SCHEMA_CLASS": "openforms.api.schema.AutoSchema",
     "EXCEPTION_HANDLER": "openforms.api.views.exception_handler",
+}
+API_HEADERS = {
+    "Pragma": "no-cache",
+    "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate",
+    **config("API_HEADERS", default="{}", cast=literal_eval),
 }
 
 #
