@@ -18,11 +18,7 @@ from openforms.forms.custom_field_types import register, unregister
 from openforms.forms.tests.factories import FormStepFactory, FormVariableFactory
 
 from ..models import Submission
-from .factories import (
-    SubmissionFactory,
-    SubmissionStepFactory,
-    SubmissionValueVariableFactory,
-)
+from .factories import SubmissionFactory, SubmissionStepFactory
 from .mixins import SubmissionsMixin, VariablesTestMixin
 
 
@@ -169,7 +165,7 @@ class ReadSubmissionStepTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
         self.assertFalse(self.submission.submissionstep_set.exists())
 
         # create submission step data
-        form_variable = FormVariableFactory.create(
+        FormVariableFactory.create(
             form=self.submission.form,
             key="dummy",
             form_definition=self.step.form_definition,

@@ -1,5 +1,4 @@
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
 
 from django_webtest import WebTest
 

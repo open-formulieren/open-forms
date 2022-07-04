@@ -1,9 +1,6 @@
 from django.contrib import admin
-from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.urls import path
 
 from timeline_logger.models import TimelineLog
-from timeline_logger.views import TimelineLogListView
 
 from openforms.logging.models import AVGTimelineLogProxy, TimelineLogProxy
 

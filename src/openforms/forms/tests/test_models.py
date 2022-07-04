@@ -85,8 +85,8 @@ class FormTestCase(TestCase):
                 ],
             }
         )
-        step_1 = FormStepFactory.create(form=form, form_definition=def_1)
-        step_2 = FormStepFactory.create(form=form, form_definition=def_2)
+        FormStepFactory.create(form=form, form_definition=def_1)
+        FormStepFactory.create(form=form, form_definition=def_2)
 
         actual = form.get_keys_for_email_confirmation()
         self.assertEqual(set(actual), {"aaa", "bbb"})
@@ -127,8 +127,8 @@ class FormTestCase(TestCase):
                 ],
             }
         )
-        step_1 = FormStepFactory.create(form=form, form_definition=def_1)
-        step_2 = FormStepFactory.create(form=form, form_definition=def_2)
+        FormStepFactory.create(form=form, form_definition=def_1)
+        FormStepFactory.create(form=form, form_definition=def_2)
 
         with self.subTest("recursive"):
             actual = list(form.iter_components(recursive=True))
@@ -242,10 +242,10 @@ class FormTestCase(TestCase):
 
 class FormQuerysetTestCase(TestCase):
     def test_queryset_live(self):
-        form1 = FormFactory.create(active=True, deleted_=True)
+        FormFactory.create(active=True, deleted_=True)
         form2 = FormFactory.create(active=True)
-        form3 = FormFactory.create(active=False, deleted_=True)
-        form4 = FormFactory.create(active=False)
+        FormFactory.create(active=False, deleted_=True)
+        FormFactory.create(active=False)
 
         active = list(Form.objects.live())
         self.assertEqual(active, [form2])

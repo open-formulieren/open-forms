@@ -270,7 +270,7 @@ class StufZDSPluginTests(VariablesTestMixin, StufTestBase):
             },
         )
 
-        attachment = SubmissionFileAttachmentFactory.create(
+        SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
             file_name="my-attachment.doc",
             content_type="application/msword",

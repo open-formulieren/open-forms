@@ -178,7 +178,7 @@ class FormAdminImportExportTests(WebTest):
         self.assertEqual(response.status_code, 403)
 
     def test_form_admin_import_error(self):
-        form = FormFactory.create(slug="test")
+        FormFactory.create(slug="test")
 
         file = BytesIO()
         with ZipFile(file, mode="w") as zf:

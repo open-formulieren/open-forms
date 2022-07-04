@@ -1,5 +1,4 @@
 import factory
-from factory import post_generation
 
 from openforms.products.tests.factories import ProductFactory
 

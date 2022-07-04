@@ -91,14 +91,14 @@ def generate_prefill_from_spec_url(
         else:
             schema = content_type["schema"]
         if not schema:
-            raise NotImplementedError(f"cannot find suitable schema")
+            raise NotImplementedError("cannot find suitable schema")
 
     elif api_schema:
         schema = select_schema(root_schema, api_schema)
         if "$ref" in schema:
             schema = json_path(root_schema, schema["$ref"])
         if not schema:
-            raise NotImplementedError(f"cannot find suitable schema")
+            raise NotImplementedError("cannot find suitable schema")
 
     else:
         raise Exception("cannot pass both api_path and api_schema")
@@ -284,11 +284,11 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         if options["service"] and options["url"]:
-            self.stderr.write(f"use either --service or --url (not both)")
+            self.stderr.write("use either --service or --url (not both)")
             return
 
         if options["path"] and options["schema"]:
-            self.stderr.write(f"use either --path or --schema (not both)")
+            self.stderr.write("use either --path or --schema (not both)")
             return
 
         if options["service"]:

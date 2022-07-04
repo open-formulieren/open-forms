@@ -5,12 +5,10 @@ from django.test import TestCase
 from django.utils import timezone
 
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.models import FormStep
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
-    FormVariableFactory,
 )
 from openforms.submissions.constants import (
     RegistrationStatuses,

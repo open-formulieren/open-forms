@@ -8,9 +8,9 @@ from django.core.management.base import CommandError
 
 TRANSLATION_REGEX_PATTERNS = {
     "labels": "label: '([^']+)'",
-    "other": "\.t\('([^']+)'[\),]",
+    "other": r"\.t\('([^']+)'[\),]",
     "tooltips": "tooltip: '([^']+)'",
-    "errors": "errorMessage\('([^']+)'[\),]",
+    "errors": r"errorMessage\('([^']+)'[\),]",
 }
 
 

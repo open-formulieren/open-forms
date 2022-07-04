@@ -22,5 +22,5 @@ class SubmissionValueVariableModelTests(TestCase):
             )
 
     def test_can_create_instances(self):
-        variable1 = SubmissionValueVariableFactory.create()
-        variable2 = SubmissionValueVariableFactory.create()
+        SubmissionValueVariableFactory.create()
+        SubmissionValueVariableFactory.create()

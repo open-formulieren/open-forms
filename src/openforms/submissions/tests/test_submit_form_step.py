@@ -17,7 +17,6 @@ from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
-    FormVariableFactory,
 )
 
 from ..models import SubmissionValueVariable
@@ -109,7 +108,7 @@ class FormStepSubmissionTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
         )
         body = {"data": {"test-key": "example data"}}
 
-        response = self.client.put(endpoint, body)
+        self.client.put(endpoint, body)
 
         mock_validate.assert_called_once()
 

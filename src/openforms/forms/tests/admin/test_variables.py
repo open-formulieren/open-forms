@@ -3,7 +3,6 @@ from django.urls import reverse
 from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import UserFactory
-from openforms.forms.constants import FormVariableSources
 from openforms.forms.tests.factories import FormVariableFactory
 
 

@@ -1,5 +1,3 @@
-import uuid
-
 from django.template import loader
 from django.test import TestCase
 

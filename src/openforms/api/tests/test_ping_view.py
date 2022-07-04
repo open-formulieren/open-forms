@@ -3,7 +3,6 @@ from rest_framework.reverse import reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
-from openforms.submissions.models import submission
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 

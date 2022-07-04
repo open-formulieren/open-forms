@@ -15,7 +15,7 @@ from .factories import AppointmentInfoFactory
 class AppointmentInfoAdminTests(WebTest):
     @freeze_time("2021-11-26T17:00:00+01:00")
     def test_cancel_and_change_links_only_for_superuser(self):
-        normal, staff = non_superusers = [
+        normal, staff = [
             UserFactory.create(user_permissions=["view_appointmentinfo"]),
             StaffUserFactory.create(user_permissions=["view_appointmentinfo"]),
         ]

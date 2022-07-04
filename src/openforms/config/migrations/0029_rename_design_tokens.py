@@ -38,12 +38,12 @@ def remove_empty_tokens(obj: dict) -> dict:
     for key, value in obj.items():
         if not isinstance(value, dict):
             continue
-        updated = remove_empty_tokens(value)
+        updated_value = remove_empty_tokens(value)
         # empty object -> remove it by not including it anymore
-        if updated is None:
+        if not updated_value:
             continue
 
-        result[key] = updated
+        result[key] = updated_value
 
     return result
 

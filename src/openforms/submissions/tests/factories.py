@@ -8,7 +8,6 @@ import factory
 import magic
 from glom import PathAccessError, glom
 
-from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,

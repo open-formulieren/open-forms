@@ -4,7 +4,6 @@ from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import authentication, permissions
-from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
 

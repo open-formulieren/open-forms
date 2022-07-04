@@ -1,9 +1,5 @@
-import warnings
-from typing import Any
-
 from django import template
 from django.template.loader import get_template
-from django.utils.encoding import force_str
 
 from openforms.submissions.rendering.constants import RenderModes
 from openforms.submissions.rendering.renderer import Renderer

@@ -7,7 +7,6 @@ from django.contrib.auth.models import Permission
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpRequest
 from django.urls import reverse
-from django.utils.translation import gettext as _
 
 from rest_framework import status
 from rest_framework.test import APITestCase

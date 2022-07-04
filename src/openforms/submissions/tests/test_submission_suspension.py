@@ -7,7 +7,7 @@ sub-resource.
 The backend collects information to send an e-mail to the user for resuming, for
 example.
 """
-from datetime import datetime, timedelta
+from datetime import datetime
 from unittest.mock import patch
 from urllib.parse import urljoin
 
@@ -23,7 +23,6 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
-from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ..constants import SUBMISSIONS_SESSION_KEY

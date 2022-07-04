@@ -101,7 +101,7 @@ class KVK_KVKNumberPrefill(BasePlugin):
             raise InvalidPluginConfiguration(
                 _("Client error: {exception}").format(exception=e)
             )
-        except Exception as e:
+        except Exception:
             # pass it on
             raise
         else:

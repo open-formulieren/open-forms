@@ -38,7 +38,7 @@ class CategoriesAPITests(APITestCase):
 
     def test_list(self):
         category_1 = Category.add_root(name="foo")
-        category_2 = category_1.add_child(name="bar")
+        category_1.add_child(name="bar")
 
         url = reverse("api:categories-list")
         response = self.client.get(url)

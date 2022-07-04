@@ -1,7 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from django_camunda.api import get_process_definitions
 from django_camunda.client import get_client
 from django_camunda.models import CamundaConfig
 

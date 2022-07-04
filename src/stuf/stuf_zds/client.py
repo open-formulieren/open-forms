@@ -337,7 +337,7 @@ class StufZDSClient:
                 "taal": "nld",
                 "inhoud": base64_body,
                 "status": "definitief",
-                "bestandsnaam": f"open-forms-inzending.pdf",
+                "bestandsnaam": "open-forms-inzending.pdf",
                 # TODO: Use name in filename
                 # "bestandsnaam": f"open-forms-{name}.pdf",
                 "formaat": "application/pdf",

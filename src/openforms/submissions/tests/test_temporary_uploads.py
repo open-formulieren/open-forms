@@ -172,7 +172,7 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         # add it
         self._add_upload_to_session(upload)
 
-        d = dict(self.client.session)
+        dict(self.client.session)
 
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
@@ -244,10 +244,10 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
     def test_cleanup_unclaimed_temporary_uploaded_files(self):
         with freeze_time("2020-06-01 10:00"):
-            remove_1 = TemporaryFileUploadFactory.create()
+            TemporaryFileUploadFactory.create()
 
         with freeze_time("2020-06-02 10:00"):
-            remove_2 = TemporaryFileUploadFactory.create()
+            TemporaryFileUploadFactory.create()
             keep_1 = TemporaryFileUploadFactory.create()
             SubmissionFileAttachmentFactory.create(temporary_file=keep_1)
 

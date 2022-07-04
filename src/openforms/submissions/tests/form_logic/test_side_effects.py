@@ -45,10 +45,6 @@ class SideEffectTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
                 ]
             },
         )
-        form_step1_path = reverse(
-            "api:form-steps-detail",
-            kwargs={"form_uuid_or_slug": form.uuid, "uuid": step1.uuid},
-        )
         form_step2_path = reverse(
             "api:form-steps-detail",
             kwargs={"form_uuid_or_slug": form.uuid, "uuid": step2.uuid},

@@ -6,7 +6,7 @@ See the `documentation <_variables>` to learn more about Camunda variable types.
 .. _variables: https://docs.camunda.org/manual/7.16/reference/rest/overview/variables/
 """
 import logging
-from typing import Any, Dict, List, NoReturn, Optional, Tuple
+from typing import Any, Dict, List, NoReturn, Tuple
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -15,7 +15,6 @@ import requests
 from django_camunda.api import get_process_definitions
 from django_camunda.models import CamundaConfig
 from django_camunda.tasks import start_process
-from django_camunda.types import ProcessVariables
 from django_camunda.utils import serialize_variables
 
 from openforms.submissions.models import Submission

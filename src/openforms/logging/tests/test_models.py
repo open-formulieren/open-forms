@@ -186,7 +186,7 @@ class TimelineLogProxyTests(TestCase):
             self.assertEqual(_("Anonymous user"), log.fmt_user)
 
         with self.subTest("lead no submission"):
-            self.assertEqual(f"[2020-01-02 13:34:00 CET]", log.fmt_lead)
+            self.assertEqual("[2020-01-02 13:34:00 CET]", log.fmt_lead)
 
         with self.subTest("unknown plugin"):
             self.assertEqual(_("(unknown)"), log.fmt_plugin)

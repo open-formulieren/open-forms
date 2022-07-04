@@ -38,7 +38,7 @@ class BAGClient:
 
         try:
             response = cls.make_request(client, data)
-        except ClientError as e:
+        except ClientError:
             logger.exception("Could not retrieve address details from the BAG API")
             return {}
 

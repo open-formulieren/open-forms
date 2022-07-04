@@ -10,8 +10,6 @@ Functional requirements are:
 * data of different submissions should not affect each other
 * "login" makes no sense, as we are usually dealing with anonymous users
 """
-from unittest.mock import patch
-
 from django.test import override_settings
 
 from rest_framework import status
@@ -19,7 +17,6 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
-from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import (
     FormFactory,
     FormStepFactory,
@@ -136,7 +133,7 @@ class SubmissionStartTests(VariablesTestMixin, APITestCase):
 
     def test_start_submission_in_maintenance_mode(self):
         form = FormFactory.create(maintenance_mode=True)
-        step = FormStepFactory.create(form=form)
+        FormStepFactory.create(form=form)
 
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         body = {
@@ -150,7 +147,7 @@ class SubmissionStartTests(VariablesTestMixin, APITestCase):
 
     def test_start_submission_on_deleted_form(self):
         form = FormFactory.create(deleted_=True)
-        step = FormStepFactory.create(form=form)
+        FormStepFactory.create(form=form)
 
         form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         body = {

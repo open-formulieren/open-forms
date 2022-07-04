@@ -6,6 +6,7 @@ from django.core.exceptions import SuspiciousOperation
 
 from glom import PathAccessError, glom
 from mozilla_django_oidc_db.mixins import SoloConfigMixin as _SoloConfigMixin
+from mozilla_django_oidc_db.utils import obfuscate_claim_value
 
 from . import (
     digid_machtigen_settings,
@@ -81,7 +82,7 @@ class MachtigenBackendMixin:
                 if isinstance(value, dict):
                     _obfuscate_claims_values(value)
                 else:
-                    claims_to_obfuscate[key] = obfuscate_claim(value)
+                    claims_to_obfuscate[key] = obfuscate_claim_value(value)
             return claims_to_obfuscate
 
         obfuscated_claims = _obfuscate_claims_values(copied_claims)

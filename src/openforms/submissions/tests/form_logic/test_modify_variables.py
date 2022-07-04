@@ -8,7 +8,6 @@ from openforms.forms.tests.factories import (
 )
 
 from ...form_logic import evaluate_form_logic
-from ...models import SubmissionValueVariable
 from ..factories import SubmissionFactory, SubmissionStepFactory
 from ..mixins import VariablesTestMixin
 from .factories import FormLogicFactory

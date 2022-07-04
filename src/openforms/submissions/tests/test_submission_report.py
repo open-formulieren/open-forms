@@ -10,16 +10,10 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
-    FormFactory,
-    FormStepFactory,
-)
-
 from ..models import SubmissionReport
 from ..tasks import generate_submission_report
 from ..tokens import submission_report_token_generator
-from .factories import SubmissionFactory, SubmissionReportFactory, SubmissionStepFactory
+from .factories import SubmissionFactory, SubmissionReportFactory
 
 
 @temp_private_root()

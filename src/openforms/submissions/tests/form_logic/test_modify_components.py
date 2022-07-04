@@ -767,6 +767,8 @@ class ComponentModificationTests(VariablesTestMixin, TestCase):
             submission, submission_step, submission.data
         )
 
+        self.assertTrue(configuration["components"][1]["hidden"])
+
 
 class StepModificationTests(VariablesTestMixin, TestCase):
     def test_next_button_disabled(self):

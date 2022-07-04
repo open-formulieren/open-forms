@@ -1,13 +1,10 @@
 from django.urls import reverse
 
 from django_webtest import WebTest
-from furl import furl
 from rest_framework.serializers import Serializer
 
 from openforms.accounts.tests.factories import SuperUserFactory
-from openforms.config.models import GlobalConfiguration
 from openforms.registrations.registry import Registry
-from openforms.registrations.tests.utils import patch_registry
 from openforms.tests.utils import disable_2fa
 
 from ...registrations.base import BasePlugin
@@ -46,8 +43,6 @@ class FormAdminTests(FormListAjaxMixin, WebTest):
     def test_form_list_view_filters_on_soft_delete(self):
         form_available = FormFactory.create(deleted_=False)
         form_deleted = FormFactory.create(deleted_=True)
-
-        url = reverse("admin:forms_form_changelist")
 
         with self.subTest("default"):
             response = self._get_form_changelist(user=self.superuser, status=200)
