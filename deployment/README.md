@@ -1,1 +1,1 @@
-[See documentation](../docs/installation/deployment.rst)
+[See documentation](../docs/installation)
