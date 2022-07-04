@@ -60,6 +60,40 @@ jobs:
         run: |
           black --check src/openforms docs
 
+  flake8:
+    name: Code style (flake8)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Install OS dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libxml2-dev libxmlsec1-dev libxmlsec1-openssl
+      - name: Install dependencies
+        run: |
+          pip install -r requirements/ci.txt
+      - name: Run flake8
+        id: flake8
+        run: |
+          flake8 src 2>&1 | tee flake8_output.txt
+          result_code=${PIPESTATUS[0]}
+          echo "::set-output name=flake8_output::$(cat flake8_output.txt)"
+          exit $result_code
+      - name: Emit flake8 flake8 output
+        if: ${{ failure() }}
+        run: |
+          echo "${{ steps.flake8.outputs.flake8_output }}"
+
+          echo 'flake8 found some issues' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '| File | Line | Column | Issue |' >> $GITHUB_STEP_SUMMARY
+          echo '| :--- | ---- | ------ | :---- |' >> $GITHUB_STEP_SUMMARY
+          python ./bin/flake8_summary.py "${{ steps.flake8.outputs.flake8_output }}" >> $GITHUB_STEP_SUMMARY
+
   prettier:
     name: Check frontend code formatting with prettier
     runs-on: ubuntu-latest
