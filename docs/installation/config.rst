@@ -49,6 +49,17 @@ Common settings
 * ``CELERY_RESULT_BACKEND``: URL for the Redis result broker for Celery.
   Defaults to ``redis://127.0.0.1:6379/1``.
 
+API settings
+-----------------
+
+* ``API_HEADERS``: what headers to use for the API. Defaults to ``Pragma`` and ``Cache-Control``.
+
+.. note::
+
+    We suggest enabling camera and geolocation using the ``Permissions-Policy`` header.
+    For example: ``{"Permissions-Policy": "camera=(self),geolocation=()"}``
+
+
 .. _email-settings:
 
 Email settings
