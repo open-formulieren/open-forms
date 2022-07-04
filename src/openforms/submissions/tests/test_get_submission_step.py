@@ -40,6 +40,11 @@ class ReadSubmissionStepTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
                     "key": "otherField",
                     "type": "selectboxes",
                     "inputType": "checkbox",
+                    "values": [
+                        {"label": "a", "value": "a"},
+                        {"label": "b", "value": "b"},
+                    ],
+                    "defaultValue": {"a": False, "b": False},
                 },
             ]
         }
@@ -88,11 +93,16 @@ class ReadSubmissionStepTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
                             "key": "otherField",
                             "type": "selectboxes",
                             "inputType": "checkbox",
+                            "values": [
+                                {"label": "a", "value": "a"},
+                                {"label": "b", "value": "b"},
+                            ],
+                            "defaultValue": {"a": False, "b": False},
                         },
                     ]
                 },
             },
-            "data": {"otherField": {}},
+            "data": {"otherField": {"a": False, "b": False}},
             "isApplicable": True,
             "completed": False,
             "optional": False,
@@ -129,11 +139,16 @@ class ReadSubmissionStepTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
                             "type": "selectboxes",
                             "key": "otherField",
                             "inputType": "checkbox",
+                            "values": [
+                                {"label": "a", "value": "a"},
+                                {"label": "b", "value": "b"},
+                            ],
+                            "defaultValue": {"a": False, "b": False},
                         },
                     ]
                 },
             },
-            "data": {"otherField": {}},
+            "data": {"otherField": {"a": False, "b": False}},
             "isApplicable": True,
             "completed": False,
             "optional": False,
@@ -181,5 +196,5 @@ class ReadSubmissionStepTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.json()["data"],
-            {"dummy": "data", "otherField": {}},
+            {"dummy": "data", "otherField": {"a": False, "b": False}},
         )

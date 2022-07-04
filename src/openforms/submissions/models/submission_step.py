@@ -61,7 +61,11 @@ class SubmissionStep(models.Model):
         config = GlobalConfiguration.get_solo()
         if config.enable_form_variables:
             values_state = self.submission.load_submission_value_variables_state()
-            step_data = values_state.get_data(submission_step=self)
+            # This is used in the evaluate_form_logic function, which only returns the data that has been changed to the
+            # frontend.
+            step_data = values_state.get_data(
+                submission_step=self, return_unchanged_data=False
+            )
             if self._unsaved_data:
                 return {**step_data, **self._unsaved_data}
             return step_data

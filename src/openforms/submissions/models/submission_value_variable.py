@@ -9,6 +9,7 @@ from glom import Assign, PathAccessError, glom
 
 from openforms.forms.models.form_variable import FormVariable
 
+from ...forms.constants import FormVariableDataTypes
 from ..constants import SubmissionValueVariableSources
 from .submission import Submission
 
@@ -23,7 +24,11 @@ class SubmissionValueVariablesState:
     def get_variable(self, key: str) -> Optional["SubmissionValueVariable"]:
         return self.variables[key]
 
-    def get_data(self, submission_step: Optional["SubmissionStep"] = None) -> dict:
+    def get_data(
+        self,
+        submission_step: Optional["SubmissionStep"] = None,
+        return_unchanged_data: bool = True,
+    ) -> dict:
         submission_variables = self.variables
         if submission_step:
             submission_variables = self.get_variables_in_submission_step(
@@ -33,10 +38,14 @@ class SubmissionValueVariablesState:
         data = {}
         for variable_key, variable in submission_variables.items():
             if (
-                variable.value != ""
-                or variable.source
-                == SubmissionValueVariableSources.sensitive_data_cleaner
+                variable.value is None
+                and variable.form_variable
+                and variable.value == variable.form_variable.initial_value
+                and not return_unchanged_data
             ):
+                continue
+
+            if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
                 glom(data, Assign(variable_key, variable.value, missing=dict))
         return data
 

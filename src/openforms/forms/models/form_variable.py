@@ -35,13 +35,24 @@ STATIC_INITIAL_VALUES = {FormVariableStaticInitialValues.now: get_now}
 
 INITIAL_VALUES = {
     FormVariableDataTypes.string: "",
-    FormVariableDataTypes.boolean: "",
+    FormVariableDataTypes.boolean: False,
     FormVariableDataTypes.object: {},
     FormVariableDataTypes.array: [],
-    FormVariableDataTypes.int: "",
-    FormVariableDataTypes.float: "",
+    FormVariableDataTypes.float: None,
     FormVariableDataTypes.datetime: "",
     FormVariableDataTypes.time: "",
+}
+
+COMPONENT_DATATYPES = {
+    "date": "datetime",
+    "time": "time",
+    "file": "array",
+    "currency": "float",
+    "number": "float",
+    "checkbox": "boolean",
+    "selectboxes": "object",
+    "npFamilyMembers": "object",
+    "map": "array",
 }
 
 
@@ -77,28 +88,33 @@ class FormVariableManager(models.Manager):
             ):
                 continue
 
-            form_variables.append(
-                self.model(
-                    form=form_step.form,
-                    form_definition=form_step.form_definition,
-                    prefill_plugin=glom(
-                        component,
-                        Path("prefill", "plugin"),
-                        default="",
-                        skip_exc=KeyError,
-                    ),
-                    prefill_attribute=glom(
-                        component,
-                        Path("prefill", "attribute"),
-                        default="",
-                        skip_exc=KeyError,
-                    ),
-                    key=component["key"],
-                    is_sensitive_data=component.get("isSensitiveData", False),
-                    source=FormVariableSources.component,
-                    data_type=get_component_datatype(component),
-                )
+            new_variable = self.model(
+                form=form_step.form,
+                form_definition=form_step.form_definition,
+                prefill_plugin=glom(
+                    component,
+                    Path("prefill", "plugin"),
+                    default="",
+                    skip_exc=KeyError,
+                ),
+                prefill_attribute=glom(
+                    component,
+                    Path("prefill", "attribute"),
+                    default="",
+                    skip_exc=KeyError,
+                ),
+                key=component["key"],
+                is_sensitive_data=component.get("isSensitiveData", False),
+                source=FormVariableSources.component,
+                data_type=get_component_datatype(component),
             )
+            default_value = component.get("defaultValue")
+            if default_value is not None:
+                new_variable.initial_value = default_value
+            else:
+                new_variable.initial_value = new_variable.get_initial_value()
+
+            form_variables.append(new_variable)
 
         return self.bulk_create(form_variables)
 
@@ -212,7 +228,7 @@ class FormVariable(models.Model):
         if self.source == FormVariableSources.static:
             return STATIC_INITIAL_VALUES[self.initial_value]()
         else:
-            return self.initial_value or INITIAL_VALUES[self.data_type]
+            return self.initial_value or None
 
     @staticmethod
     def get_default_static_variables() -> List["FormVariable"]:

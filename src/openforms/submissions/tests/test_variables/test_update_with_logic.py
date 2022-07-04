@@ -421,7 +421,7 @@ class UpdateVariablesWithLogicTests(VariablesTestMixin, SubmissionsMixin, APITes
             form=form,
             key="totApples",
             source=FormVariableSources.user_defined,
-            data_type=FormVariableDataTypes.int,
+            data_type=FormVariableDataTypes.float,
             form_definition=None,
         )
 
@@ -472,7 +472,7 @@ class UpdateVariablesWithLogicTests(VariablesTestMixin, SubmissionsMixin, APITes
             form=form,
             key="totApples",
             source=FormVariableSources.user_defined,
-            data_type=FormVariableDataTypes.int,
+            data_type=FormVariableDataTypes.float,
             form_definition=form_step.form_definition,
         )
 

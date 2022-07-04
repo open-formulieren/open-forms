@@ -136,7 +136,7 @@ class FormVariableFactory(factory.django.DjangoModelFactory):
     form_definition = factory.SubFactory(FormDefinitionFactory)
     source = FormVariableSources.user_defined
     data_type = FormVariableDataTypes.string
-    initial_value = {}
+    initial_value = None
 
     class Meta:
         model = "forms.FormVariable"
