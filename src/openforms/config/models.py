@@ -337,19 +337,13 @@ class GlobalConfiguration(SingletonModel):
             "The base URL of your Piwik PRO server, e.g. 'https://your-instance-name.piwik.pro/'."
         ),
     )
-    piwik_pro_site_id = models.CharField(
+    piwik_pro_site_id = models.UUIDField(
         _("Piwik PRO site ID"),
         blank=True,
-        max_length=36,
+        null=True,
         help_text=_(
-            "Typically looks like XXX-XXX-XXX-XXX-XXX. The 'idsite' of the website you're tracking in Piwik PRO."
+            "The 'idsite' of the website you're tracking in Piwik PRO. https://help.piwik.pro/support/questions/find-website-id/"
         ),
-        validators=[
-            RegexValidator(
-                regex=r"\w{8}-(\w{4}-){3}\w{12}",
-                message=_("The site ID must be a valid Piwik PRO site ID."),
-            ),
-        ],
     )
     siteimprove_id = models.CharField(
         _("SiteImprove ID"),
