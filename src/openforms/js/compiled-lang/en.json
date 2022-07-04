@@ -91,6 +91,12 @@
       "value": "Registration backend options"
     }
   ],
+  "2emuJW": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
   "2uIYst": [
     {
       "type": 0,
@@ -345,6 +351,12 @@
       "value": "Is not sensitive"
     }
   ],
+  "9AQi2/": [
+    {
+      "type": 0,
+      "value": "Please select the logic type:"
+    }
+  ],
   "9N67XB": [
     {
       "type": 0,
@@ -583,12 +595,6 @@
       "value": "Session expired"
     }
   ],
-  "Dwnqdq": [
-    {
-      "type": 0,
-      "value": "Advanced Logic"
-    }
-  ],
   "DxGKNm": [
     {
       "type": 0,
@@ -625,6 +631,12 @@
       "value": "Mode"
     }
   ],
+  "FayNPY": [
+    {
+      "type": 0,
+      "value": "Simple"
+    }
+  ],
   "FceidS": [
     {
       "type": 0,
@@ -635,6 +647,12 @@
     {
       "type": 0,
       "value": "Text"
+    }
+  ],
+  "G1JHUM": [
+    {
+      "type": 0,
+      "value": "Cancel rule creation"
     }
   ],
   "G2rpx2": [
@@ -951,6 +969,12 @@
     {
       "type": 0,
       "value": ". Extend your session if you wish to continue."
+    }
+  ],
+  "OobRu3": [
+    {
+      "type": 0,
+      "value": "Advanced"
     }
   ],
   "OvqnXR": [
@@ -1357,6 +1381,12 @@
     {
       "type": 0,
       "value": "Move up"
+    }
+  ],
+  "c0dfYJ": [
+    {
+      "type": 0,
+      "value": "Build a JsonLogic expression using raw JSON."
     }
   ],
   "c1XyJ4": [
@@ -1873,6 +1903,12 @@
       "value": "Change form"
     }
   ],
+  "tRCXsR": [
+    {
+      "type": 0,
+      "value": "Select components and conditions using drop-downs to build a JsonLogic expression."
+    }
+  ],
   "tjRtQk": [
     {
       "type": 0,
@@ -1895,6 +1931,26 @@
     {
       "type": 0,
       "value": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+    }
+  ],
+  "uiliGe": [
+    {
+      "type": 0,
+      "value": "The logic rules you set up here are executed in the order that they are defined. Please consult the "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "manual"
+        }
+      ],
+      "type": 8,
+      "value": "docs"
+    },
+    {
+      "type": 0,
+      "value": " for more information."
     }
   ],
   "ukFB7B": [

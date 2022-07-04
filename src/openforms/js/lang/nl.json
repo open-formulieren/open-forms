@@ -69,6 +69,11 @@
     "description": "Registration backend options label",
     "originalDefault": "Registration backend options"
   },
+  "2emuJW": {
+    "defaultMessage": "Cancel",
+    "description": "Cancel link",
+    "originalDefault": "Cancel"
+  },
   "2uIYst": {
     "defaultMessage": "De procesdefinitie waarvoor een proces instantie gestart moet worden.",
     "description": "Camunda 'process definition' help text",
@@ -224,6 +229,11 @@
     "description": "Is not sensitive icon title",
     "originalDefault": "Is not sensitive"
   },
+  "9AQi2/": {
+    "defaultMessage": "Please select the logic type:",
+    "description": "Logic type selection label",
+    "originalDefault": "Please select the logic type:"
+  },
   "9N67XB": {
     "defaultMessage": "Ongeldige JSON-syntaxis",
     "description": "Advanced logic rule invalid json message",
@@ -369,11 +379,6 @@
     "description": "Modal title session expired",
     "originalDefault": "Session expired"
   },
-  "Dwnqdq": {
-    "defaultMessage": "Geavanceerde logica",
-    "description": "Advanced logic fieldset title",
-    "originalDefault": "Advanced Logic"
-  },
   "DxGKNm": {
     "defaultMessage": "Logica",
     "description": "Logic fieldset title",
@@ -404,6 +409,11 @@
     "description": "Pricing mode label",
     "originalDefault": "Mode"
   },
+  "FayNPY": {
+    "defaultMessage": "Simple",
+    "description": "Simple logic type",
+    "originalDefault": "Simple"
+  },
   "FceidS": {
     "defaultMessage": "is niet gelijk aan",
     "description": "\"!=\" operator description",
@@ -413,6 +423,11 @@
     "defaultMessage": "Tekst",
     "description": "Interpolation expression field label",
     "originalDefault": "Text"
+  },
+  "G1JHUM": {
+    "defaultMessage": "Cancel rule creation",
+    "description": "Cancel link help",
+    "originalDefault": "Cancel rule creation"
   },
   "G2rpx2": {
     "defaultMessage": "Geef de voortgang in de formulierstappen wel of niet weer.",
@@ -663,6 +678,11 @@
     "defaultMessage": "Uw sessie vervalt {delta}. Verleng uw sessie indien u wenst door te gaan.",
     "description": "Session expiry warning (in modal)",
     "originalDefault": "Your session is about to expire {delta}. Extend your session if you wish to continue."
+  },
+  "OobRu3": {
+    "defaultMessage": "Advanced",
+    "description": "Advanced logic type",
+    "originalDefault": "Advanced"
   },
   "OvqnXR": {
     "defaultMessage": "Ja",
@@ -953,6 +973,11 @@
     "defaultMessage": "Verplaats omhoog",
     "description": "Move up icon title",
     "originalDefault": "Move up"
+  },
+  "c0dfYJ": {
+    "defaultMessage": "Build a JsonLogic expression using raw JSON.",
+    "description": "Advanced logic type info text",
+    "originalDefault": "Build a JsonLogic expression using raw JSON."
   },
   "c1XyJ4": {
     "defaultMessage": "Component",
@@ -1379,6 +1404,11 @@
     "description": "Change form page title",
     "originalDefault": "Change form"
   },
+  "tRCXsR": {
+    "defaultMessage": "Select components and conditions using drop-downs to build a JsonLogic expression.",
+    "description": "Simple logic type info text",
+    "originalDefault": "Select components and conditions using drop-downs to build a JsonLogic expression."
+  },
   "tjRtQk": {
     "defaultMessage": "Bevestingsmailsjabloon",
     "description": "Submission confirmation email fieldset title",
@@ -1398,6 +1428,11 @@
     "defaultMessage": "Aantal dagen dat een voltooide inzending bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken.",
     "description": "Successful Submissions Removal Limit help text",
     "originalDefault": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+  },
+  "uiliGe": {
+    "defaultMessage": "The logic rules you set up here are executed in the order that they are defined. Please consult the <docs>manual</docs> for more information.",
+    "description": "Logic rules introduction/explanation",
+    "originalDefault": "The logic rules you set up here are executed in the order that they are defined. Please consult the <docs>manual</docs> for more information."
   },
   "ukFB7B": {
     "defaultMessage": "Selecteer naar welke authenticatiemethode de gebruiker automatisch doorgestuurd moet worden.",

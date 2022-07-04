@@ -3,7 +3,7 @@ import factory
 from openforms.products.tests.factories import ProductFactory
 
 from ..constants import FormVariableDataTypes, FormVariableSources
-from ..models import Category, Form, FormDefinition, FormStep, FormVariable, FormVersion
+from ..models import FormStep, FormVariable
 from ..utils import form_to_json
 
 
@@ -18,7 +18,7 @@ class FormFactory(factory.django.DjangoModelFactory):
     deleted_ = False
 
     class Meta:
-        model = Form
+        model = "forms.Form"
         rename = {"deleted_": "_is_deleted"}
 
     class Params:
@@ -40,7 +40,7 @@ class FormDefinitionFactory(factory.django.DjangoModelFactory):
     )
 
     class Meta:
-        model = FormDefinition
+        model = "forms.FormDefinition"
 
     class Params:
         is_appointment = factory.Trait(
@@ -87,7 +87,7 @@ class FormStepFactory(factory.django.DjangoModelFactory):
     form = factory.SubFactory(FormFactory)
 
     class Meta:
-        model = FormStep
+        model = "forms.FormStep"
 
     @classmethod
     def create(
@@ -104,7 +104,7 @@ class FormVersionFactory(factory.django.DjangoModelFactory):
     export_blob = {}
 
     class Meta:
-        model = FormVersion
+        model = "forms.FormVersion"
 
     @factory.post_generation
     def post(obj, create, extracted, **kwargs):
@@ -139,14 +139,14 @@ class FormVariableFactory(factory.django.DjangoModelFactory):
     initial_value = {}
 
     class Meta:
-        model = FormVariable
+        model = "forms.FormVariable"
 
 
 class CategoryFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: "Category %03d" % n)
 
     class Meta:
-        model = Category
+        model = "forms.Category"
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):

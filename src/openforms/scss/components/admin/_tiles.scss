@@ -14,6 +14,8 @@
   }
 
   &__tile {
+    --tile-size: 140px;
+
     background: $color-primary;
     border: solid 1px $color-primary;
     border-radius: 4px;
@@ -25,8 +27,12 @@
     justify-content: space-around;
     align-items: center;
 
-    width: 140px;
-    height: 140px;
+    width: var(--tile-size);
+    height: var(--tile-size);
+
+    &#{&}--small {
+      --tile-size: 80px;
+    }
   }
 
   &__separator {

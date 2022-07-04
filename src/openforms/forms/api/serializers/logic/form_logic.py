@@ -1,6 +1,10 @@
+from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
 
+from ordered_model.serializers import OrderedModelSerializer
 from rest_framework import serializers
+
+from openforms.api.utils import get_from_serializer_data_or_instance
 
 from ....models import FormLogic
 from ...validators import JsonLogicTriggerValidator, JsonLogicValidator
@@ -38,7 +42,7 @@ class FormLogicBaseSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
-class FormLogicSerializer(FormLogicBaseSerializer):
+class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
     actions = LogicComponentActionSerializer(
         many=True,
         label=_("Actions"),
@@ -49,11 +53,51 @@ class FormLogicSerializer(FormLogicBaseSerializer):
 
     class Meta(FormLogicBaseSerializer.Meta):
         model = FormLogic
-        fields = FormLogicBaseSerializer.Meta.fields + ("actions", "is_advanced")
+        fields = FormLogicBaseSerializer.Meta.fields + (
+            "order",
+            "actions",
+            "is_advanced",
+        )
         extra_kwargs = {
             **FormLogicBaseSerializer.Meta.extra_kwargs,
             "url": {
                 "view_name": "api:form-logics-detail",
                 "lookup_field": "uuid",
             },
+            "order": {
+                "read_only": False,
+                "help_text": _(
+                    "Order of the rule relative to the form it belongs to. Logic rules "
+                    "are evaluated in this order. Note that specifying a value for the "
+                    "order here will cause the rules before/after this rule to be "
+                    "re-calculated."
+                ),
+            },
         }
+
+    def save(self, **kwargs):
+        """
+        Manage row-level locks while performing updates.
+
+        Updating the order through the API is sensitive to race conditions, as
+        specifying the order for a logic rule causes the _other rules_ to be updated
+        as well. Parallel requests affect each other and can lead to unexpected
+        calculated order values.
+
+        To guard against this, we wrap the save operation in an atomic transaction,
+        but this in turn leads to deadlocks because multiple parallel requests are
+        waiting for each other. To mitigate THAT, we lock all the form logic rules for
+        the involved form.
+        """
+        # taken from drf BaseSerializer.save
+        validated_data = {**self.validated_data, **kwargs}
+        form = get_from_serializer_data_or_instance("form", validated_data, self)
+        logic_rules = form.formlogic_set.all()
+
+        with transaction.atomic():
+            # evaluate queryset to force row-level locks
+            list(logic_rules.select_for_update())
+            if self.instance:
+                # ensure that we are not looking at stale date if we were waiting for a lock
+                self.instance.refresh_from_db()
+            return super().save(**kwargs)

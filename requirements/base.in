@@ -41,6 +41,7 @@ django-cors-headers
 django-decorator-include
 django-digid-eherkenning
 django-hijack
+django-ordered-model
 django-privates
 django-redis
 django-solo

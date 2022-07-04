@@ -186,6 +186,9 @@ def import_form_data(
                     context={"request": request, "form": created_form},
                 )
 
+            if resource == "formLogic" and "order" not in entry:
+                entry["order"] = 0
+
             try:
                 deserialized.is_valid(raise_exception=True)
                 deserialized.save()

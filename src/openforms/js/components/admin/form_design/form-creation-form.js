@@ -2,6 +2,7 @@ import zip from 'lodash/zip';
 import getObjectValue from 'lodash/get';
 import set from 'lodash/set';
 import groupBy from 'lodash/groupBy';
+import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
@@ -216,6 +217,17 @@ function reducer(draft, action) {
     }
     case 'PLUGINS_LOADED': {
       const {stateVar, data} = action.payload;
+
+      // post processing for the specific state var
+      switch (stateVar) {
+        case 'logicRules': {
+          for (const rule of data) {
+            rule._logicType = rule.isAdvanced ? 'simple' : 'advanced';
+          }
+          break;
+        }
+      }
+
       draft[stateVar] = data;
       break;
     }
@@ -491,19 +503,60 @@ function reducer(draft, action) {
       const {
         form: {url},
       } = draft;
-      const ruleOverrides = action.payload;
 
-      draft.logicRules.push({
+      const newRule = {
         ...EMPTY_RULE,
-        ...ruleOverrides,
         form: url,
         _generatedId: getUniqueRandomString(),
-      });
+      };
+
+      // append to the end if no explicit order is given
+      if (!newRule.order) {
+        newRule.order = draft.logicRules.length;
+      }
+
+      draft.logicRules.push(newRule);
       break;
     }
     case 'CHANGED_RULE': {
       const {index, name, value} = action.payload;
+      const oldValue = draft.logicRules[index][name];
       draft.logicRules[index][name] = value;
+
+      switch (name) {
+        // check if the type was set & if we need to update the advanced logic flag:
+        case '_logicType': {
+          const isAdvanced = value === 'advanced';
+          draft.logicRules[index].isAdvanced = isAdvanced;
+          break;
+        }
+        // if the order was changed, we need to update all the rules before/after it
+        case 'order': {
+          const changedRule = draft.logicRules[index];
+          if (value > oldValue) {
+            // moving down -> move the rules below one level lup
+            const affectedRules = draft.logicRules.filter(
+              rule => rule.order <= value && rule.order > oldValue && rule != changedRule
+            );
+            for (const rule of affectedRules) {
+              rule.order -= 1;
+            }
+          } else {
+            // moving up
+            const affectedRules = draft.logicRules.filter(
+              rule => rule.order >= value && rule.order < oldValue && rule != changedRule
+            );
+            for (const rule of affectedRules) {
+              rule.order += 1;
+            }
+          }
+          // finally, sort the rules explicitly by their updated order so that index
+          // references still work (sort-of). There's a known TODO to use more stable
+          // identities to look up rules in the collection, since re-arranging or even
+          // deleting them doesn't play nice with validation errors by index either.
+          draft.logicRules = sortBy(draft.logicRules, ['order']);
+        }
+      }
 
       // Remove the validation error for the updated field
       // If there are multiple actions with errors in one rule, updating it will clear the error also for the
@@ -524,13 +577,21 @@ function reducer(draft, action) {
     }
     case 'DELETED_RULE': {
       const {index} = action.payload;
-      const ruleUuid = draft.logicRules[index].uuid;
+      const {uuid: ruleUuid, order: ruleOrder} = draft.logicRules[index];
       draft.logicRulesToDelete.push(ruleUuid);
 
       // delete object from state
       const updatedRules = [...draft.logicRules];
       updatedRules.splice(index, 1);
       draft.logicRules = updatedRules;
+
+      // update the rules following this rule
+      draft.logicRules.filter(rule => rule.order > ruleOrder).forEach(rule => (rule.order -= 1));
+
+      // delete the validation errors (if present)
+      draft.validationErrors = draft.validationErrors.filter(
+        ([key]) => !key.startsWith(`logicRules.${index}`)
+      );
       break;
     }
     case 'RULES_SAVED': {
@@ -1325,7 +1386,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
               logicRules={state.logicRules}
               onChange={onRuleChange}
               onDelete={index => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
-              onAdd={ruleOverrides => dispatch({type: 'ADD_RULE', payload: ruleOverrides})}
+              onAdd={() => dispatch({type: 'ADD_RULE'})}
             />
           </TabPanel>
 
