@@ -431,7 +431,7 @@ class Submission(models.Model):
         # circular import
         from .submission_value_variable import SubmissionValueVariablesState
 
-        self._variables_state = SubmissionValueVariablesState.get_state(self)
+        self._variables_state = SubmissionValueVariablesState(submission=self)
         return self._variables_state
 
     def load_execution_state(self) -> SubmissionState:
