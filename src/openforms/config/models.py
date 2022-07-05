@@ -329,6 +329,22 @@ class GlobalConfiguration(SingletonModel):
         null=True,
         help_text=_("The 'idsite' of the website you're tracking in Piwik."),
     )
+    piwik_pro_url = models.CharField(
+        _("Piwik PRO server URL"),
+        max_length=255,
+        blank=True,
+        help_text=_(
+            "The base URL of your Piwik PRO server, e.g. 'https://your-instance-name.piwik.pro/'."
+        ),
+    )
+    piwik_pro_site_id = models.UUIDField(
+        _("Piwik PRO site ID"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "The 'idsite' of the website you're tracking in Piwik PRO. https://help.piwik.pro/support/questions/find-website-id/"
+        ),
+    )
     siteimprove_id = models.CharField(
         _("SiteImprove ID"),
         max_length=10,
@@ -496,6 +512,10 @@ class GlobalConfiguration(SingletonModel):
     @property
     def piwik_enabled(self) -> bool:
         return self.piwik_url and self.piwik_site_id
+
+    @property
+    def piwik_pro_enabled(self) -> bool:
+        return self.piwik_pro_url and self.piwik_pro_site_id
 
     @property
     def siteimprove_enabled(self) -> bool:

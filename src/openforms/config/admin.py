@@ -94,6 +94,12 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
             },
         ),
         (
+            _("Analytics: Piwik PRO"),
+            {
+                "fields": ("piwik_pro_url", "piwik_pro_site_id"),
+            },
+        ),
+        (
             _("Privacy & cookies"),
             {
                 "fields": (

@@ -33,6 +33,10 @@ Matomo integration relies on ``window._paq`` being available.
 
 Google Analytics uses the ``window.ga`` global variable.
 
+**Piwik PRO**
+
+Piwik PRO uses the ``_paq`` global variable.
+
 Adding other providers
 ======================
 
