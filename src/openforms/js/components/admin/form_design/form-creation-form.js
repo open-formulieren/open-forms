@@ -57,7 +57,7 @@ import {
   replaceComponentKeyInLogic,
   getUniqueKey,
 } from './utils';
-import {updateFormVariables} from './variables/utils';
+import {getEmptyValue, updateFormVariables} from './variables/utils';
 import VariablesEditor from './variables/VariablesEditor';
 import {EMPTY_VARIABLE} from './variables/constants';
 
@@ -356,6 +356,11 @@ function reducer(draft, action) {
           originalComp.key,
           schema.key
         );
+      }
+
+      // Issue #1729 - Workaround for bug in FormIO
+      if (mutationType === 'changed' && !schema.multiple && Array.isArray(schema.defaultValue)) {
+        schema.defaultValue = getEmptyValue(schema);
       }
 
       // Check if the formVariables need updating

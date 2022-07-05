@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import {Utils as FormioUtils} from 'formiojs';
 
-import {COMPONENT_DATATYPES, VARIABLE_SOURCES} from './constants';
+import {COMPONENT_DATATYPES, COMPONENT_EMPTY_VALUE, VARIABLE_SOURCES} from './constants';
 
 const getComponentDatatype = component => {
   if (component.multiple) {
@@ -78,4 +78,9 @@ const updateFormVariables = (
   return updatedFormVariables;
 };
 
-export {updateFormVariables};
+const getEmptyValue = component => {
+  const dataType = COMPONENT_DATATYPES[component.type] || 'string';
+  return COMPONENT_EMPTY_VALUE[dataType];
+};
+
+export {updateFormVariables, getEmptyValue};

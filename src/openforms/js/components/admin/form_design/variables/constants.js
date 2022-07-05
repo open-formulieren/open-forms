@@ -3,13 +3,23 @@ import {defineMessage} from 'react-intl';
 const COMPONENT_DATATYPES = {
   date: 'datetime',
   time: 'time',
-  file: 'object',
+  file: 'array',
   currency: 'float',
   number: 'float',
   checkbox: 'boolean',
   selectboxes: 'object',
   npFamilyMembers: 'object',
   map: 'array',
+};
+
+const COMPONENT_EMPTY_VALUE = {
+  object: {},
+  boolean: false,
+  array: [],
+  string: '',
+  float: null,
+  datetime: '',
+  time: '',
 };
 
 const DATATYPES_CHOICES = [
@@ -89,4 +99,10 @@ const EMPTY_VARIABLE = {
   initial_value: '',
 };
 
-export {COMPONENT_DATATYPES, VARIABLE_SOURCES, DATATYPES_CHOICES, EMPTY_VARIABLE};
+export {
+  COMPONENT_DATATYPES,
+  VARIABLE_SOURCES,
+  DATATYPES_CHOICES,
+  EMPTY_VARIABLE,
+  COMPONENT_EMPTY_VALUE,
+};
