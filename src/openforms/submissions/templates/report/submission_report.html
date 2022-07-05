@@ -18,6 +18,12 @@
         :root {{% for token, value in design_tokens.items %}
           {{ token }}: {{ value }};{% endfor %}
         }
+
+        {% if config.logo %}
+        .header {
+            --of-header-logo-url: url('{{ config.logo.url }}');
+        }
+        {% endif %}
         </style>
     </head>
 
@@ -25,7 +31,10 @@
 
         <section class="sheet padding-10mm">
             <header class="header {% if config.logo %}header--has-logo{% endif %}">
-                {% if config.logo %}<img class="header__logo" src="{{ config.logo.url }}" />{% endif %}
+                <span
+                    class="header__logo"
+                    {% if config.logo %}role="img"{% endif %}
+                ></span>
             </header>
 
             <h1 class="title">{{ report.form.name }}</h1>
