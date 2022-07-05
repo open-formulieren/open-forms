@@ -9,6 +9,8 @@ import sentry_sdk
 from celery.schedules import crontab
 from corsheaders.defaults import default_headers as default_cors_headers
 
+from csp_post_processor.constants import NONCE_HTTP_HEADER
+
 from .utils import Filesize, config, get_sentry_integrations
 
 # Build paths inside the project, so further paths can be defined relative to
@@ -671,8 +673,10 @@ CORS_ALLOWED_ORIGIN_REGEXES = config(
     "CORS_ALLOWED_ORIGIN_REGEXES", split=True, default=[]
 )
 # Authorization is included in default_cors_headers
-CORS_ALLOW_HEADERS = list(default_cors_headers) + config(
-    "CORS_EXTRA_ALLOW_HEADERS", split=True, default=[]
+CORS_ALLOW_HEADERS = (
+    list(default_cors_headers)
+    + [NONCE_HTTP_HEADER]
+    + config("CORS_EXTRA_ALLOW_HEADERS", split=True, default=[])
 )
 CORS_EXPOSE_HEADERS = ["X-Session-Expires-In"]
 CORS_ALLOW_CREDENTIALS = True  # required to send cross domain cookies
