@@ -210,13 +210,12 @@ class FormStepSubmissionTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
             submission=self.submission
         )
 
-        self.assertEqual(2, submission_variables.count())
+        # The submission variable for 'foo' has been deleted
+        self.assertEqual(1, submission_variables.count())
 
-        submission_variable1 = submission_variables.get(key="foo")
-        submission_variable2 = submission_variables.get(key="modified")
+        submission_variable = submission_variables.get(key="modified")
 
-        self.assertEqual("", submission_variable1.value)
-        self.assertEqual("data", submission_variable2.value)
+        self.assertEqual("data", submission_variable.value)
 
     def test_data_not_underscored(self):
         form_definition = FormDefinitionFactory.create(

@@ -258,11 +258,11 @@ class SubmissionTests(VariablesTestMixin, TestCase):
         submission_step.refresh_from_db()
         submission_step_2.refresh_from_db()
 
-        self.assertEqual(submission_step.data["textFieldSensitive"], "")
+        self.assertNotIn("textFieldSensitive", submission_step.data)
         self.assertEqual(
             submission_step.data["textFieldNotSensitive"], "this is not sensitive"
         )
-        self.assertEqual(submission_step_2.data["textFieldSensitive2"], "")
+        self.assertNotIn("textFieldSensitive2", submission_step_2.data)
         self.assertEqual(
             submission_step_2.data["textFieldNotSensitive2"], "this is not sensitive"
         )
