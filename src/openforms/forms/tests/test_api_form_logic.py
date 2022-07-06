@@ -1100,6 +1100,68 @@ class FormLogicAPITests(APITestCase):
         )
         self.assertEqual("blank", response.json()["invalidParams"][0]["code"])
 
+    def test_create_form_logic_with_trigger_from_step(self):
+        user = SuperUserFactory.create(username="test", password="test")
+        self.client.force_authenticate(user=user)
+        form1, form2 = FormFactory.create_batch(2)
+        step1 = FormStepFactory.create(
+            form=form1,
+            form_definition__configuration={
+                "components": [{"type": "textfield", "key": "c1"}]
+            },
+        )
+        unrelated_step = FormStepFactory.create(
+            form=form2,
+            form_definition__configuration={
+                "components": [{"type": "textfield", "key": "c2"}]
+            },
+        )
+        _form_logic_data = {
+            "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form1.uuid})}",
+            "order": 0,
+            "json_logic_trigger": {
+                "==": [
+                    {"var": "c1"},
+                    "hide step 1",
+                ]
+            },
+            "actions": [],
+        }
+
+        with self.subTest("Create logic rule with trigger_from_step set"):
+            step1_path = reverse(
+                "api:form-steps-detail",
+                kwargs={"form_uuid_or_slug": form1.uuid, "uuid": step1.uuid},
+            )
+            data = {
+                **_form_logic_data,
+                "triggerFromStep": f"http://testserver{step1_path}",
+            }
+
+            response = self.client.post(reverse("api:form-logics-list"), data=data)
+
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        with self.subTest(
+            "Reject logic rule with trigger_from_step belonging to another form"
+        ):
+            step2_path = reverse(
+                "api:form-steps-detail",
+                kwargs={"form_uuid_or_slug": form2.uuid, "uuid": unrelated_step.uuid},
+            )
+            data = {
+                **_form_logic_data,
+                "triggerFromStep": f"http://testserver{step2_path}",
+            }
+
+            response = self.client.post(reverse("api:form-logics-list"), data=data)
+
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertEqual(
+                response.data["invalid_params"][0]["name"], "triggerFromStep"
+            )
+            self.assertEqual(response.data["invalid_params"][0]["code"], "invalid")
+
 
 def copy_func(f):
     """From https://stackoverflow.com/a/13503277"""
