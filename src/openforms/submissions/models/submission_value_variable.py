@@ -18,10 +18,17 @@ if TYPE_CHECKING:  # pragma: nocover
 
 @dataclass
 class SubmissionValueVariablesState:
-    variables: Dict[str, "SubmissionValueVariable"]
+    submission: "Submission"
+    _variables: Dict[str, "SubmissionValueVariable"] = None
 
     def __init__(self, submission: "Submission"):
-        self.variables = self.collect_variables(submission)
+        self.submission = submission
+
+    @property
+    def variables(self):
+        if not self._variables:
+            self._variables = self.collect_variables(self.submission)
+        return self._variables
 
     @property
     def saved_variables(self):

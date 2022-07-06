@@ -119,8 +119,7 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
         # 3. Load submission state: Retrieve formsteps,
         # 4. Load submission state: Retrieve submission steps
         # 6.-10. Delete Submission variables of not-applicable step
-        # 11.-12. Reload submission state
-        with self.assertNumQueries(12):
+        with self.assertNumQueries(10):
             evaluate_form_logic(submission, submission_step2, data)
 
     def test_update_step_data(self):
@@ -213,7 +212,7 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
         # 1. Get the submission variables that are already in the database
         # 2. Get the form variables for which there is no corresponding submission variable in the database
         with self.assertNumQueries(2):
-            SubmissionValueVariablesState(submission)
+            SubmissionValueVariablesState(submission).variables
 
     def test_get_variables_state_two_submission_variables(self):
         form = FormFactory.create()
@@ -253,7 +252,7 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
         # 1. Get the submission variables that are already in the database
         # 2. Get the form variables for which there is no corresponding submission variable in the database
         with self.assertNumQueries(2):
-            SubmissionValueVariablesState(submission)
+            SubmissionValueVariablesState(submission).variables
 
     def test_get_variables_state_all_saved_submission_variables(self):
         form = FormFactory.create()
@@ -294,7 +293,7 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
         # 1. Get the submission variables that are already in the database
         # 2. Get the form variables for which there is no corresponding submission variable in the database
         with self.assertNumQueries(2):
-            SubmissionValueVariablesState(submission)
+            SubmissionValueVariablesState(submission).variables
 
     def test_value_variables_state_get_data(self):
         form = FormFactory.create()
@@ -331,6 +330,8 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
         )
 
         state = SubmissionValueVariablesState(submission)
+        # Load variables
+        state.variables
 
         # The queries should have been done in the get_state function
         with self.assertNumQueries(0):
