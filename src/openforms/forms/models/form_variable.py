@@ -11,6 +11,7 @@ from glom import Path, glom
 
 from openforms.formio.utils import (
     get_component_datatype,
+    get_component_default_value,
     is_layout_component,
     iter_components,
 )
@@ -86,7 +87,7 @@ class FormVariableManager(models.Manager):
                     is_sensitive_data=component.get("isSensitiveData", False),
                     source=FormVariableSources.component,
                     data_type=get_component_datatype(component),
-                    initial_value=component.get("defaultValue"),
+                    initial_value=get_component_default_value(component),
                 )
             )
 

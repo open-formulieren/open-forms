@@ -360,6 +360,12 @@ function reducer(draft, action) {
 
       // Issue #1729 - Workaround for bug in FormIO
       if (mutationType === 'changed' && !schema.multiple && Array.isArray(schema.defaultValue)) {
+        // Formio has a getter for the:
+        // - emptyValue: https://github.com/formio/formio.js/blob/4.13.x/src/components/textfield/TextField.js#L58
+        // - defaultValue:
+        //    https://github.com/formio/formio.js/blob/4.13.x/src/components/_classes/component/Component.js#L2302
+        // By setting the defaultValue to null, then the component will be populated with the emptyValue
+        // in the form data.
         schema.defaultValue = null;
       }
 

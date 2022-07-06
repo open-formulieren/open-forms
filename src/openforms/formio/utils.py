@@ -81,6 +81,15 @@ def get_component_datatype(component):
     return COMPONENT_DATATYPES.get(component_type, "string")
 
 
+def get_component_default_value(component):
+    # Formio has a getter for the:
+    # - emptyValue: https://github.com/formio/formio.js/blob/4.13.x/src/components/textfield/TextField.js#L58
+    # - defaultValue:
+    #    https://github.com/formio/formio.js/blob/4.13.x/src/components/_classes/component/Component.js#L2302
+    # If the defaultValue is empty, then the field will be populated with the emptyValue in the form data.
+    return component.get("defaultValue")
+
+
 def mimetype_allowed(mime_type: str, allowed_mime_types: List[str]) -> bool:
     """
     Test if the file mime type passes the allowed_mime_types Formio configuration.

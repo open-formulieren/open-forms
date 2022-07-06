@@ -25,20 +25,20 @@ class SubmissionValueVariablesState:
         self.submission = submission
 
     @property
-    def variables(self):
+    def variables(self) -> Dict[str, "SubmissionValueVariable"]:
         if not self._variables:
             self._variables = self.collect_variables(self.submission)
         return self._variables
 
     @property
-    def saved_variables(self):
+    def saved_variables(self) -> Dict[str, "SubmissionValueVariable"]:
         return {
             variable_key: variable
             for variable_key, variable in self.variables.items()
             if variable.pk
         }
 
-    def get_variable(self, key: str) -> Optional["SubmissionValueVariable"]:
+    def get_variable(self, key: str) -> "SubmissionValueVariable":
         return self.variables[key]
 
     def get_data(
@@ -84,7 +84,7 @@ class SubmissionValueVariablesState:
             and variable.form_variable.form_definition == form_definition
         }
 
-    def get_variables_unrelated_to_a_step(self):
+    def get_variables_unrelated_to_a_step(self) -> Dict[str, "SubmissionValueVariable"]:
         return {
             variable_key: variable
             for variable_key, variable in self.variables.items()
@@ -128,6 +128,11 @@ class SubmissionValueVariablesState:
             **unsaved_value_variables,
         }
 
+    def remove_variables(self, keys: list) -> None:
+        for key in keys:
+            if key in self._variables:
+                del self._variables[key]
+
 
 class SubmissionValueVariableManager(models.Manager):
     def bulk_create_or_update_from_data(
@@ -151,14 +156,14 @@ class SubmissionValueVariableManager(models.Manager):
 
         variables_to_create = []
         variables_to_update = []
-        variables_ids_to_delete = []
+        variables_keys_to_delete = []
         for key, variable in submission_variables.items():
             try:
                 variable.value = glom(data, key)
             except PathAccessError:
                 if update_missing_variables:
                     if variable.pk:
-                        variables_ids_to_delete.append(variable.id)
+                        variables_keys_to_delete.append(variable.key)
                     else:
                         variable.value = variable.form_variable.get_initial_value()
                     continue
@@ -170,12 +175,14 @@ class SubmissionValueVariableManager(models.Manager):
 
         self.bulk_create(variables_to_create)
         self.bulk_update(variables_to_update, fields=["value"])
-        self.filter(id__in=variables_ids_to_delete).delete()
+        self.filter(submission=submission, key__in=variables_keys_to_delete).delete()
 
         # Variables that are deleted are not automatically updated in the state
         # (i.e. they remain present with their pk)
-        if variables_ids_to_delete:
-            submission.load_submission_value_variables_state(refresh=True)
+        if variables_keys_to_delete:
+            submission_value_variables_state.remove_variables(
+                keys=variables_keys_to_delete
+            )
 
 
 class SubmissionValueVariable(models.Model):

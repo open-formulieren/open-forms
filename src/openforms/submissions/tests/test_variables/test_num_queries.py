@@ -118,7 +118,12 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
         # 2. Retrieve all logic rules related to a form
         # 3. Load submission state: Retrieve formsteps,
         # 4. Load submission state: Retrieve submission steps
-        # 6.-10. Delete Submission variables of not-applicable step
+        # 5. Retrieve the submission variables to be deleted
+        # 6. Retrieve the submission attachment files to be deleted
+        # 7. SAVEPOINT
+        # 8. Delete submission attachment files
+        # 9. RELEASE SAVEPOINT
+        # 10. Delete submission values
         with self.assertNumQueries(10):
             evaluate_form_logic(submission, submission_step2, data)
 
