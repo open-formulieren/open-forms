@@ -174,6 +174,9 @@ class SubmissionStepFactory(factory.django.DjangoModelFactory):
                 form_variable=variable,
             )
 
+        if hasattr(submission_step.submission, "_variables_state"):
+            del submission_step.submission._variables_state
+
         return submission_step
 
 
