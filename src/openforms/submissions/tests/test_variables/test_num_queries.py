@@ -1,13 +1,16 @@
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormLogicFactory,
+    FormStepFactory,
+)
 from openforms.submissions.form_logic import evaluate_form_logic
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
-from openforms.submissions.tests.form_logic.factories import FormLogicFactory
 
 from ...models.submission_value_variable import (
     SubmissionValueVariable,

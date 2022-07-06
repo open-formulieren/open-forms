@@ -3,11 +3,14 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.forms.constants import LogicActionTypes
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormLogicFactory,
+    FormStepFactory,
+)
 
 from ..factories import SubmissionFactory, SubmissionStepFactory
 from ..mixins import SubmissionsMixin, VariablesTestMixin
-from .factories import FormLogicFactory
 
 
 class SideEffectTests(VariablesTestMixin, SubmissionsMixin, APITestCase):

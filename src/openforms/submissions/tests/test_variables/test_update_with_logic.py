@@ -5,6 +5,7 @@ from rest_framework.test import APITestCase
 from openforms.forms.constants import FormVariableDataTypes, FormVariableSources
 from openforms.forms.tests.factories import (
     FormFactory,
+    FormLogicFactory,
     FormStepFactory,
     FormVariableFactory,
 )
@@ -12,7 +13,6 @@ from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ...models import SubmissionValueVariable
 from ..factories import SubmissionFactory, SubmissionStepFactory
-from ..form_logic.factories import FormLogicFactory
 from ..mixins import SubmissionsMixin
 
 

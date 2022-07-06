@@ -6,7 +6,11 @@ from rest_framework.reverse import reverse
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.models import FormVariable
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormLogicFactory,
+    FormStepFactory,
+)
 
 from ...rendering import Renderer, RenderModes
 from ...rendering.nodes import FormNode, SubmissionStepNode
@@ -15,7 +19,6 @@ from ..factories import (
     SubmissionStepFactory,
     SubmissionValueVariableFactory,
 )
-from ..form_logic.factories import FormLogicFactory
 
 
 class FormNodeTests(TestCase):

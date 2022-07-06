@@ -3,6 +3,7 @@ from django.test import TestCase
 from openforms.forms.constants import FormVariableDataTypes, FormVariableSources
 from openforms.forms.tests.factories import (
     FormFactory,
+    FormLogicFactory,
     FormStepFactory,
     FormVariableFactory,
 )
@@ -10,7 +11,6 @@ from openforms.forms.tests.factories import (
 from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory
 from ..mixins import VariablesTestMixin
-from .factories import FormLogicFactory
 
 
 class VariableModificationTests(VariablesTestMixin, TestCase):

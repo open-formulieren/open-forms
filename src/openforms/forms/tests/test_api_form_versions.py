@@ -8,11 +8,11 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 
-from ...submissions.tests.form_logic.factories import FormLogicFactory
 from ..models import FormDefinition, FormLogic, FormStep, FormVersion
 from .factories import (
     FormDefinitionFactory,
     FormFactory,
+    FormLogicFactory,
     FormStepFactory,
     FormVersionFactory,
 )
