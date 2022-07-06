@@ -3,11 +3,16 @@ from django.utils.translation import ugettext_lazy as _
 
 from ordered_model.serializers import OrderedModelSerializer
 from rest_framework import serializers
+from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
 from openforms.api.utils import get_from_serializer_data_or_instance
 
-from ....models import FormLogic
-from ...validators import JsonLogicTriggerValidator, JsonLogicValidator
+from ....models import FormLogic, FormStep
+from ...validators import (
+    FormLogicTriggerFromStepFormValidator,
+    JsonLogicTriggerValidator,
+    JsonLogicValidator,
+)
 from .action_serializers import LogicComponentActionSerializer
 
 
@@ -43,6 +48,20 @@ class FormLogicBaseSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
+    trigger_from_step = NestedHyperlinkedRelatedField(
+        required=False,
+        allow_null=True,
+        queryset=FormStep.objects,
+        view_name="api:form-steps-detail",
+        lookup_field="uuid",
+        parent_lookup_kwargs={"form_uuid_or_slug": "form__uuid"},
+        label=_("trigger from step"),
+        help_text=_(
+            "When set, the trigger will only be checked once the specified step is reached. "
+            "This means the rule will never trigger for steps before the specified trigger step. "
+            "If unset, the trigger will always be checked."
+        ),
+    )
     actions = LogicComponentActionSerializer(
         many=True,
         label=_("Actions"),
@@ -55,6 +74,7 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
         model = FormLogic
         fields = FormLogicBaseSerializer.Meta.fields + (
             "order",
+            "trigger_from_step",
             "actions",
             "is_advanced",
         )
@@ -74,6 +94,9 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
                 ),
             },
         }
+        validators = FormLogicBaseSerializer.Meta.validators + [
+            FormLogicTriggerFromStepFormValidator()
+        ]
 
     def save(self, **kwargs):
         """

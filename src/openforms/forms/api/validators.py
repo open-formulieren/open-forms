@@ -193,3 +193,27 @@ class FormIOComponentsValidator:
             validator = formio_validators_registry[component_type]
             # may raise a :class:`django.core.exceptions.ValidationError`
             validator(component)
+
+
+class FormLogicTriggerFromStepFormValidator:
+    requires_context = True
+
+    def __call__(self, attrs: dict, serializer: serializers.Serializer):
+        trigger_from_step = get_from_serializer_data_or_instance(
+            "trigger_from_step", attrs, serializer
+        )
+        form = get_from_serializer_data_or_instance("form", attrs, serializer)
+        if not form or not trigger_from_step:
+            return
+
+        if trigger_from_step.form != form:
+            raise serializers.ValidationError(
+                {
+                    "trigger_from_step": serializers.ErrorDetail(
+                        _(
+                            "You must specify a step that belongs to the same form as the logic rule itself."
+                        ),
+                        code="invalid",
+                    )
+                }
+            )
