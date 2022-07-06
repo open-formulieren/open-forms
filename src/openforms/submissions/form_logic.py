@@ -86,14 +86,28 @@ def evaluate_form_logic(
     # on that.
     rules = getattr(submission.form, "_cached_logic_rules", None)
     if rules is None:
-        rules = FormLogic.objects.filter(form=submission.form)
+        rules = FormLogic.objects.select_related("trigger_from_step").filter(
+            form=submission.form
+        )
         submission.form._cached_logic_rules = rules
 
     submission_state = submission.load_execution_state()
+    step_index = submission_state.form_steps.index(step.form_step)
 
     updated_step_data = deepcopy(step.data)
     updated_submission_data = deepcopy(data)
     for rule in rules:
+        # only evaluate a logic rule if it either:
+        # - is not limited to a particular trigger point/step
+        # - is limited to a particular trigger point/step and the current submission step
+        #   is equal to or later than the trigger point
+        if rule.trigger_from_step:
+            trigger_from_index = submission_state.form_steps.index(
+                rule.trigger_from_step
+            )
+            if step_index < trigger_from_index:
+                continue
+
         if jsonLogic(rule.json_logic_trigger, updated_submission_data):
             for action in rule.actions:
                 action_details = action["action"]
