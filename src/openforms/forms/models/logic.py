@@ -1,5 +1,6 @@
 import uuid as _uuid
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -12,6 +13,18 @@ class FormLogic(OrderedModel):
         to="forms.Form",
         on_delete=models.CASCADE,
         help_text=_("Form to which the JSON logic applies."),
+    )
+    trigger_from_step = models.ForeignKey(
+        "FormStep",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_("trigger from step"),
+        help_text=_(
+            "When set, the trigger will only be checked once the specified step is reached. "
+            "This means the rule will never trigger for steps before the specified trigger step. "
+            "If unset, the trigger will always be checked."
+        ),
     )
     json_logic_trigger = models.JSONField(
         verbose_name=_("JSON logic"),
@@ -34,3 +47,18 @@ class FormLogic(OrderedModel):
     class Meta(OrderedModel.Meta):
         verbose_name = _("form logic")
         verbose_name_plural = _("form logic rules")
+
+    def clean(self):
+        super().clean()
+
+        if (
+            self.trigger_from_step
+            and self.form
+            and self.trigger_from_step.form != self.form
+        ):
+            raise ValidationError(
+                _(
+                    "You must specify a step that belongs to the same form as the logic rule itself."
+                ),
+                code="invalid",
+            )
