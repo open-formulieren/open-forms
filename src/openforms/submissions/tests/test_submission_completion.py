@@ -24,6 +24,7 @@ from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttrib
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.tests.factories import (
     FormFactory,
+    FormLogicFactory,
     FormPriceLogicFactory,
     FormStepFactory,
     FormVariableFactory,
@@ -32,7 +33,6 @@ from openforms.forms.tests.factories import (
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..models import SubmissionStep
 from .factories import SubmissionFactory, SubmissionStepFactory
-from .form_logic.factories import FormLogicFactory
 from .mixins import SubmissionsMixin, VariablesTestMixin
 
 

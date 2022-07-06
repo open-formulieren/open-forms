@@ -15,7 +15,7 @@ from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
 from openforms.config.models import GlobalConfiguration, RichTextColor
-from openforms.submissions.tests.form_logic.factories import FormLogicFactory
+from openforms.forms.tests.factories import FormLogicFactory
 from openforms.tests.utils import disable_2fa
 from openforms.utils.admin import SubmitActions
 

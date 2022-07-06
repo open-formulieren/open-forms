@@ -13,9 +13,9 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APITransactionTestCase
 
 from openforms.accounts.tests.factories import SuperUserFactory
-from openforms.forms.models import FormLogic
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
-from openforms.submissions.tests.form_logic.factories import FormLogicFactory
+
+from ..models import FormLogic
+from .factories import FormFactory, FormLogicFactory, FormStepFactory
 
 
 class FormLogicAPITests(APITestCase):

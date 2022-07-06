@@ -113,6 +113,14 @@ class FormVersionFactory(factory.django.DjangoModelFactory):
         obj.save()
 
 
+class FormLogicFactory(factory.django.DjangoModelFactory):
+    json_logic_trigger = {"==": [{"var": "test-key"}, 1]}
+    actions = [{"action": {"type": "disable-next"}}]
+
+    class Meta:
+        model = "forms.FormLogic"
+
+
 class FormPriceLogicFactory(factory.django.DjangoModelFactory):
     form = factory.SubFactory(FormFactory)
     json_logic_trigger = {"==": [{"var": "test-key"}, 1]}
