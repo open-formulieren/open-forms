@@ -21,11 +21,6 @@ def create_form_variables_for_form(apps, schema_editor):
         FormVariable.objects.create_for_form(form)
 
 
-def reverse_operation(apps, schema_editor):
-    # Nothing to do
-    pass
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -33,5 +28,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(create_form_variables_for_form, reverse_operation),
+        migrations.RunPython(create_form_variables_for_form, migrations.RunPython.noop),
     ]

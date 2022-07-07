@@ -21,7 +21,7 @@ class AddFormVariablesTests(TestMigrations):
             configuration={
                 "components": [
                     {"type": "textfield", "key": "var1"},
-                    {"type": "textfield", "key": "var2"},
+                    {"type": "number", "key": "var2"},
                 ]
             },
         )
@@ -33,8 +33,8 @@ class AddFormVariablesTests(TestMigrations):
             slug="definition2",
             configuration={
                 "components": [
-                    {"type": "textfield", "key": "var3"},
-                    {"type": "textfield", "key": "var4"},
+                    {"type": "selectboxes", "key": "var3"},
+                    {"type": "checkbox", "key": "var4"},
                 ]
             },
         )
@@ -81,5 +81,12 @@ class AddFormVariablesTests(TestMigrations):
             form__id=self.form_with_vars_id
         )
 
-        self.assertEqual(1, old_form_component_vars.count())
-        self.assertEqual(4, new_form_component_vars.count())
+        self.assertEqual(1, old_form_component_vars.count())  # Was already present
+        self.assertEqual(4, new_form_component_vars.count())  # Created by the migration
+
+        var1 = new_form_component_vars.get(key="var1")
+        self.assertEqual("string", var1.data_type)
+        self.assertEqual("component", var1.source)
+        self.assertEqual("float", new_form_component_vars.get(key="var2").data_type)
+        self.assertEqual("object", new_form_component_vars.get(key="var3").data_type)
+        self.assertEqual("boolean", new_form_component_vars.get(key="var4").data_type)
