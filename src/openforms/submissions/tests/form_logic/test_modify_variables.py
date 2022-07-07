@@ -38,7 +38,7 @@ class VariableModificationTests(VariablesTestMixin, TestCase):
             form=form,
             key="nTotalBoxes",
             source=FormVariableSources.user_defined,
-            data_type=FormVariableDataTypes.int,
+            data_type=FormVariableDataTypes.float,
             form_definition=step2.form_definition,
         )
 
@@ -117,7 +117,7 @@ class VariableModificationTests(VariablesTestMixin, TestCase):
             form=form,
             key="nTotalBoxes",
             source=FormVariableSources.user_defined,
-            data_type=FormVariableDataTypes.int,
+            data_type=FormVariableDataTypes.float,
             form_definition=step1.form_definition,
         )
 
@@ -128,13 +128,13 @@ class VariableModificationTests(VariablesTestMixin, TestCase):
                     {
                         "!=": [
                             {"var": "nLargeBoxes"},
-                            "",
+                            None,
                         ]
                     },
                     {
                         "!=": [
                             {"var": "nGiganticBoxes"},
-                            "",
+                            None,
                         ]
                     },
                 ]
@@ -194,7 +194,7 @@ class VariableModificationTests(VariablesTestMixin, TestCase):
             form=form,
             key="nTotalBoxes",
             source=FormVariableSources.user_defined,
-            data_type=FormVariableDataTypes.int,
+            data_type=FormVariableDataTypes.float,
             form_definition=step1.form_definition,
         )
 

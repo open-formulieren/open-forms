@@ -57,7 +57,7 @@ import {
   replaceComponentKeyInLogic,
   getUniqueKey,
 } from './utils';
-import {getEmptyValue, updateFormVariables} from './variables/utils';
+import {updateFormVariables} from './variables/utils';
 import VariablesEditor from './variables/VariablesEditor';
 import {EMPTY_VARIABLE} from './variables/constants';
 
@@ -360,7 +360,13 @@ function reducer(draft, action) {
 
       // Issue #1729 - Workaround for bug in FormIO
       if (mutationType === 'changed' && !schema.multiple && Array.isArray(schema.defaultValue)) {
-        schema.defaultValue = getEmptyValue(schema);
+        // Formio has a getter for the:
+        // - emptyValue: https://github.com/formio/formio.js/blob/4.13.x/src/components/textfield/TextField.js#L58
+        // - defaultValue:
+        //    https://github.com/formio/formio.js/blob/4.13.x/src/components/_classes/component/Component.js#L2302
+        // By setting the defaultValue to null, then the component will be populated with the emptyValue
+        // in the form data.
+        schema.defaultValue = null;
       }
 
       // Check if the formVariables need updating

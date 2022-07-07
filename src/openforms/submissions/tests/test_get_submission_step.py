@@ -92,7 +92,7 @@ class ReadSubmissionStepTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
                     ]
                 },
             },
-            "data": {"otherField": {}},
+            "data": {},
             "isApplicable": True,
             "completed": False,
             "optional": False,
@@ -133,7 +133,7 @@ class ReadSubmissionStepTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
                     ]
                 },
             },
-            "data": {"otherField": {}},
+            "data": {},
             "isApplicable": True,
             "completed": False,
             "optional": False,
@@ -181,5 +181,5 @@ class ReadSubmissionStepTests(VariablesTestMixin, SubmissionsMixin, APITestCase)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.json()["data"],
-            {"dummy": "data", "otherField": {}},
+            {"dummy": "data"},
         )

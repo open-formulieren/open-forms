@@ -33,8 +33,9 @@ class FormVariablesTests(TestCase):
                 "Some text value", user_defined_variable.get_initial_value()
             )
 
+        # If no initial value is specified, the initial value is None
         component_variable = FormVariableFactory.create(
             source=FormVariableSources.component, data_type=FormVariableDataTypes.array
         )
         with self.subTest(part="component variable"):
-            self.assertEqual([], component_variable.get_initial_value())
+            self.assertIsNone(component_variable.get_initial_value())

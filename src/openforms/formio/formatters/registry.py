@@ -17,6 +17,6 @@ class Registry(BaseRegistry):
         return formatter(info, value, as_html=as_html)
 
 
-# Sentinel to provide the default registry. You an easily instantiate another
+# Sentinel to provide the default registry. You can easily instantiate another
 # :class:`Registry` object to use as dependency injection in tests.
 register = Registry()

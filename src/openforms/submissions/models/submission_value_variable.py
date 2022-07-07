@@ -18,41 +18,82 @@ if TYPE_CHECKING:  # pragma: nocover
 
 @dataclass
 class SubmissionValueVariablesState:
-    variables: Dict[str, "SubmissionValueVariable"]
+    submission: "Submission"
+    _variables: Dict[str, "SubmissionValueVariable"] = None
 
-    def get_variable(self, key: str) -> Optional["SubmissionValueVariable"]:
+    def __init__(self, submission: "Submission"):
+        self.submission = submission
+
+    @property
+    def variables(self) -> Dict[str, "SubmissionValueVariable"]:
+        if not self._variables:
+            self._variables = self.collect_variables(self.submission)
+        return self._variables
+
+    @property
+    def saved_variables(self) -> Dict[str, "SubmissionValueVariable"]:
+        return {
+            variable_key: variable
+            for variable_key, variable in self.variables.items()
+            if variable.pk
+        }
+
+    def get_variable(self, key: str) -> "SubmissionValueVariable":
         return self.variables[key]
 
-    def get_data(self, submission_step: Optional["SubmissionStep"] = None) -> dict:
-        submission_variables = self.variables
+    def get_data(
+        self,
+        submission_step: Optional["SubmissionStep"] = None,
+        return_unchanged_data: bool = True,
+    ) -> dict:
+        submission_variables = self.saved_variables
         if submission_step:
             submission_variables = self.get_variables_in_submission_step(
-                submission_step
+                submission_step, include_unsaved=False
             )
 
         data = {}
         for variable_key, variable in submission_variables.items():
             if (
-                variable.value != ""
-                or variable.source
-                == SubmissionValueVariableSources.sensitive_data_cleaner
+                variable.value is None
+                and variable.form_variable
+                and variable.value == variable.form_variable.initial_value
+                and not return_unchanged_data
             ):
+                continue
+
+            if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
                 glom(data, Assign(variable_key, variable.value, missing=dict))
         return data
 
     def get_variables_in_submission_step(
-        self, submission_step: "SubmissionStep"
+        self,
+        submission_step: "SubmissionStep",
+        include_unsaved=True,
     ) -> Dict[str, "SubmissionValueVariable"]:
         form_definition = submission_step.form_step.form_definition
+
+        variables = self.variables
+        if not include_unsaved:
+            variables = self.saved_variables
+
         return {
             variable_key: variable
-            for variable_key, variable in self.variables.items()
+            for variable_key, variable in variables.items()
             if variable.form_variable
             and variable.form_variable.form_definition == form_definition
         }
 
-    @classmethod
-    def get_state(cls, submission: "Submission") -> "SubmissionValueVariablesState":
+    def get_variables_unrelated_to_a_step(self) -> Dict[str, "SubmissionValueVariable"]:
+        return {
+            variable_key: variable
+            for variable_key, variable in self.variables.items()
+            if not variable.form_variable.form_definition
+        }
+
+    def collect_variables(
+        self, submission: "Submission"
+    ) -> Dict[str, "SubmissionValueVariable"]:
         # Get the SubmissionValueVariables already saved in the database
         saved_submission_value_variables = (
             submission.submissionvaluevariable_set.all().select_related(
@@ -82,15 +123,15 @@ class SubmissionValueVariablesState:
             )
             unsaved_value_variables[key] = unsaved_submission_var
 
-        return cls(
-            variables={
-                **{
-                    variable.key: variable
-                    for variable in saved_submission_value_variables
-                },
-                **unsaved_value_variables,
-            }
-        )
+        return {
+            **{variable.key: variable for variable in saved_submission_value_variables},
+            **unsaved_value_variables,
+        }
+
+    def remove_variables(self, keys: list) -> None:
+        for key in keys:
+            if key in self._variables:
+                del self._variables[key]
 
 
 class SubmissionValueVariableManager(models.Manager):
@@ -115,12 +156,17 @@ class SubmissionValueVariableManager(models.Manager):
 
         variables_to_create = []
         variables_to_update = []
+        variables_keys_to_delete = []
         for key, variable in submission_variables.items():
             try:
                 variable.value = glom(data, key)
             except PathAccessError:
                 if update_missing_variables:
-                    variable.value = variable.form_variable.get_initial_value()
+                    if variable.pk:
+                        variables_keys_to_delete.append(variable.key)
+                    else:
+                        variable.value = variable.form_variable.get_initial_value()
+                    continue
 
             if not variable.pk:
                 variables_to_create.append(variable)
@@ -129,6 +175,14 @@ class SubmissionValueVariableManager(models.Manager):
 
         self.bulk_create(variables_to_create)
         self.bulk_update(variables_to_update, fields=["value"])
+        self.filter(submission=submission, key__in=variables_keys_to_delete).delete()
+
+        # Variables that are deleted are not automatically updated in the state
+        # (i.e. they remain present with their pk)
+        if variables_keys_to_delete:
+            submission_value_variables_state.remove_variables(
+                keys=variables_keys_to_delete
+            )
 
 
 class SubmissionValueVariable(models.Model):

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import {Utils as FormioUtils} from 'formiojs';
 
-import {COMPONENT_DATATYPES, COMPONENT_EMPTY_VALUE, VARIABLE_SOURCES} from './constants';
+import {COMPONENT_DATATYPES, VARIABLE_SOURCES} from './constants';
 
 const getComponentDatatype = component => {
   if (component.multiple) {
@@ -44,7 +44,7 @@ const updateFormVariables = (
         prefillPlugin: newComponent.prefill?.plugin || '',
         prefillAttribute: newComponent.prefill?.attribute || '',
         dataType: getComponentDatatype(newComponent),
-        initialValue: newComponent.defaultValue || '',
+        initialValue: getDefaultValue(newComponent),
       });
 
       // This is the case where the key of a component has been changed
@@ -64,7 +64,7 @@ const updateFormVariables = (
           prefillPlugin: newComponent.prefill?.plugin || '',
           prefillAttribute: newComponent.prefill?.attribute || '',
           isSensitiveData: newComponent.isSensitiveData,
-          initialValue: newComponent.defaultValue || '',
+          initialValue: getDefaultValue(newComponent),
         };
       });
     }
@@ -78,9 +78,11 @@ const updateFormVariables = (
   return updatedFormVariables;
 };
 
-const getEmptyValue = component => {
-  const dataType = COMPONENT_DATATYPES[component.type] || 'string';
-  return COMPONENT_EMPTY_VALUE[dataType];
+const getDefaultValue = component => {
+  if (component.hasOwnProperty('defaultValue') && component.defaultValue !== null)
+    return component.defaultValue;
+
+  return null;
 };
 
-export {updateFormVariables, getEmptyValue};
+export {updateFormVariables};

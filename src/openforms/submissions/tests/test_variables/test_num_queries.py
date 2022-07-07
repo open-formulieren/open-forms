@@ -84,9 +84,9 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
             },
         )
 
-        form_step2_path = reverse(
+        form_step1_path = reverse(
             "api:form-steps-detail",
-            kwargs={"form_uuid_or_slug": form.uuid, "uuid": form_step2.uuid},
+            kwargs={"form_uuid_or_slug": form.uuid, "uuid": form_step1.uuid},
         )
 
         # ensure there is a submission
@@ -106,7 +106,7 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
             json_logic_trigger={"==": [{"var": "var2"}, "test2"]},
             actions=[
                 {
-                    "form_step": f"http://example.com{form_step2_path}",
+                    "form_step": f"http://example.com{form_step1_path}",  # Change the saved data of another step
                     "action": {
                         "name": "Step is not applicable",
                         "type": "step-not-applicable",
@@ -121,8 +121,13 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
         # 2. Retrieve all logic rules related to a form
         # 3. Load submission state: Retrieve formsteps,
         # 4. Load submission state: Retrieve submission steps
-        # 5. Clear data of saved not-applicable step
-        with self.assertNumQueries(5):
+        # 5. Retrieve the submission variables to be deleted
+        # 6. Retrieve the submission attachment files to be deleted
+        # 7. SAVEPOINT
+        # 8. Delete submission attachment files
+        # 9. RELEASE SAVEPOINT
+        # 10. Delete submission values
+        with self.assertNumQueries(10):
             evaluate_form_logic(submission, submission_step2, data)
 
     def test_update_step_data(self):
@@ -215,7 +220,7 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
         # 1. Get the submission variables that are already in the database
         # 2. Get the form variables for which there is no corresponding submission variable in the database
         with self.assertNumQueries(2):
-            SubmissionValueVariablesState.get_state(submission)
+            SubmissionValueVariablesState(submission).variables
 
     def test_get_variables_state_two_submission_variables(self):
         form = FormFactory.create()
@@ -255,7 +260,7 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
         # 1. Get the submission variables that are already in the database
         # 2. Get the form variables for which there is no corresponding submission variable in the database
         with self.assertNumQueries(2):
-            SubmissionValueVariablesState.get_state(submission)
+            SubmissionValueVariablesState(submission).variables
 
     def test_get_variables_state_all_saved_submission_variables(self):
         form = FormFactory.create()
@@ -296,7 +301,7 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
         # 1. Get the submission variables that are already in the database
         # 2. Get the form variables for which there is no corresponding submission variable in the database
         with self.assertNumQueries(2):
-            SubmissionValueVariablesState.get_state(submission)
+            SubmissionValueVariablesState(submission).variables
 
     def test_value_variables_state_get_data(self):
         form = FormFactory.create()
@@ -332,7 +337,9 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
             data={"var3": "test3", "var4": "test4"},
         )
 
-        state = SubmissionValueVariablesState.get_state(submission)
+        state = SubmissionValueVariablesState(submission)
+        # Load variables
+        state.variables
 
         # The queries should have been done in the get_state function
         with self.assertNumQueries(0):

@@ -11,6 +11,7 @@ from glom import Path, glom
 
 from openforms.formio.utils import (
     get_component_datatype,
+    get_component_default_value,
     is_layout_component,
     iter_components,
 )
@@ -32,17 +33,6 @@ def get_now() -> str:
 
 
 STATIC_INITIAL_VALUES = {FormVariableStaticInitialValues.now: get_now}
-
-INITIAL_VALUES = {
-    FormVariableDataTypes.string: "",
-    FormVariableDataTypes.boolean: "",
-    FormVariableDataTypes.object: {},
-    FormVariableDataTypes.array: [],
-    FormVariableDataTypes.int: "",
-    FormVariableDataTypes.float: "",
-    FormVariableDataTypes.datetime: "",
-    FormVariableDataTypes.time: "",
-}
 
 
 class FormVariableManager(models.Manager):
@@ -97,6 +87,7 @@ class FormVariableManager(models.Manager):
                     is_sensitive_data=component.get("isSensitiveData", False),
                     source=FormVariableSources.component,
                     data_type=get_component_datatype(component),
+                    initial_value=get_component_default_value(component),
                 )
             )
 
@@ -212,7 +203,7 @@ class FormVariable(models.Model):
         if self.source == FormVariableSources.static:
             return STATIC_INITIAL_VALUES[self.initial_value]()
         else:
-            return self.initial_value or INITIAL_VALUES[self.data_type]
+            return self.initial_value or None
 
     @staticmethod
     def get_default_static_variables() -> List["FormVariable"]:

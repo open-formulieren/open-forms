@@ -163,3 +163,11 @@ def persist_submission_variables_unrelated_to_a_step(
         SubmissionValueVariable.objects.bulk_create_or_update_from_data(
             filtered_data, submission
         )
+
+
+def initialise_variables_unrelated_to_a_step(submission: Submission):
+    state = submission.load_submission_value_variables_state()
+    variables = state.get_variables_unrelated_to_a_step()
+    SubmissionValueVariable.objects.bulk_create(
+        [variable for key, variable in variables.items() if not variable.pk]
+    )
