@@ -1,3 +1,4 @@
+import logging
 from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Dict
 
@@ -8,9 +9,12 @@ from openforms.formio.service import get_dynamic_configuration
 from openforms.formio.utils import get_default_values, iter_components
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
+from openforms.logging import logevent
 from openforms.prefill import JSONObject
 
 from .models.submission_step import DirtyData
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:  # pragma: nocover
     from .models import Submission, SubmissionStep
@@ -96,6 +100,7 @@ def evaluate_form_logic(
 
     updated_step_data = deepcopy(step.data)
     updated_submission_data = deepcopy(data)
+    evaluated_rules = list()
     for rule in rules:
         # only evaluate a logic rule if it either:
         # - is not limited to a particular trigger point/step
@@ -109,6 +114,7 @@ def evaluate_form_logic(
                 continue
 
         if jsonLogic(rule.json_logic_trigger, updated_submission_data):
+            evaluated_rules.append({"rule": rule, "trigger": True})
             for action in rule.actions:
                 action_details = action["action"]
                 # TODO this action will be replaced by changing the value of variables
@@ -150,8 +156,13 @@ def evaluate_form_logic(
                     variable_key = action["variable"]
                     updated_step_data[variable_key] = new_value
                     updated_submission_data = {**data, **updated_step_data}
-
+        else:
+            evaluated_rules.append({"rule": rule, "trigger": False})
     step.data = DirtyData(updated_step_data)
+    if evaluated_rules:
+        logevent.submission_logic_evaluated(
+            submission, evaluated_rules, updated_submission_data
+        )
 
     if dirty:
         # only keep the changes in the data, so that old values do not overwrite otherwise
@@ -177,7 +188,6 @@ def evaluate_form_logic(
         # only return the 'overrides'
         if data_diff:
             step.data = DirtyData(data_diff)
-
     step._form_logic_evaluated = True
 
     return configuration

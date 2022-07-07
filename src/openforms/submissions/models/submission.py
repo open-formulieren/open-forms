@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Union
 
 from django.contrib.auth.hashers import make_password as get_salted_hash
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models, transaction
 from django.template import Context, Template
 from django.urls import resolve
@@ -143,6 +144,8 @@ class Submission(models.Model):
 
     uuid = models.UUIDField(_("UUID"), unique=True, default=uuid.uuid4)
     form = models.ForeignKey("forms.Form", on_delete=models.PROTECT)
+
+    logs = GenericRelation("logging.TimelineLogProxy")
 
     # meta information
     form_url = models.URLField(
@@ -572,7 +575,6 @@ class Submission(models.Model):
             return values_state.get_data()
 
         merged_data = dict()
-
         for step in self.submissionstep_set.exclude(_data=None):
             for key, value in step.data.items():
                 if key in merged_data:

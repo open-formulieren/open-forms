@@ -3,8 +3,11 @@ from unittest.mock import patch
 from django.urls import reverse
 
 from django_webtest import WebTest
+from rest_framework import status
 
 from openforms.accounts.tests.factories import UserFactory
+from openforms.forms.models.form import FormLogic
+from openforms.logging import logevent
 from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
 
@@ -143,3 +146,72 @@ class TestSubmissionAdmin(VariablesTestMixin, WebTest):
 
         # avg log not visible
         self.assertNotContains(response, avg_log.get_message())
+
+
+class TestLogicEvaluated(VariablesTestMixin, WebTest):
+    @classmethod
+    def setUpTestData(cls):
+        cls.submission = SubmissionFactory.from_data(
+            {
+                "firstname": "foo",
+                "birthdate": "2022-06-20",
+            },
+        )
+
+    def setUp(self):
+        super().setUp()
+        self.admin_user = UserFactory.create(
+            is_superuser=True, is_staff=True, app=self.app
+        )
+        self.anonymous_user = UserFactory.create(
+            is_superuser=False, is_staff=False, app=self.app
+        )
+
+    def test_invalid_permission_view(self):
+        self.app.get(
+            reverse("admin:logs-evaluated-logic", args=(self.submission.pk,)),
+            user=self.anonymous_user,
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    def test_valid_prmission_view(self):
+        self.app.get(
+            reverse("admin:logs-evaluated-logic", args=(self.submission.pk,)),
+            user=self.admin_user,
+            status=status.HTTP_200_OK,
+        )
+
+    def test_submission_logs_evaluated_logic_view(self):
+
+        json_logic_trigger = {
+            ">": [{"date": {"var": "birthdate"}}, {"date": "2022-06-20"}]
+        }
+
+        actions = [
+            {
+                "component": "firstname",
+                "formStep": "",
+                "action": {
+                    "type": "property",
+                    "property": {"value": "disabled", "type": "bool"},
+                    "state": True,
+                },
+            }
+        ]
+
+        rule = FormLogic(
+            form=self.submission.form,
+            json_logic_trigger=json_logic_trigger,
+            actions=actions,
+        )
+        logevent.submission_logic_evaluated(
+            self.submission, [{"rule": rule, "trigger": True}]
+        )
+
+        response = self.app.get(
+            reverse("admin:logs-evaluated-logic", args=(self.submission.pk,)),
+            user=self.admin_user,
+        )
+
+        self.assertEquals(status.HTTP_200_OK, response.status_code)
+        self.assertContains(response, self.submission)

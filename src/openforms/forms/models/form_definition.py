@@ -132,7 +132,7 @@ class FormDefinition(models.Model):
         return keys
 
     def get_keys_for_email_confirmation(self) -> List[Tuple[str, str]]:
-        """Return the key and the label of fields to include in the confirmation email"""
+        """Return the key of fields to include in the confirmation email"""
         keys_for_email_confirmation = []
 
         for component in self.iter_components(recursive=True):

@@ -30,6 +30,13 @@ def iter_components(
                 )
 
 
+def flatten(configuration: dict) -> dict[str]:
+    return {
+        component["key"]: component
+        for component in iter_components(configuration, recursive=True)
+    }
+
+
 def get_default_values(configuration: dict) -> Dict[str, Any]:
     defaults = {}
 
