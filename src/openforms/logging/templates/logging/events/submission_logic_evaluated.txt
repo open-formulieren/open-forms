@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_lead submission=log.fmt_sub form=log.fmt_form %}
+   {{ lead }}: logged rule of {{ submission }} for form {{ form }}
+{% endblocktrans %}

@@ -1,12 +1,14 @@
 import logging
 import uuid
 
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.hashers import check_password as check_salted_hash
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.utils.crypto import constant_time_compare
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import RedirectView
+from django.views.generic import ListView, RedirectView
 
 from furl import furl
 from privates.views import PrivateMediaView
@@ -194,3 +196,24 @@ class SubmissionAttachmentDownloadView(LoginRequiredMixin, PrivateMediaView):
             "mimetype": submission_attachment.content_type,
         }
         return opts
+
+
+class LogsEvaluatedLogicView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+
+    template_name = "submission_logs/submission_logs.html"
+    context_object_name = "logs_activity"
+    permission_required = "submissions.view_submission"
+
+    def get_queryset(self):
+        self.id = self.kwargs["submission_id"]
+        self.submission = Submission.objects.get(id=self.id)
+        self.queryset = self.submission.logs.filter(
+            template="logging/events/submission_logic_evaluated.txt"
+        ).order_by("timestamp")
+        return super().get_queryset()
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context["opts"] = Submission._meta
+        context["original"] = self.submission
+        return context

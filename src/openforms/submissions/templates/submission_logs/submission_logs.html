@@ -1,0 +1,55 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static %}
+
+{% block extrastyle %}
+
+<link rel="stylesheet" href="{% static "bundles/core-css.css" %}">
+{{ block.super }}
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+&rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+&rsaquo; <a href="{% url 'admin:submissions_submission_change' original.pk %}">{{ original }}</a>
+&rsaquo; {% trans 'Evaluated Logic Logs'|capfirst%}
+</div>
+{% endblock %}
+
+{% block content %}
+    <h1>{% trans  "Logging" %}</h1>
+    {% block field_sets %}
+        {% if not logs_activity %}
+            {% trans "No logic rules for that submission" %}
+        
+        {% else %}
+            {% for log in logs_activity  %}
+                <fieldset class="module aligned collapse collapsed">
+                    <h2>{{ log.timestamp|date:'Y-m-d H:i:s' }} - {% trans 'Logic' %} - </h2>
+                    <h4> {% trans "Logic rules" %} </h4>
+                    <table class="logic-rules-tables">
+                        <thead>
+                            <th class="rule-width"> {% trans "Rule" %} </th>
+                            <th class="trigger-width"> {% trans "Trigger" %} </th>
+                            <th> {% trans "Action" %} </th>
+                        </thead>
+                        <tbody>
+                            {% for rule in log.extra_data.log_evaluated_rules %}
+                                    <tr>
+                                        <td>
+                                            {{ rule.source_components }}
+                                        </td>
+                                        <td>{{rule.trigger|yesno|capfirst}} </td>
+                                        <td>
+                                            {{ rule.targeted_components }}
+                                        </td>
+                                    </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </fieldset>
+            {% endfor %}
+        {% endif %}
+    {% endblock %}
+    <script src="/static/admin/js/collapse.js"></script>
+{% endblock %}
