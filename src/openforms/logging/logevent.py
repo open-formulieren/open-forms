@@ -438,7 +438,9 @@ def submission_export_list(form: "Form", user: "User"):
     )
 
 
-def submission_logic_evaluated(submission: "Submission", evaluated_rules):
+def submission_logic_evaluated(
+    submission: "Submission", evaluated_rules, updated_submission_data
+):
 
     log_evaluated_rules = []
 

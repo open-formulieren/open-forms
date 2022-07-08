@@ -1,12 +1,10 @@
 import logging
 import uuid
 
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.hashers import check_password as check_salted_hash
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.utils.crypto import constant_time_compare
-from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, RedirectView
 

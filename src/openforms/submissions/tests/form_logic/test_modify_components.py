@@ -6,7 +6,11 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.forms.constants import LogicActionTypes
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormLogicFactory,
+    FormStepFactory,
+)
 from openforms.logging.models import TimelineLogProxy
 
 from ...form_logic import evaluate_form_logic

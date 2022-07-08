@@ -30,7 +30,7 @@ def iter_components(
                 )
 
 
-def flatten(configuration: dict) -> dict[str]:
+def flatten(configuration: dict) -> Dict[str, Any]:
     return {
         component["key"]: component
         for component in iter_components(configuration, recursive=True)

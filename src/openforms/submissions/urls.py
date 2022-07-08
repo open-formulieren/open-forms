@@ -1,10 +1,6 @@
 from django.urls import path
 
-from .views import (
-    LogsEvaluatedLogicView,
-    ResumeSubmissionView,
-    SubmissionAttachmentDownloadView,
-)
+from .views import ResumeSubmissionView, SubmissionAttachmentDownloadView
 
 app_name = "submissions"
 
