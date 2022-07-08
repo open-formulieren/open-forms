@@ -15,15 +15,42 @@ const isLayoutOrContentComponent = component => {
   return FormioUtils.isLayoutComponent(component) || component.type === 'content';
 };
 
+const isInEditGrid = (component, configuration) => {
+  // Get all edit grids in the configuration
+  let editGrids = [];
+  FormioUtils.eachComponent(configuration.components, configComponent => {
+    if (configComponent.type === 'editgrid') editGrids.push(configComponent);
+  });
+
+  // Check if our component is in the editgrid
+  for (const editGrid of editGrids) {
+    const foundComponent = FormioUtils.getComponent(editGrid.components, component.key, true);
+    if (foundComponent) return true;
+  }
+
+  return false;
+};
+
 const updateFormVariables = (
   formDefinition,
   mutationType,
   newComponent,
   oldComponent,
-  currentFormVariables
+  currentFormVariables,
+  stepConfiguration
 ) => {
   // Not all components are associated with variables
-  if (isLayoutOrContentComponent(newComponent)) return currentFormVariables;
+  // editGrids ARE layout components, but we want to create a variable for them that contains all
+  // the data of the children
+  if (isLayoutOrContentComponent(newComponent) && !(newComponent.type === 'editgrid'))
+    return currentFormVariables;
+
+  // Check that this field is not a child of an editgrid component
+  // We need to use the oldComponent, because any update to the component performed in the editor has not been saved
+  // to the draft configuration yet
+  if (oldComponent && isInEditGrid(oldComponent, stepConfiguration)) {
+    return currentFormVariables;
+  }
 
   let updatedFormVariables = _.cloneDeep(currentFormVariables);
   const existingKeys = updatedFormVariables

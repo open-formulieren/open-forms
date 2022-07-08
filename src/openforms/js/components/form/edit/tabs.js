@@ -13,6 +13,7 @@ import {
   DEFAULT_VALUE,
   READ_ONLY,
   REGEX_VALIDATION,
+  REQUIRED,
 } from './options';
 
 /**
@@ -237,15 +238,7 @@ const REGISTRATION = {
 const VALIDATION_BASIC = {
   key: 'validation',
   label: 'Validation',
-  components: [
-    {
-      type: 'checkbox',
-      input: true,
-      label: 'Required',
-      tooltip: 'A required field must be filled in before the form can be submitted.',
-      key: 'validate.required',
-    },
-  ],
+  components: [REQUIRED],
 };
 
 const VALIDATION = {

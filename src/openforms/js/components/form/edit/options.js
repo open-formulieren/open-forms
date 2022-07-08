@@ -107,6 +107,14 @@ const REGEX_VALIDATION = {
   input: true,
 };
 
+const REQUIRED = {
+  type: 'checkbox',
+  input: true,
+  label: 'Required',
+  tooltip: 'A required field must be filled in before the form can be submitted.',
+  key: 'validate.required',
+};
+
 export {
   LABEL,
   KEY,
@@ -122,4 +130,5 @@ export {
   DEFAULT_VALUE,
   READ_ONLY,
   REGEX_VALIDATION,
+  REQUIRED,
 };

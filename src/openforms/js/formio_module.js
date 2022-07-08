@@ -25,6 +25,7 @@ import ColumnField from './components/form/columns';
 import WebformBuilder from './components/formio_builder/WebformBuilder';
 import ContentField from './components/form/content';
 import CurrencyField from './components/form/currency';
+import EditGrid from './components/form/editGrid';
 
 const FormIOModule = {
   components: {
@@ -54,6 +55,7 @@ const FormIOModule = {
     columns: ColumnField,
     content: ContentField,
     currency: CurrencyField,
+    editgrid: EditGrid,
   },
   builders: {
     webform: WebformBuilder,

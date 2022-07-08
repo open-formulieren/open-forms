@@ -362,13 +362,19 @@ function reducer(draft, action) {
         schema.defaultValue = null;
       }
 
+      // TODO: This could break if a reusable definition is used multiple times in a form
+      const step = draft.formSteps.filter(
+        step => step.formDefinition === formDefinition || step._generatedId === formDefinition
+      )[0];
+
       // Check if the formVariables need updating
       draft.formVariables = updateFormVariables(
         formDefinition,
         mutationType,
         schema,
         originalComp,
-        draft.formVariables
+        draft.formVariables,
+        step.configuration
       );
 
       // check if we need updates to the backendRegistrationOptions
