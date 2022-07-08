@@ -1,12 +1,29 @@
-@import '~microscope-sass/lib/responsive';
+@import '~microscope-sass/lib/bem';
 @import '~microscope-sass/lib/color';
+@import '~microscope-sass/lib/responsive';
 
 $logic-line-breakpoint: 1800px !default;
+
+$logic-trigger-border: solid 1px #eee;
+
+.logic-trigger-container {
+  padding: 1em;
+  border-bottom: $logic-trigger-border;
+
+  .logic-trigger {
+    padding: 0;
+    border-bottom: none;
+  }
+
+  :not(:last-child) {
+    margin-bottom: 1em;
+  }
+}
 
 .logic-trigger {
   display: flex;
   padding: 1em;
-  border-bottom: solid 1px #eee;
+  border-bottom: $logic-trigger-border;
 
   @include breakpoint($max: $logic-line-breakpoint) {
     flex-wrap: wrap;

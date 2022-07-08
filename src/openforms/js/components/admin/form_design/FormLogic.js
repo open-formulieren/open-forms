@@ -1,5 +1,5 @@
 import sortBy from 'lodash/sortBy';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import PropTypes from 'prop-types';
 import {useIntl, FormattedMessage} from 'react-intl';
 
@@ -10,10 +10,11 @@ import ActionSet from './logic/actions/ActionSet';
 import ButtonContainer from '../forms/ButtonContainer';
 import Fieldset from '../forms/Fieldset';
 import AdvancedTrigger from './logic/AdvancedTrigger';
+import DataPreview from './logic/DataPreview';
 import DSLEditorNode from './logic/DSLEditorNode';
 import LogicTypeSelection from './logic/LogicTypeSelection';
 import {ValidationErrorContext} from '../forms/ValidationErrors';
-import StepSelection from './StepSelection';
+import StepSelection, {useFormStep} from './StepSelection';
 
 const EMPTY_RULE = {
   uuid: '',
@@ -113,7 +114,7 @@ const Rule = ({
   _logicType,
   order,
   jsonLogicTrigger,
-  triggerFromStep,
+  triggerFromStep: triggerFromStepUrl,
   actions,
   isAdvanced,
   onChange,
@@ -121,6 +122,9 @@ const Rule = ({
   errors = {},
 }) => {
   const intl = useIntl();
+  const [displayAdvancedOptions, setDisplayAdvancedOptions] = useState(false);
+  const triggerFromStep = useFormStep(triggerFromStepUrl);
+
   const deleteConfirmMessage = intl.formatMessage({
     description: 'Logic rule deletion confirm message',
     defaultMessage: 'Are you sure you want to delete this rule?',
@@ -162,48 +166,88 @@ const Rule = ({
             onClick={() => onChange({target: {name: 'order', value: order + 1}})}
           />
         </div>
+        <FAIcon
+          icon="gear"
+          title={intl.formatMessage({
+            description: 'Logic rule advanced options icon title',
+            defaultMessage: 'Advanced options',
+          })}
+          extraClassname="icon actions__action"
+          onClick={() => setDisplayAdvancedOptions(!displayAdvancedOptions)}
+        />
         <DeleteIcon
           onConfirm={onDelete}
           message={deleteConfirmMessage}
           extraClassname="actions__action"
         />
         {isAdvanced && (
-          <FAIcon icon="brain" extraClassname="icon icon--no-pointer" title="advanced" />
+          <FAIcon
+            icon="wand-magic-sparkles"
+            extraClassname="icon icon--no-pointer"
+            title="advanced"
+          />
         )}
       </div>
 
       <div className="logic-rule__rule">
-        <TriggerComponent
-          name="jsonLogicTrigger"
-          logic={jsonLogicTrigger}
-          onChange={onChange}
-          error={errors.jsonLogicTrigger}
-        />
-
-        <div className="dsl-editor">
-          <DSLEditorNode errors={null}>
+        <div className="logic-rule__header">
+          <h3 className="logic-rule__heading">
             <FormattedMessage
-              description="'Trigger from step' label"
-              defaultMessage="Check from step: "
+              description="Logic trigger heading"
+              defaultMessage="Trigger condition"
             />
-          </DSLEditorNode>
+          </h3>
+        </div>
 
-          <DSLEditorNode errors={null}>
-            <StepSelection
-              name="triggerFromStep"
-              value={triggerFromStep || ''}
-              onChange={onChange}
-            />
-            {!triggerFromStep && (
-              <>
-                &nbsp;
+        {displayAdvancedOptions && (
+          <div className="logic-rule__advanced">
+            <div className="dsl-editor">
+              <DSLEditorNode errors={null}>
                 <FormattedMessage
-                  description="'Trigger from step' information for when unset"
-                  defaultMessage="(checked for every step)"
+                  description="'Trigger from step' label"
+                  defaultMessage="Enable from step: "
                 />
-              </>
-            )}
-          </DSLEditorNode>
+              </DSLEditorNode>
+
+              <DSLEditorNode errors={null}>
+                <StepSelection
+                  name="triggerFromStep"
+                  value={triggerFromStepUrl || ''}
+                  onChange={onChange}
+                />
+                {!triggerFromStepUrl && (
+                  <>
+                    &nbsp;
+                    <FormattedMessage
+                      description="'Trigger from step' information for when unset"
+                      defaultMessage="(checked for every step)"
+                    />
+                  </>
+                )}
+              </DSLEditorNode>
+            </div>
+
+            <DataPreview data={jsonLogicTrigger} />
+          </div>
+        )}
+
+        <div className="logic-trigger-container">
+          <TriggerComponent
+            name="jsonLogicTrigger"
+            logic={jsonLogicTrigger}
+            onChange={onChange}
+            error={errors.jsonLogicTrigger}
+          />
+
+          {triggerFromStep && (
+            <div className="logic-trigger-container__extra-condition">
+              <FormattedMessage
+                description="Additional 'trigger from step' condition"
+                defaultMessage={'and the step "{step}" has been reached'}
+                values={{step: triggerFromStep.stepName}}
+              />
+            </div>
+          )}
         </div>
 
         <ActionSet name="actions" actions={actions} onChange={onChange} errors={errors.actions} />

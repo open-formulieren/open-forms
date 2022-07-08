@@ -599,6 +599,12 @@
       "value": "Sessie vervallen"
     }
   ],
+  "DqG0YS": [
+    {
+      "type": 0,
+      "value": "Enable from step:"
+    }
+  ],
   "DxGKNm": [
     {
       "type": 0,
@@ -749,6 +755,20 @@
       "value": "Gebruikt het bevestigingsmailsjabloon zoals hier is opgegeven."
     }
   ],
+  "HuAm1K": [
+    {
+      "type": 0,
+      "value": "and the step \""
+    },
+    {
+      "type": 1,
+      "value": "step"
+    },
+    {
+      "type": 0,
+      "value": "\" has been reached"
+    }
+  ],
   "I0bgsg": [
     {
       "type": 0,
@@ -851,6 +871,12 @@
     {
       "type": 0,
       "value": "Inhoud"
+    }
+  ],
+  "KYTAJZ": [
+    {
+      "type": 0,
+      "value": "(checked for every step)"
     }
   ],
   "KjDolH": [
@@ -1495,6 +1521,12 @@
       "value": "Weet u zeker dat u deze regel wil verwijderen?"
     }
   ],
+  "eLDxD5": [
+    {
+      "type": 0,
+      "value": "Advanced options"
+    }
+  ],
   "evbysh": [
     {
       "type": 0,
@@ -1761,6 +1793,12 @@
     {
       "type": 0,
       "value": "Versie"
+    }
+  ],
+  "nHFMXn": [
+    {
+      "type": 0,
+      "value": "Trigger condition"
     }
   ],
   "naInSZ": [

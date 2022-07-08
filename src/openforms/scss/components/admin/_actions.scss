@@ -8,7 +8,8 @@
     align-items: center;
     justify-content: center;
 
-    .actions__action + .actions__action {
+    .actions__action + .actions__action,
+    .actions__action + .icon {
       margin-top: 4px;
     }
 
@@ -16,6 +17,11 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+
+      & + .actions__action,
+      & + .icon {
+        margin-top: 4px;
+      }
     }
   }
 
