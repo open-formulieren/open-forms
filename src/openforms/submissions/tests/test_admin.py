@@ -1,15 +1,17 @@
 from unittest.mock import patch
 
 from django.urls import reverse
+from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
 from rest_framework import status
 
-from openforms.accounts.tests.factories import UserFactory
-from openforms.forms.models import FormLogic
+from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
+from openforms.forms.tests.factories import FormLogicFactory
 from openforms.logging import logevent
 from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
+from openforms.tests.utils import disable_2fa
 
 from ...forms.models import FormVariable
 from ..constants import RegistrationStatuses
@@ -148,9 +150,11 @@ class TestSubmissionAdmin(VariablesTestMixin, WebTest):
         self.assertNotContains(response, avg_log.get_message())
 
 
+@disable_2fa
 class TestLogicEvaluated(VariablesTestMixin, WebTest):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
         cls.submission = SubmissionFactory.from_data(
             {
                 "firstname": "foo",
@@ -158,14 +162,8 @@ class TestLogicEvaluated(VariablesTestMixin, WebTest):
             },
         )
 
-    def setUp(self):
-        super().setUp()
-        self.admin_user = UserFactory.create(
-            is_superuser=True, is_staff=True, app=self.app
-        )
-        self.anonymous_user = UserFactory.create(
-            is_superuser=False, is_staff=False, app=self.app
-        )
+        cls.admin_user = SuperUserFactory.create()
+        cls.anonymous_user = UserFactory.create()
 
     def test_invalid_permission_view(self):
         self.app.get(
@@ -174,38 +172,30 @@ class TestLogicEvaluated(VariablesTestMixin, WebTest):
             status=status.HTTP_403_FORBIDDEN,
         )
 
-    def test_valid_prmission_view(self):
+    def test_valid_permission_view(self):
         self.app.get(
             reverse("admin:logs-evaluated-logic", args=(self.submission.pk,)),
             user=self.admin_user,
             status=status.HTTP_200_OK,
         )
 
-    def test_submission_logs_evaluated_logic_view(self):
+    def test_submission_logs_evaluated_logic_view_with_rules(self):
 
+        date_compared = "2022-06-20"
+        operator = ">"
         json_logic_trigger = {
-            ">": [{"date": {"var": "birthdate"}}, {"date": "2022-06-20"}]
+            operator: [{"date": {"var": "birthdate"}}, {"date": date_compared}]
         }
 
-        actions = [
-            {
-                "component": "firstname",
-                "formStep": "",
-                "action": {
-                    "type": "property",
-                    "property": {"value": "disabled", "type": "bool"},
-                    "state": True,
-                },
-            }
-        ]
-
-        rule = FormLogic(
+        rule = FormLogicFactory(
             form=self.submission.form,
             json_logic_trigger=json_logic_trigger,
-            actions=actions,
+            actions=[],
         )
+        merged_data = self.submission.get_merged_data()
+
         logevent.submission_logic_evaluated(
-            self.submission, [{"rule": rule, "trigger": True}]
+            self.submission, [{"rule": rule, "trigger": True}], merged_data
         )
 
         response = self.app.get(
@@ -214,4 +204,15 @@ class TestLogicEvaluated(VariablesTestMixin, WebTest):
         )
 
         self.assertEquals(status.HTTP_200_OK, response.status_code)
-        self.assertContains(response, self.submission)
+        self.assertContains(response, "birthdate")
+        self.assertContains(response, operator)
+        self.assertContains(response, date_compared)
+
+    def test_submission_logs_evaluated_logic_view_without_rule(self):
+        response = self.app.get(
+            reverse("admin:logs-evaluated-logic", args=(self.submission.pk,)),
+            user=self.admin_user,
+        )
+
+        self.assertEquals(status.HTTP_200_OK, response.status_code)
+        self.assertContains(response, _("No logic rules for that submission"))

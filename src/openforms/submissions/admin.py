@@ -18,7 +18,7 @@ from openforms.logging.logevent import (
 )
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.models import SubmissionPayment
-from openforms.submissions.views import LogsEvaluatedLogicView
+from openforms.submissions.admin_views import LogsEvaluatedLogicView
 
 from ..utils.admin import ReadOnlyAdminMixin
 from .constants import IMAGE_COMPONENTS, RegistrationStatuses
@@ -326,7 +326,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         urls = super().get_urls()
         my_urls = [
             path(
-                "<int:submission_id>/evaluated-logic-logs",
+                "<int:submission_id>/logs/logic/",
                 LogsEvaluatedLogicView.as_view(),
                 name="logs-evaluated-logic",
             )

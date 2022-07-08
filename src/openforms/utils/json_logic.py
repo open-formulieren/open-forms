@@ -22,6 +22,7 @@ class JsonLogicTest:
             jsonLogic(expression)
         except ValueError as exc:
             raise ValueError("Invalid jsonLogic expression given") from exc
+
         operator = list(expression.keys())[0]
         values = expression[operator]
 

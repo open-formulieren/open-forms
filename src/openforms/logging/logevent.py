@@ -442,6 +442,8 @@ def submission_logic_evaluated(
     submission: "Submission", evaluated_rules, updated_submission_data
 ):
 
+    if not evaluated_rules:
+        return
     log_evaluated_rules = []
 
     for evaluated_rule in evaluated_rules:

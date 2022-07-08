@@ -14,8 +14,6 @@ from openforms.prefill import JSONObject
 
 from .models.submission_step import DirtyData
 
-logger = logging.getLogger(__name__)
-
 if TYPE_CHECKING:  # pragma: nocover
     from .models import Submission, SubmissionStep
 
@@ -100,8 +98,9 @@ def evaluate_form_logic(
 
     updated_step_data = deepcopy(step.data)
     updated_submission_data = deepcopy(data)
-    evaluated_rules = list()
+    evaluated_rules = []
     for rule in rules:
+
         # only evaluate a logic rule if it either:
         # - is not limited to a particular trigger point/step
         # - is limited to a particular trigger point/step and the current submission step
@@ -112,57 +111,53 @@ def evaluate_form_logic(
             )
             if step_index < trigger_from_index:
                 continue
-
-        if jsonLogic(rule.json_logic_trigger, updated_submission_data):
-            evaluated_rules.append({"rule": rule, "trigger": True})
-            for action in rule.actions:
-                action_details = action["action"]
-                # TODO this action will be replaced by changing the value of variables
-                if action_details["type"] == LogicActionTypes.value:
-                    new_value = jsonLogic(
-                        action_details["value"], updated_submission_data
-                    )
-                    configuration = set_property_value(
-                        configuration, action["component"], "value", new_value
-                    )
-                    updated_step_data[action["component"]] = new_value
-                    updated_submission_data = {**data, **updated_step_data}
-                elif action_details["type"] == LogicActionTypes.property:
-                    property_name = action_details["property"]["value"]
-                    property_value = action_details["state"]
-                    configuration = set_property_value(
-                        configuration,
-                        action["component"],
-                        property_name,
-                        property_value,
-                    )
-                elif action_details["type"] == LogicActionTypes.disable_next:
-                    step._can_submit = False
-                elif action_details["type"] == LogicActionTypes.step_not_applicable:
-                    submission_step_to_modify = submission_state.resolve_step(
-                        action["form_step"]
-                    )
-                    submission_step_to_modify._is_applicable = False
-                    # This clears data in the database to make sure that saved steps which later become
-                    # not-applicable don't have old data
-                    submission_step_to_modify.data = {}
-                    if submission_step_to_modify == step:
-                        updated_step_data = {}
-                        step._is_applicable = False
-                elif action_details["type"] == LogicActionTypes.variable:
-                    new_value = jsonLogic(
-                        action_details["value"], updated_submission_data
-                    )
-                    variable_key = action["variable"]
-                    updated_step_data[variable_key] = new_value
-                    updated_submission_data = {**data, **updated_step_data}
-        else:
-            evaluated_rules.append({"rule": rule, "trigger": False})
+        trigger_rule = jsonLogic(rule.json_logic_trigger, updated_submission_data)
+        evaluated_rules.append({"rule": rule, "trigger": trigger_rule})
+        if not trigger_rule:
+            continue
+        for action in rule.actions:
+            action_details = action["action"]
+            # TODO this action will be replaced by changing the value of variables
+            if action_details["type"] == LogicActionTypes.value:
+                new_value = jsonLogic(action_details["value"], updated_submission_data)
+                configuration = set_property_value(
+                    configuration, action["component"], "value", new_value
+                )
+                updated_step_data[action["component"]] = new_value
+                updated_submission_data = {**data, **updated_step_data}
+            elif action_details["type"] == LogicActionTypes.property:
+                property_name = action_details["property"]["value"]
+                property_value = action_details["state"]
+                configuration = set_property_value(
+                    configuration,
+                    action["component"],
+                    property_name,
+                    property_value,
+                )
+            elif action_details["type"] == LogicActionTypes.disable_next:
+                step._can_submit = False
+            elif action_details["type"] == LogicActionTypes.step_not_applicable:
+                submission_step_to_modify = submission_state.resolve_step(
+                    action["form_step"]
+                )
+                submission_step_to_modify._is_applicable = False
+                # This clears data in the database to make sure that saved steps which later become
+                # not-applicable don't have old data
+                submission_step_to_modify.data = {}
+                if submission_step_to_modify == step:
+                    updated_step_data = {}
+                    step._is_applicable = False
+            elif action_details["type"] == LogicActionTypes.variable:
+                new_value = jsonLogic(action_details["value"], updated_submission_data)
+                variable_key = action["variable"]
+                updated_step_data[variable_key] = new_value
+                updated_submission_data = {**data, **updated_step_data}
     step.data = DirtyData(updated_step_data)
-    if evaluated_rules:
-        logevent.submission_logic_evaluated(
-            submission, evaluated_rules, updated_submission_data
-        )
+
+    # Logging the rules
+    logevent.submission_logic_evaluated(
+        submission, evaluated_rules, updated_submission_data
+    )
 
     if dirty:
         # only keep the changes in the data, so that old values do not overwrite otherwise

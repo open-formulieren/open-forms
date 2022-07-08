@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.utils.translation import gettext as _
 
-from openforms.forms.models import FormLogic
+from openforms.forms.tests.factories import FormLogicFactory
 from openforms.logging import logevent
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -9,14 +9,6 @@ from openforms.submissions.tests.mixins import VariablesTestMixin
 
 
 class EventTests(VariablesTestMixin, TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.submission = SubmissionFactory.from_data(
-            {
-                "firstname": "foo",
-                "birthdate": "2022-06-20",
-            },
-        )
 
     # test for specific events
     def test_submission_start(self):
@@ -47,58 +39,55 @@ class EventTests(VariablesTestMixin, TestCase):
 
     def test_submission_logic_evaluated(self):
 
+        submission = SubmissionFactory.from_data(
+            {
+                "firstname": "foo",
+                "birthdate": "2022-06-20",
+            },
+        )
+
         json_logic_trigger = {
             ">": [{"date": {"var": "birthdate"}}, {"date": "2022-06-20"}]
         }
 
         json_logic_trigger_2 = {"==": [{"var": "firstname"}, "bar"]}
 
-        actions = [
-            {
-                "component": "firstname",
-                "formStep": "",
-                "action": {
-                    "type": "property",
-                    "property": {"value": "disabled", "type": "bool"},
-                    "state": True,
-                },
-            }
-        ]
-
-        actions_2 = [
-            {
-                "component": "",
-                "formStep": "",
-                "action": {
-                    "type": "disable-next",
-                    "property": {"type": "", "value": ""},
-                    "value": "",
-                    "state": "",
-                },
-            }
-        ]
-
-        actual = self.submission.get_merged_data()
-        expected = {"firstname": "foo", "birthdate": "2022-06-20"}
-        rule = FormLogic(
-            form=self.submission.form,
+        rule = FormLogicFactory(
+            form=submission.form,
             json_logic_trigger=json_logic_trigger,
-            actions=actions,
+            actions=[],
         )
-        rule_2 = FormLogic(
-            form=self.submission.form,
+        rule_2 = FormLogicFactory(
+            form=submission.form,
             json_logic_trigger=json_logic_trigger_2,
-            actions=actions_2,
+            actions=[],
         )
 
         logevent.submission_logic_evaluated(
-            self.submission,
+            submission,
             [{"rule": rule, "trigger": True}, {"rule": rule_2, "trigger": False}],
+            submission.get_merged_data(),
         )
-        logs = self.submission.logs.all()
-        log = logs.last()
+
+        logs = submission.logs.all()
+        log = submission.logs.get()
         logged_rules = log.extra_data["log_evaluated_rules"]
 
         self.assertEquals(1, logs.count())
         self.assertEquals(2, len(logged_rules))
-        self.assertEquals(actual, expected)
+        self.assertEquals(
+            {
+                "trigger": True,
+                "source_components": json_logic_trigger,
+                "targeted_components": rule.actions,
+            },
+            logged_rules[0],
+        )
+        self.assertEquals(
+            {
+                "trigger": False,
+                "source_components": json_logic_trigger_2,
+                "targeted_components": rule_2.actions,
+            },
+            logged_rules[1],
+        )
