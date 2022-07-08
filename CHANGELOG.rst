@@ -14,6 +14,19 @@ Periodic bugfix release
 * [#1693] Fixed postcode validation errors by applying input mask normalization to prefill values
 * [#1731] Fixed crash with non-latin1 characters in StUF-calls (such as StUF-ZDS)
 
+1.0.11 (2022-06-29)
+===================
+
+Periodic bugfix release (in-development release notes)
+
+* [#1681] Use a unique reference number every time for StUF-ZDS requests
+* [#1687] Added explicit submission step validate endpoint
+* Fixed unintended camelization of response data
+* Bumped API version to 1.0.2
+* [#1693] Fixed postcode validation errors by applying input mask normalization to
+  prefill values
+* [#1731] Fixed crash with non-latin1 characters in StUF-calls (such as StUF-ZDS)
+
 1.1.2 (2022-06-16)
 ==================
 
