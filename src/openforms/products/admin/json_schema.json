@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "required": [
+    "kenteken",
+    "postcode",
+    "reden",
+    "huisnummer"
+  ],
+  "title": "Het objecttype Melding Openbare Ruimte",
+  "properties": {
+    "kenteken": {
+      "title": "Kenteken",
+      "type": "string",
+      "pattern": "^[A-Z0-9][A-Z0-9]?[A-Z0-9]?-[A-Z0-9][A-Z0-9]?[A-Z0-9]?-[A-Z0-9][A-Z0-9]?[A-Z0-9]?$",
+      "description": "Kenteken van het voertuig waarvoor de aanvraag wordt gedaan.",
+      "examples": [
+        "XX-11-YY"
+      ]
+    },
+    "reden": {
+      "title": "Reden",
+      "type": "string",
+      "description": "Reden van deze aanvraag.",
+      "examples": [
+        "Parkeren bij werk"
+      ],
+      "enum": [
+        "Parkeren bij werk",
+        "Parkeren bij woning",
+        "Parkeren voor ondersteuning/verzorging"
+      ]
+    },
+    "redenToelichting": {
+      "title": "Reden toelichting",
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Licht uw reden toe.",
+      "examples": [
+        "Parkeren bij werk"
+      ]
+    },
+    "postcode": {
+      "title": "Postcode",
+      "type": "string",
+      "pattern": "^[0-9]{4}[A-Z]{2}$",
+      "description": "Postcode van het adres waar het voertuig het dichtst bij in de buurt geparkeerd wordt.",
+      "examples": [
+        "1000AB"
+      ]
+    },
+    "huisnummer": {
+      "title": "Huisnummer",
+      "type": "integer",
+      "description": "Huisnummer van het adres waar het voertuig het dichtst bij in de buurt geparkeerd wordt.",
+      "examples": [
+        "1000AB"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

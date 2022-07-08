@@ -3,9 +3,14 @@ from django.test import TestCase
 from ..entry import convert_json_schema_to_py
 
 
-class NumberFieldTestCase(TestCase):
-    def setUp(self):
-        self.json_schema_object = {
+class SimpleObjectTestCase(TestCase):
+    """
+    test output of function 'convert_json_schema_to_py' by passing
+    different  dicts  represting JSON schema of a fieldset
+    """
+
+    def test_object(self):
+        json_schema_object = {
             "title": "person",
             "properties": {
                 "user": {
@@ -23,8 +28,8 @@ class NumberFieldTestCase(TestCase):
             },
         }
 
-    def test_object(self):
-        result = convert_json_schema_to_py(self.json_schema_object)["components"]
+        result = convert_json_schema_to_py(json_schema_object)["components"]
+
         self.assertEqual(result[0]["type"], "fieldset")
         self.assertEqual(len(result[0]["components"]), 2)
         self.assertEqual(result[0]["components"][0]["key"], "user_name")

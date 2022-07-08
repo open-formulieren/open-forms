@@ -1,6 +1,6 @@
 from .formio_classes import (
+    DateField,
     DateTimeField,
-    DayField,
     EmailField,
     FieldSet,
     NumberField,
@@ -16,24 +16,24 @@ class StringTypeFactory:
     """create instances matching form io classes based on JSON schema type==string"""
 
     CLASS_TYPES = {
-        "date": DayField,
+        "date": DateField,
         "time": TimeField,
         "date-time": DateTimeField,
         "email": EmailField,
     }
 
     @classmethod
-    def create(cls, *args, **kwargs):
+    def create(cls, key, required, content):
         """make distinction for string format fields"""
-        type_format = kwargs["content"].get("format")
+        type_format = content.get("format", None)
         _class = cls.CLASS_TYPES.get(type_format, None)
         if type_format is not None:
-            return _class(*args, **kwargs)
+            return _class(key, required, content)
         else:
-            if kwargs["content"].get("maxLength") is not None:
-                return TextField(*args, **kwargs)
+            if content.get("maxLength", None) is not None:
+                return TextField(key, required, content)
             else:
-                return TextAreaField(*args, **kwargs)
+                return TextAreaField(key, required, content)
 
 
 class FieldFactory:
@@ -49,13 +49,12 @@ class FieldFactory:
     }
 
     @classmethod
-    def create(cls, *args, **kwargs):
-        _type = kwargs.get("content").get("type")
-        _class = cls.CLASS_TYPES.get(_type, None)
+    def create(cls, key, required, content):
+        # here try/except?
+        _type = content.get("type", "")
+        _class = cls.CLASS_TYPES.get(_type, "class not found")
         if _type == "string":
-            obj = StringTypeFactory.create(*args, **kwargs)
-        elif _type == "object":
-            obj = FieldSet(*args, **kwargs)
+            obj = StringTypeFactory.create(key, required, content)
         else:
-            obj = _class(*args, **kwargs)
+            obj = _class(key, required, content)
         return obj
