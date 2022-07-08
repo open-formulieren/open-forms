@@ -2,6 +2,18 @@
 Changelog
 =========
 
+1.1.3 (2022-07-01)
+==================
+
+Periodic bugfix release
+
+* [#1681] Use a unique reference number every time for StUF-ZDS requests
+* [#1687] Added explicit submission step validate endpoint
+* Fixed unintended camelization of response data
+* Bumped API version to 1.1.1
+* [#1693] Fixed postcode validation errors by applying input mask normalization to prefill values
+* [#1731] Fixed crash with non-latin1 characters in StUF-calls (such as StUF-ZDS)
+
 1.1.2 (2022-06-16)
 ==================
 
