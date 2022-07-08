@@ -117,11 +117,11 @@ class StufZDSClient:
             "datum_vandaag": fmt_soap_date(timezone.now()),
             "gemeentecode": self.options["gemeentecode"],
             "zds_zaaktype_code": self.options["zds_zaaktype_code"],
-            "zds_zaaktype_omschrijving": self.options["zds_zaaktype_omschrijving"],
-            "zds_zaaktype_status_code": self.options["zds_zaaktype_status_code"],
-            "zds_zaaktype_status_omschrijving": self.options[
+            "zds_zaaktype_omschrijving": self.options.get("zds_zaaktype_omschrijving"),
+            "zds_zaaktype_status_code": self.options.get("zds_zaaktype_status_code"),
+            "zds_zaaktype_status_omschrijving": self.options.get(
                 "zds_zaaktype_status_omschrijving"
-            ],
+            ),
             "zaak_omschrijving": self.options["omschrijving"],
             "zds_documenttype_omschrijving_inzending": self.options[
                 "zds_documenttype_omschrijving_inzending"

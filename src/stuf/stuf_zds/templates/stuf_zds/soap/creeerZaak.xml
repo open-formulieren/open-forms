@@ -17,7 +17,9 @@
     </ZKN:parameters>
     <ZKN:object StUF:verwerkingssoort="T" StUF:entiteittype="ZAK">
         <ZKN:identificatie>{{ zaak_identificatie }}</ZKN:identificatie>
-        <ZKN:omschrijving>{{ zaak_omschrijving }}</ZKN:omschrijving>
+        {% if zaak_omschrijving %}
+            <ZKN:omschrijving>{{ zaak_omschrijving }}</ZKN:omschrijving>
+        {% endif %}
         {% for kenmerk in kenmerken %}
         <ZKN:kenmerk>
             <ZKN:kenmerk>{{ kenmerk }}</ZKN:kenmerk>
@@ -45,7 +47,9 @@
         {% include "stuf_zds/soap/includes/extraElementen.xml" %}
         <ZKN:isVan StUF:entiteittype="ZAKZKT" StUF:verwerkingssoort="T">
             <ZKN:gerelateerde StUF:verwerkingssoort="I" StUF:entiteittype="ZKT">
-                <ZKN:omschrijving>{{ zds_zaaktype_omschrijving }}</ZKN:omschrijving>
+                {% if zds_zaaktype_omschrijving %}
+                    <ZKN:omschrijving>{{ zds_zaaktype_omschrijving }}</ZKN:omschrijving>
+                {% endif %}
                 <ZKN:code>{{ zds_zaaktype_code }}</ZKN:code>
                 <ZKN:ingangsdatumObject>{{ datum_vandaag }}</ZKN:ingangsdatumObject>
             </ZKN:gerelateerde>
@@ -84,13 +88,19 @@
                 <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
             </ZKN:heeftAlsInitiator>
         {% endif %}
-        <ZKN:heeft StUF:entiteittype="ZAKSTT" StUF:verwerkingssoort="T">
-            <ZKN:gerelateerde StUF:entiteittype="STT" StUF:verwerkingssoort="I">
-                <ZKN:code>{{ zds_zaaktype_status_code }}</ZKN:code>
-                <ZKN:omschrijving>{{ zds_zaaktype_status_omschrijving }}</ZKN:omschrijving>
-            </ZKN:gerelateerde>
-            <ZKN:toelichting>Status gezet door verzendende applicatie.</ZKN:toelichting>
-            <ZKN:datumStatusGezet>{{ datum_vandaag }}</ZKN:datumStatusGezet>
-        </ZKN:heeft>
+        {% if zds_zaaktype_status_code or zds_zaaktype_status_omschrijving %}
+            <ZKN:heeft StUF:entiteittype="ZAKSTT" StUF:verwerkingssoort="T">
+                <ZKN:gerelateerde StUF:entiteittype="STT" StUF:verwerkingssoort="I">
+                    {% if zds_zaaktype_status_code %}
+                        <ZKN:code>{{ zds_zaaktype_status_code }}</ZKN:code>
+                    {% endif %}
+                    {% if zds_zaaktype_status_omschrijving %}
+                        <ZKN:omschrijving>{{ zds_zaaktype_status_omschrijving }}</ZKN:omschrijving>
+                    {% endif %}
+                </ZKN:gerelateerde>
+                <ZKN:toelichting>Status gezet door verzendende applicatie.</ZKN:toelichting>
+                <ZKN:datumStatusGezet>{{ datum_vandaag }}</ZKN:datumStatusGezet>
+            </ZKN:heeft>
+        {% endif %}
     </ZKN:object>
 </ZKN:zakLk01>

@@ -64,7 +64,6 @@ const RegistrationFields = ({
 
   const backendChoices = backends.map(backend => [backend.id, backend.label]);
   const backend = backends.find(backend => backend.id === selectedBackend);
-  const hasOptionsForm = Boolean(backend && Object.keys(backend.schema.properties).length);
 
   const addAnotherMsg = intl.formatMessage({
     description: 'Button text to add extra item',
