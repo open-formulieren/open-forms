@@ -8,6 +8,7 @@ import {getTranslatedChoices} from '../../../../utils/i18n';
 import ArrayInput from '../../forms/ArrayInput';
 import ComponentSelection from '../../forms/ComponentSelection';
 import Select from '../../forms/Select';
+import StepSelection from '../StepSelection';
 
 import {OPERATORS, COMPONENT_TYPE_TO_OPERATORS, COMPONENT_TYPE_TO_OPERAND_TYPE} from './constants';
 import LiteralValueInput from './LiteralValueInput';

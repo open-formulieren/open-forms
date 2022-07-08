@@ -1,8 +1,8 @@
 import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 
-import Select from '../../forms/Select';
-import {FormContext} from '../Context';
+import Select from '../forms/Select';
+import {FormContext} from './Context';
 
 const StepSelection = ({name, value, onChange}) => {
   const formContext = useContext(FormContext);

@@ -10,8 +10,10 @@ import ActionSet from './logic/actions/ActionSet';
 import ButtonContainer from '../forms/ButtonContainer';
 import Fieldset from '../forms/Fieldset';
 import AdvancedTrigger from './logic/AdvancedTrigger';
+import DSLEditorNode from './logic/DSLEditorNode';
 import LogicTypeSelection from './logic/LogicTypeSelection';
 import {ValidationErrorContext} from '../forms/ValidationErrors';
+import StepSelection from './StepSelection';
 
 const EMPTY_RULE = {
   uuid: '',
@@ -111,6 +113,7 @@ const Rule = ({
   _logicType,
   order,
   jsonLogicTrigger,
+  triggerFromStep,
   actions,
   isAdvanced,
   onChange,
@@ -176,6 +179,33 @@ const Rule = ({
           onChange={onChange}
           error={errors.jsonLogicTrigger}
         />
+
+        <div className="dsl-editor">
+          <DSLEditorNode errors={null}>
+            <FormattedMessage
+              description="'Trigger from step' label"
+              defaultMessage="Check from step: "
+            />
+          </DSLEditorNode>
+
+          <DSLEditorNode errors={null}>
+            <StepSelection
+              name="triggerFromStep"
+              value={triggerFromStep || ''}
+              onChange={onChange}
+            />
+            {!triggerFromStep && (
+              <>
+                &nbsp;
+                <FormattedMessage
+                  description="'Trigger from step' information for when unset"
+                  defaultMessage="(checked for every step)"
+                />
+              </>
+            )}
+          </DSLEditorNode>
+        </div>
+
         <ActionSet name="actions" actions={actions} onChange={onChange} errors={errors.actions} />
       </div>
     </div>
@@ -186,6 +216,7 @@ Rule.propTypes = {
   _logicType: PropTypes.oneOf(['', 'simple', 'advanced']), // TODO: dmn in the future
   order: PropTypes.number.isRequired,
   jsonLogicTrigger: PropTypes.object,
+  triggerFromStep: PropTypes.string,
   actions: PropTypes.arrayOf(PropTypes.object),
   isAdvanced: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,
