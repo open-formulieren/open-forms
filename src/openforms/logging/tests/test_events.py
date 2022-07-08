@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.utils.translation import gettext as _
 
-from openforms.forms.models.form import FormLogic
+from openforms.forms.models import FormLogic
 from openforms.logging import logevent
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory

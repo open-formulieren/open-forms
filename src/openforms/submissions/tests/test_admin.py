@@ -6,7 +6,7 @@ from django_webtest import WebTest
 from rest_framework import status
 
 from openforms.accounts.tests.factories import UserFactory
-from openforms.forms.models.form import FormLogic
+from openforms.forms.models import FormLogic
 from openforms.logging import logevent
 from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
