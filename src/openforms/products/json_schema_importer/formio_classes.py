@@ -143,21 +143,29 @@ class NumberField(Field):
 
 
 class SelectBoxesField(Field):
-    # note: extension of Radio component
+    """user can choose more then one item"""
+
     type = "selectboxes"
 
     def __init__(self, key: str, required: bool, content: dict):
         super().__init__(key, required, content)
-        self.intance["validate"].update(
+        items = content.get("items", {})
+        enum_list = items.get("enum")
+        # enum_type = items.get("type")-> dataType(?)
+        self.instance["validate"].update(
             {
                 "onlyAvailableItems": None,
-                # "minSelectedCount": None,
-                # "maxSelectedCount": None,
+                "maxSelectedCount": len(enum_list),
             }
         )
+        _values = [{"label": item, "value": item} for item in enum_list]
+        self.instance["values"] = _values
+        self.instance["inputType"] = "checkbox"
 
 
 class RadioField(Field):
+    """user can choose only one item"""
+
     type = "radio"
 
     def __init__(self, key: str, required: bool, content: dict):
@@ -170,14 +178,22 @@ class RadioField(Field):
         )
 
 
-class SelectField(Field):
-    type = "select"
+class CheckboxField(Field):
+    type = "checkbox"
 
     def __init__(self, key: str, required: bool, content: dict):
         super().__init__(key, required, content)
 
-        self.instance["validate"].update(
-            {
-                "onlyAvailableItems": False,
-            }
-        )
+
+class SelectField(Field):
+    """user can choose only one item"""
+
+    type = "select"
+    tableView = True
+
+    def __init__(self, key: str, required: bool, content: dict):
+        super().__init__(key, required, content)
+        enum_list = content.get("enum")
+        values = [{"label": item, "value": item} for item in enum_list]
+        self.instance["data"] = {"values": values}
+        self.instance["dataType"] = content.get("type")

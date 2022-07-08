@@ -4,7 +4,6 @@ import os
 from django.contrib import admin, messages
 from django.shortcuts import redirect, render
 from django.urls import path, reverse, reverse_lazy
-from django.utils.translation import ugettext_lazy as _
 
 from openforms.forms.models.form import Form
 from openforms.forms.models.form_definition import FormDefinition
@@ -41,12 +40,15 @@ class ProductImportMixin:
                     py_dict = json.loads(json_data)
 
                 formio_collection = convert_json_schema_to_py(json_schema=py_dict)
-                form_instance = Form.objects.create(
+                form = Form.objects.create(
                     name=py_dict["title"], active=True, authentication_backends=["demo"]
                 )
                 form_definition = FormDefinition.objects.create(
                     name="Product velden", configuration=formio_collection
                 )
+                # just for flake8 OK test
+                msg = f"Created a formulier based on form:{form.name} and {form_definition.name}"
+                messages.add_message(request, messages.SUCCESS, msg)
 
                 return redirect(reverse(url_success))  # can be changed
 

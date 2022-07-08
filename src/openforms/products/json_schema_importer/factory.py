@@ -1,11 +1,12 @@
 from .formio_classes import (
+    CheckboxField,
     DateField,
     DateTimeField,
     EmailField,
     FieldSet,
     NumberField,
-    RadioField,
     SelectBoxesField,
+    SelectField,
     TextAreaField,
     TextField,
     TimeField,
@@ -44,16 +45,19 @@ class FieldFactory:
         "number": NumberField,
         "integer": NumberField,
         "array": SelectBoxesField,
-        "boolean": RadioField,
+        "boolean": CheckboxField,
         "object": FieldSet,
     }
 
     @classmethod
     def create(cls, key, required, content):
-        # here try/except?
+        enum_flag = len(content.get("enum", []))
         _type = content.get("type", "")
         _class = cls.CLASS_TYPES.get(_type, "class not found")
-        if _type == "string":
+        if enum_flag > 0:
+            # for SelectField (default) or RadioField ?
+            obj = SelectField(key, required, content)
+        elif _type == "string":
             obj = StringTypeFactory.create(key, required, content)
         else:
             obj = _class(key, required, content)
