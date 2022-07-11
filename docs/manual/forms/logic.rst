@@ -78,6 +78,12 @@ doen.
   * **vandaag** - Alleen beschikbaar i.c.m. een datum en geeft extra opties om
     een berekening te maken.
 
+Standaard worden altijd alle regels getest bij het invullen van een formulier. Indien
+bepaalde regels pas getest moeten worden vanaf een bepaalde stap omdat er eerder
+ingevulde gegevens nodig zijn bijvoorbeeld, dan kan dit ingesteld worden. Klik hiervoor
+links van de regel op het tandwielicoontje om de geavanceerde opties weer te geven.
+Daarna selecteer je vanaf welke stap de regel relevant is. De regel wordt uitgevoerd
+voor de aangegeven stap en alle stappen die erop volgen.
 
 Voorbeelden
 -----------
