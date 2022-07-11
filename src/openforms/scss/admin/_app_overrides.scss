@@ -164,12 +164,15 @@ $djai-border-width: 8px;
 
   .glyphicon {
     display: block;
-    font: normal normal normal 14px/1 FontAwesome;
-    font-size: inherit;
     font-weight: 900;
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
+    font-family: "Font Awesome 6 Free";
     -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-style: normal;
+    font-variant: normal;
+    line-height: 1;
+    text-rendering: auto;
+    font-size: 16px;
   }
 
   .glyphicon-plus:before {
@@ -179,8 +182,7 @@ $djai-border-width: 8px;
   }
 
   .glyphicon-remove:before {
-    content: '\f1f8';
-    font-weight: normal;
+    content: '\f00d';
   }
 
   .glyphicon-arrow-down:before {
