@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-12 15:19+0200\n"
+"POT-Creation-Date: 2022-07-12 15:23+0200\n"
 "PO-Revision-Date: 2022-05-16 14:48+0020\n"
 "Last-Translator: Sergei Maertens <sergei@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -2424,11 +2424,11 @@ msgid "This domain is not in the global netloc allowlist: {netloc}"
 msgstr ""
 "Dit domein is niet aanwezig in de toegestane lijst van domeinen: {netloc}"
 
-#: openforms/formio/api/views.py:23 openforms/submissions/api/views.py:66
+#: openforms/formio/api/views.py:23 openforms/submissions/api/views.py:65
 msgid "Create temporary file upload"
 msgstr "Maak tijdelijk bestand aan"
 
-#: openforms/formio/api/views.py:25 openforms/submissions/api/views.py:68
+#: openforms/formio/api/views.py:25 openforms/submissions/api/views.py:67
 #, python-brace-format
 msgid ""
 "File upload handler for the Form.io file upload \"url\" storage type.\n"
@@ -5997,27 +5997,31 @@ msgid "Download the PDF report"
 msgstr "Download het document."
 
 #: openforms/submissions/api/views.py:32
-#, python-brace-format
+#, fuzzy, python-brace-format
+#| msgid ""
+#| "Download the PDF report containing the submission data. The endpoint "
+#| "requires a token which is tied to the submission from the session. Once "
+#| "the PDF is downloaded, this token is invalidated. The token also "
+#| "automatically expires after {expire_days} day(s)."
 msgid ""
 "Download the PDF report containing the submission data. The endpoint "
-"requires a token which is tied to the submission from the session. Once the "
-"PDF is downloaded, this token is invalidated. The token also automatically "
-"expires after {expire_days} day(s)."
+"requires a token which is tied to the submission from the session. The token "
+"automatically expires after {expire_days} day(s)."
 msgstr ""
 "Download het document met de ingezonden gegevens, in PDF vorm. Dit document "
 "kan alleen worden opgevraagd indien het juiste token is meegegeven, die "
 "hoort bij de formulier sessie. Nadat het document is gedownload, of na "
 "{expire_days} dagen, is het token niet meer te gebruiken."
 
-#: openforms/submissions/api/views.py:113
+#: openforms/submissions/api/views.py:112
 msgid "View/delete temporary upload."
 msgstr "Toon/verwijder tijdelijk bestand."
 
-#: openforms/submissions/api/views.py:117
+#: openforms/submissions/api/views.py:116
 msgid "Retrieve temporary file upload"
 msgstr "Haal tijdelijk bestand op"
 
-#: openforms/submissions/api/views.py:119
+#: openforms/submissions/api/views.py:118
 #, python-brace-format
 msgid ""
 "Retrieve temporary file upload for review by the uploader. \n"
@@ -6034,11 +6038,11 @@ msgstr ""
 "Toegang tot dit endpoint vereist een actieve formulier inzending. Niet "
 "gekoppelde bestanden worden automatisch verwijderd na {expire_days} dag(en)"
 
-#: openforms/submissions/api/views.py:129
+#: openforms/submissions/api/views.py:128
 msgid "Delete temporary file upload"
 msgstr "Verwijder tijdelijk bestand"
 
-#: openforms/submissions/api/views.py:131
+#: openforms/submissions/api/views.py:130
 #, python-brace-format
 msgid ""
 "Delete temporary file upload by the uploader. \n"
