@@ -6,7 +6,5 @@
  * because of partial state updates.
  */
 
-export {saveLogicRules, savePriceRules} from './logic';
+export {saveCompleteForm} from './complete-form';
 export {loadPlugins, PluginLoadingError} from './plugins';
-export {updateOrCreateFormSteps} from './steps';
-export {createOrUpdateFormVariables} from './variables';

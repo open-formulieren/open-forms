@@ -1,4 +1,5 @@
-import {post, put, apiDelete, ValidationErrors} from '../../../../utils/fetch';
+import {post, put, apiDelete} from '../../../../utils/fetch';
+import {ValidationErrors} from '../../../../utils/exception';
 import {LOGICS_ENDPOINT, PRICE_RULES_ENDPOINT} from '../constants';
 
 /**
@@ -16,12 +17,20 @@ import {LOGICS_ENDPOINT, PRICE_RULES_ENDPOINT} from '../constants';
 const saveRules = async (endpoint, formUrl, csrftoken, rules, rulesToDelete, rulePrefix) => {
   // updating and creating rules
   const updateOrCreatePromises = Promise.all(
-    rules.map(rule => {
+    rules.map(async rule => {
       const shouldCreate = !rule.uuid;
       const createOrUpdate = shouldCreate ? post : put;
-      const endPoint = shouldCreate ? endpoint : `${endpoint}/${rule.uuid}`;
-
-      return createOrUpdate(endPoint, csrftoken, rule.form ? rule : {...rule, form: formUrl});
+      const apiEndpoint = shouldCreate ? endpoint : `${endpoint}/${rule.uuid}`;
+      try {
+        return await createOrUpdate(
+          apiEndpoint,
+          csrftoken,
+          rule.form ? rule : {...rule, form: formUrl},
+          true
+        );
+      } catch (e) {
+        return e;
+      }
     })
   );
   // deleting rules
@@ -44,42 +53,36 @@ const saveRules = async (endpoint, formUrl, csrftoken, rules, rulesToDelete, rul
     return;
   }
 
-  // process the created rules
-  const createdRules = [];
+  // process the created/updated & errored rules
+  const results = [];
   updateOrCreateResponses.forEach((response, index) => {
-    if (!response.ok) {
-      if (response.status === 400) {
-        let errors = [...response.data.invalidParams].map((err, _) => {
-          return {
-            ...err,
-            name: [rulePrefix, index, err.name].join('.'),
-          };
-        });
-        throw new ValidationErrors('Invalid logic rule', errors);
-      } else {
-        // TODO: include more information -> which rule was it etc.
-        throw new Error('An error occurred while saving the form logic.');
-      }
+    if (response instanceof ValidationErrors) {
+      // rewrite so the correct name/index is used for the error information
+      response.errors = response.errors.map((err, _) => {
+        return {
+          ...err,
+          name: [rulePrefix, index, err.name].join('.'),
+        };
+      });
+      response.context = rulePrefix;
     }
-    const rule = rules[index];
-    if (!rule.uuid) {
-      const uuid = response.data.uuid;
-      createdRules.push({uuid, index});
-    }
+    // TODO: handle non-validation errors?
+    results.push(response);
   });
 
   // process the deleted rules
+  // TODO: more gracious handling, and have we ever seen this even?
   deleteResponses.forEach(response => {
     if (!response.ok) {
       throw new Error('An error occurred while deleting logic rules.');
     }
   });
 
-  return createdRules;
+  return results;
 };
 
 const saveLogicRules = async (formUrl, csrftoken, logicRules, logicRulesToDelete) => {
-  const createdRules = await saveRules(
+  const results = await saveRules(
     LOGICS_ENDPOINT,
     formUrl,
     csrftoken,
@@ -87,11 +90,11 @@ const saveLogicRules = async (formUrl, csrftoken, logicRules, logicRulesToDelete
     logicRulesToDelete,
     'logicRules'
   );
-  return createdRules;
+  return results;
 };
 
 const savePriceRules = async (formUrl, csrftoken, priceRules, priceRulesToDelete) => {
-  const createdRules = await saveRules(
+  const results = await saveRules(
     PRICE_RULES_ENDPOINT,
     formUrl,
     csrftoken,
@@ -99,7 +102,7 @@ const savePriceRules = async (formUrl, csrftoken, priceRules, priceRulesToDelete
     priceRulesToDelete,
     'priceRules'
   );
-  return createdRules;
+  return results;
 };
 
 export {saveLogicRules, savePriceRules};

@@ -7,7 +7,6 @@ const updateOrCreateSingleFormStep = async (
   index,
   formUrl,
   step,
-  onCreateFormStep,
   onFormDefinitionCreate
 ) => {
   // First update/create the form definitions
@@ -87,7 +86,6 @@ const updateOrCreateSingleFormStep = async (
   // save all FormDefinition/FormSteps.
   if (isNewFormDefinition) {
     onFormDefinitionCreate(definitionResponse.data);
-    onCreateFormStep(index, stepResponse.data.url, stepResponse.data.formDefinition);
   }
 
   return stepResponse.data;
@@ -99,13 +97,7 @@ const updateOrCreateSingleFormStep = async (
  * Validation errors raised for each individual step are caught and returned to the
  * caller.
  */
-const updateOrCreateFormSteps = async (
-  csrftoken,
-  formUrl,
-  formSteps,
-  onCreateFormStep,
-  onFormDefinitionCreate
-) => {
+const updateOrCreateFormSteps = async (csrftoken, formUrl, formSteps, onFormDefinitionCreate) => {
   const stepPromises = formSteps.map(async (step, index) => {
     try {
       return await updateOrCreateSingleFormStep(
@@ -113,34 +105,19 @@ const updateOrCreateFormSteps = async (
         index,
         formUrl,
         step,
-        onCreateFormStep,
         onFormDefinitionCreate
       );
     } catch (e) {
       if (e instanceof ValidationErrors) {
-        return {
-          step: step,
-          error: e,
-        };
+        e.context = {step: step};
+        return e;
       }
-      throw e; // re-throw unexpected errors
+      throw e;
     }
   });
 
   const results = await Promise.all(stepPromises);
-
-  const updatedSteps = [];
-  const errors = [];
-
-  results.map(result => {
-    if (result.error) {
-      errors.push(result);
-    } else {
-      updatedSteps.push(result);
-    }
-  });
-
-  return {updatedSteps, errors};
+  return results;
 };
 
 export {updateOrCreateFormSteps};

@@ -1,18 +1,9 @@
 import {onResponseHook} from './session-expiry';
+import {APIError, ValidationErrors, NotAuthenticatedError} from './exception';
 
 const fetchDefaults = {
   credentials: 'same-origin', // required for Firefox 60, which is used in werkplekken
 };
-
-class ValidationErrors extends Error {
-  constructor(message, errors) {
-    super(message);
-    this.errors = errors;
-  }
-}
-Object.defineProperty(ValidationErrors.prototype, 'name', {
-  value: 'ValidationErrors',
-});
 
 const fetch = async (url, opts) => {
   const options = Object.assign({}, fetchDefaults, opts);
@@ -23,12 +14,39 @@ const fetch = async (url, opts) => {
 
 const apiCall = fetch;
 
+// TODO: throwOn400 is legacy and should be removed in the future
+const throwForStatus = (response, responseData = null, throwOn400 = true) => {
+  if (response.ok) return;
+
+  switch (response.status) {
+    case 400: {
+      if (throwOn400) {
+        throw new ValidationErrors(
+          'Call did not validate on the backend',
+          responseData?.invalidParams
+        );
+      }
+      break;
+    }
+    case 401: {
+      throw new NotAuthenticatedError('User not or no longer authenticated');
+      break;
+    }
+    default: {
+      throw new APIError(`Error ${response.status} from backend`, response.status);
+      break;
+    }
+  }
+};
+
 const get = async (url, params = {}) => {
   if (Object.keys(params).length) {
     const searchparams = new URLSearchParams(params);
     url += `?${searchparams}`;
   }
   const response = await fetch(url);
+  // TODO: this should use:
+  //  throwForStatus(response);
   if (!response.ok) {
     return {
       ok: response.ok,
@@ -61,11 +79,7 @@ const _unsafe = async (method = 'POST', url, csrftoken, data = {}, throwOn400 = 
   if (contentType && contentType.indexOf('application/json') !== -1) {
     responseData = await response.json();
   }
-
-  if (response.status === 400 && throwOn400) {
-    throw new ValidationErrors('Call did not validate on the backend', responseData.invalidParams);
-  }
-
+  throwForStatus(response, responseData, throwOn400);
   return {
     ok: response.ok,
     status: response.status,
@@ -91,7 +105,9 @@ const apiDelete = async (url, csrftoken) => {
       'X-CSRFToken': csrftoken,
     },
   };
-  return await fetch(url, opts);
+  const response = await fetch(url, opts);
+  throwForStatus(response);
+  return response;
 };
 
 export {ValidationErrors};
