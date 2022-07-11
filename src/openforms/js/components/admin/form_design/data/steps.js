@@ -1,50 +1,6 @@
-import {FormException} from '../../../utils/exception';
-import {get, post, put, ValidationErrors} from '../../../utils/fetch';
-import {FORM_DEFINITIONS_ENDPOINT, LOGICS_ENDPOINT, PRICE_RULES_ENDPOINT} from './constants';
-import {saveRules} from './logic-data';
-
-class PluginLoadingError extends Error {
-  constructor(message, plugin, response) {
-    super(message);
-    this.plugin = plugin;
-    this.response = response;
-  }
-}
-
-// TODO: add error handling in the fetch wrappers to throw exceptions + add error
-// boundaries in the component tree.
-const loadPlugins = async (plugins = []) => {
-  const promises = plugins.map(async plugin => {
-    let response = await get(plugin.endpoint);
-    if (!response.ok) {
-      throw new PluginLoadingError('Failed to load plugins', plugin, response);
-    }
-    let responseData = response.data;
-
-    // paginated or not?
-    const isPaginated =
-      responseData.hasOwnProperty('results') && responseData.hasOwnProperty('count');
-    if (!isPaginated) {
-      return responseData;
-    }
-
-    // yep, resolve all pages
-    // TODO: check if we have endpoints that return stupid amounts of data and treat those
-    // differently/async to reduce the browser memory footprint
-    let allResults = [...responseData.results];
-    while (responseData.next) {
-      response = await get(responseData.next);
-      if (!response.ok) {
-        throw new PluginLoadingError('Failed to load plugins', plugin, response);
-      }
-      responseData = response.data;
-      allResults = [...allResults, ...responseData.results];
-    }
-    return allResults;
-  });
-  const results = await Promise.all(promises);
-  return results;
-};
+import {FormException} from '../../../../utils/exception';
+import {post, put, ValidationErrors} from '../../../../utils/fetch';
+import {FORM_DEFINITIONS_ENDPOINT} from '../constants';
 
 const updateOrCreateSingleFormStep = async (
   csrftoken,
@@ -187,61 +143,4 @@ const updateOrCreateFormSteps = async (
   return {updatedSteps, errors};
 };
 
-const saveLogicRules = async (formUrl, csrftoken, logicRules, logicRulesToDelete) => {
-  const createdRules = await saveRules(
-    LOGICS_ENDPOINT,
-    formUrl,
-    csrftoken,
-    logicRules,
-    logicRulesToDelete,
-    'logicRules'
-  );
-  return createdRules;
-};
-
-const savePriceRules = async (formUrl, csrftoken, priceRules, priceRulesToDelete) => {
-  const createdRules = await saveRules(
-    PRICE_RULES_ENDPOINT,
-    formUrl,
-    csrftoken,
-    priceRules,
-    priceRulesToDelete,
-    'priceRules'
-  );
-  return createdRules;
-};
-
-const createOrUpdateFormVariables = async (
-  formUrl,
-  csrftoken,
-  variables,
-  stateformSteps,
-  updatedFormSteps
-) => {
-  const endPoint = `${formUrl}/variables`;
-  const formVariables = variables.map(variable => {
-    // There are 2 cases here:
-    // 1. The variable was added to an existing form definition (i.e. which already has a URL). So variable.formDefinition
-    //   is the URL of the formDefinition.
-    // 2. The variable was added to a new form definition (i.e. which didn't have a URL). So variable.formDefinition
-    //   is the _generatedId of the formDefinition.
-    let formDefinitionUrl = variable.formDefinition;
-    try {
-      new URL(variable.formDefinition);
-    } catch (e) {
-      // Retrieve the URL of the definition from the formSteps which have already been saved
-      stateformSteps.map((step, index) => {
-        if (step._generatedId === variable.formDefinition) {
-          formDefinitionUrl = updatedFormSteps[index].formDefinition;
-        }
-      });
-    }
-    return {...variable, form: formUrl, formDefinition: formDefinitionUrl};
-  });
-
-  return await put(endPoint, csrftoken, formVariables);
-};
-
-export {loadPlugins, PluginLoadingError};
-export {updateOrCreateFormSteps, createOrUpdateFormVariables};
-export {saveLogicRules, savePriceRules};
+export {updateOrCreateFormSteps};

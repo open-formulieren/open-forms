@@ -180,7 +180,7 @@ const FormMetaFields = ({
         >
           <Select
             choices={getCategoryChoices(availableCategories)}
-            value={category}
+            value={category || ''}
             onChange={onChange}
           />
         </Field>

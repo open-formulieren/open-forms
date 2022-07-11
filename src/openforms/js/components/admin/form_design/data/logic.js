@@ -1,5 +1,5 @@
-import {post, put, apiDelete, ValidationErrors} from '../../../utils/fetch';
-import {LOGICS_ENDPOINT} from './constants';
+import {post, put, apiDelete, ValidationErrors} from '../../../../utils/fetch';
+import {LOGICS_ENDPOINT, PRICE_RULES_ENDPOINT} from '../constants';
 
 /**
  * Generic collection of rules saving.
@@ -13,7 +13,7 @@ import {LOGICS_ENDPOINT} from './constants';
  * @param  {String} rulePrefix Prefix that will be used to format errors (differentiates between logic and price rules)
  * @return {Array}                     Array of newly created rules
  */
-export const saveRules = async (endpoint, formUrl, csrftoken, rules, rulesToDelete, rulePrefix) => {
+const saveRules = async (endpoint, formUrl, csrftoken, rules, rulesToDelete, rulePrefix) => {
   // updating and creating rules
   const updateOrCreatePromises = Promise.all(
     rules.map(rule => {
@@ -77,3 +77,29 @@ export const saveRules = async (endpoint, formUrl, csrftoken, rules, rulesToDele
 
   return createdRules;
 };
+
+const saveLogicRules = async (formUrl, csrftoken, logicRules, logicRulesToDelete) => {
+  const createdRules = await saveRules(
+    LOGICS_ENDPOINT,
+    formUrl,
+    csrftoken,
+    logicRules,
+    logicRulesToDelete,
+    'logicRules'
+  );
+  return createdRules;
+};
+
+const savePriceRules = async (formUrl, csrftoken, priceRules, priceRulesToDelete) => {
+  const createdRules = await saveRules(
+    PRICE_RULES_ENDPOINT,
+    formUrl,
+    csrftoken,
+    priceRules,
+    priceRulesToDelete,
+    'priceRules'
+  );
+  return createdRules;
+};
+
+export {saveLogicRules, savePriceRules};
