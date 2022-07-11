@@ -595,6 +595,12 @@
       "value": "Session expired"
     }
   ],
+  "DqG0YS": [
+    {
+      "type": 0,
+      "value": "Enable from step:"
+    }
+  ],
   "DxGKNm": [
     {
       "type": 0,
@@ -745,6 +751,20 @@
       "value": "Will send the email specified."
     }
   ],
+  "HuAm1K": [
+    {
+      "type": 0,
+      "value": "and the step \""
+    },
+    {
+      "type": 1,
+      "value": "step"
+    },
+    {
+      "type": 0,
+      "value": "\" has been reached"
+    }
+  ],
   "I0bgsg": [
     {
       "type": 0,
@@ -847,6 +867,12 @@
     {
       "type": 0,
       "value": "Content"
+    }
+  ],
+  "KYTAJZ": [
+    {
+      "type": 0,
+      "value": "(checked for every step)"
     }
   ],
   "KjDolH": [
@@ -1491,6 +1517,12 @@
       "value": "Are you sure you want to delete this rule?"
     }
   ],
+  "eLDxD5": [
+    {
+      "type": 0,
+      "value": "Advanced options"
+    }
+  ],
   "evbysh": [
     {
       "type": 0,
@@ -1757,6 +1789,12 @@
     {
       "type": 0,
       "value": "Version"
+    }
+  ],
+  "nHFMXn": [
+    {
+      "type": 0,
+      "value": "Trigger condition"
     }
   ],
   "naInSZ": [

@@ -4369,6 +4369,13 @@ components:
           description: Order of the rule relative to the form it belongs to. Logic
             rules are evaluated in this order. Note that specifying a value for the
             order here will cause the rules before/after this rule to be re-calculated.
+        triggerFromStep:
+          type: string
+          format: uri
+          nullable: true
+          description: When set, the trigger will only be checked once the specified
+            step is reached. This means the rule will never trigger for steps before
+            the specified trigger step. If unset, the trigger will always be checked.
         actions:
           type: array
           items:
@@ -5100,6 +5107,13 @@ components:
           description: Order of the rule relative to the form it belongs to. Logic
             rules are evaluated in this order. Note that specifying a value for the
             order here will cause the rules before/after this rule to be re-calculated.
+        triggerFromStep:
+          type: string
+          format: uri
+          nullable: true
+          description: When set, the trigger will only be checked once the specified
+            step is reached. This means the rule will never trigger for steps before
+            the specified trigger step. If unset, the trigger will always be checked.
         actions:
           type: array
           items:

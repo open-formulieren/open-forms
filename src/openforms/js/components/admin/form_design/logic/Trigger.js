@@ -153,7 +153,7 @@ const reducer = (draft, action) => {
   }
 };
 
-const Trigger = ({name, logic, onChange, error, children}) => {
+const Trigger = ({name, logic, onChange, error, withDSLPreview = false, children}) => {
   const formContext = useContext(FormContext);
   const allComponents = formContext.components;
   // break down the json logic back into variables that can be managed by components state
@@ -329,9 +329,11 @@ const Trigger = ({name, logic, onChange, error, children}) => {
 
       {children ? <div className="logic-trigger__children">{children}</div> : null}
 
-      <div className="logic-trigger__data-preview">
-        <DataPreview data={jsonLogicFromState} />
-      </div>
+      {withDSLPreview && (
+        <div className="logic-trigger__data-preview">
+          <DataPreview data={jsonLogicFromState} />
+        </div>
+      )}
     </div>
   );
 };
@@ -341,6 +343,7 @@ Trigger.propTypes = {
   logic: PropTypes.object,
   onChange: PropTypes.func.isRequired,
   error: PropTypes.string,
+  withDSLPreview: PropTypes.bool,
   children: PropTypes.node,
 };
 

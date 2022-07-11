@@ -379,6 +379,11 @@
     "description": "Modal title session expired",
     "originalDefault": "Session expired"
   },
+  "DqG0YS": {
+    "defaultMessage": "Enable from step:",
+    "description": "'Trigger from step' label",
+    "originalDefault": "Enable from step:"
+  },
   "DxGKNm": {
     "defaultMessage": "Logica",
     "description": "Logic fieldset title",
@@ -504,6 +509,11 @@
     "description": "Form confirmation email help text",
     "originalDefault": "Will send the email specified."
   },
+  "HuAm1K": {
+    "defaultMessage": "and the step \"{step}\" has been reached",
+    "description": "Additional 'trigger from step' condition",
+    "originalDefault": "and the step \"{step}\" has been reached"
+  },
   "I0bgsg": {
     "defaultMessage": "Opschoonmethode voor voltooide inzendingen",
     "description": "Successful Submissions Removal Method",
@@ -583,6 +593,11 @@
     "defaultMessage": "Inhoud",
     "description": "Confirmation Email Content label",
     "originalDefault": "Content"
+  },
+  "KYTAJZ": {
+    "defaultMessage": "(checked for every step)",
+    "description": "'Trigger from step' information for when unset",
+    "originalDefault": "(checked for every step)"
   },
   "KjDolH": {
     "defaultMessage": "Handmatig ingesteld",
@@ -1064,6 +1079,11 @@
     "description": "Price rule deletion confirm message",
     "originalDefault": "Are you sure you want to delete this rule?"
   },
+  "eLDxD5": {
+    "defaultMessage": "Advanced options",
+    "description": "Logic rule advanced options icon title",
+    "originalDefault": "Advanced options"
+  },
   "evbysh": {
     "defaultMessage": "Variabeledefinitie",
     "description": "Camunda complex variable definition title",
@@ -1283,6 +1303,11 @@
     "defaultMessage": "Versie",
     "description": "Camunda 'process definition version' label",
     "originalDefault": "Version"
+  },
+  "nHFMXn": {
+    "defaultMessage": "Trigger condition",
+    "description": "Logic trigger heading",
+    "originalDefault": "Trigger condition"
   },
   "naInSZ": {
     "defaultMessage": "Toon/verberg DSL weergave",

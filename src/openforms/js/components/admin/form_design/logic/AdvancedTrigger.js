@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import DataPreview from './DataPreview';
 import JsonWidget from '../../forms/JsonWidget';
 
 const AdvancedTrigger = ({name, logic, onChange, error}) => {
@@ -15,9 +14,6 @@ const AdvancedTrigger = ({name, logic, onChange, error}) => {
       >
         <JsonWidget name={name} logic={logic} onChange={onChange} />
         {error ? <div className="logic-trigger__error">{error}</div> : null}
-      </div>
-      <div className="logic-trigger__data-preview">
-        <DataPreview data={logic} />
       </div>
     </div>
   );

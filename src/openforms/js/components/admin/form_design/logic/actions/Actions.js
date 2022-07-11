@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 
 import ComponentSelection from '../../../forms/ComponentSelection';
 import Select from '../../../forms/Select';
+import StepSelection from '../../StepSelection';
 import {MODIFIABLE_PROPERTIES, STRING_TO_TYPE, TYPE_TO_STRING} from '../constants';
 import OperandTypeSelection from '../OperandTypeSelection';
 import LiteralValueInput from '../LiteralValueInput';
-import StepSelection from '../StepSelection';
 import {Action as ActionType, ActionError} from './types';
 import DSLEditorNode from '../DSLEditorNode';
 import {FormContext} from '../../Context';

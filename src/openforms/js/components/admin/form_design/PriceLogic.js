@@ -134,7 +134,12 @@ const Rule = ({jsonLogicTrigger, price = '', onChange, onDelete}) => {
       </div>
 
       <div className="logic-rule__rule">
-        <Trigger name="jsonLogicTrigger" logic={jsonLogicTrigger} onChange={onChange}>
+        <Trigger
+          name="jsonLogicTrigger"
+          logic={jsonLogicTrigger}
+          onChange={onChange}
+          withDSLPreview
+        >
           <FormattedMessage description="Price logic prefix" defaultMessage="Then the price is" />
           &nbsp;&euro;&nbsp;
           <NumberInput name="price" value={price} min="0.00" step="any" onChange={onChange} />

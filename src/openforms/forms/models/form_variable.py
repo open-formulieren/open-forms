@@ -86,6 +86,7 @@ class FormVariableManager(models.Manager):
                         skip_exc=KeyError,
                     ),
                     key=component["key"],
+                    name=component.get("label") or component["key"],
                     is_sensitive_data=component.get("isSensitiveData", False),
                     source=FormVariableSources.component,
                     data_type=get_component_datatype(component),
@@ -199,7 +200,7 @@ class FormVariable(models.Model):
         ]
 
     def __str__(self):
-        return _("Form variable %(name)s") % {"name": self.name}
+        return _("Form variable '{key}'").format(key=self.key)
 
     def get_initial_value(self):
         if self.source == FormVariableSources.static:
