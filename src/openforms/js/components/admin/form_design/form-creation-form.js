@@ -611,10 +611,6 @@ function reducer(draft, action) {
       }
       break;
     }
-    case 'ADD_STATIC_VARIABLES': {
-      draft.formVariables = [...action.payload];
-      break;
-    }
 
     /**
      * Price rules actions
@@ -761,15 +757,6 @@ const getFormData = async (formUuid, dispatch) => {
       type: 'FORM_STEPS_LOADED',
       payload: [],
     });
-
-    let staticVariablesResponse;
-    try {
-      staticVariablesResponse = await get(STATIC_VARIABLES_ENDPOINT);
-    } catch (e) {
-      dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-    }
-
-    dispatch({type: 'ADD_STATIC_VARIABLES', payload: staticVariablesResponse.data});
     return;
   }
 
@@ -839,6 +826,8 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
   const [state, dispatch] = useImmerReducer(reducer, initialState);
 
   // load all these plugin registries in parallel
+  // TODO: 'plugin' is no longer the best name, it's more loading the data that's dynamic
+  // but not dependent on the form itself.
   const pluginsToLoad = [
     {endpoint: PAYMENT_PLUGINS_ENDPOINT, stateVar: 'availablePaymentBackends'},
     {endpoint: FORM_DEFINITIONS_ENDPOINT, stateVar: 'formDefinitions'},
@@ -856,6 +845,9 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
       endpoint: `${PRICE_RULES_ENDPOINT}?form=${formUuid}`,
       stateVar: 'priceRules',
     });
+  } else {
+    // only fetch this data if we're creating a new form
+    pluginsToLoad.push({endpoint: STATIC_VARIABLES_ENDPOINT, stateVar: 'formVariables'});
   }
 
   const {loading} = useAsync(async () => {
