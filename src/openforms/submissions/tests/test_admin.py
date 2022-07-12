@@ -151,7 +151,7 @@ class TestSubmissionAdmin(VariablesTestMixin, WebTest):
 
 
 @disable_2fa
-class TestLogicEvaluated(VariablesTestMixin, WebTest):
+class LogicLogsAdminTests(VariablesTestMixin, WebTest):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -162,34 +162,31 @@ class TestLogicEvaluated(VariablesTestMixin, WebTest):
             },
         )
 
-        cls.user_without_permission = UserFactory.create()
-        cls.user_with_permission = UserFactory.create(
-            user_permissions=["submissions.view_submission"]
-        )
-
-        cls.staff_without_permission = StaffUserFactory.create()
         cls.staff_with_permission = StaffUserFactory.create(
             user_permissions=["submissions.view_submission"]
         )
 
     def test_user_without_permission_view(self):
-        self.app.set_user(self.user_without_permission)
+        user_without_permission = UserFactory.create()
+
         self.app.get(
             reverse("admin:logs-evaluated-logic", args=(self.submission.pk,)),
-            user=self.user_without_permission,
+            user=user_without_permission,
             status=status.HTTP_403_FORBIDDEN,
         )
 
     def test_user_with_permission_view(self):
-        self.app.set_user(self.user_with_permission)
+        user_with_permission = UserFactory.create(
+            user_permissions=["submissions.view_submission"]
+        )
+
         self.app.get(
             reverse("admin:logs-evaluated-logic", args=(self.submission.pk,)),
-            user=self.user_with_permission,
+            user=user_with_permission,
             status=status.HTTP_403_FORBIDDEN,
         )
 
     def test_user_staff_with_permission_view(self):
-        self.app.set_user(self.staff_with_permission)
         self.app.get(
             reverse("admin:logs-evaluated-logic", args=(self.submission.pk,)),
             user=self.staff_with_permission,
@@ -197,10 +194,11 @@ class TestLogicEvaluated(VariablesTestMixin, WebTest):
         )
 
     def test_user_staff_without_permission_view(self):
-        self.app.set_user(self.staff_without_permission)
+        staff_without_permission = StaffUserFactory.create()
+
         self.app.get(
             reverse("admin:logs-evaluated-logic", args=(self.submission.pk,)),
-            user=self.staff_without_permission,
+            user=staff_without_permission,
             status=status.HTTP_403_FORBIDDEN,
         )
 
