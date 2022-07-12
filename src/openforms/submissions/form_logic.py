@@ -111,7 +111,7 @@ def evaluate_form_logic(
             if step_index < trigger_from_index:
                 continue
         trigger_rule = jsonLogic(rule.json_logic_trigger, updated_submission_data)
-        evaluated_rules.append({"rule": rule, "trigger": trigger_rule})
+        evaluated_rules.append({"rule": rule, "trigger": bool(trigger_rule)})
         if not trigger_rule:
             continue
         for action in rule.actions:
