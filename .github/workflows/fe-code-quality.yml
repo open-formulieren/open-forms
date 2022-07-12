@@ -1,0 +1,38 @@
+name: Frontend code quality checks
+
+# Run this workflow every time a new commit pushed to your repository
+on:
+  push:
+    branches:
+      - master
+      - stable/*
+    tags:
+    paths:
+      - '**.scss'
+      - '**.js'
+      - '**.yaml'
+  pull_request:
+    paths:
+      - '**.scss'
+      - '**.js'
+      - '**.yaml'
+  workflow_dispatch:
+
+jobs:
+  prettier:
+    name: Check frontend code formatting with prettier
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '16'
+
+      - name: Install prettier
+        run: |
+          npm ci --legacy-peer-deps
+
+      - name: Run prettier
+        run: |
+          npm run checkformat
