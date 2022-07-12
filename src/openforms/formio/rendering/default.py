@@ -1,10 +1,12 @@
-from typing import Iterator, Union
+import copy
+from typing import Any, Iterator, Union
 
 from django.urls import reverse
 from django.utils.html import format_html_join
 from django.utils.safestring import SafeString, mark_safe
 
 from furl import furl
+from glom import Path
 
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
 from openforms.submissions.rendering.constants import RenderModes
@@ -96,6 +98,7 @@ class ColumnsNode(ContainerMixin, ComponentNode):
                     component=component,
                     renderer=self.renderer,
                     depth=self.depth + 1,
+                    path=self.path,
                 )
 
 
@@ -154,3 +157,67 @@ class FileNode(ComponentNode):
             )
         else:
             return ", ".join(f"{link} ({display})" for link, display in files)
+
+
+@register("editgrid")
+class EditGridNode(ContainerMixin, ComponentNode):
+    layout_modifier: str = "editgrid"
+    display_value: str = ""
+
+    def get_children(self) -> Iterator["ComponentNode"]:
+        """
+        Return children as many times as they are repeated in the data
+
+        The editgrid component is special because it may have a configuration such as:
+
+        .. code::
+
+            {
+                "key": "children",
+                "components": [
+                    {"key": "name", ...},
+                    {"key": "surname", ...},
+                ],
+                ...
+            }
+
+        But the data submitted with the form will be:
+
+        .. code::
+
+            {
+                "children": [
+                    {"name": "Jon", "surname": "Doe"},
+                    {"name": "Jane", "surname": "Doe"},
+                    ...
+                ]
+            }
+
+        So we need to repeat the child nodes of the configuration and associate them with the data
+        provided by the user.
+        """
+        repeats = 0
+        if self.value:
+            repeats = len(self.value)
+
+        children = []
+
+        for component in iter_components(
+            configuration=self.component, recursive=False, _is_root=False
+        ):
+            children.append(
+                ComponentNode.build_node(
+                    step=self.step,
+                    component=component,
+                    renderer=self.renderer,
+                    depth=self.depth + 1,
+                )
+            )
+
+        for node_index in range(repeats):
+            path = Path(self.component["key"])
+
+            for child in children:
+                new_child = copy.deepcopy(child)
+                new_child.path = Path(path, Path(node_index))
+                yield new_child

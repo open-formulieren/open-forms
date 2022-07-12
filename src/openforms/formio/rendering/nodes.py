@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Iterator, Literal, Optional, Union
 
+from glom import Path, glom
+
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
@@ -34,12 +36,14 @@ class ComponentNode(Node):
     step: SubmissionStep
     depth: int = 0
     is_layout = False
+    path: Path = None
 
     @staticmethod
     def build_node(
         step: SubmissionStep,
         component: Component,
         renderer: "Renderer",
+        path: Path = None,
         depth: int = 0,
     ) -> "ComponentNode":
         """
@@ -49,7 +53,7 @@ class ComponentNode(Node):
 
         node_cls = register[component["type"]]
         nested_node = node_cls(
-            step=step, component=component, renderer=renderer, depth=depth
+            step=step, component=component, renderer=renderer, depth=depth, path=path
         )
         return nested_node
 
@@ -119,7 +123,11 @@ class ComponentNode(Node):
         TODO: build and use the type conversion for Formio components.
         """
         key = self.component["key"]
-        value = self.step.data.get(key)
+        path = Path(key)
+        if self.path:
+            path = Path(self.path, Path(key))
+
+        value = glom(self.step.data, path, default=None)
         return value
 
     def get_children(self) -> Iterator["ComponentNode"]:
@@ -134,6 +142,7 @@ class ComponentNode(Node):
                 component=component,
                 renderer=self.renderer,
                 depth=self.depth + 1,
+                path=self.path,
             )
 
     def __iter__(self) -> Iterator["ComponentNode"]:

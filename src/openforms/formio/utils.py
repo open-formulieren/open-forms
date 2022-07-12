@@ -67,6 +67,22 @@ def is_layout_component(component):
     return False
 
 
+def component_in_editgrid(configuration: dict, component: dict) -> bool:
+    # Get all the editgrid components in the configuration
+    editgrids = []
+    for comp in iter_components(configuration=configuration):
+        if comp["type"] == "editgrid":
+            editgrids.append(comp)
+
+    # Check if the component is in the editgrid
+    for editgrid in editgrids:
+        for comp in iter_components(configuration=editgrid):
+            if comp["key"] == component["key"]:
+                return True
+
+    return False
+
+
 def format_date_value(date_value: str) -> str:
     try:
         parsed_date = date.fromisoformat(date_value)

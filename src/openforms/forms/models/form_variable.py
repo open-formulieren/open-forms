@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from glom import Path, glom
 
 from openforms.formio.utils import (
+    component_in_editgrid,
     get_component_datatype,
     get_component_default_value,
     is_layout_component,
@@ -64,8 +65,9 @@ class FormVariableManager(models.Manager):
             configuration=form_definition_configuration, recursive=True
         ):
             if (
-                is_layout_component(component)
+                (is_layout_component(component) and not component["type"] == "editgrid")
                 or component["key"] in existing_form_variables_keys
+                or component_in_editgrid(form_definition_configuration, component)
             ):
                 continue
 
