@@ -307,6 +307,7 @@ class StufZDSPluginTests(StufTestBase):
             "zds_zaaktype_status_code": "123",
             "zds_zaaktype_status_omschrijving": "aaabbc",
             "zds_documenttype_omschrijving_inzending": "aaabbc",
+            "zds_vertrouwelijkheidsaanduiding": "openbaar",
         }
 
         plugin = StufZDSRegistration("stuf")
@@ -380,6 +381,7 @@ class StufZDSPluginTests(StufTestBase):
             {
                 "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "open-forms-inzending.pdf",
                 "//zkn:object/zkn:formaat": "application/pdf",
+                "//zkn:object/zkn:vertrouwelijkAanduiding": "openbaar",
             },
         )
 
