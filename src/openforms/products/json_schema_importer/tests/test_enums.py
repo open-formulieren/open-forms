@@ -8,8 +8,7 @@ from ..entry import convert_json_schema_to_py
 class EnumPresenceTestCase(TestCase):
     """
     test output of function 'convert_json_schema_to_py' by passing
-    different  dicts  represting JSON schema of a single field
-    with type string but no format
+    different  enums present in JSON schema: primitive(unique-choice) and array(muliple-choices)
     """
 
     def setUp(self):
@@ -37,7 +36,7 @@ class EnumPresenceTestCase(TestCase):
         ]
 
     def test_primitive_enum(self):
-        """func output containes items from JSON schema in key == data"""
+        """func output containes items from JSON schema(enum unique choice) in key 'data'"""
         json_schema = deepcopy(self.json_schema)
         json_schema["properties"]["reden"]["type"] = "string"
         json_schema["properties"]["reden"]["enum"] = ["werk", "woning", "ondersteuning"]
@@ -50,7 +49,7 @@ class EnumPresenceTestCase(TestCase):
         self.assertEqual(result["components"][0]["dataType"], "string")
 
     def test_array_enum(self):
-        """func output containes items from JSON schema in key == values"""
+        """func output containes items from JSON schema (enum multiple choice) in key 'values'"""
         json_schema = deepcopy(self.json_schema)
         json_schema["properties"]["reden"]["type"] = "array"
         json_schema["properties"]["reden"]["items"] = {

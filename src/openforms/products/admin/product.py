@@ -7,6 +7,7 @@ from django.urls import path, reverse, reverse_lazy
 
 from openforms.forms.models.form import Form
 from openforms.forms.models.form_definition import FormDefinition
+from openforms.forms.models.form_step import FormStep
 
 from ..json_schema_importer.entry import convert_json_schema_to_py
 from ..models import Product
@@ -34,7 +35,7 @@ class ProductImportMixin:
                 # json schema from local file
                 # TODO (add validation for ext =='json')
                 module_dir = os.path.dirname(__file__)
-                file_path = os.path.join(module_dir, "json_schema.json")
+                file_path = os.path.join(module_dir, "json_schema_obj.json")
                 with open(file_path) as fh:
                     json_data = fh.read()
                     py_dict = json.loads(json_data)
@@ -44,9 +45,13 @@ class ProductImportMixin:
                     name=py_dict["title"], active=True, authentication_backends=["demo"]
                 )
                 form_definition = FormDefinition.objects.create(
-                    name="Product velden", configuration=formio_collection
+                    name="Product waiting for a form", configuration=formio_collection
                 )
-                # just for flake8 OK test
+                form_step = FormStep.objects.create(
+                    form=form, form_definition=form_definition
+                )
+                # print  to pass flake8 OK test
+                print("step object created", form_step.form)
                 msg = f"Created a formulier based on form:{form.name} and {form_definition.name}"
                 messages.add_message(request, messages.SUCCESS, msg)
 

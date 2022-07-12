@@ -44,6 +44,8 @@ class SingleTextFieldTestCase(TestCase):
         self.assertEqual(result["components"][0]["type"], "textfield")
         self.assertEqual(result["components"][0]["validate"].get("required"), False)
         self.assertEqual(result["components"][0]["validate"]["maxLength"], 250)
+        self.assertEqual(result["components"][0]["tableView"], True)
+        self.assertEqual(result["components"][0]["input"], True)
 
     def test_string_with_pattern(self):
         """func output has a certain pattern in validate dict"""
@@ -55,7 +57,7 @@ class SingleTextFieldTestCase(TestCase):
         self.assertEqual(result["components"][0]["validate"].get("pattern"), "^[A-Z]?$")
 
     def test_string_required(self):
-        """func output ....."""
+        """key required in JSON schema present in validation dictionary"""
         json_schema_required = deepcopy(self.json_schema_string)
         json_schema_required["required"] = ["comment"]
 
