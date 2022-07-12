@@ -58,10 +58,9 @@ class KVKProfileClient:
         client = config.profiles.build_client()
 
         try:
-            results = client.operation(
-                "getBasisprofielByKvkNummer",
-                method="GET",
-                data=None,
+            results = client.retrieve(
+                "basisprofielen",
+                url=f"v1/basisprofielen/{kvkNummer}",
                 kvkNummer=kvkNummer,
             )
         except RequestException as e:
