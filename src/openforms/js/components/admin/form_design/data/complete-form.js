@@ -141,21 +141,32 @@ const saveSteps = async (state, csrftoken) => {
  * Save the logic rules and price rules, report back any validation errors.
  */
 const saveLogic = async (state, csrftoken) => {
-  // form logic
   const {
     form: {url: formUrl},
-    logicRules,
-    logicRulesToDelete,
-    priceRules,
-    priceRulesToDelete,
   } = state;
+
+  const stepsByGeneratedId = getStepsByGeneratedId(state.formSteps);
+
+  let newState = produce(state, draft => {
+    for (const rule of draft.logicRules) {
+      // fix the trigger from step reference
+      rule.triggerFromStep = getStepReference(stepsByGeneratedId, rule.triggerFromStep);
+      // fix the actions that do something with the step(s)
+      for (const action of rule.actions) {
+        action.formStep = getStepReference(stepsByGeneratedId, action.formStep);
+      }
+    }
+  });
+
+  // form logic
+  const {logicRules, logicRulesToDelete, priceRules, priceRulesToDelete} = newState;
 
   const logicResults = await saveLogicRules(formUrl, csrftoken, logicRules, logicRulesToDelete);
   const priceResults = await savePriceRules(formUrl, csrftoken, priceRules, priceRulesToDelete);
 
   // update the state with updated references
   const validationErrors = [];
-  const newState = produce(state, draft => {
+  newState = produce(state, draft => {
     for (const [index, result] of logicResults.entries()) {
       if (result instanceof ValidationErrors) {
         validationErrors.push(result);

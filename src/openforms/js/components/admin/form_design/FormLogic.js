@@ -114,7 +114,7 @@ const Rule = ({
   _logicType,
   order,
   jsonLogicTrigger,
-  triggerFromStep: triggerFromStepUrl,
+  triggerFromStep: triggerFromStepIdentifier,
   actions,
   isAdvanced,
   onChange,
@@ -123,7 +123,7 @@ const Rule = ({
 }) => {
   const intl = useIntl();
   const [displayAdvancedOptions, setDisplayAdvancedOptions] = useState(false);
-  const triggerFromStep = useFormStep(triggerFromStepUrl);
+  const triggerFromStep = useFormStep(triggerFromStepIdentifier);
 
   const deleteConfirmMessage = intl.formatMessage({
     description: 'Logic rule deletion confirm message',
@@ -212,10 +212,10 @@ const Rule = ({
               <DSLEditorNode errors={null}>
                 <StepSelection
                   name="triggerFromStep"
-                  value={triggerFromStepUrl || ''}
+                  value={triggerFromStepIdentifier || ''}
                   onChange={onChange}
                 />
-                {!triggerFromStepUrl && (
+                {!triggerFromStepIdentifier && (
                   <>
                     &nbsp;
                     <FormattedMessage
