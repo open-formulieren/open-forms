@@ -928,8 +928,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     try {
       [newState, validationErrors] = await saveCompleteForm(state, featureFlags, csrftoken);
     } catch (e) {
-      // TODO: perhaps move all the exception handling to the reducer?
-
       // handle HTTP 401 errors, in case the session was expired. This results in a
       // state update AND we abort the rest of the flow.
       if (e instanceof NotAuthenticatedError) {

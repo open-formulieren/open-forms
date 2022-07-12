@@ -1,6 +1,6 @@
 import produce from 'immer';
 
-import {ExtendableError, ValidationErrors} from '../../../../utils/exception';
+import {ValidationErrors} from '../../../../utils/exception';
 import {post, put, apiDelete} from '../../../../utils/fetch';
 import {FORM_ENDPOINT} from '../constants';
 import {saveLogicRules, savePriceRules} from './logic';
@@ -265,10 +265,11 @@ const saveCompleteForm = async (state, featureFlags, csrftoken) => {
     [newState, variableValidationErrors] = await saveVariables(newState, csrftoken);
   }
 
-  // Save this new version of the form in the "form version control"
-  await saveVersion(newState, csrftoken);
-
   const validationErrors = [...logicValidationErrors, ...variableValidationErrors];
+  if (!validationErrors.length) {
+    // Save this new version of the form in the "form version control"
+    await saveVersion(newState, csrftoken);
+  }
   return [newState, validationErrors];
 };
 
