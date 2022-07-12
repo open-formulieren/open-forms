@@ -11,7 +11,7 @@ import useAsync from 'react-use/esm/useAsync';
 import {Tab as ReactTab, Tabs, TabList, TabPanel} from 'react-tabs';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import {apiDelete, get, post, put} from '../../../utils/fetch';
+import {post} from '../../../utils/fetch';
 import {APIError, ValidationErrors, NotAuthenticatedError} from '../../../utils/exception';
 import {getUniqueRandomString} from '../../../utils/random';
 import FAIcon from '../FAIcon';
@@ -21,7 +21,6 @@ import Loader from '../Loader';
 import {FormContext, FeatureFlagsContext} from './Context';
 import FormSteps from './FormSteps';
 import {
-  FORM_ENDPOINT,
   FORM_DEFINITIONS_ENDPOINT,
   REGISTRATION_BACKENDS_ENDPOINT,
   AUTH_PLUGINS_ENDPOINT,
@@ -32,7 +31,7 @@ import {
   CATEGORIES_ENDPOINT,
   STATIC_VARIABLES_ENDPOINT,
 } from './constants';
-import {loadPlugins, saveCompleteForm} from './data';
+import {loadPlugins, loadForm, saveCompleteForm} from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
@@ -169,12 +168,22 @@ function reducer(draft, action) {
     /**
      * Form-level actions
      */
-    case 'FORM_LOADED': {
-      return {
-        ...draft,
-        ...action.payload,
-      };
+    case 'FORM_DATA_LOADED': {
+      const {form, literals, selectedAuthPlugins, steps, variables} = action.payload;
+
+      if (form) draft.form = form;
+      if (literals) draft.literals = literals;
+      if (selectedAuthPlugins) draft.selectedAuthPlugins = selectedAuthPlugins;
+      if (variables) draft.formVariables = variables;
+
+      // set the form steps of the form and initialize the validation errors array
+      draft.formSteps = steps;
+      for (const step of draft.formSteps) {
+        step.validationErrors = [];
+      }
+      break;
     }
+
     case 'FIELD_CHANGED': {
       const {name, value} = action.payload;
       // names are prefixed like `form.foo` and `literals.bar`
@@ -220,13 +229,6 @@ function reducer(draft, action) {
       }
 
       draft[stateVar] = data;
-      break;
-    }
-    case 'FORM_STEPS_LOADED': {
-      draft.formSteps = action.payload;
-      for (const step of draft.formSteps) {
-        step.validationErrors = [];
-      }
       break;
     }
     case 'TOGGLE_AUTH_PLUGIN': {
@@ -733,70 +735,6 @@ function reducer(draft, action) {
   }
 }
 
-/**
- * Functions to fetch data.
- *
- * TODO: move to data/ package.
- */
-const getFormStepsData = async (formUuid, dispatch) => {
-  try {
-    var response = await get(`${FORM_ENDPOINT}/${formUuid}/steps`);
-    if (!response.ok) {
-      throw new Error('An error occurred while fetching the form steps.');
-    }
-  } catch (e) {
-    dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-  }
-
-  return response.data;
-};
-
-const getFormData = async (formUuid, dispatch) => {
-  if (!formUuid) {
-    dispatch({
-      type: 'FORM_STEPS_LOADED',
-      payload: [],
-    });
-    return;
-  }
-
-  try {
-    // do the requests in parallel
-    const requests = [
-      get(`${FORM_ENDPOINT}/${formUuid}`),
-      getFormStepsData(formUuid, dispatch),
-      get(`${FORM_ENDPOINT}/${formUuid}/variables`),
-    ];
-    const [response, formStepsData, responseVariables] = await Promise.all(requests);
-    if (!response.ok) {
-      throw new Error('An error occurred while fetching the form.');
-    } else if (!responseVariables.ok) {
-      throw new Error('An error occurred while fetching the form variables.');
-    }
-
-    // Set the loaded form data as state.
-    const {literals, ...form} = response.data;
-    const formVariables = responseVariables.data;
-
-    dispatch({
-      type: 'FORM_LOADED',
-      payload: {
-        selectedAuthPlugins: form.loginOptions.map((plugin, index) => plugin.identifier),
-        form: form,
-        literals: literals,
-        formVariables: formVariables,
-      },
-    });
-    dispatch({
-      type: 'FORM_STEPS_LOADED',
-      payload: formStepsData,
-    });
-  } catch (e) {
-    // TODO: convert to ErrorBoundary
-    dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-  }
-};
-
 const StepsFieldSet = ({submitting = false, loadingErrors, steps = [], ...props}) => {
   if (loadingErrors) {
     return <div className="fetch-error">{loadingErrors}</div>;
@@ -854,9 +792,16 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     const promises = [
       // TODO: this is a bad function name, refactor
       loadPlugins(pluginsToLoad),
-      getFormData(formUuid, dispatch),
+      loadForm(formUuid),
     ];
-    const [pluginsData] = await Promise.all(promises);
+
+    // TODO: API error handling - this should be done using ErrorBoundary instead of
+    // state-changes.
+    const [pluginsData, formData] = await Promise.all(promises);
+    dispatch({
+      type: 'FORM_DATA_LOADED',
+      payload: formData,
+    });
 
     // load various module plugins & update the state
     for (const group of zip(pluginsToLoad, pluginsData)) {

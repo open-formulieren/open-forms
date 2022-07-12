@@ -8,3 +8,4 @@
 
 export {saveCompleteForm} from './complete-form';
 export {loadPlugins, PluginLoadingError} from './plugins';
+export {default as loadForm} from './read-form';
