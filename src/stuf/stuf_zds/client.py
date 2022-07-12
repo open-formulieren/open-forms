@@ -18,11 +18,7 @@ from lxml.etree import Element
 from requests import RequestException, Response
 
 from openforms.config.models import GlobalConfiguration
-from openforms.logging.logevent import (
-    stuf_zds_failure_response,
-    stuf_zds_request,
-    stuf_zds_success_response,
-)
+from openforms.logging import logevent
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
@@ -169,7 +165,7 @@ class StufZDSClient:
         ref_nr = context["referentienummer"]
 
         try:
-            stuf_zds_request(self.service, url)
+            logevent.stuf_zds_request(self.service, url)
             response = requests.post(
                 url,
                 data=request_data.encode(
@@ -193,7 +189,7 @@ class StufZDSClient:
                     ref_nr,
                     error_text,
                 )
-                stuf_zds_failure_response(self.service, url)
+                logevent.stuf_zds_failure_response(self.service, url)
                 raise RegistrationFailed(
                     f"error while making backend request: HTTP {response.status_code}: {error_text}",
                     response=response,
@@ -205,18 +201,18 @@ class StufZDSClient:
                 "bad request for referentienummer '%s'",
                 ref_nr,
             )
-            stuf_zds_failure_response(self.service, url)
+            logevent.stuf_zds_failure_response(self.service, url)
             raise RegistrationFailed("error while making backend request") from e
 
         try:
             xml = df_fromstring(response.content)
         except etree.XMLSyntaxError as e:
-            stuf_zds_failure_response(self.service, url)
+            logevent.stuf_zds_failure_response(self.service, url)
             raise RegistrationFailed(
                 "error while parsing incoming backend response XML"
             ) from e
 
-        stuf_zds_success_response(self.service, url)
+        logevent.stuf_zds_success_response(self.service, url)
 
         return response, xml
 
@@ -398,44 +394,25 @@ class StufZDSClient:
         return None
 
     def check_config(self):
-        template = "stuf_zds/soap/geefZaakDetails_check.xml"
-        context = self._get_request_base_context()
+        url = f"{self.service.get_endpoint(EndpointType.beantwoord_vraag)}?wsdl"
 
         try:
-            self._make_request(
-                template,
-                context,
-                endpoint_type=EndpointType.beantwoord_vraag,
-                soap_action="geefZaakdetails_ZakLv01",
+            logevent.stuf_zds_request(self.service, url)
+            response = requests.get(
+                url,
+                auth=self.service.get_auth(),
+                cert=self.service.get_cert(),
+                verify=self.service.get_verify(),
             )
-        except RegistrationFailed as e:
-            if not e.response:
+            if response.status_code < 200 or response.status_code >= 400:
+                error_text = parse_soap_error_text(response)
                 raise InvalidPluginConfiguration(
-                    _("Invalid response: {exception}").format(exception=e)
+                    f"Error while making backend request: HTTP {response.status_code}: {error_text}",
                 )
-            else:
-                try:
-                    xml = df_fromstring(e.response.content)
-                except etree.XMLSyntaxError as e:
-                    raise InvalidPluginConfiguration(
-                        _("XMLSyntaxError in error response: {exception}").format(
-                            exception=e
-                        )
-                    )
-                else:
-                    faults = xml.xpath("//*[local-name()='Fault']/faultstring")
-                    if not faults:
-                        raise InvalidPluginConfiguration(
-                            _(
-                                "Unexpected response: expected 'Fault' node in SOAP response"
-                            )
-                        )
-                    elif faults[0].text != "Object niet gevonden":
-                        raise InvalidPluginConfiguration(
-                            _(
-                                "Unexpected response: expected '{message}' SOAP response"
-                            ).format(message="Object niet gevonden")
-                        )
+        except RequestException as e:
+            raise InvalidPluginConfiguration(
+                _("Invalid response: {exception}").format(exception=e)
+            )
 
 
 def parse_soap_error_text(response):
