@@ -8,6 +8,38 @@ import {updateOrCreateFormSteps} from './steps';
 import {createOrUpdateFormVariables} from './variables';
 import {createFormVersion} from './versions';
 
+const getStepsByGeneratedId = formSteps => {
+  const stepsWithGeneratedId = formSteps.filter(step => !!step._generatedId);
+  return Object.fromEntries(stepsWithGeneratedId.map(step => [step._generatedId, step]));
+};
+
+/**
+ * Resolve temporary step IDs to actual URLs.
+ *
+ * This requires the stepsByGeneratedId being up-to-date with server-side UUID/URLs,
+ * so typically you can only call this after all the form steps are committed to the
+ * backend.
+ *
+ * This relies on the client-side _generatedId still being around while the URL has been
+ * set. If the passed in stepIdentifier is a URL, it is left untouched. If not, it is
+ * assumed to be a generated ID and the step is looked up in the `stepsByGeneratedId`
+ * mapping.
+ *
+ * The return value is the URL reference (if applicable).
+ */
+const getStepReference = (stepsByGeneratedId, stepIdentifier, stepAttribute = 'url') => {
+  // empty-ish value -> leave untouched
+  if (!stepIdentifier) return stepIdentifier;
+  try {
+    new URL(stepIdentifier);
+    // if it's a URL, return it - this was already set by the backend.
+    return stepIdentifier;
+  } catch {
+    const step = stepsByGeneratedId[stepIdentifier];
+    return step[stepAttribute];
+  }
+};
+
 /**
  * Save the form itself without any related objects.
  */
@@ -162,27 +194,15 @@ const saveVariables = async (state, csrftoken) => {
     form: {url: formUrl},
   } = state;
 
-  // resolve the variable.formDefinition URLs from the updated state after form steps
-  // and form definitions have been saved. This relies on the _generatedId for temporary
-  // steps/definitions.
-  const stepsByGeneratedId = Object.fromEntries(
-    state.formSteps.filter(step => !!step._generatedId).map(step => [step._generatedId, step])
-  );
+  const stepsByGeneratedId = getStepsByGeneratedId(state.formSteps);
   let newState = produce(state, draft => {
     for (const variable of draft.formVariables) {
       variable.form = formUrl;
-      // static/user defined variables do not relate to any form definition - this may be
-      // null or an empty string
-      if (!variable.formDefinition) continue;
-      // if the variable.formDefinition is not a URL, we have to resolve it against the
-      // temporary client-side ID. This also allows us to update the state with the
-      // actual resolved resource URLs.
-      try {
-        new URL(variable.formDefinition);
-      } catch {
-        const formStep = stepsByGeneratedId[variable.formDefinition];
-        variable.formDefinition = formStep.formDefinition;
-      }
+      variable.formDefinition = getStepReference(
+        stepsByGeneratedId,
+        variable.formDefinition,
+        'formDefinition'
+      );
     }
   });
 
