@@ -49,8 +49,8 @@ jobs:
           sudo apt-get install libxml2-dev libxmlsec1-dev libxmlsec1-openssl gettext
 
       - uses: actions/setup-node@v3
-          with:
-            node-version-file: '.nvmrc'
+        with:
+          node-version-file: '.nvmrc'
 
       - name: Start CI docker services
         run: |
