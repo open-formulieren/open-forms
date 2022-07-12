@@ -702,8 +702,11 @@ function reducer(draft, action) {
           prefixedErrors.push(..._prefixedErrors);
         }
 
-        // update the state
-        draft.submitting = false;
+        // update state depending on the validation errors. If there are errors, we set
+        // submitting to false so they can correct the validation errors.
+        if (validationErrors.lenth) {
+          draft.submitting = false;
+        }
         draft.validationErrors.push(...prefixedErrors);
         draft.tabsWithErrors.push(...tabsWithErrors);
 
