@@ -37,7 +37,7 @@ jobs:
       - uses: isort/isort-action@v0.1.0
         with:
           requirementsFiles: requirements/ci.txt
-          sortPaths: "src docs"
+          sortPaths: 'src docs'
           configuration: '--check-only --diff'
 
   black:
@@ -94,24 +94,6 @@ jobs:
           echo '| :--- | ---- | ------ | :---- |' >> $GITHUB_STEP_SUMMARY
           python ./bin/flake8_summary.py "${{ steps.flake8.outputs.flake8_output }}" >> $GITHUB_STEP_SUMMARY
 
-  prettier:
-    name: Check frontend code formatting with prettier
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2-beta
-        with:
-          node-version: '16'
-
-      - name: Install prettier
-        run: |
-          npm ci --legacy-peer-deps
-
-      - name: Run prettier
-        run: |
-          npm run checkformat
-
   migrations:
     name: Check for model changes not present in the migrations or default_admin_index fixture
     runs-on: ubuntu-latest
@@ -124,7 +106,8 @@ jobs:
         ports:
           - 5432:5432
         # Needed because the postgres container does not provide a healthcheck
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        options:
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - uses: actions/checkout@v2
