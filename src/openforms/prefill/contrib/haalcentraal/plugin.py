@@ -113,39 +113,20 @@ class HaalCentraalPrefill(BasePlugin):
         )
 
     def check_config(self):
-        check_bsn = "111222333"
         try:
             config = HaalCentraalConfig.get_solo()
             if not config.service:
                 raise InvalidPluginConfiguration(_("Service not selected"))
 
             client = config.service.build_client()
-            client.retrieve(
+            client.list(
                 "ingeschrevenpersonen",
-                burgerservicenummer=check_bsn,
                 request_kwargs=self.request_kwargs,
+                params={"burgerservicenummer": "123"},
             )
         except ClientError as e:
-            e = e.__cause__ or e
-            # we expect a 404 for this BSN
-            response = getattr(e, "response", None)
-            if not response or response.status != 404:
-                raise InvalidPluginConfiguration(
-                    _("Client error: {exception}").format(exception=e)
-                )
-
-            # also check the body JSON
-            data = response.json()
-            if data.get("status") != 404:
-                raise InvalidPluginConfiguration(
-                    _("Missing status 404 in response body")
-                )
-        else:
-            # shouldn't happen
             raise InvalidPluginConfiguration(
-                _("Check call unexpectedly succeeded for test BSN '{}'").format(
-                    check_bsn
-                )
+                _("Client error: {exception}").format(exception=e)
             )
 
     def get_config_actions(self):
