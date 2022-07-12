@@ -6,7 +6,7 @@ from django.utils.translation import gettext as _
 from django_webtest import WebTest
 from rest_framework import status
 
-from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
+from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.forms.tests.factories import FormLogicFactory
 from openforms.logging import logevent
 from openforms.logging.logevent import submission_start
@@ -162,21 +162,46 @@ class TestLogicEvaluated(VariablesTestMixin, WebTest):
             },
         )
 
-        cls.admin_user = SuperUserFactory.create()
-        cls.anonymous_user = UserFactory.create()
+        cls.user_without_permission = UserFactory.create()
+        cls.user_with_permission = UserFactory.create(
+            user_permissions=["submissions.view_submission"]
+        )
 
-    def test_invalid_permission_view(self):
+        cls.staff_without_permission = StaffUserFactory.create()
+        cls.staff_with_permission = StaffUserFactory.create(
+            user_permissions=["submissions.view_submission"]
+        )
+
+    def test_user_without_permission_view(self):
+        self.app.set_user(self.user_without_permission)
         self.app.get(
             reverse("admin:logs-evaluated-logic", args=(self.submission.pk,)),
-            user=self.anonymous_user,
+            user=self.user_without_permission,
             status=status.HTTP_403_FORBIDDEN,
         )
 
-    def test_valid_permission_view(self):
+    def test_user_with_permission_view(self):
+        self.app.set_user(self.user_with_permission)
         self.app.get(
             reverse("admin:logs-evaluated-logic", args=(self.submission.pk,)),
-            user=self.admin_user,
+            user=self.user_with_permission,
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    def test_user_staff_with_permission_view(self):
+        self.app.set_user(self.staff_with_permission)
+        self.app.get(
+            reverse("admin:logs-evaluated-logic", args=(self.submission.pk,)),
+            user=self.staff_with_permission,
             status=status.HTTP_200_OK,
+        )
+
+    def test_user_staff_without_permission_view(self):
+        self.app.set_user(self.staff_without_permission)
+        self.app.get(
+            reverse("admin:logs-evaluated-logic", args=(self.submission.pk,)),
+            user=self.staff_without_permission,
+            status=status.HTTP_403_FORBIDDEN,
         )
 
     def test_submission_logs_evaluated_logic_view_with_rules(self):
@@ -200,10 +225,10 @@ class TestLogicEvaluated(VariablesTestMixin, WebTest):
 
         response = self.app.get(
             reverse("admin:logs-evaluated-logic", args=(self.submission.pk,)),
-            user=self.admin_user,
+            user=self.staff_with_permission,
         )
 
-        self.assertEquals(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertContains(response, "birthdate")
         self.assertContains(response, operator)
         self.assertContains(response, date_compared)
@@ -211,8 +236,8 @@ class TestLogicEvaluated(VariablesTestMixin, WebTest):
     def test_submission_logs_evaluated_logic_view_without_rule(self):
         response = self.app.get(
             reverse("admin:logs-evaluated-logic", args=(self.submission.pk,)),
-            user=self.admin_user,
+            user=self.staff_with_permission,
         )
 
-        self.assertEquals(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertContains(response, _("No logic rules for that submission"))

@@ -24,13 +24,16 @@
         
         {% else %}
             {% for log in logs_activity  %}
-                <fieldset class="module aligned collapse collapsed">
-                    <h2>{{ log.timestamp|date:'Y-m-d H:i:s' }} - {% trans 'Logic' %} - </h2>
+                <span class="timestamp-log"></span>
+                <fieldset class="module aligned collapse collapsed fieldset-log">
+                    <h2>
+                        {{ log.timestamp|date:'Y-m-d H:i:s' }} &#40;{{ log.timestamp|timesince }}&#41; -  {% trans 'Logic' %} - 
+                    </h2>
                     <h4> {% trans "Logic rules" %} </h4>
                     <table class="logic-rules-tables">
                         <thead>
                             <th class="rule-width"> {% trans "Rule" %} </th>
-                            <th class="trigger-width"> {% trans "Trigger" %} </th>
+                            <th class="trigger-width"> {% trans "Triggered" %} </th>
                             <th> {% trans "Action" %} </th>
                         </thead>
                         <tbody>
@@ -39,7 +42,7 @@
                                         <td>
                                             {{ rule.source_components }}
                                         </td>
-                                        <td>{{rule.trigger|yesno|capfirst}} </td>
+                                        <td>{{ rule.trigger|yesno|capfirst }} </td>
                                         <td>
                                             {{ rule.targeted_components }}
                                         </td>

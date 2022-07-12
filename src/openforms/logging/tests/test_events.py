@@ -66,16 +66,14 @@ class EventTests(VariablesTestMixin, TestCase):
         logevent.submission_logic_evaluated(
             submission,
             [{"rule": rule, "trigger": True}, {"rule": rule_2, "trigger": False}],
-            submission.get_merged_data(),
+            submission.data,
         )
 
-        logs = submission.logs.all()
         log = submission.logs.get()
         logged_rules = log.extra_data["log_evaluated_rules"]
 
-        self.assertEquals(1, logs.count())
-        self.assertEquals(2, len(logged_rules))
-        self.assertEquals(
+        self.assertEqual(2, len(logged_rules))
+        self.assertEqual(
             {
                 "trigger": True,
                 "source_components": json_logic_trigger,
@@ -83,7 +81,7 @@ class EventTests(VariablesTestMixin, TestCase):
             },
             logged_rules[0],
         )
-        self.assertEquals(
+        self.assertEqual(
             {
                 "trigger": False,
                 "source_components": json_logic_trigger_2,

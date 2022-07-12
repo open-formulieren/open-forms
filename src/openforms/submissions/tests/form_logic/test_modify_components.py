@@ -1542,7 +1542,7 @@ class EvaluateLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestC
         logs = TimelineLogProxy.objects.all()
         log = TimelineLogProxy.objects.last()
 
-        self.assertEquals(1, logs.count())
+        self.assertEqual(1, logs.count())
         self.assertTrue(log.extra_data["log_evaluated_rules"][0]["trigger"])
 
     def test_evaluate_logic_log_event_not_triggered(self):
@@ -1598,5 +1598,5 @@ class EvaluateLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestC
         logs = TimelineLogProxy.objects.all()
         log = TimelineLogProxy.objects.last()
 
-        self.assertEquals(1, logs.count())
+        self.assertEqual(1, logs.count())
         self.assertFalse(log.extra_data["log_evaluated_rules"][0]["trigger"])
