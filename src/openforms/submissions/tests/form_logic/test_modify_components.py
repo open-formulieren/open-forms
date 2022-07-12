@@ -11,6 +11,7 @@ from openforms.forms.tests.factories import (
     FormLogicFactory,
     FormStepFactory,
 )
+from openforms.logging.models import TimelineLogProxy
 
 from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory
@@ -1487,3 +1488,115 @@ class EvaluateLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestC
                 "hidden": True,
             },
         )
+
+    def test_evaluate_logic_log_event_triggered(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "firstname",
+                        "hidden": False,
+                        "clearOnHide": True,
+                    },
+                    {
+                        "type": "date",
+                        "key": "birthdate",
+                        "hidden": False,
+                        "clearOnHide": True,
+                    },
+                ]
+            },
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                ">": [{"date": {"var": "birthdate"}}, {"date": "2022-06-20"}]
+            },
+            actions=[
+                {
+                    "component": "firstname",
+                    "formStep": "",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "disabled", "type": "bool"},
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={
+                "firstname": "foo",
+                "birthdate": "2022-06-21",
+            },
+        )
+
+        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
+
+        logs = TimelineLogProxy.objects.all()
+        self.assertEqual(1, logs.count())
+        log = logs[0]
+        self.assertTrue(log.extra_data["log_evaluated_rules"][0]["trigger"])
+
+    def test_evaluate_logic_log_event_not_triggered(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "firstname",
+                        "hidden": False,
+                        "clearOnHide": True,
+                    },
+                    {
+                        "type": "date",
+                        "key": "birthdate",
+                        "hidden": False,
+                        "clearOnHide": True,
+                    },
+                ]
+            },
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                ">": [{"date": {"var": "birthdate"}}, {"date": "2022-06-20"}]
+            },
+            actions=[
+                {
+                    "component": "firstname",
+                    "formStep": "",
+                    "action": {
+                        "type": "property",
+                        "property": {"value": "disabled", "type": "bool"},
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={
+                "firstname": "foo",
+                "birthdate": "2022-06-19",
+            },
+        )
+
+        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
+
+        logs = TimelineLogProxy.objects.all()
+        self.assertEqual(1, logs.count())
+        log = logs[0]
+        self.assertFalse(log.extra_data["log_evaluated_rules"][0]["trigger"])

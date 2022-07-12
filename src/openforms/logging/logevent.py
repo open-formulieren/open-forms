@@ -438,6 +438,33 @@ def submission_export_list(form: "Form", user: "User"):
     )
 
 
+def submission_logic_evaluated(
+    submission: "Submission", evaluated_rules, updated_submission_data
+):
+
+    if not evaluated_rules:
+        return
+    log_evaluated_rules = []
+
+    for evaluated_rule in evaluated_rules:
+
+        rule = evaluated_rule["rule"]
+
+        evaluated_rule_data = {
+            "source_components": rule.json_logic_trigger,
+            "targeted_components": rule.actions,
+            "trigger": evaluated_rule["trigger"],
+        }
+
+        log_evaluated_rules.append(evaluated_rule_data)
+
+    _create_log(
+        submission,
+        "submission_logic_evaluated",
+        extra_data={"log_evaluated_rules": log_evaluated_rules},
+    )
+
+
 # - - -
 
 
