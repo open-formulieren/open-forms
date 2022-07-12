@@ -27,7 +27,10 @@
                 <span class="timestamp-log"></span>
                 <fieldset class="module aligned collapse collapsed fieldset-log">
                     <h2>
-                        {{ log.timestamp|date:'Y-m-d H:i:s' }} &#40;{{ log.timestamp|timesince }}&#41; -  {% trans 'Logic' %} - 
+                        <time datetime="{{ log.timestamp.isoformat }}" title="{{ log.timestamp|date:'Y-m-d H:i:s' }}">
+                            {% blocktrans with since=log.timestamp|timesince %}{{ since }} ago{% endblocktrans %}
+                        </time>
+                        - {% trans 'Logic' %} -
                     </h2>
                     <h4> {% trans "Logic rules" %} </h4>
                     <table class="logic-rules-tables">

@@ -1539,10 +1539,10 @@ class EvaluateLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestC
         )
 
         evaluate_form_logic(submission, submission_step, submission.get_merged_data())
-        logs = TimelineLogProxy.objects.all()
-        log = TimelineLogProxy.objects.last()
 
+        logs = TimelineLogProxy.objects.all()
         self.assertEqual(1, logs.count())
+        log = logs[0]
         self.assertTrue(log.extra_data["log_evaluated_rules"][0]["trigger"])
 
     def test_evaluate_logic_log_event_not_triggered(self):
@@ -1595,8 +1595,8 @@ class EvaluateLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestC
         )
 
         evaluate_form_logic(submission, submission_step, submission.get_merged_data())
-        logs = TimelineLogProxy.objects.all()
-        log = TimelineLogProxy.objects.last()
 
+        logs = TimelineLogProxy.objects.all()
         self.assertEqual(1, logs.count())
+        log = logs[0]
         self.assertFalse(log.extra_data["log_evaluated_rules"][0]["trigger"])

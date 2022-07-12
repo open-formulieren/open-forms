@@ -438,3 +438,11 @@ body {
   background-color: var(--body-bg) !important;
   color: var(--body-fg);
 }
+
+// allow nested tags inside of h2 elements for fieldsets, as they are by default hidden
+// by django's css (.fieldset.collapsed * {display: none;})
+fieldset.collapsed h2 {
+  * {
+    display: initial;
+  }
+}

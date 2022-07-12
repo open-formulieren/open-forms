@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext as _
 from django.views.generic import ListView
 
 from openforms.utils.mixins import UserIsStaffMixin
@@ -9,7 +10,7 @@ from .models import Submission
 
 class LogsEvaluatedLogicView(UserIsStaffMixin, PermissionRequiredMixin, ListView):
 
-    template_name = "submission_logs/submission_logs.html"
+    template_name = "admin/submissions/submission/logs.html"
     context_object_name = "logs_activity"
     permission_required = "submissions.view_submission"
 
@@ -28,5 +29,11 @@ class LogsEvaluatedLogicView(UserIsStaffMixin, PermissionRequiredMixin, ListView
 
     def get_context_data(self):
         context = super().get_context_data()
-        context.update({"opts": Submission._meta, "original": self._submission})
+        context.update(
+            {
+                "opts": Submission._meta,
+                "original": self._submission,
+                "title": _("submission logs"),
+            }
+        )
         return context
