@@ -26,35 +26,29 @@ def check_kvk_remote_validator():
     try:
         client = KVKSearchClient()
         results = client.query(kvkNummer=check_kvk)
-    except KVKClientError as e:
+    except (KVKClientError, ClientError) as e:
         entry.status = None
-        entry.status_message = _("Configuration error: {exception}").format(exception=e)
-    except ClientError as e:
-        e = e.__cause__ or e
-        entry.status = None
-        entry.status_message = _("Client error: {exception}").format(exception=e)
+        entry.error = str(e.__cause__ or e)
     except Exception as e:
         entry.status = False
-        entry.status_message = _("Internal error: {exception}").format(exception=e)
+        entry.error = str(e)
     else:
         if not isinstance(results, dict):
             entry.status = False
-            entry.status_message = _("Response not a dictionary")
+            entry.error = _("Response not a dictionary")
             return entry
         items = results.get("resultaten")
         if not items or not isinstance(items, list):
             entry.status = False
-            entry.status_message = _("Response does not contain results")
+            entry.error = _("Response does not contain results")
             return entry
         num = items[0].get("kvkNummer", None)
         if num != check_kvk:
             entry.status = False
-            entry.status_message = _(
-                "Did not find kvkNummer='{kvk}' in results"
-            ).format(kvk=check_kvk)
+            entry.error = _("Did not find kvkNummer='{kvk}' in results").format(
+                kvk=check_kvk
+            )
             return results
-
         entry.status = True
-        entry.status_message = ""
 
     return entry

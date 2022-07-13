@@ -29,7 +29,14 @@
                         {% for entry in section.entries %}
                             <tr>
                                 <td><strong>{{ entry.name }}</strong></td>
-                                <td>{{ entry.status_icon }}{% if entry.status_message %} {{ entry.status_message|linebreaksbr }}{% endif %}</td>
+                                <td {% if entry.error %}title="{{ entry.error }}"{% endif %}>
+                                    {{ entry.status_icon }}
+                                    {% if entry.status is False %}
+                                        {% trans "Failed to validate the configuration." %}
+                                    {% elif entry.status is None %}
+                                        {% trans "Skipped" %}
+                                    {% endif %}
+                                </td>
                                 <td>
                                     {% for label, url in entry.actions %}
                                         {% if url %}

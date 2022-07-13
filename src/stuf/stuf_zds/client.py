@@ -397,14 +397,13 @@ class StufZDSClient:
         url = f"{self.service.get_endpoint(EndpointType.beantwoord_vraag)}?wsdl"
 
         try:
-            logevent.stuf_zds_request(self.service, url)
             response = requests.get(
                 url,
                 auth=self.service.get_auth(),
                 cert=self.service.get_cert(),
                 verify=self.service.get_verify(),
             )
-            if response.status_code < 200 or response.status_code >= 400:
+            if not response.ok:
                 error_text = parse_soap_error_text(response)
                 raise InvalidPluginConfiguration(
                     f"Error while making backend request: HTTP {response.status_code}: {error_text}",

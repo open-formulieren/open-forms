@@ -12,7 +12,6 @@ from openforms.config.data import Entry
 from openforms.contrib.kvk.checks import check_kvk_remote_validator
 from openforms.dmn.registry import register as dmn_register
 from openforms.payments.registry import register as payments_register
-from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.prefill.registry import register as prefill_register
 from openforms.registrations.registry import register as registrations_register
 from openforms.utils.mixins import UserIsStaffMixin
@@ -95,31 +94,20 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
     def get_plugin_entry(self, plugin: Any) -> Entry:
         # undocumented query string support - helps for developers ;)
         requested_plugin = self.request.GET.get("plugin")
+        status, error = True, ""
         if hasattr(plugin, "identifier") and not _subset_match(
             requested_plugin, plugin.identifier
         ):
             return Entry(
                 name=plugin.verbose_name,
                 status=None,
-                status_message=_("Skipped"),
                 actions=[],
             )
 
         try:
             plugin.check_config()
-        except InvalidPluginConfiguration as e:
-            status_message = e
-            status = False
-        except NotImplementedError:
-            status_message = _("Not implemented")
-            status = None
         except Exception as e:
-            status_message = _("Internal error: {exception}").format(exception=e)
-            status = False
-        else:
-            status_message = None
-            status = True
-
+            status, error = False, str(e)
         try:
             actions = plugin.get_config_actions()
         except NotImplementedError:
@@ -140,8 +128,8 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
         return Entry(
             name=plugin.verbose_name,
             status=status,
-            status_message=status_message,
             actions=actions,
+            error=error,
         )
 
     def get_address_entries(self):
@@ -152,7 +140,7 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
                 Entry(
                     name=_("unknown"),
                     status=False,
-                    status_message=str(e),
+                    error=str(e),
                 )
             ]
         else:

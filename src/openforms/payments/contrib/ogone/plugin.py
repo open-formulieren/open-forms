@@ -159,7 +159,7 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
             response.raise_for_status()
         except Exception as e:
             entry.status = False
-            entry.status_message = str(e)
+            entry.error = str(e)
         else:
             entry.status = True
         return entry
