@@ -30,8 +30,7 @@ from .serializers import TemporaryFileUploadSerializer
     summary=_("Download the PDF report"),
     description=_(
         "Download the PDF report containing the submission data. The endpoint requires "
-        "a token which is tied to the submission from the session. Once the PDF is "
-        "downloaded, this token is invalidated. The token also automatically expires "
+        "a token which is tied to the submission from the session. The token automatically expires "
         "after {expire_days} day(s)."
     ).format(expire_days=settings.SUBMISSION_REPORT_URL_TOKEN_TIMEOUT_DAYS),
     responses={200: bytes},

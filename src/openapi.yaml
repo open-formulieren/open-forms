@@ -2455,10 +2455,9 @@ paths:
   /api/v1/submissions/{report_id}/{token}/download:
     get:
       operationId: submissions_download_retrieve
-      description: Download het document met de ingezonden gegevens, in PDF vorm.
-        Dit document kan alleen worden opgevraagd indien het juiste token is meegegeven,
-        die hoort bij de formulier sessie. Nadat het document is gedownload, of na
-        1 dagen, is het token niet meer te gebruiken.
+      description: Download the PDF report containing the submission data. The endpoint
+        requires a token which is tied to the submission from the session. The token
+        automatically expires after 1 day(s).
       summary: Download the PDF report
       parameters:
       - in: path

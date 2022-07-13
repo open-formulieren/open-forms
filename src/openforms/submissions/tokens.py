@@ -24,7 +24,6 @@ class SubmissionReportTokenGenerator(BaseTokenGenerator):
     def get_hash_value_parts(self, submission_report: SubmissionReport) -> List[str]:
         submission_report_attributes = (
             "id",
-            "last_accessed",
             "submission",
         )
         submission_report_bits = [
