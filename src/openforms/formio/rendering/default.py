@@ -1,5 +1,5 @@
 import copy
-from typing import Any, Iterator, Union
+from typing import Iterator, Union
 
 from django.urls import reverse
 from django.utils.html import format_html_join
@@ -23,7 +23,7 @@ class ContainerMixin:
 
     @property
     def is_visible(self) -> bool:
-        # fieldset does not support the showInFoo properties, so we don't use the super
+        # fieldset/editgrid components do not support the showInFoo properties, so we don't use the super
         # class.
         if self.mode == RenderModes.export:
             return True

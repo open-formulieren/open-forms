@@ -17,7 +17,8 @@
     padding-top: $grid-margin-1;
   }
 
-  &#{&}--fieldset {
+  &#{&}--fieldset,
+  &#{&}--editgrid {
     padding-top: $grid-margin-2;
 
     .submission-step-row__label {
