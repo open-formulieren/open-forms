@@ -13,7 +13,7 @@ from django.views.generic import TemplateView
 from decorator_include import decorator_include
 
 from openforms.accounts.oidc.views import AdminLoginFailure
-from openforms.api.decorators import api_headers
+from openforms.api.decorators import response_api_headers
 from openforms.emails.admin import EmailTestAdminView
 from openforms.emails.views import EmailWrapperTestView
 from openforms.submissions.dev_views import SubmissionPDFTestView
@@ -62,7 +62,10 @@ urlpatterns = [
     ),
     path("cookies/", include("cookie_consent.urls")),
     path("tinymce/", decorator_include(login_required, "tinymce.urls")),
-    path("api/", decorator_include(api_headers, "openforms.api.urls", namespace="api")),
+    path(
+        "api/",
+        decorator_include(response_api_headers, "openforms.api.urls", namespace="api"),
+    ),
     path("auth/", include("openforms.authentication.urls", namespace="authentication")),
     path(
         "appointments/",

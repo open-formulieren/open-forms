@@ -1,18 +1,20 @@
 from functools import wraps
 
-from django.conf import settings
+from django.utils.cache import add_never_cache_headers
 
 
-def api_headers(view_func):
+def response_api_headers(view_func):
     """
-    Decorator that adds certain HTTP headers to API responses based on django settings.
+    Decorator. Add certain HTTP headers to API responses based on django settings.
+    Pragma and Cache-Control are added to prevent browsers from caching API responses.
+    * This is done for security reasons.
     """
 
     @wraps(view_func)
     def _wrapped_view_func(*args, **kwargs):
         response = view_func(*args, **kwargs)
-        for header, value in settings.API_HEADERS.items():
-            response[header] = value
+        add_never_cache_headers(response)
+        response["Pragma"] = "no-cache"
         return response
 
     return _wrapped_view_func

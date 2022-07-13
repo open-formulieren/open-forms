@@ -8,6 +8,11 @@ Open Forms can be ran both as a Docker container or directly on a VPS or
 dedicated server. It depends on other services, such as database and cache
 backends, which can be configured through environment variables.
 
+.. note::
+
+    It's recommended to enable camera and geolocation using the ``Permissions-Policy`` header on NGINX level to
+    access all features of Open Forms.
+
 Available environment variables
 ===============================
 
@@ -48,17 +53,6 @@ Common settings
 
 * ``CELERY_RESULT_BACKEND``: URL for the Redis result broker for Celery.
   Defaults to ``redis://127.0.0.1:6379/1``.
-
-API settings
------------------
-
-* ``API_HEADERS``: what headers to use for the API. Defaults to ``Pragma`` and ``Cache-Control``.
-
-.. note::
-
-    We suggest enabling camera and geolocation using the ``Permissions-Policy`` header.
-    For example: ``{"Permissions-Policy": "camera=(self),geolocation=()"}``
-
 
 .. _email-settings:
 

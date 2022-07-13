@@ -14,7 +14,7 @@ class DecoratorTests(APITestCase):
         self.user = StaffUserFactory.create()
         self.client.force_authenticate(user=self.user)
 
-    def test_api_headers(self):
+    def test_response_api_headers(self):
         response = self.client.get(self.endpoint)
         self.assertIn("Pragma", response.headers)
         self.assertIn("Cache-Control", response.headers)
@@ -22,26 +22,5 @@ class DecoratorTests(APITestCase):
         self.assertEqual(response.headers["Pragma"], "no-cache")
         self.assertEqual(
             response.headers["Cache-Control"],
-            "no-cache, no-store, max-age=0, must-revalidate",
-        )
-
-    @override_settings(
-        API_HEADERS={
-            "Pragma": "no-cache",
-            "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate",
-            "Permissions-Policy": "camera=(self),geolocation=()",
-        }
-    )
-    def test_api_headers_custom_settings(self):
-        response = self.client.get(self.endpoint)
-        self.assertIn("Pragma", response.headers)
-        self.assertIn("Cache-Control", response.headers)
-        self.assertIn("Permissions-Policy", response.headers)
-        self.assertEqual(response.headers["Pragma"], "no-cache")
-        self.assertEqual(
-            response.headers["Cache-Control"],
-            "no-cache, no-store, max-age=0, must-revalidate",
-        )
-        self.assertEqual(
-            response.headers["Permissions-Policy"], "camera=(self),geolocation=()"
+            "max-age=0, no-cache, no-store, must-revalidate, private",
         )
