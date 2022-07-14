@@ -317,7 +317,7 @@ class StufZDSPluginTests(VariablesTestMixin, StufTestBase):
             # we are deliberately NOT including this to simulate upgrades from earlier
             # versions where this configuration parameter was not available yet and is
             # thus missing from the JSON data
-            # "zds_vertrouwelijkheidsaanduiding": "OPENBAAR",
+            # "zds_zaakdoc_vertrouwelijkheid": "OPENBAAR",
         }
 
         plugin = StufZDSRegistration("stuf")
