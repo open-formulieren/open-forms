@@ -196,9 +196,7 @@ class EditGridNode(ContainerMixin, ComponentNode):
         So we need to repeat the child nodes of the configuration and associate them with the data
         provided by the user.
         """
-        repeats = 0
-        if self.value:
-            repeats = len(self.value)
+        repeats = len(self.value) if self.value else 0
 
         children = []
 

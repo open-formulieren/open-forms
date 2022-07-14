@@ -123,9 +123,7 @@ class ComponentNode(Node):
         TODO: build and use the type conversion for Formio components.
         """
         key = self.component["key"]
-        path = Path(key)
-        if self.path:
-            path = Path(self.path, Path(key))
+        path = Path(self.path, Path(key)) if self.path else Path(key)
 
         value = glom(self.step.data, path, default=None)
         return value
