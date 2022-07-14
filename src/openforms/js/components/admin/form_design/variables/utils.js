@@ -10,9 +10,8 @@ const getComponentDatatype = component => {
   return COMPONENT_DATATYPES[component.type] || 'string';
 };
 
-const isLayoutOrContentComponent = component => {
-  // Issue #1695: content components are not considered layout components
-  return FormioUtils.isLayoutComponent(component) || component.type === 'content';
+const isLayoutComponent = component => {
+  return FormioUtils.isLayoutComponent(component);
 };
 
 const isInEditGrid = (component, configuration) => {
@@ -50,14 +49,23 @@ const makeNewVariableFromComponent = (component, formDefinition) => {
   };
 };
 
-const shouldUpdateVariables = (newComponent, oldComponent, mutationType) => {
+const shouldNotUpdateVariables = (newComponent, oldComponent, mutationType, stepConfiguration) => {
+  // Issue #1695: content components are not considered layout components
+  if (newComponent.type === 'content') return false;
+
   // editGrids ARE layout components, but we want to create a variable for them that contains all
   // the data of the children
-  return (
-    isLayoutOrContentComponent(newComponent) &&
+  const isComponentWithVariable =
+    isLayoutComponent(newComponent) &&
     !(newComponent.type === 'editgrid') &&
-    !isPasteEvent(mutationType, newComponent, oldComponent)
-  );
+    !isPasteEvent(mutationType, newComponent, oldComponent);
+
+  // Check that this field is not a child of an editgrid component
+  // We need to use the oldComponent, because any update to the component performed in the editor has not been saved
+  // to the draft configuration yet
+  const isEditGridChild = oldComponent && isInEditGrid(oldComponent, stepConfiguration);
+
+  return isComponentWithVariable || isEditGridChild;
 };
 
 const updateFormVariables = (
@@ -68,18 +76,6 @@ const updateFormVariables = (
   currentFormVariables,
   stepConfiguration
 ) => {
-  // Not all components are associated with variables
-  if (shouldUpdateVariables(newComponent, oldComponent, mutationType)) {
-    return currentFormVariables;
-  }
-
-  // Check that this field is not a child of an editgrid component
-  // We need to use the oldComponent, because any update to the component performed in the editor has not been saved
-  // to the draft configuration yet
-  if (oldComponent && isInEditGrid(oldComponent, stepConfiguration)) {
-    return currentFormVariables;
-  }
-
   let updatedFormVariables = _.cloneDeep(currentFormVariables);
   const existingKeys = updatedFormVariables
     .filter(variable => variable.source === VARIABLE_SOURCES.component)
@@ -87,10 +83,15 @@ const updateFormVariables = (
 
   // The 'change' event is emitted for both create and update events (and 'paste' events)
   if (mutationType === 'changed') {
+    // Not all components are associated with variables
+    if (shouldNotUpdateVariables(newComponent, oldComponent, mutationType, stepConfiguration)) {
+      return currentFormVariables;
+    }
+
     // This is the case where a Layout component has been pasted, so the variables for the components INSIDE
     // the layout component need to be generated.
-    if (!existingKeys.includes(newComponent.key) && isLayoutOrContentComponent(newComponent)) {
-      FormioUtils.eachComponent(newComponent.components, component =>
+    if (!existingKeys.includes(newComponent.key) && isLayoutComponent(newComponent)) {
+      FormioUtils.eachComponent([newComponent], component =>
         updatedFormVariables.push(makeNewVariableFromComponent(component, formDefinition))
       );
     }
@@ -121,9 +122,19 @@ const updateFormVariables = (
       });
     }
   } else if (mutationType === 'removed') {
+    let keysToRemove = [newComponent.key];
+
+    // Case where a layout component is being removed,
+    // so the variables for the nested components have to be removed too
+    if (isLayoutComponent(newComponent)) {
+      FormioUtils.eachComponent([newComponent], component => {
+        keysToRemove.push(component.key);
+      });
+    }
+
     // When a component is removed, oldComponent is null
     updatedFormVariables = updatedFormVariables.filter(
-      variable => variable.key !== newComponent.key
+      variable => !keysToRemove.includes(variable.key)
     );
   }
 
