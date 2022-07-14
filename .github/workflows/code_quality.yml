@@ -81,7 +81,9 @@ jobs:
         run: |
           flake8 src 2>&1 | tee flake8_output.txt
           result_code=${PIPESTATUS[0]}
-          echo "::set-output name=flake8_output::$(cat flake8_output.txt)"
+          report="$(cat flake8_output.txt)"
+          report="${report//$'\n'/'%0A'}"  # escape newlines
+          echo "::set-output name=flake8_output::${report}"
           exit $result_code
       - name: Emit flake8 flake8 output
         if: ${{ failure() }}
