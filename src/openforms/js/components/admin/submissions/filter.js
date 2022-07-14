@@ -1,9 +1,9 @@
-const ALL = ['All', 'Alle'];
-
 window.onload = function () {
-
   // Retrieve the filter link who displays only triggered rules
-  triggeredLink = document.querySelector('.trigger-filter-list > .selected > a')
+  triggeredLink = document.querySelector('.trigger-filter-list > .selected > a');
+
+  // Retrieve the "All" corresponding string, depending the language
+  all = document.querySelector('#trigger-filter-list__link--all').dataset.trigger;
 
   // Only triggered logs are displayed first
   document
@@ -22,15 +22,14 @@ document.querySelectorAll('.trigger-filter-list__link').forEach(link => {
       row.classList.add('logic-table-body__row--hidden');
     });
 
-    triggered = event.target.dataset.trigger;
-    console.log(triggered);
+    let triggered = event.target.dataset.trigger;
 
     // Change the focus of the selected filter
     document.querySelector('.selected').classList.remove('selected');
     event.target.parentNode.classList.add('selected');
 
     // Showing only rules corresponding to the selected trigger link
-    if (ALL.includes(triggered)) {
+    if (triggered == all) {
       document.querySelectorAll('.logic-table-body__row').forEach(row => {
         row.classList.remove('logic-table-body__row--hidden');
       });
