@@ -1,6 +1,7 @@
 from django.urls import include, path
 from django.views.generic import RedirectView
 
+from decorator_include import decorator_include
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularJSONAPIView,
@@ -21,6 +22,7 @@ from openforms.forms.api.viewsets import (
 )
 from openforms.products.api.viewsets import ProductViewSet
 from openforms.submissions.api.viewsets import SubmissionStepViewSet, SubmissionViewSet
+from openforms.utils.decorators import never_cache
 
 from .views import PingView
 
@@ -57,11 +59,11 @@ router.register("products", ProductViewSet)
 
 urlpatterns = [
     path("docs/", RedirectView.as_view(pattern_name="api:api-docs")),
+    # API documentation
     path(
         "v1/",
         include(
             [
-                # API documentation
                 path(
                     "",
                     SpectacularJSONAPIView.as_view(schema=None),
@@ -73,7 +75,15 @@ urlpatterns = [
                     name="api-docs",
                 ),
                 path("schema", SpectacularAPIView.as_view(schema=None), name="schema"),
-                # actual API endpoints
+            ]
+        ),
+    ),
+    # actual API endpoints
+    path(
+        "v1/",
+        decorator_include(
+            never_cache,
+            [
                 path(
                     "api-auth",
                     include("rest_framework.urls", namespace="rest_framework"),
@@ -99,7 +109,7 @@ urlpatterns = [
                 path("", include(router.urls)),
                 path("", include(forms_router.urls)),
                 path("", include(submissions_router.urls)),
-            ]
+            ],
         ),
     ),
 ]

@@ -38,6 +38,13 @@ Internationalization (i18n)
    :members:
 
 
+Decorators
+----------
+
+.. automodule:: openforms.utils.decorators
+   :members:
+
+
 URL handling and manipulation
 -----------------------------
 
