@@ -1,0 +1,52 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "required": [],
+    "title": "User info in fieldset with another fieldset inside",
+    "properties": {
+                "user_info": {
+                    "type": "object",
+                    "title":"User info",
+
+                    "properties": {
+                        "name": {
+                            "type": "object",
+                            "title":"Profile",
+                            "description": "Collection of user data" ,
+                            "properties": {
+                                "last_name": {
+                                    "type": "string",
+                                    "title":"Your last name",
+                                    "maxLength": 250
+                                },
+                                "first_name": {
+                                    "type": "string",
+                                    "title":"Your first name",
+                                    "maxLength": 250
+                                },
+                                "plan": {
+                                    "title": "Your subscription plan in $",
+                                    "type": "number",                                
+                                    "description": "Subscription plan in $" ,
+                                    "enum": [
+                                        "5",
+                                        "10",
+                                        "50"
+                                      ]                               
+                                  }
+                            },
+                            
+                            "required": ["last_name","plan"]
+                        },
+                        "email": {
+                            "type": "string",
+                            "title":"Your email",
+                            "format": "email"
+                        }
+                    },
+                    "required": ["email"]
+            }
+    }
+}
+
+    
+   
