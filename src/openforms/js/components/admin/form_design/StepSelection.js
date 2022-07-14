@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import Select from '../forms/Select';
 import {FormContext} from './Context';
+import {getFormStep} from './utils';
 
 const getStepDisplayName = step => step.internalName || step.name;
 
@@ -38,11 +39,8 @@ const useFormStep = (identifier = '') => {
   if (!identifier) return null;
 
   // look up the step from the array of steps in the context
-  const step = formSteps.find(element => {
-    const urlMatch = element.url && element.url === identifier;
-    const generatedIdMatch = element._generatedId === identifier;
-    return urlMatch || generatedIdMatch;
-  });
+  const step = getFormStep(identifier, formSteps);
+
   return {
     step,
     stepName: getStepDisplayName(step),

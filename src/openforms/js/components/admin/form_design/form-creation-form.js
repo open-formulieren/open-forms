@@ -51,6 +51,7 @@ import {
   checkKeyChange,
   replaceComponentKeyInLogic,
   getUniqueKey,
+  getFormStep,
 } from './utils';
 import {updateFormVariables} from './variables/utils';
 import VariablesEditor from './variables/VariablesEditor';
@@ -363,9 +364,7 @@ function reducer(draft, action) {
       }
 
       // TODO: This could break if a reusable definition is used multiple times in a form
-      const step = draft.formSteps.filter(
-        step => step.formDefinition === formDefinition || step._generatedId === formDefinition
-      )[0];
+      const step = getFormStep(formDefinition, draft.formSteps, true);
 
       // Check if the formVariables need updating
       draft.formVariables = updateFormVariables(
@@ -968,7 +967,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     const {
       form: {url: formUrl},
     } = newState;
-    // finalize the "transacton".
+    // finalize the "transaction".
     //
     // * schedule a success message
     // * obtain the admin URL to redirect to (detail if editing again, add if creating
