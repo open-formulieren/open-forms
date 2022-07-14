@@ -68,6 +68,15 @@ const shouldNotUpdateVariables = (newComponent, oldComponent, mutationType, step
   return isComponentWithVariable || isEditGridChild;
 };
 
+const getFormVariables = (formDefinition, configuration) => {
+  const newFormVariables = [];
+
+  FormioUtils.eachComponent(configuration.components, component =>
+    newFormVariables.push(makeNewVariableFromComponent(component, formDefinition))
+  );
+  return newFormVariables;
+};
+
 const updateFormVariables = (
   formDefinition,
   mutationType,
@@ -148,4 +157,4 @@ const getDefaultValue = component => {
   return null;
 };
 
-export {updateFormVariables};
+export {updateFormVariables, getFormVariables};
