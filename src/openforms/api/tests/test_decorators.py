@@ -1,21 +1,12 @@
-from django.test import override_settings
-
-from rest_framework.reverse import reverse_lazy
+from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import StaffUserFactory
 
-
-class DecoratorTests(APITestCase):
-    endpoint = reverse_lazy("api:ping")
-
-    def setUp(self) -> None:
-        super().setUp()
-        self.user = StaffUserFactory.create()
-        self.client.force_authenticate(user=self.user)
-
+class NeverCacheAPIEndpointTests(APITestCase):
     def test_response_api_headers(self):
-        response = self.client.get(self.endpoint)
+        # grab the ping endpoint as a "random" endpoint
+        response = self.client.get(reverse("api:ping"))
+
         self.assertIn("Pragma", response.headers)
         self.assertIn("Cache-Control", response.headers)
         self.assertNotIn("Permissions-Policy", response.headers)
