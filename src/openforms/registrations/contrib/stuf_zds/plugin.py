@@ -56,13 +56,15 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         help_text=_("Documenttype description for newly created zaken in StUF-ZDS"),
     )
 
-    zds_vertrouwelijkheidsaanduiding = serializers.ChoiceField(
+    zds_zaakdoc_vertrouwelijkheid = serializers.ChoiceField(
+        label=_("Document confidentiality level"),
         choices=VertrouwelijkheidsAanduidingen.choices,
         # older versions from before this version was added do not have this field in
         # the saved data. In those cases, the default is used.
         default=VertrouwelijkheidsAanduidingen.vertrouwelijk,
         help_text=_(
-            "Indication of the level to which extend the dossier of the ZAAK is meant to be public."
+            "Indication of the level to which extend the dossier of the ZAAK is meant "
+            "to be public. This is set on the documents created for the ZAAK."
         ),
     )
 
