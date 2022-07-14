@@ -1,0 +1,47 @@
+{% extends "admin/base_site.html" %}
+{% load static i18n django_admin_index %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" href="{% static "admin/css/admin-index.css" %}">{% endblock %}
+
+{% block nav-global %}{% include "django_admin_index/includes/app_list.html" %}{% endblock nav-global %}
+
+{% block title %} {% trans "Import forms" %} {{ block.super }} {% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:products_product_changelist' %}">{% trans 'Products' %}</a>
+&rsaquo; {% trans 'Import schema' %}
+</div>
+{% endblock %}
+
+{% block content %}
+    <h1>{% trans 'Import JSON schema for a some # ADD the name of the product' %}</h1>
+    <div id="content-main">
+
+    
+        <form id="step-form" action="{% url 'admin:products_product_check_steps' %}" data-action="#"
+        method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset class="module aligned">
+            {% for field in form %}
+                <div class="form-row">
+                    {{ field.errors }}
+                    <label class=" if field.field.required %}required{% endif}">{{ field.label|capfirst }}:</label>
+                    {{field}}
+                    {% if field.field.help_text %}&nbsp;
+                        <div class="help">{{ field.field.help_text }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </fieldset>
+        <div class="submit-row">
+            <input type="submit" class="default enableOnInput" id="submitBtn"
+                value="{% trans 'Submit' %}">
+        </div>
+        </form>
+    </div>
+
+    
+{% endblock %}

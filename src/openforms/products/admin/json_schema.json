@@ -29,7 +29,7 @@
         "Parkeren bij woning",
         "Parkeren voor ondersteuning/verzorging"
       ]
-    },
+    },    
     "redenToelichting": {
       "title": "Reden toelichting",
       "type": "string",

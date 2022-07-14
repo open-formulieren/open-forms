@@ -177,6 +177,14 @@ class SelectBoxesField(Field):
         self.instance["inputType"] = "checkbox"
 
 
+class CheckboxField(Field):
+    type = "checkbox"
+    tableView = False
+
+    def __init__(self, key: str, required: bool, content: dict):
+        super().__init__(key, required, content)
+
+
 class RadioField(Field):
     """user can choose only one item"""
 
@@ -185,20 +193,9 @@ class RadioField(Field):
 
     def __init__(self, key: str, required: bool, content: dict):
         super().__init__(key, required, content)
-
-        self.intsance["validate"].update(
-            {
-                "onlyAvailableItems": False,
-            }
-        )
-
-
-class CheckboxField(Field):
-    type = "checkbox"
-    tableView = False
-
-    def __init__(self, key: str, required: bool, content: dict):
-        super().__init__(key, required, content)
+        enum_list = content.get("enum")
+        values = [{"label": item, "value": item} for item in enum_list]
+        self.instance["values"] = values
 
 
 class SelectField(Field):

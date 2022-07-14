@@ -5,6 +5,7 @@ from .formio_classes import (
     EmailField,
     FieldSet,
     NumberField,
+    RadioField,
     SelectBoxesField,
     SelectField,
     TextAreaField,
@@ -55,8 +56,11 @@ class FieldFactory:
         _type = content.get("type", "")
         _class = cls.CLASS_TYPES.get(_type, "class not found")
         if enum_flag > 0:
-            # for SelectField (default) or RadioField ?
-            obj = SelectField(key, required, content)
+            # SelectField (default) vs RadioField based on len enum_flag
+            if enum_flag < 4:
+                obj = RadioField(key, required, content)
+            else:
+                obj = SelectField(key, required, content)
         elif _type == "string":
             obj = StringTypeFactory.create(key, required, content)
         else:
