@@ -29,14 +29,14 @@
                         <h3> {% trans "Op is triggered" %} </h3>
                         <ul class="trigger-filter-list">
                             <li>
-                            <a class="trigger-filter-list__link" href="?" data-trigger="{% trans 'All' %}" title="{% trans "All" %}">{% trans "All" %}</a></li>
-                        
+                                <a id="trigger-filter-list__link--all" class="trigger-filter-list__link" href="" data-trigger="{% trans 'All' %}" title="{% trans "All" %}">{% trans "All" %}</a>
+                            </li>
                             <li class="selected">
-                            <a class="trigger-filter-list__link" href="?active__exact=1" data-trigger="{% trans 'Yes' %}" title="{% trans "Yes" %}">{% trans "Yes" %}</a></li>
-                        
+                                <a class="trigger-filter-list__link" href="" data-trigger="{% trans 'Yes' %}" title="{% trans "Yes" %}">{% trans "Yes" %}</a>
+                            </li>
                             <li>
-                            <a class="trigger-filter-list__link" href="?active__exact=0" data-trigger="{% trans 'No' %}" title="{% trans "No" %}">{% trans "No" %}</a></li>
-                        
+                                <a class="trigger-filter-list__link" href="" data-trigger="{% trans 'No' %}" title="{% trans "No" %}">{% trans "No" %}</a>
+                            </li>  
                         </ul>
                     </div>
                 </div>
