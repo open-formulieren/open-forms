@@ -125,7 +125,7 @@ class StufZDSClientTests(StufTestBase):
             "zds_zaaktype_status_code": "zt-st-code",
             "zds_zaaktype_status_omschrijving": "zt-st-omschrijving",
             "zds_documenttype_omschrijving_inzending": "dt-omschrijving",
-            "zds_vertrouwelijkheidsaanduiding": "openbaar",
+            "zds_vertrouwelijkheidsaanduiding": "OPENBAAR",
         }
         self.client = StufZDSClient(self.service, self.options)
 
@@ -443,6 +443,7 @@ class StufZDSClientTests(StufTestBase):
                 "//zkn:object/zkn:dct.omschrijving": "dt-omschrijving",
                 "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "open-forms-inzending.pdf",
                 "//zkn:object/zkn:formaat": "application/pdf",
+                "//zkn:object/zkn:vertrouwelijkAanduiding": "OPENBAAR",
                 "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:identificatie": "foo",
                 "//zkn:object/zkn:isRelevantVoor/zkn:gerelateerde/zkn:omschrijving": "my-form",
             },

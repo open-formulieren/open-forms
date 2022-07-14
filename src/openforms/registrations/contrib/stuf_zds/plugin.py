@@ -58,6 +58,8 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
 
     zds_vertrouwelijkheidsaanduiding = serializers.ChoiceField(
         choices=VertrouwelijkheidsAanduidingen.choices,
+        # older versions from before this version was added do not have this field in
+        # the saved data. In those cases, the default is used.
         default=VertrouwelijkheidsAanduidingen.vertrouwelijk,
         help_text=_(
             "Indication of the level to which extend the dossier of the ZAAK is meant to be public."
