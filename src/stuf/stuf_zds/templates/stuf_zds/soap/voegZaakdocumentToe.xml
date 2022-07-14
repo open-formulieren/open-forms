@@ -23,7 +23,7 @@
         <ZKN:taal>{{ taal }}</ZKN:taal>
         <ZKN:status>{{ status }}</ZKN:status>
         <ZKN:verzenddatum>{{ datum_vandaag }}</ZKN:verzenddatum>
-        <ZKN:vertrouwelijkAanduiding>{{ zds_vertrouwelijkheidsaanduiding }}</ZKN:vertrouwelijkAanduiding>
+        <ZKN:vertrouwelijkAanduiding>{{ zds_zaakdoc_vertrouwelijkheid }}</ZKN:vertrouwelijkAanduiding>
         <ZKN:auteur>{{ auteur }}</ZKN:auteur>
         <ZKN:inhoud StUF:bestandsnaam="{{ bestandsnaam }}">{{ inhoud }}</ZKN:inhoud>
         <StUF:tijdvakGeldigheid>
