@@ -704,7 +704,7 @@ function reducer(draft, action) {
 
         // update state depending on the validation errors. If there are errors, we set
         // submitting to false so they can correct the validation errors.
-        if (validationErrors.lenth) {
+        if (validationErrors.length) {
           draft.submitting = false;
         }
         draft.validationErrors.push(...prefixedErrors);
@@ -923,10 +923,10 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     const isCreate = state.newForm;
     dispatch({type: 'SUBMIT_STARTED'});
 
-    let newState;
+    let newState = {...state, submitting: true};
     let validationErrors;
     try {
-      [newState, validationErrors] = await saveCompleteForm(state, featureFlags, csrftoken);
+      [newState, validationErrors] = await saveCompleteForm(newState, featureFlags, csrftoken);
     } catch (e) {
       // handle HTTP 401 errors, in case the session was expired. This results in a
       // state update AND we abort the rest of the flow.

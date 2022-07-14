@@ -171,7 +171,9 @@ const saveVariables = async (state, csrftoken) => {
   let newState = produce(state, draft => {
     for (const variable of draft.formVariables) {
       variable.form = formUrl;
-      if (variable.formDefinition == null) continue;
+      // static/user defined variables do not relate to any form definition - this may be
+      // null or an empty string
+      if (!variable.formDefinition) continue;
       // if the variable.formDefinition is not a URL, we have to resolve it against the
       // temporary client-side ID. This also allows us to update the state with the
       // actual resolved resource URLs.
