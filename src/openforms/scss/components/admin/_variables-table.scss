@@ -1,7 +1,11 @@
 .variables-table {
-  td:nth-child(1),
-  th:nth-child(1) {
-    width: 30px; // Needs to fit the fa icon
+  td,
+  th {
+    word-break: break-word;
+
+    &:nth-child(1) {
+      width: 30px; // Needs to fit the fa icon
+    }
   }
 
   select,
