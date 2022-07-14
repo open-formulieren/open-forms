@@ -1,9 +1,9 @@
 {% extends "admin/change_form.html" %}
-{% load i18n admin_urls static %}
+{% load i18n static admin_urls admin_list forms_admin_list %}
 
 {% block extrastyle %}
-
 <link rel="stylesheet" href="{% static "bundles/core-css.css" %}">
+<link rel="stylesheet" type="text/css" href="/static/admin/css/changelists.css">
 {{ block.super }}
 {% endblock %}
 
@@ -22,6 +22,25 @@
             {% trans "No logic rules for that submission" %}
         
         {% else %}
+            <div class="module filtered" id="changelist">
+                <div class="changelist-form-container">
+                    <div id="changelist-filter">
+                    <h2>{% trans "Filter" %}</h2>
+                        <h3> {% trans "Op is triggered" %} </h3>
+                        <ul class="trigger-filter-list">
+                            <li>
+                            <a class="trigger-filter-list__link" href="?" data-trigger="{% trans 'All' %}" title="{% trans "All" %}">{% trans "All" %}</a></li>
+                        
+                            <li class="selected">
+                            <a class="trigger-filter-list__link" href="?active__exact=1" data-trigger="{% trans 'Yes' %}" title="{% trans "Yes" %}">{% trans "Yes" %}</a></li>
+                        
+                            <li>
+                            <a class="trigger-filter-list__link" href="?active__exact=0" data-trigger="{% trans 'No' %}" title="{% trans "No" %}">{% trans "No" %}</a></li>
+                        
+                        </ul>
+                    </div>
+                </div>
+            </div>
             {% for log in logs_activity  %}
                 <fieldset class="module aligned collapse collapsed fieldset-log">
                     <h2>
@@ -58,7 +77,7 @@
                                         <td>
                                             {{ rule.readable_rule }}
                                         </td>
-                                        <td>{{ rule.trigger|yesno|capfirst }} </td>
+                                        <td class="logic-table-body__trigger-{{ rule.trigger|yesno|capfirst }}">{{ rule.trigger|yesno|capfirst }} </td>
                                         <td>
                                         {% for action in rule.targeted_components %}
                                             {% if action.key %}
@@ -81,5 +100,6 @@
             {% endfor %}
         {% endif %}
     {% endblock %}
+    <script src="{% static "bundles/core-js.js" %}"></script>
     <script src="/static/admin/js/collapse.js"></script>
 {% endblock %}
