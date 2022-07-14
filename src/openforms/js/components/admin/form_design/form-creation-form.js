@@ -4,13 +4,15 @@ import set from 'lodash/set';
 import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
 import React, {useContext} from 'react';
+import {produce} from 'immer';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
 import {Tab as ReactTab, Tabs, TabList, TabPanel} from 'react-tabs';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import {apiDelete, get, post, put, ValidationErrors} from '../../../utils/fetch';
+import {post} from '../../../utils/fetch';
+import {APIError, ValidationErrors, NotAuthenticatedError} from '../../../utils/exception';
 import {getUniqueRandomString} from '../../../utils/random';
 import FAIcon from '../FAIcon';
 import Fieldset from '../forms/Fieldset';
@@ -19,7 +21,6 @@ import Loader from '../Loader';
 import {FormContext, FeatureFlagsContext} from './Context';
 import FormSteps from './FormSteps';
 import {
-  FORM_ENDPOINT,
   FORM_DEFINITIONS_ENDPOINT,
   REGISTRATION_BACKENDS_ENDPOINT,
   AUTH_PLUGINS_ENDPOINT,
@@ -30,13 +31,7 @@ import {
   CATEGORIES_ENDPOINT,
   STATIC_VARIABLES_ENDPOINT,
 } from './constants';
-import {
-  loadPlugins,
-  updateOrCreateFormSteps,
-  saveLogicRules,
-  savePriceRules,
-  createOrUpdateFormVariables,
-} from './data';
+import {loadPlugins, loadForm, saveCompleteForm} from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import FormMetaFields from './FormMetaFields';
 import FormObjectTools from './FormObjectTools';
@@ -173,17 +168,22 @@ function reducer(draft, action) {
     /**
      * Form-level actions
      */
-    case 'FORM_LOADED': {
-      return {
-        ...draft,
-        ...action.payload,
-      };
-    }
-    case 'FORM_CREATED': {
-      draft.newForm = false;
-      draft.form = action.payload;
+    case 'FORM_DATA_LOADED': {
+      const {form, literals, selectedAuthPlugins, steps, variables} = action.payload;
+
+      if (form) draft.form = form;
+      if (literals) draft.literals = literals;
+      if (selectedAuthPlugins) draft.selectedAuthPlugins = selectedAuthPlugins;
+      if (variables) draft.formVariables = variables;
+
+      // set the form steps of the form and initialize the validation errors array
+      draft.formSteps = steps;
+      for (const step of draft.formSteps) {
+        step.validationErrors = [];
+      }
       break;
     }
+
     case 'FIELD_CHANGED': {
       const {name, value} = action.payload;
       // names are prefixed like `form.foo` and `literals.bar`
@@ -231,13 +231,6 @@ function reducer(draft, action) {
       draft[stateVar] = data;
       break;
     }
-    case 'FORM_STEPS_LOADED': {
-      draft.formSteps = action.payload;
-      for (const step of draft.formSteps) {
-        step.validationErrors = [];
-      }
-      break;
-    }
     case 'TOGGLE_AUTH_PLUGIN': {
       const pluginId = action.payload;
       if (draft.selectedAuthPlugins.includes(pluginId)) {
@@ -281,7 +274,7 @@ function reducer(draft, action) {
         index: newIndex,
         name: `Stap ${newIndex + 1}`,
       };
-      draft.formSteps = draft.formSteps.concat([emptyStep]);
+      draft.formSteps.push(emptyStep);
       break;
     }
     case 'FORM_DEFINITION_CHOSEN': {
@@ -488,25 +481,6 @@ function reducer(draft, action) {
       }
       break;
     }
-    case 'PROCESS_STEP_VALIDATION_ERRORS': {
-      const {index, errors} = action.payload;
-      draft.formSteps[index].validationErrors = errors.map(err => [err.name, err.reason]);
-      if (!draft.tabsWithErrors.includes('form-steps')) {
-        draft.tabsWithErrors.push('form-steps');
-      }
-      draft.submitting = false;
-      break;
-    }
-    case 'ADD_FORM_DEFINITION': {
-      draft.formDefinitions.push(action.payload);
-      break;
-    }
-    case 'CREATE_FORM_STEP': {
-      const {index, url, formDefinition} = action.payload;
-      draft.formSteps[index].url = url;
-      draft.formSteps[index].formDefinition = formDefinition;
-      break;
-    }
     /**
      * Form Logic rules actions
      */
@@ -605,18 +579,6 @@ function reducer(draft, action) {
       );
       break;
     }
-    case 'RULES_SAVED': {
-      // set the generated UUID from the backend for created rules
-      const createdRules = action.payload;
-      for (const rule of createdRules) {
-        const {uuid, index} = rule;
-        draft.logicRules[index].uuid = uuid;
-      }
-
-      // clear the state of rules to delete, as they have been deleted
-      draft.logicRulesToDelete = [];
-      break;
-    }
     /**
      * Form Variables
      */
@@ -651,10 +613,6 @@ function reducer(draft, action) {
       }
       break;
     }
-    case 'ADD_STATIC_VARIABLES': {
-      draft.formVariables = [...action.payload];
-      break;
-    }
 
     /**
      * Price rules actions
@@ -685,49 +643,9 @@ function reducer(draft, action) {
       draft.priceRules = updatedRules;
       break;
     }
-    case 'PRICE_RULES_SAVED': {
-      // set the generated UUID from the backend for created rules
-      const createdRules = action.payload;
-      for (const rule of createdRules) {
-        const {uuid, index} = rule;
-        draft.priceRules[index].uuid = uuid;
-      }
-
-      // clear the state of rules to delete, as they have been deleted
-      draft.priceRulesToDelete = [];
-      break;
-    }
 
     /**
-     * Validation error handling
-     */
-    case 'PROCESS_VALIDATION_ERRORS': {
-      const {fieldPrefix, errors} = action.payload;
-      // process the errors with their field names
-      const tabsWithErrors = [];
-      const prefixedErrors = errors.map(err => {
-        const fieldName = err.name.split('.')[0];
-        if (!tabsWithErrors.includes(fieldName))
-          tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldName]);
-        let key;
-        // literals are tracked separately in the state
-        if (fieldPrefix === 'form' && fieldName === 'literals') {
-          key = err.name;
-        } else if (fieldPrefix === 'logic-rules') {
-          key = err.name;
-        } else {
-          key = `${fieldPrefix}.${err.name}`;
-        }
-        return [key, err.reason];
-      });
-      draft.validationErrors = [...draft.validationErrors, ...prefixedErrors];
-      // keep track of which tabs have errors
-      draft.tabsWithErrors = [...draft.tabsWithErrors, ...tabsWithErrors];
-      draft.submitting = false;
-      break;
-    }
-    /**
-     * Misc
+     * Submit & validation error handling
      */
     case 'SUBMIT_STARTED': {
       draft.submitting = true;
@@ -736,6 +654,73 @@ function reducer(draft, action) {
       draft.tabsWithErrors = [];
       break;
     }
+    case 'SUBMIT_DONE': {
+      // either the submit completed without errors, or there are validation errors.
+      // Either way, there are usually *some* updates to persisted data with updated
+      // backend references - which is reflected in the updated state. Therefore, we
+      // take that updated state as base and apply any validation error mutations to
+      // the updated state. Eventually we return the replacement state.
+      const {updatedState, validationErrors} = action.payload;
+
+      // updatedState is the result of earlier produce calls, so it's immutable. We
+      // create and update a new state here inside the reducer to eventually replace
+      // the component state.
+      const newState = produce(updatedState, draft => {
+        // process the errors with their field names
+        const tabsWithErrors = [];
+        const prefixedErrors = [];
+
+        // process the validation errors
+        for (const validationError of validationErrors) {
+          if (validationError.context.step) {
+            const index = validationError.context.step.index;
+            draft.formSteps[index].validationErrors = validationError.errors.map(err => [
+              err.name,
+              err.reason,
+            ]);
+            continue;
+          }
+
+          // generic form-level validation error processing
+          let {context: fieldPrefix, errors} = validationError;
+          const _prefixedErrors = errors.map(err => {
+            const fieldName = err.name.split('.')[0];
+            if (!tabsWithErrors.includes(fieldName))
+              tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldName]);
+
+            let key;
+            // literals are tracked separately in the state
+            if (fieldPrefix === 'form' && fieldName === 'literals') {
+              key = err.name;
+            } else if (fieldPrefix === 'logicRules') {
+              key = err.name;
+            } else {
+              key = `${fieldPrefix}.${err.name}`;
+            }
+            return [key, err.reason];
+          });
+          prefixedErrors.push(..._prefixedErrors);
+        }
+
+        // update state depending on the validation errors. If there are errors, we set
+        // submitting to false so they can correct the validation errors.
+        if (validationErrors.length) {
+          draft.submitting = false;
+        }
+        draft.validationErrors.push(...prefixedErrors);
+        draft.tabsWithErrors.push(...tabsWithErrors);
+
+        // flag the tabs with errors, if relevant
+        const anyStepErrors = draft.formSteps.some(formStep => !!formStep.validationErrors.length);
+        if (anyStepErrors && !draft.tabsWithErrors.includes('form-steps')) {
+          draft.tabsWithErrors.push('form-steps');
+        }
+      });
+      return newState;
+    }
+    /**
+     * Errors
+     */
     // special case - we have a generic session expiry status monitor thing,
     // so don't display the generic error message.
     case 'AUTH_FAILURE': {
@@ -752,77 +737,6 @@ function reducer(draft, action) {
       throw new Error(`Unknown action type: ${action.type}`);
   }
 }
-
-/**
- * Functions to fetch data
- */
-const getFormStepsData = async (formUuid, dispatch) => {
-  try {
-    var response = await get(`${FORM_ENDPOINT}/${formUuid}/steps`);
-    if (!response.ok) {
-      throw new Error('An error occurred while fetching the form steps.');
-    }
-  } catch (e) {
-    dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-  }
-
-  return response.data;
-};
-
-const getFormData = async (formUuid, dispatch) => {
-  if (!formUuid) {
-    dispatch({
-      type: 'FORM_STEPS_LOADED',
-      payload: [],
-    });
-
-    let staticVariablesResponse;
-    try {
-      staticVariablesResponse = await get(STATIC_VARIABLES_ENDPOINT);
-    } catch (e) {
-      dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-    }
-
-    dispatch({type: 'ADD_STATIC_VARIABLES', payload: staticVariablesResponse.data});
-    return;
-  }
-
-  try {
-    // do the requests in parallel
-    const requests = [
-      get(`${FORM_ENDPOINT}/${formUuid}`),
-      getFormStepsData(formUuid, dispatch),
-      get(`${FORM_ENDPOINT}/${formUuid}/variables`),
-    ];
-    const [response, formStepsData, responseVariables] = await Promise.all(requests);
-    if (!response.ok) {
-      throw new Error('An error occurred while fetching the form.');
-    } else if (!responseVariables.ok) {
-      throw new Error('An error occurred while fetching the form variables.');
-    }
-
-    // Set the loaded form data as state.
-    const {literals, ...form} = response.data;
-    const formVariables = responseVariables.data;
-
-    dispatch({
-      type: 'FORM_LOADED',
-      payload: {
-        selectedAuthPlugins: form.loginOptions.map((plugin, index) => plugin.identifier),
-        form: form,
-        literals: literals,
-        formVariables: formVariables,
-      },
-    });
-    dispatch({
-      type: 'FORM_STEPS_LOADED',
-      payload: formStepsData,
-    });
-  } catch (e) {
-    // TODO: convert to ErrorBoundary
-    dispatch({type: 'SET_FETCH_ERRORS', payload: {loadingErrors: e.message}});
-  }
-};
 
 const StepsFieldSet = ({submitting = false, loadingErrors, steps = [], ...props}) => {
   if (loadingErrors) {
@@ -853,6 +767,8 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
   const [state, dispatch] = useImmerReducer(reducer, initialState);
 
   // load all these plugin registries in parallel
+  // TODO: 'plugin' is no longer the best name, it's more loading the data that's dynamic
+  // but not dependent on the form itself.
   const pluginsToLoad = [
     {endpoint: PAYMENT_PLUGINS_ENDPOINT, stateVar: 'availablePaymentBackends'},
     {endpoint: FORM_DEFINITIONS_ENDPOINT, stateVar: 'formDefinitions'},
@@ -870,15 +786,25 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
       endpoint: `${PRICE_RULES_ENDPOINT}?form=${formUuid}`,
       stateVar: 'priceRules',
     });
+  } else {
+    // only fetch this data if we're creating a new form
+    pluginsToLoad.push({endpoint: STATIC_VARIABLES_ENDPOINT, stateVar: 'formVariables'});
   }
 
   const {loading} = useAsync(async () => {
     const promises = [
       // TODO: this is a bad function name, refactor
       loadPlugins(pluginsToLoad),
-      getFormData(formUuid, dispatch),
+      loadForm(formUuid),
     ];
-    const [pluginsData] = await Promise.all(promises);
+
+    // TODO: API error handling - this should be done using ErrorBoundary instead of
+    // state-changes.
+    const [pluginsData, formData] = await Promise.all(promises);
+    dispatch({
+      type: 'FORM_DATA_LOADED',
+      payload: formData,
+    });
 
     // load various module plugins & update the state
     for (const group of zip(pluginsToLoad, pluginsData)) {
@@ -954,24 +880,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     });
   };
 
-  const onCreateFormStep = (index, stepUrl, formDefinitionUrl) => {
-    dispatch({
-      type: 'CREATE_FORM_STEP',
-      payload: {
-        index: index,
-        url: stepUrl,
-        formDefinition: formDefinitionUrl,
-      },
-    });
-  };
-
-  const onFormDefinitionCreate = formDefinitionData => {
-    dispatch({
-      type: 'ADD_FORM_DEFINITION',
-      payload: formDefinitionData,
-    });
-  };
-
   const onStepLiteralFieldChange = (index, event) => {
     const {name, value} = event.target;
     dispatch({
@@ -1012,194 +920,54 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
 
   const onSubmit = async event => {
     const {name: submitAction} = event.target;
+    const isCreate = state.newForm;
     dispatch({type: 'SUBMIT_STARTED'});
 
-    // Update the form
-    const formData = {
-      ...state.form,
-      literals: {
-        beginText: {
-          value: state.literals.beginText.value,
-        },
-        previousText: {
-          value: state.literals.previousText.value,
-        },
-        changeText: {
-          value: state.literals.changeText.value,
-        },
-        confirmText: {
-          value: state.literals.confirmText.value,
-        },
-      },
-      authenticationBackends: state.selectedAuthPlugins,
-    };
-
-    const createOrUpdate = state.newForm ? post : put;
-    const endPoint = state.newForm ? FORM_ENDPOINT : `${FORM_ENDPOINT}/${state.form.uuid}`;
-
+    let newState = {...state, submitting: true};
+    let validationErrors;
     try {
-      var formResponse = await createOrUpdate(endPoint, csrftoken, formData, true);
-      // unexpected error
-      if (!formResponse.ok) {
-        if (formResponse.status === 401) {
-          dispatch({type: 'AUTH_FAILURE'});
-          return;
-        }
-
-        dispatch({
-          type: 'SET_FETCH_ERRORS',
-          payload: `Error ${formResponse.status} from backend`,
-        });
+      [newState, validationErrors] = await saveCompleteForm(newState, featureFlags, csrftoken);
+    } catch (e) {
+      // handle HTTP 401 errors, in case the session was expired. This results in a
+      // state update AND we abort the rest of the flow.
+      if (e instanceof NotAuthenticatedError) {
+        dispatch({type: 'AUTH_FAILURE'});
         return;
       }
-      // ok, good to go
-      var {uuid: formUuid, url: formUrl} = formResponse.data;
-      dispatch({type: 'FORM_CREATED', payload: formResponse.data});
-    } catch (e) {
-      if (e instanceof ValidationErrors) {
-        dispatch({
-          type: 'PROCESS_VALIDATION_ERRORS',
-          payload: {
-            fieldPrefix: 'form',
-            errors: e.errors,
-          },
-        });
+
+      // any generic unexpected error. TODO: this really should be gone at some point.
+      if (e instanceof APIError) {
+        dispatch({type: 'SET_FETCH_ERRORS', payload: e.message});
+        window.scrollTo(0, 0); // TODO: get rid of this side-effect -> should be in useEffect instead
         return;
-      } else {
-        throw e; // re-throw unchanged error, this is unexpected.
       }
-    }
 
-    try {
-      var {updatedSteps, errors: stepValidationErrors} = await updateOrCreateFormSteps(
-        csrftoken,
-        formUrl,
-        state.formSteps,
-        onCreateFormStep,
-        onFormDefinitionCreate
-      );
-    } catch (e) {
-      dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
-      window.scrollTo(0, 0);
-      return;
-    }
-
-    // dispatch validation errors for errored steps so that they are displayed
-    const erroredSteps = stepValidationErrors.filter(erroredStep => !!erroredStep);
-    for (const erroredStep of erroredSteps) {
-      const {step, error} = erroredStep;
-      dispatch({
-        type: 'PROCESS_STEP_VALIDATION_ERRORS',
-        payload: {
-          index: state.formSteps.indexOf(step),
-          errors: error.errors,
-        },
-      });
-    }
-    // stop processing if there are errored steps
-    if (erroredSteps.length) {
-      return;
-    }
-
-    if (state.stepsToDelete.length) {
-      for (const step of state.stepsToDelete) {
-        // Steps that were added but are not saved in the backend yet don't have a URL.
-        if (!step) return;
-
-        try {
-          var response = await apiDelete(step, csrftoken);
-          if (!response.ok) {
-            throw new Error('An error occurred while deleting form steps.');
-          }
-        } catch (e) {
-          dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
-          window.scrollTo(0, 0);
-          return;
-        }
-      }
-    }
-
-    // Update/create logic rules
-    try {
-      const {logicRules, logicRulesToDelete} = state;
-      const createdRules = await saveLogicRules(formUrl, csrftoken, logicRules, logicRulesToDelete);
-      dispatch({
-        type: 'RULES_SAVED',
-        payload: createdRules,
-      });
-    } catch (e) {
-      dispatch({
-        type: 'PROCESS_VALIDATION_ERRORS',
-        payload: {
-          fieldPrefix: 'logic-rules',
-          errors: e.errors,
-        },
-      });
-      window.scrollTo(0, 0);
-      return;
-    }
-
-    // Update/create price rules
-    try {
-      const {priceRules, priceRulesToDelete} = state;
-      const createdPriceRules = await savePriceRules(
-        formUrl,
-        csrftoken,
-        priceRules,
-        priceRulesToDelete
-      );
-      dispatch({
-        type: 'PRICE_RULES_SAVED',
-        payload: createdPriceRules,
-      });
-    } catch (e) {
+      // anything going wrong here is unexpected, so display a generic error message
       console.error(e);
-      dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
-      window.scrollTo(0, 0);
-      return;
-    }
-
-    if (featureFlags.enable_form_variables) {
-      // Save the FormVariables
-      try {
-        const response = await createOrUpdateFormVariables(
-          formUrl,
-          csrftoken,
-          state.formVariables,
-          state.formSteps,
-          updatedSteps
-        );
-        if (!response.ok) {
-          throw new Error('An error occurred while saving the form variables.');
-        }
-      } catch (e) {
-        dispatch({type: 'SET_FETCH_ERRORS', payload: {submissionError: e.message}});
-        window.scrollTo(0, 0);
-        return;
-      }
-    }
-
-    // Save this new version of the form in the "form version control"
-    try {
-      var versionResponse = await post(`${FORM_ENDPOINT}/${formUuid}/versions`, csrftoken);
-      if (!versionResponse.ok) {
-        throw new Error('An error occurred while saving the form version.');
-      }
-    } catch (e) {
       dispatch({type: 'SET_FETCH_ERRORS', payload: e.message});
       window.scrollTo(0, 0);
       return;
     }
 
+    dispatch({
+      type: 'SUBMIT_DONE',
+      payload: {
+        updatedState: newState,
+        validationErrors,
+      },
+    });
+    // if there are any validation errors -> abort the success message
+    if (validationErrors.length) return;
+
+    const {
+      form: {url: formUrl},
+    } = newState;
     // finalize the "transacton".
     //
     // * schedule a success message
     // * obtain the admin URL to redirect to (detail if editing again, add if creating
     //   another object or list page for simple save)
-    const messageData = {
-      isCreate: state.newForm,
-      submitAction: submitAction,
-    };
+    const messageData = {isCreate, submitAction: submitAction};
     const messageResponse = await post(`${formUrl}/admin-message`, csrftoken, messageData);
     // this full-page reload ensures that the admin messages are displayed
     window.location = messageResponse.data.redirectUrl;
