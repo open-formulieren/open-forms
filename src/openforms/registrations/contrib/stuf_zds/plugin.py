@@ -23,6 +23,7 @@ from openforms.submissions.mapping import (
 )
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.mixins import JsonSchemaSerializerMixin
+from stuf.stuf_zds.constants import VertrouwelijkheidsAanduidingen
 from stuf.stuf_zds.models import StufZDSConfig
 
 
@@ -53,6 +54,18 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     zds_documenttype_omschrijving_inzending = serializers.CharField(
         required=True,
         help_text=_("Documenttype description for newly created zaken in StUF-ZDS"),
+    )
+
+    zds_zaakdoc_vertrouwelijkheid = serializers.ChoiceField(
+        label=_("Document confidentiality level"),
+        choices=VertrouwelijkheidsAanduidingen.choices,
+        # older versions from before this version was added do not have this field in
+        # the saved data. In those cases, the default is used.
+        default=VertrouwelijkheidsAanduidingen.vertrouwelijk,
+        help_text=_(
+            "Indication of the level to which extend the dossier of the ZAAK is meant "
+            "to be public. This is set on the documents created for the ZAAK."
+        ),
     )
 
 

@@ -18,15 +18,13 @@
         <ZKN:dct.omschrijving>{{ zds_documenttype_omschrijving_inzending }}</ZKN:dct.omschrijving>
         <ZKN:creatiedatum>{{ datum_vandaag }}</ZKN:creatiedatum>
         <ZKN:ontvangstdatum>{{ datum_vandaag }}</ZKN:ontvangstdatum>
-
-        {# TODO: Fill these fields below #}
         <ZKN:titel>{{ titel }}</ZKN:titel>
         <ZKN:beschrijving>{{ beschrijving }}</ZKN:beschrijving>
         <ZKN:formaat>{{ formaat }}</ZKN:formaat>
         <ZKN:taal>{{ taal }}</ZKN:taal>
         <ZKN:status>{{ status }}</ZKN:status>
         <ZKN:verzenddatum>{{ datum_vandaag }}</ZKN:verzenddatum>
-        <ZKN:vertrouwelijkAanduiding>VERTROUWELIJK</ZKN:vertrouwelijkAanduiding>
+        <ZKN:vertrouwelijkAanduiding>{{ zds_zaakdoc_vertrouwelijkheid }}</ZKN:vertrouwelijkAanduiding>
         <ZKN:auteur>{{ auteur }}</ZKN:auteur>
         <ZKN:inhoud xmime:contentType="{{ formaat }}" StUF:bestandsnaam="{{ bestandsnaam }}">{{ inhoud }}</ZKN:inhoud>
         <StUF:tijdvakGeldigheid>

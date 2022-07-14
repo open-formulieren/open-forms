@@ -126,6 +126,9 @@ class StufZDSClient:
             "zds_documenttype_omschrijving_inzending": self.options[
                 "zds_documenttype_omschrijving_inzending"
             ],
+            "zds_zaakdoc_vertrouwelijkheid": self.options[
+                "zds_zaakdoc_vertrouwelijkheid"
+            ],
             "referentienummer": str(uuid4()),
             "global_config": self._global_config,
         }

@@ -314,6 +314,10 @@ class StufZDSPluginTests(VariablesTestMixin, StufTestBase):
             "zds_zaaktype_status_code": "123",
             "zds_zaaktype_status_omschrijving": "aaabbc",
             "zds_documenttype_omschrijving_inzending": "aaabbc",
+            # we are deliberately NOT including this to simulate upgrades from earlier
+            # versions where this configuration parameter was not available yet and is
+            # thus missing from the JSON data
+            # "zds_zaakdoc_vertrouwelijkheid": "OPENBAAR",
         }
 
         plugin = StufZDSRegistration("stuf")
@@ -387,6 +391,7 @@ class StufZDSPluginTests(VariablesTestMixin, StufTestBase):
             {
                 "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "open-forms-inzending.pdf",
                 "//zkn:object/zkn:formaat": "application/pdf",
+                "//zkn:object/zkn:vertrouwelijkAanduiding": "VERTROUWELIJK",
             },
         )
 

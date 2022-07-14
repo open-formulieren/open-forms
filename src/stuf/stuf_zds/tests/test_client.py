@@ -55,6 +55,7 @@ class StufZdsClientTest(TestCase):
             "zds_zaaktype_status_code": "zt-st-code",
             "zds_zaaktype_status_omschrijving": "zt-st-omschrijving",
             "zds_documenttype_omschrijving_inzending": "dt-omschrijving",
+            "zds_zaakdoc_vertrouwelijkheid": "OPENBAAR",
         }
 
     def test_mutual_tls(self, m):
