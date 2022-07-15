@@ -26,6 +26,14 @@
     }
   }
 
+  &#{&}--editgrid-group {
+    padding-top: $grid-margin-1;
+
+    .submission-step-row__label {
+      font-weight: bold;
+    }
+  }
+
   &#{&}--columns {
     padding-top: $grid-margin-2;
   }

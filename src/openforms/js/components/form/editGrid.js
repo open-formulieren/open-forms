@@ -11,6 +11,17 @@ import {
 
 const EditGridFormio = Formio.Components.components.editgrid;
 
+const GROUP_LABEL = {
+  type: 'textfield',
+  key: 'groupLabel',
+  label: 'Group label',
+  tooltip:
+    'The label that will be shown above each repeating group in the ' +
+    'summary page, the submission report and the confirmation email. ' +
+    'Use curly braces ({}) where you would like the index of each group to be added. ' +
+    'For example, "Item {}" will be displayed as "Item 1", "Item 2"...',
+};
+
 const EDIT_FORM_TABS = [
   {
     type: 'tabs',
@@ -19,7 +30,15 @@ const EDIT_FORM_TABS = [
       {
         key: 'basic',
         label: 'Basic',
-        components: [LABEL, KEY, DESCRIPTION, HIDDEN, CLEAR_ON_HIDE, IS_SENSITIVE_DATA],
+        components: [
+          LABEL,
+          KEY,
+          GROUP_LABEL,
+          DESCRIPTION,
+          HIDDEN,
+          CLEAR_ON_HIDE,
+          IS_SENSITIVE_DATA,
+        ],
       },
       {
         key: 'display',
