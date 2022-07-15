@@ -18,6 +18,7 @@ from openforms.submissions.tests.mixins import VariablesTestMixin
 from ..nodes import ComponentNode
 
 
+@override_settings(LANGUAGE_CODE="en")
 class FormNodeTests(VariablesTestMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -465,6 +466,7 @@ class FormNodeTests(VariablesTestMixin, TestCase):
             "type": "editgrid",
             "key": "children",
             "label": "Children",
+            "groupLabel": "Child {}",
             "hidden": False,
             "components": [
                 {"key": "name", "type": "textfield", "label": "Name"},
@@ -497,19 +499,107 @@ class FormNodeTests(VariablesTestMixin, TestCase):
             nodelist = list(component_node)
 
             # One node for the EditGrid, 2 nodes per child (2 children)
-            self.assertEqual(5, len(nodelist))
+            self.assertEqual(7, len(nodelist))
 
             self.assertEqual("Children: ", nodelist[0].render())
-            self.assertEqual("Name: John", nodelist[1].render())
-            self.assertEqual("Surname: Doe", nodelist[2].render())
-            self.assertEqual("Name: Jane", nodelist[3].render())
-            self.assertEqual("Surname: Doe", nodelist[4].render())
+            self.assertEqual("Child 1", nodelist[1].render())
+            self.assertEqual("Name: John", nodelist[2].render())
+            self.assertEqual("Surname: Doe", nodelist[3].render())
+            self.assertEqual("Child 2", nodelist[4].render())
+            self.assertEqual("Name: Jane", nodelist[5].render())
+            self.assertEqual("Surname: Doe", nodelist[6].render())
+
+    def test_simple_editgrid_no_group_label(self):
+        component = {
+            "type": "editgrid",
+            "key": "children",
+            "label": "Children",
+            "hidden": False,
+            "components": [
+                {"key": "name", "type": "textfield", "label": "Name"},
+                {"key": "surname", "type": "textfield", "label": "Surname"},
+            ],
+        }
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form, form_definition__configuration={"components": [component]}
+        )
+        submission = SubmissionFactory.create(
+            form=form,
+        )
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={
+                "children": [
+                    {"name": "John", "surname": "Doe"},
+                    {"name": "Jane", "surname": "Doe"},
+                ]
+            },
+        )
+
+        with self.subTest(as_html=True):
+            renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
+            component_node = ComponentNode.build_node(
+                step=submission_step, component=component, renderer=renderer
+            )
+            nodelist = list(component_node)
+
+            # One node for the EditGrid, 2 nodes per child (2 children)
+            self.assertEqual(7, len(nodelist))
+
+            self.assertEqual("Item 1", nodelist[1].render())
+            self.assertEqual("Item 2", nodelist[4].render())
+
+    def test_simple_editgrid_wrong_group_label(self):
+        component = {
+            "type": "editgrid",
+            "key": "children",
+            "label": "Children",
+            "groupLabel": "Child {} {}",
+            "hidden": False,
+            "components": [
+                {"key": "name", "type": "textfield", "label": "Name"},
+                {"key": "surname", "type": "textfield", "label": "Surname"},
+            ],
+        }
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form, form_definition__configuration={"components": [component]}
+        )
+        submission = SubmissionFactory.create(
+            form=form,
+        )
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={
+                "children": [
+                    {"name": "John", "surname": "Doe"},
+                    {"name": "Jane", "surname": "Doe"},
+                ]
+            },
+        )
+
+        with self.subTest(as_html=True):
+            renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
+            component_node = ComponentNode.build_node(
+                step=submission_step, component=component, renderer=renderer
+            )
+            nodelist = list(component_node)
+
+            # One node for the EditGrid, 2 nodes per child (2 children)
+            self.assertEqual(7, len(nodelist))
+
+            self.assertEqual("Item 1", nodelist[1].render())
+            self.assertEqual("Item 2", nodelist[4].render())
 
     def test_editgrid_with_nested_fields(self):
         component = {
             "type": "editgrid",
             "key": "children",
             "label": "Children",
+            "groupLabel": "Child {}",
             "hidden": False,
             "components": [
                 {
@@ -577,21 +667,23 @@ class FormNodeTests(VariablesTestMixin, TestCase):
             )
             nodelist = list(component_node)
 
-            # One node for the EditGrid, 6 nodes per child (2 children)
-            self.assertEqual(13, len(nodelist))
+            # One node for the EditGrid, 7 nodes per child (2 children)
+            self.assertEqual(15, len(nodelist))
 
             self.assertEqual("Children: ", nodelist[0].render())
 
-            self.assertEqual("Personal Details", nodelist[1].render())
-            self.assertEqual("Name: John", nodelist[2].render())
-            self.assertEqual("Surname: Doe", nodelist[3].render())
-            self.assertEqual("Columns A", nodelist[4].component["label"])
-            self.assertEqual("Input A: A1", nodelist[5].render())
-            self.assertEqual("Input B: B1", nodelist[6].render())
+            self.assertEqual("Child 1", nodelist[1].render())
+            self.assertEqual("Personal Details", nodelist[2].render())
+            self.assertEqual("Name: John", nodelist[3].render())
+            self.assertEqual("Surname: Doe", nodelist[4].render())
+            self.assertEqual("Columns A", nodelist[5].component["label"])
+            self.assertEqual("Input A: A1", nodelist[6].render())
+            self.assertEqual("Input B: B1", nodelist[7].render())
 
-            self.assertEqual("Personal Details", nodelist[7].render())
-            self.assertEqual("Name: Jane", nodelist[8].render())
-            self.assertEqual("Surname: Doe", nodelist[9].render())
-            self.assertEqual("Columns A", nodelist[10].component["label"])
-            self.assertEqual("Input A: A2", nodelist[11].render())
-            self.assertEqual("Input B: B2", nodelist[12].render())
+            self.assertEqual("Child 2", nodelist[8].render())
+            self.assertEqual("Personal Details", nodelist[9].render())
+            self.assertEqual("Name: Jane", nodelist[10].render())
+            self.assertEqual("Surname: Doe", nodelist[11].render())
+            self.assertEqual("Columns A", nodelist[12].component["label"])
+            self.assertEqual("Input A: A2", nodelist[13].render())
+            self.assertEqual("Input B: B2", nodelist[14].render())
