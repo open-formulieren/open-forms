@@ -26,3 +26,8 @@ def summary(context):
 @register.simple_tag()
 def whitespace(amount: int, base=" ") -> str:
     return base * amount
+
+
+@register.simple_tag()
+def has_bold_label(layout_modifier: str) -> bool:
+    return layout_modifier in ["fieldset", "editgrid", "editgrid-group"]

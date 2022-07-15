@@ -1,9 +1,9 @@
-import copy
-from typing import Iterator, Union
+from typing import TYPE_CHECKING, Iterator, Union
 
 from django.urls import reverse
 from django.utils.html import format_html_join
 from django.utils.safestring import SafeString, mark_safe
+from django.utils.translation import ugettext_lazy as _
 
 from furl import furl
 from glom import Path
@@ -16,6 +16,12 @@ from ..utils import iter_components
 from .conf import RENDER_CONFIGURATION
 from .nodes import ComponentNode
 from .registry import register
+
+if TYPE_CHECKING:
+    from openforms.submissions.models import SubmissionStep
+    from openforms.submissions.rendering import Renderer
+
+    from ..typing import Component
 
 
 class ContainerMixin:
@@ -198,24 +204,62 @@ class EditGridNode(ContainerMixin, ComponentNode):
         """
         repeats = len(self.value) if self.value else 0
 
-        children = []
-
-        for component in iter_components(
-            configuration=self.component, recursive=False, _is_root=False
-        ):
-            children.append(
-                ComponentNode.build_node(
-                    step=self.step,
-                    component=component,
-                    renderer=self.renderer,
-                    depth=self.depth + 1,
-                )
-            )
-
         for node_index in range(repeats):
             path = Path(self.component["key"])
 
-            for child in children:
-                new_child = copy.deepcopy(child)
-                new_child.path = Path(path, Path(node_index))
-                yield new_child
+            yield EditGridGroupNode(
+                step=self.step,
+                component=self.component,
+                renderer=self.renderer,
+                depth=self.depth + 1,
+                index=node_index,
+                path=path,
+            )
+
+
+class EditGridGroupNode(ContainerMixin, ComponentNode):
+    group_index: int = 0
+    layout_modifier: str = "editgrid-group"
+    display_value: str = ""
+    default_label: str = _("Item {}")
+
+    def __init__(
+        self,
+        step: "SubmissionStep",
+        component: "Component",
+        renderer: "Renderer",
+        path: Path = None,
+        depth: int = 0,
+        index: int = 0,
+    ):
+        self.component = component
+        self.renderer = renderer
+        self.step = step
+        self.path = path
+        self.depth = depth
+        self.group_index = index
+
+    def get_children(self) -> Iterator["ComponentNode"]:
+        for component in iter_components(
+            configuration=self.component, recursive=False, _is_root=False
+        ):
+            yield ComponentNode.build_node(
+                step=self.step,
+                component=component,
+                renderer=self.renderer,
+                depth=self.depth + 1,
+                path=Path(self.path, Path(self.group_index)),
+            )
+
+    @property
+    def label(self) -> str:
+        group_label = self.component.get("groupLabel", self.default_label)
+        try:
+            formatted_label = group_label.format(self.group_index + 1)
+        except IndexError:
+            # Case in which more than one replacement fields have been added
+            formatted_label = self.default_label.format(self.group_index + 1)
+        return formatted_label
+
+    def render(self) -> str:
+        return f"{self.indent}{self.label}"
