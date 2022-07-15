@@ -466,7 +466,7 @@ class FormNodeTests(VariablesTestMixin, TestCase):
             "type": "editgrid",
             "key": "children",
             "label": "Children",
-            "groupLabel": "Child {}",
+            "groupLabel": "Child",
             "hidden": False,
             "components": [
                 {"key": "name", "type": "textfield", "label": "Name"},
@@ -551,55 +551,12 @@ class FormNodeTests(VariablesTestMixin, TestCase):
             self.assertEqual("Item 1", nodelist[1].render())
             self.assertEqual("Item 2", nodelist[4].render())
 
-    def test_simple_editgrid_wrong_group_label(self):
-        component = {
-            "type": "editgrid",
-            "key": "children",
-            "label": "Children",
-            "groupLabel": "Child {} {}",
-            "hidden": False,
-            "components": [
-                {"key": "name", "type": "textfield", "label": "Name"},
-                {"key": "surname", "type": "textfield", "label": "Surname"},
-            ],
-        }
-        form = FormFactory.create()
-        form_step = FormStepFactory.create(
-            form=form, form_definition__configuration={"components": [component]}
-        )
-        submission = SubmissionFactory.create(
-            form=form,
-        )
-        submission_step = SubmissionStepFactory.create(
-            submission=submission,
-            form_step=form_step,
-            data={
-                "children": [
-                    {"name": "John", "surname": "Doe"},
-                    {"name": "Jane", "surname": "Doe"},
-                ]
-            },
-        )
-
-        with self.subTest(as_html=True):
-            renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
-            component_node = ComponentNode.build_node(
-                step=submission_step, component=component, renderer=renderer
-            )
-            nodelist = list(component_node)
-
-            # One node for the EditGrid, 2 nodes per child (2 children)
-            self.assertEqual(7, len(nodelist))
-
-            self.assertEqual("Item 1", nodelist[1].render())
-            self.assertEqual("Item 2", nodelist[4].render())
-
     def test_editgrid_with_nested_fields(self):
         component = {
             "type": "editgrid",
             "key": "children",
             "label": "Children",
-            "groupLabel": "Child {}",
+            "groupLabel": "Child",
             "hidden": False,
             "components": [
                 {

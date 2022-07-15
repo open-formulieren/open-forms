@@ -18,8 +18,9 @@ const GROUP_LABEL = {
   tooltip:
     'The label that will be shown above each repeating group in the ' +
     'summary page, the submission report and the confirmation email. ' +
-    'Use curly braces ({}) where you would like the index of each group to be added. ' +
-    'For example, "Item {}" will be displayed as "Item 1", "Item 2"...',
+    'The index of the item will be added next to it, i.e. if you enter ' +
+    '"Item" it will be displayed as "Item 1", "Item 2" ...',
+  defaultValue: 'Item',
 };
 
 const EDIT_FORM_TABS = [

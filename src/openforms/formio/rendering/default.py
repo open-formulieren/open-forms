@@ -221,7 +221,7 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
     group_index: int = 0
     layout_modifier: str = "editgrid-group"
     display_value: str = ""
-    default_label: str = _("Item {}")
+    default_label: str = _("Item")
 
     def __init__(
         self,
@@ -254,12 +254,7 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
     @property
     def label(self) -> str:
         group_label = self.component.get("groupLabel", self.default_label)
-        try:
-            formatted_label = group_label.format(self.group_index + 1)
-        except IndexError:
-            # Case in which more than one replacement fields have been added
-            formatted_label = self.default_label.format(self.group_index + 1)
-        return formatted_label
+        return f"{group_label} {self.group_index + 1}"
 
     def render(self) -> str:
         return f"{self.indent}{self.label}"
