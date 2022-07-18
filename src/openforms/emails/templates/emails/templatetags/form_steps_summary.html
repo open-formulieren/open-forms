@@ -20,8 +20,7 @@
             {% with add_bottom_margin=forloop.last %}
                 {% if component_node.label or component_node.display_value %}
                     {% ifchanged component_node.layout_modifier %}
-                        {% has_bold_label component_node.layout_modifier as make_bold%}
-                        {% if make_bold %}
+                        {% if component_node.layout_modifier in bold_label_modifiers %}
                             {% include "emails/templatetags/field_summary.html" with padding_top='16px' label_font_weight='600' %}
                         {% else %}
                             {% include "emails/templatetags/field_summary.html" %}
