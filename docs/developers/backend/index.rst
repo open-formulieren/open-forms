@@ -16,6 +16,7 @@ following the outlined :ref:`developers_architecture`.
 
    core/index
    modules/index
+   dev-rendering
    profiling
 
 .. _Django: https://www.djangoproject.com/
