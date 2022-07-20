@@ -1,6 +1,11 @@
 from django import template
 from django.template.loader import get_template
 
+from openforms.formio.rendering.default import (
+    EditGridGroupNode,
+    EditGridNode,
+    FieldSetNode,
+)
 from openforms.submissions.rendering.constants import RenderModes
 from openforms.submissions.rendering.renderer import Renderer
 
@@ -19,7 +24,16 @@ def summary(context):
         name = "emails/templatetags/form_summary.txt"
     else:
         name = "emails/templatetags/form_summary.html"
-    context["renderer"] = renderer
+    context.update(
+        {
+            "renderer": renderer,
+            "bold_label_modifiers": [
+                FieldSetNode.layout_modifier,
+                EditGridNode.layout_modifier,
+                EditGridGroupNode.layout_modifier,
+            ],
+        }
+    )
     return get_template(name).render(context.flatten())
 
 

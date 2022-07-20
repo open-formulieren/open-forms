@@ -4,13 +4,14 @@ from django.test import TestCase
 
 from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ..constants import RenderConfigurationOptions
 from ..nodes import ComponentNode
 from ..registry import Registry
 
 
-class FormNodeTests(TestCase):
+class FormNodeTests(VariablesTestMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -118,7 +119,52 @@ class FormNodeTests(TestCase):
                         }
                     ],
                 },
-                # TODO container: columns
+                # container: visible editgrid with visible children
+                {
+                    "type": "editgrid",
+                    "key": "visibleEditGridWithVisibleChildren",
+                    "label": "Visible editgrid with visible children",
+                    "hidden": False,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "input11",
+                            "label": "Input 11",
+                            "hidden": False,
+                        }
+                    ],
+                },
+                # container: hidden editgrid with visible children
+                {
+                    "type": "editgrid",
+                    "key": "hiddenEditGridWithVisibleChildren",
+                    "label": "Hidden editgrid with visible children",
+                    "hidden": True,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "input12",
+                            "label": "Input 12",
+                            "hidden": False,
+                        }
+                    ],
+                },
+                # container: visible editgrid with hidden children
+                {
+                    "type": "editgrid",
+                    "key": "visibleEditGridWithHiddenChildren",
+                    "label": "Visible editgrid with hidden children",
+                    "hidden": False,
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "input13",
+                            "label": "Input 13",
+                            "hidden": True,
+                        }
+                    ],
+                },
+                # TODO columns
             ]
         }
         data = {
@@ -131,6 +177,18 @@ class FormNodeTests(TestCase):
             "input7": "ggggg",
             "input8": "hhhhh",
             "input9": "iiiii",
+            "visibleEditGridWithVisibleChildren": [
+                {"input11": "kkkkk"},
+                {"input11": "lllll"},
+            ],
+            "hiddenEditGridWithVisibleChildren": [
+                {"input12": "mmmmm"},
+                {"input12": "nnnnn"},
+            ],
+            "visibleEditGridWithHiddenChildren": [
+                {"input13": "ooooo"},
+                {"input13": "ppppp"},
+            ],
         }
 
         submission = SubmissionFactory.from_components(
@@ -237,8 +295,9 @@ class FormNodeTests(TestCase):
             )
             nodelist += list(component_node)
 
-        self.assertEqual(len(nodelist), 10)
+        self.assertEqual(len(nodelist), 16)
         labels = [node.label for node in nodelist]
+        # The fieldset/editgrid components have no labels
         self.assertEqual(
             labels,
             [
@@ -252,12 +311,19 @@ class FormNodeTests(TestCase):
                 "input8",
                 "input9",
                 "input10",
+                # The editgrid components have 2 entries each in the data
+                "input11",
+                "input11",
+                "input12",
+                "input12",
+                "input13",
+                "input13",
             ],
         )
 
     def test_render_mode_pdf(self):
         renderer = Renderer(self.submission, mode=RenderModes.pdf, as_html=True)
-        # set up mock registry without special fieldset behaviour
+        # set up mock registry without special fieldset/editgrid behaviour
         register = Registry()
 
         nodelist = []
@@ -270,7 +336,7 @@ class FormNodeTests(TestCase):
                 )
                 nodelist += list(component_node)
 
-        self.assertEqual(len(nodelist), 6)
+        self.assertEqual(len(nodelist), 9)
         labels = [node.label for node in nodelist]
         expected_labels = [
             "Input 1",
@@ -279,6 +345,9 @@ class FormNodeTests(TestCase):
             "A container without visible children",
             "A container with visible children",
             "Input 9",
+            "Visible editgrid with visible children",
+            "Input 11",
+            "Visible editgrid with hidden children",
         ]
         self.assertEqual(labels, expected_labels)
 

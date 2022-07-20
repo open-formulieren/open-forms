@@ -1,10 +1,13 @@
+from dataclasses import dataclass
 from typing import Iterator, Union
 
 from django.urls import reverse
 from django.utils.html import format_html_join
 from django.utils.safestring import SafeString, mark_safe
+from django.utils.translation import ugettext_lazy as _
 
 from furl import furl
+from glom import Path
 
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
 from openforms.submissions.rendering.constants import RenderModes
@@ -21,7 +24,7 @@ class ContainerMixin:
 
     @property
     def is_visible(self) -> bool:
-        # fieldset does not support the showInFoo properties, so we don't use the super
+        # fieldset/editgrid components do not support the showInFoo properties, so we don't use the super
         # class.
         if self.mode == RenderModes.export:
             return True
@@ -96,6 +99,7 @@ class ColumnsNode(ContainerMixin, ComponentNode):
                     component=component,
                     renderer=self.renderer,
                     depth=self.depth + 1,
+                    path=self.path,
                 )
 
 
@@ -154,3 +158,83 @@ class FileNode(ComponentNode):
             )
         else:
             return ", ".join(f"{link} ({display})" for link, display in files)
+
+
+@register("editgrid")
+class EditGridNode(ContainerMixin, ComponentNode):
+    layout_modifier: str = "editgrid"
+    display_value: str = ""
+
+    def get_children(self) -> Iterator["ComponentNode"]:
+        """
+        Return children as many times as they are repeated in the data
+
+        The editgrid component is special because it may have a configuration such as:
+
+        .. code::
+
+            {
+                "key": "children",
+                "components": [
+                    {"key": "name", ...},
+                    {"key": "surname", ...},
+                ],
+                ...
+            }
+
+        But the data submitted with the form will be:
+
+        .. code::
+
+            {
+                "children": [
+                    {"name": "Jon", "surname": "Doe"},
+                    {"name": "Jane", "surname": "Doe"},
+                    ...
+                ]
+            }
+
+        So we need to repeat the child nodes of the configuration and associate them with the data
+        provided by the user.
+        """
+        repeats = len(self.value) if self.value else 0
+
+        for node_index in range(repeats):
+            path = Path(self.component["key"])
+
+            yield EditGridGroupNode(
+                step=self.step,
+                component=self.component,
+                renderer=self.renderer,
+                depth=self.depth + 1,
+                group_index=node_index,
+                path=path,
+            )
+
+
+@dataclass
+class EditGridGroupNode(ContainerMixin, ComponentNode):
+    group_index: int = 0
+    layout_modifier: str = "editgrid-group"
+    display_value: str = ""
+    default_label: str = _("Item")
+
+    def get_children(self) -> Iterator["ComponentNode"]:
+        for component in iter_components(
+            configuration=self.component, recursive=False, _is_root=False
+        ):
+            yield ComponentNode.build_node(
+                step=self.step,
+                component=component,
+                renderer=self.renderer,
+                depth=self.depth + 1,
+                path=Path(self.path, Path(self.group_index)),
+            )
+
+    @property
+    def label(self) -> str:
+        group_label = self.component.get("groupLabel", self.default_label)
+        return f"{group_label} {self.group_index + 1}"
+
+    def render(self) -> str:
+        return f"{self.indent}{self.label}"

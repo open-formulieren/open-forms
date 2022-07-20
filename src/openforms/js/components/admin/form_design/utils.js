@@ -99,6 +99,17 @@ const getUniqueKey = (key, existingKeys) => {
   return getUniqueKey(uniqueKey, existingKeys);
 };
 
+const getFormStep = (identifier, formSteps, matchOnFormDefinition = false) => {
+  return formSteps.find(element => {
+    // The formDefinition also uses the _generatedId instead of the URL if it is new
+    const urlMatch = matchOnFormDefinition
+      ? element.formDefinition === identifier
+      : element.url && element.url === identifier;
+    const generatedIdMatch = element._generatedId === identifier;
+    return urlMatch || generatedIdMatch;
+  });
+};
+
 export {
   stripIdFromComponents,
   getFormComponents,
@@ -106,4 +117,5 @@ export {
   checkKeyChange,
   replaceComponentKeyInLogic,
   getUniqueKey,
+  getFormStep,
 };
