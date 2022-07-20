@@ -1,10 +1,6 @@
-from django.template import loader
-from django.test import TestCase
-
 import requests_mock
 from freezegun import freeze_time
 from lxml import etree
-from lxml.etree import ElementTree
 from privates.test import temp_private_root
 from requests import RequestException
 
@@ -17,88 +13,15 @@ from openforms.submissions.tests.factories import (
 from stuf.constants import SOAPVersion
 from stuf.tests.factories import StufServiceFactory
 
-from ..client import PaymentStatus, StufZDSClient, nsmap
-
-
-def load_mock(name, context=None):
-    return loader.render_to_string(
-        f"stuf_zds/soap/response-mock/{name}", context
-    ).encode("utf8")
-
-
-def match_text(text):
-    # requests_mock matcher for SOAP requests
-    def _matcher(request):
-        return text in (request.text or "")
-
-    return _matcher
-
-
-def xml_from_request_history(m, index) -> ElementTree:
-    request = m.request_history[index]
-    xml = etree.fromstring(bytes(request.text, encoding="utf8"))
-    return xml
-
-
-class StufTestBase(TestCase):
-    namespaces = nsmap
-
-    def assertXPathExists(self, xml_doc, xpath):
-        elements = xml_doc.xpath(xpath, namespaces=self.namespaces)
-        if len(elements) == 0:
-            self.fail(f"cannot find XML element(s) with xpath {xpath}")
-
-    def assertXPathNotExists(self, xml_doc, xpath):
-        elements = xml_doc.xpath(xpath, namespaces=self.namespaces)
-        if len(elements) != 0:
-            self.fail(
-                f"found {len(elements)} unexpected XML element(s) with xpath {xpath}"
-            )
-
-    def assertXPathCount(self, xml_doc, xpath, count):
-        elements = xml_doc.xpath(xpath, namespaces=self.namespaces)
-        self.assertEqual(
-            len(elements),
-            count,
-            f"cannot find exactly {count} XML element(s) with xpath {xpath}",
-        )
-
-    def assertXPathEquals(self, xml_doc, xpath, text):
-        elements = xml_doc.xpath(xpath, namespaces=self.namespaces)
-        self.assertGreaterEqual(
-            len(elements), 1, f"cannot find XML element(s) with xpath {xpath}"
-        )
-        self.assertEqual(
-            len(elements), 1, f"multiple XML element(s) found for xpath {xpath}"
-        )
-        if isinstance(elements[0], str):
-            self.assertEqual(elements[0].strip(), text, f"at xpath {xpath}")
-        else:
-            elem_text = elements[0].text
-            if elem_text is None:
-                elem_text = ""
-            else:
-                elem_text = elem_text.strip()
-            self.assertEqual(elem_text, text, f"at xpath {xpath}")
-
-    def assertXPathEqualDict(self, xml_doc, path_value_dict):
-        for path, value in path_value_dict.items():
-            self.assertXPathEquals(xml_doc, path, value)
-
-    def assertSoapXMLCommon(self, xml_doc):
-        self.assertIsNotNone(xml_doc)
-        self.assertXPathExists(
-            xml_doc, "/*[local-name()='Envelope']/*[local-name()='Header']"
-        )
-        self.assertXPathExists(
-            xml_doc, "/*[local-name()='Envelope']/*[local-name()='Body']"
-        )
+from ..client import PaymentStatus, StufZDSClient
+from . import StUFZDSTestBase
+from .utils import load_mock, match_text, xml_from_request_history
 
 
 @freeze_time("2021-10-11 11:23:00")
 @temp_private_root()
 @requests_mock.Mocker()
-class StufZDSClientTests(StufTestBase):
+class StufZDSClientTests(StUFZDSTestBase):
     """
     test the client class directly
     """
