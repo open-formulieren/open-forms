@@ -1,9 +1,12 @@
+from functools import wraps
 from typing import Dict, List, Optional, Tuple
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+import requests
 from rest_framework import serializers
+from zds_client import ClientError
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
 from openforms.contrib.zgw.service import (
@@ -22,6 +25,7 @@ from openforms.utils.validators import validate_rsin
 
 from ...base import BasePlugin
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
+from ...exceptions import RegistrationFailed
 from ...registry import register
 from .checks import check_config
 from .models import ZgwConfig
@@ -55,6 +59,17 @@ def _point_coordinate(value):
     return {"type": "Point", "coordinates": [value[0], value[1]]}
 
 
+def wrap_api_errors(func):
+    @wraps(func)
+    def decorator(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except (requests.RequestException, ClientError) as exc:
+            raise RegistrationFailed from exc
+
+    return decorator
+
+
 @register("zgw-create-zaak")
 class ZGWRegistration(BasePlugin):
     verbose_name = _("ZGW API's")
@@ -74,6 +89,7 @@ class ZGWRegistration(BasePlugin):
         ),
     }
 
+    @wrap_api_errors
     def register_submission(
         self, submission: Submission, options: dict
     ) -> Optional[dict]:
@@ -148,6 +164,7 @@ class ZGWRegistration(BasePlugin):
         zaak = result["zaak"]
         return zaak["identificatie"]
 
+    @wrap_api_errors
     def update_payment_status(self, submission: "Submission", options: dict):
         set_zaak_payment(submission.registration_result["zaak"]["url"])
 
