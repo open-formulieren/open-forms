@@ -108,6 +108,13 @@ class StufBgPrefill(BasePlugin):
         response_dict = {}
         for attribute in attributes:
             value = glom(data, ATTRIBUTES_TO_STUF_BG_MAPPING[attribute], default=None)
+            # if the XML element has attributes, we don't get a return value of the content,
+            # but rather an OrderedDict from xmltodict with the #text key for the content
+            # and @<attribute> keys for the attributes.
+            # E.g. <ns:geboortedatum StUF:indOnvolledigeDatum="M">19600701</ns:geboortedatum>,
+            # see #1617 for such a regression.
+            if isinstance(value, dict) and "#text" in value:
+                value = value["#text"]
 
             if value and "@noValue" not in value:
                 response_dict[attribute] = value
