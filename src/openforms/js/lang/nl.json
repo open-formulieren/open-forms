@@ -154,6 +154,11 @@
     "description": "Variable table key title",
     "originalDefault": "Key"
   },
+  "7/Bhpw": {
+    "defaultMessage": "Please fill in the name of the previous variable before adding another",
+    "description": "Warning to finish invalid user defined variable",
+    "originalDefault": "Please fill in the name of the previous variable before adding another"
+  },
   "7/n6O+": {
     "defaultMessage": "Dit formulier heeft geen versies.",
     "description": "No form version history message",
