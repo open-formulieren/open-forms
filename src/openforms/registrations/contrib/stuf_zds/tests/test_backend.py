@@ -2,11 +2,14 @@ import dataclasses
 from decimal import Decimal
 from unittest.mock import patch
 
+from django.test import tag
+
 import requests_mock
 from freezegun import freeze_time
 from privates.test import temp_private_root
 
 from openforms.logging.models import TimelineLogProxy
+from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -18,7 +21,9 @@ from stuf.stuf_zds.tests.utils import load_mock, match_text, xml_from_request_hi
 from stuf.tests.factories import StufServiceFactory
 
 from ....constants import RegistrationAttribute
+from ....exceptions import RegistrationFailed
 from ....service import extract_submission_reference
+from ....tasks import register_submission
 from ..plugin import PartialDate, StufZDSRegistration
 
 
@@ -191,7 +196,7 @@ class StufZDSPluginTests(VariablesTestMixin, StUFZDSTestBase):
             },
         )
 
-        SubmissionFileAttachmentFactory.create(
+        attachment = SubmissionFileAttachmentFactory.create(
             submission_step=submission.steps[0],
             file_name="my-attachment.doc",
             content_type="application/msword",
@@ -348,6 +353,24 @@ class StufZDSPluginTests(VariablesTestMixin, StUFZDSTestBase):
                 template="logging/events/stuf_zds_success_response.txt"
             ).count(),
             6,
+        )
+
+        # even on success, the intermediate results must be recorded:
+        submission.refresh_from_db()
+        self.assertEqual(
+            submission.registration_result["intermediate"],
+            {
+                "zaaknummer": "foo-zaak",
+                "zaak_created": True,
+                "document_nummers": {
+                    "pdf-report": "bar-document",
+                    str(attachment.id): "bar-document",
+                },
+                "documents_created": {
+                    "pdf-report": True,
+                    str(attachment.id): True,
+                },
+            },
         )
 
     @patch("celery.app.task.Task.request")
@@ -1211,3 +1234,320 @@ class StufZDSPluginTests(VariablesTestMixin, StUFZDSTestBase):
         reference = extract_submission_reference(submission)
 
         self.assertEqual("abcd1234", reference)
+
+
+@tag("gh-1183")
+@freeze_time("2020-12-22")
+@temp_private_root()
+class PartialRegistrationFailureTests(VariablesTestMixin, StUFZDSTestBase):
+    """
+    Test that partial results are stored and don't cause excessive registration calls.
+
+    Issue #1183 -- case numbers are reserved to often, as a retry reserves a new one. It
+    also happens that when certain other calls fail, a new Zaak is created which
+    should not have been created again.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.service = StufServiceFactory.create()
+        config = StufZDSConfig.get_solo()
+        config.service = cls.service
+        config.save()
+
+        # set up a simple form to track the partial result storing state
+        cls.submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                },
+                {
+                    "key": "achternaam",
+                    "type": "textfield",
+                },
+            ],
+            form__name="my-form",
+            form__registration_backend="stuf-zds-create-zaak",
+            form__registration_backend_options={
+                "zds_zaaktype_code": "zt-code",
+                "zds_zaaktype_status_code": "123",
+                "zds_documenttype_omschrijving_inzending": "aaabbc",
+            },
+            completed=True,
+            bsn="111222333",
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+            },
+        )
+
+    def setUp(self):
+        super().setUp()
+
+        self.requests_mock = requests_mock.Mocker()
+        self.requests_mock.start()
+        self.addCleanup(self.requests_mock.stop)
+        self.addCleanup(self.submission.refresh_from_db)
+
+    def test_zaak_creation_fails_number_is_reserved(self):
+        self.requests_mock.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerZaakIdentificatie.xml",
+                {
+                    "zaak_identificatie": "foo-zaak",
+                },
+            ),
+            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
+        )
+        self.requests_mock.post(
+            self.service.soap_service.url,
+            status_code=400,
+            content=load_mock("soap-error.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+
+        with self.subTest("Initial registration fails"):
+            register_submission(self.submission.id)
+
+            self.submission.refresh_from_db()
+            self.assertEqual(
+                self.submission.registration_status, RegistrationStatuses.failed
+            )
+            intermediate_results = self.submission.registration_result["intermediate"]
+            self.assertEqual(
+                intermediate_results,
+                {"zaaknummer": "foo-zaak"},
+            )
+            self.assertIn("traceback", self.submission.registration_result)
+
+        with self.subTest("Retry does not create new zaaknummer"):
+            with self.assertRaises(RegistrationFailed):
+                register_submission(self.submission.id)
+
+            self.submission.refresh_from_db()
+            intermediate_results = self.submission.registration_result["intermediate"]
+            self.assertEqual(
+                intermediate_results,
+                {"zaaknummer": "foo-zaak"},
+            )
+            self.assertIn("traceback", self.submission.registration_result)
+            num_requests_done = len(self.requests_mock.request_history)
+            self.assertEqual(
+                num_requests_done, 3
+            )  # 1 create identificatie, 2 attempts to create zaak
+
+            xml_doc = xml_from_request_history(self.requests_mock, 0)
+            self.assertXPathEqualDict(
+                xml_doc,
+                {"//zkn:stuurgegevens/stuf:functie": "genereerZaakidentificatie"},
+            )
+
+            xml_doc = xml_from_request_history(self.requests_mock, 1)
+            self.assertXPathEqualDict(
+                xml_doc,
+                {
+                    "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                    "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
+                },
+            )
+
+            xml_doc = xml_from_request_history(self.requests_mock, 2)
+            self.assertXPathEqualDict(
+                xml_doc,
+                {
+                    "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                    "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
+                },
+            )
+
+    def test_doc_id_creation_fails_zaak_registration_succeeds(self):
+        self.requests_mock.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerZaakIdentificatie.xml",
+                {
+                    "zaak_identificatie": "foo-zaak",
+                },
+            ),
+            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
+        )
+        self.requests_mock.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+        self.requests_mock.post(
+            self.service.soap_service.url,
+            status_code=400,
+            content=load_mock("soap-error.xml"),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+
+        with self.subTest("Document id generation fails"):
+            register_submission(self.submission.id)
+
+            self.submission.refresh_from_db()
+            self.assertEqual(
+                self.submission.registration_status, RegistrationStatuses.failed
+            )
+            intermediate_results = self.submission.registration_result["intermediate"]
+            self.assertEqual(
+                intermediate_results,
+                {
+                    "zaaknummer": "foo-zaak",
+                    "zaak_created": True,
+                },
+            )
+            self.assertIn("traceback", self.submission.registration_result)
+
+        with self.subTest("Retry does not create new zaak"):
+            with self.assertRaises(RegistrationFailed):
+                register_submission(self.submission.id)
+
+            self.submission.refresh_from_db()
+            intermediate_results = self.submission.registration_result["intermediate"]
+            self.assertEqual(
+                intermediate_results,
+                {
+                    "zaaknummer": "foo-zaak",
+                    "zaak_created": True,
+                },
+            )
+            self.assertIn("traceback", self.submission.registration_result)
+            num_requests_done = len(self.requests_mock.request_history)
+            # 1. create zaak identificatie
+            # 2. create zaak
+            # 3. create document identificatie
+            # 4. create document identificatie
+            self.assertEqual(num_requests_done, 4)
+
+            xml_doc = xml_from_request_history(self.requests_mock, 0)
+            self.assertXPathEqualDict(
+                xml_doc,
+                {"//zkn:stuurgegevens/stuf:functie": "genereerZaakidentificatie"},
+            )
+
+            xml_doc = xml_from_request_history(self.requests_mock, 1)
+            self.assertXPathEqualDict(
+                xml_doc,
+                {
+                    "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                    "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
+                },
+            )
+
+            xml_doc = xml_from_request_history(self.requests_mock, 2)
+            self.assertXPathEqualDict(
+                xml_doc,
+                {"//zkn:stuurgegevens/stuf:functie": "genereerDocumentidentificatie"},
+            )
+
+            xml_doc = xml_from_request_history(self.requests_mock, 3)
+            self.assertXPathEqualDict(
+                xml_doc,
+                {"//zkn:stuurgegevens/stuf:functie": "genereerDocumentidentificatie"},
+            )
+
+    def test_doc_creation_failure_does_not_create_more_doc_ids(self):
+        self.requests_mock.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerZaakIdentificatie.xml",
+                {
+                    "zaak_identificatie": "foo-zaak",
+                },
+            ),
+            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
+        )
+        self.requests_mock.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+        self.requests_mock.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+        self.requests_mock.post(
+            self.service.soap_service.url,
+            status_code=400,
+            content=load_mock("soap-error.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+
+        with self.subTest("Document id generation fails"):
+            register_submission(self.submission.id)
+
+            self.submission.refresh_from_db()
+            self.assertEqual(
+                self.submission.registration_status, RegistrationStatuses.failed
+            )
+            intermediate_results = self.submission.registration_result["intermediate"]
+            self.assertEqual(
+                intermediate_results,
+                {
+                    "zaaknummer": "foo-zaak",
+                    "zaak_created": True,
+                    "document_nummers": {
+                        "pdf-report": "bar-document",
+                    },
+                },
+            )
+            self.assertIn("traceback", self.submission.registration_result)
+
+        with self.subTest("Retry does not create new zaak"):
+            with self.assertRaises(RegistrationFailed):
+                register_submission(self.submission.id)
+
+            self.submission.refresh_from_db()
+            intermediate_results = self.submission.registration_result["intermediate"]
+            self.assertEqual(
+                intermediate_results,
+                {
+                    "zaaknummer": "foo-zaak",
+                    "zaak_created": True,
+                    "document_nummers": {
+                        "pdf-report": "bar-document",
+                    },
+                },
+            )
+            self.assertIn("traceback", self.submission.registration_result)
+            num_requests_done = len(self.requests_mock.request_history)
+            # 1. create zaak identificatie
+            # 2. create zaak
+            # 3. create document identificatie (pdf)
+            # 4. voegZaakDocumentToe (fails)
+            # 5. voegZaakDocumentToe (fails again)
+            self.assertEqual(num_requests_done, 5)
+
+            xml_doc = xml_from_request_history(self.requests_mock, 2)
+            self.assertXPathEqualDict(
+                xml_doc,
+                {"//zkn:stuurgegevens/stuf:functie": "genereerDocumentidentificatie"},
+            )
+
+            xml_doc = xml_from_request_history(self.requests_mock, 3)
+            self.assertXPathEqualDict(
+                xml_doc,
+                {
+                    "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                    "//zkn:stuurgegevens/stuf:entiteittype": "EDC",
+                },
+            )
+
+            xml_doc = xml_from_request_history(self.requests_mock, 4)
+            self.assertXPathEqualDict(
+                xml_doc,
+                {
+                    "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                    "//zkn:stuurgegevens/stuf:entiteittype": "EDC",
+                },
+            )
