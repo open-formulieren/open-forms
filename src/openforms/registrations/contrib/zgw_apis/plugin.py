@@ -27,6 +27,7 @@ from ...base import BasePlugin
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
 from ...exceptions import RegistrationFailed
 from ...registry import register
+from ...utils import execute_unless_result_exists
 from .checks import check_config
 from .models import ZgwConfig
 

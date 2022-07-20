@@ -1,11 +1,10 @@
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from glom import assign, glom
 from rest_framework import serializers
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
@@ -14,7 +13,6 @@ from openforms.registrations.constants import (
     REGISTRATION_ATTRIBUTE,
     RegistrationAttribute,
 )
-from openforms.registrations.registry import register
 from openforms.submissions.mapping import (
     SKIP,
     FieldConf,
@@ -26,6 +24,9 @@ from openforms.submissions.models import Submission, SubmissionReport
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from stuf.stuf_zds.constants import VertrouwelijkheidsAanduidingen
 from stuf.stuf_zds.models import StufZDSConfig
+
+from ...registry import register
+from ...utils import execute_unless_result_exists
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -136,31 +137,6 @@ def _point_coordinate(value):
     if not value or not isinstance(value, list) or len(value) != 2:
         return SKIP
     return {"lat": value[0], "lng": value[1]}
-
-
-unset = object()
-
-
-def execute_unless_result_exists(
-    callback: callable,
-    submission: Submission,
-    spec: str,
-    default=None,
-    result=unset,
-) -> Any:
-    existing_result = glom(submission.registration_result, spec, default=default)
-    if existing_result:
-        return existing_result
-
-    callback_result = callback()
-
-    if result is unset:
-        result = callback_result
-
-    # store the result
-    assign(submission.registration_result, spec, result, missing=dict)
-    submission.save(update_fields=["registration_result"])
-    return callback_result
 
 
 @register("stuf-zds-create-zaak")
