@@ -14,6 +14,9 @@ def execute_unless_result_exists(
     default=None,
     result=unset,
 ) -> Any:
+    if submission.registration_result is None:
+        submission.registration_result = {}
+
     existing_result = glom(submission.registration_result, spec, default=default)
     if existing_result:
         return existing_result

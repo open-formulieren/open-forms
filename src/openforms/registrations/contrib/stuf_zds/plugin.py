@@ -179,9 +179,6 @@ class StufZDSRegistration(BasePlugin):
 
         client = config.get_client(options)
 
-        # ensure registration_result is a dict
-        submission.registration_result = submission.registration_result or {}
-
         # obtain a zaaknummer & save it - first, check if we have an intermediate result
         # from earlier attempts. if we do, do not generate a new number
         zaak_id = execute_unless_result_exists(

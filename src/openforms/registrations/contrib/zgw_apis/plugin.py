@@ -1,4 +1,4 @@
-from functools import wraps
+from functools import partial, wraps
 from typing import Dict, List, Optional, Tuple
 
 from django.urls import reverse
@@ -108,35 +108,65 @@ class ZGWRegistration(BasePlugin):
         zaak_data = apply_data_mapping(
             submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
         )
-        zaak = create_zaak(
+
+        _create_zaak = partial(
+            create_zaak,
             options,
             payment_required=submission.payment_required,
             existing_reference=submission.public_registration_reference,
-            **zaak_data
+            **zaak_data,
         )
-
+        zaak = execute_unless_result_exists(
+            _create_zaak,
+            submission,
+            "intermediate.zaak",
+        )
         submission_report = SubmissionReport.objects.get(submission=submission)
-        document = create_report_document(
-            submission.form.admin_name, submission_report, options
+        document = execute_unless_result_exists(
+            partial(
+                create_report_document,
+                submission.form.admin_name,
+                submission_report,
+                options,
+            ),
+            submission,
+            "intermediate.documents.report.document",
         )
-        relate_document(zaak["url"], document["url"])
+        execute_unless_result_exists(
+            partial(relate_document, zaak["url"], document["url"]),
+            submission,
+            "intermediate.documents.report.relation",
+        )
 
         rol_data = apply_data_mapping(
             submission, self.rol_mapping, REGISTRATION_ATTRIBUTE
         )
-        rol = create_rol(zaak, rol_data, options)
+        rol = execute_unless_result_exists(
+            partial(create_rol, zaak, rol_data, options), submission, "intermediate.rol"
+        )
 
-        # for now create generic status
-        status = create_status(zaak)
+        status = execute_unless_result_exists(
+            partial(create_status, zaak), submission, "intermediate.status"
+        )
 
         for attachment in submission.attachments:
-            options["informatieobjecttype"] = (
-                attachment.informatieobjecttype or options["informatieobjecttype"]
+            iot = attachment.informatieobjecttype or options["informatieobjecttype"]
+            doc_options = {**options, "informatieobjecttype": iot}
+            attachment_document = execute_unless_result_exists(
+                partial(
+                    create_attachment_document,
+                    submission.form.admin_name,
+                    attachment,
+                    doc_options,
+                ),
+                submission,
+                f"intermediate.documents.{attachment.id}.document",
             )
-            attachment = create_attachment_document(
-                submission.form.admin_name, attachment, options
+            execute_unless_result_exists(
+                partial(relate_document, zaak["url"], attachment_document["url"]),
+                submission,
+                f"intermediate.documents.{attachment.id}.relation",
             )
-            relate_document(zaak["url"], attachment["url"])
 
         result = {
             "zaak": zaak,
