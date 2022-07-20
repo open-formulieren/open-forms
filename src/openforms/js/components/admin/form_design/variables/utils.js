@@ -10,9 +10,8 @@ const getComponentDatatype = component => {
   return COMPONENT_DATATYPES[component.type] || 'string';
 };
 
-const isLayoutOrContentComponent = component => {
-  // Issue #1695: content components are not considered layout components
-  return FormioUtils.isLayoutComponent(component) || component.type === 'content';
+const isLayoutComponent = component => {
+  return FormioUtils.isLayoutComponent(component);
 };
 
 const isInEditGrid = (component, configuration) => {
@@ -31,6 +30,44 @@ const isInEditGrid = (component, configuration) => {
   return false;
 };
 
+const isPasteEvent = (mutationType, newComponent, oldComponent) => {
+  if (mutationType !== 'changed') return false;
+  return _.isEqual(newComponent, oldComponent);
+};
+
+const makeNewVariableFromComponent = (component, formDefinition) => {
+  return {
+    name: component.label,
+    key: component.key,
+    formDefinition: formDefinition,
+    source: VARIABLE_SOURCES.component,
+    isSensitiveData: component.isSensitiveData,
+    prefillPlugin: component.prefill?.plugin || '',
+    prefillAttribute: component.prefill?.attribute || '',
+    dataType: getComponentDatatype(component),
+    initialValue: getDefaultValue(component),
+  };
+};
+
+const shouldNotUpdateVariables = (newComponent, oldComponent, mutationType, stepConfiguration) => {
+  // Issue #1695: content components are not considered layout components
+  if (newComponent.type === 'content') return false;
+
+  // editGrids ARE layout components, but we want to create a variable for them that contains all
+  // the data of the children
+  const isComponentWithVariable =
+    isLayoutComponent(newComponent) &&
+    !(newComponent.type === 'editgrid') &&
+    !isPasteEvent(mutationType, newComponent, oldComponent);
+
+  // Check that this field is not a child of an editgrid component
+  // We need to use the oldComponent, because any update to the component performed in the editor has not been saved
+  // to the draft configuration yet
+  const isEditGridChild = oldComponent && isInEditGrid(oldComponent, stepConfiguration);
+
+  return isComponentWithVariable || isEditGridChild;
+};
+
 const updateFormVariables = (
   formDefinition,
   mutationType,
@@ -39,40 +76,29 @@ const updateFormVariables = (
   currentFormVariables,
   stepConfiguration
 ) => {
-  // Not all components are associated with variables
-  // editGrids ARE layout components, but we want to create a variable for them that contains all
-  // the data of the children
-  if (isLayoutOrContentComponent(newComponent) && !(newComponent.type === 'editgrid'))
-    return currentFormVariables;
-
-  // Check that this field is not a child of an editgrid component
-  // We need to use the oldComponent, because any update to the component performed in the editor has not been saved
-  // to the draft configuration yet
-  if (oldComponent && isInEditGrid(oldComponent, stepConfiguration)) {
-    return currentFormVariables;
-  }
-
   let updatedFormVariables = _.cloneDeep(currentFormVariables);
   const existingKeys = updatedFormVariables
     .filter(variable => variable.source === VARIABLE_SOURCES.component)
     .map(variable => variable.key);
 
-  // The 'change' event is emitted for both create and update events
+  // The 'change' event is emitted for both create and update events (and 'paste' events)
   if (mutationType === 'changed') {
-    // This is either a create event, or the key of the component has changed
-    if (!existingKeys.includes(newComponent.key)) {
+    // Not all components are associated with variables
+    if (shouldNotUpdateVariables(newComponent, oldComponent, mutationType, stepConfiguration)) {
+      return currentFormVariables;
+    }
+
+    // This is the case where a Layout component has been pasted, so the variables for the components INSIDE
+    // the layout component need to be generated.
+    if (!existingKeys.includes(newComponent.key) && isLayoutComponent(newComponent)) {
+      FormioUtils.eachComponent([newComponent], component =>
+        updatedFormVariables.push(makeNewVariableFromComponent(component, formDefinition))
+      );
+    }
+    // This is either a create event, a change of a component key
+    else if (!existingKeys.includes(newComponent.key)) {
       // The URL of the form will be added during the onSubmit callback (so that the formUrl is available)
-      updatedFormVariables.push({
-        name: newComponent.label,
-        key: newComponent.key,
-        formDefinition: formDefinition,
-        source: VARIABLE_SOURCES.component,
-        isSensitiveData: newComponent.isSensitiveData,
-        prefillPlugin: newComponent.prefill?.plugin || '',
-        prefillAttribute: newComponent.prefill?.attribute || '',
-        dataType: getComponentDatatype(newComponent),
-        initialValue: getDefaultValue(newComponent),
-      });
+      updatedFormVariables.push(makeNewVariableFromComponent(newComponent, formDefinition));
 
       // This is the case where the key of a component has been changed
       if (newComponent.key !== oldComponent.key) {
@@ -96,9 +122,19 @@ const updateFormVariables = (
       });
     }
   } else if (mutationType === 'removed') {
+    let keysToRemove = [newComponent.key];
+
+    // Case where a layout component is being removed,
+    // so the variables for the nested components have to be removed too
+    if (isLayoutComponent(newComponent)) {
+      FormioUtils.eachComponent([newComponent], component => {
+        keysToRemove.push(component.key);
+      });
+    }
+
     // When a component is removed, oldComponent is null
     updatedFormVariables = updatedFormVariables.filter(
-      variable => variable.key !== newComponent.key
+      variable => !keysToRemove.includes(variable.key)
     );
   }
 
