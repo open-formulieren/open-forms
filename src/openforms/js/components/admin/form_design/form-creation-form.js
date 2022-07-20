@@ -12,7 +12,7 @@ import {Tab as ReactTab, Tabs, TabList, TabPanel} from 'react-tabs';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {post} from '../../../utils/fetch';
-import {APIError, ValidationErrors, NotAuthenticatedError} from '../../../utils/exception';
+import {APIError, NotAuthenticatedError} from '../../../utils/exception';
 import {getUniqueRandomString} from '../../../utils/random';
 import FAIcon from '../FAIcon';
 import Fieldset from '../forms/Fieldset';
@@ -53,7 +53,7 @@ import {
   getUniqueKey,
   getFormStep,
 } from './utils';
-import {updateFormVariables} from './variables/utils';
+import {getFormVariables, updateFormVariables} from './variables/utils';
 import VariablesEditor from './variables/VariablesEditor';
 import {EMPTY_VARIABLE} from './variables/constants';
 
@@ -317,6 +317,11 @@ function reducer(draft, action) {
           isNew: false,
           validationErrors: [],
         };
+
+        // Add form variables for the reusable configuration
+        draft.formVariables = draft.formVariables.concat(
+          getFormVariables(formDefinitionUrl, configuration)
+        );
       }
       break;
     }
