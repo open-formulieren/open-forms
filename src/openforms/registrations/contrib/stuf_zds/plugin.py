@@ -1,10 +1,11 @@
 import re
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+from glom import assign, glom
 from rest_framework import serializers
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
@@ -137,6 +138,31 @@ def _point_coordinate(value):
     return {"lat": value[0], "lng": value[1]}
 
 
+unset = object()
+
+
+def execute_unless_result_exists(
+    callback: callable,
+    submission: Submission,
+    spec: str,
+    default=None,
+    result=unset,
+) -> Any:
+    existing_result = glom(submission.registration_result, spec, default=default)
+    if existing_result:
+        return existing_result
+
+    callback_result = callback()
+
+    if result is unset:
+        result = callback_result
+
+    # store the result
+    assign(submission.registration_result, spec, result, missing=dict)
+    submission.save(update_fields=["registration_result"])
+    return callback_result
+
+
 @register("stuf-zds-create-zaak")
 class StufZDSRegistration(BasePlugin):
     verbose_name = _("StUF-ZDS")
@@ -160,6 +186,16 @@ class StufZDSRegistration(BasePlugin):
     def register_submission(
         self, submission: Submission, options: dict
     ) -> Optional[dict]:
+        """
+        Register the submission by creating a ZAAK.
+
+        Any attachments and the submission report are added as ZAAK-DOCUMENTs.
+
+        Because of the various calls needed to come to the "end-result", we store the
+        intermediate results on the submission in the event retries are needed. This
+        prevents Open Forms from reserving case numbers over and over again (for
+        example). See #1183 for a reported issue about this.
+        """
         config = StufZDSConfig.get_solo()
         config.apply_defaults_to(options)
 
@@ -167,7 +203,17 @@ class StufZDSRegistration(BasePlugin):
 
         client = config.get_client(options)
 
-        zaak_id = client.create_zaak_identificatie()
+        # ensure registration_result is a dict
+        submission.registration_result = submission.registration_result or {}
+
+        # obtain a zaaknummer & save it - first, check if we have an intermediate result
+        # from earlier attempts. if we do, do not generate a new number
+        zaak_id = execute_unless_result_exists(
+            client.create_zaak_identificatie,
+            submission,
+            "intermediate.zaaknummer",
+            default="",
+        )
 
         zaak_data = apply_data_mapping(
             submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
@@ -186,16 +232,47 @@ class StufZDSRegistration(BasePlugin):
         if submission.public_registration_reference:
             zaak_data.update({"kenmerken": [submission.public_registration_reference]})
 
-        client.create_zaak(zaak_id, zaak_data, extra_data, submission.payment_required)
+        execute_unless_result_exists(
+            lambda: client.create_zaak(
+                zaak_id, zaak_data, extra_data, submission.payment_required
+            ),
+            submission,
+            "intermediate.zaak_created",
+            default=False,
+            result=True,
+        )
 
-        doc_id = client.create_document_identificatie()
-
+        doc_id = execute_unless_result_exists(
+            client.create_document_identificatie,
+            submission,
+            "intermediate.document_nummers.pdf-report",
+            default="",
+        )
         submission_report = SubmissionReport.objects.get(submission=submission)
-        client.create_zaak_document(zaak_id, doc_id, submission_report)
+        execute_unless_result_exists(
+            lambda: client.create_zaak_document(zaak_id, doc_id, submission_report),
+            submission,
+            "intermediate.documents_created.pdf-report",
+            default=False,
+            result=True,
+        )
 
         for attachment in submission.attachments:
-            attachment_doc_id = client.create_document_identificatie()
-            client.create_zaak_attachment(zaak_id, attachment_doc_id, attachment)
+            attachment_doc_id = execute_unless_result_exists(
+                client.create_document_identificatie,
+                submission,
+                f"intermediate.document_nummers.{attachment.id}",
+                default="",
+            )
+            execute_unless_result_exists(
+                lambda: client.create_zaak_attachment(
+                    zaak_id, attachment_doc_id, attachment
+                ),
+                submission,
+                f"intermediate.documents_created.{attachment.id}",
+                default=False,
+                result=True,
+            )
 
         result = {
             "zaak": zaak_id,
