@@ -489,8 +489,8 @@ class ZGWBackendTests(VariablesTestMixin, TestCase):
         plugin = ZGWRegistration("zgw")
         plugin.register_submission(submission, zgw_form_options)
 
-        document_create_attachment1 = m.request_history[-2]
-        document_create_attachment2 = m.request_history[-4]
+        document_create_attachment1 = m.request_history[-4]
+        document_create_attachment2 = m.request_history[-2]
 
         # Verify attachments
         document_create_attachment1_body = document_create_attachment1.json()
@@ -500,6 +500,9 @@ class ZGWBackendTests(VariablesTestMixin, TestCase):
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
         )
         # Use override IOType
+        self.assertEqual(
+            document_create_attachment1_body["bestandsnaam"], "attachment1.jpg"
+        )
         self.assertEqual(
             document_create_attachment1_body["informatieobjecttype"],
             "https://catalogi.nl/api/v1/informatieobjecttypen/10",
@@ -512,10 +515,13 @@ class ZGWBackendTests(VariablesTestMixin, TestCase):
             document_create_attachment2.url,
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
         )
-        # Use override IOType
+        # Use default IOType
+        self.assertEqual(
+            document_create_attachment2_body["bestandsnaam"], "attachment2.jpg"
+        )
         self.assertEqual(
             document_create_attachment2_body["informatieobjecttype"],
-            "https://catalogi.nl/api/v1/informatieobjecttypen/10",
+            "https://catalogi.nl/api/v1/informatieobjecttypen/1",
         )
 
 
