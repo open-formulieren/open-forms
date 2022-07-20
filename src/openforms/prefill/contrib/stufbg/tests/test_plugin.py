@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, tag
 
 from requests import RequestException
 
@@ -159,6 +159,20 @@ class StufBgPrefillTests(TestCase):
 
             self.assertEqual(values, {})
             self.assertEqual(logs.records[0].fault, {})
+
+    @tag("gh-1617")
+    def test_onvolledige_datum(self):
+        """
+        Regression test for StUF-onvolledigeDatum responses.
+
+        See issue #1617 on Github.
+        """
+        client_patcher = mock_stufbg_client("StufBgResponseOnvolledigeDatum.xml")
+        self.addCleanup(client_patcher.stop)
+
+        values = self.plugin.get_prefill_values(self.submission, ["geboortedatum"])
+
+        self.assertEqual(values["geboortedatum"], "19600701")
 
 
 class StufBgCheckTests(TestCase):
