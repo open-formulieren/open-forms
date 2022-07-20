@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Iterator, Union
+from dataclasses import dataclass
+from typing import Iterator, Union
 
 from django.urls import reverse
 from django.utils.html import format_html_join
@@ -16,12 +17,6 @@ from ..utils import iter_components
 from .conf import RENDER_CONFIGURATION
 from .nodes import ComponentNode
 from .registry import register
-
-if TYPE_CHECKING:
-    from openforms.submissions.models import SubmissionStep
-    from openforms.submissions.rendering import Renderer
-
-    from ..typing import Component
 
 
 class ContainerMixin:
@@ -212,32 +207,17 @@ class EditGridNode(ContainerMixin, ComponentNode):
                 component=self.component,
                 renderer=self.renderer,
                 depth=self.depth + 1,
-                index=node_index,
+                group_index=node_index,
                 path=path,
             )
 
 
+@dataclass
 class EditGridGroupNode(ContainerMixin, ComponentNode):
     group_index: int = 0
     layout_modifier: str = "editgrid-group"
     display_value: str = ""
     default_label: str = _("Item")
-
-    def __init__(
-        self,
-        step: "SubmissionStep",
-        component: "Component",
-        renderer: "Renderer",
-        path: Path = None,
-        depth: int = 0,
-        index: int = 0,
-    ):
-        self.component = component
-        self.renderer = renderer
-        self.step = step
-        self.path = path
-        self.depth = depth
-        self.group_index = index
 
     def get_children(self) -> Iterator["ComponentNode"]:
         for component in iter_components(
