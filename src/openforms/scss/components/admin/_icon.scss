@@ -1,6 +1,8 @@
+@import '../../../ui/static/ui/scss/settings';
+
 .icon {
   cursor: pointer;
-  padding: 5px;
+  padding: $grid-margin-1;
 
   &--danger {
     @include color-danger;

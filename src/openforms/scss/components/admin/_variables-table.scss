@@ -1,3 +1,5 @@
+@import '../../../ui/static/ui/scss/settings';
+
 .variables-table {
   td,
   th {
@@ -11,5 +13,21 @@
   select,
   input {
     max-width: 90%;
+  }
+
+  .errorlist {
+    padding-left: 0 !important;
+  }
+
+  &__row {
+    &--errors {
+      td {
+        vertical-align: bottom !important;
+      }
+    }
+
+    .checkbox-row {
+      padding: $grid-margin-1; // Same padding as the icon
+    }
   }
 }

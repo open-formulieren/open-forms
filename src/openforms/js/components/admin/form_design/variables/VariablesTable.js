@@ -1,6 +1,7 @@
 import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
+import classNames from 'classnames';
 
 import FAIcon from 'components/admin/FAIcon';
 import DeleteIcon from 'components/admin/DeleteIcon';
@@ -105,8 +106,14 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
     setPrefillAttributeChoices(response.data.map(attribute => [attribute.id, attribute.label]));
   }, [variable.prefillPlugin]);
 
+  const hasErrors = Object.entries(variable.errors || {}).length;
+
   return (
-    <tr className={`row${(index % 2) + 1}`}>
+    <tr
+      className={classNames('variables-table__row', `row${(index % 2) + 1}`, {
+        'variables-table__row--errors': hasErrors,
+      })}
+    >
       <td>
         <DeleteIcon onConfirm={() => onDelete(variable.key)} message={deleteConfirmMessage} />
       </td>
@@ -127,66 +134,80 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
-        <Select
-          name="formDefinition"
-          choices={formStepsChoices}
-          value={variable.formDefinition}
-          onChange={onValueChanged}
-          allowBlank
-        />
+        <Field name="key" errors={variable.errors?.formDefinition}>
+          <Select
+            name="formDefinition"
+            choices={formStepsChoices}
+            value={variable.formDefinition}
+            onChange={onValueChanged}
+            allowBlank
+          />
+        </Field>
       </td>
       <td>
-        <Select
-          name="prefillPlugin"
-          choices={prefillPluginChoices}
-          value={variable.prefillPlugin}
-          onChange={onValueChanged}
-          allowBlank
-        />
+        <Field name="key" errors={variable.errors?.prefillPlugin}>
+          <Select
+            name="prefillPlugin"
+            choices={prefillPluginChoices}
+            value={variable.prefillPlugin}
+            onChange={onValueChanged}
+            allowBlank
+          />
+        </Field>
       </td>
       <td>
-        <Select
-          name="prefillAttribute"
-          choices={prefillAttributeChoices}
-          value={variable.prefillAttribute}
-          onChange={onValueChanged}
-          disabled={loading || !variable.prefillPlugin}
-        />
+        <Field name="key" errors={variable.errors?.prefillAttribute}>
+          <Select
+            name="prefillAttribute"
+            choices={prefillAttributeChoices}
+            value={variable.prefillAttribute}
+            onChange={onValueChanged}
+            disabled={loading || !variable.prefillPlugin}
+          />
+        </Field>
       </td>
       <td>
-        <Select
-          name="dataType"
-          choices={DATATYPES_CHOICES}
-          translateChoices
-          value={variable.dataType}
-          onChange={onValueChanged}
-        />
+        <Field name="key" errors={variable.errors?.dataType}>
+          <Select
+            name="dataType"
+            choices={DATATYPES_CHOICES}
+            translateChoices
+            value={variable.dataType}
+            onChange={onValueChanged}
+          />
+        </Field>
       </td>
       <td>
-        <Checkbox
-          name=""
-          label=""
-          checked={variable.isSensitiveData}
-          onChange={e =>
-            onValueChanged({target: {name: 'isSensitiveData', value: !variable.isSensitiveData}})
-          }
-        />
+        <Field name="key" errors={variable.errors?.isSensitiveData}>
+          <Checkbox
+            name=""
+            label=""
+            checked={variable.isSensitiveData}
+            onChange={e =>
+              onValueChanged({target: {name: 'isSensitiveData', value: !variable.isSensitiveData}})
+            }
+          />
+        </Field>
       </td>
       <td>
-        <TextInput
-          name="initialValue"
-          value={variable.initialValue || ''}
-          onChange={onValueChanged}
-          noVTextField={true}
-        />
+        <Field name="key" errors={variable.errors?.initialValue}>
+          <TextInput
+            name="initialValue"
+            value={variable.initialValue || ''}
+            onChange={onValueChanged}
+            noVTextField={true}
+          />
+        </Field>
       </td>
       <td>
-        <TextInput
-          name="dataFormat"
-          value={variable.dataFormat}
-          onChange={onValueChanged}
-          noVTextField={true}
-        />
+        <Field name="key" errors={variable.errors?.dataFormat}>
+          <TextInput
+            name="dataFormat"
+            value={variable.dataFormat}
+            onChange={onValueChanged}
+            noVTextField={true}
+          />
+        </Field>
       </td>
     </tr>
   );
