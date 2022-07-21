@@ -338,8 +338,18 @@ class Submission(models.Model):
             del self._execution_state
 
     def save_registration_status(self, status, result):
+        # combine the new result with existing data, where the new result overwrites
+        # on key collisions. This allows storing intermediate results in the plugin
+        # itself.
+        if not self.registration_result and result is None:
+            full_result = None
+        else:
+            full_result = {
+                **(self.registration_result or {}),
+                **result,
+            }
         self.registration_status = status
-        self.registration_result = result
+        self.registration_result = full_result
         update_fields = ["registration_status", "registration_result"]
 
         if status == RegistrationStatuses.failed:

@@ -1,14 +1,16 @@
 from decimal import Decimal
 
-from django.test import TestCase
+from django.test import TestCase, tag
 
 import requests_mock
 from freezegun import freeze_time
+from glom import glom
 from privates.test import temp_private_root
 from zds_client.oas import schema_fetcher
 from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
+from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
@@ -17,7 +19,9 @@ from openforms.submissions.tests.factories import (
 from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ....constants import RegistrationAttribute
+from ....exceptions import RegistrationFailed
 from ....service import extract_submission_reference
+from ....tasks import register_submission
 from ..plugin import ZGWRegistration
 from .factories import ZgwConfigFactory
 
@@ -485,8 +489,8 @@ class ZGWBackendTests(VariablesTestMixin, TestCase):
         plugin = ZGWRegistration("zgw")
         plugin.register_submission(submission, zgw_form_options)
 
-        document_create_attachment1 = m.request_history[-2]
-        document_create_attachment2 = m.request_history[-4]
+        document_create_attachment1 = m.request_history[-4]
+        document_create_attachment2 = m.request_history[-2]
 
         # Verify attachments
         document_create_attachment1_body = document_create_attachment1.json()
@@ -496,6 +500,9 @@ class ZGWBackendTests(VariablesTestMixin, TestCase):
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
         )
         # Use override IOType
+        self.assertEqual(
+            document_create_attachment1_body["bestandsnaam"], "attachment1.jpg"
+        )
         self.assertEqual(
             document_create_attachment1_body["informatieobjecttype"],
             "https://catalogi.nl/api/v1/informatieobjecttypen/10",
@@ -508,8 +515,365 @@ class ZGWBackendTests(VariablesTestMixin, TestCase):
             document_create_attachment2.url,
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
         )
-        # Use override IOType
+        # Use default IOType
+        self.assertEqual(
+            document_create_attachment2_body["bestandsnaam"], "attachment2.jpg"
+        )
         self.assertEqual(
             document_create_attachment2_body["informatieobjecttype"],
-            "https://catalogi.nl/api/v1/informatieobjecttypen/10",
+            "https://catalogi.nl/api/v1/informatieobjecttypen/1",
         )
+
+
+@tag("gh-1183")
+@temp_private_root()
+class PartialRegistrationFailureTests(VariablesTestMixin, TestCase):
+    """
+    Test that partial results are stored and don't cause excessive registration calls.
+
+    Issue #1183 -- case numbers are reserved to often, as a retry reserves a new one. It
+    also happens that when certain other calls fail, a new Zaak is created which
+    should not have been created again.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        ZgwConfigFactory.create(
+            zrc_service__api_root="https://zaken.nl/api/v1/",
+            drc_service__api_root="https://documenten.nl/api/v1/",
+            ztc_service__api_root="https://catalogus.nl/api/v1/",
+        )
+
+        # set up a simple form to track the partial result storing state
+        cls.submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                },
+                {
+                    "key": "achternaam",
+                    "type": "textfield",
+                },
+            ],
+            form__name="my-form",
+            form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={
+                "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
+                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
+                "organisatie_rsin": "000000000",
+                "vertrouwelijkheidaanduiding": "openbaar",
+            },
+            completed=True,
+            bsn="111222333",
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+            },
+        )
+
+    def setUp(self):
+        super().setUp()
+        # reset cache to keep request_history indexes consistent
+        schema_fetcher.cache.clear()
+        self.addCleanup(schema_fetcher.cache.clear)
+
+        self.requests_mock = requests_mock.Mocker()
+        self.requests_mock.start()
+        self.addCleanup(self.requests_mock.stop)
+        self.addCleanup(self.submission.refresh_from_db)
+
+        mock_service_oas_get(self.requests_mock, "https://zaken.nl/api/v1/", "zaken")
+        mock_service_oas_get(
+            self.requests_mock, "https://documenten.nl/api/v1/", "documenten"
+        )
+        mock_service_oas_get(
+            self.requests_mock, "https://catalogus.nl/api/v1/", "catalogi"
+        )
+
+    def test_failure_after_zaak_creation(self):
+        self.requests_mock.post(
+            "https://zaken.nl/api/v1/zaken",
+            status_code=201,
+            json=generate_oas_component(
+                "zaken",
+                "schemas/Zaak",
+                url="https://zaken.nl/api/v1/zaken/1",
+                zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            ),
+        )
+        self.requests_mock.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=500,
+            json={"type": "Server error"},
+        )
+
+        with self.subTest("Initial document creation fails"):
+            register_submission(self.submission.id)
+
+            self.submission.refresh_from_db()
+            self.assertEqual(
+                self.submission.registration_status, RegistrationStatuses.failed
+            )
+            intermediate_results = self.submission.registration_result["intermediate"]
+            self.assertEqual(
+                intermediate_results["zaak"]["url"], "https://zaken.nl/api/v1/zaken/1"
+            )
+            self.assertIn("traceback", self.submission.registration_result)
+
+        with self.subTest("New document creation attempt does not create zaak again"):
+            with self.assertRaises(RegistrationFailed):
+                register_submission(self.submission.id)
+
+            self.submission.refresh_from_db()
+            self.assertEqual(
+                self.submission.registration_status, RegistrationStatuses.failed
+            )
+            intermediate_results = self.submission.registration_result["intermediate"]
+            self.assertEqual(
+                intermediate_results["zaak"]["url"], "https://zaken.nl/api/v1/zaken/1"
+            )
+            self.assertIn("traceback", self.submission.registration_result)
+
+            history = self.requests_mock.request_history
+            # 1. fetch zaken API schema
+            # 2. create zaak call
+            # 3. fetch documenten API schema
+            # 4. create report document call (fails)
+            # 5. create report document call (fails)
+            self.assertEqual(len(history), 5)
+
+            self.assertEqual(history[1].url, "https://zaken.nl/api/v1/zaken")
+            self.assertEqual(
+                history[3].url,
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            )
+            self.assertEqual(
+                history[4].url,
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            )
+
+    def test_attachment_document_create_fails(self):
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=self.submission.steps[0],
+            file_name="attachment1.jpg",
+            form_key="field1",
+        )
+        self.requests_mock.post(
+            "https://zaken.nl/api/v1/zaken",
+            status_code=201,
+            json=generate_oas_component(
+                "zaken",
+                "schemas/Zaak",
+                url="https://zaken.nl/api/v1/zaken/1",
+                zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            ),
+        )
+        self.requests_mock.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            [
+                # two calls on same URL: one PDF and one attachment
+                {
+                    "json": generate_oas_component(
+                        "documenten",
+                        "schemas/EnkelvoudigInformatieObject",
+                        url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+                    ),
+                    "status_code": 201,
+                },
+                {
+                    "json": generate_oas_component(
+                        "documenten",
+                        "schemas/EnkelvoudigInformatieObject",
+                        url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+                    ),
+                    "status_code": 201,
+                },
+            ],
+        )
+        self.requests_mock.post(
+            "https://zaken.nl/api/v1/zaakinformatieobjecten",
+            [
+                # two calls on same URL: one PDF and one attachment
+                {
+                    "json": generate_oas_component(
+                        "zaken",
+                        "schemas/ZaakInformatieObject",
+                        url="https://zaken.nl/api/v1/zaakinformatieobjecten/1",
+                    ),
+                    "status_code": 201,
+                },
+                {
+                    "json": {"type": "Server error"},
+                    "status_code": 500,
+                },
+                {
+                    "json": {"type": "Server error"},
+                    "status_code": 500,
+                },
+            ],
+        )
+        self.requests_mock.get(
+            "https://catalogus.nl/api/v1/roltypen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1&omschrijvingGeneriek=initiator",
+            status_code=200,
+            json={
+                "count": 1,
+                "next": None,
+                "previous": None,
+                "results": [
+                    generate_oas_component(
+                        "catalogi",
+                        "schemas/RolType",
+                        url="https://catalogus.nl/api/v1/roltypen/1",
+                    )
+                ],
+            },
+        )
+        self.requests_mock.post(
+            "https://zaken.nl/api/v1/rollen",
+            status_code=201,
+            json=generate_oas_component(
+                "zaken", "schemas/Rol", url="https://zaken.nl/api/v1/rollen/1"
+            ),
+        )
+        self.requests_mock.get(
+            "https://catalogus.nl/api/v1/statustypen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
+            status_code=200,
+            json={
+                "count": 2,
+                "next": None,
+                "previous": None,
+                "results": [
+                    generate_oas_component(
+                        "catalogi",
+                        "schemas/StatusType",
+                        url="https://catalogus.nl/api/v1/statustypen/2",
+                        volgnummer=2,
+                    ),
+                    generate_oas_component(
+                        "catalogi",
+                        "schemas/StatusType",
+                        url="https://catalogus.nl/api/v1/statustypen/1",
+                        volgnummer=1,
+                    ),
+                ],
+            },
+        )
+        self.requests_mock.post(
+            "https://zaken.nl/api/v1/statussen",
+            status_code=201,
+            json=generate_oas_component(
+                "zaken", "schemas/Status", url="https://zaken.nl/api/v1/statussen/1"
+            ),
+        )
+
+        with self.subTest("First try, attachment relation fails"):
+            register_submission(self.submission.id)
+
+            self.submission.refresh_from_db()
+            self.assertEqual(
+                self.submission.registration_status, RegistrationStatuses.failed
+            )
+            intermediate_results = self.submission.registration_result["intermediate"]
+
+            zaak = glom(intermediate_results, "zaak")
+            self.assertEqual(zaak["url"], "https://zaken.nl/api/v1/zaken/1")
+
+            doc_report = glom(intermediate_results, "documents.report")
+            self.assertEqual(
+                doc_report["document"]["url"],
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+            )
+            self.assertEqual(
+                doc_report["relation"]["url"],
+                "https://zaken.nl/api/v1/zaakinformatieobjecten/1",
+            )
+
+            doc_attachment = glom(intermediate_results, f"documents.{attachment.id}")
+            self.assertEqual(
+                doc_attachment["document"]["url"],
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+            )
+
+            rol = glom(intermediate_results, "rol")
+            self.assertEqual(rol["url"], "https://zaken.nl/api/v1/rollen/1")
+
+            status = glom(intermediate_results, "status")
+            self.assertEqual(status["url"], "https://zaken.nl/api/v1/statussen/1")
+
+            self.assertIn("traceback", self.submission.registration_result)
+
+        with self.subTest("New attempt - ensure existing data is not created again"):
+            with self.assertRaises(RegistrationFailed):
+                register_submission(self.submission.id)
+
+            self.submission.refresh_from_db()
+            self.assertEqual(
+                self.submission.registration_status, RegistrationStatuses.failed
+            )
+            intermediate_results = self.submission.registration_result["intermediate"]
+            zaak = glom(intermediate_results, "zaak")
+            self.assertEqual(zaak["url"], "https://zaken.nl/api/v1/zaken/1")
+
+            doc_report = glom(intermediate_results, "documents.report")
+            self.assertEqual(
+                doc_report["document"]["url"],
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+            )
+            self.assertEqual(
+                doc_report["relation"]["url"],
+                "https://zaken.nl/api/v1/zaakinformatieobjecten/1",
+            )
+
+            doc_attachment = glom(intermediate_results, f"documents.{attachment.id}")
+            self.assertEqual(
+                doc_attachment["document"]["url"],
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+            )
+
+            rol = glom(intermediate_results, "rol")
+            self.assertEqual(rol["url"], "https://zaken.nl/api/v1/rollen/1")
+
+            status = glom(intermediate_results, "status")
+            self.assertEqual(status["url"], "https://zaken.nl/api/v1/statussen/1")
+
+            self.assertIn("traceback", self.submission.registration_result)
+
+            history = self.requests_mock.request_history
+            # 1. fetch zaken API schema
+            # 2. create zaak call
+            # 3. fetch documents API schema
+            # 4. create report document call
+            # 5. relate zaak & report document
+            # 6. fetch catalogi API schema
+            # 7. get roltypen
+            # 8. create rol
+            # 9. get statustypen
+            # 10. create status
+            # 11. create attachment document
+            # 12. relate attachment document (fails)
+            # 13. relate attachment document (still fails)
+            self.assertEqual(len(history), 13)
+
+            self.assertEqual(history[1].url, "https://zaken.nl/api/v1/zaken")
+            self.assertEqual(
+                history[3].url,
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            )
+            self.assertEqual(
+                history[4].url, "https://zaken.nl/api/v1/zaakinformatieobjecten"
+            )
+            self.assertEqual(history[7].url, "https://zaken.nl/api/v1/rollen")
+            self.assertEqual(history[9].url, "https://zaken.nl/api/v1/statussen")
+            self.assertEqual(
+                history[10].url,
+                "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            )
+            self.assertEqual(
+                history[11].url, "https://zaken.nl/api/v1/zaakinformatieobjecten"
+            )
+            self.assertEqual(
+                history[12].url, "https://zaken.nl/api/v1/zaakinformatieobjecten"
+            )

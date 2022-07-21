@@ -1,6 +1,5 @@
 import logging
 import traceback
-from typing import Optional
 
 from django.utils import timezone
 
@@ -22,7 +21,7 @@ logger = logging.getLogger(__name__)
     ignore_result=False,
     once={"graceful": True},  # do not spam error monitoring
 )
-def register_submission(submission_id: int) -> Optional[dict]:
+def register_submission(submission_id: int) -> None:
     """
     Attempt to register the submission with the configured backend.
 
