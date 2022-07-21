@@ -3,6 +3,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const argv = require('yargs').argv;
 const paths = require('./build/paths');
+const path = require('path');
 
 // Set isProduction based on environment or argv.
 
@@ -103,6 +104,14 @@ module.exports = {
           escape: /\{\{\{([\s\S]+?)\}\}\}/g,
         },
       },
+    ],
+  },
+
+  resolve: {
+    modules: [
+      'node_modules',
+      path.resolve(__dirname, 'node_modules'),
+      path.resolve(__dirname, 'src/openforms/js'),
     ],
   },
 
