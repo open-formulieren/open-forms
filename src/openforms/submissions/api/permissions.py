@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from openforms.api.permissions import TimestampedTokenPermission
 
 from ..constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
+from ..models import SubmissionStep
 from ..tokens import (
     submission_report_token_generator,
     submission_status_token_generator,
@@ -34,6 +35,23 @@ class AnyActiveSubmissionPermission(permissions.BasePermission):
             return False
 
         return True
+
+
+class FormAuthenticationPermission(permissions.BasePermission):
+    """
+    Check that the submission authentication matches the form requirement.
+
+    If the form requires authentication, then permission is not granted if the
+    submission has not been authenticated.
+    """
+
+    def has_object_permission(
+        self, request: Request, view: APIView, step: SubmissionStep
+    ) -> bool:
+        login_required = step.submission.form.login_required
+        if not login_required:
+            return True
+        return step.submission.is_authenticated
 
 
 class ActiveSubmissionPermission(AnyActiveSubmissionPermission):
