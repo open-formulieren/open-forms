@@ -4,7 +4,6 @@ from typing import Any, Dict, Iterable, List, Tuple
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from defusedxml.lxml import fromstring as df_fromstring
 from glom import T as Target, glom
 from lxml import etree
 from requests import HTTPError, RequestException
@@ -12,6 +11,7 @@ from requests import HTTPError, RequestException
 from openforms.authentication.constants import AuthAttribute
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import Submission
+from openforms.utils.xml import fromstring
 from stuf.stuf_bg.constants import FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
 
@@ -180,7 +180,7 @@ class StufBgPrefill(BasePlugin):
             )
         else:
             try:
-                xml = df_fromstring(response.content)
+                xml = fromstring(response.content)
             except etree.XMLSyntaxError as e:
                 raise InvalidPluginConfiguration(
                     _("SyntaxError in response: {exception}").format(exception=e)

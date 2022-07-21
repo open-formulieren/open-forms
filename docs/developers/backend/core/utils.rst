@@ -66,3 +66,9 @@ Model file fields
 
 .. automodule:: openforms.utils.files
    :members:
+
+XML
+---
+
+.. automodule:: openforms.utils.xml
+   :members:
