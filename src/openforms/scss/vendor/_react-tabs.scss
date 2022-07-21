@@ -18,15 +18,13 @@
       border-color: var(--react-tab-border-color);
       background: var(--body-bg);
     }
+  }
 
-    &--has-errors {
-      .fa {
-        position: absolute;
-        top: 0;
-        right: 0;
-        color: $color-error;
-        transform: translate(40%, -40%);
-      }
-    }
+  &__error-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: $color-error;
+    transform: translate(40%, -40%);
   }
 }

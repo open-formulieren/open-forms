@@ -17,7 +17,9 @@ const Tab = ({hasErrors = false, children, ...props}) => {
   return (
     <ReactTab {...allProps}>
       {children}
-      {hasErrors ? <FAIcon icon="exclamation-circle" title={title} /> : null}
+      {hasErrors ? (
+        <FAIcon icon="exclamation-circle" extraClassname="react-tabs__error-badge" title={title} />
+      ) : null}
     </ReactTab>
   );
 };

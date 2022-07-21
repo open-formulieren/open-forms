@@ -122,7 +122,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
-        <Field name="name" errors={variable.errors?.key}>
+        <Field name="key" errors={variable.errors?.key}>
           <TextInput name="key" value={variable.key} noVTextField={true} disabled={true} />
         </Field>
       </td>
