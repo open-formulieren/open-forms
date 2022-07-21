@@ -354,7 +354,6 @@ FormMetaFields.propTypes = {
     registrationBackendOptions: PropTypes.object,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
-  errors: PropTypes.object,
   availableAuthPlugins: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string,

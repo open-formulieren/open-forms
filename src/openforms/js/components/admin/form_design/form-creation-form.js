@@ -53,6 +53,7 @@ import {
   replaceComponentKeyInLogic,
   getUniqueKey,
   getFormStep,
+  parseValidationErrors,
 } from './utils';
 import {getFormVariables, updateFormVariables} from './variables/utils';
 import VariablesEditor from './variables/VariablesEditor';
@@ -609,6 +610,11 @@ function reducer(draft, action) {
 
       draft.formVariables[index][propertyName] = propertyValue;
 
+      // Check if there are errors that need to be reset
+      if (draft.formVariables[index].errors) {
+        delete draft.formVariables[index].errors[propertyName];
+      }
+
       // Check that after the update there are no duplicate keys.
       // If it is the case, update the key that was last updated
       if (propertyName === 'key') {
@@ -712,6 +718,15 @@ function reducer(draft, action) {
           });
           prefixedErrors.push(..._prefixedErrors);
         }
+
+        // Assign errors to variables
+        const variablesValidationErrors = parseValidationErrors(prefixedErrors, 'variables');
+        draft.formVariables = draft.formVariables.map((variable, index) => {
+          return {
+            ...variable,
+            errors: variablesValidationErrors[index],
+          };
+        });
 
         // update state depending on the validation errors. If there are errors, we set
         // submitting to false so they can correct the validation errors.

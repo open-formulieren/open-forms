@@ -9,6 +9,7 @@ import Select from 'components/admin/forms/Select';
 import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 import {FormContext} from 'components/admin/form_design/Context';
 import {get} from 'utils/fetch';
+import Field from 'components/admin/forms/Field';
 
 import {DATATYPES_CHOICES} from './constants';
 
@@ -110,16 +111,20 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         <DeleteIcon onConfirm={() => onDelete(variable.key)} message={deleteConfirmMessage} />
       </td>
       <td>
-        <TextInput
-          name="name"
-          value={variable.name}
-          onChange={onValueChanged}
-          onBlur={updateKey}
-          noVTextField={true}
-        />
+        <Field name="name" errors={variable.errors?.name}>
+          <TextInput
+            name="name"
+            value={variable.name}
+            onChange={onValueChanged}
+            onBlur={updateKey}
+            noVTextField={true}
+          />
+        </Field>
       </td>
       <td>
-        <TextInput name="key" value={variable.key} noVTextField={true} disabled={true} />
+        <Field name="name" errors={variable.errors?.key}>
+          <TextInput name="key" value={variable.key} noVTextField={true} disabled={true} />
+        </Field>
       </td>
       <td>
         <Select
