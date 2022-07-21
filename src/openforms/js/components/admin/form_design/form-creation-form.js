@@ -8,10 +8,9 @@ import {produce} from 'immer';
 import {useImmerReducer} from 'use-immer';
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
-import {Tab as ReactTab, Tabs, TabList, TabPanel} from 'react-tabs';
-import {FormattedMessage, useIntl} from 'react-intl';
+import {Tabs, TabList, TabPanel} from 'react-tabs';
+import {FormattedMessage} from 'react-intl';
 
-import FAIcon from 'components/admin/FAIcon';
 import Fieldset from 'components/admin/forms/Fieldset';
 import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
 import Loader from 'components/admin/Loader';
@@ -58,6 +57,7 @@ import {
 import {getFormVariables, updateFormVariables} from './variables/utils';
 import VariablesEditor from './variables/VariablesEditor';
 import {EMPTY_VARIABLE} from './variables/constants';
+import Tab from './Tab';
 
 const initialFormState = {
   form: {
@@ -164,6 +164,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   literals: 'literals',
   explanationTemplate: 'form',
   logicRules: 'logic-rules',
+  variables: 'variables',
 };
 
 function reducer(draft, action) {
@@ -702,18 +703,29 @@ function reducer(draft, action) {
           let {context: fieldPrefix, errors} = validationError;
           const _prefixedErrors = errors.map(err => {
             const fieldName = err.name.split('.')[0];
-            if (!tabsWithErrors.includes(fieldName))
+            if (!tabsWithErrors.includes(fieldName) && FORM_FIELDS_TO_TAB_NAMES[fieldName]) {
               tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldName]);
+            } else if (
+              !tabsWithErrors.includes(fieldPrefix) &&
+              FORM_FIELDS_TO_TAB_NAMES[fieldPrefix]
+            ) {
+              tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldPrefix]);
+            }
 
             let key;
-            // literals are tracked separately in the state
-            if (fieldPrefix === 'form' && fieldName === 'literals') {
-              key = err.name;
-            } else if (fieldPrefix === 'logicRules') {
-              key = err.name;
-            } else {
-              key = `${fieldPrefix}.${err.name}`;
+            switch (fieldPrefix) {
+              case 'form':
+              case 'logicRules':
+              // literals are tracked separately in the state
+              case 'literals': {
+                key = err.name;
+                break;
+              }
+              default: {
+                key = `${fieldPrefix}.${err.name}`;
+              }
             }
+
             return [key, err.reason];
           });
           prefixedErrors.push(..._prefixedErrors);
@@ -1094,7 +1106,11 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
               />
             </Tab>
             {featureFlags.enable_form_variables && (
-              <Tab>
+              <Tab
+                hasErrors={state.formVariables.some(
+                  variable => Object.entries(variable.errors || {}).length
+                )}
+              >
                 <FormattedMessage defaultMessage="Variables" description="Variables tab title" />
               </Tab>
             )}
@@ -1227,29 +1243,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
       <FormSubmit onSubmit={onSubmit} displayActions={!state.newForm} />
     </ValidationErrorsProvider>
   );
-};
-
-const Tab = ({hasErrors = false, children, ...props}) => {
-  const intl = useIntl();
-  const customProps = {
-    className: ['react-tabs__tab', {'react-tabs__tab--has-errors': hasErrors}],
-  };
-  const allProps = {...props, ...customProps};
-  const title = intl.formatMessage({
-    defaultMessage: 'There are validation errors',
-    description: 'Tab validation errors icon title',
-  });
-  return (
-    <ReactTab {...allProps}>
-      {children}
-      {hasErrors ? <FAIcon icon="exclamation-circle" title={title} /> : null}
-    </ReactTab>
-  );
-};
-Tab.tabsRole = 'Tab';
-
-Tab.propTypes = {
-  hasErrors: PropTypes.bool,
 };
 
 FormCreationForm.propTypes = {
