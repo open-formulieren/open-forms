@@ -16,6 +16,7 @@ import DataPreview from './logic/DataPreview';
 import DSLEditorNode from './logic/DSLEditorNode';
 import LogicTypeSelection from './logic/LogicTypeSelection';
 import StepSelection, {useFormStep} from './StepSelection';
+import {parseValidationErrors} from './utils';
 
 const EMPTY_RULE = {
   uuid: '',
@@ -26,17 +27,6 @@ const EMPTY_RULE = {
   jsonLogicTrigger: {'': [{var: ''}, null]},
   isAdvanced: false,
   actions: [],
-};
-
-const parseValidationErrors = errors => {
-  let parsedErrors = {};
-  for (const [errorName, errorReason] of errors) {
-    const errorNameBits = errorName.split('.');
-    if (errorNameBits[0] === 'logicRules') {
-      _.set(parsedErrors, errorNameBits.slice(1), errorReason);
-    }
-  }
-  return parsedErrors;
 };
 
 const FormLogic = ({logicRules = [], onChange, onDelete, onAdd}) => {
@@ -59,7 +49,7 @@ FormLogic.propTypes = {
 };
 
 const FormLogicRules = ({rules, onAdd, onChange, onDelete}) => {
-  const validationErrors = parseValidationErrors(useContext(ValidationErrorContext));
+  const validationErrors = parseValidationErrors(useContext(ValidationErrorContext), 'logicRules');
   // FIXME - getting the validation errors by index breaks if you then delete rules/reorder
   // rules -> they're displayed for the wrong rule. When deleting/reordering rules, the
   // validation errors state needs to be re-ordered the same way.

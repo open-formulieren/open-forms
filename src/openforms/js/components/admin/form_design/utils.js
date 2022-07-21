@@ -110,6 +110,17 @@ const getFormStep = (identifier, formSteps, matchOnFormDefinition = false) => {
   });
 };
 
+const parseValidationErrors = (errors, prefix) => {
+  let parsedErrors = {};
+  for (const [errorName, errorReason] of errors) {
+    const errorNameBits = errorName.split('.');
+    if (errorNameBits[0] === prefix) {
+      _.set(parsedErrors, errorNameBits.slice(1), errorReason);
+    }
+  }
+  return parsedErrors;
+};
+
 export {
   stripIdFromComponents,
   getFormComponents,
@@ -118,4 +129,5 @@ export {
   replaceComponentKeyInLogic,
   getUniqueKey,
   getFormStep,
+  parseValidationErrors,
 };
