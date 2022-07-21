@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import {useImmerReducer} from 'use-immer';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import {SubmitAction} from '../../forms/ActionButton';
-import SubmitRow from '../../forms/SubmitRow';
+import {SubmitAction} from 'components/admin/forms/ActionButton';
+import SubmitRow from 'components/admin/forms/SubmitRow';
+
 import Types from '../types';
 import EditVariable from './EditVariable';
 

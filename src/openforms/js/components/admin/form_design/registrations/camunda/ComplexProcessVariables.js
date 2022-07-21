@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 import {useImmerReducer} from 'use-immer';
 
-import FormModal from '../../../FormModal';
-import ButtonContainer from '../../../forms/ButtonContainer';
-import {Checkbox, TextInput} from '../../../forms/Inputs';
-import {ChangelistTableWrapper, HeadColumn, TableRow} from '../../../tables';
-import DeleteIcon from '../../../DeleteIcon';
-import {jsonComplex as COMPLEX_JSON_TYPES} from '../../../json_editor/types';
+import FormModal from 'components/admin/FormModal';
+import ButtonContainer from 'components/admin/forms/ButtonContainer';
+import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
+import {ChangelistTableWrapper, HeadColumn, TableRow} from 'components/admin/tables';
+import DeleteIcon from 'components/admin/DeleteIcon';
+import {jsonComplex as COMPLEX_JSON_TYPES} from 'components/admin/json_editor/types';
+
 import ComplexProcessVariable from './ComplexProcessVariable';
 
 const HeadColumns = () => {

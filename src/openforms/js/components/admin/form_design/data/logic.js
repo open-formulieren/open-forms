@@ -1,6 +1,6 @@
-import {post, put, apiDelete} from '../../../../utils/fetch';
-import {ValidationErrors} from '../../../../utils/exception';
-import {LOGICS_ENDPOINT, PRICE_RULES_ENDPOINT} from '../constants';
+import {LOGICS_ENDPOINT, PRICE_RULES_ENDPOINT} from 'components/admin/form_design/constants';
+import {post, put, apiDelete} from 'utils/fetch';
+import {ValidationErrors} from 'utils/exception';
 
 /**
  * Generic collection of rules saving.

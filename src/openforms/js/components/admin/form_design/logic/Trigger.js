@@ -4,10 +4,11 @@ import {useIntl, FormattedMessage} from 'react-intl';
 import {useImmerReducer} from 'use-immer';
 import jsonLogic from 'json-logic-js';
 
-import {getTranslatedChoices} from '../../../../utils/i18n';
-import ArrayInput from '../../forms/ArrayInput';
-import ComponentSelection from '../../forms/ComponentSelection';
-import Select from '../../forms/Select';
+import {getTranslatedChoices} from 'utils/i18n';
+import ArrayInput from 'components/admin/forms/ArrayInput';
+import ComponentSelection from 'components/admin/forms/ComponentSelection';
+import Select from 'components/admin/forms/Select';
+import {FormContext} from 'components/admin/form_design/Context';
 
 import {OPERATORS, COMPONENT_TYPE_TO_OPERATORS, COMPONENT_TYPE_TO_OPERAND_TYPE} from './constants';
 import LiteralValueInput from './LiteralValueInput';
@@ -16,7 +17,6 @@ import DataPreview from './DataPreview';
 import DSLEditorNode from './DSLEditorNode';
 import {useOnChanged} from './hooks';
 import Today from './Today';
-import {FormContext} from '../Context';
 
 const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
   const intl = useIntl();

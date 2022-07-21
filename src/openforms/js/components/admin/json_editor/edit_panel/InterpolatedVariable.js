@@ -5,13 +5,14 @@ import PropTypes from 'prop-types';
 import {produce} from 'immer';
 import {FormattedMessage} from 'react-intl';
 
-import DeleteIcon from '../../DeleteIcon';
-import ButtonContainer from '../../forms/ButtonContainer';
-import ComponentSelection from '../../forms/ComponentSelection';
-import Field from '../../forms/Field';
-import {TextInput} from '../../forms/Inputs';
-import Fieldset from '../../forms/Fieldset';
-import FormRow from '../../forms/FormRow';
+import DeleteIcon from 'components/admin/DeleteIcon';
+import ButtonContainer from 'components/admin/forms/ButtonContainer';
+import ComponentSelection from 'components/admin/forms/ComponentSelection';
+import Field from 'components/admin/forms/Field';
+import {TextInput} from 'components/admin/forms/Inputs';
+import Fieldset from 'components/admin/forms/Fieldset';
+import FormRow from 'components/admin/forms/FormRow';
+
 import Types from '../types';
 
 const isString = arg => {

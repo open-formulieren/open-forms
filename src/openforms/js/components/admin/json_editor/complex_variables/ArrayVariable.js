@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import {produce} from 'immer';
 import {FormattedMessage} from 'react-intl';
 
-import ButtonContainer from '../../forms/ButtonContainer';
-import {ChangelistTableWrapper, HeadColumn, TableRow} from '../../tables';
+import ButtonContainer from 'components/admin/forms/ButtonContainer';
+import {ChangelistTableWrapper, HeadColumn, TableRow} from 'components/admin/tables';
+
 import TypeRepresentation from '../TypeRepresentation';
 import Types from '../types';
 import ValueRepresentation from '../ValueRepresentation';

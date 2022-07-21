@@ -1,5 +1,5 @@
-import jsonScriptToVar from '../../utils/json-script';
-import {apiCall} from '../../utils/fetch';
+import jsonScriptToVar from 'utils/json-script';
+import {apiCall} from 'utils/fetch';
 
 const init = async () => {
   const nodes = document.querySelectorAll('.form-category.form-category--has-children');

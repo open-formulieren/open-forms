@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 import produce from 'immer';
 
-import ActionButton, {SubmitAction} from '../../../forms/ActionButton';
-import Select from '../../../forms/Select';
-import SubmitRow from '../../../forms/SubmitRow';
-import FormModal from '../../../FormModal';
-import {jsonComplex as COMPLEX_JSON_TYPES} from '../../../json_editor/types';
-import {CustomFieldTemplate} from '../../../RJSFWrapper';
+import ActionButton, {SubmitAction} from 'components/admin/forms/ActionButton';
+import Select from 'components/admin/forms/Select';
+import SubmitRow from 'components/admin/forms/SubmitRow';
+import FormModal from 'components/admin/FormModal';
+import {jsonComplex as COMPLEX_JSON_TYPES} from 'components/admin/json_editor/types';
+import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
+
 import SelectProcessVariables from './SelectProcessVariables';
 import ComplexProcessVariables from './ComplexProcessVariables';
 

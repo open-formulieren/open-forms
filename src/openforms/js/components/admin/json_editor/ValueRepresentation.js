@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
-import FormioComponentRepresentation from '../FormioComponentRepresentation';
+import FormioComponentRepresentation from 'components/admin/FormioComponentRepresentation';
 
 import Types from './types';
 import {displayInterpolateExpression} from './edit_panel/InterpolatedVariable';

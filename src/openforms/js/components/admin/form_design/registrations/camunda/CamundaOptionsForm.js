@@ -3,10 +3,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
 
-import {get} from '../../../../../utils/fetch';
-import {PROCESS_DEFINITIONS_ENDPOINT} from '../../constants';
-import Field from '../../../forms/Field';
-import Loader from '../../../Loader';
+import Field from 'components/admin/forms/Field';
+import Loader from 'components/admin/Loader';
+import {get} from 'utils/fetch';
+import {PROCESS_DEFINITIONS_ENDPOINT} from 'components/admin/form_design/constants';
+
 import FormFields from './FormFields';
 
 const useLoadProcessDefinitions = () => {

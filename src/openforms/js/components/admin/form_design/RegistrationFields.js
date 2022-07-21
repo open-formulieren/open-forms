@@ -2,11 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import Field from '../forms/Field';
-import FormRow from '../forms/FormRow';
-import Fieldset from '../forms/Fieldset';
-import Select from '../forms/Select';
-import FormRjsfWrapper from '../RJSFWrapper';
+import Field from 'components/admin/forms/Field';
+import FormRow from 'components/admin/forms/FormRow';
+import Fieldset from 'components/admin/forms/Fieldset';
+import Select from 'components/admin/forms/Select';
+import FormRjsfWrapper from 'components/admin/RJSFWrapper';
+
 import {BACKEND_OPTIONS_FORMS} from './registrations';
 
 const BackendType = PropTypes.shape({

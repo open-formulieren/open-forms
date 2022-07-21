@@ -5,10 +5,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
-import FormIOBuilder from '../../formio_builder/builder';
-import {Checkbox, TextInput} from '../forms/Inputs';
-import Field, {normalizeErrors} from '../forms/Field';
-import FormRow from '../forms/FormRow';
+import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
+import Field, {normalizeErrors} from 'components/admin/forms/Field';
+import FormRow from 'components/admin/forms/FormRow';
+import FormIOBuilder from 'components/formio_builder/builder';
+
 import useDetectConfigurationChanged from './useDetectConfigurationChanged';
 import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
 import PluginWarning from './PluginWarning';

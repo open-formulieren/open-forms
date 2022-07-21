@@ -4,16 +4,16 @@ import {produce} from 'immer';
 import {useImmerReducer} from 'use-immer';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import FormModal from '../../../FormModal';
-import {SubmitAction} from '../../../forms/ActionButton';
-import {TextInput} from '../../../forms/Inputs';
-import Field from '../../../forms/Field';
-import Fieldset from '../../../forms/Fieldset';
-import FormRow from '../../../forms/FormRow';
-import Select from '../../../forms/Select';
-import SubmitRow from '../../../forms/SubmitRow';
-import {ComplexVariable, EditPanel, TypeSelector} from '../../../json_editor';
-import {jsonComplex as COMPLEX_JSON_TYPES} from '../../../json_editor/types';
+import FormModal from 'components/admin/FormModal';
+import {SubmitAction} from 'components/admin/forms/ActionButton';
+import {TextInput} from 'components/admin/forms/Inputs';
+import Field from 'components/admin/forms/Field';
+import Fieldset from 'components/admin/forms/Fieldset';
+import FormRow from 'components/admin/forms/FormRow';
+import Select from 'components/admin/forms/Select';
+import SubmitRow from 'components/admin/forms/SubmitRow';
+import {ComplexVariable, EditPanel, TypeSelector} from 'components/admin/json_editor';
+import {jsonComplex as COMPLEX_JSON_TYPES} from 'components/admin/json_editor/types';
 
 const initialState = {
   // variable definition/state

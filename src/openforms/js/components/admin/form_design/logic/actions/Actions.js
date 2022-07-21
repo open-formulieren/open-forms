@@ -1,16 +1,21 @@
 import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 
-import ComponentSelection from '../../../forms/ComponentSelection';
-import Select from '../../../forms/Select';
-import StepSelection from '../../StepSelection';
-import {MODIFIABLE_PROPERTIES, STRING_TO_TYPE, TYPE_TO_STRING} from '../constants';
-import OperandTypeSelection from '../OperandTypeSelection';
-import LiteralValueInput from '../LiteralValueInput';
+import ComponentSelection from 'components/admin/forms/ComponentSelection';
+import Select from 'components/admin/forms/Select';
+import JsonWidget from 'components/admin/forms/JsonWidget';
+import {FormContext} from 'components/admin/form_design/Context';
+import StepSelection from 'components/admin/form_design/StepSelection';
+import {
+  MODIFIABLE_PROPERTIES,
+  STRING_TO_TYPE,
+  TYPE_TO_STRING,
+} from 'components/admin/form_design/logic/constants';
+import OperandTypeSelection from 'components/admin/form_design/logic/OperandTypeSelection';
+import LiteralValueInput from 'components/admin/form_design/logic/LiteralValueInput';
+import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
+
 import {Action as ActionType, ActionError} from './types';
-import DSLEditorNode from '../DSLEditorNode';
-import {FormContext} from '../../Context';
-import JsonWidget from '../../../forms/JsonWidget';
 
 const ActionProperty = ({action, errors, onChange}) => {
   const modifiablePropertyChoices = Object.entries(MODIFIABLE_PROPERTIES).map(([key, info]) => [

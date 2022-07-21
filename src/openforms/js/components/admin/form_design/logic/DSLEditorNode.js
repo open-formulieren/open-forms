@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import ErrorList from '../../forms/ErrorList';
+import ErrorList from 'components/admin/forms/ErrorList';
 
 const DSLEditorNode = ({errors, children}) => (
   <div className={classNames('dsl-editor__node', {'dsl-editor__node--errors': !!errors})}>

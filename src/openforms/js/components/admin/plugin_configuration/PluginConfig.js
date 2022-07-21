@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
-import {Checkbox} from '../forms/Inputs';
+import {Checkbox} from 'components/admin/forms/Inputs';
 
 const PluginConfig = ({module, plugin, label, enabled = true, onChange}) => {
   return (

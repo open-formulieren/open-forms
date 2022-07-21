@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
 import {FormattedDate, FormattedMessage, FormattedTime} from 'react-intl';
 
-import {get, post} from '../../../utils/fetch';
-import {FORM_ENDPOINT} from '../form_design/constants';
-import Loader from '../Loader';
-import User from '../User';
+import {FORM_ENDPOINT} from 'components/admin/form_design/constants';
+import Loader from 'components/admin/Loader';
+import User from 'components/admin/User';
+import {get, post} from 'utils/fetch';
 
 const FormVersionsTable = ({csrftoken, formUuid}) => {
   const [formVersions, setFormVersions] = useState([]);

@@ -2,10 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
-import Field from '../../forms/Field';
-import FormRow from '../../forms/FormRow';
-import {TextInput, NumberInput} from '../../forms/Inputs';
-import Select from '../../forms/Select';
+import Field from 'components/admin/forms/Field';
+import FormRow from 'components/admin/forms/FormRow';
+import {TextInput, NumberInput} from 'components/admin/forms/Inputs';
+import Select from 'components/admin/forms/Select';
+
 import Types from '../types';
 import TypeSelector from '../TypeSelector';
 

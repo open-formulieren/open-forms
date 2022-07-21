@@ -1,4 +1,4 @@
-import {get} from '../../../../utils/fetch';
+import {get} from 'utils/fetch';
 
 class PluginLoadingError extends Error {
   constructor(message, plugin, response) {

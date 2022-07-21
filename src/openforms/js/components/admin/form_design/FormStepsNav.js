@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import {useIntl, FormattedMessage} from 'react-intl';
 
-import FAIcon from '../FAIcon';
-import DeleteIcon from '../DeleteIcon';
+import FAIcon from 'components/admin/FAIcon';
+import DeleteIcon from 'components/admin/DeleteIcon';
 
 const FormStepNavItem = ({
   name,

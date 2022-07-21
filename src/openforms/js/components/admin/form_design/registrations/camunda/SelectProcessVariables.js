@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import {Checkbox, TextInput} from '../../../forms/Inputs';
-import ButtonContainer from '../../../forms/ButtonContainer';
-import ComponentSelection from '../../../forms/ComponentSelection';
-import {ChangelistTableWrapper, HeadColumn, TableRow} from '../../../tables';
-import DeleteIcon from '../../../DeleteIcon';
+import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
+import ButtonContainer from 'components/admin/forms/ButtonContainer';
+import ComponentSelection from 'components/admin/forms/ComponentSelection';
+import {ChangelistTableWrapper, HeadColumn, TableRow} from 'components/admin/tables';
+import DeleteIcon from 'components/admin/DeleteIcon';
 
 const HeadColumns = () => {
   const intl = useIntl();

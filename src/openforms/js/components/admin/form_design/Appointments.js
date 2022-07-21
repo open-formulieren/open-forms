@@ -3,10 +3,11 @@ import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
-import ComponentSelection from '../forms/ComponentSelection';
-import Field from '../forms/Field';
-import FormRow from '../forms/FormRow';
-import Fieldset from '../forms/Fieldset';
+import ComponentSelection from 'components/admin/forms/ComponentSelection';
+import Field from 'components/admin/forms/Field';
+import FormRow from 'components/admin/forms/FormRow';
+import Fieldset from 'components/admin/forms/Fieldset';
+
 import {FormContext} from './Context';
 
 const PREFIX = 'appointments'; // prefix to use in the Formio.js component JSON

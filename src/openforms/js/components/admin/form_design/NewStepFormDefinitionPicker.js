@@ -2,13 +2,14 @@ import React, {useContext, useState} from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import FAIcon from '../FAIcon';
-import FormModal from '../FormModal';
-import Field from '../forms/Field';
-import FormRow from '../forms/FormRow';
-import {SubmitAction} from '../forms/ActionButton';
-import Select from '../forms/Select';
-import SubmitRow from '../forms/SubmitRow';
+import FAIcon from 'components/admin/FAIcon';
+import FormModal from 'components/admin/FormModal';
+import Field from 'components/admin/forms/Field';
+import FormRow from 'components/admin/forms/FormRow';
+import {SubmitAction} from 'components/admin/forms/ActionButton';
+import Select from 'components/admin/forms/Select';
+import SubmitRow from 'components/admin/forms/SubmitRow';
+
 import {FormContext} from './Context';
 
 const NewStepFormDefinitionPicker = ({onReplace}) => {

@@ -1,13 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {defineMessage, FormattedMessage, useIntl} from 'react-intl';
+
+import FormRow from 'components/admin/forms/FormRow';
+import Field from 'components/admin/forms/Field';
+import Fieldset from 'components/admin/forms/Fieldset';
+import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
+import Select from 'components/admin/forms/Select';
+import {getTranslatedChoices} from 'utils/i18n';
+
 import TinyMCEEditor from './Editor';
-import FormRow from '../forms/FormRow';
-import Field from '../forms/Field';
-import Fieldset from '../forms/Fieldset';
-import {Checkbox, TextInput} from '../forms/Inputs';
-import {getTranslatedChoices} from '../../../utils/i18n';
-import Select from '../forms/Select';
 
 const EMAIL_OPTIONS = [
   [

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {TextInput, NumberInput, DateInput} from '../../forms/Inputs';
+import {TextInput, NumberInput, DateInput} from 'components/admin/forms/Inputs';
 
 const COMPONENT_TYPE_TO_INPUT_TYPE = {
   number: NumberInput,

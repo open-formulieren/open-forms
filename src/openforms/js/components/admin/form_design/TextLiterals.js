@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import Field from '../forms/Field';
-import FormRow from '../forms/FormRow';
-import Fieldset from '../forms/Fieldset';
-import {TextInput} from '../forms/Inputs';
+import Field from 'components/admin/forms/Field';
+import FormRow from 'components/admin/forms/FormRow';
+import Fieldset from 'components/admin/forms/Fieldset';
+import {TextInput} from 'components/admin/forms/Inputs';
 
 const TextLiterals = ({literals, onChange}) => {
   const intl = useIntl();

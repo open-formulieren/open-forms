@@ -2,8 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
-import Field from '../forms/Field';
-import {Checkbox} from '../forms/Inputs';
+import Field from 'components/admin/forms/Field';
+import {Checkbox} from 'components/admin/forms/Inputs';
+
 import TYPES from './types';
 
 const AuthPluginField = ({availableAuthPlugins, selectedAuthPlugins, onChange, errors}) => {
