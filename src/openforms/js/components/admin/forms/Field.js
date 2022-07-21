@@ -10,7 +10,12 @@ export const normalizeErrors = (errors = []) => {
     errors = [errors];
   }
   const hasErrors = Boolean(errors && errors.length);
-  const formattedErrors = errors.map(([key, msg]) => msg);
+  const formattedErrors = errors.map(error => {
+    if (typeof error === 'string') return error;
+
+    const [key, msg] = error;
+    return msg;
+  });
   return [hasErrors, formattedErrors];
 };
 
@@ -19,7 +24,7 @@ export const normalizeErrors = (errors = []) => {
  */
 const Field = ({
   name,
-  label,
+  label = '',
   helpText = '',
   required = false,
   errors = [],
@@ -41,9 +46,11 @@ const Field = ({
       {!fieldBox && hasErrors ? <ErrorList>{formattedErrors}</ErrorList> : null}
       <div className={className}>
         {fieldBox && hasErrors ? <ErrorList>{formattedErrors}</ErrorList> : null}
-        <label className={required ? 'required' : ''} htmlFor={htmlFor}>
-          {label}
-        </label>
+        {label && (
+          <label className={required ? 'required' : ''} htmlFor={htmlFor}>
+            {label}
+          </label>
+        )}
         {modifiedChildren}
         {helpText ? <div className="help">{helpText}</div> : null}
       </div>
@@ -53,7 +60,7 @@ const Field = ({
 
 Field.propTypes = {
   name: PropTypes.string.isRequired,
-  label: PropTypes.node.isRequired,
+  label: PropTypes.node,
   children: PropTypes.element.isRequired,
   helpText: PropTypes.node,
   required: PropTypes.bool,
