@@ -2,14 +2,15 @@ import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 
-import {Checkbox, TextInput} from '../../forms/Inputs';
-import Select from '../../forms/Select';
+import FAIcon from 'components/admin/FAIcon';
+import DeleteIcon from 'components/admin/DeleteIcon';
+import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
+import Select from 'components/admin/forms/Select';
+import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
+import {FormContext} from 'components/admin/form_design/Context';
+import {get} from 'utils/fetch';
+
 import {DATATYPES_CHOICES} from './constants';
-import DeleteIcon from '../../DeleteIcon';
-import {FormContext} from '../Context';
-import {get} from '../../../../utils/fetch';
-import FAIcon from '../../FAIcon';
-import {ChangelistTableWrapper, HeadColumn} from '../../tables';
 
 const SensitiveData = ({isSensitive}) => {
   const intl = useIntl();

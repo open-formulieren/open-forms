@@ -1,4 +1,4 @@
-import {post} from '../../../../utils/fetch';
+import {post} from 'utils/fetch';
 
 const createFormVersion = async (formUrl, csrftoken) => {
   const endpoint = `${formUrl}/versions`;

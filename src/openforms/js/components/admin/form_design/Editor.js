@@ -1,8 +1,9 @@
 import React, {useContext, useRef} from 'react';
 import {useIntl} from 'react-intl';
 import {Editor} from '@tinymce/tinymce-react';
-import {TinyMceContext} from './Context';
+
 import tinyMceConfig from '../../../../conf/tinymce_config.json';
+import {TinyMceContext} from './Context';
 
 const TinyMCEEditor = ({content, onEditorChange}) => {
   const editorRef = useRef(null);

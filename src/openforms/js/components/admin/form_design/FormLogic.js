@@ -3,17 +3,18 @@ import React, {useContext, useState} from 'react';
 import PropTypes from 'prop-types';
 import {useIntl, FormattedMessage} from 'react-intl';
 
-import DeleteIcon from '../DeleteIcon';
-import FAIcon from '../FAIcon';
+import DeleteIcon from 'components/admin/DeleteIcon';
+import FAIcon from 'components/admin/FAIcon';
+import ButtonContainer from 'components/admin/forms/ButtonContainer';
+import Fieldset from 'components/admin/forms/Fieldset';
+import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
+
 import Trigger from './logic/Trigger';
 import ActionSet from './logic/actions/ActionSet';
-import ButtonContainer from '../forms/ButtonContainer';
-import Fieldset from '../forms/Fieldset';
 import AdvancedTrigger from './logic/AdvancedTrigger';
 import DataPreview from './logic/DataPreview';
 import DSLEditorNode from './logic/DSLEditorNode';
 import LogicTypeSelection from './logic/LogicTypeSelection';
-import {ValidationErrorContext} from '../forms/ValidationErrors';
 import StepSelection, {useFormStep} from './StepSelection';
 
 const EMPTY_RULE = {

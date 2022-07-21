@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import JsonWidget from '../../forms/JsonWidget';
+import JsonWidget from 'components/admin/forms/JsonWidget';
 
 const AdvancedTrigger = ({name, logic, onChange, error}) => {
   return (

@@ -2,8 +2,8 @@ import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import DeleteIcon from '../DeleteIcon';
-import {useOnChanged} from '../form_design/logic/hooks';
+import DeleteIcon from 'components/admin/DeleteIcon';
+import {useOnChanged} from 'components/admin/form_design/logic/hooks';
 
 const ArrayInput = ({
   name,

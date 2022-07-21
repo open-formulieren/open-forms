@@ -1,8 +1,8 @@
 /**
  * Implement the API calls to fetch the data for a given form.
  */
-import {get} from '../../../../utils/fetch';
-import {FORM_ENDPOINT} from '../constants';
+import {FORM_ENDPOINT} from 'components/admin/form_design/constants';
+import {get} from 'utils/fetch';
 
 const loadForm = async formUuid => {
   // no UUID -> it's an empty, new form

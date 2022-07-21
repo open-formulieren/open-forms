@@ -11,13 +11,14 @@ import useAsync from 'react-use/esm/useAsync';
 import {Tab as ReactTab, Tabs, TabList, TabPanel} from 'react-tabs';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import {post} from '../../../utils/fetch';
-import {APIError, NotAuthenticatedError} from '../../../utils/exception';
-import {getUniqueRandomString} from '../../../utils/random';
-import FAIcon from '../FAIcon';
-import Fieldset from '../forms/Fieldset';
-import ValidationErrorsProvider from '../forms/ValidationErrors';
-import Loader from '../Loader';
+import FAIcon from 'components/admin/FAIcon';
+import Fieldset from 'components/admin/forms/Fieldset';
+import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
+import Loader from 'components/admin/Loader';
+import {post} from 'utils/fetch';
+import {APIError, NotAuthenticatedError} from 'utils/exception';
+import {getUniqueRandomString} from 'utils/random';
+
 import {FormContext, FeatureFlagsContext} from './Context';
 import FormSteps from './FormSteps';
 import {

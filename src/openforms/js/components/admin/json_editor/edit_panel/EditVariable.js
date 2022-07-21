@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
-import ComponentSelection from '../../forms/ComponentSelection';
-import Field from '../../forms/Field';
-import Fieldset from '../../forms/Fieldset';
-import FormRow from '../../forms/FormRow';
-import Types from '../types';
+import ComponentSelection from 'components/admin/forms/ComponentSelection';
+import Field from 'components/admin/forms/Field';
+import Fieldset from 'components/admin/forms/Fieldset';
+import FormRow from 'components/admin/forms/FormRow';
 
+import Types from '../types';
 import ComplexManualVariable from './ComplexManualVariable';
 import InterpolatedVariable from './InterpolatedVariable';
 import PrimitiveManualVariable from './PrimitiveManualVariable';

@@ -1,8 +1,9 @@
 import produce from 'immer';
 
-import {ValidationErrors} from '../../../../utils/exception';
-import {post, put, apiDelete} from '../../../../utils/fetch';
-import {FORM_ENDPOINT} from '../constants';
+import {FORM_ENDPOINT} from 'components/admin/form_design/constants';
+import {ValidationErrors} from 'utils/exception';
+import {post, put, apiDelete} from 'utils/fetch';
+
 import {saveLogicRules, savePriceRules} from './logic';
 import {updateOrCreateFormSteps} from './steps';
 import {createOrUpdateFormVariables} from './variables';

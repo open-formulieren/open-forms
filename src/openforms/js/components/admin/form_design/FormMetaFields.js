@@ -5,12 +5,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {defineMessage, FormattedMessage, useIntl} from 'react-intl';
 
-import {getTranslatedChoices} from '../../../utils/i18n';
-import Field from '../forms/Field';
-import FormRow from '../forms/FormRow';
-import Fieldset from '../forms/Fieldset';
-import {TextInput, Checkbox} from '../forms/Inputs';
-import Select from '../forms/Select';
+import Field from 'components/admin/forms/Field';
+import FormRow from 'components/admin/forms/FormRow';
+import Fieldset from 'components/admin/forms/Fieldset';
+import {TextInput, Checkbox} from 'components/admin/forms/Inputs';
+import Select from 'components/admin/forms/Select';
+import {getTranslatedChoices} from 'utils/i18n';
+
 import AuthPluginField from './AuthPluginField';
 import TinyMCEEditor from './Editor';
 import AuthPluginAutoLoginField from './AuthPluginAutoLoginField';

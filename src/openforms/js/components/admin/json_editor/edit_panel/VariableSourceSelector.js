@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {defineMessage} from 'react-intl';
 
-import Select from '../../forms/Select';
+import Select from 'components/admin/forms/Select';
+
 import Types from '../types';
 
 const VARIABLE_SOURCES = {

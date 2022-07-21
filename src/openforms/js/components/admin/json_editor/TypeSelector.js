@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Select from '../forms/Select';
+import Select from 'components/admin/forms/Select';
+
 import {TYPE_MESSAGES} from './TypeRepresentation';
 
 export const TYPE_CHOICES = [

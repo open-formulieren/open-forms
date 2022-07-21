@@ -1,8 +1,9 @@
 import React from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
+import ButtonContainer from 'components/admin/forms/ButtonContainer';
+
 import VariablesTable from './VariablesTable';
-import ButtonContainer from '../../forms/ButtonContainer';
 
 const UserDefinedVariables = ({variables, onAdd, onChange, onDelete}) => {
   const intl = useIntl();

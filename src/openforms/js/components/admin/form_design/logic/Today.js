@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 import jsonLogic from 'json-logic-js';
 
+import Select from 'components/admin/forms/Select';
+import {NumberInput} from 'components/admin/forms/Inputs';
+import {getTranslatedChoices} from 'utils/i18n';
+
 import {OPERATORS} from './constants';
-import Select from '../../forms/Select';
-import {NumberInput} from '../../forms/Inputs';
-import {getTranslatedChoices} from '../../../../utils/i18n';
 import DSLEditorNode from './DSLEditorNode';
 
 const EMPTY_RELATIVE_DELTA = [0, 0, 0];

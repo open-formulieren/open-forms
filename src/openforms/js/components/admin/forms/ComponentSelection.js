@@ -1,8 +1,9 @@
 import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 
+import {FormContext} from 'components/admin/form_design/Context';
+
 import Select from './Select';
-import {FormContext} from '../form_design/Context';
 
 const allowAny = () => true;
 

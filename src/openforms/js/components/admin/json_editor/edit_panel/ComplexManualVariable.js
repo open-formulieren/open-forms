@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
-import Fieldset from '../../forms/Fieldset';
+import Fieldset from 'components/admin/forms/Fieldset';
+
 import ComplexVariable from '../complex_variables';
 import Types, {jsonComplex as COMPLEX_TYPES} from '../types';
 

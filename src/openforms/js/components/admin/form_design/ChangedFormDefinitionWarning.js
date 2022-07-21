@@ -2,9 +2,9 @@ import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
-import Modal from '../Modal';
-import {ChangelistTable, ChangelistColumn} from '../tables';
-import MessageList from './warnings/MessageList';
+import Modal from 'components/admin/Modal';
+import {ChangelistTable, ChangelistColumn} from 'components/admin/tables';
+import MessageList from 'components/admin/form_design/warnings/MessageList';
 
 const AffectedFormType = PropTypes.shape({
   url: PropTypes.string.isRequired,

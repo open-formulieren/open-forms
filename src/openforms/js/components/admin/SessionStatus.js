@@ -12,8 +12,9 @@ import {
   useIntl,
 } from 'react-intl';
 
-import {sessionExpiresAt} from '../../utils/session-expiry';
-import {apiCall} from '../../utils/fetch';
+import {sessionExpiresAt} from 'utils/session-expiry';
+import {apiCall} from 'utils/fetch';
+
 import FormModal from './FormModal';
 import ActionButton, {SubmitAction} from './forms/ActionButton';
 import SubmitRow from './forms/SubmitRow';

@@ -3,14 +3,15 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import {useIntl} from 'react-intl';
 
-import Select from '../../../forms/Select';
-import DeleteIcon from '../../../DeleteIcon';
-import {ACTION_TYPES} from '../constants';
-import DataPreview from '../DataPreview';
+import Select from 'components/admin/forms/Select';
+import DeleteIcon from 'components/admin/DeleteIcon';
+import {FeatureFlagsContext} from 'components/admin/form_design/Context';
+import {ACTION_TYPES} from 'components/admin/form_design/logic/constants';
+import DataPreview from 'components/admin/form_design/logic/DataPreview';
+import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
+
 import {ActionComponent} from './Actions';
 import {Action as ActionType, ActionError} from './types';
-import DSLEditorNode from '../DSLEditorNode';
-import {FeatureFlagsContext} from '../../Context';
 
 const Action = ({prefixText, action, errors = {}, onChange, onDelete}) => {
   const intl = useIntl();

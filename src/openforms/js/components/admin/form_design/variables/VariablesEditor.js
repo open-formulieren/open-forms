@@ -2,7 +2,8 @@ import React from 'react';
 import {Tab, TabList, TabPanel, Tabs} from 'react-tabs';
 import {FormattedMessage} from 'react-intl';
 
-import Fieldset from '../../forms/Fieldset';
+import Fieldset from 'components/admin/forms/Fieldset';
+
 import {VARIABLE_SOURCES} from './constants';
 import UserDefinedVariables from './UserDefinedVariables';
 import VariablesTable from './VariablesTable';

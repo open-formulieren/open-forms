@@ -1,7 +1,8 @@
 import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 
-import Select from '../forms/Select';
+import Select from 'components/admin/forms/Select';
+
 import {FormContext} from './Context';
 import {getFormStep} from './utils';
 

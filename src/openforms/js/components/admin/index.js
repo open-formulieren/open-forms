@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import ReactModal from 'react-modal';
 import {IntlProvider} from 'react-intl';
 
+import jsonScriptToVar from 'utils/json-script';
+
 import {FormCreationForm} from './form_design/form-creation-form';
 import {TinyMceContext, FeatureFlagsContext} from './form_design/Context';
 import FormVersionsTable from './form_versions/FormVersionsTable';
@@ -13,7 +15,6 @@ import './form-category';
 import Debug from './debug';
 import SessionStatus from './SessionStatus';
 import {getIntlProviderProps} from './i18n';
-import jsonScriptToVar from '../../utils/json-script';
 
 const mountForm = intlProps => {
   const formCreationFormNodes = document.getElementsByClassName('react-form-create');

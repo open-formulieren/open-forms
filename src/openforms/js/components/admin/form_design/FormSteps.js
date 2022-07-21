@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import {FormattedMessage} from 'react-intl';
 
+import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
+import Loader from 'components/admin/Loader';
+
 import FormStep from './FormStep';
 import FormStepsNav from './FormStepsNav';
-import ValidationErrorsProvider from '../forms/ValidationErrors';
-import Loader from '../Loader';
 
 const FormSteps = ({
   steps = [],

@@ -1,6 +1,6 @@
-import {FormException} from '../../../../utils/exception';
-import {post, put, ValidationErrors} from '../../../../utils/fetch';
-import {FORM_DEFINITIONS_ENDPOINT} from '../constants';
+import {FORM_DEFINITIONS_ENDPOINT} from 'components/admin/form_design/constants';
+import {FormException} from 'utils/exception';
+import {post, put, ValidationErrors} from 'utils/fetch';
 
 const updateOrCreateSingleFormStep = async (
   csrftoken,

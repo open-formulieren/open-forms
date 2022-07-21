@@ -2,14 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {defineMessage, FormattedMessage, useIntl} from 'react-intl';
 
-import {getTranslatedChoices} from '../../../utils/i18n';
-import ButtonContainer from '../forms/ButtonContainer';
-import Field from '../forms/Field';
-import {NumberInput} from '../forms/Inputs';
-import FormRow from '../forms/FormRow';
-import Fieldset from '../forms/Fieldset';
-import Select from '../forms/Select';
-import DeleteIcon from '../DeleteIcon';
+import ButtonContainer from 'components/admin/forms/ButtonContainer';
+import Field from 'components/admin/forms/Field';
+import {NumberInput} from 'components/admin/forms/Inputs';
+import FormRow from 'components/admin/forms/FormRow';
+import Fieldset from 'components/admin/forms/Fieldset';
+import Select from 'components/admin/forms/Select';
+import DeleteIcon from 'components/admin/DeleteIcon';
+import {getTranslatedChoices} from 'utils/i18n';
+
 import Trigger from './logic/Trigger';
 
 export const EMPTY_PRICE_RULE = {
