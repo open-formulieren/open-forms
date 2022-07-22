@@ -11,6 +11,7 @@ from openforms.products.tests.factories import ProductFactory
 from ..constants import FormVariableSources
 from ..models import Form, FormDefinition, FormLogic, FormStep
 from .factories import (
+    CategoryFactory,
     FormDefinitionFactory,
     FormFactory,
     FormLogicFactory,
@@ -368,3 +369,27 @@ class ImportExportTests(TestCase):
         self.assertEqual(form_logics.count(), 2)
         self.assertNotEqual(form_logic_2.pk, form_logic_pk)
         self.assertEqual(forms.last().pk, form_logic_2.form.pk)
+
+    def test_import_form_with_category(self):
+        """
+        Assert that the category reference is ignored during import.
+
+        There are no guarantees that the categories on environment 1 are identical
+        to the categories on environment two, so we don't do any guessing. Category
+        names are also not unique, as the whole tree structure allows for duplicate
+        names in different contexts. This makes it impossible to match a category
+        by ID, name or even the path in the tree.
+
+        Therefore, imported forms are always assigned to "no category".
+        """
+        category = CategoryFactory.create()
+        form = FormFactory.create(category=category)
+        call_command("export", form.pk, self.filepath)
+        # delete the data to mimic an environment where category/form don't exist
+        form.delete()
+        category.delete()
+
+        call_command("import", import_file=self.filepath)
+
+        form = Form.objects.get()
+        self.assertIsNone(form.category)
