@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
+from django.db.models import Q
 from django.http import HttpRequest
 from django.test import override_settings
 from django.urls import reverse
@@ -8,11 +9,18 @@ from django.utils.translation import gettext as _
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import TokenFactory
+from openforms.accounts.tests.factories import SuperUserFactory, TokenFactory
+from openforms.submissions.tests.mixins import VariablesTestMixin
 from openforms.tests.utils import NOOP_CACHES
 
-from ..models import Form, FormDefinition, FormStep
-from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
+from ..constants import FormVariableSources
+from ..models import Form, FormDefinition, FormStep, FormVariable
+from .factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormStepFactory,
+    FormVariableFactory,
+)
 
 
 class CopyFormAPITests(APITestCase):
@@ -184,3 +192,63 @@ class CopyFormAPITests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class CopyFormWithVarsTest(VariablesTestMixin, APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        user = SuperUserFactory.create()
+        cls.user = user
+        cls.token = TokenFactory(user=user)
+
+    def test_copy_form_with_variables(self):
+        form = FormFactory.create(slug="test-copying-with-vars")
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "name",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "surname",
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=form, source=FormVariableSources.static, key="now"
+        )
+        FormVariableFactory.create(
+            form=form, source=FormVariableSources.user_defined, key="bla"
+        )
+
+        self.assertEqual(1, Form.objects.count())
+        self.assertEqual(4, FormVariable.objects.filter(form=form).count())
+
+        url = reverse("api:form-copy", args=(form.uuid,))
+        response = self.client.post(
+            url, format="json", HTTP_AUTHORIZATION=f"Token {self.token.key}"
+        )
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        forms = Form.objects.all()
+
+        self.assertEqual(2, forms.count())
+
+        form_copy = forms.get(~Q(slug__in=["test-copying-with-vars"]))
+        variables_copy = form_copy.formvariable_set.all()
+
+        self.assertEqual(4, variables_copy.count())
+        self.assertEqual(
+            2, variables_copy.filter(source=FormVariableSources.component).count()
+        )
+        self.assertEqual(
+            1, variables_copy.filter(source=FormVariableSources.static).count()
+        )
+        self.assertEqual(
+            1, variables_copy.filter(source=FormVariableSources.user_defined).count()
+        )
