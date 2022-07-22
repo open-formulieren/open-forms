@@ -17,6 +17,7 @@ from tinymce.models import HTMLField
 from csp_post_processor.fields import CSPPostProcessedWYSIWYGField
 from openforms.authentication.fields import AuthenticationBackendMultiSelectField
 from openforms.authentication.registry import register as authentication_register
+from openforms.config.models import GlobalConfiguration
 from openforms.data_removal.constants import RemovalMethods
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
@@ -26,7 +27,11 @@ from openforms.registrations.registry import register as registration_register
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 from openforms.utils.validators import DjangoTemplateValidator
 
-from ..constants import ConfirmationEmailOptions, SubmissionAllowedChoices
+from ..constants import (
+    ConfirmationEmailOptions,
+    FormVariableSources,
+    SubmissionAllowedChoices,
+)
 from .utils import literal_getter
 
 User = get_user_model()
@@ -370,6 +375,20 @@ class Form(models.Model):
             logic.uuid = _uuid.uuid4()
             logic.form = copy
             logic.save()
+
+        config = GlobalConfiguration.get_solo()
+        if config.enable_form_variables:
+            from ..utils import create_static_variables
+            from . import FormVariable
+
+            FormVariable.objects.create_for_form(copy)
+            create_static_variables(copy)
+            for variable in self.formvariable_set.filter(
+                source=FormVariableSources.user_defined
+            ):
+                variable.pk = None
+                variable.form = copy
+                variable.save()
 
         return copy
 
