@@ -70,21 +70,23 @@ class EventTests(VariablesTestMixin, TestCase):
         )
 
         log = submission.logs.get()
-        logged_rules = log.extra_data["log_evaluated_rules"]
+        logged_rules = log.extra_data["evaluated_rules"]
 
         self.assertEqual(2, len(logged_rules))
         self.assertEqual(
             {
+                "raw_logic_expression": json_logic_trigger,
                 "trigger": True,
-                "source_components": json_logic_trigger,
+                "readable_rule": "birthdate > 2022-06-20",
                 "targeted_components": rule.actions,
             },
             logged_rules[0],
         )
         self.assertEqual(
             {
+                "raw_logic_expression": json_logic_trigger_2,
                 "trigger": False,
-                "source_components": json_logic_trigger_2,
+                "readable_rule": "firstname == bar",
                 "targeted_components": rule_2.actions,
             },
             logged_rules[1],
