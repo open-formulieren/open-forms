@@ -27,6 +27,7 @@ familiarize yourself with the design principles.
    sdk/index
    plugins/index
    extending
+   checklists
    manual_testing
    i18n
    csp
