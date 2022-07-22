@@ -1,5 +1,5 @@
 import React from 'react';
-import {Tab, TabList, TabPanel, Tabs} from 'react-tabs';
+import {TabList, TabPanel, Tabs} from 'react-tabs';
 import {FormattedMessage} from 'react-intl';
 
 import Fieldset from 'components/admin/forms/Fieldset';
@@ -7,8 +7,13 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import {VARIABLE_SOURCES} from './constants';
 import UserDefinedVariables from './UserDefinedVariables';
 import VariablesTable from './VariablesTable';
+import Tab from '../Tab';
 
 const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
+  const userDefinedVariables = variables.filter(
+    variable => variable.source === VARIABLE_SOURCES.userDefined
+  );
+
   return (
     <Fieldset
       title={
@@ -31,7 +36,11 @@ const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
                 description="Component variables tab title"
               />
             </Tab>
-            <Tab>
+            <Tab
+              hasErrors={userDefinedVariables.some(
+                variable => Object.entries(variable.errors || {}).length
+              )}
+            >
               <FormattedMessage
                 defaultMessage="User defined"
                 description="User defined variables tab title"
