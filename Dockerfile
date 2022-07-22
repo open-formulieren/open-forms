@@ -93,6 +93,7 @@ COPY ./bin/docker_start.sh /start.sh
 COPY ./bin/celery_worker.sh /celery_worker.sh
 COPY ./bin/celery_beat.sh /celery_beat.sh
 COPY ./bin/celery_flower.sh /celery_flower.sh
+COPY ./bin/dump_configuration.sh /dump_configuration.sh
 RUN mkdir /app/log
 RUN mkdir /app/media
 
