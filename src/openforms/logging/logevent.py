@@ -3,8 +3,10 @@ from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from django.db.models import Model
 
+from openforms.forms.constants import LogicActionTypes
 from openforms.logging.constants import TimelineLogTags
 from openforms.payments.constants import PaymentStatus
+from openforms.utils.json_logic import ComponentMeta, introspect_json_logic
 
 if TYPE_CHECKING:  # pragma: nocover
     from openforms.accounts.models import User
@@ -439,29 +441,105 @@ def submission_export_list(form: "Form", user: "User"):
 
 
 def submission_logic_evaluated(
-    submission: "Submission", evaluated_rules, updated_submission_data
+    submission: "Submission", evaluated_rules, resulting_data
 ):
-
     if not evaluated_rules:
         return
-    log_evaluated_rules = []
+    evaluated_rules_list = []
 
+    submission_state = submission.load_execution_state()
+    form_steps = submission_state.form_steps
+
+    # Keep a mapping for each component's key for each component in the entire form.
+    # The key of the mapping is the component key, the value is a dataclasse composed of
+    # form_step and component defintion
+    components_map = {}
+    for form_step in form_steps:
+        for component in form_step.form_definition.iter_components():
+            components_map[component["key"]] = ComponentMeta(form_step, component)
+
+    input_data = []
+    all_variables = submission.form.formvariable_set.distinct("key").in_bulk(
+        field_name="key"
+    )
+    component_key_lookup = {
+        LogicActionTypes.value: "component",
+        LogicActionTypes.property: "component",
+        LogicActionTypes.variable: "variable",
+    }
     for evaluated_rule in evaluated_rules:
 
         rule = evaluated_rule["rule"]
+        rule_introspection = introspect_json_logic(
+            rule.json_logic_trigger, components_map, resulting_data
+        )
+
+        # Gathering all the input component of each evaluated rule
+        input_data.extend(rule_introspection.get_input_components())
+
+        targeted_components = []
+        for action in rule.actions:
+            action_details = action["action"]
+            component_key = action.get(component_key_lookup.get(action_details["type"]))
+            component_meta = components_map.get(component_key)
+            component = component_meta.component if component_meta else None
+
+            # figure out the best possible label
+            # 1. fall back to component label if there is a label, else empty string
+            # 2. if there is a variable, use the name if it's set, else fall back to
+            # component label
+            label = component.get("label", "") if component else ""
+            if component_key in all_variables:
+                label = all_variables[component_key].name or label
+
+            action_log_data = {
+                "key": component_key,
+                "type_display": LogicActionTypes.get_choice(
+                    action_details["type"]
+                ).label,
+                "label": label,
+                "step_name": component_meta.form_step.form_definition.name
+                if component_meta
+                else "",
+                "value": "",
+            }
+
+            # process the value
+            if action_details["type"] == LogicActionTypes.value:
+                action_log_data["value"] = action_details["value"]
+            elif action_details["type"] == LogicActionTypes.property:
+                action_log_data.update(
+                    {
+                        "value": action_details["property"]["value"],
+                        "state": action_details["state"],
+                    }
+                )
+            elif action_details["type"] == LogicActionTypes.variable:
+                action_logic_introspection = introspect_json_logic(
+                    action_details["value"], components_map, resulting_data
+                )
+                action_log_data["value"] = action_logic_introspection.as_string()
+            targeted_components.append(action_log_data)
 
         evaluated_rule_data = {
-            "source_components": rule.json_logic_trigger,
-            "targeted_components": rule.actions,
+            "raw_logic_expression": rule_introspection.expression,
+            "readable_rule": rule_introspection.as_string(),
+            "targeted_components": targeted_components,
             "trigger": evaluated_rule["trigger"],
         }
 
-        log_evaluated_rules.append(evaluated_rule_data)
+        evaluated_rules_list.append(evaluated_rule_data)
+
+    # de-duplication of input data
+    deduplicated_input_data = {node["key"]: node for node in input_data}
 
     _create_log(
         submission,
         "submission_logic_evaluated",
-        extra_data={"log_evaluated_rules": log_evaluated_rules},
+        extra_data={
+            "evaluated_rules": evaluated_rules_list,
+            "input_data": deduplicated_input_data,
+        },
     )
 
 

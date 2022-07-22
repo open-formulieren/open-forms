@@ -43,6 +43,7 @@ def setup_env():
     load_self_signed_certs()
     monkeypatch_requests()
     monkeypatch_mozilla_django_oidc_get_from_settings()
+    monkeypatch_json_logic()
 
 
 def load_self_signed_certs() -> None:
@@ -140,3 +141,13 @@ def mute_deprecation_warnings():
     """
     if not sys.warnoptions:
         warnings.simplefilter("ignore", DeprecationWarning, append=False)
+
+
+# TODO Apply this fix to the fork of json-logic.py
+def monkeypatch_json_logic():
+
+    from json_logic import operations
+
+    operations["in"] = (
+        lambda a, b: a in b if "__contains__" in dir(b) and a is not None else False
+    )

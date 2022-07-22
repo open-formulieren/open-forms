@@ -154,9 +154,7 @@ def evaluate_form_logic(
     step.data = DirtyData(updated_step_data)
 
     # Logging the rules
-    logevent.submission_logic_evaluated(
-        submission, evaluated_rules, updated_submission_data
-    )
+    logevent.submission_logic_evaluated(submission, evaluated_rules, data)
 
     if dirty:
         # only keep the changes in the data, so that old values do not overwrite otherwise
