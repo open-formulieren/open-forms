@@ -27,15 +27,15 @@
                     <div id="changelist-filter">
                     <h2>{% trans "Filter" %}</h2>
                         <h3> {% trans "Op is triggered" %} </h3>
-                        <ul class="trigger-filter-list">
+                        <ul class="logic-rules-filter">
                             <li>
-                                <a id="trigger-filter-list__link--all" class="trigger-filter-list__link" href="" data-trigger="{% trans 'All' %}" title="{% trans "All" %}">{% trans "All" %}</a>
+                                <a class="logic-rules-filter__link logic-rules-filter__link--all" href="" data-trigger="{% trans 'All' %}" title="{% trans "All" %}">{% trans "All" %}</a>
                             </li>
                             <li class="selected">
-                                <a class="trigger-filter-list__link" href="" data-trigger="{% trans 'Yes' %}" title="{% trans "Yes" %}">{% trans "Yes" %}</a>
+                                <a class="logic-rules-filter__link" href="" data-trigger="{% trans 'Yes' %}" title="{% trans "Yes" %}">{% trans "Yes" %}</a>
                             </li>
                             <li>
-                                <a class="trigger-filter-list__link" href="" data-trigger="{% trans 'No' %}" title="{% trans "No" %}">{% trans "No" %}</a>
+                                <a class="logic-rules-filter__link" href="" data-trigger="{% trans 'No' %}" title="{% trans "No" %}">{% trans "No" %}</a>
                             </li>  
                         </ul>
                     </div>
@@ -73,11 +73,11 @@
                         </thead>
                         <tbody>
                             {% for rule in log.extra_data.evaluated_rules %}
-                                    <tr>
+                                    <tr class="logic-logs__row-body logic-logs__row-body--hidden">
                                         <td>
                                             {{ rule.readable_rule }}
                                         </td>
-                                        <td class="logic-table-body__trigger-{{ rule.trigger|yesno|capfirst }}">{{ rule.trigger|yesno|capfirst }} </td>
+                                        <td class="logic-logs__col-body logic-logs__col-body--trigger-{{ rule.trigger|yesno|capfirst }}">{{ rule.trigger|yesno|capfirst }} </td>
                                         <td>
                                         {% for action in rule.targeted_components %}
                                             {% if action.key %}

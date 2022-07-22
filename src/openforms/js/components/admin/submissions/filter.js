@@ -3,23 +3,23 @@ window.onload = function () {
   triggeredLink = document.querySelector('.trigger-filter-list > .selected > a');
 
   // Retrieve the "All" corresponding string, depending the language
-  all = document.querySelector('#trigger-filter-list__link--all').dataset.trigger;
+  all = document.querySelector('.logic-rules-filter__link--all').dataset.trigger;
 
   // Only triggered logs are displayed first
   document
-    .querySelectorAll('.logic-table-body__trigger-' + triggeredLink.dataset.trigger)
+    .querySelectorAll('.logic-logs__col-body--trigger-' + triggeredLink.dataset.trigger)
     .forEach(trigger => {
-      trigger.parentNode.classList.remove('logic-table-body__row--hidden');
+      trigger.parentNode.classList.remove('logic-logs__row-body--hidden');
     });
 };
 
-document.querySelectorAll('.trigger-filter-list__link').forEach(link => {
+document.querySelectorAll('.logic-rules-filter__link').forEach(link => {
   link.addEventListener('click', event => {
     event.preventDefault();
 
     // Hiding all the rows first
-    document.querySelectorAll('.logic-table-body__row').forEach(row => {
-      row.classList.add('logic-table-body__row--hidden');
+    document.querySelectorAll('.logic-logs__row-body').forEach(row => {
+      row.classList.add('logic-logs__row-body--hidden');
     });
 
     let triggered = event.target.dataset.trigger;
@@ -30,12 +30,12 @@ document.querySelectorAll('.trigger-filter-list__link').forEach(link => {
 
     // Showing only rules corresponding to the selected trigger link
     if (triggered == all) {
-      document.querySelectorAll('.logic-table-body__row').forEach(row => {
-        row.classList.remove('logic-table-body__row--hidden');
+      document.querySelectorAll('.logic-logs__row-body').forEach(row => {
+        row.classList.remove('logic-logs__row-body--hidden');
       });
     } else {
-      document.querySelectorAll('.logic-table-body__trigger-' + triggered).forEach(trigger => {
-        trigger.parentNode.classList.remove('logic-table-body__row--hidden');
+      document.querySelectorAll('.logic-logs__col-body--trigger-' + triggered).forEach(trigger => {
+        trigger.parentNode.classList.remove('logic-logs__row-body--hidden');
       });
     }
   });

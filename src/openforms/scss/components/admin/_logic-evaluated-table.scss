@@ -18,5 +18,15 @@
         width: 10%;
       }
     }
+    .logic-logs__row-body {
+      &--hidden {
+        display: none;
+      }
+    }
   }
+}
+
+#changelist-filter {
+  width: 10%;
+  margin: 0 !important;
 }
