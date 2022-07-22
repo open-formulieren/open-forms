@@ -124,7 +124,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
             value={variable.name}
             onChange={onValueChanged}
             onBlur={updateKey}
-            noVTextField={true}
+            noVTextField
           />
         </Field>
       </td>
@@ -195,7 +195,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
             name="initialValue"
             value={variable.initialValue || ''}
             onChange={onValueChanged}
-            noVTextField={true}
+            noVTextField
           />
         </Field>
       </td>
@@ -205,7 +205,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
             name="dataFormat"
             value={variable.dataFormat}
             onChange={onValueChanged}
-            noVTextField={true}
+            noVTextField
           />
         </Field>
       </td>

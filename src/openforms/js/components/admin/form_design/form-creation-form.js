@@ -733,11 +733,8 @@ function reducer(draft, action) {
 
         // Assign errors to variables
         const variablesValidationErrors = parseValidationErrors(prefixedErrors, 'variables');
-        draft.formVariables = draft.formVariables.map((variable, index) => {
-          return {
-            ...variable,
-            errors: variablesValidationErrors[index],
-          };
+        variablesValidationErrors.forEach((errors, index) => {
+          draft.formVariables[index].errors = errors;
         });
 
         // update state depending on the validation errors. If there are errors, we set

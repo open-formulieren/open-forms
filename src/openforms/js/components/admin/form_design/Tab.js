@@ -1,8 +1,9 @@
+import React from 'react';
 import {useIntl} from 'react-intl';
 import {Tab as ReactTab} from 'react-tabs';
-import FAIcon from '../FAIcon';
 import PropTypes from 'prop-types';
-import React from 'react';
+
+import FAIcon from 'components/admin/FAIcon';
 
 const Tab = ({hasErrors = false, children, ...props}) => {
   const intl = useIntl();
