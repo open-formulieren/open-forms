@@ -197,6 +197,7 @@ class CopyFormAPITests(APITestCase):
 class CopyFormWithVarsTest(VariablesTestMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
         user = SuperUserFactory.create()
         cls.user = user
         cls.token = TokenFactory(user=user)

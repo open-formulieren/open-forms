@@ -1,4 +1,4 @@
-.. _checklists_for_developers:
+.. _developers_checklists:
 
 
 =========================
