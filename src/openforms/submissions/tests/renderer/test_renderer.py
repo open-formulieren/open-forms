@@ -138,7 +138,9 @@ class FormNodeTests(TestCase):
         # Expected queries:
         # 1. Getting the merged data of the submission steps
         # 2. Getting the submission steps for the given submission
-        # 3. Query the form logic rules for the submission form (and this is cached)
-        # 4. & 5. Loading the submission execution state
-        with self.assertNumQueries(5):
+        # 3. Get static variables for a form
+        # 4. Query the form logic rules for the submission form (and this is cached)
+        # 5. Load submission state: get form steps
+        # 6. Load submission state: get submission steps
+        with self.assertNumQueries(6):
             list(renderer)

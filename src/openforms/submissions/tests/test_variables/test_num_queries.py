@@ -57,10 +57,11 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
 
         # 1. get_dynamic_configuration: injects variables in configuration and *currently* does 1 query to retrieve
         #    variables with prefill data, so the defaultValue on the components can be set.
-        # 2. Retrieve all logic rules related to a form
-        # 3. Load submission state: Retrieve formsteps,
-        # 4. Load submission state: Retrieve submission steps
-        with self.assertNumQueries(4):
+        # 2. Retrieve static data
+        # 3. Retrieve all logic rules related to a form
+        # 4. Load submission state: Retrieve formsteps,
+        # 5.  Load submission state: Retrieve submission steps
+        with self.assertNumQueries(5):
             evaluate_form_logic(submission, submission_step2, data)
 
     def test_evaluate_form_logic_with_rules(self):
@@ -116,20 +117,21 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
         )
         data = submission.data
 
-        # 1. get_dynamic_configuration: injects variables in configuration and *currently* does 1 query to retrieve
-        #    variables with prefill data, so the defaultValue on the components can be set.
-        # 2. Retrieve all logic rules related to a form
-        # 3. Load submission state: Retrieve formsteps,
-        # 4. Load submission state: Retrieve submission steps
-        # 5. Retrieve the submission variables to be deleted
-        # 6. Retrieve the submission attachment files to be deleted
-        # 7. SAVEPOINT
-        # 8. Delete submission attachment files
-        # 9. RELEASE SAVEPOINT
-        # 10. Delete submission values
-        # 11. Retrieve all form_variables
-        # 12. Creation of timelinelog
-        with self.assertNumQueries(12):
+        # 1.  get_dynamic_configuration: injects variables in configuration and *currently* does 1 query to retrieve
+        #     variables with prefill data, so the defaultValue on the components can be set.
+        # 2.  Retrieve static data
+        # 3.  Retrieve all logic rules related to a form
+        # 4.  Load submission state: Retrieve formsteps,
+        # 5.  Load submission state: Retrieve submission steps
+        # 6.  Retrieve the submission variables to be deleted
+        # 7.  Retrieve the submission attachment files to be deleted
+        # 8.  SAVEPOINT
+        # 9.  Delete submission attachment files
+        # 10. RELEASE SAVEPOINT
+        # 11. Delete submission values
+        # 12. Retrieve all form_variables
+        # 13. Creation of timelinelog
+        with self.assertNumQueries(13):
             evaluate_form_logic(submission, submission_step2, data)
 
     def test_update_step_data(self):
@@ -388,8 +390,11 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
 
         # 1-2. renderer get_children: get submission data (get form variables and submission value variables)
         # 3. renderer get_children: get submission steps
-        # 4-7. renderer get_children: evaluate form logic for first submission step
-        # 8. renderer get_children: evaluate form logic for second submission step (the first evaluation caches some results)
+        # 4. Retrieve prefill data
+        # 5. Retrieve static data
+        # 6. Retrieve logic rules
+        # 7.  Load submission state: Retrieve formsteps,
+        # 8.  Load submission state: Retrieve submission steps
         with self.assertNumQueries(8):
             nodes = [node for node in renderer]
 
