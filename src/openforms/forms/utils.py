@@ -171,6 +171,14 @@ def import_form_data(
                 old_uuid = entry["uuid"]
                 entry["uuid"] = str(uuid4())
 
+            if resource == "forms":
+                # we can only extract a category UUID from the URL here, but that requires
+                # an exact match and we currently don't provide import/export functionality
+                # for categories. Relying on ID/Name is not much better than guesswork either,
+                # so we always import forms with NO category at all to prevent import errors.
+                # See #1774 for one such example of an error.
+                entry["category"] = None
+
             if resource == "forms" and not existing_form_instance:
                 entry["active"] = False
 
