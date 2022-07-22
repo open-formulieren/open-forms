@@ -1,19 +1,22 @@
-.logic-rules-tables {
+.logic-logs {
   width: 100%;
-}
 
-.property-name-width {
-  width: 70%;
-}
+  &--variables {
+    .logic-logs__col-header {
+      &--name {
+        width: 70%;
+      }
+    }
+  }
 
-.rule-width {
-  width: 60%;
-}
-
-.trigger-width {
-  width: 10%;
-}
-
-.rule-list {
-  list-style: none;
+  &--rules {
+    .logic-logs__col-header {
+      &--rule {
+        width: 60%;
+      }
+      &--trigger {
+        width: 10%;
+      }
+    }
+  }
 }

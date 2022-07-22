@@ -17,14 +17,12 @@
 {% endblock %}
 
 {% block content %}
-    <h1>{% trans  "Logic logs" %}</h1>
     {% block field_sets %}
         {% if not logs_activity %}
             {% trans "No logic rules for that submission" %}
         
         {% else %}
             {% for log in logs_activity  %}
-                <span class="timestamp-log"></span>
                 <fieldset class="module aligned collapse collapsed fieldset-log">
                     <h2>
                         <time datetime="{{ log.timestamp.isoformat }}" title="{{ log.timestamp|date:'Y-m-d H:i:s' }}">
@@ -32,22 +30,48 @@
                         </time>
                         - {% trans 'Logic' %} -
                     </h2>
-                    <h4> {% trans "Logic rules" %} </h4>
-                    <table class="logic-rules-tables">
+                    <h4> {% trans "Variables" %} </h4>
+                    <table class="logic-logs logic-logs--variables">
                         <thead>
-                            <th class="rule-width"> {% trans "Rule" %} </th>
-                            <th class="trigger-width"> {% trans "Triggered" %} </th>
+                            <th class="logic-logs__col-header logic-logs__col-header--name"> {% trans "Property name" %} </th>
+                            <th class="logic-logs__col-header logic-logs__col-header--value"> {% trans "Value" %} </th>
+                        </thead>
+                        <tbody>
+                            {% for key, value in log.extra_data.input_data.items  %}
+                            <tr>
+                                <td>{{ value.step_name }}: <code>{{ key }}</code> &#40;{{ value.label }}&#41;</td>
+                                <td>{{ value.actual_value }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <h4> {% trans "Logic rules" %} </h4>
+                    <table class="logic-logs logic-logs--rules">
+                        <thead>
+                            <th class="logic-logs__col-header logic-logs__col-header--rule"> {% trans "Rule" %} </th>
+                            <th class="logic-logs__col-header logic-logs__col-header--trigger"> {% trans "Triggered" %} </th>
                             <th> {% trans "Action" %} </th>
                         </thead>
                         <tbody>
-                            {% for rule in log.extra_data.log_evaluated_rules %}
+                            {% for rule in log.extra_data.evaluated_rules %}
                                     <tr>
                                         <td>
-                                            {{ rule.source_components }}
+                                            {{ rule.readable_rule }}
                                         </td>
                                         <td>{{ rule.trigger|yesno|capfirst }} </td>
                                         <td>
-                                            {{ rule.targeted_components }}
+                                        {% for action in rule.targeted_components %}
+                                            {% if action.key %}
+                                                <b>{{ action.type_display }}</b>: {{ action.step_name }}: <code>{{ action.key }}</code> ({{ action.label }}):
+                                                    {% if not 'state' in action %}
+                                                        <i>{{ action.value }}</i>
+                                                    {% else %}
+                                                        <i>{{ action.value }} = {{ action.state|yesno|capfirst }}</i>
+                                                    {% endif %}
+                                            {% else %}
+                                                <b>{{ action.type_display }}</b>
+                                            {% endif %}
+                                        {% endfor %}
                                         </td>
                                     </tr>
                             {% endfor %}
