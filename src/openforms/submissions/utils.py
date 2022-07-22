@@ -3,6 +3,7 @@ from typing import Any
 
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
+from django.db.models import Q
 
 from openforms.appointments.service import get_confirmation_mail_suffix
 from openforms.emails.confirmation_emails import (
@@ -12,9 +13,10 @@ from openforms.emails.confirmation_emails import (
     render_confirmation_email_template,
 )
 from openforms.emails.utils import send_mail_html, strip_tags_plus
+from openforms.forms.constants import FormVariableSources
+from openforms.forms.models import FormVariable
 from openforms.logging import logevent
 
-from ..forms.models import FormVariable
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from .models import Submission, SubmissionValueVariable, TemporaryFileUpload
 from .query import SubmissionQuerySet
@@ -150,12 +152,15 @@ def send_confirmation_email(submission: Submission):
     logevent.confirmation_email_success(submission)
 
 
-def persist_submission_variables_unrelated_to_a_step(
+def persist_user_defined_variables_unrelated_to_a_step(
     data: dict, submission: Submission
 ) -> None:
     keys_in_data = [key for key, value in data.items()]
     form_vars_keys = FormVariable.objects.filter(
-        form=submission.form, key__in=keys_in_data, form_definition__isnull=True
+        ~Q(source=FormVariableSources.static),
+        form=submission.form,
+        key__in=keys_in_data,
+        form_definition__isnull=True,
     ).values_list("key", flat=True)
     filtered_data = {key: value for key, value in data.items() if key in form_vars_keys}
 
@@ -165,9 +170,13 @@ def persist_submission_variables_unrelated_to_a_step(
         )
 
 
-def initialise_variables_unrelated_to_a_step(submission: Submission):
+def initialise_user_defined_variables(submission: Submission):
     state = submission.load_submission_value_variables_state()
-    variables = state.get_variables_unrelated_to_a_step()
+    variables = {
+        variable_key: variable
+        for variable_key, variable in state.variables.items()
+        if variable.form_variable.source == FormVariableSources.user_defined
+    }
     SubmissionValueVariable.objects.bulk_create(
         [variable for key, variable in variables.items() if not variable.pk]
     )

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from django.db import models
 from django.db.models import Q
@@ -7,12 +7,15 @@ from django.utils.translation import gettext_lazy as _
 
 from glom import Assign, PathAccessError, glom
 
+from openforms.forms.constants import FormVariableSources
 from openforms.forms.models.form_variable import FormVariable
 
 from ..constants import SubmissionValueVariableSources
 from .submission import Submission
 
 if TYPE_CHECKING:  # pragma: nocover
+    from rest_framework.request import Request
+
     from .submission_step import SubmissionStep
 
 
@@ -20,6 +23,7 @@ if TYPE_CHECKING:  # pragma: nocover
 class SubmissionValueVariablesState:
     submission: "Submission"
     _variables: Dict[str, "SubmissionValueVariable"] = None
+    _static_data: Dict[str, Any] = None
 
     def __init__(self, submission: "Submission"):
         self.submission = submission
@@ -132,6 +136,19 @@ class SubmissionValueVariablesState:
         for key in keys:
             if key in self._variables:
                 del self._variables[key]
+
+    # TODO: Argument request present for when we will use the data in the session to put
+    #  data returned from DigiD/eHerkenning into static vars
+    def static_data(self, request: "Request") -> dict:
+        if self._static_data is None:
+            static_form_variables = self.submission.form.formvariable_set.filter(
+                source=FormVariableSources.static
+            )
+            static_variables_data = {}
+            for variable in static_form_variables:
+                static_variables_data[variable.key] = variable.get_initial_value()
+            self._static_data = static_variables_data
+        return self._static_data
 
 
 class SubmissionValueVariableManager(models.Manager):

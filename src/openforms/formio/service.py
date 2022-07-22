@@ -1,4 +1,3 @@
-from django.db.models import Q
 from django.template import Context, Template
 from django.urls import reverse
 
@@ -8,7 +7,7 @@ from rest_framework.request import Request
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.custom_field_types import handle_custom_types
 from openforms.prefill import _set_default_values, apply_prefill
-from openforms.submissions.models import Submission, SubmissionValueVariable
+from openforms.submissions.models import Submission
 
 from .normalization import normalize_value_for_component  # noqa
 from .utils import format_date_value, iter_components, mimetype_allowed  # noqa
@@ -32,30 +31,29 @@ def get_dynamic_configuration(
     conf = GlobalConfiguration.get_solo()
 
     if conf.enable_form_variables:
-        configuration = insert_variables(configuration, submission=submission)
+        configuration = insert_variables(
+            configuration, submission=submission, request=request
+        )
     else:
         configuration = apply_prefill(configuration, submission=submission)
 
     return configuration
 
 
-def insert_variables(configuration: dict, submission: Submission) -> dict:
-    prefill_data = dict(
-        SubmissionValueVariable.objects.filter(
-            ~Q(form_variable__prefill_plugin=""), submission=submission
-        ).values_list("key", "value")
-    )
+def insert_variables(
+    configuration: dict, submission: Submission, request: "Request"
+) -> dict:
+    # TODO Once the enable_form_variables feature flag is removed, whe should move this code around
+    _set_default_values(configuration, submission.get_prefilled_data())
 
     value_variables_state = submission.load_submission_value_variables_state()
     data = value_variables_state.get_data()
-
-    # TODO Once the enable_form_variables feature flag is removed, whe should move this code around
-    _set_default_values(configuration, prefill_data)
+    static_data = value_variables_state.static_data(request)
 
     for component in iter_components(configuration):
         if "html" in component:
             content_with_vars = Template(component.get("html", "")).render(
-                Context(data)
+                Context({**data, **static_data})
             )
             component["html"] = content_with_vars
 

@@ -33,8 +33,8 @@ from ..tasks import on_completion
 from ..tokens import submission_status_token_generator
 from ..utils import (
     add_submmission_to_session,
-    initialise_variables_unrelated_to_a_step,
-    persist_submission_variables_unrelated_to_a_step,
+    initialise_user_defined_variables,
+    persist_user_defined_variables_unrelated_to_a_step,
     remove_submission_from_session,
     remove_submission_uploads_from_session,
 )
@@ -129,7 +129,7 @@ class SubmissionViewSet(
         conf = GlobalConfiguration.get_solo()
         if conf.enable_form_variables:
             prefill_variables(serializer.instance)
-            initialise_variables_unrelated_to_a_step(serializer.instance)
+            initialise_user_defined_variables(serializer.instance)
 
     @extend_schema(
         summary=_("Retrieve co-sign state"),
@@ -405,7 +405,7 @@ class SubmissionStepViewSet(
 
         logevent.submission_step_fill(instance)
 
-        persist_submission_variables_unrelated_to_a_step(
+        persist_user_defined_variables_unrelated_to_a_step(
             serializer.validated_data["data"], instance.submission
         )
         attach_uploads_to_submission_step(instance)

@@ -39,6 +39,31 @@ def get_component(configuration: JSONObject, key: str) -> JSONObject:
             return component
 
 
+class DataForLogic:
+    """Manage data during logic evaluation
+
+    This class contains the initial data that was passed to the evaluate_form_logic function
+    (submission data plus any data entered by the user that hasnt been saved yet).
+    It then contains any data added by the logic rules and the static data for this submission.
+    """
+
+    initial_data: dict
+    _data: dict
+    static_data: dict
+
+    def __init__(self, initial_data, static_data):
+        self.initial_data = {**initial_data}
+        self.static_data = static_data
+        self._data = {**initial_data}
+
+    def update_data(self, new_data: dict):
+        self._data = {**self.initial_data, **new_data}
+
+    @property
+    def data(self):
+        return {**self._data, **self.static_data}
+
+
 @elasticapm.capture_span(span_type="app.submissions.logic")
 def evaluate_form_logic(
     submission: "Submission",
@@ -69,9 +94,12 @@ def evaluate_form_logic(
     # check what the default data values are
     defaults = get_default_values(configuration)
 
+    submission_variables_state = submission.load_submission_value_variables_state()
+    static_data = submission_variables_state.static_data(context.get("request"))
+
     # merge the default values and supplied data - supplied data overwrites defaults
     # if keys are present in both dicts
-    data = {**defaults, **data}
+    data = DataForLogic(initial_data={**defaults, **data}, static_data=static_data)
 
     if not step.data:
         step.data = DirtyData({})
@@ -96,7 +124,6 @@ def evaluate_form_logic(
     step_index = submission_state.form_steps.index(step.form_step)
 
     updated_step_data = deepcopy(step.data)
-    updated_submission_data = deepcopy(data)
     evaluated_rules = []
     for rule in rules:
 
@@ -110,7 +137,7 @@ def evaluate_form_logic(
             )
             if step_index < trigger_from_index:
                 continue
-        trigger_rule = jsonLogic(rule.json_logic_trigger, updated_submission_data)
+        trigger_rule = jsonLogic(rule.json_logic_trigger, data.data)
         evaluated_rules.append({"rule": rule, "trigger": bool(trigger_rule)})
         if not trigger_rule:
             continue
@@ -118,12 +145,12 @@ def evaluate_form_logic(
             action_details = action["action"]
             # TODO this action will be replaced by changing the value of variables
             if action_details["type"] == LogicActionTypes.value:
-                new_value = jsonLogic(action_details["value"], updated_submission_data)
+                new_value = jsonLogic(action_details["value"], data.data)
                 configuration = set_property_value(
                     configuration, action["component"], "value", new_value
                 )
                 updated_step_data[action["component"]] = new_value
-                updated_submission_data = {**data, **updated_step_data}
+                data.update_data(updated_step_data)
             elif action_details["type"] == LogicActionTypes.property:
                 property_name = action_details["property"]["value"]
                 property_value = action_details["state"]
@@ -147,21 +174,21 @@ def evaluate_form_logic(
                     updated_step_data = {}
                     step._is_applicable = False
             elif action_details["type"] == LogicActionTypes.variable:
-                new_value = jsonLogic(action_details["value"], updated_submission_data)
+                new_value = jsonLogic(action_details["value"], data.data)
                 variable_key = action["variable"]
                 updated_step_data[variable_key] = new_value
-                updated_submission_data = {**data, **updated_step_data}
+                data.update_data(updated_step_data)
     step.data = DirtyData(updated_step_data)
 
     # Logging the rules
-    logevent.submission_logic_evaluated(submission, evaluated_rules, data)
+    logevent.submission_logic_evaluated(submission, evaluated_rules, data.data)
 
     if dirty:
         # only keep the changes in the data, so that old values do not overwrite otherwise
         # debounced client-side data changes
         data_diff = {}
         for key, new_value in step.data.items():
-            original_value = data.get(key)
+            original_value = data.initial_data.get(key)
             # Reset the value of any field that may have become hidden again after evaluating the logic
             if original_value:
                 component = get_component(configuration, key)
