@@ -338,13 +338,16 @@ function reducer(draft, action) {
       const {mutationType, schema, args, formDefinition} = action.payload;
 
       let originalComp;
+      let isNew;
       switch (mutationType) {
         case 'changed': {
-          [originalComp] = args;
+          originalComp = args[0];
+          isNew = args[4];
           break;
         }
         case 'removed': {
           originalComp = null;
+          isNew = false;
           break;
         }
         default:
@@ -379,6 +382,7 @@ function reducer(draft, action) {
       draft.formVariables = updateFormVariables(
         formDefinition,
         mutationType,
+        isNew,
         schema,
         originalComp,
         draft.formVariables,
