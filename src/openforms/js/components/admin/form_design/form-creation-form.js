@@ -733,8 +733,11 @@ function reducer(draft, action) {
 
         // Assign errors to variables
         const variablesValidationErrors = parseValidationErrors(prefixedErrors, 'variables');
-        variablesValidationErrors.forEach((errors, index) => {
-          draft.formVariables[index].errors = errors;
+        // variablesValidationErrors is a dict where the keys are the indices of the variables with errors
+        Object.keys(variablesValidationErrors).forEach(index => {
+          if (draft.formVariables[index]) {
+            draft.formVariables[index].errors = variablesValidationErrors[index];
+          }
         });
 
         // update state depending on the validation errors. If there are errors, we set
