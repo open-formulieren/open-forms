@@ -8,8 +8,9 @@ class FormVersionAdmin(admin.ModelAdmin):
     list_display = (
         "form",
         "created",
+        "app_release",
     )
-    list_filter = ("form", "created")
+    list_filter = ("form", "created", "app_release")
     search_fields = ("form", "created")
 
     def has_add_permission(self, request):

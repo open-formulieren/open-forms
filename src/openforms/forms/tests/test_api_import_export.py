@@ -14,7 +14,7 @@ from rest_framework.test import APITestCase
 from openforms.accounts.tests.factories import TokenFactory, UserFactory
 
 from ...emails.tests.factories import ConfirmationEmailTemplateFactory
-from ..constants import ConfirmationEmailOptions, FormVariableSources
+from ..constants import EXPORT_META_KEY, ConfirmationEmailOptions, FormVariableSources
 from ..models import Form, FormDefinition, FormStep
 from .factories import (
     FormDefinitionFactory,
@@ -62,6 +62,7 @@ class ImportExportAPITests(APITestCase):
                 "formDefinitions.json",
                 "formLogic.json",
                 "formVariables.json",
+                f"{EXPORT_META_KEY}.json",
             ],
         )
 

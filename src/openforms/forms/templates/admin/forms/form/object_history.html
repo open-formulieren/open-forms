@@ -1,6 +1,11 @@
 {% extends 'admin/object_history.html' %}
 {% load i18n admin_urls static %}
 
+{% block extrastyle %}
+<link rel="stylesheet" type="text/css" href="{% static 'bundles/core-css.css' %}">
+{{ block.super }}
+{% endblock %}
+
 {% block content %}
 <div id="content-main">
     <div class="module">
@@ -9,6 +14,7 @@
         class="react-form-versions-table"
         data-form-uuid="{{ object.uuid }}"
         data-csrftoken="{{ csrf_token }}"
+        data-current-release="{{ settings.RELEASE }}"
     >{# React managed #}</div>
 
     </div>

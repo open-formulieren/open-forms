@@ -20,6 +20,7 @@ from openforms.tests.utils import disable_2fa
 from openforms.utils.admin import SubmitActions
 
 from ...admin.form import FormAdmin
+from ...constants import EXPORT_META_KEY
 from ...models import Category, Form, FormDefinition, FormStep, FormVariable
 from ...tests.factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
@@ -91,6 +92,7 @@ class FormAdminImportExportTests(WebTest):
                 "formDefinitions.json",
                 "formLogic.json",
                 "formVariables.json",
+                f"{EXPORT_META_KEY}.json",
             ],
         )
 

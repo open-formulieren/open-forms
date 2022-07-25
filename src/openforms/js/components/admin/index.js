@@ -50,11 +50,15 @@ const mountFormVersions = intlProps => {
   if (!formVersionsNodes.length) return;
 
   for (const formVersionsNode of formVersionsNodes) {
-    const {formUuid, csrftoken} = formVersionsNode.dataset;
+    const {formUuid, csrftoken, currentRelease} = formVersionsNode.dataset;
 
     ReactDOM.render(
       <IntlProvider {...intlProps}>
-        <FormVersionsTable csrftoken={csrftoken} formUuid={formUuid} />
+        <FormVersionsTable
+          csrftoken={csrftoken}
+          formUuid={formUuid}
+          currentRelease={currentRelease}
+        />
       </IntlProvider>,
       formVersionsNode
     );

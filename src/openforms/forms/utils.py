@@ -8,6 +8,7 @@ from uuid import uuid4
 
 from django.conf import settings
 from django.db import transaction
+from django.utils import timezone
 
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
@@ -22,7 +23,7 @@ from .api.serializers import (
     FormStepSerializer,
     FormVariableSerializer,
 )
-from .constants import FormVariableSources
+from .constants import EXPORT_META_KEY, FormVariableSources
 from .models import Form, FormDefinition, FormLogic, FormStep, FormVariable
 
 IMPORT_ORDER = {
@@ -100,6 +101,13 @@ def form_to_json(form_id: int) -> dict:
         "formDefinitions": json.dumps(form_definitions),
         "formLogic": json.dumps(form_logic),
         "formVariables": json.dumps(form_variables),
+        EXPORT_META_KEY: json.dumps(
+            {
+                "of_release": settings.RELEASE,
+                "of_git_sha": settings.GIT_SHA,
+                "created": timezone.now().isoformat(),
+            }
+        ),
     }
 
     return resources
