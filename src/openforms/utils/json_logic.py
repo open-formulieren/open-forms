@@ -120,13 +120,12 @@ def convert_json_logic_in_json_tree(
     components involved in the rule such as its `value`, `label`, `step name`...
 
     :param logics:  :class:`JsonLogicTest` the logic rule
-    :param keys_mapped_to_component: dict of component with component key as key
-    :param keys_mapped_to_form: dict of form with component key as key
+    :param component_map: formLogic and component mapped to the related key
     :param resulting_data: actual data from the submission form
 
 
     :rtype: JsonLogicOperation
-    :return: rule with additional informations related to the involved component
+    :return: rule with additional information related to the involved component
 
 
     """
