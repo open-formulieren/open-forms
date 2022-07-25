@@ -2,6 +2,8 @@ from django.utils.translation import gettext_lazy as _
 
 from djchoices import ChoiceItem, DjangoChoices
 
+EXPORT_META_KEY = "_meta"
+
 
 class LogicActionTypes(DjangoChoices):
     step_not_applicable = ChoiceItem(
