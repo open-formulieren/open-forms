@@ -637,6 +637,12 @@
       "value": "the array"
     }
   ],
+  "FH2sxf": [
+    {
+      "type": 0,
+      "value": "This form version was created in an application version different from the current version. There may be missing configuration after restoring."
+    }
+  ],
   "FQswyM": [
     {
       "type": 0,
@@ -1581,6 +1587,12 @@
     {
       "type": 0,
       "value": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
+    }
+  ],
+  "gr7edY": [
+    {
+      "type": 0,
+      "value": "App version"
     }
   ],
   "gz32s2": [

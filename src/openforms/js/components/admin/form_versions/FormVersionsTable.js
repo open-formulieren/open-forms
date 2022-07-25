@@ -1,14 +1,28 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import useAsync from 'react-use/esm/useAsync';
-import {FormattedDate, FormattedMessage, FormattedTime} from 'react-intl';
+import {useIntl, FormattedDate, FormattedMessage, FormattedTime} from 'react-intl';
+import semverValid from 'semver/functions/valid';
+import semverDiff from 'semver/functions/diff';
 
 import {FORM_ENDPOINT} from 'components/admin/form_design/constants';
+import FAIcon from 'components/admin/FAIcon';
 import Loader from 'components/admin/Loader';
 import User from 'components/admin/User';
 import {get, post} from 'utils/fetch';
 
-const FormVersionsTable = ({csrftoken, formUuid}) => {
+const checkVersionsCompatible = (version1, version2) => {
+  // if any of the versions is empty, we can't reach any conclusions
+  if (!version1 || !version2) return true;
+  // if we get non-semver versions -> check for strict equality
+  if (!semverValid(version1) || !semverValid(version2)) return version1 === version2;
+  const diffLevel = semverDiff(version1, version2);
+  // patch releases are backwards compatible
+  return diffLevel === 'patch';
+};
+
+const FormVersionsTable = ({csrftoken, formUuid, currentRelease}) => {
+  const intl = useIntl();
   const [formVersions, setFormVersions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -41,6 +55,7 @@ const FormVersionsTable = ({csrftoken, formUuid}) => {
 
   const rows = formVersions.map((version, index) => {
     const created = new Date(version.created);
+    const showVersionWarning = !checkVersionsCompatible(version.appRelease, currentRelease);
     return (
       <tr key={version.uuid}>
         <th>
@@ -50,6 +65,20 @@ const FormVersionsTable = ({csrftoken, formUuid}) => {
         </th>
         <td>{version.user ? <User {...version.user} /> : '-'}</td>
         <td>{version.description}</td>
+        <td>
+          {showVersionWarning && (
+            <FAIcon
+              icon="exclamation-triangle"
+              extraClassname="icon icon--warning icon--no-pointer icon--as-lead"
+              title={intl.formatMessage({
+                description: 'FormVersion: Warning message different application versions',
+                defaultMessage: `This form version was created in an application version different
+                from the current version. There may be missing configuration after restoring.`,
+              })}
+            />
+          )}
+          {version.appRelease}
+        </td>
         <td>
           <a
             href="#"
@@ -73,7 +102,6 @@ const FormVersionsTable = ({csrftoken, formUuid}) => {
         {rows.length > 0 ? (
           <table id="change-history">
             <thead>
-              {/* TODO: apply react-intl here */}
               <tr>
                 <th scope="col">
                   <FormattedMessage
@@ -88,6 +116,12 @@ const FormVersionsTable = ({csrftoken, formUuid}) => {
                   <FormattedMessage
                     description="Description column header"
                     defaultMessage="Description"
+                  />
+                </th>
+                <th scope="col">
+                  <FormattedMessage
+                    description="App version column header"
+                    defaultMessage="App version"
                   />
                 </th>
                 <th scope="col">
@@ -113,6 +147,7 @@ const FormVersionsTable = ({csrftoken, formUuid}) => {
 FormVersionsTable.propTypes = {
   csrftoken: PropTypes.string.isRequired,
   formUuid: PropTypes.string.isRequired,
+  currentRelease: PropTypes.string.isRequired,
 };
 
 export default FormVersionsTable;

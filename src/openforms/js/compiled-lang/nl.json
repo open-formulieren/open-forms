@@ -641,6 +641,12 @@
       "value": "de lijst"
     }
   ],
+  "FH2sxf": [
+    {
+      "type": 0,
+      "value": "This form version was created in an application version different from the current version. There may be missing configuration after restoring."
+    }
+  ],
   "FQswyM": [
     {
       "type": 0,
@@ -1585,6 +1591,12 @@
     {
       "type": 0,
       "value": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "gr7edY": [
+    {
+      "type": 0,
+      "value": "App version"
     }
   ],
   "gz32s2": [

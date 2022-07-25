@@ -8,7 +8,16 @@
     @include color-danger;
   }
 
+  &--warning {
+    @include color-warning;
+  }
+
   &--no-pointer {
     cursor: default;
+  }
+
+  &--as-lead {
+    padding: 0;
+    padding-right: $grid-margin-1;
   }
 }

@@ -414,6 +414,11 @@
     "description": "\"array\" operand type",
     "originalDefault": "the array"
   },
+  "FH2sxf": {
+    "defaultMessage": "This form version was created in an application version different from the current version. There may be missing configuration after restoring.",
+    "description": "FormVersion: Warning message different application versions",
+    "originalDefault": "This form version was created in an application version different from the current version. There may be missing configuration after restoring."
+  },
   "FQswyM": {
     "defaultMessage": "Modus",
     "description": "Pricing mode label",
@@ -1133,6 +1138,11 @@
     "defaultMessage": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "literals.previousText help text",
     "originalDefault": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
+  },
+  "gr7edY": {
+    "defaultMessage": "App version",
+    "description": "App version column header",
+    "originalDefault": "App version"
   },
   "gz32s2": {
     "defaultMessage": "Indien gewenst, dan kunt u een alternatieve naam opgeven voor de procesvariabele.",
