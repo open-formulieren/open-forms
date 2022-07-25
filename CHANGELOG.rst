@@ -2,6 +2,26 @@
 Changelog
 =========
 
+1.1.4 (2022-07-25)
+==================
+
+Bugfix release
+
+Note that this release includes a fix for Github security advisory
+`GHSA-g936-w68m-87j8 <https://github.com/open-formulieren/open-forms/security/advisories/GHSA-g936-w68m-87j8>`_.
+
+* Upgraded to latest Django security release
+* [#1730] Update allowed headers for nonce CSP header
+* [#1325] Added management command to check number of forms with duplicate component
+  keys (required for upgrade to 1.2 when it's available)
+* [#1723] StUF-ZDS registration: a number of configuration options are now optional
+* [#1769] StUF-ZDS registration: you can now configure the confidentiality level of a
+  document attached to the zaak
+* [#1617] Fixed crash on StUF onvolledige datum
+* [GHSA-g936-w68m-87j8] Perform additional permission checks if the form requires
+  login
+* Backported Submission.is_authenticated from #1418
+
 1.1.3 (2022-07-01)
 ==================
 
