@@ -131,6 +131,7 @@ const updateFormVariables = (
       return variable;
     });
   } else if (mutationType === 'removed') {
+    // When a component is removed, oldComponent is null
     let keysToRemove = [newComponent.key];
 
     // Case where a layout component is being removed,
@@ -141,10 +142,13 @@ const updateFormVariables = (
       });
     }
 
-    // When a component is removed, oldComponent is null
-    updatedFormVariables = updatedFormVariables.filter(
-      variable => !keysToRemove.includes(variable.key)
-    );
+    updatedFormVariables = updatedFormVariables.filter(variable => {
+      const matchKeyToRemove = keysToRemove.includes(variable.key);
+
+      // In the case that there are duplicate keys, we need to figure out which of the variables with duplicate keys
+      // should be removed. Since in a step there can't be duplicate keys, check that the formDefinition matches
+      return !matchKeyToRemove || variable.formDefinition !== formDefinition;
+    });
   }
 
   return updatedFormVariables;
