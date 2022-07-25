@@ -4592,7 +4592,19 @@ components:
           type: string
           title: Version description
           description: Description/context about this particular version.
+        appRelease:
+          type: string
+          readOnly: true
+          title: Application version
+          description: App release/version at the time this version was created.
+        appGitSha:
+          type: string
+          readOnly: true
+          title: Application commit hash
+          description: Application commit hash at the time this version was created.
       required:
+      - appGitSha
+      - appRelease
       - created
       - user
     GenericObject:

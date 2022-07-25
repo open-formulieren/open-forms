@@ -15,4 +15,6 @@ class FormVersionSerializer(serializers.HyperlinkedModelSerializer):
             "created",
             "user",
             "description",
+            "app_release",
+            "app_git_sha",
         )
