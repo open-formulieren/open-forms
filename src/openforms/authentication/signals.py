@@ -39,7 +39,10 @@ def set_auth_attribute_on_session(
     sender, instance: Submission, request: Request, **kwargs
 ):
     form_auth = request.session.get(FORM_AUTH_SESSION_KEY)
+
     if not form_auth:
+        if instance.form.login_required:
+            raise PermissionDenied(_("You must be logged in to start this form."))
         return
 
     plugin = form_auth["plugin"]

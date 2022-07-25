@@ -38,7 +38,11 @@ from ..utils import (
     remove_submission_from_session,
     remove_submission_uploads_from_session,
 )
-from .permissions import ActiveSubmissionPermission, SubmissionStatusPermission
+from .permissions import (
+    ActiveSubmissionPermission,
+    FormAuthenticationPermission,
+    SubmissionStatusPermission,
+)
 from .serializers import (
     FormDataSerializer,
     SubmissionCompletionSerializer,
@@ -74,6 +78,11 @@ logger = logging.getLogger(__name__)
             "Start a submission for a particular form. The submission is added to the "
             "user session."
         ),
+        responses={
+            201: SubmissionSerializer,
+            400: ValidationErrorSerializer,
+            403: ExceptionSerializer,
+        },
     ),
 )
 class SubmissionViewSet(
@@ -315,6 +324,10 @@ class SubmissionViewSet(
             "form step configuration. If there is no data yet for the step, the ID "
             "will be `null`. Set the step data by making a `PUT` request."
         ),
+        responses={
+            200: SubmissionStepSerializer,
+            403: ExceptionSerializer,
+        },
     )
 )
 class SubmissionStepViewSet(
@@ -327,7 +340,7 @@ class SubmissionStepViewSet(
     queryset = SubmissionStep.objects.all()
     serializer_class = SubmissionStepSerializer
     authentication_classes = ()
-    permission_classes = [ActiveSubmissionPermission]
+    permission_classes = [ActiveSubmissionPermission, FormAuthenticationPermission]
     lookup_url_kwarg = "step_uuid"
     submission_url_kwarg = "submission_uuid"
     parser_classes = [IgnoreDataFieldCamelCaseJSONParser]
@@ -348,7 +361,7 @@ class SubmissionStepViewSet(
         qs = SubmissionStep.objects.filter(
             submission__uuid=submission_uuid,
             form_step__uuid=self.kwargs["step_uuid"],
-        )
+        ).select_related("submission", "submission__form")
         try:
             submission_step = qs.get()
         except SubmissionStep.DoesNotExist:
@@ -460,7 +473,10 @@ class SubmissionStepViewSet(
         summary=_("Apply/check form logic"),
         description=_("Apply/check the logic rules specified on the form step."),
         request=FormDataSerializer,
-        responses={200: SubmissionStateLogicSerializer},
+        responses={
+            200: SubmissionStateLogicSerializer,
+            403: ExceptionSerializer,
+        },
     )
     @action(
         detail=True,
