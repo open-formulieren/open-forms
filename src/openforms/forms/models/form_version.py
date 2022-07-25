@@ -30,6 +30,14 @@ class FormVersionManager(models.Manager):
         )
 
 
+def get_app_release():
+    return settings.RELEASE or ""
+
+
+def get_app_git_sha():
+    return settings.GIT_SHA or ""
+
+
 class FormVersion(models.Model):
     uuid = models.UUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
     form = models.ForeignKey(
@@ -58,6 +66,22 @@ class FormVersion(models.Model):
         _("version description"),
         blank=True,
         help_text=_("Description/context about this particular version."),
+    )
+    app_release = models.CharField(
+        _("application version"),
+        max_length=50,
+        blank=True,
+        help_text=_("App release/version at the time this version was created."),
+        editable=False,
+        default=get_app_release,
+    )
+    app_git_sha = models.CharField(
+        _("application commit hash"),
+        max_length=50,
+        blank=True,
+        help_text=_("Application commit hash at the time this version was created."),
+        editable=False,
+        default=get_app_git_sha,
     )
 
     objects = FormVersionManager()
