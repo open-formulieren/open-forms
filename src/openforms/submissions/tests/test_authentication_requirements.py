@@ -10,7 +10,7 @@ did not authenticate. This applies to:
 
 If authentication is optional, then this behaviour does not apply.
 """
-from django.test import tag
+from django.test import override_settings, tag
 
 from rest_framework import status
 from rest_framework.reverse import reverse, reverse_lazy
@@ -24,6 +24,7 @@ from .mixins import SubmissionsMixin
 
 
 @tag("GHSA-g936-w68m-87j8")
+@override_settings(ALLOWED_HOSTS=["testserver", "testserver.com"])
 class AuthOptionalTests(SubmissionsMixin, APITestCase):
     endpoint = reverse_lazy("api:submission-list")
 
@@ -99,6 +100,7 @@ class AuthOptionalTests(SubmissionsMixin, APITestCase):
 
 
 @tag("GHSA-g936-w68m-87j8")
+@override_settings(ALLOWED_HOSTS=["testserver", "testserver.com"])
 class AuthRequiredTests(SubmissionsMixin, APITestCase):
     endpoint = reverse_lazy("api:submission-list")
 
