@@ -2,8 +2,8 @@
 {% load i18n static admin_urls admin_list forms_admin_list %}
 
 {% block extrastyle %}
+<link rel="stylesheet" type="text/css" href=" {% static "admin/css/changelists.css" %}">
 <link rel="stylesheet" href="{% static "bundles/core-css.css" %}">
-<link rel="stylesheet" type="text/css" href="/static/admin/css/changelists.css">
 {{ block.super }}
 {% endblock %}
 
@@ -24,82 +24,82 @@
         {% else %}
             <div class="module filtered" id="changelist">
                 <div class="changelist-form-container">
-                    <div id="changelist-filter">
+                    {% for log in logs_activity  %}
+                    <fieldset class="module aligned collapse collapsed fieldset-log">
+                        <h2>
+                            <time datetime="{{ log.timestamp.isoformat }}" title="{{ log.timestamp|date:'Y-m-d H:i:s' }}">
+                                {% blocktrans with since=log.timestamp|timesince %}{{ since }} ago{% endblocktrans %}
+                            </time>
+                            - {% trans 'Logic' %} -
+                        </h2>
+                        <h4> {% trans "Variables" %} </h4>
+                        <table class="logic-logs logic-logs--variables">
+                            <thead>
+                                <th class="logic-logs__col-header logic-logs__col-header--name"> {% trans "Property name" %} </th>
+                                <th class="logic-logs__col-header logic-logs__col-header--value"> {% trans "Value" %} </th>
+                            </thead>
+                            <tbody>
+                                {% for key, value in log.extra_data.input_data.items  %}
+                                <tr>
+                                    <td>{{ value.step_name }}: <code>{{ key }}</code> &#40;{{ value.label }}&#41;</td>
+                                    <td>{{ value.actual_value }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <h4> {% trans "Logic rules" %} </h4>
+                        <table class="logic-logs logic-logs--rules">
+                            <thead>
+                                <th class="logic-logs__col-header logic-logs__col-header--rule"> {% trans "Rule" %} </th>
+                                <th class="logic-logs__col-header logic-logs__col-header--trigger"> {% trans "Triggered" %} </th>
+                                <th> {% trans "Action" %} </th>
+                            </thead>
+                            <tbody>
+                                {% for rule in log.extra_data.evaluated_rules %}
+                                        <tr class="logic-logs__row-body logic-logs__row-body--hidden">
+                                            <td>
+                                                {{ rule.readable_rule }}
+                                            </td>
+                                            <td class="logic-logs__col-body logic-logs__col-body--trigger-{% if rule.triggger %}yes{% else %}no{% endif %}">{{ rule.trigger|yesno|capfirst }} </td>
+                                            <td>
+                                            {% for action in rule.targeted_components %}
+                                                {% if action.key %}
+                                                    <b>{{ action.type_display }}</b>: {{ action.step_name }}: <code>{{ action.key }}</code> ({{ action.label }}):
+                                                        {% if not 'state' in action %}
+                                                            <i>{{ action.value }}</i>
+                                                        {% else %}
+                                                            <i>{{ action.value }} = {{ action.state|yesno|capfirst }}</i>
+                                                        {% endif %}
+                                                {% else %}
+                                                    <b>{{ action.type_display }}</b>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </td>
+                                        </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </fieldset>
+                {% endfor %}
+                </div>
+                <div id="changelist-filter">
                     <h2>{% trans "Filter" %}</h2>
-                        <h3> {% trans "Rule is triggered" %} </h3>
-                        <ul class="logic-rules-filter">
-                            <li>
-                                <a class="logic-rules-filter__link logic-rules-filter__link--all" href="" data-trigger="{% trans 'All' %}" title="{% trans "All" %}">{% trans "All" %}</a>
-                            </li>
-                            <li class="selected">
-                                <a class="logic-rules-filter__link" href="" data-trigger="{% trans 'Yes' %}" title="{% trans "Yes" %}">{% trans "Yes" %}</a>
-                            </li>
-                            <li>
-                                <a class="logic-rules-filter__link" href="" data-trigger="{% trans 'No' %}" title="{% trans "No" %}">{% trans "No" %}</a>
-                            </li>  
-                        </ul>
-                    </div>
+                    <h3> {% trans "Rule is triggered" %} </h3>
+                    <ul class="logic-rules-filter">
+                        <li>
+                            <a class="logic-rules-filter__link" href="#" data-trigger="all">{% trans "All" %}</a>
+                        </li>
+                        <li class="selected">
+                            <a class="logic-rules-filter__link" href="#" data-trigger="yes">{% trans "Yes" %}</a>
+                        </li>
+                        <li>
+                            <a class="logic-rules-filter__link" href="#" data-trigger="no">{% trans "No" %}</a>
+                        </li>  
+                    </ul>
                 </div>
             </div>
-            {% for log in logs_activity  %}
-                <fieldset class="module aligned collapse collapsed fieldset-log">
-                    <h2>
-                        <time datetime="{{ log.timestamp.isoformat }}" title="{{ log.timestamp|date:'Y-m-d H:i:s' }}">
-                            {% blocktrans with since=log.timestamp|timesince %}{{ since }} ago{% endblocktrans %}
-                        </time>
-                        - {% trans 'Logic' %} -
-                    </h2>
-                    <h4> {% trans "Variables" %} </h4>
-                    <table class="logic-logs logic-logs--variables">
-                        <thead>
-                            <th class="logic-logs__col-header logic-logs__col-header--name"> {% trans "Property name" %} </th>
-                            <th class="logic-logs__col-header logic-logs__col-header--value"> {% trans "Value" %} </th>
-                        </thead>
-                        <tbody>
-                            {% for key, value in log.extra_data.input_data.items  %}
-                            <tr>
-                                <td>{{ value.step_name }}: <code>{{ key }}</code> &#40;{{ value.label }}&#41;</td>
-                                <td>{{ value.actual_value }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <h4> {% trans "Logic rules" %} </h4>
-                    <table class="logic-logs logic-logs--rules">
-                        <thead>
-                            <th class="logic-logs__col-header logic-logs__col-header--rule"> {% trans "Rule" %} </th>
-                            <th class="logic-logs__col-header logic-logs__col-header--trigger"> {% trans "Triggered" %} </th>
-                            <th> {% trans "Action" %} </th>
-                        </thead>
-                        <tbody>
-                            {% for rule in log.extra_data.evaluated_rules %}
-                                    <tr class="logic-logs__row-body logic-logs__row-body--hidden">
-                                        <td>
-                                            {{ rule.readable_rule }}
-                                        </td>
-                                        <td class="logic-logs__col-body logic-logs__col-body--trigger-{{ rule.trigger|yesno|capfirst }}">{{ rule.trigger|yesno|capfirst }} </td>
-                                        <td>
-                                        {% for action in rule.targeted_components %}
-                                            {% if action.key %}
-                                                <b>{{ action.type_display }}</b>: {{ action.step_name }}: <code>{{ action.key }}</code> ({{ action.label }}):
-                                                    {% if not 'state' in action %}
-                                                        <i>{{ action.value }}</i>
-                                                    {% else %}
-                                                        <i>{{ action.value }} = {{ action.state|yesno|capfirst }}</i>
-                                                    {% endif %}
-                                            {% else %}
-                                                <b>{{ action.type_display }}</b>
-                                            {% endif %}
-                                        {% endfor %}
-                                        </td>
-                                    </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </fieldset>
-            {% endfor %}
         {% endif %}
     {% endblock %}
+    <script src="{% static "admin/js/collapse.js" %}"></script>
     <script src="{% static "bundles/core-js.js" %}"></script>
-    <script src="/static/admin/js/collapse.js"></script>
 {% endblock %}
