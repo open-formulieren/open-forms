@@ -1,5 +1,5 @@
 {% extends "admin/change_form.html" %}
-{% load i18n static admin_urls admin_list forms_admin_list %}
+{% load i18n static admin_urls %}
 
 {% block extrastyle %}
 <link rel="stylesheet" type="text/css" href=" {% static "admin/css/changelists.css" %}">
@@ -60,7 +60,7 @@
                                             <td>
                                                 {{ rule.readable_rule }}
                                             </td>
-                                            <td class="logic-logs__col-body logic-logs__col-body--trigger-{% if rule.triggger %}yes{% else %}no{% endif %}">{{ rule.trigger|yesno|capfirst }} </td>
+                                            <td class="logic-logs__col-body logic-logs__col-body--trigger-{% if rule.trigger %}yes{% else %}no{% endif %}">{{ rule.trigger|yesno|capfirst }} </td>
                                             <td>
                                             {% for action in rule.targeted_components %}
                                                 {% if action.key %}
