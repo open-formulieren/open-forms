@@ -22,8 +22,8 @@ if TYPE_CHECKING:  # pragma: nocover
 @dataclass
 class SubmissionValueVariablesState:
     submission: "Submission"
-    _variables: Dict[str, "SubmissionValueVariable"] = None
-    _static_data: Dict[str, Any] = None
+    _variables: Optional[Dict[str, "SubmissionValueVariable"]] = None
+    _static_data: Optional[Dict[str, Any]] = None
 
     def __init__(self, submission: "Submission"):
         self.submission = submission
@@ -144,10 +144,10 @@ class SubmissionValueVariablesState:
             static_form_variables = self.submission.form.formvariable_set.filter(
                 source=FormVariableSources.static
             )
-            static_variables_data = {}
-            for variable in static_form_variables:
-                static_variables_data[variable.key] = variable.get_initial_value()
-            self._static_data = static_variables_data
+            self._static_data = {
+                variable.key: variable.get_initial_value()
+                for variable in static_form_variables
+            }
         return self._static_data
 
 

@@ -1,3 +1,4 @@
+import copy
 from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Dict
 
@@ -43,7 +44,7 @@ class DataForLogic:
     """Manage data during logic evaluation
 
     This class contains the initial data that was passed to the evaluate_form_logic function
-    (submission data plus any data entered by the user that hasnt been saved yet).
+    (submission data plus any data entered by the user that hasn't been saved yet).
     It then contains any data added by the logic rules and the static data for this submission.
     """
 
@@ -52,15 +53,15 @@ class DataForLogic:
     static_data: dict
 
     def __init__(self, initial_data, static_data):
-        self.initial_data = {**initial_data}
+        self.initial_data = copy.deepcopy(initial_data)
         self.static_data = static_data
-        self._data = {**initial_data}
+        self._data = copy.deepcopy(initial_data)
 
-    def update_data(self, new_data: dict):
+    def update_data(self, new_data: dict) -> None:
         self._data = {**self.initial_data, **new_data}
 
     @property
-    def data(self):
+    def data(self) -> dict:
         return {**self._data, **self.static_data}
 
 
@@ -99,7 +100,9 @@ def evaluate_form_logic(
 
     # merge the default values and supplied data - supplied data overwrites defaults
     # if keys are present in both dicts
-    data = DataForLogic(initial_data={**defaults, **data}, static_data=static_data)
+    data_container = DataForLogic(
+        initial_data={**defaults, **data}, static_data=static_data
+    )
 
     if not step.data:
         step.data = DirtyData({})
@@ -137,7 +140,7 @@ def evaluate_form_logic(
             )
             if step_index < trigger_from_index:
                 continue
-        trigger_rule = jsonLogic(rule.json_logic_trigger, data.data)
+        trigger_rule = jsonLogic(rule.json_logic_trigger, data_container.data)
         evaluated_rules.append({"rule": rule, "trigger": bool(trigger_rule)})
         if not trigger_rule:
             continue
@@ -145,12 +148,12 @@ def evaluate_form_logic(
             action_details = action["action"]
             # TODO this action will be replaced by changing the value of variables
             if action_details["type"] == LogicActionTypes.value:
-                new_value = jsonLogic(action_details["value"], data.data)
+                new_value = jsonLogic(action_details["value"], data_container.data)
                 configuration = set_property_value(
                     configuration, action["component"], "value", new_value
                 )
                 updated_step_data[action["component"]] = new_value
-                data.update_data(updated_step_data)
+                data_container.update_data(updated_step_data)
             elif action_details["type"] == LogicActionTypes.property:
                 property_name = action_details["property"]["value"]
                 property_value = action_details["state"]
@@ -174,21 +177,23 @@ def evaluate_form_logic(
                     updated_step_data = {}
                     step._is_applicable = False
             elif action_details["type"] == LogicActionTypes.variable:
-                new_value = jsonLogic(action_details["value"], data.data)
+                new_value = jsonLogic(action_details["value"], data_container.data)
                 variable_key = action["variable"]
                 updated_step_data[variable_key] = new_value
-                data.update_data(updated_step_data)
+                data_container.update_data(updated_step_data)
     step.data = DirtyData(updated_step_data)
 
     # Logging the rules
-    logevent.submission_logic_evaluated(submission, evaluated_rules, data.data)
+    logevent.submission_logic_evaluated(
+        submission, evaluated_rules, data_container.data
+    )
 
     if dirty:
         # only keep the changes in the data, so that old values do not overwrite otherwise
         # debounced client-side data changes
         data_diff = {}
         for key, new_value in step.data.items():
-            original_value = data.initial_data.get(key)
+            original_value = data_container.initial_data.get(key)
             # Reset the value of any field that may have become hidden again after evaluating the logic
             if original_value:
                 component = get_component(configuration, key)
