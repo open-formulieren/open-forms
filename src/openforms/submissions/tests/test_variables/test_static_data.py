@@ -36,9 +36,6 @@ class StaticVariablesTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
                 ]
             },
         )
-        FormVariableFactory.create(
-            form=form, key="now", source=FormVariableSources.static, initial_value="now"
-        )
         FormVariableFactory.create(form=form, source=FormVariableSources.user_defined)
 
         form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
@@ -95,9 +92,6 @@ class StaticVariablesTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
             },
         )
         FormVariableFactory.create(
-            form=form, key="now", source=FormVariableSources.static, initial_value="now"
-        )
-        FormVariableFactory.create(
             form=form,
             key="isJohn",
             source=FormVariableSources.user_defined,
@@ -148,9 +142,6 @@ class StaticVariablesTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
                     },
                 ]
             },
-        )
-        FormVariableFactory.create(
-            form=form, key="now", source=FormVariableSources.static, initial_value="now"
         )
 
         submission = SubmissionFactory.create(form=form)

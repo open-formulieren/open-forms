@@ -54,9 +54,6 @@ class ImportExportTests(TestCase):
         FormVariableFactory.create(
             form=form, source=FormVariableSources.user_defined, key="test-user-defined"
         )
-        FormVariableFactory.create(
-            form=form, source=FormVariableSources.static, key="test-static"
-        )
 
         call_command("export", form.pk, self.filepath)
 

@@ -79,11 +79,11 @@ class FormVariableViewsetTest(APITestCase):
             {
                 "form": form_url,
                 "form_definition": form_definition_url,
-                "name": "Now",
-                "key": "now",
-                "source": FormVariableSources.static,
-                "data_type": FormVariableDataTypes.datetime,
-                "initial_value": "now",
+                "name": "variable3",
+                "key": "variable3",
+                "source": FormVariableSources.user_defined,
+                "data_type": FormVariableDataTypes.string,
+                "initial_value": None,
             },  # New variable
         ]
 
@@ -106,9 +106,9 @@ class FormVariableViewsetTest(APITestCase):
         form_variables = variables.filter(form=form)
 
         self.assertEqual(2, form_variables.count())
-        self.assertTrue(form_variables.filter(key="now").exists())
         self.assertTrue(form_variables.filter(key="variable1").exists())
         self.assertFalse(form_variables.filter(key="variable2").exists())
+        self.assertTrue(form_variables.filter(key="variable3").exists())
 
     def test_unique_together_key_form(self):
         user = StaffUserFactory.create(user_permissions=["change_form"])
@@ -129,7 +129,7 @@ class FormVariableViewsetTest(APITestCase):
                 "form_definition": form_definition_url,
                 "key": "test-not-unique",
                 "name": "Test 1",
-                "source": FormVariableSources.static,
+                "source": FormVariableSources.user_defined,
                 "data_type": FormVariableDataTypes.string,
                 "initial_value": "",
             },
@@ -138,7 +138,7 @@ class FormVariableViewsetTest(APITestCase):
                 "form_definition": form_definition_url,
                 "name": "Test 2",
                 "key": "test-not-unique",
-                "source": FormVariableSources.static,
+                "source": FormVariableSources.user_defined,
                 "data_type": FormVariableDataTypes.string,
                 "initial_value": "",
             },

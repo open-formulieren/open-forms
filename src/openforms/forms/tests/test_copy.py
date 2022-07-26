@@ -220,14 +220,11 @@ class CopyFormWithVarsTest(VariablesTestMixin, APITestCase):
             },
         )
         FormVariableFactory.create(
-            form=form, source=FormVariableSources.static, key="now"
-        )
-        FormVariableFactory.create(
             form=form, source=FormVariableSources.user_defined, key="bla"
         )
 
         self.assertEqual(1, Form.objects.count())
-        self.assertEqual(4, FormVariable.objects.filter(form=form).count())
+        self.assertEqual(3, FormVariable.objects.filter(form=form).count())
 
         url = reverse("api:form-copy", args=(form.uuid,))
         response = self.client.post(
@@ -243,12 +240,9 @@ class CopyFormWithVarsTest(VariablesTestMixin, APITestCase):
         form_copy = forms.get(~Q(slug__in=["test-copying-with-vars"]))
         variables_copy = form_copy.formvariable_set.all()
 
-        self.assertEqual(4, variables_copy.count())
+        self.assertEqual(3, variables_copy.count())
         self.assertEqual(
             2, variables_copy.filter(source=FormVariableSources.component).count()
-        )
-        self.assertEqual(
-            1, variables_copy.filter(source=FormVariableSources.static).count()
         )
         self.assertEqual(
             1, variables_copy.filter(source=FormVariableSources.user_defined).count()
