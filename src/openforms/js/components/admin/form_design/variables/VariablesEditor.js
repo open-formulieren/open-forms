@@ -8,6 +8,7 @@ import {VARIABLE_SOURCES} from './constants';
 import UserDefinedVariables from './UserDefinedVariables';
 import VariablesTable from './VariablesTable';
 import Tab from '../Tab';
+import StaticData from './StaticData';
 
 const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
   const userDefinedVariables = variables.filter(
@@ -28,9 +29,6 @@ const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
         <Tabs>
           <TabList>
             <Tab>
-              <FormattedMessage defaultMessage="Static" description="Static variables tab title" />
-            </Tab>
-            <Tab>
               <FormattedMessage
                 defaultMessage="Component"
                 description="Component variables tab title"
@@ -46,13 +44,11 @@ const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
                 description="User defined variables tab title"
               />
             </Tab>
+            <Tab>
+              <FormattedMessage defaultMessage="Static" description="Static variables tab title" />
+            </Tab>
           </TabList>
 
-          <TabPanel>
-            <VariablesTable
-              variables={variables.filter(variable => variable.source === VARIABLE_SOURCES.static)}
-            />
-          </TabPanel>
           <TabPanel>
             <VariablesTable
               variables={variables.filter(
@@ -69,6 +65,9 @@ const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
               onDelete={onDelete}
               onChange={onChange}
             />
+          </TabPanel>
+          <TabPanel>
+            <StaticData />
           </TabPanel>
         </Tabs>
       </div>

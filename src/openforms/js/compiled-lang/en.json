@@ -547,6 +547,12 @@
       "value": "Internal name of the form definition used in this form step"
     }
   ],
+  "C6xxed": [
+    {
+      "type": 0,
+      "value": "Example initial"
+    }
+  ],
   "CN9j+L": [
     {
       "type": 0,

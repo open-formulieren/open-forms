@@ -29,7 +29,6 @@ import {
   LOGICS_ENDPOINT,
   PRICE_RULES_ENDPOINT,
   CATEGORIES_ENDPOINT,
-  STATIC_VARIABLES_ENDPOINT,
 } from './constants';
 import {loadPlugins, loadForm, saveCompleteForm} from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
@@ -824,9 +823,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
       endpoint: `${PRICE_RULES_ENDPOINT}?form=${formUuid}`,
       stateVar: 'priceRules',
     });
-  } else {
-    // only fetch this data if we're creating a new form
-    pluginsToLoad.push({endpoint: STATIC_VARIABLES_ENDPOINT, stateVar: 'formVariables'});
   }
 
   const {loading} = useAsync(async () => {
