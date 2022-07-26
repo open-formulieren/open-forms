@@ -11,6 +11,7 @@ from openforms.formio.service import (
 )
 
 from ...models import Form, FormDefinition
+from ...validators import validate_form_definition_is_reusable
 from ..validators import FormIOComponentsValidator
 
 
@@ -89,6 +90,11 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
                 "validators": [FormIOComponentsValidator()],
             },
         }
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        validate_form_definition_is_reusable(self.instance, **attrs)
+        return attrs
 
 
 class FormDefinitionDetailSerializer(FormDefinitionSerializer):

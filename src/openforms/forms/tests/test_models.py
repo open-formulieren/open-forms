@@ -354,6 +354,15 @@ class FormDefinitionTestCase(TestCase):
             FormDefinition.objects.filter(pk=step.form_definition.pk).exists()
         )
 
+    def test_form_definition_is_reusable_fails_with_multiple_forms(self):
+        step = FormStepFactory.create()
+        FormStepFactory.create(
+            form_definition=step.form_definition,
+        )
+        with self.assertRaises(ValidationError):
+            step.form_definition.is_reusable = False
+            step.form_definition.clean()
+
 
 class FormStepTestCase(TestCase):
     def test_str(self):

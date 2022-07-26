@@ -158,3 +158,9 @@ class FormDefinition(models.Model):
     class Meta:
         verbose_name = _("Form definition")
         verbose_name_plural = _("Form definitions")
+
+    def clean(self):
+        from ..validators import validate_form_definition_is_reusable
+
+        super().clean()
+        validate_form_definition_is_reusable(self)

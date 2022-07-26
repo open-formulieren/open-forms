@@ -1,6 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
+from openforms.forms.models import FormDefinition
+
 
 def validate_formio_js_schema(value: dict):
     """
@@ -43,4 +45,25 @@ def validate_not_deleted(form):
         raise ValidationError(
             _("Form is deleted."),
             code="invalid",
+        )
+
+
+def validate_form_definition_is_reusable(
+    form_definition: FormDefinition, **kwargs
+) -> None:
+    """
+    Validate the integrity of the ``is_reusable`` flag.
+
+    ``is_reusable`` can only be switched from true to false if the form definition is used in less than
+    two distinct forms.
+    """
+    is_reusable = kwargs.get("is_reusable", form_definition.is_reusable)
+
+    if is_reusable is False and form_definition.used_in.count() > 1:
+        raise ValidationError(
+            {
+                "is_reusable": _(
+                    "This form definition cannot be marked as 'not-reusable' as it is used in multiple existing forms."
+                ),
+            }
         )
