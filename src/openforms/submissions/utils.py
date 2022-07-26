@@ -3,7 +3,6 @@ from typing import Any
 
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
-from django.db.models import Q
 
 from openforms.appointments.service import get_confirmation_mail_suffix
 from openforms.emails.confirmation_emails import (
@@ -157,7 +156,6 @@ def persist_user_defined_variables_unrelated_to_a_step(
 ) -> None:
     keys_in_data = [key for key, value in data.items()]
     form_vars_keys = FormVariable.objects.filter(
-        ~Q(source=FormVariableSources.static),
         form=submission.form,
         key__in=keys_in_data,
         form_definition__isnull=True,

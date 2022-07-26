@@ -12,8 +12,8 @@ from openforms.utils.api.views import ListMixin
 
 @extend_schema_view(
     get=extend_schema(
-        summary=_("Get static form variables"),
-        description=_("List the static form variables that every form should have"),
+        summary=_("Get static data"),
+        description=_("List the static data that will be associated with every form"),
         responses={
             200: FormVariableSerializer(many=True),
             403: ExceptionSerializer,
@@ -26,4 +26,4 @@ class StaticFormVariablesView(ListMixin, APIView):
     serializer_class = FormVariableSerializer
 
     def get_objects(self):
-        return FormVariable.get_default_static_variables()
+        return FormVariable.get_static_data()

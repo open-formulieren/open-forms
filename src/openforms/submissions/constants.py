@@ -34,7 +34,6 @@ class ProcessingResults(DjangoChoices):
 
 
 class SubmissionValueVariableSources(DjangoChoices):
-    static = ChoiceItem("static", _("Static"))
     sensitive_data_cleaner = ChoiceItem(
         "sensitive_data_cleaner", _("Sensitive data cleaner")
     )

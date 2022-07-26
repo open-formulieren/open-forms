@@ -42,7 +42,6 @@ class SubmissionAllowedChoices(DjangoChoices):
 class FormVariableSources(DjangoChoices):
     component = ChoiceItem("component", _("Component"))
     user_defined = ChoiceItem("user_defined", _("User defined"))
-    static = ChoiceItem("static", _("Static"))
 
 
 class FormVariableDataTypes(DjangoChoices):

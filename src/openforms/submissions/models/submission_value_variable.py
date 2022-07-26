@@ -7,7 +7,6 @@ from django.utils.translation import gettext_lazy as _
 
 from glom import Assign, PathAccessError, glom
 
-from openforms.forms.constants import FormVariableSources
 from openforms.forms.models.form_variable import FormVariable
 
 from ..constants import SubmissionValueVariableSources
@@ -141,12 +140,9 @@ class SubmissionValueVariablesState:
     #  data returned from DigiD/eHerkenning into static vars
     def static_data(self, request: "Request") -> dict:
         if self._static_data is None:
-            static_form_variables = self.submission.form.formvariable_set.filter(
-                source=FormVariableSources.static
-            )
             self._static_data = {
-                variable.key: variable.get_initial_value()
-                for variable in static_form_variables
+                variable.key: variable.initial_value
+                for variable in FormVariable.get_static_data()
             }
         return self._static_data
 
