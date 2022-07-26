@@ -21,23 +21,24 @@ class FormVariableListSerializer(serializers.ListSerializer):
         static_data_keys = [item.key for item in FormVariable.get_static_data()]
 
         existing_form_key_combinations = []
-        for item in attrs:
+        errors = {}
+        for index, item in enumerate(attrs):
             key_form_combination = (item["key"], item["form"].slug)
             if key_form_combination in existing_form_key_combinations:
-                raise ValidationError(
-                    _("The form and key attributes must be unique together"),
-                    code="unique",
-                )
+                errors[f"{index}.key"] = _("Key not unique within form")
+                continue
 
             if item["key"] in static_data_keys:
-                raise ValidationError(
-                    _(
-                        "The variable key cannot be equal to any of the following values: {static_data}."
-                    ).format(static_data=", ".join(static_data_keys)),
-                    code="unique",
-                )
+                errors[f"{index}.key"] = _(
+                    "The variable key cannot be equal to any of the following values: {static_data}."
+                ).format(static_data=", ".join(static_data_keys))
+                continue
 
             existing_form_key_combinations.append(key_form_combination)
+
+        if errors:
+            raise ValidationError(errors, code="unique")
+
         return attrs
 
 
