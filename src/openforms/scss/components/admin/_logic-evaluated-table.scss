@@ -1,6 +1,12 @@
 .logic-logs {
   width: 100%;
 
+  .logic-logs__col-header {
+    .text {
+      padding: 8px;
+    }
+  }
+
   &--variables {
     .logic-logs__col-header {
       &--name {

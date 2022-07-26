@@ -35,8 +35,12 @@
                         <h4> {% trans "Variables" %} </h4>
                         <table class="logic-logs logic-logs--variables">
                             <thead>
-                                <th class="logic-logs__col-header logic-logs__col-header--name"> {% trans "Property name" %} </th>
-                                <th class="logic-logs__col-header logic-logs__col-header--value"> {% trans "Value" %} </th>
+                                <th class="logic-logs__col-header logic-logs__col-header--name"> 
+                                    <div class="text">{% trans "Property name" %}</div>
+                                </th>
+                                <th class="logic-logs__col-header logic-logs__col-header--value"> 
+                                    <div class="text">{% trans "Value" %}</div>
+                                </th>
                             </thead>
                             <tbody>
                                 {% for key, value in log.extra_data.input_data.items  %}
@@ -50,9 +54,15 @@
                         <h4> {% trans "Logic rules" %} </h4>
                         <table class="logic-logs logic-logs--rules">
                             <thead>
-                                <th class="logic-logs__col-header logic-logs__col-header--rule"> {% trans "Rule" %} </th>
-                                <th class="logic-logs__col-header logic-logs__col-header--trigger"> {% trans "Triggered" %} </th>
-                                <th> {% trans "Action" %} </th>
+                                <th class="logic-logs__col-header logic-logs__col-header--rule"> 
+                                    <div class="text">{% trans "Rule" %}</div>
+                                </th>
+                                <th class="logic-logs__col-header logic-logs__col-header--trigger">
+                                    <div class="text">{% trans "Triggered" %}</div>
+                                </th>
+                                <th> 
+                                    <div class="text">{% trans "Action" %}</div>
+                                </th>
                             </thead>
                             <tbody>
                                 {% for rule in log.extra_data.evaluated_rules %}
