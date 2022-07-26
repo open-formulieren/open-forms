@@ -12,11 +12,10 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
-from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ...models import Submission
 from ..factories import SubmissionFactory
-from ..mixins import SubmissionsMixin
+from ..mixins import SubmissionsMixin, VariablesTestMixin
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)

@@ -1,4 +1,3 @@
-import {STATIC_VARIABLES_ENDPOINT} from '../constants';
 import React, {useState} from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import {FormattedMessage} from 'react-intl';
@@ -7,6 +6,7 @@ import {get} from 'utils/fetch';
 import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 import ErrorList from 'components/admin/forms/ErrorList';
 import Loader from 'components/admin/Loader';
+import {STATIC_VARIABLES_ENDPOINT} from 'components/admin/form_design/constants';
 
 const StaticData = () => {
   const [staticData, setStaticData] = useState([]);

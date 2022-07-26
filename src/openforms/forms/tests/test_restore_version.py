@@ -8,17 +8,17 @@ from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
 
-from openforms.forms.models import FormDefinition, FormStep, FormVersion
-from openforms.forms.tests.factories import (
+from openforms.submissions.tests.mixins import VariablesTestMixin
+
+from ..constants import FormVariableDataTypes, FormVariableSources
+from ..models import FormDefinition, FormStep, FormVersion
+from .factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
     FormVariableFactory,
+    FormVersionFactory,
 )
-
-from ...submissions.tests.mixins import VariablesTestMixin
-from ..constants import FormVariableDataTypes, FormVariableSources
-from .factories import FormVersionFactory
 from .utils import EXPORT_BLOB
 
 

@@ -3,11 +3,11 @@ import {TabList, TabPanel, Tabs} from 'react-tabs';
 import {FormattedMessage} from 'react-intl';
 
 import Fieldset from 'components/admin/forms/Fieldset';
+import Tab from 'components/admin/form_design/Tab';
 
 import {VARIABLE_SOURCES} from './constants';
 import UserDefinedVariables from './UserDefinedVariables';
 import VariablesTable from './VariablesTable';
-import Tab from '../Tab';
 import StaticData from './StaticData';
 
 const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
