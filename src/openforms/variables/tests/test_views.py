@@ -48,6 +48,8 @@ class GetStaticVariablesViewTest(APITestCase):
         self.assertEqual(1, len(data))
         self.assertEqual(
             {
+                "form": None,
+                "form_definition": None,
                 "name": "Now",
                 "key": "now",
                 "source": "",

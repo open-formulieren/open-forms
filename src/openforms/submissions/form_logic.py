@@ -185,7 +185,9 @@ def evaluate_form_logic(
 
     # Logging the rules
     logevent.submission_logic_evaluated(
-        submission, evaluated_rules, data_container.data
+        submission,
+        evaluated_rules,
+        {**data_container.static_data, **data_container.initial_data},
     )
 
     if dirty:

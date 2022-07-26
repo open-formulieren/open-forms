@@ -18,6 +18,8 @@ class FormVariableListSerializer(serializers.ListSerializer):
         return FormVariable.objects.bulk_create(variables_to_create)
 
     def validate(self, attrs):
+        static_data_keys = [item.key for item in FormVariable.get_static_data()]
+
         existing_form_key_combinations = []
         for item in attrs:
             key_form_combination = (item["key"], item["form"].slug)
@@ -26,6 +28,15 @@ class FormVariableListSerializer(serializers.ListSerializer):
                     _("The form and key attributes must be unique together"),
                     code="unique",
                 )
+
+            if item["key"] in static_data_keys:
+                raise ValidationError(
+                    _(
+                        "The variable key cannot be equal to any of the following values: {static_data}."
+                    ).format(static_data=", ".join(static_data_keys)),
+                    code="unique",
+                )
+
             existing_form_key_combinations.append(key_form_combination)
         return attrs
 

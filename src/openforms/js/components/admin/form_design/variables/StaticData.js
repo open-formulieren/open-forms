@@ -1,30 +1,12 @@
-import React, {useState} from 'react';
-import useAsync from 'react-use/esm/useAsync';
+import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import {get} from 'utils/fetch';
 import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
-import ErrorList from 'components/admin/forms/ErrorList';
-import Loader from 'components/admin/Loader';
-import {STATIC_VARIABLES_ENDPOINT} from 'components/admin/form_design/constants';
+import {FormContext} from 'components/admin/form_design/Context';
 
 const StaticData = () => {
-  const [staticData, setStaticData] = useState([]);
-  const [error, setError] = useState(null);
-
-  const {loading} = useAsync(async () => {
-    const response = await get(STATIC_VARIABLES_ENDPOINT);
-    if (!response.ok) {
-      setError(response.data);
-      return;
-    }
-
-    setStaticData(response.data);
-  }, []);
-
-  if (loading) {
-    return <Loader />;
-  }
+  const formContext = useContext(FormContext);
+  const staticData = formContext.staticVariables;
 
   const headColumns = (
     <>
@@ -56,7 +38,6 @@ const StaticData = () => {
 
   return (
     <div className="variables-table">
-      {error && <ErrorList>{error}</ErrorList>}
       <ChangelistTableWrapper headColumns={headColumns} extraModifiers={['fixed']}>
         {staticData.map((item, index) => {
           return (

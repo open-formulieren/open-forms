@@ -59,7 +59,7 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
         #    variables with prefill data, so the defaultValue on the components can be set.
         # 2. Retrieve all logic rules related to a form
         # 3. Load submission state: Retrieve formsteps,
-        # 4.  Load submission state: Retrieve submission steps
+        # 4. Load submission state: Retrieve submission steps
         with self.assertNumQueries(4):
             evaluate_form_logic(submission, submission_step2, data)
 
@@ -390,8 +390,8 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
         # 3. renderer get_children: get submission steps
         # 4. Retrieve prefill data
         # 5. Retrieve logic rules
-        # 6.  Load submission state: Retrieve formsteps,
-        # 7.  Load submission state: Retrieve submission steps
+        # 6. Load submission state: Retrieve formsteps,
+        # 7. Load submission state: Retrieve submission steps
         with self.assertNumQueries(7):
             nodes = [node for node in renderer]
 

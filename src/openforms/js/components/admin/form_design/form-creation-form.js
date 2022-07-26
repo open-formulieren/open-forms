@@ -29,6 +29,7 @@ import {
   LOGICS_ENDPOINT,
   PRICE_RULES_ENDPOINT,
   CATEGORIES_ENDPOINT,
+  STATIC_VARIABLES_ENDPOINT,
 } from './constants';
 import {loadPlugins, loadForm, saveCompleteForm} from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
@@ -114,6 +115,7 @@ const initialFormState = {
   priceRules: [],
   priceRulesToDelete: [],
   formVariables: [],
+  staticVariables: [],
   // backend error handling
   validationErrors: [],
   tabsWithErrors: [],
@@ -813,6 +815,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     {endpoint: AUTH_PLUGINS_ENDPOINT, stateVar: 'availableAuthPlugins'},
     {endpoint: CATEGORIES_ENDPOINT, stateVar: 'availableCategories'},
     {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
+    {endpoint: STATIC_VARIABLES_ENDPOINT, stateVar: 'staticVariables'},
   ];
 
   // only load rules if we're dealing with an existing form rather than when we're creating
@@ -1047,6 +1050,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
           formSteps: state.formSteps,
           formDefinitions: state.formDefinitions,
           formVariables: state.formVariables,
+          staticVariables: state.staticVariables,
           plugins: {
             availableAuthPlugins: state.availableAuthPlugins,
             selectedAuthPlugins: state.selectedAuthPlugins,
