@@ -15,6 +15,10 @@ const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
     variable => variable.source === VARIABLE_SOURCES.userDefined
   );
 
+  const componentVariables = variables.filter(
+    variable => variable.source === VARIABLE_SOURCES.component
+  );
+
   return (
     <Fieldset
       title={
@@ -28,7 +32,11 @@ const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
       <div className="variables-editor__tabs">
         <Tabs>
           <TabList>
-            <Tab>
+            <Tab
+              hasErrors={componentVariables.some(
+                variable => Object.entries(variable.errors || {}).length
+              )}
+            >
               <FormattedMessage
                 defaultMessage="Component"
                 description="Component variables tab title"
@@ -50,17 +58,11 @@ const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
           </TabList>
 
           <TabPanel>
-            <VariablesTable
-              variables={variables.filter(
-                variable => variable.source === VARIABLE_SOURCES.component
-              )}
-            />
+            <VariablesTable variables={componentVariables} />
           </TabPanel>
           <TabPanel>
             <UserDefinedVariables
-              variables={variables.filter(
-                variable => variable.source === VARIABLE_SOURCES.userDefined
-              )}
+              variables={userDefinedVariables}
               onAdd={onAdd}
               onDelete={onDelete}
               onChange={onChange}

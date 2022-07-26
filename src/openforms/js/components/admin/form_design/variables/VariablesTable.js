@@ -32,6 +32,19 @@ const SensitiveData = ({isSensitive}) => {
   );
 };
 
+const Td = ({variable, fieldName}) => {
+  const field = variable[fieldName];
+  const fieldErrors = variable.errors ? variable.errors[fieldName] : [];
+
+  return (
+    <td>
+      <Field name={fieldName} errors={fieldErrors}>
+        <div>{field}</div>
+      </Field>
+    </td>
+  );
+};
+
 const VariableRow = ({index, variable}) => {
   const formContext = useContext(FormContext);
   const formSteps = formContext.formSteps;
@@ -44,11 +57,16 @@ const VariableRow = ({index, variable}) => {
     return '';
   };
 
+  const hasErrors = !!Object.entries(variable.errors || {}).length;
+  const rowClassnames = classNames(`row${(index % 2) + 1}`, 'variables-table__row', {
+    'variables-table__row--errors': hasErrors,
+  });
+
   return (
-    <tr className={`row${(index % 2) + 1}`}>
+    <tr className={rowClassnames}>
       <td />
       <td>{variable.name}</td>
-      <td>{variable.key}</td>
+      <Td variable={variable} fieldName="key" />
       <td>{getFormDefinitionName(variable.formDefinition)}</td>
       <td>{variable.prefillAttribute}</td>
       <td>{variable.prefillPlugin}</td>
