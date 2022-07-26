@@ -1,6 +1,7 @@
 function init() {
   // Retrieve the filter link that displays only triggered rules
   const triggeredLink = document.querySelector('.logic-rules-filter > .selected > a');
+  if (!triggeredLink) return
 
   document.querySelectorAll('.logic-rules-filter__link').forEach(link => {
     link.addEventListener('click', event => {
