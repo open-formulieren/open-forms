@@ -11,6 +11,7 @@ import FormVersionsTable from './form_versions/FormVersionsTable';
 import './sdk-snippet';
 import './plugin_configuration';
 import './form-category';
+import './submissions/filter';
 
 import Debug from './debug';
 import SessionStatus from './SessionStatus';
