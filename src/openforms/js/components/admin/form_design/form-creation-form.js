@@ -54,7 +54,7 @@ import {
   getFormStep,
   parseValidationErrors,
 } from './utils';
-import {getFormVariables, updateFormVariables} from './variables/utils';
+import {checkForDuplicateKeys, getFormVariables, updateFormVariables} from './variables/utils';
 import VariablesEditor from './variables/VariablesEditor';
 import {EMPTY_VARIABLE} from './variables/constants';
 import Tab from './Tab';
@@ -387,6 +387,9 @@ function reducer(draft, action) {
         originalComp,
         draft.formVariables,
         step.configuration
+      );
+      draft.validationErrors = draft.validationErrors.concat(
+        checkForDuplicateKeys(draft.formVariables)
       );
 
       // check if we need updates to the backendRegistrationOptions

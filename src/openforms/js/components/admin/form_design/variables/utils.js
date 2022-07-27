@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import {Utils as FormioUtils} from 'formiojs';
 
-import {COMPONENT_DATATYPES, VARIABLE_SOURCES} from './constants';
+import {COMPONENT_DATATYPES, UNIQUE_KEY_ERROR, VARIABLE_SOURCES} from './constants';
 
 const getComponentDatatype = component => {
   if (component.multiple) {
@@ -154,6 +154,24 @@ const updateFormVariables = (
   return updatedFormVariables;
 };
 
+const checkForDuplicateKeys = formVariables => {
+  let validationErrors = [];
+  let existingKeys = [];
+  formVariables.map((variable, index) => {
+    if (existingKeys.includes(variable.key)) {
+      validationErrors.push([`variables.${index}.key`, UNIQUE_KEY_ERROR]);
+
+      if (!variable.errors) variable.errors = {};
+      variable.errors['key'] = UNIQUE_KEY_ERROR;
+      return;
+    }
+
+    existingKeys.push(variable.key);
+  });
+
+  return validationErrors;
+};
+
 const getDefaultValue = component => {
   if (component.hasOwnProperty('defaultValue') && component.defaultValue !== null)
     return component.defaultValue;
@@ -161,4 +179,4 @@ const getDefaultValue = component => {
   return null;
 };
 
-export {updateFormVariables, getFormVariables};
+export {updateFormVariables, getFormVariables, checkForDuplicateKeys};
