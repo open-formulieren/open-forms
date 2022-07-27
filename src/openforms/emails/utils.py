@@ -7,6 +7,7 @@ from urllib.parse import urlparse, urlsplit
 
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
+from django.template import Context, Template
 from django.template.loader import get_template
 from django.utils.html import strip_tags as django_strip_tags
 
@@ -192,3 +193,8 @@ def unwrap_anchors(html_str: str) -> str:
         link.text += f" ({url})"
 
     return tostring(root, encoding="utf8").decode("utf8")
+
+
+def render_email_template(template: str, context: dict, **extra_context: Any) -> str:
+    render_context = {**context, **extra_context}
+    return Template(template).render(Context(render_context))

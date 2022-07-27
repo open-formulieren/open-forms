@@ -1,0 +1,19 @@
+{% load i18n capture_tags %}
+{% capture as tt_openvariable silent %}{% templatetag openvariable %}{% endcapture %}
+{% capture as tt_closevariable silent %}{% templatetag closevariable %}{% endcapture %}
+
+{% blocktrans %}
+
+Dear Sir or Madam,<br>
+<br>
+You have stored the form "{{ tt_openvariable }} form_name {{ tt_closevariable }}" via the website on {{ tt_openvariable }} save_date {{ tt_closevariable }}.
+You can resume this form at a later time by clicking the link below.<br>
+The link is valid up to and including {{ tt_openvariable }} expiration_date {{ tt_closevariable }}.<br>
+<br>
+<a href="{{ tt_openvariable }} continue_url {{ tt_closevariable }}">Resume form "{{ tt_openvariable }} form_name {{ tt_closevariable }}".</a><br>
+<br>
+Kind regards,<br>
+<br>
+Open Forms
+
+{% endblocktrans %}

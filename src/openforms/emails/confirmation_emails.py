@@ -1,7 +1,6 @@
 import logging
 from typing import TYPE_CHECKING, Any, Dict, Tuple
 
-from django.template import Context, Template
 from django.template.defaultfilters import date as date_filter
 from django.urls import reverse
 
@@ -75,11 +74,3 @@ def get_confirmation_email_context_data(submission: "Submission") -> Dict[str, A
         pass
 
     return context
-
-
-def render_confirmation_email_template(
-    template: str, context: dict, **extra_context: Any
-) -> str:
-    render_context = {**context, **extra_context}
-    rendered_content = Template(template).render(Context(render_context))
-    return rendered_content

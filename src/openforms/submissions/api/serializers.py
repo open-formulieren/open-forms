@@ -5,7 +5,6 @@ from typing import Optional
 
 from django.conf import settings
 from django.db import transaction
-from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -16,7 +15,11 @@ from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
 from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
 from openforms.config.models import GlobalConfiguration
-from openforms.emails.utils import send_mail_html
+from openforms.emails.utils import (
+    render_email_template,
+    send_mail_html,
+    strip_tags_plus,
+)
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import FormStep
@@ -325,6 +328,7 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
 
     def notify_suspension(self, instance: Submission, email: str):
         token = submission_resume_token_generator.make_token(instance)
+        config = GlobalConfiguration.get_solo()
 
         continue_path = reverse(
             "submissions:resume",
@@ -339,7 +343,7 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
 
         days_until_removal = (
             instance.form.incomplete_submissions_removal_limit
-            or GlobalConfiguration.get_solo().incomplete_submissions_removal_limit
+            or config.incomplete_submissions_removal_limit
         )
         datetime_removed = instance.created_on + timedelta(days=days_until_removal)
 
@@ -348,26 +352,20 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
             "save_date": timezone.now(),
             "expiration_date": datetime_removed,
             "continue_url": continue_url,
+            "rendering_text": True,
         }
 
-        html_content = render_to_string(
-            "emails/save_form/save_form.html", context=context
-        )
-        context["rendering_text"] = True
-        text_content = render_to_string(
-            "emails/save_form/save_form.txt", context=context
-        )
-        subject_content = render_to_string(
-            "emails/save_form/save_form_subject.txt", context=context
-        )
-
         send_mail_html(
-            subject_content.strip(),
-            html_content,
+            render_email_template(config.save_form_email_subject, context),
+            render_email_template(config.save_form_email_content, context),
             settings.DEFAULT_FROM_EMAIL,
             [email],
-            fail_silently=False,
-            text_message=text_content,
+            text_message=strip_tags_plus(
+                render_email_template(
+                    config.save_form_email_content, context, rendering_text=True
+                ),
+                keep_leading_whitespace=True,
+            ),
         )
 
 

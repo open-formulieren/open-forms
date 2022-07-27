@@ -9,7 +9,9 @@ from openforms.emails.confirmation_emails import (
     SkipConfirmationEmail,
     get_confirmation_email_context_data,
     get_confirmation_email_templates,
-    render_confirmation_email_template,
+)
+from openforms.emails.utils import (
+    render_email_template,
 )
 from openforms.emails.utils import send_mail_html, strip_tags_plus
 from openforms.forms.constants import FormVariableSources
@@ -118,18 +120,16 @@ def send_confirmation_email(submission: Submission):
     context = get_confirmation_email_context_data(submission)
 
     # render the templates with the submission context
-    subject = render_confirmation_email_template(
+    subject = render_email_template(
         subject_template, context, rendering_text=True
     ).strip()
 
     if subject_suffix := get_confirmation_mail_suffix(submission):
         subject = f"{subject} {subject_suffix}"
 
-    html_content = render_confirmation_email_template(content_template, context)
+    html_content = render_email_template(content_template, context)
     text_content = strip_tags_plus(
-        render_confirmation_email_template(
-            content_template, context, rendering_text=True
-        ),
+        render_email_template(content_template, context, rendering_text=True),
         keep_leading_whitespace=True,
     )
 
