@@ -134,7 +134,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
-        <Field name="key" errors={variable.errors?.formDefinition}>
+        <Field name="formDefinition" errors={variable.errors?.formDefinition}>
           <Select
             name="formDefinition"
             choices={formStepsChoices}
@@ -145,7 +145,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
-        <Field name="key" errors={variable.errors?.prefillPlugin}>
+        <Field name="prefillPlugin" errors={variable.errors?.prefillPlugin}>
           <Select
             name="prefillPlugin"
             choices={prefillPluginChoices}
@@ -156,7 +156,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
-        <Field name="key" errors={variable.errors?.prefillAttribute}>
+        <Field name="prefillAttribute" errors={variable.errors?.prefillAttribute}>
           <Select
             name="prefillAttribute"
             choices={prefillAttributeChoices}
@@ -167,7 +167,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
-        <Field name="key" errors={variable.errors?.dataType}>
+        <Field name="dataType" errors={variable.errors?.dataType}>
           <Select
             name="dataType"
             choices={DATATYPES_CHOICES}
@@ -178,7 +178,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
-        <Field name="key" errors={variable.errors?.isSensitiveData}>
+        <Field name="isSensitiveData" errors={variable.errors?.isSensitiveData}>
           <Checkbox
             name=""
             label=""
@@ -190,7 +190,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
-        <Field name="key" errors={variable.errors?.initialValue}>
+        <Field name="initialValue" errors={variable.errors?.initialValue}>
           <TextInput
             name="initialValue"
             value={variable.initialValue || ''}
@@ -200,7 +200,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
-        <Field name="key" errors={variable.errors?.dataFormat}>
+        <Field name="dataFormat" errors={variable.errors?.dataFormat}>
           <TextInput
             name="dataFormat"
             value={variable.dataFormat}
