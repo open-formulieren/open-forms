@@ -389,7 +389,7 @@ function reducer(draft, action) {
         step.configuration
       );
       draft.validationErrors = draft.validationErrors.concat(
-        checkForDuplicateKeys(draft.formVariables)
+        checkForDuplicateKeys(draft.formVariables, draft.staticVariables)
       );
 
       // check if we need updates to the backendRegistrationOptions
@@ -627,7 +627,9 @@ function reducer(draft, action) {
       // Check that after the update there are no duplicate keys.
       // If it is the case, update the key that was last updated
       if (propertyName === 'key') {
-        const existingKeysAfterUpdate = draft.formVariables.map(variable => variable.key);
+        const existingKeysAfterUpdate = draft.staticVariables
+          .concat(draft.formVariables)
+          .map(variable => variable.key);
         const uniqueKeysAfterUpdate = new Set(existingKeysAfterUpdate);
 
         if (existingKeysAfterUpdate.length !== uniqueKeysAfterUpdate.size) {

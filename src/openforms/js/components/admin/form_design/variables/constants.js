@@ -89,9 +89,17 @@ const EMPTY_VARIABLE = {
   initial_value: '',
 };
 
-const UNIQUE_KEY_ERROR = defineMessage({
-  description: 'Unique key error message',
-  defaultMessage: 'Key not unique within form',
-});
+const VARIABLES_ERROR_MESSAGES = {
+  unique: defineMessage({
+    description: 'Unique key error message',
+    defaultMessage: 'Key not unique within form',
+  }),
+};
 
-export {COMPONENT_DATATYPES, VARIABLE_SOURCES, DATATYPES_CHOICES, EMPTY_VARIABLE, UNIQUE_KEY_ERROR};
+export {
+  COMPONENT_DATATYPES,
+  VARIABLE_SOURCES,
+  DATATYPES_CHOICES,
+  EMPTY_VARIABLE,
+  VARIABLES_ERROR_MESSAGES,
+};

@@ -11,8 +11,9 @@ import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 import {FormContext} from 'components/admin/form_design/Context';
 import {get} from 'utils/fetch';
 import Field from 'components/admin/forms/Field';
+import {getUniqueRandomString} from 'utils/random';
 
-import {DATATYPES_CHOICES} from './constants';
+import {DATATYPES_CHOICES, VARIABLES_ERROR_MESSAGES} from './constants';
 
 const SensitiveData = ({isSensitive}) => {
   const intl = useIntl();
@@ -33,8 +34,19 @@ const SensitiveData = ({isSensitive}) => {
 };
 
 const Td = ({variable, fieldName}) => {
+  const intl = useIntl();
+
   const field = variable[fieldName];
-  const fieldErrors = variable.errors ? variable.errors[fieldName] : [];
+  let fieldErrors = variable.errors ? variable.errors[fieldName] : [];
+
+  if (!Array.isArray(fieldErrors)) fieldErrors = [fieldErrors];
+
+  fieldErrors = fieldErrors.map(error => {
+    if (VARIABLES_ERROR_MESSAGES[error]) {
+      return intl.formatMessage(VARIABLES_ERROR_MESSAGES[error]);
+    }
+    return error;
+  });
 
   return (
     <td>
@@ -156,7 +168,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
           <Select
             name="formDefinition"
             choices={formStepsChoices}
-            value={variable.formDefinition}
+            value={variable.formDefinition || ''}
             onChange={onValueChanged}
             allowBlank
           />
@@ -167,7 +179,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
           <Select
             name="prefillPlugin"
             choices={prefillPluginChoices}
-            value={variable.prefillPlugin}
+            value={variable.prefillPlugin || ''}
             onChange={onValueChanged}
             allowBlank
           />
@@ -178,7 +190,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
           <Select
             name="prefillAttribute"
             choices={prefillAttributeChoices}
-            value={variable.prefillAttribute}
+            value={variable.prefillAttribute || ''}
             onChange={onValueChanged}
             disabled={loading || !variable.prefillPlugin}
           />
@@ -190,7 +202,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
             name="dataType"
             choices={DATATYPES_CHOICES}
             translateChoices
-            value={variable.dataType}
+            value={variable.dataType || ''}
             onChange={onValueChanged}
           />
         </Field>
@@ -306,14 +318,14 @@ const VariablesTable = ({variables, editable, onChange, onDelete}) => {
         {variables.map((variable, index) =>
           editable ? (
             <EditableVariableRow
-              key={variable.key}
+              key={`${variable.key}-${index}`}
               index={index}
               variable={variable}
               onChange={onChange}
               onDelete={onDelete}
             />
           ) : (
-            <VariableRow key={variable.key} index={index} variable={variable} />
+            <VariableRow key={`${variable.key}-${index}`} index={index} variable={variable} />
           )
         )}
       </ChangelistTableWrapper>
