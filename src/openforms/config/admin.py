@@ -134,6 +134,7 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
             },
         ),
         (_("Plugin configuration"), {"fields": ("plugin_configuration",)}),
+        (_("Registration"), {"fields": ("registration_attempt_limit",)}),
         (
             _("Feature flags & fields for testing"),
             {
