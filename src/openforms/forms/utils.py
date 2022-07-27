@@ -134,13 +134,6 @@ def import_form(import_file, existing_form_instance=None):
     return import_form_data(import_data, existing_form_instance)
 
 
-def create_static_variables(form: "Form") -> None:
-    variables_to_create = FormVariable.get_default_static_variables()
-    for variable in variables_to_create:
-        variable.form = form
-    FormVariable.objects.bulk_create(variables_to_create)
-
-
 @transaction.atomic
 def import_form_data(
     import_data: dict, existing_form_instance: Form = None
@@ -210,7 +203,6 @@ def import_form_data(
                 deserialized.save()
                 if resource == "forms":
                     created_form = deserialized.instance
-                    create_static_variables(created_form)
                 if resource == "formSteps" and config.enable_form_variables:
                     # Once the form steps have been created, we create the component FormVariables
                     # based on the form definition configurations.

@@ -42,9 +42,6 @@ class ImportExportAPITests(APITestCase):
         FormVariableFactory.create(
             form=form, source=FormVariableSources.user_defined, key="test-user-defined"
         )
-        FormVariableFactory.create(
-            form=form, source=FormVariableSources.static, key="test-static"
-        )
 
         url = reverse("api:form-export", args=(form.uuid,))
         response = self.client.post(

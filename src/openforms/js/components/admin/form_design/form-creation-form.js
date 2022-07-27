@@ -115,6 +115,7 @@ const initialFormState = {
   priceRules: [],
   priceRulesToDelete: [],
   formVariables: [],
+  staticVariables: [],
   // backend error handling
   validationErrors: [],
   tabsWithErrors: [],
@@ -814,6 +815,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     {endpoint: AUTH_PLUGINS_ENDPOINT, stateVar: 'availableAuthPlugins'},
     {endpoint: CATEGORIES_ENDPOINT, stateVar: 'availableCategories'},
     {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
+    {endpoint: STATIC_VARIABLES_ENDPOINT, stateVar: 'staticVariables'},
   ];
 
   // only load rules if we're dealing with an existing form rather than when we're creating
@@ -824,9 +826,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
       endpoint: `${PRICE_RULES_ENDPOINT}?form=${formUuid}`,
       stateVar: 'priceRules',
     });
-  } else {
-    // only fetch this data if we're creating a new form
-    pluginsToLoad.push({endpoint: STATIC_VARIABLES_ENDPOINT, stateVar: 'formVariables'});
   }
 
   const {loading} = useAsync(async () => {
@@ -1051,6 +1050,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
           formSteps: state.formSteps,
           formDefinitions: state.formDefinitions,
           formVariables: state.formVariables,
+          staticVariables: state.staticVariables,
           plugins: {
             availableAuthPlugins: state.availableAuthPlugins,
             selectedAuthPlugins: state.selectedAuthPlugins,

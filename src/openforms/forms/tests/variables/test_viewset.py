@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.test import override_settings
 
 from rest_framework import status
@@ -79,11 +81,11 @@ class FormVariableViewsetTest(APITestCase):
             {
                 "form": form_url,
                 "form_definition": form_definition_url,
-                "name": "Now",
-                "key": "now",
-                "source": FormVariableSources.static,
-                "data_type": FormVariableDataTypes.datetime,
-                "initial_value": "now",
+                "name": "variable3",
+                "key": "variable3",
+                "source": FormVariableSources.user_defined,
+                "data_type": FormVariableDataTypes.string,
+                "initial_value": None,
             },  # New variable
         ]
 
@@ -106,9 +108,9 @@ class FormVariableViewsetTest(APITestCase):
         form_variables = variables.filter(form=form)
 
         self.assertEqual(2, form_variables.count())
-        self.assertTrue(form_variables.filter(key="now").exists())
         self.assertTrue(form_variables.filter(key="variable1").exists())
         self.assertFalse(form_variables.filter(key="variable2").exists())
+        self.assertTrue(form_variables.filter(key="variable3").exists())
 
     def test_unique_together_key_form(self):
         user = StaffUserFactory.create(user_permissions=["change_form"])
@@ -129,7 +131,7 @@ class FormVariableViewsetTest(APITestCase):
                 "form_definition": form_definition_url,
                 "key": "test-not-unique",
                 "name": "Test 1",
-                "source": FormVariableSources.static,
+                "source": FormVariableSources.user_defined,
                 "data_type": FormVariableDataTypes.string,
                 "initial_value": "",
             },
@@ -138,7 +140,7 @@ class FormVariableViewsetTest(APITestCase):
                 "form_definition": form_definition_url,
                 "name": "Test 2",
                 "key": "test-not-unique",
-                "source": FormVariableSources.static,
+                "source": FormVariableSources.user_defined,
                 "data_type": FormVariableDataTypes.string,
                 "initial_value": "",
             },
@@ -284,3 +286,63 @@ class FormVariableViewsetTest(APITestCase):
                 error["invalidParams"][1]["code"],
                 "blank",
             )
+
+    def test_key_clash_with_static_data(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create()
+
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver.com{form_path}"
+
+        form_definition_path = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
+        )
+        form_definition_url = f"http://testserver.com{form_definition_path}"
+
+        data = [
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "now",
+                "name": "Now",
+                "source": FormVariableSources.user_defined,
+                "data_type": FormVariableDataTypes.string,
+                "initial_value": "",
+            },
+        ]
+
+        self.client.force_authenticate(user)
+
+        with patch(
+            "openforms.forms.api.serializers.form_variable.FormVariableSerializer"
+        ) as m:
+            m.return_value = [
+                FormVariable(
+                    name="Now",
+                    key="now",
+                    data_type=FormVariableDataTypes.datetime,
+                    initial_value="2021-07-16T21:15:00+00:00",
+                )
+            ]
+            response = self.client.put(
+                reverse(
+                    "api:form-variables",
+                    kwargs={"uuid_or_slug": form.uuid},
+                ),
+                data=data,
+            )
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        error = response.json()
+
+        self.assertEqual(error["code"], "invalid")
+        self.assertEqual(
+            error["invalidParams"][0]["reason"],
+            "The variable key cannot be equal to any of the following values: now.",
+        )
+        self.assertEqual(
+            error["invalidParams"][0]["code"],
+            "unique",
+        )

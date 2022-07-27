@@ -378,11 +378,9 @@ class Form(models.Model):
 
         config = GlobalConfiguration.get_solo()
         if config.enable_form_variables:
-            from ..utils import create_static_variables
             from . import FormVariable
 
             FormVariable.objects.create_for_form(copy)
-            create_static_variables(copy)
             for variable in self.formvariable_set.filter(
                 source=FormVariableSources.user_defined
             ):

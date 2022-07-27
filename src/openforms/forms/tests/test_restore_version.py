@@ -8,17 +8,17 @@ from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
 
-from openforms.forms.models import FormDefinition, FormStep, FormVariable, FormVersion
-from openforms.forms.tests.factories import (
+from openforms.submissions.tests.mixins import VariablesTestMixin
+
+from ..constants import FormVariableDataTypes, FormVariableSources
+from ..models import FormDefinition, FormStep, FormVersion
+from .factories import (
     FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
     FormVariableFactory,
+    FormVersionFactory,
 )
-
-from ..constants import FormVariableDataTypes, FormVariableSources
-from ..utils import create_static_variables
-from .factories import FormVersionFactory
 from .utils import EXPORT_BLOB
 
 
@@ -354,25 +354,26 @@ FORM_VARIABLES = [
 
 
 @patch(
-    "openforms.forms.models.FormVariable.get_default_static_variables",
+    "openforms.forms.models.FormVariable.get_static_data",
     return_value=[
-        FormVariable(
-            name="Now",
-            key="now",
-            source=FormVariableSources.static,
-            data_type=FormVariableDataTypes.datetime,
-            initial_value="now",
-        )
+        {
+            "name": "Now",
+            "key": "now",
+            "data_type": FormVariableDataTypes.datetime,
+            "initial_value": "2021-07-16T21:15:00+00:00",
+        }
     ],
 )
-class RestoreVersionsWithVariablesTest(TestCase):
+class RestoreVersionsWithVariablesTest(VariablesTestMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
 
         cls.export_blob = {
             "forms": json.dumps(FORM),
-            "formDefinitions": json.dumps(FORM_DEFINITION),
+            "formDefinitions": json.dumps(
+                FORM_DEFINITION
+            ),  # contains one textfield component
             "formSteps": json.dumps(FORM_STEP),
             "formLogic": json.dumps([]),
         }
@@ -385,22 +386,19 @@ class RestoreVersionsWithVariablesTest(TestCase):
         )
         form = FormFactory.create(name="Icecream questions")
         FormStepFactory.create(form=form, form_definition=form_definition)
-        create_static_variables(form)
 
         version = FormVersion.objects.create(
             form=form,
             created=datetime.datetime(2021, 7, 21, 12, 00, 00),
-            export_blob=self.export_blob,
+            export_blob=self.export_blob,  # Contains 1 textfield component
         )
 
-        self.assertEqual(1, form.formvariable_set.count())  # 1 static var
+        self.assertEqual(0, form.formvariable_set.count())
 
         form.restore_old_version(version.uuid)
         form.refresh_from_db()
 
-        self.assertEqual(
-            2, form.formvariable_set.count()
-        )  # 1 static var, 1 component var
+        self.assertEqual(1, form.formvariable_set.count())
 
     def test_restore_form_with_fewer_component_variables(self, m):
         form_definition = FormDefinitionFactory.create(
@@ -419,7 +417,6 @@ class RestoreVersionsWithVariablesTest(TestCase):
         )
         form = FormFactory.create(name="Icecream questions")
         FormStepFactory.create(form=form, form_definition=form_definition)
-        create_static_variables(form)
 
         version = FormVersion.objects.create(
             form=form,
@@ -427,16 +424,12 @@ class RestoreVersionsWithVariablesTest(TestCase):
             export_blob=self.export_blob,
         )
 
-        self.assertEqual(
-            3, form.formvariable_set.count()
-        )  # 1 static var, 2 component var
+        self.assertEqual(2, form.formvariable_set.count())
 
         form.restore_old_version(version.uuid)
         form.refresh_from_db()
 
-        self.assertEqual(
-            2, form.formvariable_set.count()
-        )  # 1 static var, 1 component var
+        self.assertEqual(1, form.formvariable_set.count())
 
     def test_restore_form_with_user_defined_variables(self, m):
         form_definition = FormDefinitionFactory.create(

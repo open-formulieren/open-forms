@@ -205,19 +205,15 @@ class FormVariable(models.Model):
         return _("Form variable '{key}'").format(key=self.key)
 
     def get_initial_value(self):
-        if self.source == FormVariableSources.static:
-            return STATIC_INITIAL_VALUES[self.initial_value]()
-        else:
-            return self.initial_value or None
+        return self.initial_value or None
 
     @staticmethod
-    def get_default_static_variables() -> List["FormVariable"]:
+    def get_static_data() -> List["FormVariable"]:
         now = FormVariable(
             name="Now",
             key="now",
-            source=FormVariableSources.static,
             data_type=FormVariableDataTypes.datetime,
-            initial_value="now",
+            initial_value=STATIC_INITIAL_VALUES["now"](),
         )
 
         return [now]

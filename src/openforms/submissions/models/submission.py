@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Union
 from django.contrib.auth.hashers import make_password as get_salted_hash
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models, transaction
+from django.db.models import Q
 from django.template import Context, Template
 from django.urls import resolve
 from django.utils.translation import gettext_lazy as _
@@ -314,6 +315,8 @@ class Submission(models.Model):
     )
 
     objects = SubmissionManager()
+
+    _prefilled_data = None
 
     class Meta:
         verbose_name = _("submission")
@@ -668,3 +671,12 @@ class Submission(models.Model):
             return f"{self.auth_plugin} ({','.join(auth)})"
         else:
             return ""
+
+    def get_prefilled_data(self):
+        if self._prefilled_data is None:
+            self._prefilled_data = dict(
+                self.submissionvaluevariable_set.filter(
+                    ~Q(form_variable__prefill_plugin="")
+                ).values_list("key", "value")
+            )
+        return self._prefilled_data

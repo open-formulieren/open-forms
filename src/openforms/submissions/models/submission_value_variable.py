@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from django.db import models
 from django.db.models import Q
@@ -13,13 +13,16 @@ from ..constants import SubmissionValueVariableSources
 from .submission import Submission
 
 if TYPE_CHECKING:  # pragma: nocover
+    from rest_framework.request import Request
+
     from .submission_step import SubmissionStep
 
 
 @dataclass
 class SubmissionValueVariablesState:
     submission: "Submission"
-    _variables: Dict[str, "SubmissionValueVariable"] = None
+    _variables: Optional[Dict[str, "SubmissionValueVariable"]] = None
+    _static_data: Optional[Dict[str, Any]] = None
 
     def __init__(self, submission: "Submission"):
         self.submission = submission
@@ -132,6 +135,16 @@ class SubmissionValueVariablesState:
         for key in keys:
             if key in self._variables:
                 del self._variables[key]
+
+    # TODO: Argument request present for when we will use the data in the session to put
+    #  data returned from DigiD/eHerkenning into static vars
+    def static_data(self, request: "Request") -> dict:
+        if self._static_data is None:
+            self._static_data = {
+                variable.key: variable.initial_value
+                for variable in FormVariable.get_static_data()
+            }
+        return self._static_data
 
 
 class SubmissionValueVariableManager(models.Manager):

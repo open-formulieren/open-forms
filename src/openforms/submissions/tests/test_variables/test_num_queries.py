@@ -116,16 +116,16 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
         )
         data = submission.data
 
-        # 1. get_dynamic_configuration: injects variables in configuration and *currently* does 1 query to retrieve
-        #    variables with prefill data, so the defaultValue on the components can be set.
-        # 2. Retrieve all logic rules related to a form
-        # 3. Load submission state: Retrieve formsteps,
-        # 4. Load submission state: Retrieve submission steps
-        # 5. Retrieve the submission variables to be deleted
-        # 6. Retrieve the submission attachment files to be deleted
-        # 7. SAVEPOINT
-        # 8. Delete submission attachment files
-        # 9. RELEASE SAVEPOINT
+        # 1.  get_dynamic_configuration: injects variables in configuration and *currently* does 1 query to retrieve
+        #     variables with prefill data, so the defaultValue on the components can be set.
+        # 2.  Retrieve all logic rules related to a form
+        # 3.  Load submission state: Retrieve formsteps,
+        # 4.  Load submission state: Retrieve submission steps
+        # 5.  Retrieve the submission variables to be deleted
+        # 6.  Retrieve the submission attachment files to be deleted
+        # 7.  SAVEPOINT
+        # 8.  Delete submission attachment files
+        # 9.  RELEASE SAVEPOINT
         # 10. Delete submission values
         # 11. Retrieve all form_variables
         # 12. Creation of timelinelog
@@ -388,9 +388,11 @@ class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
 
         # 1-2. renderer get_children: get submission data (get form variables and submission value variables)
         # 3. renderer get_children: get submission steps
-        # 4-7. renderer get_children: evaluate form logic for first submission step
-        # 8. renderer get_children: evaluate form logic for second submission step (the first evaluation caches some results)
-        with self.assertNumQueries(8):
+        # 4. Retrieve prefill data
+        # 5. Retrieve logic rules
+        # 6. Load submission state: Retrieve formsteps,
+        # 7. Load submission state: Retrieve submission steps
+        with self.assertNumQueries(7):
             nodes = [node for node in renderer]
 
         with self.assertNumQueries(0):
