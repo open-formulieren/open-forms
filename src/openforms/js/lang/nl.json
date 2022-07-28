@@ -1304,6 +1304,11 @@
     "description": "\"today\" operand type",
     "originalDefault": "today"
   },
+  "mOgTIH": {
+    "defaultMessage": "the variable",
+    "description": "\"variable\" operand type",
+    "originalDefault": "the variable"
+  },
   "mOjKcm": {
     "defaultMessage": "Stappen en velden",
     "description": "Form design tab title",
@@ -1423,11 +1428,6 @@
     "defaultMessage": "Beheer complexe procesvariabelen",
     "description": "Camunda complex process vars modal title",
     "originalDefault": "Manage complex process variables"
-  },
-  "r6Wa2m": {
-    "defaultMessage": "het veld",
-    "description": "\"component\" operand type",
-    "originalDefault": "the field"
   },
   "rF90xM": {
     "defaultMessage": "Data type",

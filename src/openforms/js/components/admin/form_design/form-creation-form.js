@@ -1036,6 +1036,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     return <Loader />;
   }
 
+  // TODO: replace with available variables?
   const availableComponents = getFormComponents(state.formSteps);
   // dev/debug helper
   const activeTab = new URLSearchParams(window.location.search).get('tab');

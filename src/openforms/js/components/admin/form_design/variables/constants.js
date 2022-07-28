@@ -72,7 +72,6 @@ const DATATYPES_CHOICES = [
 ];
 
 const VARIABLE_SOURCES = {
-  static: 'static',
   component: 'component',
   userDefined: 'user_defined',
 };

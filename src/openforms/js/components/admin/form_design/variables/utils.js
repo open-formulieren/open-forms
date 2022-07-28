@@ -190,4 +190,10 @@ const getDefaultValue = component => {
 
 const variableHasErrors = variable => !!Object.entries(variable.errors || {}).length;
 
-export {updateFormVariables, getFormVariables, checkForDuplicateKeys, variableHasErrors};
+export {
+  updateFormVariables,
+  getFormVariables,
+  getComponentDatatype,
+  checkForDuplicateKeys,
+  variableHasErrors,
+};
