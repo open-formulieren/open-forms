@@ -12,6 +12,7 @@ from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
+    FormStepFactory,
     FormVariableFactory,
 )
 
@@ -220,7 +221,7 @@ class FormVariableViewsetTest(APITestCase):
                 "form_definition": form_definition_url,
                 "key": "test-with_dots.valid",
                 "name": "Valid with dots",
-                "source": FormVariableSources.component,
+                "source": FormVariableSources.user_defined,
                 "data_type": FormVariableDataTypes.string,
                 "initial_value": "",
             },
@@ -232,7 +233,7 @@ class FormVariableViewsetTest(APITestCase):
                 "form_definition": form_definition_url,
                 "key": "test-with_dots.invalid.",
                 "name": "Valid with dots",
-                "source": FormVariableSources.component,
+                "source": FormVariableSources.user_defined,
                 "data_type": FormVariableDataTypes.string,
                 "initial_value": "",
             },
@@ -241,7 +242,7 @@ class FormVariableViewsetTest(APITestCase):
                 "form_definition": form_definition_url,
                 "key": "normal_key",
                 "name": "",  # missing name
-                "source": FormVariableSources.component,
+                "source": FormVariableSources.user_defined,
                 "data_type": FormVariableDataTypes.string,
                 "initial_value": "",
             },
@@ -350,4 +351,60 @@ class FormVariableViewsetTest(APITestCase):
         self.assertEqual(
             error["invalidParams"][0]["code"],
             "unique",
+        )
+
+    def test_key_not_present_in_form_definition(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration={"components": [{"type": "textfield", "key": "test"}]}
+        )
+        FormStepFactory.create(form=form, form_definition=form_definition)
+
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver.com{form_path}"
+
+        form_definition_path = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
+        )
+        form_definition_url = f"http://testserver.com{form_definition_path}"
+
+        data = [
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "not-in-configuration",
+                "name": "Not in configuration",
+                "source": FormVariableSources.component,
+                "data_type": FormVariableDataTypes.string,
+                "initial_value": "",
+            },
+        ]
+
+        self.client.force_authenticate(user)
+
+        response = self.client.put(
+            reverse(
+                "api:form-variables",
+                kwargs={"uuid_or_slug": form.uuid},
+            ),
+            data=data,
+        )
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        error = response.json()
+
+        self.assertEqual(error["code"], "invalid")
+        self.assertEqual(
+            error["invalidParams"][0]["reason"],
+            "Invalid component variable: no component with corresponding key present in the form definition.",
+        )
+        self.assertEqual(
+            error["invalidParams"][0]["name"],
+            "0.key",
+        )
+        self.assertEqual(
+            error["invalidParams"][0]["code"],
+            "invalid",
         )
