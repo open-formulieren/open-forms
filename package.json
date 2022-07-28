@@ -36,7 +36,7 @@
     "copy-to-clipboard": "^3.3.1",
     "core-js": "^3.11.1",
     "flatpickr": "^4.6.9",
-    "formiojs": "^4.13.13",
+    "formiojs": "~4.13.0",
     "immer": "^9.0.6",
     "json-logic-js": "^2.0.1",
     "leaflet": "^1.7.1",
