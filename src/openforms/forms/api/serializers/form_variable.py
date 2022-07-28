@@ -5,7 +5,10 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from openforms.forms.models import FormVariable
+from openforms.submissions.form_logic import get_component
+
+from ...constants import FormVariableSources
+from ...models import FormVariable
 
 
 class FormVariableListSerializer(serializers.ListSerializer):
@@ -84,3 +87,23 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
                 "lookup_url_kwarg": "uuid",
             },
         }
+
+    def validate(self, attrs):
+        if (
+            attrs.get("form_definition")
+            and attrs.get("source") == FormVariableSources.component
+        ):
+            component = get_component(
+                attrs["form_definition"].configuration, attrs["key"]
+            )
+            if not component:
+                raise ValidationError(
+                    {
+                        "key": _(
+                            "Invalid component variable: "
+                            "no component with corresponding key present in the form definition."
+                        )
+                    }
+                )
+
+        return attrs
