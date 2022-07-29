@@ -89,13 +89,10 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
         }
 
     def validate(self, attrs):
-        if (
-            attrs.get("form_definition")
-            and attrs.get("source") == FormVariableSources.component
-        ):
-            component = get_component(
-                attrs["form_definition"].configuration, attrs["key"]
-            )
+        if (form_definition := attrs.get("form_definition")) and attrs.get(
+            "source"
+        ) == FormVariableSources.component:
+            component = get_component(form_definition.configuration, attrs["key"])
             if not component:
                 raise ValidationError(
                     {

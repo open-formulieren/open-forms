@@ -6,13 +6,16 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.accounts.tests.factories import (
+    StaffUserFactory,
+    SuperUserFactory,
+    UserFactory,
+)
 from openforms.forms.constants import FormVariableDataTypes, FormVariableSources
 from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
-    FormStepFactory,
     FormVariableFactory,
 )
 
@@ -114,7 +117,7 @@ class FormVariableViewsetTest(APITestCase):
         self.assertTrue(form_variables.filter(key="variable3").exists())
 
     def test_unique_together_key_form(self):
-        user = StaffUserFactory.create(user_permissions=["change_form"])
+        user = SuperUserFactory.create()
         form = FormFactory.create()
         form_definition = FormDefinitionFactory.create()
 
@@ -176,7 +179,7 @@ class FormVariableViewsetTest(APITestCase):
         )
 
     def test_list_form_variables(self):
-        user = StaffUserFactory.create(user_permissions=["change_form"])
+        user = SuperUserFactory.create()
         form = FormFactory.create()
 
         form_variable1 = FormVariableFactory.create(form=form)
@@ -203,7 +206,7 @@ class FormVariableViewsetTest(APITestCase):
         self.assertIn(form_variable2.key, variables_keys)
 
     def test_dotted_variable_keys(self):
-        user = StaffUserFactory.create(user_permissions=["change_form"])
+        user = SuperUserFactory.create()
         form = FormFactory.create()
         form_definition = FormDefinitionFactory.create()
 
@@ -294,7 +297,7 @@ class FormVariableViewsetTest(APITestCase):
             )
 
     def test_key_clash_with_static_data(self):
-        user = StaffUserFactory.create(user_permissions=["change_form"])
+        user = SuperUserFactory.create()
         form = FormFactory.create()
         form_definition = FormDefinitionFactory.create()
 
@@ -354,12 +357,14 @@ class FormVariableViewsetTest(APITestCase):
         )
 
     def test_key_not_present_in_form_definition(self):
-        user = StaffUserFactory.create(user_permissions=["change_form"])
-        form = FormFactory.create()
-        form_definition = FormDefinitionFactory.create(
-            configuration={"components": [{"type": "textfield", "key": "test"}]}
+        user = SuperUserFactory.create()
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [{"type": "textfield", "key": "test"}]
+            },
         )
-        FormStepFactory.create(form=form, form_definition=form_definition)
+        form_definition = form.formstep_set.get().form_definition
 
         form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_url = f"http://testserver.com{form_path}"
