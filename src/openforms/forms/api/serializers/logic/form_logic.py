@@ -37,7 +37,7 @@ class FormLogicBaseSerializer(serializers.HyperlinkedModelSerializer):
                 "help_text": _(
                     "The trigger expression to determine if the actions should execute "
                     "or not. Note that this must be a valid JsonLogic expression, and "
-                    "the first operand must be a reference to a component in the form."
+                    "the first operand must be a reference to a variable in the form."
                 ),
                 "validators": [JsonLogicValidator()],
             },

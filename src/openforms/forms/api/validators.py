@@ -10,6 +10,7 @@ from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.typing import JSONObject
 from openforms.utils.json_logic import JsonLogicTest
 
+from ..models import FormVariable
 from ..validation.registry import register as formio_validators_registry
 
 
@@ -137,31 +138,29 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
                 raise serializers.ValidationError(
                     {
                         self.trigger_field: ErrorDetail(
-                            _("The component cannot be empty."),
+                            _("The variable cannot be empty."),
                             code=self.code,
                         ),
                     }
                 )
 
-            for component in form.iter_components(recursive=True):
-                key = component.get("key")
-                if key and key == needle:
-                    break
+            # Check if the trigger references a static variable
+            if needle in [variable.key for variable in FormVariable.get_static_data()]:
+                return
 
-                if component.get("type") == "selectboxes":
-                    needle_bits = needle.split(".")
-                    key_bits = key.split(".")
-                    if key_bits == needle_bits[:-1]:
-                        break
+            variable_related_to_form = form.formvariable_set.filter(key=needle)
+            if not variable_related_to_form:
+                # selectboxes case
+                needle_bits = needle.split(".")
+                variable_related_to_form = form.formvariable_set.filter(
+                    key=".".join(needle_bits[:-1])
+                )
 
-            # executes if the break was not hit
-            else:
+            if not variable_related_to_form:
                 raise serializers.ValidationError(
                     {
                         self.trigger_field: ErrorDetail(
-                            _(
-                                "The specified component is not present in the form definition"
-                            ),
+                            _("The specified variable is not related to the form"),
                             code=self.code,
                         ),
                     }
