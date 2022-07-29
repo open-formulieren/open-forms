@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import {Utils as FormioUtils} from 'formiojs';
+import {defineMessage} from 'react-intl';
 
 import {COMPONENT_DATATYPES, VARIABLE_SOURCES} from './constants';
 
@@ -118,13 +119,15 @@ const updateFormVariables = (
   // but 'update' events have isNew = false
   else if (mutationType === 'changed') {
     updatedFormVariables = updatedFormVariables.map(variable => {
+      // The id of the component changes on every save
+      const idMatch = variable._id === oldComponent.id;
       // Case in which the component key has changed (possibly among other attributes)
       if (newComponent.key !== oldComponent.key) {
-        if (variable.key === oldComponent.key)
+        if (variable.key === oldComponent.key && idMatch)
           return makeNewVariableFromComponent(newComponent, formDefinition);
         // This is the case where other attributes (not the key) of the component have changed.
       } else {
-        if (variable.key === newComponent.key)
+        if (variable.key === newComponent.key && idMatch)
           return makeNewVariableFromComponent(newComponent, formDefinition);
       }
 
@@ -156,14 +159,19 @@ const updateFormVariables = (
 
 const checkForDuplicateKeys = (formVariables, staticVariables) => {
   let validationErrors = [];
-  let existingKeys = [];
+  let existingKeys = staticVariables.map(variable => variable.key);
 
-  staticVariables.concat(formVariables).map((variable, index) => {
+  const uniqueErrorMessage = defineMessage({
+    description: 'Unique key error message',
+    defaultMessage: 'The variable key must be unique within a form',
+  });
+
+  formVariables.map((variable, index) => {
     if (existingKeys.includes(variable.key)) {
-      validationErrors.push([`variables.${index}.key`, 'unique']);
+      validationErrors.push([`variables.${index}.key`, uniqueErrorMessage]);
 
       if (!variable.errors) variable.errors = {};
-      variable.errors['key'] = 'unique';
+      variable.errors['key'] = uniqueErrorMessage;
       return;
     }
 
@@ -180,4 +188,6 @@ const getDefaultValue = component => {
   return null;
 };
 
-export {updateFormVariables, getFormVariables, checkForDuplicateKeys};
+const variableHasErrors = variable => !!Object.entries(variable.errors || {}).length;
+
+export {updateFormVariables, getFormVariables, checkForDuplicateKeys, variableHasErrors};

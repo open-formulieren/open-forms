@@ -41,7 +41,7 @@ const StaticData = () => {
       <ChangelistTableWrapper headColumns={headColumns} extraModifiers={['fixed']}>
         {staticData.map((item, index) => {
           return (
-            <tr className={`row${(index % 2) + 1}`} key={index}>
+            <tr className={`row${(index % 2) + 1}`} key={item.key}>
               <td />
               <td>{item.name}</td>
               <td>{item.key}</td>

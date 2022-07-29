@@ -1371,6 +1371,12 @@
       "value": "Weet u zeker dat u dit wilt verwijderen?"
     }
   ],
+  "ZB6mnn": [
+    {
+      "type": 0,
+      "value": "The variable key must be unique within a form"
+    }
+  ],
   "ZICfus": [
     {
       "type": 0,

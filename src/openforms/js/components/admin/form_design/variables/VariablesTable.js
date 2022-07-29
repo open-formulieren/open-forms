@@ -2,6 +2,7 @@ import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
 
 import FAIcon from 'components/admin/FAIcon';
 import DeleteIcon from 'components/admin/DeleteIcon';
@@ -11,9 +12,10 @@ import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 import {FormContext} from 'components/admin/form_design/Context';
 import {get} from 'utils/fetch';
 import Field from 'components/admin/forms/Field';
-import {getUniqueRandomString} from 'utils/random';
 
-import {DATATYPES_CHOICES, VARIABLES_ERROR_MESSAGES} from './constants';
+import {DATATYPES_CHOICES} from './constants';
+import {variableHasErrors} from './utils';
+import Variable from './types';
 
 const SensitiveData = ({isSensitive}) => {
   const intl = useIntl();
@@ -42,8 +44,8 @@ const Td = ({variable, fieldName}) => {
   if (!Array.isArray(fieldErrors)) fieldErrors = [fieldErrors];
 
   fieldErrors = fieldErrors.map(error => {
-    if (VARIABLES_ERROR_MESSAGES[error]) {
-      return intl.formatMessage(VARIABLES_ERROR_MESSAGES[error]);
+    if (typeof error !== 'string' && error.defaultMessage) {
+      return intl.formatMessage(error);
     }
     return error;
   });
@@ -55,6 +57,11 @@ const Td = ({variable, fieldName}) => {
       </Field>
     </td>
   );
+};
+
+Td.propTypes = {
+  variable: Variable.isRequired,
+  fieldName: PropTypes.string.isRequired,
 };
 
 const VariableRow = ({index, variable}) => {
@@ -69,9 +76,8 @@ const VariableRow = ({index, variable}) => {
     return '';
   };
 
-  const hasErrors = !!Object.entries(variable.errors || {}).length;
   const rowClassnames = classNames(`row${(index % 2) + 1}`, 'variables-table__row', {
-    'variables-table__row--errors': hasErrors,
+    'variables-table__row--errors': variableHasErrors(variable),
   });
 
   return (
@@ -136,12 +142,10 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
     setPrefillAttributeChoices(response.data.map(attribute => [attribute.id, attribute.label]));
   }, [variable.prefillPlugin]);
 
-  const hasErrors = Object.entries(variable.errors || {}).length;
-
   return (
     <tr
       className={classNames('variables-table__row', `row${(index % 2) + 1}`, {
-        'variables-table__row--errors': hasErrors,
+        'variables-table__row--errors': variableHasErrors(variable),
       })}
     >
       <td>
@@ -168,7 +172,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
           <Select
             name="formDefinition"
             choices={formStepsChoices}
-            value={variable.formDefinition || ''}
+            value={variable.formDefinition}
             onChange={onValueChanged}
             allowBlank
           />

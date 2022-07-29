@@ -9,6 +9,7 @@ import {VARIABLE_SOURCES} from './constants';
 import UserDefinedVariables from './UserDefinedVariables';
 import VariablesTable from './VariablesTable';
 import StaticData from './StaticData';
+import {variableHasErrors} from './utils';
 
 const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
   const userDefinedVariables = variables.filter(
@@ -32,21 +33,13 @@ const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
       <div className="variables-editor__tabs">
         <Tabs>
           <TabList>
-            <Tab
-              hasErrors={componentVariables.some(
-                variable => Object.entries(variable.errors || {}).length
-              )}
-            >
+            <Tab hasErrors={componentVariables.some(variable => variableHasErrors(variable))}>
               <FormattedMessage
                 defaultMessage="Component"
                 description="Component variables tab title"
               />
             </Tab>
-            <Tab
-              hasErrors={userDefinedVariables.some(
-                variable => Object.entries(variable.errors || {}).length
-              )}
-            >
+            <Tab hasErrors={userDefinedVariables.some(variable => variableHasErrors(variable))}>
               <FormattedMessage
                 defaultMessage="User defined"
                 description="User defined variables tab title"

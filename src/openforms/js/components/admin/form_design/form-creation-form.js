@@ -54,7 +54,12 @@ import {
   getFormStep,
   parseValidationErrors,
 } from './utils';
-import {checkForDuplicateKeys, getFormVariables, updateFormVariables} from './variables/utils';
+import {
+  checkForDuplicateKeys,
+  getFormVariables,
+  updateFormVariables,
+  variableHasErrors,
+} from './variables/utils';
 import VariablesEditor from './variables/VariablesEditor';
 import {EMPTY_VARIABLE} from './variables/constants';
 import Tab from './Tab';
@@ -1115,11 +1120,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
               />
             </Tab>
             {featureFlags.enable_form_variables && (
-              <Tab
-                hasErrors={state.formVariables.some(
-                  variable => Object.entries(variable.errors || {}).length
-                )}
-              >
+              <Tab hasErrors={state.formVariables.some(variable => variableHasErrors(variable))}>
                 <FormattedMessage defaultMessage="Variables" description="Variables tab title" />
               </Tab>
             )}

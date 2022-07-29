@@ -4,14 +4,17 @@ import classNames from 'classnames';
 
 import {PrefixContext} from './Context';
 import ErrorList from './ErrorList';
+import {useIntl} from 'react-intl';
 
-export const normalizeErrors = (errors = []) => {
-  if (typeof errors === 'string') {
+export const normalizeErrors = (errors = [], intl) => {
+  if (!Array.isArray(errors)) {
     errors = [errors];
   }
   const hasErrors = Boolean(errors && errors.length);
   const formattedErrors = errors.map(error => {
     if (typeof error === 'string') return error;
+
+    if (error.defaultMessage) return intl.formatMessage(error);
 
     const [key, msg] = error;
     return msg;
@@ -31,6 +34,7 @@ const Field = ({
   children,
   fieldBox = false,
 }) => {
+  const intl = useIntl();
   const originalName = name;
   const prefix = useContext(PrefixContext);
   name = prefix ? `${prefix}-${name}` : name;
@@ -38,7 +42,7 @@ const Field = ({
   const htmlFor = `id_${name}`;
 
   const modifiedChildren = React.cloneElement(children, {id: htmlFor, name: originalName});
-  const [hasErrors, formattedErrors] = normalizeErrors(errors);
+  const [hasErrors, formattedErrors] = normalizeErrors(errors, intl);
   const className = classNames({fieldBox: fieldBox}, {errors: hasErrors});
 
   return (

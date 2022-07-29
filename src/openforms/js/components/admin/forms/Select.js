@@ -29,6 +29,8 @@ const Select = ({
   name = prefix ? `${prefix}-${name}` : name;
   const options = allowBlank ? [BLANK_OPTION].concat(choices) : choices;
 
+  extraProps.value = extraProps.value || '';
+
   return (
     <select name={name} {...extraProps}>
       {options.map(([value, label]) => (
