@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -21,23 +23,33 @@ class FormVariableListSerializer(serializers.ListSerializer):
         static_data_keys = [item.key for item in FormVariable.get_static_data()]
 
         existing_form_key_combinations = []
-        errors = {}
+        errors = defaultdict(list)
         for index, item in enumerate(attrs):
             key_form_combination = (item["key"], item["form"].slug)
             if key_form_combination in existing_form_key_combinations:
-                errors[f"{index}.key"] = _("Key not unique within form")
+                errors[f"{index}.key"].append(
+                    serializers.ErrorDetail(
+                        _("The variable key must be unique within a form"),
+                        code="unique",
+                    )
+                )
                 continue
 
             if item["key"] in static_data_keys:
-                errors[f"{index}.key"] = _(
-                    "The variable key cannot be equal to any of the following values: {static_data}."
-                ).format(static_data=", ".join(static_data_keys))
+                errors[f"{index}.key"].append(
+                    serializers.ErrorDetail(
+                        _(
+                            "The variable key cannot be equal to any of the following values: {static_data}."
+                        ).format(static_data=", ".join(static_data_keys)),
+                        code="unique",
+                    )
+                )
                 continue
 
             existing_form_key_combinations.append(key_form_combination)
 
         if errors:
-            raise ValidationError(errors, code="unique")
+            raise ValidationError(errors)
 
         return attrs
 

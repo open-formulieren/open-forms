@@ -163,7 +163,7 @@ class FormVariableViewsetTest(APITestCase):
         self.assertEqual(1, len(error["invalidParams"]))
         self.assertEqual(
             error["invalidParams"][0]["reason"],
-            "Key not unique within form",
+            "The variable key must be unique within a form",
         )
         self.assertEqual(
             error["invalidParams"][0]["code"],
