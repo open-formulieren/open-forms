@@ -198,7 +198,17 @@ class FormVariable(models.Model):
                     | (~Q(prefill_plugin="") & ~Q(prefill_attribute=""))
                 ),
                 name="prefill_config_empty_or_complete",
-            )
+            ),
+            CheckConstraint(
+                check=Q(
+                    (
+                        Q(form_definition__isnull=True)
+                        & ~Q(source=FormVariableSources.component)
+                    )
+                    | Q(form_definition__isnull=False)
+                ),
+                name="form_definition_not_null_for_component_vars",
+            ),
         ]
 
     def __str__(self):
@@ -217,3 +227,19 @@ class FormVariable(models.Model):
         )
 
         return [now]
+
+    def _derive_info_from_component(self):
+        from openforms.submissions.form_logic import get_component
+
+        component = get_component(self.form_definition.configuration, self.key)
+
+        if not self.initial_value:
+            self.initial_value = component.get("defaultValue", None)
+
+        self.data_type = get_component_datatype(component)
+
+    def save(self, *args, **kwargs):
+        if self.source == FormVariableSources.component and self.form_definition:
+            self._derive_info_from_component()
+
+        super().save(*args, **kwargs)

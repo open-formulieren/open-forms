@@ -1,7 +1,7 @@
 COMPONENT_DATATYPES = {
     "date": "datetime",
     "time": "time",
-    "file": "object",
+    "file": "array",
     "currency": "float",
     "number": "float",
     "checkbox": "boolean",
