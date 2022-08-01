@@ -4398,7 +4398,7 @@ components:
           title: JSON logic
           description: The trigger expression to determine if the actions should execute
             or not. Note that this must be a valid JsonLogic expression, and the first
-            operand must be a reference to a component in the form.
+            operand must be a reference to a variable in the form.
         order:
           type: integer
           description: Order of the rule relative to the form it belongs to. Logic
@@ -4449,7 +4449,7 @@ components:
           title: JSON logic
           description: The trigger expression to determine if the actions should execute
             or not. Note that this must be a valid JsonLogic expression, and the first
-            operand must be a reference to a component in the form.
+            operand must be a reference to a variable in the form.
         price:
           type: string
           format: decimal
@@ -5148,7 +5148,7 @@ components:
           title: JSON logic
           description: The trigger expression to determine if the actions should execute
             or not. Note that this must be a valid JsonLogic expression, and the first
-            operand must be a reference to a component in the form.
+            operand must be a reference to a variable in the form.
         order:
           type: integer
           description: Order of the rule relative to the form it belongs to. Logic
@@ -5192,7 +5192,7 @@ components:
           title: JSON logic
           description: The trigger expression to determine if the actions should execute
             or not. Note that this must be a valid JsonLogic expression, and the first
-            operand must be a reference to a component in the form.
+            operand must be a reference to a variable in the form.
         price:
           type: string
           format: decimal
