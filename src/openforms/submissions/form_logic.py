@@ -163,7 +163,7 @@ def evaluate_form_logic(
                     and not is_visible_in_frontend(component, data_container.data)
                     and component.get("clearOnHide")
                 ):
-                    data_diff[key] = default or ""
+                    data_diff[key] = ""
                     continue
 
             if new_value == original_value:
@@ -172,7 +172,6 @@ def evaluate_form_logic(
 
         # only return the 'overrides'
         step.data = DirtyData(data_diff)
-
     step._form_logic_evaluated = True
 
     return configuration
