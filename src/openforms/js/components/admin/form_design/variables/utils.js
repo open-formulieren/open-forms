@@ -6,7 +6,7 @@ import {COMPONENT_DATATYPES, VARIABLE_SOURCES} from './constants';
 
 const getComponentDatatype = component => {
   if (component.multiple) {
-    return [];
+    return 'array';
   }
   return COMPONENT_DATATYPES[component.type] || 'string';
 };
