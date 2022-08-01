@@ -11,7 +11,7 @@ from freezegun import freeze_time
 from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ..constants import FormVariableDataTypes, FormVariableSources
-from ..models import FormDefinition, FormStep, FormVersion
+from ..models import FormDefinition, FormStep, FormVariable, FormVersion
 from .factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -356,12 +356,12 @@ FORM_VARIABLES = [
 @patch(
     "openforms.forms.models.FormVariable.get_static_data",
     return_value=[
-        {
-            "name": "Now",
-            "key": "now",
-            "data_type": FormVariableDataTypes.datetime,
-            "initial_value": "2021-07-16T21:15:00+00:00",
-        }
+        FormVariable(
+            key="now",
+            name="Now",
+            data_type=FormVariableDataTypes.datetime,
+            initial_value="2021-07-16T21:15:00+00:00",
+        )
     ],
 )
 class RestoreVersionsWithVariablesTest(VariablesTestMixin, TestCase):
