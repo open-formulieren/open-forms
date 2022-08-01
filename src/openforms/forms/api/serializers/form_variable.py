@@ -17,9 +17,12 @@ class FormVariableListSerializer(serializers.ListSerializer):
         super().__init__(*args, **kwargs)
 
     def create(self, validated_data):
-        variables_to_create = [
-            FormVariable(**variable) for variable in self.validated_data
-        ]
+        variables_to_create = []
+        for variable in self.validated_data:
+            variable = FormVariable(**variable)
+            variable.derive_info_from_component()
+            variables_to_create.append(variable)
+
         return FormVariable.objects.bulk_create(variables_to_create)
 
     def validate(self, attrs):

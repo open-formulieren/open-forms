@@ -228,8 +228,11 @@ class FormVariable(models.Model):
 
         return [now]
 
-    def _derive_info_from_component(self):
+    def derive_info_from_component(self):
         from openforms.submissions.form_logic import get_component
+
+        if self.source != FormVariableSources.component or not self.form_definition:
+            return
 
         component = get_component(self.form_definition.configuration, self.key)
 
@@ -239,7 +242,6 @@ class FormVariable(models.Model):
         self.data_type = get_component_datatype(component)
 
     def save(self, *args, **kwargs):
-        if self.source == FormVariableSources.component and self.form_definition:
-            self._derive_info_from_component()
+        self.derive_info_from_component()
 
         super().save(*args, **kwargs)
