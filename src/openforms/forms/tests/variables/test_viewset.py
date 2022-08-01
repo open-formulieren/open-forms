@@ -413,3 +413,103 @@ class FormVariableViewsetTest(APITestCase):
             error["invalidParams"][0]["code"],
             "invalid",
         )
+
+    def test_data_type_initial_value_set(self):
+        user = SuperUserFactory.create()
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {"key": "test1", "type": "textfield", "multiple": False},
+                    {
+                        "key": "test2",
+                        "type": "textfield",
+                        "multiple": False,
+                        "defaultValue": "test2 default value",
+                    },
+                    {
+                        "key": "test3",
+                        "type": "textfield",
+                        "multiple": True,
+                        "defaultValue": ["test3 default value"],
+                    },
+                    {
+                        "key": "test4",
+                        "type": "number",
+                        "multiple": False,
+                        "defaultValue": 4,
+                    },
+                ]
+            },
+        )
+
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver.com{form_path}"
+
+        form_definition_path = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": form.formstep_set.first().form_definition.uuid},
+        )
+        form_definition_url = f"http://testserver.com{form_definition_path}"
+
+        data = [
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "test1",
+                "name": "Test 1",
+                "source": FormVariableSources.component,
+                "data_type": FormVariableDataTypes.string,
+            },
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "test2",
+                "name": "Test 2",
+                "source": FormVariableSources.component,
+                "data_type": FormVariableDataTypes.string,
+            },
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "test3",
+                "name": "Test 3",
+                "source": FormVariableSources.component,
+                "data_type": FormVariableDataTypes.string,  # The backend should set this to the right value (array)
+            },
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "test4",
+                "name": "Test 4",
+                "source": FormVariableSources.component,
+                "data_type": FormVariableDataTypes.string,  # The backend should set this to the right value (float)
+            },
+        ]
+
+        self.client.force_authenticate(user)
+
+        response = self.client.put(
+            reverse(
+                "api:form-variables",
+                kwargs={"uuid_or_slug": form.uuid},
+            ),
+            data=data,
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        variable1 = form.formvariable_set.get(key="test1")
+        variable2 = form.formvariable_set.get(key="test2")
+        variable3 = form.formvariable_set.get(key="test3")
+        variable4 = form.formvariable_set.get(key="test4")
+
+        self.assertEqual(FormVariableDataTypes.string, variable1.data_type)
+        self.assertEqual(FormVariableDataTypes.string, variable2.data_type)
+        self.assertEqual(FormVariableDataTypes.array, variable3.data_type)
+        self.assertEqual(FormVariableDataTypes.float, variable4.data_type)
+
+        self.assertIsNone(variable1.initial_value)
+        self.assertEqual("test2 default value", variable2.initial_value)
+        self.assertEqual(["test3 default value"], variable3.initial_value)
+        self.assertEqual(4, variable4.initial_value)
