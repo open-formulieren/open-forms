@@ -234,7 +234,7 @@ class FormVariable(models.Model):
         component = get_component(self.form_definition.configuration, self.key)
 
         if not self.initial_value:
-            self.initial_value = component.get("defaultValue", None)
+            self.initial_value = get_component_default_value(component)
 
         self.data_type = get_component_datatype(component)
 
