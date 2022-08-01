@@ -32,6 +32,7 @@ class FormNodeTests(VariablesTestMixin, TestCase):
                 "components": [
                     # container: visible fieldset without visible children
                     {
+                        "key": "fieldset1",
                         "type": "fieldset",
                         "label": "A container without visible children",
                         "hidden": False,
@@ -46,6 +47,7 @@ class FormNodeTests(VariablesTestMixin, TestCase):
                     },
                     # container: visible fieldset with visible children
                     {
+                        "key": "fieldset2",
                         "type": "fieldset",
                         "label": "A container with visible children",
                         "hidden": False,
@@ -66,6 +68,7 @@ class FormNodeTests(VariablesTestMixin, TestCase):
                     },
                     # container: hidden fieldset with 'visible' children
                     {
+                        "key": "fieldset3",
                         "type": "fieldset",
                         "label": "A hidden container with visible children",
                         "hidden": True,

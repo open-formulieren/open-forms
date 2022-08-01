@@ -519,6 +519,7 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
                     {
                         "key": "name",
                         "label": "Name",
+                        "type": "textfield",
                     },
                 ],
             },
@@ -538,11 +539,13 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
                         "key": "product",
                         "appointments": {"showProducts": False},
                         "label": "Product",
+                        "type": "select",
                     },
                     {
                         "key": "time",
                         "appointments": {"showTimes": False},
                         "label": "Time",
+                        "type": "select",
                     },
                 ],
             },
