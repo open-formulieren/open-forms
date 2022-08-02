@@ -5,6 +5,7 @@ from django.views.generic import ListView
 
 from openforms.utils.mixins import UserIsStaffMixin
 
+from ..logging.models import TimelineLogProxy
 from .models import Submission
 
 
@@ -24,7 +25,9 @@ class LogsEvaluatedLogicView(UserIsStaffMixin, PermissionRequiredMixin, ListView
 
     def get_queryset(self):
         logic_log_template = "logging/events/submission_logic_evaluated.txt"
-        queryset = self.submission.logs.filter(template=logic_log_template)
+        queryset = TimelineLogProxy.objects.filter(
+            template=logic_log_template, object_id=self.submission.id
+        )
         return queryset.order_by("timestamp")
 
     def get_context_data(self):
