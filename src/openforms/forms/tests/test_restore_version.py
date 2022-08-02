@@ -355,8 +355,8 @@ FORM_VARIABLES = [
     "openforms.forms.models.FormVariable.get_static_data",
     return_value=[
         FormVariable(
-            key="now",
             name="Now",
+            key="now",
             data_type=FormVariableDataTypes.datetime,
             initial_value="2021-07-16T21:15:00+00:00",
         )
