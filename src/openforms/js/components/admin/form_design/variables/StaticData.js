@@ -25,14 +25,6 @@ const StaticData = () => {
           />
         }
       />
-      <HeadColumn
-        content={
-          <FormattedMessage
-            defaultMessage="Example initial"
-            description="Variable table initial value title"
-          />
-        }
-      />
     </>
   );
 
@@ -46,7 +38,6 @@ const StaticData = () => {
               <td>{item.name}</td>
               <td>{item.key}</td>
               <td>{item.dataType}</td>
-              <td>{JSON.stringify(item.initialValue)}</td>
             </tr>
           );
         })}
