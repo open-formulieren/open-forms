@@ -136,13 +136,11 @@ class SubmissionValueVariablesState:
             if key in self._variables:
                 del self._variables[key]
 
-    # TODO: Argument request present for when we will use the data in the session to put
-    #  data returned from DigiD/eHerkenning into static vars
     def static_data(self, request: "Request") -> dict:
         if self._static_data is None:
             self._static_data = {
                 variable.key: variable.initial_value
-                for variable in FormVariable.get_static_data()
+                for variable in FormVariable.get_static_data(request)
             }
         return self._static_data
 

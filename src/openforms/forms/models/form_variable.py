@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
 from django.core.validators import RegexValidator
 from django.db import models, transaction
@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 
 from glom import Path, glom
 
+from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 from openforms.formio.utils import (
     component_in_editgrid,
     get_component,
@@ -27,6 +28,8 @@ from .form_definition import FormDefinition
 
 if TYPE_CHECKING:
     from .form import Form
+    from rest_framework.request import Request
+
     from .form_step import FormStep
 
 
@@ -34,7 +37,18 @@ def get_now() -> str:
     return timezone.now().isoformat()
 
 
-STATIC_INITIAL_VALUES = {FormVariableStaticInitialValues.now: get_now}
+def get_auth_identifier(request: Optional["Request"]) -> Optional[str]:
+    if not request or not hasattr(request, "session"):
+        return None
+
+    # TODO what is the structure of the data in the machtigen field?
+    return request.session.get(FORM_AUTH_SESSION_KEY)
+
+
+STATIC_INITIAL_VALUES = {
+    FormVariableStaticInitialValues.now: get_now,
+    FormVariableStaticInitialValues.auth_identifier: get_auth_identifier,
+}
 
 
 class FormVariableManager(models.Manager):
@@ -220,7 +234,7 @@ class FormVariable(models.Model):
         return self.initial_value or None
 
     @staticmethod
-    def get_static_data() -> List["FormVariable"]:
+    def get_static_data(request: Optional["Request"] = None) -> List["FormVariable"]:
         now = FormVariable(
             name="Now",
             key="now",
@@ -228,7 +242,14 @@ class FormVariable(models.Model):
             initial_value=STATIC_INITIAL_VALUES["now"](),
         )
 
-        return [now]
+        auth_identifier = FormVariable(
+            name="Authentication identifier",
+            key="auth_identifier",
+            data_type=FormVariableDataTypes.object,
+            initial_value=STATIC_INITIAL_VALUES["auth_identifier"](request),
+        )
+
+        return [now, auth_identifier]
 
     def derive_info_from_component(self):
         if self.source != FormVariableSources.component or not self.form_definition:

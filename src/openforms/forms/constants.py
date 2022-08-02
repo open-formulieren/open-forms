@@ -55,3 +55,4 @@ class FormVariableDataTypes(DjangoChoices):
 
 class FormVariableStaticInitialValues(DjangoChoices):
     now = ChoiceItem("now", _("Now"))
+    auth_identifier = ChoiceItem("auth_identifier", "Authentication identifier")
