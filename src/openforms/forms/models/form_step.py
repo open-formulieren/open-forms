@@ -79,5 +79,11 @@ class FormStep(OrderedModel):
         else:
             return super().__str__()
 
+    def delete(self, using=None, keep_parents=False):
+        super().delete(using=using, keep_parents=keep_parents)
+
+        if not self.form_definition.is_reusable:
+            self.form_definition.delete()
+
     def iter_components(self, recursive=True, **kwargs):
         yield from self.form_definition.iter_components(recursive=recursive, **kwargs)
