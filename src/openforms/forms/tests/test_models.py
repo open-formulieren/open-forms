@@ -259,7 +259,6 @@ class FormQuerysetTestCase(TestCase):
 class FormDefinitionTestCase(TestCase):
     def setUp(self) -> None:
         self.form_definition = FormDefinitionFactory.create()
-        self.reusable_form_definition = FormDefinitionFactory.create()
 
     def test_deleting_form_definition_fails_when_used_by_form(self):
         self.form_definition.delete()
