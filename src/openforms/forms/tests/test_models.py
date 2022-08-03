@@ -259,6 +259,7 @@ class FormQuerysetTestCase(TestCase):
 class FormDefinitionTestCase(TestCase):
     def setUp(self) -> None:
         self.form_definition = FormDefinitionFactory.create()
+        self.reusable_form_definition = FormDefinitionFactory.create()
 
     def test_deleting_form_definition_fails_when_used_by_form(self):
         self.form_definition.delete()
@@ -333,6 +334,25 @@ class FormDefinitionTestCase(TestCase):
         self.assertEqual(
             self.form_definition_with_sensitive_information.sensitive_fields,
             ["textFieldSensitive"],
+        )
+
+    def test_not_reusable_form_definitions_deleted(self):
+        step = FormStepFactory.create(form_definition=self.form_definition)
+
+        step.delete()
+
+        self.assertFalse(
+            FormDefinition.objects.filter(pk=step.form_definition.pk).exists()
+        )
+
+    def test_reusable_form_definition_not_deleted(self):
+        reusable_form_definition = FormDefinitionFactory(is_reusable=True)
+        step = FormStepFactory.create(form_definition=reusable_form_definition)
+
+        step.delete()
+
+        self.assertTrue(
+            FormDefinition.objects.filter(pk=step.form_definition.pk).exists()
         )
 
 
