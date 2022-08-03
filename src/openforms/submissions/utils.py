@@ -12,8 +12,9 @@ from openforms.emails.confirmation_emails import (
 )
 from openforms.emails.utils import (
     render_email_template,
+    send_mail_html,
+    strip_tags_plus,
 )
-from openforms.emails.utils import send_mail_html, strip_tags_plus
 from openforms.forms.constants import FormVariableSources
 from openforms.forms.models import FormVariable
 from openforms.logging import logevent

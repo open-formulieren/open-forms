@@ -15,11 +15,7 @@ from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
 from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
 from openforms.config.models import GlobalConfiguration
-from openforms.emails.utils import (
-    render_email_template,
-    send_mail_html,
-    strip_tags_plus,
-)
+from openforms.emails.utils import render_email_template, send_mail_html
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import FormStep
@@ -352,7 +348,6 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
             "save_date": timezone.now(),
             "expiration_date": datetime_removed,
             "continue_url": continue_url,
-            "rendering_text": True,
         }
 
         send_mail_html(
@@ -360,12 +355,6 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
             render_email_template(config.save_form_email_content, context),
             settings.DEFAULT_FROM_EMAIL,
             [email],
-            text_message=strip_tags_plus(
-                render_email_template(
-                    config.save_form_email_content, context, rendering_text=True
-                ),
-                keep_leading_whitespace=True,
-            ),
         )
 
 
