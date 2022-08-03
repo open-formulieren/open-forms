@@ -10,14 +10,15 @@ teksten die aangepaste kunnen worden op basis van het ingevulde formulier.
 Momenteel worden sjablonen gebruikt voor:
 
 * Bevestigingsmail
+* Formulier opslaan e-mail
 * Bevestigingspagina
 
-De tekst kan in deze elementen aangepast worden met **variabelen** en 
-**voorwaardelijke weergave**. De variabelen die beschikbaar zijn, zijn 
+De tekst kan in deze elementen aangepast worden met **variabelen** en
+**voorwaardelijke weergave**. De variabelen die beschikbaar zijn, zijn
 afhankelijk van het type sjabloon en het formulier.
 
 Stel, we hebben een formulier met daarin onderstaande velden en een gebruiker
-heeft voor elk formulierveld een bepaalde *waarde* ingevuld. Technisch heeft 
+heeft voor elk formulierveld een bepaalde *waarde* ingevuld. Technisch heeft
 elk veld een *eigenschap*-attribuut wat het veld uniek identifieert.
 
 ==========  =============
@@ -65,24 +66,24 @@ Voorwaardelijke weergave
 ------------------------
 
 Met behulp van voorwaardelijke weergave kunt u bepaalde teksten in sjablonen
-tonen of verbergen op basis van bepaalde voorwaarden. Dit zijn zogenaamde 
+tonen of verbergen op basis van bepaalde voorwaarden. Dit zijn zogenaamde
 **Als** *dit* **dan** *dat*-constructies.
 
 Om dit te doen kunt u ``{% if <eigenschap> %}``, ``{% elif <eigenschap> %}``,
-``{% else %}`` en ``{% endif %}`` opnemen in sjablonen. De voorwaarde 
+``{% else %}`` en ``{% endif %}`` opnemen in sjablonen. De voorwaarde
 (``if <eigenschap>``) wordt geëvalueerd naar waar of onwaar. Indien waar, dan
 wordt de tekst tussen twee van de ``{% %}``-instructies weergeven. Een
 ``if``-instructie moet worden afgesloten met een ``endif``-instructie.
 
-U kunt ``and`` en ``or`` gebruiken om meerdere ``eigenschappen`` te evalueren 
-en u kunt variabelen vergelijken met een bepaalde waarde door verschillende 
-operatoren te gebruiken: ``==`` (gelijk aan), ``!=`` (niet gelijk aan), ``>`` 
-(groter dan) of ``<`` (kleiner dan). De laatste twee kunnen alleen met 
+U kunt ``and`` en ``or`` gebruiken om meerdere ``eigenschappen`` te evalueren
+en u kunt variabelen vergelijken met een bepaalde waarde door verschillende
+operatoren te gebruiken: ``==`` (gelijk aan), ``!=`` (niet gelijk aan), ``>``
+(groter dan) of ``<`` (kleiner dan). De laatste twee kunnen alleen met
 numerieke waarden.
 
-Als u geen vergelijking maakt, controleert de ``if``-instructie simpelweg of 
-de waarde van de ``eigenschap`` niet leeg is. Ten slotte kunt u controleren 
-of een variabele leeg is door ``not`` ervoor te zetten: 
+Als u geen vergelijking maakt, controleert de ``if``-instructie simpelweg of
+de waarde van de ``eigenschap`` niet leeg is. Ten slotte kunt u controleren
+of een variabele leeg is door ``not`` ervoor te zetten:
 ``{% if not <eigenschap> %}...``
 
 Het is mogelijk om voorwaarden binnen aandere voorwaarden te gebruiken.
@@ -118,14 +119,14 @@ Voorbeeld
 Bevestigingsmail
 ================
 
-De bevestigingsmail is een optionele e-mail die wordt verzonden wanneer een 
+De bevestigingsmail is een optionele e-mail die wordt verzonden wanneer een
 gebruiker een formulier verstuurd. De bevestigingsmail heeft toegang tot alle
 gegevens uit het formulier en de waarden ingevuld door de gebruiker.
 
 **Speciale instructies**
 
-Dit zijn aanvullende variabelen en instructies die beschikbaar zijn voor de 
-sjabloon. Als een variabele niet beschikbaar maar wel aanwezig is in het 
+Dit zijn aanvullende variabelen en instructies die beschikbaar zijn voor de
+sjabloon. Als een variabele niet beschikbaar maar wel aanwezig is in het
 sjabloon, dan wordt deze niet getoond.
 
 ==================================  ===========================================================================
@@ -156,7 +157,7 @@ Voorbeeld
          Uw referentienummer is: {{ public_reference }}
 
          Let u alstublieft op het volgende:
-         
+
          {% product_information %}
 
          {% summary %}
@@ -215,17 +216,36 @@ Voorbeeld
          Open Formulieren
 
 
+Formulier opslaan e-mail
+================
+
+**Speciale instructies**
+
+Dit zijn aanvullende variabelen en instructies die beschikbaar zijn voor de
+sjabloon. Als een variabele niet beschikbaar maar wel aanwezig is in het
+sjabloon, dan wordt deze niet getoond.
+
+==================================  ===========================================================================
+Variabele                           Beschrijving
+==================================  ===========================================================================
+``{{ form_name }}``                 De naam van het formulier.
+``{{ save_date }}``                 De datum waarop het formulier is opgeslagen.
+``{{ expiration_date }}``           De datum waarop het formulier zal vervallen.
+``{{ continue_url }}``              De URL om het formulier te hervatten.
+==================================  ===========================================================================
+
+
 Bevestigingspagina
 ==================
 
 De bevestigingspagina is de pagina die wordt weergegeven nadat het formulier is
-verstuurd. De bevestigingspagina heeft toegang tot alle gegevens uit het 
-formulier en de waarden ingevuld door de gebruiker. 
+verstuurd. De bevestigingspagina heeft toegang tot alle gegevens uit het
+formulier en de waarden ingevuld door de gebruiker.
 
 **Speciale instructies**
 
-Dit zijn aanvullende variabelen en instructies die beschikbaar zijn voor de 
-sjabloon. Als een variabele niet beschikbaar maar wel aanwezig is in het 
+Dit zijn aanvullende variabelen en instructies die beschikbaar zijn voor de
+sjabloon. Als een variabele niet beschikbaar maar wel aanwezig is in het
 sjabloon, dan wordt deze niet getoond.
 
 ==================================  ===========================================================================
