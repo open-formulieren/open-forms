@@ -193,7 +193,7 @@ const Trigger = ({name, logic, onChange, error, withDSLPreview = false, children
           onChange={onTriggerChange}
         />
       );
-      if (triggerVariable?.dataType === COMPONENT_DATATYPES.date) {
+      if (triggerVariable?.dataType === 'datetime') {
         compareValue = {date: operand};
       } else {
         compareValue = operand;
@@ -206,11 +206,11 @@ const Trigger = ({name, logic, onChange, error, withDSLPreview = false, children
           name="operand"
           value={operand}
           onChange={onTriggerChange}
-          // filter variables of the same type as the trigger component
+          // filter variables of the same type as the trigger variable
           filter={variable => variable.dataType === triggerVariable?.dataType}
         />
       );
-      if (triggerVariable?.dataType === COMPONENT_DATATYPES.date) {
+      if (triggerVariable?.dataType === 'datetime') {
         compareValue = {date: {var: operand}};
       } else {
         compareValue = {var: operand};
@@ -259,6 +259,7 @@ const Trigger = ({name, logic, onChange, error, withDSLPreview = false, children
   let firstOperand;
   if (triggerVariable?.source === VARIABLE_SOURCES.component) {
     const triggerComponent = formContext.components[triggerVariableKey];
+    // Handling components special cases
     switch (triggerComponent.type) {
       case 'date': {
         firstOperand = {date: {var: triggerVariableKey}};

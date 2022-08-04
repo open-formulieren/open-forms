@@ -3,6 +3,8 @@ import jsonLogic from 'json-logic-js';
 import PropTypes from 'prop-types';
 import {useIntl} from 'react-intl';
 
+import jsonPropTypeValidator from 'utils/JsonPropTypeValidator';
+
 import {TextArea} from './Inputs';
 
 // dump JSON in a readable form
@@ -67,7 +69,7 @@ const JsonWidget = ({name, logic, onChange}) => {
 
 JsonWidget.propTypes = {
   name: PropTypes.string.isRequired,
-  logic: PropTypes.object.isRequired,
+  logic: jsonPropTypeValidator,
   onChange: PropTypes.func.isRequired,
 };
 

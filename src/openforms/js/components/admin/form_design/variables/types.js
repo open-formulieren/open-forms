@@ -11,7 +11,13 @@ const Variable = PropTypes.shape({
   dataType: PropTypes.string,
   dataFormat: PropTypes.string,
   isSensitiveData: PropTypes.bool,
-  initialValue: PropTypes.string,
+  initialValue: PropTypes.oneOfType([
+    PropTypes.array,
+    PropTypes.bool,
+    PropTypes.number,
+    PropTypes.object,
+    PropTypes.string,
+  ]),
   errors: PropTypes.object,
 });
 

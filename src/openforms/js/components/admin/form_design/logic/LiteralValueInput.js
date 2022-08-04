@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {TextInput, NumberInput, DateInput} from 'components/admin/forms/Inputs';
-import {COMPONENT_DATATYPES} from 'components/admin/form_design/variables/constants';
 
 const TYPE_TO_INPUT_TYPE = {
   float: NumberInput,
@@ -19,7 +18,7 @@ const LiteralValueInput = ({name, type, value = '', onChange, ...extraProps}) =>
 
     // do any input type conversions if needed, e.g. date to native datetime/ISO-8601 format
     switch (type) {
-      case COMPONENT_DATATYPES.number: {
+      case 'float': {
         value = Number.parseFloat(inputValue);
         break;
       }
