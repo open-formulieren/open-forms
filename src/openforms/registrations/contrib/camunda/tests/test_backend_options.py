@@ -23,20 +23,22 @@ class FormRegistrationBackendOptionsTests(APITestCase):
         cls.form = FormFactory.create(
             generate_minimal_setup=True,
             registration_backend="camunda",
-            formstep__form_definition__configuration=[
-                {
-                    "key": "test1",
-                    "type": "textfield",
-                },
-                {
-                    "key": "test2",
-                    "type": "textfield",
-                },
-                {
-                    "key": "test3",
-                    "type": "textfield",
-                },
-            ],
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "test1",
+                        "type": "textfield",
+                    },
+                    {
+                        "key": "test2",
+                        "type": "textfield",
+                    },
+                    {
+                        "key": "test3",
+                        "type": "textfield",
+                    },
+                ]
+            },
         )
         cls.endpoint = reverse(
             "api:form-detail", kwargs={"uuid_or_slug": cls.form.uuid}
@@ -152,12 +154,14 @@ class FormRegistrationBackendOptionsTests(APITestCase):
         form = FormFactory.create(
             generate_minimal_setup=True,
             registration_backend="camunda",
-            formstep__form_definition__configuration=[
-                {
-                    "key": "test1",
-                    "type": "textfield",
-                },
-            ],
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "test1",
+                        "type": "textfield",
+                    },
+                ]
+            },
             registration_backend_options={
                 "process_definition": "invoice",
                 "process_definition_version": None,

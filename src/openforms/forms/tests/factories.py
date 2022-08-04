@@ -98,6 +98,13 @@ class FormStepFactory(factory.django.DjangoModelFactory):
         FormVariable.objects.create_for_formstep(form_step)
         return form_step
 
+    @classmethod
+    def _create(cls, *args, **kwargs):
+        # This method is called instead of create() from the FormFactory with `generte_minimal_setup`
+        form_step = super()._create(*args, **kwargs)
+        FormVariable.objects.create_for_formstep(form_step)
+        return form_step
+
 
 class FormVersionFactory(factory.django.DjangoModelFactory):
     form = factory.SubFactory(FormFactory)

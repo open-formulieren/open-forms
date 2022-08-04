@@ -45,7 +45,9 @@ class PrefillVariablesTests(TestCase):
     )
     def test_applying_prefill_plugins(self, m_prefill):
         form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
-        submission_step = SubmissionStepFactory.create(submission__form=form_step.form)
+        submission_step = SubmissionStepFactory.create(
+            submission__form=form_step.form, form_step=form_step
+        )
 
         prefill_variables(submission=submission_step.submission)
 
