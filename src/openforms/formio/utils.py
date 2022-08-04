@@ -2,7 +2,9 @@ import logging
 from datetime import date, datetime
 from typing import Any, Dict, Iterator, List
 
-from ..forms.constants import FormVariableDataTypes
+from openforms.forms.constants import FormVariableDataTypes
+
+from ..typing import JSONObject
 from .constants import COMPONENT_DATATYPES
 from .typing import Component
 
@@ -29,6 +31,12 @@ def iter_components(
                 yield from iter_components(
                     configuration=component, recursive=recursive, _is_root=False
                 )
+
+
+def get_component(configuration: JSONObject, key: str) -> JSONObject:
+    for component in iter_components(configuration=configuration, recursive=True):
+        if component["key"] == key:
+            return component
 
 
 def get_default_values(configuration: dict) -> Dict[str, Any]:

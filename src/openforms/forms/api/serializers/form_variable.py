@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from openforms.submissions.form_logic import get_component
+from openforms.formio.utils import get_component
 
 from ...constants import FormVariableSources
 from ...models import FormVariable

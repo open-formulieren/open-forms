@@ -11,6 +11,7 @@ from glom import Path, glom
 
 from openforms.formio.utils import (
     component_in_editgrid,
+    get_component,
     get_component_datatype,
     get_component_default_value,
     is_layout_component,
@@ -229,8 +230,6 @@ class FormVariable(models.Model):
         return [now]
 
     def derive_info_from_component(self):
-        from openforms.submissions.form_logic import get_component
-
         if self.source != FormVariableSources.component or not self.form_definition:
             return
 
