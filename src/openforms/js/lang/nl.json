@@ -954,6 +954,11 @@
     "description": "Default delete confirmation message",
     "originalDefault": "Are you sure you want to delete this?"
   },
+  "ZB6mnn": {
+    "defaultMessage": "The variable key must be unique within a form",
+    "description": "Unique key error message",
+    "originalDefault": "The variable key must be unique within a form"
+  },
   "ZICfus": {
     "defaultMessage": "'Vorige' tekst",
     "description": "Form step previous text label",

@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import {Utils as FormioUtils} from 'formiojs';
+import {defineMessage} from 'react-intl';
 
 import {COMPONENT_DATATYPES, VARIABLE_SOURCES} from './constants';
 
@@ -36,6 +37,7 @@ const isPasteEvent = (mutationType, newComponent, oldComponent) => {
 };
 
 const makeNewVariableFromComponent = (component, formDefinition) => {
+  // The URL of the form will be added during the onSubmit callback (so that the formUrl is available)
   return {
     name: component.label,
     key: component.key,
@@ -46,12 +48,13 @@ const makeNewVariableFromComponent = (component, formDefinition) => {
     prefillAttribute: component.prefill?.attribute || '',
     dataType: getComponentDatatype(component),
     initialValue: getDefaultValue(component),
+    _id: component.id,
   };
 };
 
 const shouldNotUpdateVariables = (newComponent, oldComponent, mutationType, stepConfiguration) => {
   // Issue #1695: content components are not considered layout components
-  if (newComponent.type === 'content') return false;
+  if (newComponent.type === 'content') return true;
 
   // editGrids ARE layout components, but we want to create a variable for them that contains all
   // the data of the children
@@ -80,57 +83,58 @@ const getFormVariables = (formDefinition, configuration) => {
 const updateFormVariables = (
   formDefinition,
   mutationType,
+  isNew,
   newComponent,
   oldComponent,
   currentFormVariables,
   stepConfiguration
 ) => {
+  // Not all components are associated with variables
+  if (shouldNotUpdateVariables(newComponent, oldComponent, mutationType, stepConfiguration)) {
+    return currentFormVariables;
+  }
+
   let updatedFormVariables = _.cloneDeep(currentFormVariables);
-  const existingKeys = updatedFormVariables
-    .filter(variable => variable.source === VARIABLE_SOURCES.component)
-    .map(variable => variable.key);
 
-  // The 'change' event is emitted for both create and update events (and 'paste' events)
-  if (mutationType === 'changed') {
-    // Not all components are associated with variables
-    if (shouldNotUpdateVariables(newComponent, oldComponent, mutationType, stepConfiguration)) {
-      return currentFormVariables;
-    }
-
+  // This is a 'create' or a 'paste' event
+  if (isNew) {
     // This is the case where a Layout component has been pasted, so the variables for the components INSIDE
     // the layout component need to be generated.
-    if (!existingKeys.includes(newComponent.key) && isLayoutComponent(newComponent)) {
+    if (isLayoutComponent(newComponent) && newComponent.type !== 'editgrid') {
       FormioUtils.eachComponent([newComponent], component =>
         updatedFormVariables.push(makeNewVariableFromComponent(component, formDefinition))
       );
-    }
-    // This is either a create event, a change of a component key
-    else if (!existingKeys.includes(newComponent.key)) {
-      // The URL of the form will be added during the onSubmit callback (so that the formUrl is available)
-      updatedFormVariables.push(makeNewVariableFromComponent(newComponent, formDefinition));
-
-      // This is the case where the key of a component has been changed
-      if (newComponent.key !== oldComponent.key) {
-        updatedFormVariables = updatedFormVariables.filter(
-          variable => variable.key !== oldComponent.key
-        );
-      }
     } else {
-      // This is the case where other attributes (not the key) of the component have changed.
-      updatedFormVariables = updatedFormVariables.map(variable => {
-        if (variable.key !== newComponent.key) return variable;
+      // When a new component is created, the callback is called multiple times by Formio. So we need to avoid adding
+      // the variable more than once.
+      const existingIds = updatedFormVariables
+        .filter(variable => !!variable._id)
+        .map(variable => variable._id);
+      if (existingIds.includes(newComponent.id)) return updatedFormVariables;
 
-        return {
-          ...variable,
-          name: newComponent.label,
-          prefillPlugin: newComponent.prefill?.plugin || '',
-          prefillAttribute: newComponent.prefill?.attribute || '',
-          isSensitiveData: newComponent.isSensitiveData,
-          initialValue: getDefaultValue(newComponent),
-        };
-      });
+      updatedFormVariables.push(makeNewVariableFromComponent(newComponent, formDefinition));
     }
+  }
+  // The 'change' event is emitted for both 'create', 'paste' and 'update' events
+  // but 'update' events have isNew = false
+  else if (mutationType === 'changed') {
+    updatedFormVariables = updatedFormVariables.map(variable => {
+      // The id of the component changes on every save
+      const idMatch = variable._id === oldComponent.id;
+      // Case in which the component key has changed (possibly among other attributes)
+      if (newComponent.key !== oldComponent.key) {
+        if (variable.key === oldComponent.key && idMatch)
+          return makeNewVariableFromComponent(newComponent, formDefinition);
+        // This is the case where other attributes (not the key) of the component have changed.
+      } else {
+        if (variable.key === newComponent.key && idMatch)
+          return makeNewVariableFromComponent(newComponent, formDefinition);
+      }
+
+      return variable;
+    });
   } else if (mutationType === 'removed') {
+    // When a component is removed, oldComponent is null
     let keysToRemove = [newComponent.key];
 
     // Case where a layout component is being removed,
@@ -141,13 +145,40 @@ const updateFormVariables = (
       });
     }
 
-    // When a component is removed, oldComponent is null
-    updatedFormVariables = updatedFormVariables.filter(
-      variable => !keysToRemove.includes(variable.key)
-    );
+    updatedFormVariables = updatedFormVariables.filter(variable => {
+      const matchKeyToRemove = keysToRemove.includes(variable.key);
+
+      // In the case that there are duplicate keys, we need to figure out which of the variables with duplicate keys
+      // should be removed. Since in a step there can't be duplicate keys, check that the formDefinition matches
+      return !matchKeyToRemove || variable.formDefinition !== formDefinition;
+    });
   }
 
   return updatedFormVariables;
+};
+
+const checkForDuplicateKeys = (formVariables, staticVariables) => {
+  let validationErrors = [];
+  let existingKeys = staticVariables.map(variable => variable.key);
+
+  const uniqueErrorMessage = defineMessage({
+    description: 'Unique key error message',
+    defaultMessage: 'The variable key must be unique within a form',
+  });
+
+  formVariables.map((variable, index) => {
+    if (existingKeys.includes(variable.key)) {
+      validationErrors.push([`variables.${index}.key`, uniqueErrorMessage]);
+
+      if (!variable.errors) variable.errors = {};
+      variable.errors['key'] = uniqueErrorMessage;
+      return;
+    }
+
+    existingKeys.push(variable.key);
+  });
+
+  return validationErrors;
 };
 
 const getDefaultValue = component => {
@@ -157,4 +188,6 @@ const getDefaultValue = component => {
   return null;
 };
 
-export {updateFormVariables, getFormVariables};
+const variableHasErrors = variable => !!Object.entries(variable.errors || {}).length;
+
+export {updateFormVariables, getFormVariables, checkForDuplicateKeys, variableHasErrors};

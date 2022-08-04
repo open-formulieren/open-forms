@@ -2,6 +2,7 @@ import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
 
 import FAIcon from 'components/admin/FAIcon';
 import DeleteIcon from 'components/admin/DeleteIcon';
@@ -13,6 +14,8 @@ import {get} from 'utils/fetch';
 import Field from 'components/admin/forms/Field';
 
 import {DATATYPES_CHOICES} from './constants';
+import {variableHasErrors} from './utils';
+import Variable from './types';
 
 const SensitiveData = ({isSensitive}) => {
   const intl = useIntl();
@@ -32,6 +35,35 @@ const SensitiveData = ({isSensitive}) => {
   );
 };
 
+const Td = ({variable, fieldName}) => {
+  const intl = useIntl();
+
+  const field = variable[fieldName];
+  let fieldErrors = variable.errors ? variable.errors[fieldName] : [];
+
+  if (!Array.isArray(fieldErrors)) fieldErrors = [fieldErrors];
+
+  fieldErrors = fieldErrors.map(error => {
+    if (typeof error !== 'string' && error.defaultMessage) {
+      return intl.formatMessage(error);
+    }
+    return error;
+  });
+
+  return (
+    <td>
+      <Field name={fieldName} errors={fieldErrors}>
+        <div>{field}</div>
+      </Field>
+    </td>
+  );
+};
+
+Td.propTypes = {
+  variable: Variable.isRequired,
+  fieldName: PropTypes.string.isRequired,
+};
+
 const VariableRow = ({index, variable}) => {
   const formContext = useContext(FormContext);
   const formSteps = formContext.formSteps;
@@ -44,11 +76,15 @@ const VariableRow = ({index, variable}) => {
     return '';
   };
 
+  const rowClassnames = classNames(`row${(index % 2) + 1}`, 'variables-table__row', {
+    'variables-table__row--errors': variableHasErrors(variable),
+  });
+
   return (
-    <tr className={`row${(index % 2) + 1}`}>
+    <tr className={rowClassnames}>
       <td />
       <td>{variable.name}</td>
-      <td>{variable.key}</td>
+      <Td variable={variable} fieldName="key" />
       <td>{getFormDefinitionName(variable.formDefinition)}</td>
       <td>{variable.prefillAttribute}</td>
       <td>{variable.prefillPlugin}</td>
@@ -106,12 +142,10 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
     setPrefillAttributeChoices(response.data.map(attribute => [attribute.id, attribute.label]));
   }, [variable.prefillPlugin]);
 
-  const hasErrors = Object.entries(variable.errors || {}).length;
-
   return (
     <tr
       className={classNames('variables-table__row', `row${(index % 2) + 1}`, {
-        'variables-table__row--errors': hasErrors,
+        'variables-table__row--errors': variableHasErrors(variable),
       })}
     >
       <td>
@@ -149,7 +183,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
           <Select
             name="prefillPlugin"
             choices={prefillPluginChoices}
-            value={variable.prefillPlugin}
+            value={variable.prefillPlugin || ''}
             onChange={onValueChanged}
             allowBlank
           />
@@ -160,7 +194,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
           <Select
             name="prefillAttribute"
             choices={prefillAttributeChoices}
-            value={variable.prefillAttribute}
+            value={variable.prefillAttribute || ''}
             onChange={onValueChanged}
             disabled={loading || !variable.prefillPlugin}
           />
@@ -172,7 +206,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
             name="dataType"
             choices={DATATYPES_CHOICES}
             translateChoices
-            value={variable.dataType}
+            value={variable.dataType || ''}
             onChange={onValueChanged}
           />
         </Field>
@@ -288,14 +322,14 @@ const VariablesTable = ({variables, editable, onChange, onDelete}) => {
         {variables.map((variable, index) =>
           editable ? (
             <EditableVariableRow
-              key={variable.key}
+              key={`${variable.key}-${index}`}
               index={index}
               variable={variable}
               onChange={onChange}
               onDelete={onDelete}
             />
           ) : (
-            <VariableRow key={variable.key} index={index} variable={variable} />
+            <VariableRow key={`${variable.key}-${index}`} index={index} variable={variable} />
           )
         )}
       </ChangelistTableWrapper>

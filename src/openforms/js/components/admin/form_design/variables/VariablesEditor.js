@@ -9,10 +9,15 @@ import {VARIABLE_SOURCES} from './constants';
 import UserDefinedVariables from './UserDefinedVariables';
 import VariablesTable from './VariablesTable';
 import StaticData from './StaticData';
+import {variableHasErrors} from './utils';
 
 const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
   const userDefinedVariables = variables.filter(
     variable => variable.source === VARIABLE_SOURCES.userDefined
+  );
+
+  const componentVariables = variables.filter(
+    variable => variable.source === VARIABLE_SOURCES.component
   );
 
   return (
@@ -28,17 +33,13 @@ const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
       <div className="variables-editor__tabs">
         <Tabs>
           <TabList>
-            <Tab>
+            <Tab hasErrors={componentVariables.some(variable => variableHasErrors(variable))}>
               <FormattedMessage
                 defaultMessage="Component"
                 description="Component variables tab title"
               />
             </Tab>
-            <Tab
-              hasErrors={userDefinedVariables.some(
-                variable => Object.entries(variable.errors || {}).length
-              )}
-            >
+            <Tab hasErrors={userDefinedVariables.some(variable => variableHasErrors(variable))}>
               <FormattedMessage
                 defaultMessage="User defined"
                 description="User defined variables tab title"
@@ -50,17 +51,11 @@ const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {
           </TabList>
 
           <TabPanel>
-            <VariablesTable
-              variables={variables.filter(
-                variable => variable.source === VARIABLE_SOURCES.component
-              )}
-            />
+            <VariablesTable variables={componentVariables} />
           </TabPanel>
           <TabPanel>
             <UserDefinedVariables
-              variables={variables.filter(
-                variable => variable.source === VARIABLE_SOURCES.userDefined
-              )}
+              variables={userDefinedVariables}
               onAdd={onAdd}
               onDelete={onDelete}
               onChange={onChange}

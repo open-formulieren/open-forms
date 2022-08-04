@@ -160,13 +160,18 @@ class FormVariableViewsetTest(APITestCase):
         error = response.json()
 
         self.assertEqual(error["code"], "invalid")
+        self.assertEqual(1, len(error["invalidParams"]))
         self.assertEqual(
             error["invalidParams"][0]["reason"],
-            "The form and key attributes must be unique together",
+            "The variable key must be unique within a form",
         )
         self.assertEqual(
             error["invalidParams"][0]["code"],
             "unique",
+        )
+        self.assertEqual(
+            error["invalidParams"][0]["name"],
+            "1.key",
         )
 
     def test_list_form_variables(self):

@@ -54,7 +54,12 @@ import {
   getFormStep,
   parseValidationErrors,
 } from './utils';
-import {getFormVariables, updateFormVariables} from './variables/utils';
+import {
+  checkForDuplicateKeys,
+  getFormVariables,
+  updateFormVariables,
+  variableHasErrors,
+} from './variables/utils';
 import VariablesEditor from './variables/VariablesEditor';
 import {EMPTY_VARIABLE} from './variables/constants';
 import Tab from './Tab';
@@ -338,13 +343,16 @@ function reducer(draft, action) {
       const {mutationType, schema, args, formDefinition} = action.payload;
 
       let originalComp;
+      let isNew;
       switch (mutationType) {
         case 'changed': {
-          [originalComp] = args;
+          originalComp = args[0];
+          isNew = args[4];
           break;
         }
         case 'removed': {
           originalComp = null;
+          isNew = false;
           break;
         }
         default:
@@ -379,10 +387,14 @@ function reducer(draft, action) {
       draft.formVariables = updateFormVariables(
         formDefinition,
         mutationType,
+        isNew,
         schema,
         originalComp,
         draft.formVariables,
         step.configuration
+      );
+      draft.validationErrors = draft.validationErrors.concat(
+        checkForDuplicateKeys(draft.formVariables, draft.staticVariables)
       );
 
       // check if we need updates to the backendRegistrationOptions
@@ -620,7 +632,9 @@ function reducer(draft, action) {
       // Check that after the update there are no duplicate keys.
       // If it is the case, update the key that was last updated
       if (propertyName === 'key') {
-        const existingKeysAfterUpdate = draft.formVariables.map(variable => variable.key);
+        const existingKeysAfterUpdate = draft.staticVariables
+          .concat(draft.formVariables)
+          .map(variable => variable.key);
         const uniqueKeysAfterUpdate = new Set(existingKeysAfterUpdate);
 
         if (existingKeysAfterUpdate.length !== uniqueKeysAfterUpdate.size) {
@@ -1106,11 +1120,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
               />
             </Tab>
             {featureFlags.enable_form_variables && (
-              <Tab
-                hasErrors={state.formVariables.some(
-                  variable => Object.entries(variable.errors || {}).length
-                )}
-              >
+              <Tab hasErrors={state.formVariables.some(variable => variableHasErrors(variable))}>
                 <FormattedMessage defaultMessage="Variables" description="Variables tab title" />
               </Tab>
             )}
