@@ -27,6 +27,7 @@ class PhoneNumberTestCase(ValidatorTestBase):
             "+31612345678",
             "+441134960000",  # US test number
             "+1 206 555 0100",  # US test number
+            "0031612345678",
         ]
         invalid = [
             "",
@@ -45,6 +46,7 @@ class PhoneNumberTestCase(ValidatorTestBase):
         validator = DutchPhoneNumberValidator()
         valid = [
             "+31612345678",
+            "0031612345678",
             "+31 612 345 678",
             "0612345678",
             "020 753 0523",
