@@ -7,8 +7,9 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.authentication.constants import AuthAttribute
 
-from ...constants import FormVariableSources
+from ...constants import FormVariableDataTypes, FormVariableSources
 from ...models import FormVariable
 from ..factories import FormFactory, FormVariableFactory
 
@@ -102,6 +103,49 @@ class VariablesInLogicAPITests(APITestCase):
                 "==": [
                     {"var": "now"},
                     "2021-07-16T21:15:00+00:00",
+                ]
+            },
+            "actions": [
+                {
+                    "action": {
+                        "type": "disable-next",
+                    }
+                }
+            ],
+        }
+
+        self.client.force_authenticate(user=user)
+        url = reverse("api:form-logics-list")
+        response = self.client.post(url, data=form_logic_data)
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+    @patch(
+        "openforms.forms.models.FormVariable.get_static_data",
+        return_value=[
+            FormVariable(
+                name="Authentication identifier",
+                key="auth_identifier",
+                data_type=FormVariableDataTypes.object,
+                initial_value={
+                    "plugin": "digid",
+                    "attribute": AuthAttribute.bsn,
+                    "value": "123456782",
+                },
+            )
+        ],
+    )
+    def test_auth_static_variable_in_trigger(self, m_get_static_data):
+        user = SuperUserFactory.create()
+        form = FormFactory.create()
+
+        form_logic_data = {
+            "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+            "order": 0,
+            "json_logic_trigger": {
+                "==": [
+                    {"var": "auth_identifier.plugin"},
+                    "digid",
                 ]
             },
             "actions": [
@@ -230,3 +274,4 @@ class VariablesInLogicBulkAPITests(APITestCase):
         response = self.client.put(url, data=form_logic_data)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
+
