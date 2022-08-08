@@ -7,7 +7,7 @@ import {getTranslatedChoices} from 'utils/i18n';
 
 const OPERAND_TYPES = {
   literal: defineMessage({description: '"literal" operand type', defaultMessage: 'value'}),
-  component: defineMessage({description: '"component" operand type', defaultMessage: 'the field'}),
+  variable: defineMessage({description: '"variable" operand type', defaultMessage: 'the variable'}),
   today: defineMessage({description: '"today" operand type', defaultMessage: 'today'}),
   array: defineMessage({description: '"array" operand type', defaultMessage: 'the array'}),
 };

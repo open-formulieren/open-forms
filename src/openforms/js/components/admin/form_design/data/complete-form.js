@@ -291,13 +291,15 @@ const saveCompleteForm = async (state, featureFlags, csrftoken) => {
     return [newState, stepsValidationErrors];
   }
 
-  // save (normal) logic and price logic rules
-  [newState, logicValidationErrors] = await saveLogic(newState, csrftoken);
-
   // variables - only if feature flag is enabled!
+  // Variables should be created before logic rules,
+  // since the logic rules validate if the variables in the trigger exist.
   if (featureFlags.enable_form_variables) {
     [newState, variableValidationErrors] = await saveVariables(newState, csrftoken);
   }
+
+  // save (normal) logic and price logic rules
+  [newState, logicValidationErrors] = await saveLogic(newState, csrftoken);
 
   const validationErrors = [...logicValidationErrors, ...variableValidationErrors];
   if (!validationErrors.length) {

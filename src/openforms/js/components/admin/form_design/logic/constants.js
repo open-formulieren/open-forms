@@ -47,12 +47,10 @@ const OPERATORS = {
 // map the Formio component types to allowed operators. Strings cannot be compared
 // against each other for >=,>,<,<= etc., so this includes a logical allow-list to only
 // show relevant components.
-const COMPONENT_TYPE_TO_OPERATORS = {
-  number: ['==', '!=', '>', '>=', '<', '<='],
-  textfield: ['==', '!=', 'in'],
-  iban: ['==', '!=', 'in'],
-  date: ['==', '!=', '>', '>=', '<', '<='],
-  select: ['==', '!='],
+const TYPE_TO_OPERATORS = {
+  float: ['==', '!=', '>', '>=', '<', '<='],
+  string: ['==', '!=', 'in'],
+  datetime: ['==', '!=', '>', '>=', '<', '<='],
   _default: ['==', '!='],
 };
 
@@ -98,13 +96,12 @@ const ACTION_TYPES = [
 // For example, picking which property of a component should be changed.
 const ACTIONS_WITH_OPTIONS = ['property', 'value'];
 
-const COMPONENT_TYPE_TO_OPERAND_TYPE = {
-  number: ['literal', 'component'],
-  textfield: ['literal', 'component', 'array'],
-  iban: ['literal', 'component'],
-  date: ['literal', 'component', 'today'],
-  select: ['literal', 'component'],
-  _default: ['literal', 'component'],
+const TYPE_TO_OPERAND_TYPE = {
+  float: ['literal', 'variable'],
+  string: ['literal', 'variable', 'array'],
+  datetime: ['literal', 'variable', 'today'],
+  object: ['literal'],
+  _default: ['literal'],
 };
 
 const STRING_TO_TYPE = {
@@ -191,11 +188,11 @@ const MODIFIABLE_PROPERTIES = {
 
 export {
   OPERATORS,
-  COMPONENT_TYPE_TO_OPERATORS,
+  TYPE_TO_OPERATORS,
   ACTION_TYPES,
   ACTIONS_WITH_OPTIONS,
   MODIFIABLE_PROPERTIES,
   STRING_TO_TYPE,
   TYPE_TO_STRING,
-  COMPONENT_TYPE_TO_OPERAND_TYPE,
+  TYPE_TO_OPERAND_TYPE,
 };

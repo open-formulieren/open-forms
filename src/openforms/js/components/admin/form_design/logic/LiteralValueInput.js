@@ -3,23 +3,22 @@ import PropTypes from 'prop-types';
 
 import {TextInput, NumberInput, DateInput} from 'components/admin/forms/Inputs';
 
-const COMPONENT_TYPE_TO_INPUT_TYPE = {
-  number: NumberInput,
-  textfield: TextInput,
-  iban: TextInput,
-  date: DateInput,
+const TYPE_TO_INPUT_TYPE = {
+  float: NumberInput,
+  string: TextInput,
+  datetime: DateInput,
 };
 
-const LiteralValueInput = ({name, componentType, value = '', onChange, ...extraProps}) => {
-  const InputComponent = COMPONENT_TYPE_TO_INPUT_TYPE[componentType] || TextInput;
+const LiteralValueInput = ({name, type, value = '', onChange, ...extraProps}) => {
+  const InputComponent = TYPE_TO_INPUT_TYPE[type] || TextInput;
 
   const onInputChange = event => {
     const inputValue = event.target.value;
     let value;
 
     // do any input type conversions if needed, e.g. date to native datetime/ISO-8601 format
-    switch (componentType) {
-      case 'number': {
+    switch (type) {
+      case 'float': {
         value = Number.parseFloat(inputValue);
         break;
       }
@@ -40,7 +39,7 @@ const LiteralValueInput = ({name, componentType, value = '', onChange, ...extraP
 
 LiteralValueInput.propTypes = {
   name: PropTypes.string.isRequired,
-  componentType: PropTypes.string,
+  type: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChange: PropTypes.func.isRequired,
 };

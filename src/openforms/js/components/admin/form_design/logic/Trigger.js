@@ -6,11 +6,15 @@ import jsonLogic from 'json-logic-js';
 
 import {getTranslatedChoices} from 'utils/i18n';
 import ArrayInput from 'components/admin/forms/ArrayInput';
-import ComponentSelection from 'components/admin/forms/ComponentSelection';
 import Select from 'components/admin/forms/Select';
 import {FormContext} from 'components/admin/form_design/Context';
+import VariableSelection from 'components/admin/forms/VariableSelection';
+import {
+  COMPONENT_DATATYPES,
+  VARIABLE_SOURCES,
+} from 'components/admin/form_design/variables/constants';
 
-import {OPERATORS, COMPONENT_TYPE_TO_OPERATORS, COMPONENT_TYPE_TO_OPERAND_TYPE} from './constants';
+import {OPERATORS, TYPE_TO_OPERATORS, TYPE_TO_OPERAND_TYPE} from './constants';
 import LiteralValueInput from './LiteralValueInput';
 import OperandTypeSelection from './OperandTypeSelection';
 import DataPreview from './DataPreview';
@@ -18,16 +22,11 @@ import DSLEditorNode from './DSLEditorNode';
 import {useOnChanged} from './hooks';
 import Today from './Today';
 
-const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
+const OperatorSelection = ({name, selectedVariableType, operator, onChange}) => {
   const intl = useIntl();
-  // check the component type, which is used to filter the possible choices
-  const formContext = useContext(FormContext);
-  const allComponents = formContext.components;
-  const componentType = allComponents[selectedComponent]?.type;
 
   // only keep the relevant choices
-  const allowedOperators =
-    COMPONENT_TYPE_TO_OPERATORS[componentType] || COMPONENT_TYPE_TO_OPERATORS._default;
+  const allowedOperators = TYPE_TO_OPERATORS[selectedVariableType] || TYPE_TO_OPERATORS._default;
   const choices = Object.entries(OPERATORS).filter(([operator]) =>
     allowedOperators.includes(operator)
   );
@@ -48,21 +47,21 @@ const OperatorSelection = ({name, selectedComponent, operator, onChange}) => {
 
 OperatorSelection.propTypes = {
   name: PropTypes.string.isRequired,
-  selectedComponent: PropTypes.string.isRequired,
+  selectedVariableType: PropTypes.string.isRequired,
   operator: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
 };
 
 const initialState = {
-  component: '',
+  variable: '',
   operator: '',
   operandType: '',
   operand: '',
 };
 
-const TRIGGER_FIELD_ORDER = ['component', 'operator', 'operandType', 'operand'];
+const TRIGGER_FIELD_ORDER = ['variable', 'operator', 'operandType', 'operand'];
 
-const parseJsonLogic = (logic, allComponents) => {
+const parseJsonLogic = (logic, allVariablesKeys) => {
   // Algorithm mostly taken from https://github.com/jwadhams/json-logic-js/blob/master/logic.js, combined
   // with our own organization.
   if (!logic || !Object.keys(logic).length) return {};
@@ -75,35 +74,35 @@ const parseJsonLogic = (logic, allComponents) => {
     values = [values];
   }
 
-  // first value should be the reference to the component
-  let component = values[0].date ? values[0].date.var : values[0].var;
-  if (Array.isArray(component)) {
+  // first value should be the reference to the variable
+  let variableKey = values[0].date ? values[0].date.var : values[0].var;
+  if (Array.isArray(variableKey)) {
     // Case where a default is defined
-    component = component[0];
+    variableKey = variableKey[0];
   }
 
-  // check if we're using a literal value, or a component reference
+  // check if we're using a literal value, or a variable reference
   let compareValue = values[1];
   let operandType = '';
   let operand = '';
 
-  // Selectboxes case: the component name contains the reference to which value, e.g. "selectComponentField.option1"
-  if (!allComponents[component]) {
-    let componentBits = component.split('.');
-    component = componentBits.slice(0, componentBits.length - 1).join('.');
-    compareValue = componentBits.slice(componentBits.length - 1).join('.');
+  // Selectboxes case: the variable name contains the reference to which value, e.g. "selectField.option1"
+  if (!allVariablesKeys.includes(variableKey)) {
+    let variableKeyBits = variableKey.split('.');
+    variableKey = variableKeyBits.slice(0, variableKeyBits.length - 1).join('.');
+    compareValue = variableKeyBits.slice(variableKeyBits.length - 1).join('.');
   }
 
   if (jsonLogic.is_logic(compareValue)) {
     const op = jsonLogic.get_operator(compareValue);
     switch (op) {
       case 'var': {
-        operandType = 'component';
+        operandType = 'variable';
         operand = compareValue.var;
         break;
       }
       case 'date': {
-        operandType = compareValue.date.var ? 'component' : 'literal';
+        operandType = compareValue.date.var ? 'variable' : 'literal';
         operand = compareValue.date.var ? compareValue.date.var : compareValue.date;
         break;
       }
@@ -126,7 +125,7 @@ const parseJsonLogic = (logic, allComponents) => {
   }
 
   return {
-    component,
+    variable: variableKey,
     operator,
     operandType,
     operand,
@@ -155,9 +154,14 @@ const reducer = (draft, action) => {
 
 const Trigger = ({name, logic, onChange, error, withDSLPreview = false, children}) => {
   const formContext = useContext(FormContext);
-  const allComponents = formContext.components;
+  const allVariables = formContext.staticVariables.concat(formContext.formVariables);
+  const allVariablesObj = allVariables.reduce((obj, variable) => {
+    obj[variable.key] = variable;
+    return obj;
+  }, {});
+
   // break down the json logic back into variables that can be managed by components state
-  const parsedLogic = parseJsonLogic(logic, allComponents);
+  const parsedLogic = parseJsonLogic(logic, Object.keys(allVariablesObj));
   const [state, dispatch] = useImmerReducer(reducer, {...initialState, ...parsedLogic});
 
   // event handlers
@@ -173,9 +177,8 @@ const Trigger = ({name, logic, onChange, error, withDSLPreview = false, children
   };
 
   // rendering logic
-  const {component: triggerComponent, operator, operandType, operand} = state;
-
-  const componentType = allComponents[triggerComponent]?.type;
+  const {variable: triggerVariableKey, operator, operandType, operand} = state;
+  const triggerVariable = allVariablesObj[triggerVariableKey];
 
   let compareValue = null;
   let valueInput = null;
@@ -185,29 +188,29 @@ const Trigger = ({name, logic, onChange, error, withDSLPreview = false, children
       valueInput = (
         <LiteralValueInput
           name="operand"
-          componentType={componentType}
+          type={triggerVariable?.dataType}
           value={operand.toString()}
           onChange={onTriggerChange}
         />
       );
-      if (componentType === 'date') {
+      if (triggerVariable?.dataType === 'datetime') {
         compareValue = {date: operand};
       } else {
         compareValue = operand;
       }
       break;
     }
-    case 'component': {
+    case 'variable': {
       valueInput = (
-        <ComponentSelection
+        <VariableSelection
           name="operand"
           value={operand}
           onChange={onTriggerChange}
-          // filter components of the same type as the trigger component
-          filter={comp => comp.type === componentType}
+          // filter variables of the same type as the trigger variable
+          filter={variable => variable.dataType === triggerVariable?.dataType}
         />
       );
-      if (componentType === 'date') {
+      if (triggerVariable?.dataType === 'datetime') {
         compareValue = {date: {var: operand}};
       } else {
         compareValue = {var: operand};
@@ -254,25 +257,31 @@ const Trigger = ({name, logic, onChange, error, withDSLPreview = false, children
   }
 
   let firstOperand;
-  switch (componentType) {
-    case 'date': {
-      firstOperand = {date: {var: triggerComponent}};
-      break;
+  if (triggerVariable?.source === VARIABLE_SOURCES.component) {
+    const triggerComponent = formContext.components[triggerVariableKey];
+    // Handling components special cases
+    switch (triggerComponent.type) {
+      case 'date': {
+        firstOperand = {date: {var: triggerVariableKey}};
+        break;
+      }
+      case 'selectboxes': {
+        firstOperand = {var: `${triggerVariableKey}.${compareValue}`};
+        compareValue = true;
+        break;
+      }
+      case 'checkbox': {
+        firstOperand = {var: triggerVariableKey};
+        // cast from string to actual boolean
+        if (compareValue === 'true') compareValue = true;
+        if (compareValue === 'false') compareValue = false;
+        break;
+      }
+      default:
+        firstOperand = {var: triggerVariableKey};
     }
-    case 'selectboxes': {
-      firstOperand = {var: `${triggerComponent}.${compareValue}`};
-      compareValue = true;
-      break;
-    }
-    case 'checkbox': {
-      firstOperand = {var: triggerComponent};
-      // cast from string to actual boolean
-      if (compareValue === 'true') compareValue = true;
-      if (compareValue === 'false') compareValue = false;
-      break;
-    }
-    default:
-      firstOperand = {var: triggerComponent};
+  } else {
+    firstOperand = {var: triggerVariableKey};
   }
 
   const jsonLogicFromState = {
@@ -292,36 +301,38 @@ const Trigger = ({name, logic, onChange, error, withDSLPreview = false, children
             <FormattedMessage description="Logic trigger prefix" defaultMessage="When" />
           </DSLEditorNode>
           <DSLEditorNode errors={null}>
-            <ComponentSelection
-              name="component"
-              value={triggerComponent}
+            <VariableSelection
+              name="variable"
+              value={triggerVariableKey}
               onChange={onTriggerChange}
             />
           </DSLEditorNode>
-          {triggerComponent ? (
+          {triggerVariableKey ? (
             <DSLEditorNode errors={null}>
               <OperatorSelection
                 name="operator"
-                selectedComponent={triggerComponent}
+                selectedVariableType={triggerVariable?.dataType}
                 operator={operator}
                 onChange={onTriggerChange}
               />
             </DSLEditorNode>
           ) : null}
-          {triggerComponent && operator ? (
+          {triggerVariableKey && operator ? (
             <DSLEditorNode errors={null}>
               <OperandTypeSelection
                 name="operandType"
                 operandType={operandType}
                 onChange={onTriggerChange}
                 filter={([choiceKey, choiceLabel]) => {
-                  if (!componentType) return true;
-                  return getOperandTypesForComponentType(componentType).includes(choiceKey);
+                  if (!triggerVariable.dataType) return true;
+                  return getOperandTypesForVariableType(triggerVariable.dataType).includes(
+                    choiceKey
+                  );
                 }}
               />
             </DSLEditorNode>
           ) : null}
-          {triggerComponent && operator && operandType ? (
+          {triggerVariableKey && operator && operandType ? (
             <DSLEditorNode errors={null}>{valueInput}</DSLEditorNode>
           ) : null}
         </div>
@@ -347,10 +358,8 @@ Trigger.propTypes = {
   children: PropTypes.node,
 };
 
-const getOperandTypesForComponentType = componentType => {
-  const types =
-    COMPONENT_TYPE_TO_OPERAND_TYPE[componentType] || COMPONENT_TYPE_TO_OPERAND_TYPE._default;
-  return types;
+const getOperandTypesForVariableType = componentType => {
+  return TYPE_TO_OPERAND_TYPE[componentType] || TYPE_TO_OPERAND_TYPE._default;
 };
 
 export default Trigger;

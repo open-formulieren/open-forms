@@ -37,7 +37,7 @@ class FormRegistrationBackendOptionsTests(APITestCase):
                         "key": "test3",
                         "type": "textfield",
                     },
-                ]
+                ],
             },
         )
         cls.endpoint = reverse(
