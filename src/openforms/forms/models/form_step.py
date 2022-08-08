@@ -79,5 +79,11 @@ class FormStep(OrderedModel):
         else:
             return super().__str__()
 
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+
+        if self.form_definition.pk is not None and not self.form_definition.is_reusable:
+            self.form_definition.delete()
+
     def iter_components(self, recursive=True, **kwargs):
         yield from self.form_definition.iter_components(recursive=recursive, **kwargs)

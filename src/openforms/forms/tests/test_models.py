@@ -335,6 +335,25 @@ class FormDefinitionTestCase(TestCase):
             ["textFieldSensitive"],
         )
 
+    def test_not_reusable_form_definitions_deleted(self):
+        step = FormStepFactory.create(form_definition=self.form_definition)
+
+        step.delete()
+
+        self.assertFalse(
+            FormDefinition.objects.filter(pk=step.form_definition.pk).exists()
+        )
+
+    def test_reusable_form_definition_not_deleted(self):
+        reusable_form_definition = FormDefinitionFactory(is_reusable=True)
+        step = FormStepFactory.create(form_definition=reusable_form_definition)
+
+        step.delete()
+
+        self.assertTrue(
+            FormDefinition.objects.filter(pk=step.form_definition.pk).exists()
+        )
+
 
 class FormStepTestCase(TestCase):
     def test_str(self):
