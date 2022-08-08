@@ -361,7 +361,7 @@ function reducer(draft, action) {
 
       // Check if a key has been changed and if the logic rules need updating
       const hasKeyChanged = checkKeyChange(mutationType, schema, originalComp);
-      if (hasKeyChanged) {
+      if (mutationType === 'changed' && hasKeyChanged) {
         draft.logicRules = replaceComponentKeyInLogic(
           draft.logicRules,
           originalComp.key,
@@ -393,8 +393,10 @@ function reducer(draft, action) {
         draft.formVariables,
         step.configuration
       );
-      draft.validationErrors = draft.validationErrors.concat(
-        checkForDuplicateKeys(draft.formVariables, draft.staticVariables)
+      draft.validationErrors = checkForDuplicateKeys(
+        draft.formVariables,
+        draft.staticVariables,
+        draft.validationErrors
       );
 
       // check if we need updates to the backendRegistrationOptions

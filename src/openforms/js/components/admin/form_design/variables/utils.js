@@ -118,21 +118,38 @@ const updateFormVariables = (
   // The 'change' event is emitted for both 'create', 'paste' and 'update' events
   // but 'update' events have isNew = false
   else if (mutationType === 'changed') {
-    updatedFormVariables = updatedFormVariables.map(variable => {
-      // The id of the component changes on every save
-      const idMatch = variable._id === oldComponent.id;
-      // Case in which the component key has changed (possibly among other attributes)
-      if (newComponent.key !== oldComponent.key) {
-        if (variable.key === oldComponent.key && idMatch)
-          return makeNewVariableFromComponent(newComponent, formDefinition);
-        // This is the case where other attributes (not the key) of the component have changed.
-      } else {
-        if (variable.key === newComponent.key && idMatch)
-          return makeNewVariableFromComponent(newComponent, formDefinition);
+    let indicesVariablesWithoutIds = [];
+    let variableUpdated = false;
+
+    for (let variableIndex = 0; variableIndex < updatedFormVariables.length; variableIndex++) {
+      const variable = updatedFormVariables[variableIndex];
+      if (!variable._id) {
+        indicesVariablesWithoutIds.push(variableIndex);
+        continue;
       }
 
-      return variable;
-    });
+      if (variable._id === oldComponent.id) {
+        updatedFormVariables[variableIndex] = makeNewVariableFromComponent(
+          newComponent,
+          formDefinition
+        );
+        variableUpdated = true;
+        break;
+      }
+    }
+
+    if (!variableUpdated) {
+      // Variables that don't have an _id have been loaded from the backend (which means they can't have duplicate keys)
+      for (const index of indicesVariablesWithoutIds) {
+        const variable = updatedFormVariables[index];
+        // Case 1: the component key has changed (possibly among other attributes)
+        // Case 2: other attributes (not the key) of the component have changed.
+        if (variable.key === oldComponent.key) {
+          updatedFormVariables[index] = makeNewVariableFromComponent(newComponent, formDefinition);
+          break;
+        }
+      }
+    }
   } else if (mutationType === 'removed') {
     // When a component is removed, oldComponent is null
     let keysToRemove = [newComponent.key];
@@ -157,8 +174,8 @@ const updateFormVariables = (
   return updatedFormVariables;
 };
 
-const checkForDuplicateKeys = (formVariables, staticVariables) => {
-  let validationErrors = [];
+const checkForDuplicateKeys = (formVariables, staticVariables, validationErrors) => {
+  let updatedValidationErrors = _.cloneDeep(validationErrors);
   let existingKeys = staticVariables.map(variable => variable.key);
 
   const uniqueErrorMessage = defineMessage({
@@ -167,18 +184,26 @@ const checkForDuplicateKeys = (formVariables, staticVariables) => {
   });
 
   formVariables.map((variable, index) => {
+    const errorKey = `variables.${index}.key`;
     if (existingKeys.includes(variable.key)) {
-      validationErrors.push([`variables.${index}.key`, uniqueErrorMessage]);
+      updatedValidationErrors.push([errorKey, uniqueErrorMessage]);
 
       if (!variable.errors) variable.errors = {};
       variable.errors['key'] = uniqueErrorMessage;
       return;
+    } else if (variable.errors && variable.errors['key']?.id === uniqueErrorMessage.id) {
+      if (Object.keys(variable.errors).length > 1) {
+        delete variable.errors['key'];
+      } else {
+        delete variable.errors;
+      }
+      updatedValidationErrors = updatedValidationErrors.filter(error => error[0] !== errorKey);
     }
 
     existingKeys.push(variable.key);
   });
 
-  return validationErrors;
+  return updatedValidationErrors;
 };
 
 const getDefaultValue = component => {
