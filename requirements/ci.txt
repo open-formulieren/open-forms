@@ -290,7 +290,7 @@ django-relativedelta==1.1.1
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   zgw-consumers
-django-sendfile2==0.6.0
+django-sendfile2==0.7.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
