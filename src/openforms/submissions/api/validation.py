@@ -107,11 +107,14 @@ def get_invalid_prefilled_fields(
         attribute_name = component["prefill"]["attribute"]
 
         if submission.prefill_data[plugin_name][attribute_name] is None:
-            initial_value = component["defaultValue"]
-        else:
-            initial_value = submission.prefill_data[plugin_name][attribute_name]
+            # the value will be `None` if there is no actual prefill data available, so there is nothing to compare to. This
+            # especially applies to test-environments without real prefill-connections.
+            continue
 
-        if submission_step.data[component["key"]] != initial_value:
+        if (
+            submission_step.data[component["key"]]
+            != submission.prefill_data[plugin_name][attribute_name]
+        ):
             invalid_prefilled_fields.append(component["label"])
 
     return invalid_prefilled_fields
