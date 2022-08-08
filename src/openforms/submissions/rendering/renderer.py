@@ -6,9 +6,10 @@ modes. It is aware of the intrinsic tree-like structure of a submission and asso
 printable data.
 """
 from dataclasses import dataclass
-from typing import Iterator
+from typing import Iterator, Union
 
 from openforms.forms.models import Form
+from openforms.variables.rendering.nodes import VariablesNode
 
 from ..form_logic import evaluate_form_logic
 from ..models import Submission
@@ -63,7 +64,7 @@ class Renderer:
         else:
             return True
 
-    def get_children(self) -> Iterator["SubmissionStepNode"]:
+    def get_children(self) -> Iterator[Union["SubmissionStepNode", "VariablesNode"]]:
         """
         Produce only the direct child nodes.
         """
@@ -93,6 +94,10 @@ class Renderer:
             # if not has_any_children:
             #     continue
             yield submission_step_node
+
+        variables_node = VariablesNode(renderer=self, submission=self.submission)
+        if variables_node.is_visible:
+            yield variables_node
 
     def __iter__(self) -> Iterator["Node"]:
         """
