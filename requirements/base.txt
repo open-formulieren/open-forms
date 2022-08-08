@@ -168,7 +168,7 @@ django-redis==5.2.0
     # via -r requirements/base.in
 django-relativedelta==1.1.1
     # via zgw-consumers
-django-sendfile2==0.6.0
+django-sendfile2==0.7.0
     # via django-privates
 django-solo==2.0.0
     # via
