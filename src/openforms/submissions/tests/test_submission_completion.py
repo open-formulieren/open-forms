@@ -21,6 +21,7 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -334,6 +335,42 @@ class SubmissionCompletionTests(VariablesTestMixin, SubmissionsMixin, APITestCas
         response = self.client.post(endpoint)
 
         # Since the prefilled field was not disabled, it is possible to modify it and the submission is valid
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
+    def test_null_prefilled_data(self, mock_get_solo):
+
+        mock_get_solo.return_value = GlobalConfiguration(enable_form_variables=False)
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "surname",
+                        "label": "Surname",
+                        "prefill": {"plugin": "test-prefill", "attribute": "surname"},
+                        "disabled": True,
+                        "defaultValue": "",
+                    }
+                ],
+            },
+        )
+        submission = SubmissionFactory.create(
+            form=form, prefill_data={"test-prefill": {"surname": None}}
+        )
+
+        SubmissionStepFactory.create(
+            submission=submission, form_step=step, _data={"surname": ""}
+        )
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint)
+
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
 
