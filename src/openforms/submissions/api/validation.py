@@ -107,6 +107,8 @@ def get_invalid_prefilled_fields(
         attribute_name = component["prefill"]["attribute"]
 
         if submission.prefill_data[plugin_name][attribute_name] is None:
+            # the value will be `None` if there is no actual prefill data available, so there is nothing to compare to. This
+            # especially applies to test-environments without real prefill-connections.
             continue
 
         if (
