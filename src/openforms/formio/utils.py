@@ -2,6 +2,9 @@ import logging
 from datetime import date, datetime
 from typing import Any, Dict, Iterator, List
 
+from openforms.forms.constants import FormVariableDataTypes
+
+from ..typing import JSONObject
 from .constants import COMPONENT_DATATYPES
 from .typing import Component
 
@@ -28,6 +31,12 @@ def iter_components(
                 yield from iter_components(
                     configuration=component, recursive=recursive, _is_root=False
                 )
+
+
+def get_component(configuration: JSONObject, key: str) -> JSONObject:
+    for component in iter_components(configuration=configuration, recursive=True):
+        if component["key"] == key:
+            return component
 
 
 def get_default_values(configuration: dict) -> Dict[str, Any]:
@@ -94,7 +103,9 @@ def format_date_value(date_value: str) -> str:
 
 def get_component_datatype(component):
     component_type = component["type"]
-    return COMPONENT_DATATYPES.get(component_type, "string")
+    if component.get("multiple"):
+        return FormVariableDataTypes.array
+    return COMPONENT_DATATYPES.get(component_type, FormVariableDataTypes.string)
 
 
 def get_component_default_value(component):
@@ -103,7 +114,10 @@ def get_component_default_value(component):
     # - defaultValue:
     #    https://github.com/formio/formio.js/blob/4.13.x/src/components/_classes/component/Component.js#L2302
     # If the defaultValue is empty, then the field will be populated with the emptyValue in the form data.
-    return component.get("defaultValue")
+    default_value = component.get("defaultValue")
+    if component.get("multiple") and default_value is None:
+        return []
+    return default_value
 
 
 def mimetype_allowed(mime_type: str, allowed_mime_types: List[str]) -> bool:

@@ -6,7 +6,7 @@ import elasticapm
 from json_logic import jsonLogic
 
 from openforms.formio.service import get_dynamic_configuration
-from openforms.formio.utils import get_default_values, iter_components
+from openforms.formio.utils import get_component, get_default_values, iter_components
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
 from openforms.logging import logevent
@@ -32,12 +32,6 @@ def set_property_value(
             break
 
     return configuration
-
-
-def get_component(configuration: JSONObject, key: str) -> JSONObject:
-    for component in iter_components(configuration=configuration, recursive=True):
-        if component["key"] == key:
-            return component
 
 
 class DataForLogic:

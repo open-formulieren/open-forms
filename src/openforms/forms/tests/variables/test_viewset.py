@@ -6,7 +6,11 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.accounts.tests.factories import (
+    StaffUserFactory,
+    SuperUserFactory,
+    UserFactory,
+)
 from openforms.forms.constants import FormVariableDataTypes, FormVariableSources
 from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
@@ -113,7 +117,7 @@ class FormVariableViewsetTest(APITestCase):
         self.assertTrue(form_variables.filter(key="variable3").exists())
 
     def test_unique_together_key_form(self):
-        user = StaffUserFactory.create(user_permissions=["change_form"])
+        user = SuperUserFactory.create()
         form = FormFactory.create()
         form_definition = FormDefinitionFactory.create()
 
@@ -175,7 +179,7 @@ class FormVariableViewsetTest(APITestCase):
         )
 
     def test_list_form_variables(self):
-        user = StaffUserFactory.create(user_permissions=["change_form"])
+        user = SuperUserFactory.create()
         form = FormFactory.create()
 
         form_variable1 = FormVariableFactory.create(form=form)
@@ -202,7 +206,7 @@ class FormVariableViewsetTest(APITestCase):
         self.assertIn(form_variable2.key, variables_keys)
 
     def test_dotted_variable_keys(self):
-        user = StaffUserFactory.create(user_permissions=["change_form"])
+        user = SuperUserFactory.create()
         form = FormFactory.create()
         form_definition = FormDefinitionFactory.create()
 
@@ -220,7 +224,7 @@ class FormVariableViewsetTest(APITestCase):
                 "form_definition": form_definition_url,
                 "key": "test-with_dots.valid",
                 "name": "Valid with dots",
-                "source": FormVariableSources.component,
+                "source": FormVariableSources.user_defined,
                 "data_type": FormVariableDataTypes.string,
                 "initial_value": "",
             },
@@ -232,7 +236,7 @@ class FormVariableViewsetTest(APITestCase):
                 "form_definition": form_definition_url,
                 "key": "test-with_dots.invalid.",
                 "name": "Valid with dots",
-                "source": FormVariableSources.component,
+                "source": FormVariableSources.user_defined,
                 "data_type": FormVariableDataTypes.string,
                 "initial_value": "",
             },
@@ -241,7 +245,7 @@ class FormVariableViewsetTest(APITestCase):
                 "form_definition": form_definition_url,
                 "key": "normal_key",
                 "name": "",  # missing name
-                "source": FormVariableSources.component,
+                "source": FormVariableSources.user_defined,
                 "data_type": FormVariableDataTypes.string,
                 "initial_value": "",
             },
@@ -293,7 +297,7 @@ class FormVariableViewsetTest(APITestCase):
             )
 
     def test_key_clash_with_static_data(self):
-        user = StaffUserFactory.create(user_permissions=["change_form"])
+        user = SuperUserFactory.create()
         form = FormFactory.create()
         form_definition = FormDefinitionFactory.create()
 
@@ -351,3 +355,161 @@ class FormVariableViewsetTest(APITestCase):
             error["invalidParams"][0]["code"],
             "unique",
         )
+
+    def test_key_not_present_in_form_definition(self):
+        user = SuperUserFactory.create()
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [{"type": "textfield", "key": "test"}]
+            },
+        )
+        form_definition = form.formstep_set.get().form_definition
+
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver.com{form_path}"
+
+        form_definition_path = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
+        )
+        form_definition_url = f"http://testserver.com{form_definition_path}"
+
+        data = [
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "not-in-configuration",
+                "name": "Not in configuration",
+                "source": FormVariableSources.component,
+                "data_type": FormVariableDataTypes.string,
+                "initial_value": "",
+            },
+        ]
+
+        self.client.force_authenticate(user)
+
+        response = self.client.put(
+            reverse(
+                "api:form-variables",
+                kwargs={"uuid_or_slug": form.uuid},
+            ),
+            data=data,
+        )
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        error = response.json()
+
+        self.assertEqual(error["code"], "invalid")
+        self.assertEqual(
+            error["invalidParams"][0]["reason"],
+            "Invalid component variable: no component with corresponding key present in the form definition.",
+        )
+        self.assertEqual(
+            error["invalidParams"][0]["name"],
+            "0.key",
+        )
+        self.assertEqual(
+            error["invalidParams"][0]["code"],
+            "invalid",
+        )
+
+    def test_data_type_initial_value_set(self):
+        user = SuperUserFactory.create()
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {"key": "test1", "type": "textfield", "multiple": False},
+                    {
+                        "key": "test2",
+                        "type": "textfield",
+                        "multiple": False,
+                        "defaultValue": "test2 default value",
+                    },
+                    {
+                        "key": "test3",
+                        "type": "textfield",
+                        "multiple": True,
+                        "defaultValue": ["test3 default value"],
+                    },
+                    {
+                        "key": "test4",
+                        "type": "number",
+                        "multiple": False,
+                        "defaultValue": 4,
+                    },
+                ]
+            },
+        )
+
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver.com{form_path}"
+
+        form_definition_path = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": form.formstep_set.first().form_definition.uuid},
+        )
+        form_definition_url = f"http://testserver.com{form_definition_path}"
+
+        data = [
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "test1",
+                "name": "Test 1",
+                "source": FormVariableSources.component,
+                "data_type": FormVariableDataTypes.string,
+            },
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "test2",
+                "name": "Test 2",
+                "source": FormVariableSources.component,
+                "data_type": FormVariableDataTypes.string,
+            },
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "test3",
+                "name": "Test 3",
+                "source": FormVariableSources.component,
+                "data_type": FormVariableDataTypes.string,  # The backend should set this to the right value (array)
+            },
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "test4",
+                "name": "Test 4",
+                "source": FormVariableSources.component,
+                "data_type": FormVariableDataTypes.string,  # The backend should set this to the right value (float)
+            },
+        ]
+
+        self.client.force_authenticate(user)
+
+        response = self.client.put(
+            reverse(
+                "api:form-variables",
+                kwargs={"uuid_or_slug": form.uuid},
+            ),
+            data=data,
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        variable1 = form.formvariable_set.get(key="test1")
+        variable2 = form.formvariable_set.get(key="test2")
+        variable3 = form.formvariable_set.get(key="test3")
+        variable4 = form.formvariable_set.get(key="test4")
+
+        self.assertEqual(FormVariableDataTypes.string, variable1.data_type)
+        self.assertEqual(FormVariableDataTypes.string, variable2.data_type)
+        self.assertEqual(FormVariableDataTypes.array, variable3.data_type)
+        self.assertEqual(FormVariableDataTypes.float, variable4.data_type)
+
+        self.assertIsNone(variable1.initial_value)
+        self.assertEqual("test2 default value", variable2.initial_value)
+        self.assertEqual(["test3 default value"], variable3.initial_value)
+        self.assertEqual(4, variable4.initial_value)

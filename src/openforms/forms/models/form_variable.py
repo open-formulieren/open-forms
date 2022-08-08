@@ -11,6 +11,7 @@ from glom import Path, glom
 
 from openforms.formio.utils import (
     component_in_editgrid,
+    get_component,
     get_component_datatype,
     get_component_default_value,
     is_layout_component,
@@ -198,7 +199,17 @@ class FormVariable(models.Model):
                     | (~Q(prefill_plugin="") & ~Q(prefill_attribute=""))
                 ),
                 name="prefill_config_empty_or_complete",
-            )
+            ),
+            CheckConstraint(
+                check=Q(
+                    (
+                        Q(form_definition__isnull=True)
+                        & ~Q(source=FormVariableSources.component)
+                    )
+                    | Q(form_definition__isnull=False)
+                ),
+                name="form_definition_not_null_for_component_vars",
+            ),
         ]
 
     def __str__(self):
@@ -217,3 +228,19 @@ class FormVariable(models.Model):
         )
 
         return [now]
+
+    def derive_info_from_component(self):
+        if self.source != FormVariableSources.component or not self.form_definition:
+            return
+
+        component = get_component(self.form_definition.configuration, self.key)
+
+        if not self.initial_value:
+            self.initial_value = get_component_default_value(component)
+
+        self.data_type = get_component_datatype(component)
+
+    def save(self, *args, **kwargs):
+        self.derive_info_from_component()
+
+        super().save(*args, **kwargs)
