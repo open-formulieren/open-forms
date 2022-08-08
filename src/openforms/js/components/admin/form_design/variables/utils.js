@@ -128,8 +128,6 @@ const updateFormVariables = (
         continue;
       }
 
-      // TODO: this doesn't work because of this: https://github.com/formio/formio.js/blob/4.13.x/src/WebformBuilder.js#L1201
-      // Formio returns the wrong oldComponent because they do the check based on the key rather than id.
       if (variable._id === oldComponent.id) {
         updatedFormVariables[variableIndex] = makeNewVariableFromComponent(
           newComponent,
@@ -176,8 +174,8 @@ const updateFormVariables = (
   return updatedFormVariables;
 };
 
-const checkForDuplicateKeys = (formVariables, staticVariables) => {
-  let validationErrors = [];
+const checkForDuplicateKeys = (formVariables, staticVariables, validationErrors) => {
+  let updatedValidationErrors = _.cloneDeep(validationErrors);
   let existingKeys = staticVariables.map(variable => variable.key);
 
   const uniqueErrorMessage = defineMessage({
@@ -186,18 +184,26 @@ const checkForDuplicateKeys = (formVariables, staticVariables) => {
   });
 
   formVariables.map((variable, index) => {
+    const errorKey = `variables.${index}.key`;
     if (existingKeys.includes(variable.key)) {
-      validationErrors.push([`variables.${index}.key`, uniqueErrorMessage]);
+      updatedValidationErrors.push([errorKey, uniqueErrorMessage]);
 
       if (!variable.errors) variable.errors = {};
       variable.errors['key'] = uniqueErrorMessage;
       return;
+    } else if (variable.errors && variable.errors['key']?.id === uniqueErrorMessage.id) {
+      if (Object.keys(variable.errors).length > 1) {
+        delete variable.errors['key'];
+      } else {
+        delete variable.errors;
+      }
+      updatedValidationErrors = updatedValidationErrors.filter(error => error[0] !== errorKey);
     }
 
     existingKeys.push(variable.key);
   });
 
-  return validationErrors;
+  return updatedValidationErrors;
 };
 
 const getDefaultValue = component => {
