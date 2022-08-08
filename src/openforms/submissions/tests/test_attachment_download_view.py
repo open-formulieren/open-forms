@@ -1,4 +1,4 @@
-from django.test import override_settings
+from django.test import override_settings, tag
 from django.urls import reverse
 
 from django_webtest import WebTest
@@ -116,6 +116,49 @@ class SubmissionAttachmentDownloadTest(WebTest):
             response.headers["Content-Disposition"].startswith("attachment;")
         )
         self.assertIn("X-Accel-Redirect", response.headers)
+
+    @tag("CVE-2022-36359")
+    def test_filename_properly_escaped(self):
+        """
+        Equivalent test for Django's CVE-2022-36359.
+
+        Ensure that filenames are correctly escaped so they don't lead to reflected
+        file downloads when staff users download the attachments of end-users.
+
+        Tests taken from Django:
+        https://github.com/django/django/commit/bd062445cffd3f6cc6dcd20d13e2abed818fa173
+        """
+        tests = [
+            ('multi-part-one";" dummy".txt', r"multi-part-one\";\" dummy\".txt"),
+            ('multi-part-one\\";" dummy".txt', r"multi-part-one\\\";\" dummy\".txt"),
+            (
+                'multi-part-one\\";\\" dummy".txt',
+                r"multi-part-one\\\";\\\" dummy\".txt",
+            ),
+        ]
+
+        for filename, escaped in tests:
+            with self.subTest(filename=filename, escaped=escaped):
+                submission_file_attachment = SubmissionFileAttachmentFactory.create(
+                    submission_step__submission__completed=True,
+                    submission_step__submission__registration_success=True,
+                    file_name="",
+                    original_name=filename,
+                )
+                path = reverse(
+                    "submissions:attachment-download",
+                    kwargs={"uuid": submission_file_attachment.uuid},
+                )
+                url = furl(path).add({"hash": submission_file_attachment.content_hash})
+
+                response = self.app.get(url, user=self.super_user)
+
+                self.assertEqual(response.status_code, 200)
+                self.assertIn("Content-Disposition", response.headers)
+                self.assertEqual(
+                    response.headers["Content-Disposition"],
+                    f'attachment; filename="{escaped}"',
+                )
 
 
 @temp_private_root()

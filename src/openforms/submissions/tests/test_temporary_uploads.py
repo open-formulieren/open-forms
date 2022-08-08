@@ -3,7 +3,7 @@ import uuid
 from datetime import timedelta
 
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import RequestFactory, override_settings
+from django.test import RequestFactory, override_settings, tag
 
 from django_capture_on_commit_callbacks import capture_on_commit_callbacks
 from freezegun import freeze_time
@@ -122,6 +122,41 @@ class TemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
         # added to session
         self.assertEqual([str(upload.uuid)], self.client.session[UPLOADS_SESSION_KEY])
+
+    @tag("CVE-2022-36359")
+    def test_filename_properly_escaped(self):
+        """
+        Equivalent test for Django's CVE-2022-36359.
+
+        Ensure that filenames are correctly escaped so they don't lead to reflected
+        file downloads when staff users download the attachments of end-users.
+
+        Tests taken from Django:
+        https://github.com/django/django/commit/bd062445cffd3f6cc6dcd20d13e2abed818fa173
+        """
+        tests = [
+            ('multi-part-one";" dummy".txt', r"multi-part-one\";\" dummy\".txt"),
+            ('multi-part-one\\";" dummy".txt', r"multi-part-one\\\";\" dummy\".txt"),
+            (
+                'multi-part-one\\";\\" dummy".txt',
+                r"multi-part-one\\\";\\\" dummy\".txt",
+            ),
+        ]
+
+        for filename, escaped in tests:
+            with self.subTest(filename=filename, escaped=escaped):
+                upload = TemporaryFileUploadFactory.create(file_name=filename)
+                self._add_upload_to_session(upload)
+                url = reverse(
+                    "api:submissions:temporary-file", kwargs={"uuid": upload.uuid}
+                )
+
+                response = self.client.get(url)
+
+                self.assertEqual(
+                    response.headers["Content-Disposition"],
+                    f'attachment; filename="{escaped}"',
+                )
 
     @override_settings(MAX_FILE_UPLOAD_SIZE=10)  # only allow 10 bytes upload size
     def test_upload_too_large(self):
