@@ -165,7 +165,7 @@ defusedxml==0.6.0
     #   django-camunda
     #   django-digid-eherkenning
     #   python3-saml
-django==3.2.14
+django==3.2.15
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
