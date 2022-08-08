@@ -126,6 +126,74 @@ class WebformBuilder extends WebformBuilderFormio {
     }
     return parentEditResult;
   }
+
+  saveComponent(component, parent, isNew, original) {
+    this.editForm.detach();
+    const parentContainer = parent ? parent.formioContainer : this.container;
+    const parentComponent = parent ? parent.formioComponent : this;
+    this.dialog.close();
+    const path = parentContainer
+      ? this.getComponentsPath(component, parentComponent.component)
+      : '';
+    if (!original) {
+      original = parent.formioContainer.find(comp => comp.id === component.id);
+    }
+    const index = parentContainer ? parentContainer.indexOf(original) : 0;
+    if (index !== -1) {
+      let submissionData = this.editForm.submission.data;
+      submissionData = submissionData.componentJson || submissionData;
+      const fieldsToRemoveDoubleQuotes = ['label', 'tooltip', 'placeholder'];
+
+      if (submissionData) {
+        fieldsToRemoveDoubleQuotes.forEach(key => {
+          if (submissionData[key]) {
+            submissionData[key] = submissionData[key].replace(/"/g, "'");
+          }
+        });
+      }
+
+      let comp = null;
+      parentComponent.getComponents().forEach(component => {
+        // Changed from Formio. We do the check on id and not on key
+        // (as this causes problems in the case of duplicate keys)
+        if (component.component.id === original.id) {
+          comp = component;
+        }
+      });
+      const originalComp = comp.component;
+      const originalComponentSchema = comp.schema;
+
+      const isParentSaveChildMethod = this.isParentSaveChildMethod(parent.formioComponent);
+
+      if (parentContainer && !isParentSaveChildMethod) {
+        parentContainer[index] = submissionData;
+        if (comp) {
+          comp.component = submissionData;
+        }
+      } else if (isParentSaveChildMethod) {
+        parent.formioComponent.saveChildComponent(submissionData);
+      }
+
+      const rebuild = parentComponent.rebuild() || Promise.resolve();
+      return rebuild.then(() => {
+        const schema = parentContainer ? parentContainer[index] : comp ? comp.schema : [];
+        this.emitSaveComponentEvent(
+          schema,
+          originalComp,
+          parentComponent.schema,
+          path,
+          index,
+          isNew,
+          originalComponentSchema
+        );
+        this.emit('change', this.form);
+        this.highlightInvalidComponents();
+      });
+    }
+
+    this.highlightInvalidComponents();
+    return Promise.resolve();
+  }
 }
 
 export default WebformBuilder;
