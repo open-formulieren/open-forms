@@ -333,7 +333,7 @@ django-relativedelta==1.1.1
     #   zgw-consumers
 django-rosetta==0.9.8
     # via -r requirements/dev.in
-django-sendfile2==0.6.0
+django-sendfile2==0.7.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
