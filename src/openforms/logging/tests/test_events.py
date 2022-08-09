@@ -69,7 +69,7 @@ class EventTests(VariablesTestMixin, TestCase):
             submission.data,
         )
 
-        log = submission.logs.get()
+        log = TimelineLogProxy.objects.get(object_id=submission.id)
         logged_rules = log.extra_data["evaluated_rules"]
 
         self.assertEqual(2, len(logged_rules))

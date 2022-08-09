@@ -1,20 +1,26 @@
 from unittest.mock import patch
 
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
 from rest_framework import status
 
-from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.accounts.tests.factories import (
+    StaffUserFactory,
+    SuperUserFactory,
+    UserFactory,
+)
+from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import FormLogicFactory
 from openforms.logging import logevent
 from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
 from openforms.tests.utils import disable_2fa
 
-from ...forms.models import FormVariable
 from ..constants import RegistrationStatuses
+from ..models import Submission
 from .factories import SubmissionFactory, SubmissionValueVariableFactory
 from .mixins import VariablesTestMixin
 
@@ -239,3 +245,54 @@ class LogicLogsAdminTests(VariablesTestMixin, WebTest):
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertContains(response, _("No logic rules for that submission"))
+
+    def test_delete_submission_without_logs(self):
+        submission = SubmissionFactory.create(completed_on=timezone.now())
+        user = SuperUserFactory.create()
+
+        url = reverse("admin:submissions_submission_changelist")
+        changelist = self.app.get(url, user=user)
+
+        html_form = changelist.forms["changelist-form"]
+        html_form["action"] = "delete_selected"
+        html_form["_selected_action"] = [submission.pk]
+
+        confirmation_page = html_form.submit()
+
+        self.assertEqual(1, len(confirmation_page.forms))
+
+        confirmation_form = confirmation_page.forms[0]
+        confirmation_form["_selected_action"] = [submission.pk]
+        confirmation_form["action"] = "delete_selected"
+        confirmation_form["post"] = "yes"
+
+        delete_response = confirmation_form.submit()
+
+        self.assertRedirects(delete_response, url)
+        self.assertFalse(Submission.objects.filter(pk=submission.pk).exists())
+
+    def test_delete_submission_with_logs_superuser(self):
+        submission = SubmissionFactory.create(completed_on=timezone.now())
+        user = SuperUserFactory.create()
+        logevent.submission_details_view_admin(submission, user)
+
+        url = reverse("admin:submissions_submission_changelist")
+        changelist = self.app.get(url, user=user)
+
+        html_form = changelist.forms["changelist-form"]
+        html_form["action"] = "delete_selected"
+        html_form["_selected_action"] = [submission.pk]
+
+        confirmation_page = html_form.submit()
+
+        self.assertEqual(1, len(confirmation_page.forms))
+
+        confirmation_form = confirmation_page.forms[0]
+        confirmation_form["_selected_action"] = [submission.pk]
+        confirmation_form["action"] = "delete_selected"
+        confirmation_form["post"] = "yes"
+
+        delete_response = confirmation_form.submit()
+
+        self.assertRedirects(delete_response, url)
+        self.assertFalse(Submission.objects.filter(pk=submission.pk).exists())
