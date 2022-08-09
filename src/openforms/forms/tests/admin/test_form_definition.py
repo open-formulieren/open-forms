@@ -133,20 +133,19 @@ class TestFormDefinitionAdmin(WebTest):
         step = FormStepFactory.create(form_definition__is_reusable=True)
         FormStepFactory.create(form_definition=step.form_definition)
 
-        self.client.force_login(user=self.user)
-
         response = self.app.get(
             reverse(
                 "admin:forms_formdefinition_change",
                 kwargs={"object_id": step.form_definition.pk},
-            )
+            ),
         )
         response.form["is_reusable"] = False
         response = response.form.submit()
 
         self.assertInHTML(
             _(
-                "Cannot change is_reusable from true to false if the form definition is used in more than one formstep."
+                "This form definition cannot be marked as 'not-reusable' as it is used "
+                "in multiple existing forms."
             ),
             str(response.content),
         )

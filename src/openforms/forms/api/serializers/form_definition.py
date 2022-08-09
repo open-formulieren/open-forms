@@ -93,7 +93,10 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
-        validate_form_definition_is_reusable(self.instance, **attrs)
+        if self.instance:
+            validate_form_definition_is_reusable(
+                self.instance, new_value=attrs.get("is_reusable")
+            )
         return attrs
 
 

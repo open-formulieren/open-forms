@@ -178,7 +178,8 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual(
             response.json()["invalidParams"][0]["reason"],
             _(
-                "Cannot change is_reusable from true to false if the form definition is used in more than one formstep."
+                "This form definition cannot be marked as 'not-reusable' as it is used "
+                "in multiple existing forms."
             ),
         )
 

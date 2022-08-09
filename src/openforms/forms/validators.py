@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -49,7 +51,8 @@ def validate_not_deleted(form):
 
 
 def validate_form_definition_is_reusable(
-    form_definition: FormDefinition, **kwargs
+    form_definition: FormDefinition,
+    new_value: Optional[bool] = None,
 ) -> None:
     """
     Validate the integrity of the ``is_reusable`` flag.
@@ -57,9 +60,8 @@ def validate_form_definition_is_reusable(
     ``is_reusable`` can only be switched from true to false if the form definition is used in less than
     two distinct forms.
     """
-    is_reusable = kwargs.get("is_reusable", form_definition.is_reusable)
-
-    if is_reusable is False and form_definition.used_in.count() > 1:
+    new_value = new_value if new_value is not None else form_definition.is_reusable
+    if new_value is False and form_definition.used_in.count() > 1:
         raise ValidationError(
             {
                 "is_reusable": _(
