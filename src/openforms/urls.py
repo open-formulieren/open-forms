@@ -11,8 +11,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 
 from decorator_include import decorator_include
+from mozilla_django_oidc_db.views import AdminLoginFailure
 
-from openforms.accounts.oidc.views import AdminLoginFailure
 from openforms.emails.admin import EmailTestAdminView
 from openforms.emails.views import EmailWrapperTestView
 from openforms.submissions.dev_views import SubmissionPDFTestView
