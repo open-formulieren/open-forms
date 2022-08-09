@@ -55,7 +55,7 @@ class OIDCFLowTests(TestCase):
     @patch("mozilla_django_oidc_db.backends.OIDCAuthenticationBackend.get_token")
     @patch(
         "mozilla_django_oidc_db.mixins.OpenIDConnectConfig.get_solo",
-        return_value=OpenIDConnectConfig(enabled=True),
+        return_value=OpenIDConnectConfig(id=1, enabled=True),
     )
     def test_duplicate_email_unique_constraint_violated(
         self,
@@ -112,7 +112,7 @@ class OIDCFLowTests(TestCase):
     @patch("mozilla_django_oidc_db.backends.OIDCAuthenticationBackend.get_token")
     @patch(
         "mozilla_django_oidc_db.mixins.OpenIDConnectConfig.get_solo",
-        return_value=OpenIDConnectConfig(enabled=True),
+        return_value=OpenIDConnectConfig(id=1, enabled=True),
     )
     def test_happy_flow(
         self,
@@ -163,7 +163,7 @@ class OIDCFLowTests(TestCase):
     @patch("mozilla_django_oidc_db.backends.OIDCAuthenticationBackend.get_token")
     @patch(
         "mozilla_django_oidc_db.mixins.OpenIDConnectConfig.get_solo",
-        return_value=OpenIDConnectConfig(enabled=True),
+        return_value=OpenIDConnectConfig(id=1, enabled=True),
     )
     def test_error_first_cleared_after_succesful_login(
         self,
