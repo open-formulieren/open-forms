@@ -1,7 +1,7 @@
 import dataclasses
 from typing import Iterator
 
-from django.http import FileResponse, HttpResponse
+from django.http import HttpResponse
 from django.utils.timezone import make_naive
 
 import tablib
@@ -74,7 +74,7 @@ def create_submission_export(queryset: SubmissionQuerySet) -> tablib.Dataset:
 
 def export_submissions(
     queryset: SubmissionQuerySet, file_type: FileType
-) -> FileResponse:
+) -> HttpResponse:
     export_data = create_submission_export(queryset)
     filename = f"submissions_export.{file_type.extension}"
 
