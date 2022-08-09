@@ -2,6 +2,16 @@
 Changelog
 =========
 
+1.1.5 (2022-08-09)
+==================
+
+Security fix release
+
+This release fixes a potential reflected file download vulnerability.
+
+* Bumped Django and django-sendfile2 versions with fixes for CVE-2022-36359
+* [#1833] Fixed submission being blocked on empty prefill data
+
 1.1.4 (2022-07-25)
 ==================
 
