@@ -1,11 +1,12 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 from django.views.generic import ListView
 
+from openforms.logging.models import TimelineLogProxy
 from openforms.utils.mixins import UserIsStaffMixin
 
-from ..logging.models import TimelineLogProxy
 from .models import Submission
 
 
@@ -26,7 +27,9 @@ class LogsEvaluatedLogicView(UserIsStaffMixin, PermissionRequiredMixin, ListView
     def get_queryset(self):
         logic_log_template = "logging/events/submission_logic_evaluated.txt"
         queryset = TimelineLogProxy.objects.filter(
-            template=logic_log_template, object_id=self.submission.id
+            template=logic_log_template,
+            object_id=self.submission.id,
+            content_type=ContentType.objects.get_for_model(Submission),
         )
         return queryset.order_by("timestamp")
 
