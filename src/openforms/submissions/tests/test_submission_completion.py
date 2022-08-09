@@ -335,10 +335,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         # Since the prefilled field was not disabled, it is possible to modify it and the submission is valid
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
-    def test_null_prefilled_data(self, mock_get_solo):
-
-        mock_get_solo.return_value = GlobalConfiguration(enable_form_variables=False)
+    def test_null_prefilled_data(self):
         form = FormFactory.create()
         step = FormStepFactory.create(
             form=form,
@@ -361,7 +358,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         )
 
         SubmissionStepFactory.create(
-            submission=submission, form_step=step, _data={"surname": ""}
+            submission=submission, form_step=step, data={"surname": ""}
         )
 
         self._add_submission_to_session(submission)
