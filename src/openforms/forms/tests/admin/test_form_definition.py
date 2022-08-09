@@ -126,3 +126,26 @@ class TestFormDefinitionAdmin(WebTest):
             deleted_form_url,
             str(response.content),
         )
+
+    def test_cannot_mark_form_definition_as_non_reusable_if_used_in_multiple_forms(
+        self,
+    ):
+        step = FormStepFactory.create(form_definition__is_reusable=True)
+        FormStepFactory.create(form_definition=step.form_definition)
+
+        response = self.app.get(
+            reverse(
+                "admin:forms_formdefinition_change",
+                kwargs={"object_id": step.form_definition.pk},
+            ),
+        )
+        response.form["is_reusable"] = False
+        response = response.form.submit()
+
+        self.assertInHTML(
+            _(
+                "This form definition cannot be marked as 'not-reusable' as it is used "
+                "in multiple existing forms."
+            ),
+            str(response.content),
+        )

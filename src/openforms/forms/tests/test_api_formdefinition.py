@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -155,6 +156,32 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual("updated-slug", definition.slug)
         self.assertEqual(True, definition.login_required)
         self.assertIn({"label": "New field"}, definition.configuration["components"])
+
+    def test_update_is_reusable_unsuccessful_with_multiple_forms(self):
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+
+        step = FormStepFactory.create(form_definition__is_reusable=True)
+        FormStepFactory.create(form_definition=step.form_definition)
+
+        url = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": step.form_definition.uuid}
+        )
+        response = self.client.patch(
+            url,
+            data={
+                "isReusable": False,
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.json()["invalidParams"][0]["reason"],
+            _(
+                "This form definition cannot be marked as 'not-reusable' as it is used "
+                "in multiple existing forms."
+            ),
+        )
 
     def test_create(self):
         user = StaffUserFactory.create(user_permissions=["change_form"])
