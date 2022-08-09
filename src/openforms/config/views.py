@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Generator, Optional
 
 from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -76,7 +76,7 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
             sections.append(
                 {
                     "name": name,
-                    "entries": self.get_register_entries(register),
+                    "entries": list(self.get_register_entries(register)),
                 }
             )
 
@@ -84,7 +84,7 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
 
         return context
 
-    def get_register_entries(self, register):
+    def get_register_entries(self, register) -> Generator[Entry, None, None]:
         for plugin in register.iter_enabled_plugins():
             if hasattr(plugin, "iter_config_checks"):
                 yield from plugin.iter_config_checks()

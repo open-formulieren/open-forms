@@ -119,12 +119,10 @@ class HaalCentraalPrefill(BasePlugin):
                 raise InvalidPluginConfiguration(_("Service not selected"))
 
             client = config.service.build_client()
-            client.list(
-                "ingeschrevenpersonen",
-                request_kwargs=self.request_kwargs,
-                params={"burgerservicenummer": "123"},
-            )
+            client.retrieve("test", "test")
         except ClientError as e:
+            if e.args[0].get("status") == 404:
+                return
             raise InvalidPluginConfiguration(
                 _("Client error: {exception}").format(exception=e)
             )
