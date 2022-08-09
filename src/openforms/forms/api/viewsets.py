@@ -54,6 +54,7 @@ from .serializers import (
     FormVersionSerializer,
 )
 from .serializers.category import CategorySerializer
+from .serializers.logic.form_logic import FormLogicListSerializer
 
 
 @extend_schema(
@@ -476,6 +477,53 @@ class FormViewSet(viewsets.ModelViewSet):
 
         serializer = FormVariableSerializer(
             instance=form_variables,
+            many=True,
+            context={"request": request, "form": form},
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(
+        detail=True,
+        methods=["put"],
+        url_path="logic-rules",
+        url_name="logic-rules",
+    )
+    @transaction.atomic
+    def logic_rules_bulk_update(self, request, *args, **kwargs):
+        form = self.get_object()
+        logic_rules = form.formlogic_set.all()
+        # We expect that all the logic rules associated with a form come in the request.
+        # So we can delete any existing rule because they will be replaced.
+        logic_rules.delete()
+
+        serializer = FormLogicSerializer(
+            data=request.data, many=True, context={"request": request, "form": form}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @extend_schema(
+        summary=_("List logic rules"),
+        description=_("List all logic rules defined for a form."),
+        tags=["forms"],
+        request=FormLogicListSerializer,
+        responses={
+            status.HTTP_200_OK: FormLogicSerializer,
+            status.HTTP_401_UNAUTHORIZED: ExceptionSerializer,
+            status.HTTP_403_FORBIDDEN: ExceptionSerializer,
+            status.HTTP_404_NOT_FOUND: ExceptionSerializer,
+            status.HTTP_405_METHOD_NOT_ALLOWED: ExceptionSerializer,
+        },
+    )
+    @logic_rules_bulk_update.mapping.get
+    def logic_rules_list(self, request, *args, **kwargs):
+        form = self.get_object()
+        logic_rules = form.formlogic_set.all()
+
+        serializer = FormLogicSerializer(
+            instance=logic_rules,
             many=True,
             context={"request": request, "form": form},
         )

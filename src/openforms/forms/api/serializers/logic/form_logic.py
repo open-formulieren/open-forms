@@ -124,3 +124,13 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
                 # ensure that we are not looking at stale date if we were waiting for a lock
                 self.instance.refresh_from_db()
             return super().save(**kwargs)
+
+
+class FormLogicListSerializer(serializers.ListSerializer):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("child", FormLogicSerializer())
+        super().__init__(*args, **kwargs)
+
+    def create(self, validated_data):
+        rules_to_create = [FormLogic(**rule) for rule in validated_data]
+        FormLogic.objects.bulk_create(rules_to_create)
