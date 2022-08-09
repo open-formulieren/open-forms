@@ -7,6 +7,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
 from openforms.api.utils import get_from_serializer_data_or_instance
+from openforms.formio.utils import iter_components
 from openforms.typing import JSONObject
 from openforms.utils.json_logic import JsonLogicTest
 
@@ -176,13 +177,7 @@ class FormIOComponentsValidator:
     """
 
     def __call__(self, configuration: JSONObject) -> None:
-        from ..models import FormDefinition
-
-        instance = FormDefinition()
-
-        for component in instance.iter_components(
-            configuration=configuration, recursive=True
-        ):
+        for component in iter_components(configuration=configuration, recursive=True):
             if not (component_type := component.get("type")):
                 continue
 
