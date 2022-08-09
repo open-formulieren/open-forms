@@ -36,6 +36,27 @@ TODO
    command to be available. If you are on an older version, please update to the latest
    patch version first.
 
+1.1.5 (2022-08-09)
+==================
+
+Security fix release
+
+This release fixes a potential reflected file download vulnerability.
+
+* Bumped Django and django-sendfile2 versions with fixes for CVE-2022-36359
+* [#1833] Fixed submission being blocked on empty prefill data
+
+1.0.13 (2022-08-09)
+===================
+
+Security fix release
+
+This release fixes a potential reflected file download vulnerability.
+
+* Bumped Django and django-sendfile2 versions with fixes for CVE-2022-36359
+* Fixed the filename of submission attachment file downloads
+* [#1833] Fixed submission being blocked on empty prefill data
+
 1.1.4 (2022-07-25)
 ==================
 
