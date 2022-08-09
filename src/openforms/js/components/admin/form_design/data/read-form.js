@@ -15,6 +15,7 @@ const loadForm = async formUuid => {
     get(`${FORM_ENDPOINT}/${formUuid}`),
     get(`${FORM_ENDPOINT}/${formUuid}/steps`),
     get(`${FORM_ENDPOINT}/${formUuid}/variables`),
+    get(`${FORM_ENDPOINT}/${formUuid}/logic-rules`),
   ];
 
   const responses = await Promise.all(requests);
@@ -22,7 +23,7 @@ const loadForm = async formUuid => {
     throw new Error('An error occurred while loading the form data.');
   }
 
-  const [formResponse, formStepsResponse, formVariablesResponse] = responses;
+  const [formResponse, formStepsResponse, formVariablesResponse, logicRulesResponse] = responses;
   const {literals, ...form} = formResponse.data;
 
   return {
@@ -31,6 +32,7 @@ const loadForm = async formUuid => {
     selectedAuthPlugins: form.loginOptions.map((plugin, index) => plugin.identifier),
     steps: formStepsResponse.data,
     variables: formVariablesResponse.data,
+    logicRules: logicRulesResponse.data,
   };
 };
 

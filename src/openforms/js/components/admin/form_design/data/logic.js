@@ -2,6 +2,10 @@ import {LOGICS_ENDPOINT, PRICE_RULES_ENDPOINT} from 'components/admin/form_desig
 import {post, put, apiDelete} from 'utils/fetch';
 import {ValidationErrors} from 'utils/exception';
 
+const createOrUpdateLogicRules = async (formUrl, logicRules, csrftoken) => {
+  const endpoint = `${formUrl}/logic-rules`;
+  return await put(endpoint, csrftoken, logicRules, true);
+};
 /**
  * Generic collection of rules saving.
  *
@@ -105,4 +109,4 @@ const savePriceRules = async (formUrl, csrftoken, priceRules, priceRulesToDelete
   return results;
 };
 
-export {saveLogicRules, savePriceRules};
+export {saveLogicRules, savePriceRules, createOrUpdateLogicRules};

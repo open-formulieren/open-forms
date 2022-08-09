@@ -116,7 +116,6 @@ const initialFormState = {
   stepsToDelete: [],
   submitting: false,
   logicRules: [],
-  logicRulesToDelete: [],
   priceRules: [],
   priceRulesToDelete: [],
   formVariables: [],
@@ -179,12 +178,17 @@ function reducer(draft, action) {
      * Form-level actions
      */
     case 'FORM_DATA_LOADED': {
-      const {form, literals, selectedAuthPlugins, steps, variables} = action.payload;
+      const {form, literals, selectedAuthPlugins, steps, variables, logicRules} = action.payload;
 
       if (form) draft.form = form;
       if (literals) draft.literals = literals;
       if (selectedAuthPlugins) draft.selectedAuthPlugins = selectedAuthPlugins;
       if (variables) draft.formVariables = variables;
+      if (logicRules)
+        draft.logicRules = logicRules.map(rule => ({
+          ...rule,
+          _logicType: rule.isAdvanced ? 'simple' : 'advanced',
+        }));
 
       // set the form steps of the form and initialize the validation errors array
       draft.formSteps = steps;
@@ -227,16 +231,6 @@ function reducer(draft, action) {
     }
     case 'PLUGINS_LOADED': {
       const {stateVar, data} = action.payload;
-
-      // post processing for the specific state var
-      switch (stateVar) {
-        case 'logicRules': {
-          for (const rule of data) {
-            rule._logicType = rule.isAdvanced ? 'simple' : 'advanced';
-          }
-          break;
-        }
-      }
 
       draft[stateVar] = data;
       break;
@@ -590,8 +584,7 @@ function reducer(draft, action) {
     }
     case 'DELETED_RULE': {
       const {index} = action.payload;
-      const {uuid: ruleUuid, order: ruleOrder} = draft.logicRules[index];
-      draft.logicRulesToDelete.push(ruleUuid);
+      const {order: ruleOrder} = draft.logicRules[index];
 
       // delete object from state
       const updatedRules = [...draft.logicRules];
@@ -837,7 +830,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
   // only load rules if we're dealing with an existing form rather than when we're creating
   // a new form.
   if (formUuid) {
-    pluginsToLoad.push({endpoint: `${LOGICS_ENDPOINT}?form=${formUuid}`, stateVar: 'logicRules'});
     pluginsToLoad.push({
       endpoint: `${PRICE_RULES_ENDPOINT}?form=${formUuid}`,
       stateVar: 'priceRules',

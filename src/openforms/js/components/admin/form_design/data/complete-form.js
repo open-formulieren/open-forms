@@ -4,7 +4,7 @@ import {FORM_ENDPOINT} from 'components/admin/form_design/constants';
 import {ValidationErrors} from 'utils/exception';
 import {post, put, apiDelete} from 'utils/fetch';
 
-import {saveLogicRules, savePriceRules} from './logic';
+import {createOrUpdateLogicRules, saveLogicRules, savePriceRules} from './logic';
 import {updateOrCreateFormSteps} from './steps';
 import {createOrUpdateFormVariables} from './variables';
 import {createFormVersion} from './versions';
@@ -150,6 +150,7 @@ const saveLogic = async (state, csrftoken) => {
 
   let newState = produce(state, draft => {
     for (const rule of draft.logicRules) {
+      rule.form = formUrl;
       // fix the trigger from step reference
       rule.triggerFromStep = getStepReference(stepsByGeneratedId, rule.triggerFromStep);
       // fix the actions that do something with the step(s)
@@ -159,42 +160,29 @@ const saveLogic = async (state, csrftoken) => {
     }
   });
 
-  // form logic
-  const {logicRules, logicRulesToDelete, priceRules, priceRulesToDelete} = newState;
-
-  const logicResults = await saveLogicRules(formUrl, csrftoken, logicRules, logicRulesToDelete);
-  const priceResults = await savePriceRules(formUrl, csrftoken, priceRules, priceRulesToDelete);
-
-  // update the state with updated references
-  const validationErrors = [];
-  newState = produce(state, draft => {
-    for (const [index, result] of logicResults.entries()) {
-      if (result instanceof ValidationErrors) {
-        validationErrors.push(result);
-        continue;
+  // make the actual API call
+  let errors = [];
+  try {
+    const response = await createOrUpdateLogicRules(formUrl, newState.logicRules, csrftoken);
+    // update the state with server-side objects
+    newState = produce(newState, draft => {
+      draft.logicRules = response.data;
+      for (const rule of draft.logicRules) {
+        rule._logicType = rule.isAdvanced ? 'simple' : 'advanced';
       }
-
-      const {url, uuid} = result;
-      draft.logicRules[index].uuid = uuid;
-      draft.logicRules[index].url = url;
+    });
+  } catch (e) {
+    if (e instanceof ValidationErrors) {
+      e.context = 'logicRules';
+      // TODO: convert in list of errors for further processing?
+      errors = [e];
+    } else {
+      // re-throw any other type of error
+      throw e;
     }
+  }
 
-    for (const [index, result] of priceResults.entries()) {
-      if (result instanceof ValidationErrors) {
-        validationErrors.push(result);
-        continue;
-      }
-
-      const {url, uuid} = result;
-      draft.priceRules[index].uuid = uuid;
-      draft.priceRules[index].url = url;
-    }
-
-    draft.logicRulesToDelete = [];
-    draft.priceRulesToDelete = [];
-  });
-
-  return [newState, validationErrors];
+  return [newState, errors];
 };
 
 /**
