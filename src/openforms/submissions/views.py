@@ -190,7 +190,7 @@ class SubmissionAttachmentDownloadView(LoginRequiredMixin, PrivateMediaView):
         submission_attachment = self.get_object()
         opts = {
             "attachment": True,
-            "attachment_filename": submission_attachment.file_name,
+            "attachment_filename": submission_attachment.get_display_name(),
             "mimetype": submission_attachment.content_type,
         }
         return opts
