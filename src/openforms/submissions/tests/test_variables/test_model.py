@@ -1,6 +1,7 @@
 from django.db import IntegrityError
 from django.test import TestCase
 
+from ...models import SubmissionValueVariable
 from ..factories import SubmissionValueVariableFactory
 
 
@@ -9,7 +10,7 @@ class SubmissionValueVariableModelTests(TestCase):
         variable1 = SubmissionValueVariableFactory.create(key="var1")
 
         with self.assertRaises(IntegrityError):
-            SubmissionValueVariableFactory.create(
+            SubmissionValueVariable.objects.create(
                 submission=variable1.submission, key="var1"
             )
 
@@ -17,7 +18,7 @@ class SubmissionValueVariableModelTests(TestCase):
         variable1 = SubmissionValueVariableFactory.create()
 
         with self.assertRaises(IntegrityError):
-            SubmissionValueVariableFactory.create(
+            SubmissionValueVariable.objects.create(
                 submission=variable1.submission, form_variable=variable1.form_variable
             )
 

@@ -150,7 +150,6 @@ class SubmissionValueVariablesState:
         prefill_vars = []
         for variable in self.variables.values():
             prefill_plugin = variable.form_variable.prefill_plugin
-            attribute = variable.form_variable.prefill_attribute
             if prefill_plugin == "":
                 continue
             prefill_vars.append(variable)

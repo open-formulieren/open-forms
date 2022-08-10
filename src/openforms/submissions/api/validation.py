@@ -22,13 +22,11 @@ from .fields import NestedSubmissionRelatedField
 class InvalidCompletion:
     submission: Submission
     incomplete_steps: List[SubmissionStep] = field(default_factory=list)
-    invalid_prefilled_fields: List[str] = field(default_factory=list)
     request: Request = None
 
     def validate(self) -> Optional["CompletionValidationSerializer"]:
         checks = [
             any([self.incomplete_steps]),
-            any(self.invalid_prefilled_fields),
             self.submission.form.submission_allowed != SubmissionAllowedChoices.yes,
         ]
         invalid = any(checks)
@@ -59,7 +57,6 @@ class CompletionValidationSerializer(serializers.Serializer):
         source="submission.form.submission_allowed",
         read_only=True,
     )
-    invalid_prefilled_fields = serializers.ListField(child=serializers.CharField())
 
 
 def validate_submission_completion(
@@ -72,11 +69,7 @@ def validate_submission_completion(
     check_submission_logic(submission)
 
     incomplete_steps = []
-    invalid_prefilled_fields = []
     for submission_step in state.submission_steps:
-        invalid_prefilled_fields += get_invalid_prefilled_fields(
-            submission_step, submission
-        )
         if submission_step.form_step.optional:
             continue
         if not submission_step.completed and submission_step.is_applicable:
@@ -85,37 +78,6 @@ def validate_submission_completion(
     completion = InvalidCompletion(
         submission=submission,
         incomplete_steps=incomplete_steps,
-        invalid_prefilled_fields=invalid_prefilled_fields,
         request=request,
     )
     return completion.validate()
-
-
-def get_invalid_prefilled_fields(
-    submission_step: "SubmissionStep", submission: "Submission"
-) -> List[str]:
-    invalid_prefilled_fields = []
-
-    prefill_data = submission.get_prefilled_data()
-    for component in submission_step.form_step.iter_components():
-        if "prefill" not in component or component["prefill"]["plugin"] == "":
-            continue
-
-        if not component["disabled"]:
-            continue
-
-        # match on key
-        if not (component_key := component.get("key")):
-            continue
-
-        prefilled_value = prefill_data.get(component_key)
-        if prefilled_value is None:
-            # the value will be `None` if there is no actual prefill data available, so there is nothing to compare to. This
-            # especially applies to test-environments without real prefill-connections.
-            continue
-
-        value = submission_step.data.get(component_key)
-        if value != prefilled_value:
-            invalid_prefilled_fields.append(component["label"])
-
-    return invalid_prefilled_fields

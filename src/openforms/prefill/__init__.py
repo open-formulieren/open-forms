@@ -131,8 +131,6 @@ def inject_prefill(configuration: dict, submission: "Submission") -> None:
 
 @elasticapm.capture_span(span_type="app.prefill")
 def prefill_variables(submission: "Submission", register=None) -> None:
-    from openforms.submissions.models import SubmissionValueVariable
-
     from .registry import register as default_register
 
     register = register or default_register
