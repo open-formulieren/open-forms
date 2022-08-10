@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {defineMessage, FormattedMessage, useIntl} from 'react-intl';
 
@@ -12,6 +12,9 @@ import DeleteIcon from 'components/admin/DeleteIcon';
 import {getTranslatedChoices} from 'utils/i18n';
 
 import Trigger from './logic/Trigger';
+import {parseValidationErrors} from './utils';
+import {ValidationErrorContext} from '../forms/ValidationErrors';
+import DSLEditorNode from './logic/DSLEditorNode';
 
 export const EMPTY_PRICE_RULE = {
   uuid: '',
@@ -57,6 +60,8 @@ PricingMode.propTypes = {
 export const PriceLogic = ({rules = [], onChange, onDelete, onAdd}) => {
   const hasDynamicPricing = rules.length > 0;
 
+  const validationErrors = parseValidationErrors(useContext(ValidationErrorContext), 'priceRules');
+
   // TODO: de-duplicate/validate duplicate rules (identical triggers?)
 
   const onPricingModeChange = event => {
@@ -99,12 +104,13 @@ export const PriceLogic = ({rules = [], onChange, onDelete, onAdd}) => {
         </Field>
       </FormRow>
 
-      {rules.map((rule, i) => (
+      {rules.map((rule, index) => (
         <Rule
           key={rule.uuid || rule._generatedId}
           {...rule}
-          onChange={onChange.bind(null, i)}
-          onDelete={onDelete.bind(null, i)}
+          onChange={onChange.bind(null, index)}
+          onDelete={onDelete.bind(null, index)}
+          errors={validationErrors[index.toString()]}
         />
       ))}
 
@@ -122,7 +128,7 @@ PriceLogic.propTypes = {
   onAdd: PropTypes.func.isRequired,
 };
 
-const Rule = ({jsonLogicTrigger, price = '', onChange, onDelete}) => {
+const Rule = ({jsonLogicTrigger, price = '', onChange, onDelete, errors = {}}) => {
   const intl = useIntl();
   const deleteConfirmMessage = intl.formatMessage({
     description: 'Price rule deletion confirm message',
@@ -139,11 +145,14 @@ const Rule = ({jsonLogicTrigger, price = '', onChange, onDelete}) => {
           name="jsonLogicTrigger"
           logic={jsonLogicTrigger}
           onChange={onChange}
+          error={errors.jsonLogicTrigger}
           withDSLPreview
         >
-          <FormattedMessage description="Price logic prefix" defaultMessage="Then the price is" />
-          &nbsp;&euro;&nbsp;
-          <NumberInput name="price" value={price} min="0.00" step="any" onChange={onChange} />
+          <DSLEditorNode errors={errors.price}>
+            <FormattedMessage description="Price logic prefix" defaultMessage="Then the price is" />
+            &nbsp;&euro;&nbsp;
+            <NumberInput name="price" value={price} min="0.00" step="any" onChange={onChange} />
+          </DSLEditorNode>
         </Trigger>
       </div>
     </div>

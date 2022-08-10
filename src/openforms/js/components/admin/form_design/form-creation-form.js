@@ -61,6 +61,7 @@ import {
 import VariablesEditor from './variables/VariablesEditor';
 import {EMPTY_VARIABLE} from './variables/constants';
 import Tab from './Tab';
+import {updateWarningsValidationError} from './logic/utils';
 
 const initialFormState = {
   form: {
@@ -166,6 +167,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   literals: 'literals',
   explanationTemplate: 'form',
   logicRules: 'logic-rules',
+  priceRules: 'product-payment',
   variables: 'variables',
 };
 
@@ -567,18 +569,16 @@ function reducer(draft, action) {
       // Remove the validation error for the updated field
       // If there are multiple actions with errors in one rule, updating it will clear the error also for the
       // other actions of that rule.
-      draft.validationErrors = draft.validationErrors.filter(
-        ([key]) => !key.startsWith(`logicRules.${index}.${name}`)
+      const [validationErrors, tabsWithErrors] = updateWarningsValidationError(
+        draft.validationErrors,
+        draft.tabsWithErrors,
+        'logicRules',
+        index,
+        name,
+        FORM_FIELDS_TO_TAB_NAMES['logicRules']
       );
-      // Update the error badge in the tabs
-      const logicRulesErrors = draft.validationErrors.filter(([key]) =>
-        key.startsWith('logicRules')
-      );
-      if (!logicRulesErrors.length) {
-        draft.tabsWithErrors = draft.tabsWithErrors.filter(
-          tabId => tabId !== FORM_FIELDS_TO_TAB_NAMES['logicRules']
-        );
-      }
+      draft.validationErrors = validationErrors;
+      draft.tabsWithErrors = tabsWithErrors;
       break;
     }
     case 'DELETED_RULE': {
@@ -658,6 +658,17 @@ function reducer(draft, action) {
     case 'CHANGED_PRICE_RULE': {
       const {index, name, value} = action.payload;
       draft.priceRules[index][name] = value;
+
+      const [validationErrors, tabsWithErrors] = updateWarningsValidationError(
+        draft.validationErrors,
+        draft.tabsWithErrors,
+        'priceRules',
+        index,
+        name,
+        FORM_FIELDS_TO_TAB_NAMES['priceRules']
+      );
+      draft.validationErrors = validationErrors;
+      draft.tabsWithErrors = tabsWithErrors;
       break;
     }
     case 'DELETED_PRICE_RULE': {
@@ -723,7 +734,7 @@ function reducer(draft, action) {
             let key;
             switch (fieldPrefix) {
               case 'form':
-              case 'logicRules':
+              // case 'logicRules':
               // literals are tracked separately in the state
               case 'literals': {
                 key = err.name;

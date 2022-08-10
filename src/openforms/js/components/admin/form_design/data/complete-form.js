@@ -4,7 +4,7 @@ import {FORM_ENDPOINT} from 'components/admin/form_design/constants';
 import {ValidationErrors} from 'utils/exception';
 import {post, put, apiDelete} from 'utils/fetch';
 
-import {createOrUpdateLogicRules, saveLogicRules, savePriceRules} from './logic';
+import {createOrUpdateLogicRules} from './logic';
 import {updateOrCreateFormSteps} from './steps';
 import {createOrUpdateFormVariables} from './variables';
 import {createFormVersion} from './versions';
@@ -157,16 +157,26 @@ const saveLogic = async (state, csrftoken) => {
       for (const action of rule.actions) {
         action.formStep = getStepReference(stepsByGeneratedId, action.formStep);
       }
+
+      for (const rule of draft.priceRules) {
+        rule.form = formUrl;
+      }
     }
   });
 
   // make the actual API call
   let errors = [];
+  let responseLogicRules, responsePriceRules;
   try {
-    const response = await createOrUpdateLogicRules(formUrl, newState.logicRules, csrftoken);
-    // update the state with server-side objects
+    responseLogicRules = await createOrUpdateLogicRules(
+      formUrl,
+      newState.logicRules,
+      csrftoken,
+      false
+    );
+
     newState = produce(newState, draft => {
-      draft.logicRules = response.data;
+      draft.logicRules = responseLogicRules.data;
       for (const rule of draft.logicRules) {
         rule._logicType = rule.isAdvanced ? 'simple' : 'advanced';
       }
@@ -176,6 +186,28 @@ const saveLogic = async (state, csrftoken) => {
       e.context = 'logicRules';
       // TODO: convert in list of errors for further processing?
       errors = [e];
+    } else {
+      // re-throw any other type of error
+      throw e;
+    }
+  }
+
+  try {
+    responsePriceRules = await createOrUpdateLogicRules(
+      formUrl,
+      newState.priceRules,
+      csrftoken,
+      true
+    );
+
+    newState = produce(newState, draft => {
+      draft.priceRules = responsePriceRules.data;
+    });
+  } catch (e) {
+    if (e instanceof ValidationErrors) {
+      e.context = 'priceRules';
+      // TODO: convert in list of errors for further processing?
+      errors = errors.concat([e]);
     } else {
       // re-throw any other type of error
       throw e;
