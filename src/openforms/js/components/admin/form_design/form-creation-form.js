@@ -734,7 +734,6 @@ function reducer(draft, action) {
             let key;
             switch (fieldPrefix) {
               case 'form':
-              // case 'logicRules':
               // literals are tracked separately in the state
               case 'literals': {
                 key = err.name;

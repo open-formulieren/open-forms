@@ -9,11 +9,11 @@ import FormRow from 'components/admin/forms/FormRow';
 import Fieldset from 'components/admin/forms/Fieldset';
 import Select from 'components/admin/forms/Select';
 import DeleteIcon from 'components/admin/DeleteIcon';
+import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import {getTranslatedChoices} from 'utils/i18n';
 
 import Trigger from './logic/Trigger';
 import {parseValidationErrors} from './utils';
-import {ValidationErrorContext} from '../forms/ValidationErrors';
 import DSLEditorNode from './logic/DSLEditorNode';
 
 export const EMPTY_PRICE_RULE = {
@@ -164,6 +164,7 @@ Rule.propTypes = {
   price: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   onChange: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
+  errors: PropTypes.object,
 };
 
 export default PriceLogic;
