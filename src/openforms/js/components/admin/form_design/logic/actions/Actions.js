@@ -84,62 +84,6 @@ const ActionProperty = ({action, errors, onChange}) => {
   );
 };
 
-const ActionValue = ({action, errors, onChange}) => {
-  const formContext = useContext(FormContext);
-  const allComponents = formContext.components;
-  const componentType = allComponents[action.component]?.type;
-
-  const getValueSource = action => {
-    if (!action.component) return '';
-
-    return action.action.value.hasOwnProperty('var') ? 'component' : 'literal';
-  };
-
-  const valueSource = getValueSource(action);
-  return (
-    <>
-      <DSLEditorNode errors={errors.component}>
-        <ComponentSelection name="component" value={action.component} onChange={onChange} />
-      </DSLEditorNode>
-      <DSLEditorNode errors={null}>
-        <OperandTypeSelection
-          name="action.value"
-          onChange={e => {
-            onChange({
-              target: {
-                name: e.target.name,
-                value: e.target.value === 'component' ? {var: ''} : '',
-              },
-            });
-          }}
-          operandType={valueSource}
-          filter={([choiceKey, choiceLabel]) => ['literal', 'component'].includes(choiceKey)}
-        />
-      </DSLEditorNode>
-      {valueSource === 'literal' && (
-        <DSLEditorNode errors={null}>
-          <LiteralValueInput
-            name="action.value"
-            componentType={componentType}
-            value={action.action.value}
-            onChange={onChange}
-          />
-        </DSLEditorNode>
-      )}
-      {valueSource === 'component' && (
-        <DSLEditorNode errors={errors.action?.value}>
-          <ComponentSelection
-            name="action.value.var"
-            value={action.action.value.var}
-            onChange={onChange}
-            filter={comp => comp.type === componentType}
-          />
-        </DSLEditorNode>
-      )}
-    </>
-  );
-};
-
 const ActionVariableValue = ({action, errors, onChange}) => {
   const formContext = useContext(FormContext);
   const allVariables = formContext.formVariables;
@@ -180,10 +124,6 @@ const ActionComponent = ({action, errors, onChange}) => {
   switch (action.action.type) {
     case 'property': {
       Component = ActionProperty;
-      break;
-    }
-    case 'value': {
-      Component = ActionValue;
       break;
     }
     case 'variable': {
