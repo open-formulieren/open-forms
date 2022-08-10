@@ -25,6 +25,9 @@ So, to recap:
 3. End-user starts the form and logs in, thereby creating a session/``Submission``
 4. The submission-specific form definition configuration is enhanced with the pre-filled
    form field default values.
+
+.. todo:: Move the public API into ``openforms.prefill.service``.
+
 """
 import logging
 from collections import defaultdict
@@ -244,6 +247,11 @@ def _set_default_values(
             component["defaultValue"] = format_date_value(prefill_value)
 
 
+def inject_prefill(configuration: dict, submission: "Submission") -> None:
+    _set_default_values(configuration, submission.get_prefilled_data())
+
+
+@elasticapm.capture_span(span_type="app.prefill")
 def prefill_variables(submission: "Submission", register=None) -> None:
     from openforms.submissions.models import SubmissionValueVariable
 

@@ -5,7 +5,7 @@ import elasticapm
 from rest_framework.request import Request
 
 from openforms.forms.custom_field_types import handle_custom_types
-from openforms.prefill import _set_default_values
+from openforms.prefill import inject_prefill
 from openforms.submissions.models import Submission
 
 from .normalization import normalize_value_for_component  # noqa
@@ -36,7 +36,7 @@ def insert_variables(
     configuration: dict, submission: Submission, request: "Request"
 ) -> dict:
     # TODO: refactor when interpolating configuration properties with variables
-    _set_default_values(configuration, submission.get_prefilled_data())
+    inject_prefill(configuration, submission)
 
     value_variables_state = submission.load_submission_value_variables_state()
     data = value_variables_state.get_data()
