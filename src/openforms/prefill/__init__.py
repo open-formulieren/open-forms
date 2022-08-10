@@ -196,33 +196,33 @@ def _group_prefills_by_plugin(fields: List[Dict[str, str]]) -> Dict[str, list]:
 
 
 def _set_default_values(
-    configuration: JSONObject, prefilled_values: Dict[str, Dict[str, Any]]
+    configuration: JSONObject, prefilled_values: Dict[str, Any]
 ) -> None:
     """
     Mutates each component found in configuration according to the prefilled values.
 
     :param configuration: The Formiojs JSON schema describing an entire form or an
       individual component within the form.
-    :param prefilled_values: A dict keyed by plugin ID, with values a dict keyed by the
-      attribute ID. The value of each attribute key is the prefill value as retrieved.
+    :param prefilled_values: A dict keyed by component key, with values the value fetched
+    from the prefill calls (from :func:`prefill_variables`).
 
-    This function recurses to deal with the nested component structure. Each component
-    is inspected for prefill configuration, which is then looked up in
-    ``prefilled_values`` to set the component ``defaultValue``.
+    Each component is inspected for prefill configuration, after which the value is
+    looked up in ``prefilled_values``.
     """
     from openforms.formio.service import normalize_value_for_component
 
     for component in iter_components(configuration, recursive=True):
+        if not (component_key := component.get("key")):
+            continue
         if not (prefill := component.get("prefill")):
             continue
-        if not (plugin := prefill.get("plugin")):
+        if not prefill.get("plugin"):
             continue
-        if not (attribute := prefill.get("attribute")):
+        if not prefill.get("attribute"):
             continue
 
         default_value = component.get("defaultValue")
-        glom_path = Path(plugin, attribute)
-        prefill_value = glom(prefilled_values, glom_path, default=None)
+        prefill_value = prefilled_values.get(component_key)
 
         if prefill_value is None:
             logger.debug("Prefill value for component %r is None, skipping.", component)
