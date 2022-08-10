@@ -6,7 +6,7 @@ from django.test import TransactionTestCase
 from django.utils.crypto import get_random_string
 
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.forms.tests.factories import FormStepFactory
 from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
