@@ -225,9 +225,7 @@ class SubmissionTests(TestCase):
             form=form, form_definition=form_definition_2
         )
 
-        submission = SubmissionFactory.create(
-            form=form, bsn="999990676", kvk="69599084"
-        )
+        submission = SubmissionFactory.create(form=form, auth_info__value="999990676")
         submission_step = SubmissionStepFactory.create(
             submission=submission,
             data={

@@ -43,13 +43,13 @@ class KVK_KVKNumberPrefill(BasePlugin):
         self, submission: Submission, attributes: List[str]
     ) -> Dict[str, Any]:
         # check if submission was logged in with the identifier we're interested
-        if not submission.kvk:
+        if submission.auth_info.attribute != AuthAttribute.kvk:
             return {}
 
         client = KVKProfileClient()
 
         try:
-            result = client.query(submission.kvk)
+            result = client.query(submission.auth_info.value)
         except (RequestException, ClientError, KVKClientError):
             return {}
 

@@ -152,8 +152,8 @@ class StufZDSRegistration(BasePlugin):
             RegistrationAttribute.initiator_geboortedatum, transform=PartialDate.parse
         ),
         # "initiator.aanschrijfwijze": FieldConf(RegistrationAttribute.initiator_aanschrijfwijze),
-        "initiator.bsn": FieldConf(submission_field="bsn"),
-        "initiator.kvk": FieldConf(submission_field="kvk"),
+        "initiator.bsn": FieldConf(submission_auth_info_attribute="bsn"),
+        "initiator.kvk": FieldConf(submission_auth_info_attribute="kvk"),
         "locatie": FieldConf(
             RegistrationAttribute.locatie_coordinaat, transform=_point_coordinate
         ),

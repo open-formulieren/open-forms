@@ -5,7 +5,6 @@ from collections import OrderedDict
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Union
 
-from django.contrib.auth.hashers import make_password as get_salted_hash
 from django.db import models, transaction
 from django.db.models import Q
 from django.template import Context, Template
@@ -16,17 +15,11 @@ from django_better_admin_arrayfield.models.fields import ArrayField
 from furl import furl
 from glom import glom
 
-from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
-from openforms.contrib.kvk.validators import validate_kvk
 from openforms.formio.formatters.service import filter_printable
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
-from openforms.utils.validators import (
-    AllowedRedirectValidator,
-    SerializerValidator,
-    validate_bsn,
-)
+from openforms.utils.validators import AllowedRedirectValidator, SerializerValidator
 
 from ..constants import RegistrationStatuses, SubmissionValueVariableSources
 from ..pricing import get_submission_price
@@ -158,39 +151,6 @@ class Submission(models.Model):
     completed_on = models.DateTimeField(_("completed on"), blank=True, null=True)
     suspended_on = models.DateTimeField(_("suspended on"), blank=True, null=True)
 
-    # authentication state
-    auth_plugin = models.CharField(
-        _("auth plugin"),
-        max_length=100,
-        blank=True,
-        help_text=_("The plugin used by the user for authentication."),
-    )
-    bsn = models.CharField(
-        _("BSN"),
-        max_length=255,  # large enough to accomodate hashes
-        default=get_default_bsn,
-        blank=True,
-        validators=(validate_bsn,),
-    )
-    kvk = models.CharField(
-        _("KvK number"),
-        max_length=255,  # large enough to accomodate hashes
-        default=get_default_kvk,
-        blank=True,
-        validators=(validate_kvk,),
-    )
-    pseudo = models.CharField(
-        _("Pseudo ID"),
-        max_length=255,  # large enough to accomodate hashes
-        blank=True,
-        help_text=_("Pseudo ID provided by authentication with eIDAS"),
-    )
-    auth_attributes_hashed = models.BooleanField(
-        _("identifying attributes hashed"),
-        help_text=_("are the auth/identifying attributes hashed?"),
-        default=False,
-        editable=False,
-    )
     co_sign_data = models.JSONField(
         _("co-sign data"),
         blank=True,
@@ -354,7 +314,7 @@ class Submission(models.Model):
 
     @property
     def is_authenticated(self):
-        return bool(self.auth_plugin)
+        return hasattr(self, "auth_info")
 
     @property
     def is_completed(self):
@@ -364,9 +324,8 @@ class Submission(models.Model):
     def remove_sensitive_data(self):
         from .submission_files import SubmissionFileAttachment
 
-        self.bsn = ""
-        self.kvk = ""
-        self.pseudo = ""
+        if hasattr(self, "auth_info"):
+            self.auth_info.clear_sensitive_data()
 
         sensitive_variables = self.submissionvaluevariable_set.filter(
             form_variable__is_sensitive_data=True
@@ -393,25 +352,6 @@ class Submission(models.Model):
             )
 
         self.save()
-
-    def hash_identifying_attributes(self, save=False):
-        """
-        Generate a salted hash for each of the identifying attributes.
-
-        Hashes allow us to compare correct values at a later stage, while still
-        preventing sensitive data to be available in plain text if the database were
-        to leak.
-
-        We use :module:`django.contrib.auth.hashers` for the actual salting and hashing,
-        relying on the global Django ``PASSWORD_HASHERS`` setting.
-        """
-        attrs = [AuthAttribute.bsn, AuthAttribute.kvk, AuthAttribute.pseudo]
-        for attr in attrs:
-            hashed = get_salted_hash(getattr(self, attr))
-            setattr(self, attr, hashed)
-        self.auth_attributes_hashed = True
-        if save:
-            self.save(update_fields=["auth_attributes_hashed", *attrs])
 
     def load_submission_value_variables_state(
         self, refresh: bool = False
@@ -618,18 +558,10 @@ class Submission(models.Model):
 
     def get_auth_mode_display(self):
         # compact anonymous display of authentication method
-        auth = []
-        if self.bsn:
-            auth.append("bsn")
-        if self.kvk:
-            auth.append("kvk")
-        if self.pseudo:
-            auth.append("pseudo")
-
-        if self.auth_plugin:
-            return f"{self.auth_plugin} ({','.join(auth)})"
-        else:
+        if not hasattr(self, "auth_info"):
             return ""
+
+        return f"{self.auth_info.plugin} ({self.auth_info.attribute})"
 
     def get_prefilled_data(self):
         if self._prefilled_data is None:

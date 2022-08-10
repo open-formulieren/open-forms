@@ -96,7 +96,7 @@ def maybe_hash_identifying_attributes(submission_id: int):
     if submission.registration_status != RegistrationStatuses.success:
         return
 
-    if submission.auth_attributes_hashed:
+    if submission.auth_info.attribute_hashed:
         return
 
-    submission.hash_identifying_attributes(save=True)
+    submission.auth_info.hash_identifying_attributes()
