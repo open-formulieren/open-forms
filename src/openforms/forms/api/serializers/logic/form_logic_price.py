@@ -11,8 +11,9 @@ class FormPriceLogicSerializer(FormLogicBaseSerializer):
         extra_kwargs = {
             **FormLogicBaseSerializer.Meta.extra_kwargs,
             "url": {
-                "view_name": "api:price-logics-detail",
+                "view_name": "api:form-price-logic-rules",
                 "lookup_field": "uuid",
+                "lookup_url_kwarg": "uuid_or_slug",
             },
         }
 

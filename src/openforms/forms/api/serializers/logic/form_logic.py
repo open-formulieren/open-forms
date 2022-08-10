@@ -81,8 +81,9 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
         extra_kwargs = {
             **FormLogicBaseSerializer.Meta.extra_kwargs,
             "url": {
-                "view_name": "api:form-logics-detail",
+                "view_name": "api:form-logic-rules",
                 "lookup_field": "uuid",
+                "lookup_url_kwarg": "uuid_or_slug",
             },
             "order": {
                 "read_only": False,
