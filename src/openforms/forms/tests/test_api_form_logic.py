@@ -18,6 +18,7 @@ from ..models import FormLogic
 from .factories import FormFactory, FormLogicFactory, FormStepFactory
 
 
+# TODO Remove once the FormLogicViewSet endpoint is removed
 class FormLogicAPITests(APITestCase):
     def test_auth_required(self):
         url = reverse("api:form-logics-list")
@@ -1177,6 +1178,7 @@ def copy_func(f):
     return g
 
 
+# TODO Remove once the FormLogicViewSet endpoint is removed
 class FormLogicTransactionTests(APITransactionTestCase):
     @skip(
         "This test cannot complete/pass when row-level locking is used which is the solution for the problem."

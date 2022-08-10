@@ -10,6 +10,7 @@ from ..models import FormPriceLogic
 from .factories import FormFactory, FormPriceLogicFactory, FormStepFactory
 
 
+# TODO Remove once the FormPriceLogicViewSet endpoint is removed
 class FormPriceLogicAPITests(APITestCase):
 
     list_url = reverse_lazy("api:price-logics-list")
