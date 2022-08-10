@@ -5,6 +5,7 @@ from ordered_model.serializers import OrderedModelSerializer
 from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
+from openforms.api.serializers import ListWithChildSerializer
 from openforms.api.utils import get_from_serializer_data_or_instance
 
 from ....models import FormLogic, FormStep
@@ -128,11 +129,6 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
             return super().save(**kwargs)
 
 
-class FormLogicListSerializer(serializers.ListSerializer):
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault("child", FormLogicSerializer())
-        super().__init__(*args, **kwargs)
-
-    def create(self, validated_data):
-        rules_to_create = [FormLogic(**rule) for rule in validated_data]
-        FormLogic.objects.bulk_create(rules_to_create)
+class FormLogicListSerializer(ListWithChildSerializer):
+    child_serializer_class = FormLogicSerializer
+    model = FormLogic

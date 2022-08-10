@@ -1,5 +1,4 @@
-from rest_framework import serializers
-
+from openforms.api.serializers import ListWithChildSerializer
 from openforms.forms.api.serializers.logic.form_logic import FormLogicBaseSerializer
 from openforms.forms.models import FormPriceLogic
 
@@ -18,11 +17,6 @@ class FormPriceLogicSerializer(FormLogicBaseSerializer):
         }
 
 
-class FormPriceLogicListSerializer(serializers.ListSerializer):
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault("child", FormPriceLogicSerializer())
-        super().__init__(*args, **kwargs)
-
-    def create(self, validated_data):
-        rules_to_create = [FormPriceLogic(**rule) for rule in validated_data]
-        FormPriceLogic.objects.bulk_create(rules_to_create)
+class FormPriceLogicListSerializer(ListWithChildSerializer):
+    child_serializer_class = FormPriceLogicSerializer
+    model = FormPriceLogic

@@ -5,25 +5,22 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from openforms.api.serializers import ListWithChildSerializer
 from openforms.formio.utils import get_component
 
 from ...constants import FormVariableSources
 from ...models import FormVariable
 
 
-class FormVariableListSerializer(serializers.ListSerializer):
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault("child", FormVariableSerializer())
-        super().__init__(*args, **kwargs)
+class FormVariableListSerializer(ListWithChildSerializer):
+    model = FormVariable
 
-    def create(self, validated_data):
-        variables_to_create = []
-        for variable in self.validated_data:
-            variable = FormVariable(**variable)
-            variable.derive_info_from_component()
-            variables_to_create.append(variable)
+    def get_child_serializer_class(self):
+        return FormVariableSerializer
 
-        return FormVariable.objects.bulk_create(variables_to_create)
+    def process_object(self, variable: "FormVariable"):
+        variable.derive_info_from_component()
+        return variable
 
     def validate(self, attrs):
         static_data_keys = [item.key for item in FormVariable.get_static_data()]
