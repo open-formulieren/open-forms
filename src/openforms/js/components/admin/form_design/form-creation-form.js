@@ -26,8 +26,6 @@ import {
   AUTH_PLUGINS_ENDPOINT,
   PREFILL_PLUGINS_ENDPOINT,
   PAYMENT_PLUGINS_ENDPOINT,
-  LOGICS_ENDPOINT,
-  PRICE_RULES_ENDPOINT,
   CATEGORIES_ENDPOINT,
   STATIC_VARIABLES_ENDPOINT,
 } from './constants';
@@ -117,7 +115,6 @@ const initialFormState = {
   submitting: false,
   logicRules: [],
   priceRules: [],
-  priceRulesToDelete: [],
   formVariables: [],
   staticVariables: [],
   // backend error handling
@@ -178,7 +175,8 @@ function reducer(draft, action) {
      * Form-level actions
      */
     case 'FORM_DATA_LOADED': {
-      const {form, literals, selectedAuthPlugins, steps, variables, logicRules} = action.payload;
+      const {form, literals, selectedAuthPlugins, steps, variables, logicRules, priceRules} =
+        action.payload;
 
       if (form) draft.form = form;
       if (literals) draft.literals = literals;
@@ -189,6 +187,7 @@ function reducer(draft, action) {
           ...rule,
           _logicType: rule.isAdvanced ? 'simple' : 'advanced',
         }));
+      if (priceRules) draft.priceRules = priceRules;
 
       // set the form steps of the form and initialize the validation errors array
       draft.formSteps = steps;
@@ -663,7 +662,6 @@ function reducer(draft, action) {
     }
     case 'DELETED_PRICE_RULE': {
       const {index} = action.payload;
-      const ruleUuid = draft.priceRules[index].uuid;
 
       // delete object from state
       const updatedRules = [...draft.priceRules];
@@ -826,15 +824,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
     {endpoint: STATIC_VARIABLES_ENDPOINT, stateVar: 'staticVariables'},
   ];
-
-  // only load rules if we're dealing with an existing form rather than when we're creating
-  // a new form.
-  if (formUuid) {
-    pluginsToLoad.push({
-      endpoint: `${PRICE_RULES_ENDPOINT}?form=${formUuid}`,
-      stateVar: 'priceRules',
-    });
-  }
 
   const {loading} = useAsync(async () => {
     const promises = [
