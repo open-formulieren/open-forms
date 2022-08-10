@@ -18,7 +18,7 @@ import {post} from 'utils/fetch';
 import {APIError, NotAuthenticatedError} from 'utils/exception';
 import {getUniqueRandomString} from 'utils/random';
 
-import {FormContext, FeatureFlagsContext} from './Context';
+import {FormContext} from './Context';
 import FormSteps from './FormSteps';
 import {
   FORM_DEFINITIONS_ENDPOINT,
@@ -811,7 +811,6 @@ StepsFieldSet.propTypes = {
  * Component to render the form edit page.
  */
 const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
-  const featureFlags = useContext(FeatureFlagsContext);
   const initialState = {
     ...initialFormState,
     form: {
@@ -970,7 +969,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     let newState = {...state, submitting: true};
     let validationErrors;
     try {
-      [newState, validationErrors] = await saveCompleteForm(newState, featureFlags, csrftoken);
+      [newState, validationErrors] = await saveCompleteForm(newState, csrftoken);
     } catch (e) {
       // handle HTTP 401 errors, in case the session was expired. This results in a
       // state update AND we abort the rest of the flow.
@@ -1112,11 +1111,9 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
                 description="Appointments tab title"
               />
             </Tab>
-            {featureFlags.enable_form_variables && (
-              <Tab hasErrors={state.formVariables.some(variable => variableHasErrors(variable))}>
-                <FormattedMessage defaultMessage="Variables" description="Variables tab title" />
-              </Tab>
-            )}
+            <Tab hasErrors={state.formVariables.some(variable => variableHasErrors(variable))}>
+              <FormattedMessage defaultMessage="Variables" description="Variables tab title" />
+            </Tab>
           </TabList>
 
           <TabPanel>
@@ -1225,21 +1222,19 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
             />
           </TabPanel>
 
-          {featureFlags.enable_form_variables && (
-            <TabPanel>
-              <VariablesEditor
-                variables={state.formVariables}
-                onAdd={() => dispatch({type: 'ADD_USER_DEFINED_VARIABLE'})}
-                onDelete={key => dispatch({type: 'DELETE_USER_DEFINED_VARIABLE', payload: key})}
-                onChange={(key, propertyName, propertyValue) =>
-                  dispatch({
-                    type: 'CHANGE_USER_DEFINED_VARIABLE',
-                    payload: {key, propertyName, propertyValue},
-                  })
-                }
-              />
-            </TabPanel>
-          )}
+          <TabPanel>
+            <VariablesEditor
+              variables={state.formVariables}
+              onAdd={() => dispatch({type: 'ADD_USER_DEFINED_VARIABLE'})}
+              onDelete={key => dispatch({type: 'DELETE_USER_DEFINED_VARIABLE', payload: key})}
+              onChange={(key, propertyName, propertyValue) =>
+                dispatch({
+                  type: 'CHANGE_USER_DEFINED_VARIABLE',
+                  payload: {key, propertyName, propertyValue},
+                })
+              }
+            />
+          </TabPanel>
         </Tabs>
       </FormContext.Provider>
 
