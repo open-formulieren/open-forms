@@ -264,6 +264,40 @@ _FORM_ADMIN_FIELDS_MARKDOWN = "\n".join(
             status.HTTP_405_METHOD_NOT_ALLOWED: ExceptionSerializer,
         },
     ),
+    logic_rules_bulk_update=extend_schema(
+        summary=_("Bulk configure logic rules"),
+        description=_(
+            "By sending a list of LogicRules to this endpoint, all the LogicRules related to the form will be "
+            "replaced with the data sent to the endpoint."
+        ),
+        tags=["forms"],
+        request=FormLogicListSerializer,
+        responses={
+            status.HTTP_200_OK: FormLogicListSerializer,
+            status.HTTP_400_BAD_REQUEST: ValidationErrorSerializer,
+            status.HTTP_401_UNAUTHORIZED: ExceptionSerializer,
+            status.HTTP_403_FORBIDDEN: ExceptionSerializer,
+            status.HTTP_404_NOT_FOUND: ExceptionSerializer,
+            status.HTTP_405_METHOD_NOT_ALLOWED: ExceptionSerializer,
+        },
+    ),
+    price_logic_rules_bulk_update=extend_schema(
+        summary=_("Bulk configure price logic rules"),
+        description=_(
+            "By sending a list of FormPriceLogic to this endpoint, all the FormPriceLogic related to the form will be "
+            "replaced with the data sent to the endpoint."
+        ),
+        tags=["forms"],
+        request=FormPriceLogicListSerializer,
+        responses={
+            status.HTTP_200_OK: FormPriceLogicListSerializer,
+            status.HTTP_400_BAD_REQUEST: ValidationErrorSerializer,
+            status.HTTP_401_UNAUTHORIZED: ExceptionSerializer,
+            status.HTTP_403_FORBIDDEN: ExceptionSerializer,
+            status.HTTP_404_NOT_FOUND: ExceptionSerializer,
+            status.HTTP_405_METHOD_NOT_ALLOWED: ExceptionSerializer,
+        },
+    ),
 )
 class FormViewSet(viewsets.ModelViewSet):
     """
@@ -519,7 +553,7 @@ class FormViewSet(viewsets.ModelViewSet):
         tags=["forms"],
         request=FormLogicListSerializer,
         responses={
-            status.HTTP_200_OK: FormLogicSerializer,
+            status.HTTP_200_OK: FormLogicListSerializer,
             status.HTTP_401_UNAUTHORIZED: ExceptionSerializer,
             status.HTTP_403_FORBIDDEN: ExceptionSerializer,
             status.HTTP_404_NOT_FOUND: ExceptionSerializer,
@@ -566,7 +600,7 @@ class FormViewSet(viewsets.ModelViewSet):
         tags=["forms"],
         request=FormPriceLogicListSerializer,
         responses={
-            status.HTTP_200_OK: FormPriceLogicSerializer,
+            status.HTTP_200_OK: FormPriceLogicListSerializer,
             status.HTTP_401_UNAUTHORIZED: ExceptionSerializer,
             status.HTTP_403_FORBIDDEN: ExceptionSerializer,
             status.HTTP_404_NOT_FOUND: ExceptionSerializer,
