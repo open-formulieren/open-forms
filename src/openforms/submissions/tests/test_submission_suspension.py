@@ -28,10 +28,10 @@ from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..tokens import submission_resume_token_generator
 from .factories import SubmissionFactory, SubmissionStepFactory
-from .mixins import SubmissionsMixin, VariablesTestMixin
+from .mixins import SubmissionsMixin
 
 
-class SubmissionSuspensionTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
+class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
     def test_invalid_submission_id(self):
         submission = SubmissionFactory.create()
         endpoint = reverse("api:submission-suspend", kwargs={"uuid": submission.uuid})

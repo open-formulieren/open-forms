@@ -22,10 +22,9 @@ from openforms.tests.utils import disable_2fa
 from ..constants import RegistrationStatuses
 from ..models import Submission
 from .factories import SubmissionFactory, SubmissionValueVariableFactory
-from .mixins import VariablesTestMixin
 
 
-class TestSubmissionAdmin(VariablesTestMixin, WebTest):
+class TestSubmissionAdmin(WebTest):
     @classmethod
     def setUpTestData(cls):
         cls.submission_1 = SubmissionFactory.from_components(
@@ -157,7 +156,7 @@ class TestSubmissionAdmin(VariablesTestMixin, WebTest):
 
 
 @disable_2fa
-class LogicLogsAdminTests(VariablesTestMixin, WebTest):
+class LogicLogsAdminTests(WebTest):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

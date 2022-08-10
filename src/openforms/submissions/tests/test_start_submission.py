@@ -25,7 +25,6 @@ from openforms.forms.tests.factories import (
 
 from ..constants import SUBMISSIONS_SESSION_KEY, SubmissionValueVariableSources
 from ..models import Submission, SubmissionValueVariable
-from .mixins import VariablesTestMixin
 
 
 @override_settings(
@@ -33,7 +32,7 @@ from .mixins import VariablesTestMixin
     ALLOWED_HOSTS=["*"],
     CORS_ALLOWED_ORIGINS=["http://testserver.com"],
 )
-class SubmissionStartTests(VariablesTestMixin, APITestCase):
+class SubmissionStartTests(APITestCase):
     endpoint = reverse_lazy("api:submission-list")
 
     @classmethod

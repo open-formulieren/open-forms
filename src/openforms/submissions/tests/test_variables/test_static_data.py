@@ -15,11 +15,11 @@ from openforms.forms.tests.factories import (
 
 from ...models import Submission
 from ..factories import SubmissionFactory
-from ..mixins import SubmissionsMixin, VariablesTestMixin
+from ..mixins import SubmissionsMixin
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
-class StaticVariablesTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
+class StaticVariablesTests(SubmissionsMixin, APITestCase):
     def test_start_submission(self):
         form = FormFactory.create()
         FormStepFactory.create(

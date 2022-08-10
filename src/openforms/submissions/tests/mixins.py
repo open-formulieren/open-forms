@@ -1,7 +1,3 @@
-from unittest.mock import patch
-
-from openforms.config.models import GlobalConfiguration
-
 from ..constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from ..models import Submission, TemporaryFileUpload
 
@@ -30,16 +26,3 @@ class SubmissionsMixin:
     def _get_session_submission_uuids(self):
         session = self.client.session
         return session.get(SUBMISSIONS_SESSION_KEY, [])
-
-
-class VariablesTestMixin:
-    def setUp(self):
-        super().setUp()
-
-        patcher = patch(
-            "openforms.config.models.GlobalConfiguration.get_solo",
-            return_value=GlobalConfiguration(enable_form_variables=True),
-        )
-        patcher.start()
-
-        self.addCleanup(patcher.stop)

@@ -8,10 +8,9 @@ from freezegun import freeze_time
 from ..exports import create_submission_export
 from ..models import Submission
 from .factories import SubmissionFactory
-from .mixins import VariablesTestMixin
 
 
-class ExportTests(VariablesTestMixin, TestCase):
+class ExportTests(TestCase):
     @freeze_time("2022-05-09T13:00:00Z")
     def test_complex_formio_configuration(self):
         """

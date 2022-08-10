@@ -9,14 +9,13 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
-from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ...models import SubmissionValueVariable
 from ..factories import SubmissionFactory, SubmissionStepFactory
 from ..mixins import SubmissionsMixin
 
 
-class UpdateVariablesWithLogicTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
+class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
     def test_update_data_in_step(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(

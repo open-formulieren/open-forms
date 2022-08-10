@@ -13,10 +13,9 @@ from openforms.config.models import GlobalConfiguration
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..tokens import submission_resume_token_generator
 from .factories import SubmissionFactory, SubmissionStepFactory
-from .mixins import VariablesTestMixin
 
 
-class SubmissionResumeViewTests(VariablesTestMixin, TestCase):
+class SubmissionResumeViewTests(TestCase):
     def test_good_token_and_submission_redirect_and_add_submission_to_session(self):
         submission = SubmissionFactory.from_components(
             completed=True,

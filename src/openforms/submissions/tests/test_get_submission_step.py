@@ -19,10 +19,10 @@ from openforms.forms.tests.factories import FormStepFactory, FormVariableFactory
 
 from ..models import Submission
 from .factories import SubmissionFactory, SubmissionStepFactory
-from .mixins import SubmissionsMixin, VariablesTestMixin
+from .mixins import SubmissionsMixin
 
 
-class ReadSubmissionStepTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
+class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

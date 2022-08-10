@@ -30,13 +30,12 @@ from .factories import (
     SubmissionStepFactory,
     TemporaryFileUploadFactory,
 )
-from .mixins import VariablesTestMixin
 
 TEST_FILES_DIR = Path(__file__).parent / "files"
 
 
 @temp_private_root()
-class SubmissionAttachmentTest(VariablesTestMixin, TestCase):
+class SubmissionAttachmentTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

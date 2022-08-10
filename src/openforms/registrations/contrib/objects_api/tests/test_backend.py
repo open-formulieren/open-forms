@@ -12,7 +12,6 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
-from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ....constants import RegistrationAttribute
 from ....service import NoSubmissionReference, extract_submission_reference
@@ -21,7 +20,7 @@ from .factories import ObjectsAPIConfigFactory
 
 
 @requests_mock.Mocker()
-class ObjectsAPIBackendTests(VariablesTestMixin, TestCase):
+class ObjectsAPIBackendTests(TestCase):
     maxDiff = None
 
     @classmethod

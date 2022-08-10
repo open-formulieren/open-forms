@@ -23,10 +23,10 @@ from ..constants import (
     FormVariableSources,
     FormVariableStaticInitialValues,
 )
-from .form import Form
 from .form_definition import FormDefinition
 
 if TYPE_CHECKING:
+    from .form import Form
     from .form_step import FormStep
 
 
@@ -102,7 +102,7 @@ class FormVariableManager(models.Manager):
 
 class FormVariable(models.Model):
     form = models.ForeignKey(
-        to=Form,
+        to="Form",
         verbose_name=_("form"),
         help_text=_("Form to which this variable is related"),
         on_delete=models.CASCADE,

@@ -1,13 +1,11 @@
 from django.db import IntegrityError
 from django.test import TestCase
 
-from openforms.submissions.tests.mixins import VariablesTestMixin
-
 from ...constants import FormVariableDataTypes, FormVariableSources
 from ..factories import FormFactory, FormVariableFactory
 
 
-class FormVariableModelTests(VariablesTestMixin, TestCase):
+class FormVariableModelTests(TestCase):
     def test_prefill_plugin_empty_prefill_attribute_filled(self):
         with self.assertRaises(IntegrityError):
             FormVariableFactory.create(prefill_plugin="", prefill_attribute="demo")

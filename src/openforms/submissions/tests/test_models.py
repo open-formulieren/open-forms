@@ -23,11 +23,10 @@ from .factories import (
     SubmissionFileAttachmentFactory,
     SubmissionStepFactory,
 )
-from .mixins import VariablesTestMixin
 
 
 @temp_private_root()
-class SubmissionTests(VariablesTestMixin, TestCase):
+class SubmissionTests(TestCase):
     maxDiff = None
 
     @skip("Can't have duplicate keys with FormVariables")

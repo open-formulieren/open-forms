@@ -6,7 +6,6 @@ from django.test import TestCase
 
 from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.submissions.tests.mixins import VariablesTestMixin
 
 FORMIO_CONFIGURATION_COMPONENTS = [
     # visible component, leaf node
@@ -53,7 +52,7 @@ FORMIO_CONFIGURATION_COMPONENTS = [
 ]
 
 
-class SubmissionRendererIntegrationTests(VariablesTestMixin, TestCase):
+class SubmissionRendererIntegrationTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

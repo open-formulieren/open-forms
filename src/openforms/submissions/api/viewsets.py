@@ -16,7 +16,6 @@ from rest_framework.reverse import reverse
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
-from openforms.config.models import GlobalConfiguration
 from openforms.logging import logevent
 from openforms.prefill import prefill_variables
 from openforms.utils.api.throttle_classes import PollingRateThrottle
@@ -126,10 +125,8 @@ class SubmissionViewSet(
 
         logevent.submission_start(serializer.instance)
 
-        conf = GlobalConfiguration.get_solo()
-        if conf.enable_form_variables:
-            prefill_variables(serializer.instance)
-            initialise_user_defined_variables(serializer.instance)
+        prefill_variables(serializer.instance)
+        initialise_user_defined_variables(serializer.instance)
 
     @extend_schema(
         summary=_("Retrieve co-sign state"),

@@ -16,7 +16,6 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
-from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ....constants import RegistrationAttribute
 from ....exceptions import RegistrationFailed
@@ -28,7 +27,7 @@ from .factories import ZgwConfigFactory
 
 @temp_private_root()
 @requests_mock.Mocker(real_http=False)
-class ZGWBackendTests(VariablesTestMixin, TestCase):
+class ZGWBackendTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         ZgwConfigFactory.create(
@@ -527,7 +526,7 @@ class ZGWBackendTests(VariablesTestMixin, TestCase):
 
 @tag("gh-1183")
 @temp_private_root()
-class PartialRegistrationFailureTests(VariablesTestMixin, TestCase):
+class PartialRegistrationFailureTests(TestCase):
     """
     Test that partial results are stored and don't cause excessive registration calls.
 

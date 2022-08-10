@@ -10,10 +10,10 @@ from openforms.forms.tests.factories import (
 )
 
 from ..factories import SubmissionFactory, SubmissionStepFactory
-from ..mixins import SubmissionsMixin, VariablesTestMixin
+from ..mixins import SubmissionsMixin
 
 
-class SideEffectTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
+class SideEffectTests(SubmissionsMixin, APITestCase):
     def test_not_applicable_steps_are_reset(self):
         """
         Assert that subsequent steps are reset when they become not-applicable.

@@ -9,10 +9,10 @@ from openforms.forms.tests.factories import (
 )
 
 from ..factories import SubmissionFactory, SubmissionStepFactory
-from ..mixins import SubmissionsMixin, VariablesTestMixin
+from ..mixins import SubmissionsMixin
 
 
-class CheckLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestCase):
+class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     def test_check_logic_on_whole_submission(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(

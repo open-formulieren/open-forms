@@ -19,13 +19,12 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
 )
-from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ..constants import RemovalMethods
 from ..tasks import delete_submissions, make_sensitive_data_anonymous
 
 
-class DeleteSubmissionsTask(VariablesTestMixin, TestCase):
+class DeleteSubmissionsTask(TestCase):
     def test_successful_submissions_correctly_deleted(self):
         config = GlobalConfiguration.get_solo()
 
@@ -351,7 +350,7 @@ class DeleteSubmissionsTask(VariablesTestMixin, TestCase):
             submission_to_be_deleted.refresh_from_db()
 
 
-class MakeSensitiveDataAnonymousTask(VariablesTestMixin, TestCase):
+class MakeSensitiveDataAnonymousTask(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.form_definition = FormDefinitionFactory.create(

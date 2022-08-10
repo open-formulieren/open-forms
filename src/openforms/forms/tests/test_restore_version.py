@@ -8,8 +8,6 @@ from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
 
-from openforms.submissions.tests.mixins import VariablesTestMixin
-
 from ..constants import FormVariableDataTypes, FormVariableSources
 from ..models import FormDefinition, FormStep, FormVariable, FormVersion
 from .factories import (
@@ -364,7 +362,7 @@ FORM_VARIABLES = [
         )
     ],
 )
-class RestoreVersionsWithVariablesTest(VariablesTestMixin, TestCase):
+class RestoreVersionsWithVariablesTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

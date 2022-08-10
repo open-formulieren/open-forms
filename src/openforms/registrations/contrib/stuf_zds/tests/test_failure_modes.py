@@ -8,7 +8,6 @@ from privates.test import temp_private_root
 
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.submissions.tests.mixins import VariablesTestMixin
 from stuf.stuf_zds.models import StufZDSConfig
 from stuf.stuf_zds.tests import StUFZDSTestBase
 from stuf.stuf_zds.tests.utils import load_mock, match_text, xml_from_request_history
@@ -21,7 +20,7 @@ from ....tasks import register_submission
 @tag("gh-1183")
 @freeze_time("2020-12-22")
 @temp_private_root()
-class PartialRegistrationFailureTests(VariablesTestMixin, StUFZDSTestBase):
+class PartialRegistrationFailureTests(StUFZDSTestBase):
     """
     Test that partial results are stored and don't cause excessive registration calls.
 

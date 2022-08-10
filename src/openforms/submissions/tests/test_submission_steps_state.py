@@ -11,10 +11,9 @@ from django.test import TestCase
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from .factories import SubmissionFactory, SubmissionStepFactory
-from .mixins import VariablesTestMixin
 
 
-class SubmissionStepsStateTests(VariablesTestMixin, TestCase):
+class SubmissionStepsStateTests(TestCase):
     def test_no_steps_at_all_submitted(self):
         form = FormFactory.create()
         step1, step2, step3 = FormStepFactory.create_batch(3, form=form)
@@ -76,7 +75,7 @@ class SubmissionStepsStateTests(VariablesTestMixin, TestCase):
             self.assertTrue(steps[1].completed)
 
 
-class SubmissionNextStepTests(VariablesTestMixin, TestCase):
+class SubmissionNextStepTests(TestCase):
     def test_next_step_all_required_sequential_submission(self):
         form = FormFactory.create()
         step1, step2, step3 = FormStepFactory.create_batch(3, form=form)

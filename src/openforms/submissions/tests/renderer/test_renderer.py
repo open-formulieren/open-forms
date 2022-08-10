@@ -1,10 +1,7 @@
-from unittest.mock import patch
-
 from django.test import TestCase
 
 from rest_framework.reverse import reverse
 
-from openforms.config.models import GlobalConfiguration
 from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -102,14 +99,6 @@ class FormNodeTests(TestCase):
         self.sstep1.data = {"input1": "disabled-step-2"}
         self.sstep1.save()
 
-        form_var1 = FormVariable.objects.get(key="input1")
-        SubmissionValueVariableFactory.create(
-            submission=self.submission,
-            key=form_var1.key,
-            value="disabled-step-2",
-            form_variable=form_var1,
-        )
-
         renderer = Renderer(
             submission=self.submission, mode=RenderModes.pdf, as_html=True
         )
@@ -124,22 +113,21 @@ class FormNodeTests(TestCase):
         enabled_step_node = nodes[1]
         self.assertEqual(enabled_step_node.step, self.sstep1)
 
-    @patch("openforms.formio.service.GlobalConfiguration.get_solo")
-    def test_performance_num_queries(self, m_conf):
+    def test_performance_num_queries(self):
         """
         Assert that the number of queries stays low while rendering a submission.
         """
-        m_conf.return_value = GlobalConfiguration(enable_form_variables=False)
-
         renderer = Renderer(
             submission=self.submission, mode=RenderModes.pdf, as_html=True
         )
 
         # Expected queries:
-        # 1. Getting the merged data of the submission steps
-        # 2. Getting the submission steps for the given submission
-        # 3. Query the form logic rules for the submission form (and this is cached)
-        # 4. Load submission state: get form steps
-        # 5. Load submission state: get submission steps
-        with self.assertNumQueries(5):
+        # 1. Retrieve all the variables defined for the submission form
+        # 2. Retrieve all the submission variable values
+        # 3. Getting the submission steps for the given submission
+        # 4. Get the step-specific data from submission variable values (TODO: this can probably be optimized away?)
+        # 5. Load submission state: get form steps
+        # 6. Load submission state: get submission steps
+        # 7. Query the form logic rules for the submission form (and this is cached)
+        with self.assertNumQueries(7):
             list(renderer)

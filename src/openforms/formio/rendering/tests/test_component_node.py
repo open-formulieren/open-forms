@@ -4,14 +4,13 @@ from django.test import TestCase
 
 from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ..constants import RenderConfigurationOptions
 from ..nodes import ComponentNode
 from ..registry import Registry
 
 
-class FormNodeTests(VariablesTestMixin, TestCase):
+class FormNodeTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

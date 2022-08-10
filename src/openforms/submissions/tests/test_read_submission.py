@@ -20,7 +20,7 @@ from openforms.forms.tests.factories import (
 from openforms.logging.models import TimelineLogProxy
 
 from .factories import SubmissionFactory, SubmissionStepFactory
-from .mixins import SubmissionsMixin, VariablesTestMixin
+from .mixins import SubmissionsMixin
 
 
 class SubmissionReadTests(SubmissionsMixin, APITestCase):
@@ -144,9 +144,7 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
             self.assertTrue(response.json()["isAuthenticated"])
 
 
-class SubmissionReadPaymentInformationTests(
-    VariablesTestMixin, SubmissionsMixin, APITestCase
-):
+class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
     def test_submission_payment_information_no_payment_required(self):
         submission = SubmissionFactory.create(
             completed=True,

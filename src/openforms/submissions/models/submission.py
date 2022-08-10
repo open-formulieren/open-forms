@@ -375,32 +375,17 @@ class Submission(models.Model):
         self.pseudo = ""
         self.prefill_data = dict()
 
-        conf = GlobalConfiguration.get_solo()
-        if conf.enable_form_variables:
-            sensitive_variables = self.submissionvaluevariable_set.filter(
-                form_variable__is_sensitive_data=True
-            )
-            sensitive_variables.update(
-                value="", source=SubmissionValueVariableSources.sensitive_data_cleaner
-            )
+        sensitive_variables = self.submissionvaluevariable_set.filter(
+            form_variable__is_sensitive_data=True
+        )
+        sensitive_variables.update(
+            value="", source=SubmissionValueVariableSources.sensitive_data_cleaner
+        )
 
-            SubmissionFileAttachment.objects.filter(
-                submission_step__submission=self,
-                submission_variable__form_variable__is_sensitive_data=True,
-            ).delete()
-        else:
-            steps_qs = self.submissionstep_set.select_related(
-                "form_step",
-                "form_step__form_definition",
-            )
-            for submission_step in steps_qs.select_for_update():
-                fields = submission_step.form_step.form_definition.sensitive_fields
-                removed_data = {key: "" for key in fields}
-                submission_step.data.update(removed_data)
-                submission_step.save()
-
-                # handle the attachments
-                submission_step.attachments.filter(form_key__in=fields).delete()
+        SubmissionFileAttachment.objects.filter(
+            submission_step__submission=self,
+            submission_variable__form_variable__is_sensitive_data=True,
+        ).delete()
 
         self._is_cleaned = True
 
@@ -578,24 +563,8 @@ class Submission(models.Model):
         return appointment_data
 
     def get_merged_data(self) -> dict:
-        conf = GlobalConfiguration.get_solo()
-
-        if conf.enable_form_variables:
-            values_state = self.load_submission_value_variables_state()
-            return values_state.get_data()
-
-        merged_data = dict()
-        for step in self.submissionstep_set.exclude(_data=None):
-            for key, value in step.data.items():
-                if key in merged_data:
-                    logger.warning(
-                        'Key "%s" was previously in merged_data and will be overwritten by: %s',
-                        key,
-                        value,
-                    )
-                merged_data[key] = value
-
-        return merged_data
+        values_state = self.load_submission_value_variables_state()
+        return values_state.get_data()
 
     data = property(get_merged_data)
 
