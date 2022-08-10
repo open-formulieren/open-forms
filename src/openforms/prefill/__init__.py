@@ -30,6 +30,7 @@ So, to recap:
 
 """
 import logging
+from collections import defaultdict
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 
 import elasticapm
@@ -39,7 +40,6 @@ from zgw_consumers.concurrent import parallel
 from openforms.formio.utils import format_date_value, iter_components
 from openforms.logging import logevent
 from openforms.plugins.exceptions import PluginNotEnabled
-from openforms.submissions.constants import SubmissionValueVariableSources
 from openforms.typing import JSONObject
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -138,27 +138,17 @@ def prefill_variables(submission: "Submission", register=None) -> None:
     register = register or default_register
 
     state = submission.load_submission_value_variables_state()
+    variables_to_prefill = state.get_prefill_variables()
 
-    grouped_fields = {}
-    variables_to_prefill = []
-    for key, submission_value_variable in state.variables.items():
-        prefill_plugin = submission_value_variable.form_variable.prefill_plugin
-        if prefill_plugin == "":
-            continue
-
-        if prefill_plugin in grouped_fields:
-            grouped_fields[prefill_plugin] += [
-                submission_value_variable.form_variable.prefill_attribute
-            ]
-        else:
-            grouped_fields[prefill_plugin] = [
-                submission_value_variable.form_variable.prefill_attribute
-            ]
-
-        variables_to_prefill.append(submission_value_variable)
+    grouped_fields = defaultdict(list)
+    for variable in variables_to_prefill:
+        grouped_fields[variable.form_variable.prefill_plugin].append(
+            variable.form_variable.prefill_attribute
+        )
 
     results = _fetch_prefill_values(grouped_fields, submission, register)
 
+    prefill_data = {}
     for variable in variables_to_prefill:
         try:
             prefill_value = glom(
@@ -170,9 +160,7 @@ def prefill_variables(submission: "Submission", register=None) -> None:
             )
         except PathAccessError:
             continue
+        else:
+            prefill_data[variable.key] = prefill_value
 
-        variable.value = prefill_value
-        variable.source = SubmissionValueVariableSources.prefill
-
-    # Prefill variables is invoked once at the beginning od the submission, so no need to worry about updates
-    SubmissionValueVariable.objects.bulk_create(variables_to_prefill)
+    state.save_prefill_data(prefill_data)

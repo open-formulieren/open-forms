@@ -96,6 +96,7 @@ def get_invalid_prefilled_fields(
 ) -> List[str]:
     invalid_prefilled_fields = []
 
+    prefill_data = submission.get_prefilled_data()
     for component in submission_step.form_step.iter_components():
         if "prefill" not in component or component["prefill"]["plugin"] == "":
             continue
@@ -103,18 +104,18 @@ def get_invalid_prefilled_fields(
         if not component["disabled"]:
             continue
 
-        plugin_name = component["prefill"]["plugin"]
-        attribute_name = component["prefill"]["attribute"]
+        # match on key
+        if not (component_key := component.get("key")):
+            continue
 
-        if submission.prefill_data[plugin_name][attribute_name] is None:
+        prefilled_value = prefill_data.get(component_key)
+        if prefilled_value is None:
             # the value will be `None` if there is no actual prefill data available, so there is nothing to compare to. This
             # especially applies to test-environments without real prefill-connections.
             continue
 
-        if (
-            submission_step.data[component["key"]]
-            != submission.prefill_data[plugin_name][attribute_name]
-        ):
+        value = submission_step.data.get(component_key)
+        if value != prefilled_value:
             invalid_prefilled_fields.append(component["label"])
 
     return invalid_prefilled_fields

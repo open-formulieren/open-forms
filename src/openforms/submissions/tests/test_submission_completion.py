@@ -283,7 +283,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             },
         )
         submission = SubmissionFactory.create(
-            form=form, prefill_data={"test-prefill": {"surname": "Doe"}}
+            form=form, prefill_data={"surname": "Doe"}
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -320,7 +320,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             },
         )
         submission = SubmissionFactory.create(
-            form=form, prefill_data={"test-prefill": {"surname": "Doe"}}
+            form=form, prefill_data={"surname": "Doe"}
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -354,9 +354,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 ],
             },
         )
-        submission = SubmissionFactory.create(
-            form=form, prefill_data={"test-prefill": {"surname": None}}
-        )
+        submission = SubmissionFactory.create(form=form, prefill_data={"surname": None})
 
         SubmissionStepFactory.create(
             submission=submission, form_step=step, data={"surname": ""}

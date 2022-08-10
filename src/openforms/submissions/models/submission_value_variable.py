@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from django.db import models
 from django.db.models import Q
@@ -145,6 +145,27 @@ class SubmissionValueVariablesState:
                 for variable in FormVariable.get_static_data()
             }
         return self._static_data
+
+    def get_prefill_variables(self) -> List["SubmissionValueVariable"]:
+        prefill_vars = []
+        for variable in self.variables.values():
+            prefill_plugin = variable.form_variable.prefill_plugin
+            attribute = variable.form_variable.prefill_attribute
+            if prefill_plugin == "":
+                continue
+            prefill_vars.append(variable)
+        return prefill_vars
+
+    def save_prefill_data(self, data: Dict[str, Any]) -> None:
+        variables_to_prefill = self.get_prefill_variables()
+        for variable in variables_to_prefill:
+            if variable.key not in data:
+                continue
+
+            variable.value = data[variable.key]
+            variable.source = SubmissionValueVariableSources.prefill
+
+        SubmissionValueVariable.objects.bulk_create(variables_to_prefill)
 
 
 class SubmissionValueVariableManager(models.Manager):

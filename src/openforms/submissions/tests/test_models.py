@@ -226,7 +226,7 @@ class SubmissionTests(TestCase):
         )
 
         submission = SubmissionFactory.create(
-            form=form, bsn="999990676", kvk="69599084", prefill_data={"secret": "123"}
+            form=form, bsn="999990676", kvk="69599084"
         )
         submission_step = SubmissionStepFactory.create(
             submission=submission,
@@ -268,7 +268,6 @@ class SubmissionTests(TestCase):
         self.assertTrue(submission._is_cleaned)
         self.assertEqual(submission.bsn, "")
         self.assertEqual(submission.kvk, "")
-        self.assertEqual(submission.prefill_data, {})
 
         with self.subTest("attachment deletion"):
             self.assertFalse(attachment.content.storage.exists(attachment.content.name))
