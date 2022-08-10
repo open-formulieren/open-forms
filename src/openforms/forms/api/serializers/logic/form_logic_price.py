@@ -16,6 +16,7 @@ class FormPriceLogicSerializer(FormLogicBaseSerializer):
             },
         }
 
+
 class FormPriceLogicListSerializer(serializers.ListSerializer):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("child", FormPriceLogicSerializer())

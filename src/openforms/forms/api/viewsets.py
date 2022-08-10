@@ -20,7 +20,6 @@ from rest_framework.response import Response
 from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
-from .serializers.logic.form_logic_price import FormPriceLogicListSerializer
 
 from ..messages import add_success_message
 from ..models import (
@@ -56,6 +55,7 @@ from .serializers import (
 )
 from .serializers.category import CategorySerializer
 from .serializers.logic.form_logic import FormLogicListSerializer
+from .serializers.logic.form_logic_price import FormPriceLogicListSerializer
 
 
 @extend_schema(
@@ -91,7 +91,11 @@ class FormStepViewSet(
         return context
 
 
-@extend_schema(tags=["logic-rules"])
+@extend_schema(
+    tags=["logic-rules"],
+    description="This endpoint is deprecated, instead use the form logic bulk endpoint.",
+    deprecated=True,
+)
 @extend_schema_view(
     list=extend_schema(summary=_("List logic rules")),
     retrieve=extend_schema(summary=_("Retrieve logic rule details")),
@@ -111,7 +115,11 @@ class FormLogicViewSet(
     lookup_field = "uuid"
 
 
-@extend_schema(tags=["logic-rules"])
+@extend_schema(
+    tags=["logic-rules"],
+    description="This endpoint is deprecated, instead use the form price logic bulk endpoint.",
+    deprecated=True,
+)
 @extend_schema_view(
     list=extend_schema(summary=_("List pricing logic rules")),
     retrieve=extend_schema(summary=_("Retrieve pricing logic rule details")),

@@ -98,6 +98,7 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
             FormLogicTriggerFromStepFormValidator()
         ]
 
+    # TODO Remove once the FormLogicViewSet endpoint is removed
     def save(self, **kwargs):
         """
         Manage row-level locks while performing updates.
