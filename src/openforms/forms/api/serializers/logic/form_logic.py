@@ -5,6 +5,7 @@ from ordered_model.serializers import OrderedModelSerializer
 from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
+from openforms.api.serializers import ListWithChildSerializer
 from openforms.api.utils import get_from_serializer_data_or_instance
 
 from ....models import FormLogic, FormStep
@@ -81,8 +82,9 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
         extra_kwargs = {
             **FormLogicBaseSerializer.Meta.extra_kwargs,
             "url": {
-                "view_name": "api:form-logics-detail",
+                "view_name": "api:form-logic-rules",
                 "lookup_field": "uuid",
+                "lookup_url_kwarg": "uuid_or_slug",
             },
             "order": {
                 "read_only": False,
@@ -98,6 +100,7 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
             FormLogicTriggerFromStepFormValidator()
         ]
 
+    # TODO Remove once the FormLogicViewSet endpoint is removed
     def save(self, **kwargs):
         """
         Manage row-level locks while performing updates.
@@ -124,3 +127,7 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
                 # ensure that we are not looking at stale date if we were waiting for a lock
                 self.instance.refresh_from_db()
             return super().save(**kwargs)
+
+
+class FormLogicListSerializer(ListWithChildSerializer):
+    child_serializer_class = FormLogicSerializer

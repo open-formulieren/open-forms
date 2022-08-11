@@ -48,3 +48,30 @@ class ExceptionSerializer(serializers.Serializer):
 
 class ValidationErrorSerializer(ExceptionSerializer):
     invalid_params = FieldValidationErrorSerializer(many=True)
+
+
+class ListWithChildSerializer(serializers.ListSerializer):
+    child_serializer_class = None
+
+    def __init__(self, *args, **kwargs):
+        child_serializer_class = (
+            self.child_serializer_class or self.get_child_serializer_class()
+        )
+        kwargs.setdefault("child", child_serializer_class())
+        super().__init__(*args, **kwargs)
+
+    def get_child_serializer_class(self):
+        return self.child_serializer_class
+
+    def process_object(self, obj):
+        return obj
+
+    def create(self, validated_data):
+        model = self.get_child_serializer_class().Meta.model
+
+        objects_to_create = []
+        for data_dict in self.validated_data:
+            obj = model(**data_dict)
+            objects_to_create.append(self.process_object(obj))
+
+        return model.objects.bulk_create(objects_to_create)

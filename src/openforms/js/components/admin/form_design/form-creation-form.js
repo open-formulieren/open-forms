@@ -26,8 +26,6 @@ import {
   AUTH_PLUGINS_ENDPOINT,
   PREFILL_PLUGINS_ENDPOINT,
   PAYMENT_PLUGINS_ENDPOINT,
-  LOGICS_ENDPOINT,
-  PRICE_RULES_ENDPOINT,
   CATEGORIES_ENDPOINT,
   STATIC_VARIABLES_ENDPOINT,
 } from './constants';
@@ -63,6 +61,7 @@ import {
 import VariablesEditor from './variables/VariablesEditor';
 import {EMPTY_VARIABLE} from './variables/constants';
 import Tab from './Tab';
+import {updateWarningsValidationError} from './logic/utils';
 
 const initialFormState = {
   form: {
@@ -116,9 +115,7 @@ const initialFormState = {
   stepsToDelete: [],
   submitting: false,
   logicRules: [],
-  logicRulesToDelete: [],
   priceRules: [],
-  priceRulesToDelete: [],
   formVariables: [],
   staticVariables: [],
   // backend error handling
@@ -170,6 +167,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   literals: 'literals',
   explanationTemplate: 'form',
   logicRules: 'logic-rules',
+  priceRules: 'product-payment',
   variables: 'variables',
 };
 
@@ -179,12 +177,19 @@ function reducer(draft, action) {
      * Form-level actions
      */
     case 'FORM_DATA_LOADED': {
-      const {form, literals, selectedAuthPlugins, steps, variables} = action.payload;
+      const {form, literals, selectedAuthPlugins, steps, variables, logicRules, priceRules} =
+        action.payload;
 
       if (form) draft.form = form;
       if (literals) draft.literals = literals;
       if (selectedAuthPlugins) draft.selectedAuthPlugins = selectedAuthPlugins;
       if (variables) draft.formVariables = variables;
+      if (logicRules)
+        draft.logicRules = logicRules.map(rule => ({
+          ...rule,
+          _logicType: rule.isAdvanced ? 'simple' : 'advanced',
+        }));
+      if (priceRules) draft.priceRules = priceRules;
 
       // set the form steps of the form and initialize the validation errors array
       draft.formSteps = steps;
@@ -227,16 +232,6 @@ function reducer(draft, action) {
     }
     case 'PLUGINS_LOADED': {
       const {stateVar, data} = action.payload;
-
-      // post processing for the specific state var
-      switch (stateVar) {
-        case 'logicRules': {
-          for (const rule of data) {
-            rule._logicType = rule.isAdvanced ? 'simple' : 'advanced';
-          }
-          break;
-        }
-      }
 
       draft[stateVar] = data;
       break;
@@ -574,24 +569,21 @@ function reducer(draft, action) {
       // Remove the validation error for the updated field
       // If there are multiple actions with errors in one rule, updating it will clear the error also for the
       // other actions of that rule.
-      draft.validationErrors = draft.validationErrors.filter(
-        ([key]) => !key.startsWith(`logicRules.${index}.${name}`)
+      const [validationErrors, tabsWithErrors] = updateWarningsValidationError(
+        draft.validationErrors,
+        draft.tabsWithErrors,
+        'logicRules',
+        index,
+        name,
+        FORM_FIELDS_TO_TAB_NAMES['logicRules']
       );
-      // Update the error badge in the tabs
-      const logicRulesErrors = draft.validationErrors.filter(([key]) =>
-        key.startsWith('logicRules')
-      );
-      if (!logicRulesErrors.length) {
-        draft.tabsWithErrors = draft.tabsWithErrors.filter(
-          tabId => tabId !== FORM_FIELDS_TO_TAB_NAMES['logicRules']
-        );
-      }
+      draft.validationErrors = validationErrors;
+      draft.tabsWithErrors = tabsWithErrors;
       break;
     }
     case 'DELETED_RULE': {
       const {index} = action.payload;
-      const {uuid: ruleUuid, order: ruleOrder} = draft.logicRules[index];
-      draft.logicRulesToDelete.push(ruleUuid);
+      const {order: ruleOrder} = draft.logicRules[index];
 
       // delete object from state
       const updatedRules = [...draft.logicRules];
@@ -666,11 +658,21 @@ function reducer(draft, action) {
     case 'CHANGED_PRICE_RULE': {
       const {index, name, value} = action.payload;
       draft.priceRules[index][name] = value;
+
+      const [validationErrors, tabsWithErrors] = updateWarningsValidationError(
+        draft.validationErrors,
+        draft.tabsWithErrors,
+        'priceRules',
+        index,
+        name,
+        FORM_FIELDS_TO_TAB_NAMES['priceRules']
+      );
+      draft.validationErrors = validationErrors;
+      draft.tabsWithErrors = tabsWithErrors;
       break;
     }
     case 'DELETED_PRICE_RULE': {
       const {index} = action.payload;
-      const ruleUuid = draft.priceRules[index].uuid;
 
       // delete object from state
       const updatedRules = [...draft.priceRules];
@@ -732,7 +734,6 @@ function reducer(draft, action) {
             let key;
             switch (fieldPrefix) {
               case 'form':
-              case 'logicRules':
               // literals are tracked separately in the state
               case 'literals': {
                 key = err.name;
@@ -833,16 +834,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
     {endpoint: STATIC_VARIABLES_ENDPOINT, stateVar: 'staticVariables'},
   ];
-
-  // only load rules if we're dealing with an existing form rather than when we're creating
-  // a new form.
-  if (formUuid) {
-    pluginsToLoad.push({endpoint: `${LOGICS_ENDPOINT}?form=${formUuid}`, stateVar: 'logicRules'});
-    pluginsToLoad.push({
-      endpoint: `${PRICE_RULES_ENDPOINT}?form=${formUuid}`,
-      stateVar: 'priceRules',
-    });
-  }
 
   const {loading} = useAsync(async () => {
     const promises = [
