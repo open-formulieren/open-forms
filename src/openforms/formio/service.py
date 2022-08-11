@@ -4,9 +4,8 @@ from django.urls import reverse
 import elasticapm
 from rest_framework.request import Request
 
-from openforms.config.models import GlobalConfiguration
 from openforms.forms.custom_field_types import handle_custom_types
-from openforms.prefill import _set_default_values, apply_prefill
+from openforms.prefill import inject_prefill
 from openforms.submissions.models import Submission
 
 from .normalization import normalize_value_for_component  # noqa
@@ -27,24 +26,17 @@ def get_dynamic_configuration(
     configuration = handle_custom_types(
         configuration, request=request, submission=submission
     )
-
-    conf = GlobalConfiguration.get_solo()
-
-    if conf.enable_form_variables:
-        configuration = insert_variables(
-            configuration, submission=submission, request=request
-        )
-    else:
-        configuration = apply_prefill(configuration, submission=submission)
-
+    configuration = insert_variables(
+        configuration, submission=submission, request=request
+    )
     return configuration
 
 
 def insert_variables(
     configuration: dict, submission: Submission, request: "Request"
 ) -> dict:
-    # TODO Once the enable_form_variables feature flag is removed, whe should move this code around
-    _set_default_values(configuration, submission.get_prefilled_data())
+    # TODO: refactor when interpolating configuration properties with variables
+    inject_prefill(configuration, submission)
 
     value_variables_state = submission.load_submission_value_variables_state()
     data = value_variables_state.get_data()

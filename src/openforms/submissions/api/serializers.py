@@ -32,6 +32,7 @@ from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep, TemporaryFileUpload
 from ..tokens import submission_resume_token_generator
 from .fields import NestedRelatedField
+from .validators import ValidatePrefillData
 
 logger = logging.getLogger(__name__)
 
@@ -236,6 +237,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         label=_("data"),
         required=False,
         allow_null=True,
+        validators=[ValidatePrefillData()],
     )
 
     parent_lookup_kwargs = {

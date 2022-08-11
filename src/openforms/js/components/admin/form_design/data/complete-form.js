@@ -279,7 +279,7 @@ const saveVersion = async (state, csrftoken) => {
  * @param  {Object} state     The FormCreationForm state at the moment of submission
  * @return {Object}           Updated state with resolved temporary IDs
  */
-const saveCompleteForm = async (state, featureFlags, csrftoken) => {
+const saveCompleteForm = async (state, csrftoken) => {
   // various save actions for parts of the form result in (gradual) state updates. At
   // the end, we will have a new component state that we can just set/dispatch. This
   // allows us to update internal references when their persistent identifiers have been
@@ -311,12 +311,9 @@ const saveCompleteForm = async (state, featureFlags, csrftoken) => {
     return [newState, stepsValidationErrors];
   }
 
-  // variables - only if feature flag is enabled!
   // Variables should be created before logic rules,
   // since the logic rules validate if the variables in the trigger exist.
-  if (featureFlags.enable_form_variables) {
-    [newState, variableValidationErrors] = await saveVariables(newState, csrftoken);
-  }
+  [newState, variableValidationErrors] = await saveVariables(newState, csrftoken);
 
   // save (normal) logic and price logic rules
   [newState, logicValidationErrors] = await saveLogic(newState, csrftoken);

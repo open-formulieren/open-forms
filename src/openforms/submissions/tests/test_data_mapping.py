@@ -12,8 +12,6 @@ from openforms.submissions.mapping import (
 )
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from .mixins import VariablesTestMixin
-
 
 class TestAttribute(DjangoChoices):
     initiator_voornamen = ChoiceItem("initiator_voornamen", "Initiator > Voornamen")
@@ -29,7 +27,7 @@ class TestAttribute(DjangoChoices):
 
 
 @temp_private_root()
-class MappingTests(VariablesTestMixin, TestCase):
+class MappingTests(TestCase):
     def test_kitchensink(self):
         """
         all-in-one testcase for demonstration purposes

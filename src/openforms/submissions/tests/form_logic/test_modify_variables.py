@@ -10,10 +10,9 @@ from openforms.forms.tests.factories import (
 
 from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory
-from ..mixins import VariablesTestMixin
 
 
-class VariableModificationTests(VariablesTestMixin, TestCase):
+class VariableModificationTests(TestCase):
     def test_modify_variable_related_to_step_being_edited(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(

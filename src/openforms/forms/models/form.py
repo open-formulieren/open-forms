@@ -17,7 +17,6 @@ from tinymce.models import HTMLField
 from csp_post_processor.fields import CSPPostProcessedWYSIWYGField
 from openforms.authentication.fields import AuthenticationBackendMultiSelectField
 from openforms.authentication.registry import register as authentication_register
-from openforms.config.models import GlobalConfiguration
 from openforms.data_removal.constants import RemovalMethods
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
@@ -341,6 +340,8 @@ class Form(models.Model):
 
     @transaction.atomic
     def copy(self):
+        from .form_variable import FormVariable
+
         form_steps = self.formstep_set.all().select_related("form_definition")
 
         copy = deepcopy(self)
@@ -376,17 +377,13 @@ class Form(models.Model):
             logic.form = copy
             logic.save()
 
-        config = GlobalConfiguration.get_solo()
-        if config.enable_form_variables:
-            from . import FormVariable
-
-            FormVariable.objects.create_for_form(copy)
-            for variable in self.formvariable_set.filter(
-                source=FormVariableSources.user_defined
-            ):
-                variable.pk = None
-                variable.form = copy
-                variable.save()
+        FormVariable.objects.create_for_form(copy)
+        for variable in self.formvariable_set.filter(
+            source=FormVariableSources.user_defined
+        ):
+            variable.pk = None
+            variable.form = copy
+            variable.save()
 
         return copy
 

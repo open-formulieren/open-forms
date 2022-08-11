@@ -10,7 +10,6 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import SuperUserFactory, TokenFactory
-from openforms.submissions.tests.mixins import VariablesTestMixin
 from openforms.tests.utils import NOOP_CACHES
 
 from ..constants import FormVariableSources
@@ -194,7 +193,7 @@ class CopyFormAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
-class CopyFormWithVarsTest(VariablesTestMixin, APITestCase):
+class CopyFormWithVarsTest(APITestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

@@ -21,7 +21,6 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
-from openforms.config.models import GlobalConfiguration
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -34,11 +33,11 @@ from openforms.forms.tests.factories import (
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..models import SubmissionStep
 from .factories import SubmissionFactory, SubmissionStepFactory
-from .mixins import SubmissionsMixin, VariablesTestMixin
+from .mixins import SubmissionsMixin
 
 
 @temp_private_root()
-class SubmissionCompletionTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
+class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
     def test_invalid_submission_id(self):
         submission = SubmissionFactory.create()
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
@@ -70,7 +69,6 @@ class SubmissionCompletionTests(VariablesTestMixin, SubmissionsMixin, APITestCas
                     {"formStep": f"http://testserver{form_step_url}"},
                 ],
                 "submissionAllowed": SubmissionAllowedChoices.yes,
-                "invalidPrefilledFields": [],
             },
         )
 
@@ -213,7 +211,6 @@ class SubmissionCompletionTests(VariablesTestMixin, SubmissionsMixin, APITestCas
             {
                 "incompleteSteps": [],
                 "submissionAllowed": SubmissionAllowedChoices.no_with_overview,
-                "invalidPrefilledFields": [],
             },
         )
 
@@ -233,7 +230,6 @@ class SubmissionCompletionTests(VariablesTestMixin, SubmissionsMixin, APITestCas
             {
                 "incompleteSteps": [],
                 "submissionAllowed": SubmissionAllowedChoices.no_without_overview,
-                "invalidPrefilledFields": [],
             },
         )
 
@@ -267,115 +263,9 @@ class SubmissionCompletionTests(VariablesTestMixin, SubmissionsMixin, APITestCas
                 )
                 self.assertNotEqual(value, "foo")
 
-    def test_prefilled_data_updated(self):
-        form = FormFactory.create()
-        step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "surname",
-                        "label": "Surname",
-                        "prefill": {"plugin": "test-prefill", "attribute": "surname"},
-                        "disabled": True,
-                    }
-                ]
-            },
-        )
-        submission = SubmissionFactory.create(
-            form=form, prefill_data={"test-prefill": {"surname": "Doe"}}
-        )
-        SubmissionStepFactory.create(
-            submission=submission,
-            form_step=step,
-            data={"surname": "Doe-MODIFIED"},
-        )
-
-        self._add_submission_to_session(submission)
-        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
-
-        response = self.client.post(endpoint)
-
-        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
-
-        error_data = response.json()
-
-        self.assertEqual(1, len(error_data["invalidPrefilledFields"]))
-        self.assertEqual("Surname", error_data["invalidPrefilledFields"][0])
-
-    def test_prefilled_data_updated_not_disabled(self):
-        form = FormFactory.create()
-        step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "surname",
-                        "label": "Surname",
-                        "prefill": {"plugin": "test-prefill", "attribute": "surname"},
-                        "disabled": False,
-                    }
-                ]
-            },
-        )
-        submission = SubmissionFactory.create(
-            form=form, prefill_data={"test-prefill": {"surname": "Doe"}}
-        )
-        SubmissionStepFactory.create(
-            submission=submission,
-            form_step=step,
-            data={"surname": "Doe-MODIFIED"},
-        )
-
-        self._add_submission_to_session(submission)
-        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
-
-        response = self.client.post(endpoint)
-
-        # Since the prefilled field was not disabled, it is possible to modify it and the submission is valid
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
-
-    @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
-    def test_null_prefilled_data(self, mock_get_solo):
-
-        mock_get_solo.return_value = GlobalConfiguration(enable_form_variables=False)
-        form = FormFactory.create()
-        step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "display": "form",
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "surname",
-                        "label": "Surname",
-                        "prefill": {"plugin": "test-prefill", "attribute": "surname"},
-                        "disabled": True,
-                        "defaultValue": "",
-                    }
-                ],
-            },
-        )
-        submission = SubmissionFactory.create(
-            form=form, prefill_data={"test-prefill": {"surname": None}}
-        )
-
-        SubmissionStepFactory.create(
-            submission=submission, form_step=step, _data={"surname": ""}
-        )
-
-        self._add_submission_to_session(submission)
-        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
-
-        response = self.client.post(endpoint)
-
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
-
 
 @temp_private_root()
-class CSRFSubmissionCompletionTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
+class CSRFSubmissionCompletionTests(SubmissionsMixin, APITestCase):
     def setUp(self):
         # install a different client class with enforced CSRF checks
         self.client = self.client_class(enforce_csrf_checks=True)
@@ -404,9 +294,7 @@ class CSRFSubmissionCompletionTests(VariablesTestMixin, SubmissionsMixin, APITes
 
 
 @temp_private_root()
-class SetSubmissionPriceOnCompletionTests(
-    VariablesTestMixin, SubmissionsMixin, APITestCase
-):
+class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
     """
     Make assertions about price derivation on submission completion.
     """

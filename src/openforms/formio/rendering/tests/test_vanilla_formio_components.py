@@ -13,13 +13,12 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
     SubmissionStepFactory,
 )
-from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ..nodes import ComponentNode
 
 
 @override_settings(LANGUAGE_CODE="en")
-class FormNodeTests(VariablesTestMixin, TestCase):
+class FormNodeTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

@@ -13,8 +13,6 @@ from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
-from openforms.config.models import GlobalConfiguration
-
 from .api.serializers import (
     FormDefinitionSerializer,
     FormExportSerializer,
@@ -138,8 +136,6 @@ def import_form(import_file, existing_form_instance=None):
 def import_form_data(
     import_data: dict, existing_form_instance: Form = None
 ) -> List[FormDefinition]:
-    config = GlobalConfiguration.get_solo()
-
     uuid_mapping = {}
 
     request = _get_mock_request()
@@ -203,7 +199,7 @@ def import_form_data(
                 deserialized.save()
                 if resource == "forms":
                     created_form = deserialized.instance
-                if resource == "formSteps" and config.enable_form_variables:
+                if resource == "formSteps":
                     # Once the form steps have been created, we create the component FormVariables
                     # based on the form definition configurations.
                     FormVariable.objects.create_for_form(created_form)

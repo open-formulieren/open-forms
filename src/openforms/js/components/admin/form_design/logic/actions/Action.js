@@ -5,7 +5,6 @@ import {useIntl} from 'react-intl';
 
 import Select from 'components/admin/forms/Select';
 import DeleteIcon from 'components/admin/DeleteIcon';
-import {FeatureFlagsContext} from 'components/admin/form_design/Context';
 import {ACTION_TYPES} from 'components/admin/form_design/logic/constants';
 import DataPreview from 'components/admin/form_design/logic/DataPreview';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
@@ -16,8 +15,6 @@ import {Action as ActionType, ActionError} from './types';
 const Action = ({prefixText, action, errors = {}, onChange, onDelete}) => {
   const intl = useIntl();
   const hasErrors = Object.entries(errors).length > 0;
-
-  const featureFlags = useContext(FeatureFlagsContext);
 
   return (
     <div className="logic-action">
@@ -41,10 +38,7 @@ const Action = ({prefixText, action, errors = {}, onChange, onDelete}) => {
             <DSLEditorNode errors={errors.action?.type}>
               <Select
                 name="action.type"
-                choices={ACTION_TYPES.filter(actionType => {
-                  if (!featureFlags.enable_form_variables) return actionType[0] !== 'variable';
-                  return true;
-                })}
+                choices={ACTION_TYPES}
                 translateChoices
                 allowBlank
                 onChange={onChange}

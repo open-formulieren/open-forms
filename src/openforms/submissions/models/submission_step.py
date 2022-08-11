@@ -4,8 +4,6 @@ from typing import Optional
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from openforms.config.models import GlobalConfiguration
-
 
 class SubmissionStep(models.Model):
     """
@@ -20,6 +18,8 @@ class SubmissionStep(models.Model):
     submission = models.ForeignKey("submissions.Submission", on_delete=models.CASCADE)
     form_step = models.ForeignKey("forms.FormStep", on_delete=models.CASCADE)
     _data = models.JSONField(_("data"), blank=True, null=True)
+    # _data is deprecated and replaced with variables. This is still kept around to be
+    # able to automatically migrate in case there were earlier migration bugs.
     created_on = models.DateTimeField(_("created on"), auto_now_add=True)
     modified = models.DateTimeField(_("modified on"), auto_now=True)
 
@@ -58,34 +58,26 @@ class SubmissionStep(models.Model):
 
     @property
     def data(self) -> dict:
-        config = GlobalConfiguration.get_solo()
-        if config.enable_form_variables:
-            values_state = self.submission.load_submission_value_variables_state()
-            # This is used in the evaluate_form_logic function, which only returns the data that has been changed to the
-            # frontend.
-            step_data = values_state.get_data(
-                submission_step=self, return_unchanged_data=False
-            )
-            if self._unsaved_data:
-                return {**step_data, **self._unsaved_data}
-            return step_data
-        else:
-            return self._data
+        values_state = self.submission.load_submission_value_variables_state()
+        # This is used in the evaluate_form_logic function, which only returns the data that has been changed to the
+        # frontend.
+        step_data = values_state.get_data(
+            submission_step=self, return_unchanged_data=False
+        )
+        if self._unsaved_data:
+            return {**step_data, **self._unsaved_data}
+        return step_data
 
     @data.setter
     def data(self, data: Optional[dict]) -> None:
-        config = GlobalConfiguration.get_solo()
-        if config.enable_form_variables:
-            if isinstance(data, DirtyData):
-                self._unsaved_data = data
-            else:
-                from .submission_value_variable import SubmissionValueVariable
-
-                SubmissionValueVariable.objects.bulk_create_or_update_from_data(
-                    data, self.submission, self, update_missing_variables=True
-                )
+        if isinstance(data, DirtyData):
+            self._unsaved_data = data
         else:
-            self._data = data
+            from .submission_value_variable import SubmissionValueVariable
+
+            SubmissionValueVariable.objects.bulk_create_or_update_from_data(
+                data, self.submission, self, update_missing_variables=True
+            )
 
 
 class DirtyData(dict):

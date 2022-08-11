@@ -5,10 +5,9 @@ from openforms.forms.tests.factories import FormLogicFactory
 from openforms.logging import logevent
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.submissions.tests.mixins import VariablesTestMixin
 
 
-class EventTests(VariablesTestMixin, TestCase):
+class EventTests(TestCase):
 
     # test for specific events
     def test_submission_start(self):

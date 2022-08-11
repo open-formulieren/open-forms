@@ -88,3 +88,104 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         error_fields = [param["name"] for param in response.json()["invalidParams"]]
         self.assertEqual(error_fields, ["data.my_file"])
+
+    def test_prefilled_data_updated(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "surname",
+                        "label": "Surname",
+                        "prefill": {"plugin": "test-prefill", "attribute": "surname"},
+                        "disabled": True,
+                    }
+                ]
+            },
+        )
+        submission = SubmissionFactory.create(
+            form=form, prefill_data={"surname": "Doe"}
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse(
+            "api:submission-steps-validate",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+
+        response = self.client.post(endpoint, {"data": {"surname": "Doe-MODIFIED"}})
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        invalid_params = response.json()["invalidParams"]
+        error_fields = [param["name"] for param in invalid_params]
+        self.assertEqual(error_fields, ["data.surname"])
+        self.assertEqual(invalid_params[0]["code"], "invalidPrefilledField")
+
+    def test_prefilled_data_updated_not_disabled(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "surname",
+                        "label": "Surname",
+                        "prefill": {"plugin": "test-prefill", "attribute": "surname"},
+                        "disabled": False,
+                    }
+                ]
+            },
+        )
+        submission = SubmissionFactory.create(
+            form=form, prefill_data={"surname": "Doe"}
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse(
+            "api:submission-steps-validate",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+
+        response = self.client.post(endpoint, {"data": {"surname": "Doe-MODIFIED"}})
+
+        # Since the prefilled field was not disabled, it is possible to modify it and the submission is valid
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_null_prefilled_data(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "surname",
+                        "label": "Surname",
+                        "prefill": {"plugin": "test-prefill", "attribute": "surname"},
+                        "disabled": True,
+                        "defaultValue": "",
+                    }
+                ],
+            },
+        )
+        submission = SubmissionFactory.create(form=form, prefill_data={"surname": None})
+        self._add_submission_to_session(submission)
+        endpoint = reverse(
+            "api:submission-steps-validate",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+
+        response = self.client.post(endpoint, {"data": {"surname": ""}})
+
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)

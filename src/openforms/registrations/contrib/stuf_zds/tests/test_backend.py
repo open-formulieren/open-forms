@@ -11,7 +11,6 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
-from openforms.submissions.tests.mixins import VariablesTestMixin
 from stuf.stuf_zds.models import StufZDSConfig
 from stuf.stuf_zds.tests import StUFZDSTestBase
 from stuf.stuf_zds.tests.utils import load_mock, match_text, xml_from_request_history
@@ -124,7 +123,7 @@ class StufZDSHelperTests(StUFZDSTestBase):
 @freeze_time("2020-12-22")
 @temp_private_root()
 @requests_mock.Mocker()
-class StufZDSPluginTests(VariablesTestMixin, StUFZDSTestBase):
+class StufZDSPluginTests(StUFZDSTestBase):
     """
     test the plugin function
     """

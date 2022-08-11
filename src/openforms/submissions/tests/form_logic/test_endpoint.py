@@ -7,13 +7,12 @@ from openforms.forms.tests.factories import (
     FormLogicFactory,
     FormStepFactory,
 )
-from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ..factories import SubmissionFactory, SubmissionStepFactory
 from ..mixins import SubmissionsMixin
 
 
-class CheckLogicEndpointTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
+class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
     def test_update_not_applicable_steps(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(

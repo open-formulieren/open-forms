@@ -15,10 +15,10 @@ from openforms.logging.models import TimelineLogProxy
 
 from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory
-from ..mixins import SubmissionsMixin, VariablesTestMixin
+from ..mixins import SubmissionsMixin
 
 
-class ComponentModificationTests(VariablesTestMixin, TestCase):
+class ComponentModificationTests(TestCase):
     def test_change_component_to_hidden(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(
@@ -774,7 +774,7 @@ class ComponentModificationTests(VariablesTestMixin, TestCase):
         self.assertTrue(configuration["components"][1]["hidden"])
 
 
-class StepModificationTests(VariablesTestMixin, TestCase):
+class StepModificationTests(TestCase):
     def test_next_button_disabled(self):
         form = FormFactory.create()
         step1 = FormStepFactory.create(
@@ -1207,7 +1207,7 @@ class StepModificationTests(VariablesTestMixin, TestCase):
         )
 
 
-class CheckLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestCase):
+class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
     def test_response_contains_submission(self):
         form = FormFactory.create()
         form_step1 = FormStepFactory.create(
@@ -1431,7 +1431,7 @@ class CheckLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestCase
             )
 
 
-class EvaluateLogicSubmissionTest(VariablesTestMixin, SubmissionsMixin, APITestCase):
+class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
     def test_evaluate_logic_with_default_values(self):
         form = FormFactory.create(
             generate_minimal_setup=True,

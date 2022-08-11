@@ -5,13 +5,12 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
-from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ..models import FormPriceLogic
 from .factories import FormFactory, FormPriceLogicFactory
 
 
-class FormPriceLogicBulkAPITests(VariablesTestMixin, APITestCase):
+class FormPriceLogicBulkAPITests(APITestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

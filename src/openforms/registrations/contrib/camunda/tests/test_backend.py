@@ -10,7 +10,6 @@ from django_camunda.models import CamundaConfig
 from privates.test import temp_private_root
 
 from openforms.submissions.tests.factories import SubmissionFactory
-from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ....exceptions import RegistrationFailed
 from ..plugin import CamundaRegistration, serialize_variables
@@ -238,7 +237,7 @@ class InitialRegistrationTests(CamundaMixin, TestCase):
 
 @temp_private_root()
 @requests_mock.Mocker(real_http=False)
-class MappedProcessVariableTests(VariablesTestMixin, CamundaMixin, TestCase):
+class MappedProcessVariableTests(CamundaMixin, TestCase):
     """
     Test that form values are mapped correctly onto process variables.
     """
@@ -306,7 +305,7 @@ class MappedProcessVariableTests(VariablesTestMixin, CamundaMixin, TestCase):
 
 @temp_private_root()
 @requests_mock.Mocker(real_http=False)
-class ComplexProcessVariableTests(VariablesTestMixin, CamundaMixin, TestCase):
+class ComplexProcessVariableTests(CamundaMixin, TestCase):
     """
     Assert that complex variables are correctly mapped to JSON variables in Camunda.
     """

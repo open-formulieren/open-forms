@@ -10,10 +10,9 @@ from openforms.forms.tests.factories import (
 
 from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory
-from ..mixins import VariablesTestMixin
 
 
-class DeterministicEvaluationTests(VariablesTestMixin, TestCase):
+class DeterministicEvaluationTests(TestCase):
     def test_logic_rule_order_respected(self):
         form = FormFactory.create()
         step = FormStepFactory.create(

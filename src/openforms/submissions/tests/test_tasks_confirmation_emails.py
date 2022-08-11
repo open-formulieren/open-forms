@@ -22,11 +22,10 @@ from openforms.utils.tests.html_assert import HTMLAssertMixin
 from ..tasks import maybe_send_confirmation_email
 from ..tasks.emails import send_confirmation_email
 from .factories import SubmissionFactory, SubmissionStepFactory
-from .mixins import VariablesTestMixin
 
 
 @temp_private_root()
-class ConfirmationEmailTests(VariablesTestMixin, HTMLAssertMixin, TestCase):
+class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
     def test_task_without_mail_template(self):
         submission = SubmissionFactory.create()
         assert (

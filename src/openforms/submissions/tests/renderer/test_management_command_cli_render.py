@@ -7,7 +7,6 @@ from django.core.management import call_command
 from django.test import TestCase
 
 from ..factories import SubmissionFactory
-from ..mixins import VariablesTestMixin
 
 FORMIO_CONFIGURATION_COMPONENTS = [
     # visible component, leaf node
@@ -63,7 +62,7 @@ FORMIO_CONFIGURATION_COMPONENTS = [
 ]
 
 
-class CLIRendererIntegrationTests(VariablesTestMixin, TestCase):
+class CLIRendererIntegrationTests(TestCase):
     maxDiff = None
 
     def test_render_submission_in_cli_no_html(self):

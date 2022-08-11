@@ -21,11 +21,11 @@ from openforms.forms.tests.factories import (
 
 from ..models import SubmissionValueVariable
 from .factories import SubmissionFactory, SubmissionStepFactory
-from .mixins import SubmissionsMixin, VariablesTestMixin
+from .mixins import SubmissionsMixin
 
 
 @temp_private_root()
-class FormStepSubmissionTests(VariablesTestMixin, SubmissionsMixin, APITestCase):
+class FormStepSubmissionTests(SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()

@@ -7,7 +7,6 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import SuperUserFactory
-from openforms.submissions.tests.mixins import VariablesTestMixin
 
 from ...constants import FormVariableSources
 from ...models import FormVariable
@@ -16,7 +15,7 @@ from ..factories import FormFactory, FormVariableFactory
 
 # TODO Remove once the FormLogicViewSet endpoint is removed
 @override_settings(LANGUAGE_CODE="en")
-class VariablesInLogicAPITests(VariablesTestMixin, APITestCase):
+class VariablesInLogicAPITests(APITestCase):
     def test_user_defined_variable_in_trigger(self):
         user = SuperUserFactory.create()
         form = FormFactory.create()
@@ -122,7 +121,7 @@ class VariablesInLogicAPITests(VariablesTestMixin, APITestCase):
 
 
 @override_settings(LANGUAGE_CODE="en")
-class VariablesInLogicBulkAPITests(VariablesTestMixin, APITestCase):
+class VariablesInLogicBulkAPITests(APITestCase):
     def test_user_defined_variable_in_trigger(self):
         user = SuperUserFactory.create()
         form = FormFactory.create()

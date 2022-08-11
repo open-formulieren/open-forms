@@ -17,10 +17,9 @@ from ...models.submission_value_variable import (
     SubmissionValueVariablesState,
 )
 from ...rendering import Renderer, RenderModes
-from ..mixins import VariablesTestMixin
 
 
-class SubmissionVariablesPerformanceTests(VariablesTestMixin, APITestCase):
+class SubmissionVariablesPerformanceTests(APITestCase):
     def test_evaluate_form_logic_without_rules(self):
         form = FormFactory.create()
         form_step1 = FormStepFactory.create(
