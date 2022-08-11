@@ -363,6 +363,29 @@ class FormDefinitionTestCase(TestCase):
             step.form_definition.is_reusable = False
             step.form_definition.clean()
 
+    def test_num_components_calculated_on_save(self):
+        fd = FormDefinitionFactory.build(
+            configuration={
+                "components": [
+                    {
+                        "type": "fieldset",
+                        "key": "fieldset",
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "textfield",
+                            }
+                        ],
+                    }
+                ]
+            }
+        )
+        self.assertEqual(fd._num_components, 0)
+
+        fd.save()
+
+        self.assertEqual(fd._num_components, 2)
+
 
 class FormStepTestCase(TestCase):
     def test_str(self):

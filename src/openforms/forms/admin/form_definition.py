@@ -34,7 +34,7 @@ delete_selected.short_description = _("Delete selected %(verbose_name_plural)s")
 class FormDefinitionAdmin(FormioConfigMixin, admin.ModelAdmin):
     form = FormDefinitionForm
     prepopulated_fields = {"slug": ("name",)}
-    list_display = ("anno_name", "used_in_forms", "is_reusable")
+    list_display = ("anno_name", "used_in_forms", "is_reusable", "_num_components")
     actions = ["overridden_delete_selected", "make_copies"]
     list_filter = ["is_reusable"]
     search_fields = ("name",)
