@@ -1,0 +1,1912 @@
+{
+    "display": "form",
+    "components":
+    [
+        {
+            "id": "edj37sl",
+            "key": "uwPersoonlijkeGegevens",
+            "tree": false,
+            "type": "fieldset",
+            "input": false,
+            "label": "{{ fieldsetLabel }}",
+            "logic":
+            [],
+            "hidden": false,
+            "legend": "Persoonlijke gegevens",
+            "prefix": "",
+            "suffix": "",
+            "unique": false,
+            "widget": null,
+            "dbIndex": false,
+            "overlay":
+            {
+                "top": "",
+                "left": "",
+                "style": "",
+                "width": "",
+                "height": ""
+            },
+            "tooltip": "",
+            "disabled": false,
+            "multiple": false,
+            "redrawOn": "",
+            "tabindex": "",
+            "validate":
+            {
+                "custom": "",
+                "unique": false,
+                "multiple": false,
+                "required": false,
+                "customPrivate": false,
+                "strictDateValidation": false
+            },
+            "autofocus": false,
+            "encrypted": false,
+            "hideLabel": false,
+            "modalEdit": false,
+            "protected": false,
+            "refreshOn": "",
+            "tableView": false,
+            "attributes":
+            {},
+            "components":
+            [
+                {
+                    "id": "eizown9",
+                    "key": "naam",
+                    "mask": false,
+                    "type": "textfield",
+                    "input": true,
+                    "label": "{{ labels.firstName }}",
+                    "hidden": false,
+                    "prefix": "",
+                    "suffix": "",
+                    "unique": false,
+                    "widget":
+                    {
+                        "type": "input"
+                    },
+                    "dbIndex": false,
+                    "overlay":
+                    {
+                        "top": "",
+                        "left": "",
+                        "style": "",
+                        "width": "",
+                        "height": ""
+                    },
+                    "prefill":
+                    {
+                        "plugin": "stufbg",
+                        "attribute": "voornamen"
+                    },
+                    "tooltip": "",
+                    "disabled": false,
+                    "multiple": false,
+                    "redrawOn": "",
+                    "tabindex": "",
+                    "validate":
+                    {
+                        "custom": "",
+                        "unique": false,
+                        "pattern": "",
+                        "plugins":
+                        [],
+                        "multiple": false,
+                        "required": true,
+                        "maxLength": "",
+                        "minLength": "",
+                        "customPrivate": false,
+                        "strictDateValidation": false
+                    },
+                    "autofocus": false,
+                    "encrypted": false,
+                    "hideLabel": false,
+                    "inputMask": "",
+                    "inputType": "text",
+                    "modalEdit": false,
+                    "protected": false,
+                    "refreshOn": "",
+                    "tableView": true,
+                    "attributes":
+                    {},
+                    "deriveCity": false,
+                    "errorLabel": "",
+                    "persistent": true,
+                    "properties":
+                    {},
+                    "spellcheck": true,
+                    "validateOn": "change",
+                    "clearOnHide": true,
+                    "conditional":
+                    {
+                        "eq": "",
+                        "show": null,
+                        "when": null
+                    },
+                    "customClass": "",
+                    "description": "Current year: {{ now|date:\"Y\" }}",
+                    "inputFormat": "plain",
+                    "placeholder": "",
+                    "showInEmail": true,
+                    "defaultValue": "",
+                    "registration":
+                    {
+                        "attribute": ""
+                    },
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "showCharCount": false,
+                    "showWordCount": false,
+                    "calculateValue": "",
+                    "derivePostcode": "",
+                    "calculateServer": false,
+                    "isSensitiveData": false,
+                    "deriveStreetName": false,
+                    "deriveHouseNumber": "",
+                    "allowMultipleMasks": false,
+                    "customDefaultValue": "",
+                    "allowCalculateOverride": false
+                },
+                {
+                    "id": "e2mz9ir5",
+                    "key": "tussenvoegsel",
+                    "mask": false,
+                    "type": "textfield",
+                    "input": true,
+                    "label": "Tussenvoegsel",
+                    "hidden": false,
+                    "prefix": "",
+                    "suffix": "",
+                    "unique": false,
+                    "widget":
+                    {
+                        "type": "input"
+                    },
+                    "dbIndex": false,
+                    "overlay":
+                    {
+                        "top": "",
+                        "left": "",
+                        "style": "",
+                        "width": "",
+                        "height": ""
+                    },
+                    "prefill":
+                    {
+                        "plugin": "stufbg",
+                        "attribute": "voorvoegselGeslachtsnaam"
+                    },
+                    "tooltip": "",
+                    "disabled": false,
+                    "multiple": false,
+                    "redrawOn": "",
+                    "tabindex": "",
+                    "validate":
+                    {
+                        "custom": "",
+                        "unique": false,
+                        "pattern": "",
+                        "plugins":
+                        [],
+                        "multiple": false,
+                        "required": false,
+                        "maxLength": "",
+                        "minLength": "",
+                        "customPrivate": false,
+                        "strictDateValidation": false
+                    },
+                    "autofocus": false,
+                    "encrypted": false,
+                    "hideLabel": false,
+                    "inputMask": "",
+                    "inputType": "text",
+                    "modalEdit": false,
+                    "protected": false,
+                    "refreshOn": "",
+                    "tableView": true,
+                    "attributes":
+                    {},
+                    "deriveCity": false,
+                    "errorLabel": "",
+                    "persistent": true,
+                    "properties":
+                    {},
+                    "spellcheck": true,
+                    "validateOn": "change",
+                    "clearOnHide": true,
+                    "conditional":
+                    {
+                        "eq": "",
+                        "show": null,
+                        "when": null
+                    },
+                    "customClass": "",
+                    "description": "",
+                    "inputFormat": "plain",
+                    "placeholder": "",
+                    "showInEmail": true,
+                    "defaultValue": "",
+                    "registration":
+                    {
+                        "attribute": ""
+                    },
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "showCharCount": false,
+                    "showWordCount": false,
+                    "calculateValue": "",
+                    "derivePostcode": "",
+                    "calculateServer": false,
+                    "isSensitiveData": false,
+                    "deriveStreetName": false,
+                    "deriveHouseNumber": "",
+                    "allowMultipleMasks": false,
+                    "customDefaultValue": "",
+                    "allowCalculateOverride": false
+                },
+                {
+                    "id": "e5rp2ket",
+                    "key": "achternaam",
+                    "mask": false,
+                    "type": "textfield",
+                    "input": true,
+                    "label": "{{ labels.lastName }}",
+                    "hidden": false,
+                    "prefix": "",
+                    "suffix": "",
+                    "unique": false,
+                    "widget":
+                    {
+                        "type": "input"
+                    },
+                    "dbIndex": false,
+                    "overlay":
+                    {
+                        "top": "",
+                        "left": "",
+                        "style": "",
+                        "width": "",
+                        "height": ""
+                    },
+                    "prefill":
+                    {
+                        "plugin": "stufbg",
+                        "attribute": "geslachtsnaam"
+                    },
+                    "tooltip": "",
+                    "disabled": false,
+                    "multiple": false,
+                    "redrawOn": "",
+                    "tabindex": "",
+                    "validate":
+                    {
+                        "custom": "",
+                        "unique": false,
+                        "pattern": "",
+                        "plugins":
+                        [],
+                        "multiple": false,
+                        "required": true,
+                        "maxLength": "",
+                        "minLength": "",
+                        "customPrivate": false,
+                        "strictDateValidation": false
+                    },
+                    "autofocus": false,
+                    "encrypted": false,
+                    "hideLabel": false,
+                    "inputMask": "",
+                    "inputType": "text",
+                    "modalEdit": false,
+                    "protected": false,
+                    "refreshOn": "",
+                    "tableView": true,
+                    "attributes":
+                    {},
+                    "deriveCity": false,
+                    "errorLabel": "",
+                    "persistent": true,
+                    "properties":
+                    {},
+                    "spellcheck": true,
+                    "validateOn": "change",
+                    "clearOnHide": true,
+                    "conditional":
+                    {
+                        "eq": "",
+                        "show": null,
+                        "when": null
+                    },
+                    "customClass": "",
+                    "description": "Your full name is then: {{ naam }} {{ tussenvoegsel }} {{ achternaam }}.",
+                    "inputFormat": "plain",
+                    "placeholder": "",
+                    "showInEmail": true,
+                    "defaultValue": "",
+                    "registration":
+                    {
+                        "attribute": ""
+                    },
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "showCharCount": false,
+                    "showWordCount": false,
+                    "calculateValue": "",
+                    "derivePostcode": "",
+                    "calculateServer": false,
+                    "isSensitiveData": false,
+                    "deriveStreetName": false,
+                    "deriveHouseNumber": "",
+                    "allowMultipleMasks": false,
+                    "customDefaultValue": "",
+                    "allowCalculateOverride": false
+                },
+                {
+                    "id": "ecbnwgo",
+                    "key": "postcode",
+                    "mask": false,
+                    "type": "postcode",
+                    "input": true,
+                    "label": "Postcode",
+                    "hidden": false,
+                    "prefix": "",
+                    "suffix": "",
+                    "unique": false,
+                    "widget":
+                    {
+                        "type": "input"
+                    },
+                    "dbIndex": false,
+                    "overlay":
+                    {
+                        "top": "",
+                        "left": "",
+                        "style": "",
+                        "width": "",
+                        "height": ""
+                    },
+                    "prefill":
+                    {
+                        "plugin": "stufbg",
+                        "attribute": "postcode"
+                    },
+                    "tooltip": "",
+                    "disabled": false,
+                    "multiple": false,
+                    "redrawOn": "",
+                    "tabindex": "",
+                    "validate":
+                    {
+                        "custom": "",
+                        "unique": false,
+                        "pattern": "^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$",
+                        "plugins":
+                        [],
+                        "multiple": false,
+                        "required": true,
+                        "maxLength": "",
+                        "minLength": "",
+                        "customMessage": "Invalid Postcode",
+                        "customPrivate": false,
+                        "strictDateValidation": false
+                    },
+                    "autofocus": false,
+                    "encrypted": false,
+                    "hideLabel": false,
+                    "inputMask": "9999 AA",
+                    "inputType": "text",
+                    "modalEdit": false,
+                    "protected": false,
+                    "refreshOn": "",
+                    "tableView": true,
+                    "attributes":
+                    {},
+                    "errorLabel": "",
+                    "persistent": true,
+                    "properties":
+                    {},
+                    "spellcheck": true,
+                    "validateOn": "blur",
+                    "clearOnHide": true,
+                    "conditional":
+                    {
+                        "eq": "",
+                        "show": null,
+                        "when": null
+                    },
+                    "customClass": "",
+                    "description": "",
+                    "inputFormat": "plain",
+                    "placeholder": "",
+                    "showInEmail": true,
+                    "defaultValue": "{{ defaultPostcode }}",
+                    "registration":
+                    {
+                        "attribute": ""
+                    },
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "showCharCount": false,
+                    "showWordCount": false,
+                    "calculateValue": "",
+                    "calculateServer": false,
+                    "isSensitiveData": true,
+                    "allowMultipleMasks": false,
+                    "customDefaultValue": "",
+                    "allowCalculateOverride": false
+                },
+                {
+                    "id": "e8isqc",
+                    "key": "huisnummer",
+                    "mask": false,
+                    "type": "textfield",
+                    "input": true,
+                    "label": "Huisnummer",
+                    "hidden": false,
+                    "prefix": "",
+                    "suffix": "",
+                    "unique": false,
+                    "widget":
+                    {
+                        "type": "input"
+                    },
+                    "dbIndex": false,
+                    "overlay":
+                    {
+                        "top": "",
+                        "left": "",
+                        "style": "",
+                        "width": "",
+                        "height": ""
+                    },
+                    "prefill":
+                    {
+                        "plugin": "stufbg",
+                        "attribute": "huisnummer"
+                    },
+                    "tooltip": "",
+                    "disabled": false,
+                    "multiple": false,
+                    "redrawOn": "",
+                    "tabindex": "",
+                    "validate":
+                    {
+                        "custom": "",
+                        "unique": false,
+                        "pattern": "",
+                        "plugins":
+                        [],
+                        "multiple": false,
+                        "required": true,
+                        "maxLength": "",
+                        "minLength": "",
+                        "customPrivate": false,
+                        "strictDateValidation": false
+                    },
+                    "autofocus": false,
+                    "encrypted": false,
+                    "hideLabel": false,
+                    "inputMask": "",
+                    "inputType": "text",
+                    "modalEdit": false,
+                    "protected": false,
+                    "refreshOn": "",
+                    "tableView": true,
+                    "attributes":
+                    {},
+                    "deriveCity": false,
+                    "errorLabel": "",
+                    "persistent": true,
+                    "properties":
+                    {},
+                    "spellcheck": true,
+                    "validateOn": "change",
+                    "clearOnHide": true,
+                    "conditional":
+                    {
+                        "eq": "",
+                        "show": null,
+                        "when": null
+                    },
+                    "customClass": "",
+                    "description": "",
+                    "inputFormat": "plain",
+                    "placeholder": "",
+                    "showInEmail": true,
+                    "defaultValue": "",
+                    "registration":
+                    {
+                        "attribute": ""
+                    },
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "showCharCount": false,
+                    "showWordCount": false,
+                    "calculateValue": "",
+                    "derivePostcode": "",
+                    "calculateServer": false,
+                    "isSensitiveData": false,
+                    "deriveStreetName": false,
+                    "deriveHouseNumber": "",
+                    "allowMultipleMasks": false,
+                    "customDefaultValue": "",
+                    "allowCalculateOverride": false
+                },
+                {
+                    "id": "ehgbxx7",
+                    "key": "huisnummertoevoeging",
+                    "mask": false,
+                    "type": "textfield",
+                    "input": true,
+                    "label": "Huisnummertoevoeging",
+                    "hidden": false,
+                    "prefix": "",
+                    "suffix": "",
+                    "unique": false,
+                    "widget":
+                    {
+                        "type": "input"
+                    },
+                    "dbIndex": false,
+                    "overlay":
+                    {
+                        "top": "",
+                        "left": "",
+                        "style": "",
+                        "width": "",
+                        "height": ""
+                    },
+                    "prefill":
+                    {
+                        "plugin": "stufbg",
+                        "attribute": "huisnummertoevoeging"
+                    },
+                    "tooltip": "",
+                    "disabled": false,
+                    "multiple": false,
+                    "redrawOn": "",
+                    "tabindex": "",
+                    "validate":
+                    {
+                        "custom": "",
+                        "unique": false,
+                        "pattern": "",
+                        "plugins":
+                        [],
+                        "multiple": false,
+                        "required": false,
+                        "maxLength": "",
+                        "minLength": "",
+                        "customPrivate": false,
+                        "strictDateValidation": false
+                    },
+                    "autofocus": false,
+                    "encrypted": false,
+                    "hideLabel": false,
+                    "inputMask": "",
+                    "inputType": "text",
+                    "modalEdit": false,
+                    "protected": false,
+                    "refreshOn": "",
+                    "tableView": true,
+                    "attributes":
+                    {},
+                    "deriveCity": false,
+                    "errorLabel": "",
+                    "persistent": true,
+                    "properties":
+                    {},
+                    "spellcheck": true,
+                    "validateOn": "change",
+                    "clearOnHide": true,
+                    "conditional":
+                    {
+                        "eq": "",
+                        "show": null,
+                        "when": null
+                    },
+                    "customClass": "",
+                    "description": "",
+                    "inputFormat": "plain",
+                    "placeholder": "",
+                    "showInEmail": true,
+                    "defaultValue": "",
+                    "registration":
+                    {
+                        "attribute": ""
+                    },
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "showCharCount": false,
+                    "showWordCount": false,
+                    "calculateValue": "",
+                    "derivePostcode": "",
+                    "calculateServer": false,
+                    "isSensitiveData": false,
+                    "deriveStreetName": false,
+                    "deriveHouseNumber": "",
+                    "allowMultipleMasks": false,
+                    "customDefaultValue": "",
+                    "allowCalculateOverride": false
+                },
+                {
+                    "id": "ext7lhg9",
+                    "key": "adres",
+                    "mask": false,
+                    "type": "textfield",
+                    "input": true,
+                    "label": "Straat",
+                    "hidden": false,
+                    "prefix": "",
+                    "suffix": "",
+                    "unique": false,
+                    "widget":
+                    {
+                        "type": "input"
+                    },
+                    "dbIndex": false,
+                    "overlay":
+                    {
+                        "top": "",
+                        "left": "",
+                        "style": "",
+                        "width": "",
+                        "height": ""
+                    },
+                    "prefill":
+                    {
+                        "plugin": "stufbg",
+                        "attribute": "straatnaam"
+                    },
+                    "tooltip": "",
+                    "disabled": false,
+                    "multiple": false,
+                    "redrawOn": "",
+                    "tabindex": "",
+                    "validate":
+                    {
+                        "custom": "",
+                        "unique": false,
+                        "pattern": "",
+                        "plugins":
+                        [],
+                        "multiple": false,
+                        "required": false,
+                        "maxLength": "",
+                        "minLength": "",
+                        "customPrivate": false,
+                        "strictDateValidation": false
+                    },
+                    "autofocus": false,
+                    "encrypted": false,
+                    "hideLabel": false,
+                    "inputMask": "",
+                    "inputType": "text",
+                    "modalEdit": false,
+                    "protected": false,
+                    "refreshOn": "",
+                    "tableView": true,
+                    "attributes":
+                    {},
+                    "deriveCity": false,
+                    "errorLabel": "",
+                    "persistent": true,
+                    "properties":
+                    {},
+                    "spellcheck": true,
+                    "validateOn": "change",
+                    "clearOnHide": true,
+                    "conditional":
+                    {
+                        "eq": "",
+                        "show": null,
+                        "when": null
+                    },
+                    "customClass": "",
+                    "description": "",
+                    "inputFormat": "plain",
+                    "placeholder": "",
+                    "showInEmail": true,
+                    "defaultValue": "",
+                    "registration":
+                    {
+                        "attribute": ""
+                    },
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "showCharCount": false,
+                    "showWordCount": false,
+                    "calculateValue": "",
+                    "derivePostcode": "postcode",
+                    "calculateServer": false,
+                    "isSensitiveData": false,
+                    "deriveStreetName": true,
+                    "deriveHouseNumber": "huisnummer",
+                    "allowMultipleMasks": false,
+                    "customDefaultValue": "",
+                    "allowCalculateOverride": false
+                },
+                {
+                    "id": "egfues",
+                    "key": "plaats",
+                    "mask": false,
+                    "type": "textfield",
+                    "input": true,
+                    "label": "Plaats",
+                    "hidden": false,
+                    "prefix": "",
+                    "suffix": "",
+                    "unique": false,
+                    "widget":
+                    {
+                        "type": "input"
+                    },
+                    "dbIndex": false,
+                    "overlay":
+                    {
+                        "top": "",
+                        "left": "",
+                        "style": "",
+                        "width": "",
+                        "height": ""
+                    },
+                    "prefill":
+                    {
+                        "plugin": "stufbg",
+                        "attribute": "woonplaatsNaam"
+                    },
+                    "tooltip": "",
+                    "disabled": false,
+                    "multiple": false,
+                    "redrawOn": "",
+                    "tabindex": "",
+                    "validate":
+                    {
+                        "custom": "",
+                        "unique": false,
+                        "pattern": "",
+                        "plugins":
+                        [],
+                        "multiple": false,
+                        "required": false,
+                        "maxLength": "",
+                        "minLength": "",
+                        "customPrivate": false,
+                        "strictDateValidation": false
+                    },
+                    "autofocus": false,
+                    "encrypted": false,
+                    "hideLabel": false,
+                    "inputMask": "",
+                    "inputType": "text",
+                    "modalEdit": false,
+                    "protected": false,
+                    "refreshOn": "",
+                    "tableView": true,
+                    "attributes":
+                    {},
+                    "deriveCity": true,
+                    "errorLabel": "",
+                    "persistent": true,
+                    "properties":
+                    {},
+                    "spellcheck": true,
+                    "validateOn": "change",
+                    "clearOnHide": true,
+                    "conditional":
+                    {
+                        "eq": "",
+                        "show": null,
+                        "when": null
+                    },
+                    "customClass": "",
+                    "description": "",
+                    "inputFormat": "plain",
+                    "placeholder": "",
+                    "showInEmail": false,
+                    "defaultValue": "",
+                    "registration":
+                    {
+                        "attribute": ""
+                    },
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "showCharCount": false,
+                    "showWordCount": false,
+                    "calculateValue": "",
+                    "derivePostcode": "postcode",
+                    "calculateServer": false,
+                    "isSensitiveData": false,
+                    "deriveStreetName": false,
+                    "deriveHouseNumber": "huisnummer",
+                    "allowMultipleMasks": false,
+                    "customDefaultValue": "",
+                    "allowCalculateOverride": false
+                }
+            ],
+            "errorLabel": "",
+            "persistent": false,
+            "properties":
+            {},
+            "validateOn": "change",
+            "clearOnHide": true,
+            "conditional":
+            {
+                "eq": "",
+                "show": null,
+                "when": null
+            },
+            "customClass": "",
+            "description": "",
+            "placeholder": "",
+            "defaultValue": null,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "showCharCount": false,
+            "showWordCount": false,
+            "calculateValue": "",
+            "calculateServer": false,
+            "allowMultipleMasks": false,
+            "customDefaultValue": "",
+            "allowCalculateOverride": false
+        },
+        {
+            "id": "e9yoxvg",
+            "key": "doetUDeAanvraagNamensEenOrganisatieVerenigingOfStichting",
+            "type": "radio",
+            "input": true,
+            "label": "Doet u de aanvraag namens een organisatie, vereniging of stichting?",
+            "hidden": false,
+            "prefix": "",
+            "suffix": "",
+            "unique": false,
+            "values":
+            [
+                {
+                    "label": "ja",
+                    "value": "ja"
+                },
+                {
+                    "label": "nee",
+                    "value": "nee"
+                }
+            ],
+            "widget": null,
+            "dbIndex": false,
+            "overlay":
+            {
+                "top": "",
+                "left": "",
+                "style": "",
+                "width": "",
+                "height": ""
+            },
+            "tooltip": "",
+            "disabled": false,
+            "fieldSet": false,
+            "multiple": false,
+            "redrawOn": "",
+            "tabindex": "",
+            "validate":
+            {
+                "custom": "",
+                "unique": false,
+                "plugins":
+                [],
+                "multiple": false,
+                "required": true,
+                "customPrivate": false,
+                "onlyAvailableItems": false,
+                "strictDateValidation": false
+            },
+            "autofocus": false,
+            "encrypted": false,
+            "hideLabel": false,
+            "inputType": "radio",
+            "modalEdit": false,
+            "protected": false,
+            "refreshOn": "",
+            "tableView": false,
+            "attributes":
+            {},
+            "errorLabel": "",
+            "persistent": true,
+            "properties":
+            {},
+            "validateOn": "change",
+            "clearOnHide": true,
+            "conditional":
+            {
+                "eq": "",
+                "show": null,
+                "when": null
+            },
+            "customClass": "",
+            "description": "",
+            "placeholder": "",
+            "showInEmail": true,
+            "defaultValue": "",
+            "registration":
+            {
+                "attribute": ""
+            },
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "showCharCount": false,
+            "showWordCount": false,
+            "calculateValue": "",
+            "calculateServer": false,
+            "isSensitiveData": false,
+            "allowMultipleMasks": false,
+            "customDefaultValue": "",
+            "allowCalculateOverride": false
+        },
+        {
+            "id": "evg7jhg",
+            "key": "gegevensOrganisatieVerenigingOfStichting",
+            "tree": false,
+            "type": "fieldset",
+            "input": false,
+            "label": "Gegevens organisatie, vereniging of stichting",
+            "hidden": true,
+            "legend": "Gegevens organisatie, vereniging of stichting",
+            "prefix": "",
+            "suffix": "",
+            "unique": false,
+            "widget": null,
+            "dbIndex": false,
+            "overlay":
+            {
+                "top": "",
+                "left": "",
+                "style": "",
+                "width": "",
+                "height": ""
+            },
+            "tooltip": "",
+            "disabled": false,
+            "multiple": false,
+            "redrawOn": "",
+            "tabindex": "",
+            "validate":
+            {
+                "custom": "",
+                "unique": false,
+                "multiple": false,
+                "required": false,
+                "customPrivate": false,
+                "strictDateValidation": false
+            },
+            "autofocus": false,
+            "encrypted": false,
+            "hideLabel": false,
+            "modalEdit": false,
+            "protected": false,
+            "refreshOn": "",
+            "tableView": false,
+            "attributes":
+            {},
+            "components":
+            [
+                {
+                    "id": "ewdshpa",
+                    "key": "naam1",
+                    "mask": false,
+                    "type": "textfield",
+                    "input": true,
+                    "label": "Naam",
+                    "hidden": false,
+                    "prefix": "",
+                    "suffix": "",
+                    "unique": false,
+                    "widget":
+                    {
+                        "type": "input"
+                    },
+                    "dbIndex": false,
+                    "overlay":
+                    {
+                        "top": "",
+                        "left": "",
+                        "style": "",
+                        "width": "",
+                        "height": ""
+                    },
+                    "prefill":
+                    {
+                        "plugin": "",
+                        "attribute": ""
+                    },
+                    "tooltip": "",
+                    "disabled": false,
+                    "multiple": false,
+                    "redrawOn": "",
+                    "tabindex": "",
+                    "validate":
+                    {
+                        "custom": "",
+                        "unique": false,
+                        "pattern": "",
+                        "plugins":
+                        [],
+                        "multiple": false,
+                        "required": true,
+                        "maxLength": "",
+                        "minLength": "",
+                        "customPrivate": false,
+                        "strictDateValidation": false
+                    },
+                    "autofocus": false,
+                    "encrypted": false,
+                    "hideLabel": false,
+                    "inputMask": "",
+                    "inputType": "text",
+                    "modalEdit": false,
+                    "protected": false,
+                    "refreshOn": "",
+                    "tableView": true,
+                    "attributes":
+                    {},
+                    "deriveCity": false,
+                    "errorLabel": "",
+                    "persistent": true,
+                    "properties":
+                    {},
+                    "spellcheck": true,
+                    "validateOn": "change",
+                    "clearOnHide": true,
+                    "conditional":
+                    {
+                        "eq": "",
+                        "show": "",
+                        "when": ""
+                    },
+                    "customClass": "",
+                    "description": "",
+                    "inputFormat": "plain",
+                    "placeholder": "",
+                    "showInEmail": true,
+                    "defaultValue": "",
+                    "registration":
+                    {
+                        "attribute": ""
+                    },
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "showCharCount": false,
+                    "showWordCount": false,
+                    "calculateValue": "",
+                    "derivePostcode": "",
+                    "calculateServer": false,
+                    "isSensitiveData": false,
+                    "deriveStreetName": false,
+                    "deriveHouseNumber": "",
+                    "allowMultipleMasks": false,
+                    "customDefaultValue": "",
+                    "allowCalculateOverride": false
+                },
+                {
+                    "id": "e5tfva",
+                    "key": "adres1",
+                    "mask": false,
+                    "type": "textfield",
+                    "input": true,
+                    "label": "Adres",
+                    "hidden": false,
+                    "prefix": "",
+                    "suffix": "",
+                    "unique": false,
+                    "widget":
+                    {
+                        "type": "input"
+                    },
+                    "dbIndex": false,
+                    "overlay":
+                    {
+                        "top": "",
+                        "left": "",
+                        "style": "",
+                        "width": "",
+                        "height": ""
+                    },
+                    "prefill":
+                    {
+                        "plugin": "",
+                        "attribute": ""
+                    },
+                    "tooltip": "",
+                    "disabled": false,
+                    "multiple": false,
+                    "redrawOn": "",
+                    "tabindex": "",
+                    "validate":
+                    {
+                        "custom": "",
+                        "unique": false,
+                        "pattern": "",
+                        "plugins":
+                        [],
+                        "multiple": false,
+                        "required": true,
+                        "maxLength": "",
+                        "minLength": "",
+                        "customPrivate": false,
+                        "strictDateValidation": false
+                    },
+                    "autofocus": false,
+                    "encrypted": false,
+                    "hideLabel": false,
+                    "inputMask": "",
+                    "inputType": "text",
+                    "modalEdit": false,
+                    "protected": false,
+                    "refreshOn": "",
+                    "tableView": true,
+                    "attributes":
+                    {},
+                    "deriveCity": false,
+                    "errorLabel": "",
+                    "persistent": true,
+                    "properties":
+                    {},
+                    "spellcheck": true,
+                    "validateOn": "change",
+                    "clearOnHide": true,
+                    "conditional":
+                    {
+                        "eq": "",
+                        "show": "",
+                        "when": ""
+                    },
+                    "customClass": "",
+                    "description": "",
+                    "inputFormat": "plain",
+                    "placeholder": "",
+                    "showInEmail": true,
+                    "defaultValue": "",
+                    "registration":
+                    {
+                        "attribute": ""
+                    },
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "showCharCount": false,
+                    "showWordCount": false,
+                    "calculateValue": "",
+                    "derivePostcode": "",
+                    "calculateServer": false,
+                    "isSensitiveData": false,
+                    "deriveStreetName": false,
+                    "deriveHouseNumber": "",
+                    "allowMultipleMasks": false,
+                    "customDefaultValue": "",
+                    "allowCalculateOverride": false
+                }
+            ],
+            "errorLabel": "",
+            "persistent": false,
+            "properties":
+            {},
+            "validateOn": "change",
+            "clearOnHide": true,
+            "conditional":
+            {
+                "eq": "",
+                "show": null,
+                "when": null
+            },
+            "customClass": "",
+            "description": "",
+            "placeholder": "",
+            "defaultValue": null,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "showCharCount": false,
+            "showWordCount": false,
+            "calculateValue": "",
+            "calculateServer": false,
+            "allowMultipleMasks": false,
+            "customDefaultValue": "",
+            "allowCalculateOverride": false
+        },
+        {
+            "id": "euilfomk",
+            "key": "financieleGegevens",
+            "tree": false,
+            "type": "fieldset",
+            "input": false,
+            "label": "Financiële gegevens",
+            "logic":
+            [],
+            "hidden": false,
+            "legend": "Financiële gegevens",
+            "prefix": "",
+            "suffix": "",
+            "unique": false,
+            "widget": null,
+            "dbIndex": false,
+            "overlay":
+            {
+                "top": "",
+                "left": "",
+                "style": "",
+                "width": "",
+                "height": ""
+            },
+            "tooltip": "",
+            "disabled": false,
+            "multiple": false,
+            "redrawOn": "",
+            "tabindex": "",
+            "validate":
+            {
+                "custom": "",
+                "unique": false,
+                "multiple": false,
+                "required": false,
+                "customPrivate": false,
+                "strictDateValidation": false
+            },
+            "autofocus": false,
+            "encrypted": false,
+            "hideLabel": false,
+            "modalEdit": false,
+            "protected": false,
+            "refreshOn": "",
+            "tableView": false,
+            "attributes":
+            {},
+            "components":
+            [
+                {
+                    "id": "e5jpi4i",
+                    "key": "columns",
+                    "tags":
+                    [],
+                    "tree": false,
+                    "type": "columns",
+                    "input": false,
+                    "label": "Columns",
+                    "logic":
+                    [],
+                    "hidden": false,
+                    "prefix": "",
+                    "suffix": "",
+                    "unique": false,
+                    "widget": null,
+                    "columns":
+                    [
+                        {
+                            "pull": 0,
+                            "push": 0,
+                            "size": "md",
+                            "width": 6,
+                            "offset": 0,
+                            "components":
+                            [
+                                {
+                                    "id": "enwm1d78",
+                                    "key": "vulHetIbanNummerInWaarDeSubsidieOpMoetWordenUitbetaald",
+                                    "mask": false,
+                                    "type": "iban",
+                                    "input": true,
+                                    "label": "Rekeningummer (IBAN)",
+                                    "hidden": false,
+                                    "prefix": "",
+                                    "suffix": "",
+                                    "unique": false,
+                                    "widget":
+                                    {
+                                        "type": "input"
+                                    },
+                                    "dbIndex": false,
+                                    "overlay":
+                                    {
+                                        "top": "",
+                                        "left": "",
+                                        "style": "",
+                                        "width": "",
+                                        "height": ""
+                                    },
+                                    "tooltip": "",
+                                    "disabled": false,
+                                    "multiple": false,
+                                    "redrawOn": "",
+                                    "tabindex": "",
+                                    "validate":
+                                    {
+                                        "custom": "",
+                                        "unique": false,
+                                        "pattern": "",
+                                        "plugins":
+                                        [],
+                                        "multiple": false,
+                                        "required": true,
+                                        "maxLength": "",
+                                        "minLength": "",
+                                        "customPrivate": false,
+                                        "strictDateValidation": false
+                                    },
+                                    "autofocus": false,
+                                    "encrypted": false,
+                                    "hideLabel": false,
+                                    "inputMask": "",
+                                    "inputType": "text",
+                                    "modalEdit": false,
+                                    "protected": false,
+                                    "refreshOn": "",
+                                    "tableView": true,
+                                    "attributes":
+                                    {},
+                                    "errorLabel": "",
+                                    "persistent": true,
+                                    "properties":
+                                    {},
+                                    "spellcheck": true,
+                                    "validateOn": "blur",
+                                    "clearOnHide": true,
+                                    "conditional":
+                                    {
+                                        "eq": "",
+                                        "show": null,
+                                        "when": null
+                                    },
+                                    "customClass": "",
+                                    "description": "",
+                                    "inputFormat": "plain",
+                                    "placeholder": "",
+                                    "showInEmail": true,
+                                    "defaultValue": "",
+                                    "registration":
+                                    {
+                                        "attribute": ""
+                                    },
+                                    "dataGridLabel": false,
+                                    "labelPosition": "top",
+                                    "showCharCount": false,
+                                    "showWordCount": false,
+                                    "calculateValue": "",
+                                    "calculateServer": false,
+                                    "isSensitiveData": true,
+                                    "allowMultipleMasks": false,
+                                    "customDefaultValue": "",
+                                    "allowCalculateOverride": false
+                                }
+                            ],
+                            "currentWidth": 6
+                        },
+                        {
+                            "pull": 0,
+                            "push": 0,
+                            "size": "md",
+                            "width": 6,
+                            "offset": 0,
+                            "components":
+                            [
+                                {
+                                    "id": "e4wnlup",
+                                    "key": "tenNameVan",
+                                    "mask": false,
+                                    "type": "textfield",
+                                    "input": true,
+                                    "label": "Op naam van",
+                                    "hidden": false,
+                                    "prefix": "",
+                                    "suffix": "",
+                                    "unique": false,
+                                    "widget":
+                                    {
+                                        "type": "input"
+                                    },
+                                    "dbIndex": false,
+                                    "overlay":
+                                    {
+                                        "top": "",
+                                        "left": "",
+                                        "style": "",
+                                        "width": "",
+                                        "height": ""
+                                    },
+                                    "prefill":
+                                    {
+                                        "plugin": "",
+                                        "attribute": ""
+                                    },
+                                    "tooltip": "",
+                                    "disabled": false,
+                                    "multiple": false,
+                                    "redrawOn": "",
+                                    "tabindex": "",
+                                    "validate":
+                                    {
+                                        "custom": "",
+                                        "unique": false,
+                                        "pattern": "",
+                                        "plugins":
+                                        [],
+                                        "multiple": false,
+                                        "required": true,
+                                        "maxLength": "",
+                                        "minLength": "",
+                                        "customPrivate": false,
+                                        "strictDateValidation": false
+                                    },
+                                    "autofocus": false,
+                                    "encrypted": false,
+                                    "hideLabel": false,
+                                    "inputMask": "",
+                                    "inputType": "text",
+                                    "modalEdit": false,
+                                    "protected": false,
+                                    "refreshOn": "",
+                                    "tableView": true,
+                                    "attributes":
+                                    {},
+                                    "deriveCity": false,
+                                    "errorLabel": "",
+                                    "persistent": true,
+                                    "properties":
+                                    {},
+                                    "spellcheck": true,
+                                    "validateOn": "change",
+                                    "clearOnHide": true,
+                                    "conditional":
+                                    {
+                                        "eq": "",
+                                        "show": null,
+                                        "when": null
+                                    },
+                                    "customClass": "",
+                                    "description": "",
+                                    "inputFormat": "plain",
+                                    "placeholder": "",
+                                    "showInEmail": true,
+                                    "defaultValue": "",
+                                    "registration":
+                                    {
+                                        "attribute": ""
+                                    },
+                                    "dataGridLabel": false,
+                                    "labelPosition": "top",
+                                    "showCharCount": false,
+                                    "showWordCount": false,
+                                    "calculateValue": "",
+                                    "derivePostcode": "",
+                                    "calculateServer": false,
+                                    "isSensitiveData": true,
+                                    "deriveStreetName": false,
+                                    "deriveHouseNumber": "",
+                                    "allowMultipleMasks": false,
+                                    "customDefaultValue": "",
+                                    "allowCalculateOverride": false
+                                }
+                            ],
+                            "currentWidth": 6
+                        }
+                    ],
+                    "dbIndex": false,
+                    "overlay":
+                    {
+                        "top": "",
+                        "left": "",
+                        "page": "",
+                        "style": "",
+                        "width": "",
+                        "height": ""
+                    },
+                    "tooltip": "",
+                    "disabled": false,
+                    "multiple": false,
+                    "redrawOn": "",
+                    "tabindex": "",
+                    "validate":
+                    {
+                        "custom": "",
+                        "unique": false,
+                        "multiple": false,
+                        "required": false,
+                        "customPrivate": false,
+                        "strictDateValidation": false
+                    },
+                    "autofocus": false,
+                    "encrypted": false,
+                    "hideLabel": false,
+                    "modalEdit": false,
+                    "protected": false,
+                    "refreshOn": "",
+                    "tableView": false,
+                    "attributes":
+                    {},
+                    "autoAdjust": false,
+                    "errorLabel": "",
+                    "persistent": false,
+                    "properties":
+                    {},
+                    "validateOn": "change",
+                    "clearOnHide": false,
+                    "conditional":
+                    {
+                        "eq": "",
+                        "json": "",
+                        "show": null,
+                        "when": null
+                    },
+                    "customClass": "",
+                    "description": "",
+                    "placeholder": "",
+                    "defaultValue": null,
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "showCharCount": false,
+                    "showWordCount": false,
+                    "calculateValue": "",
+                    "calculateServer": false,
+                    "customConditional": "",
+                    "allowMultipleMasks": false,
+                    "customDefaultValue": "",
+                    "allowCalculateOverride": false
+                }
+            ],
+            "errorLabel": "",
+            "persistent": false,
+            "properties":
+            {},
+            "validateOn": "change",
+            "clearOnHide": true,
+            "conditional":
+            {
+                "eq": "",
+                "show": null,
+                "when": null
+            },
+            "customClass": "",
+            "description": "",
+            "placeholder": "",
+            "defaultValue": null,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "showCharCount": false,
+            "showWordCount": false,
+            "calculateValue": "",
+            "calculateServer": false,
+            "allowMultipleMasks": false,
+            "customDefaultValue": "",
+            "allowCalculateOverride": false
+        },
+        {
+            "id": "etme82f",
+            "key": "contactgegevens",
+            "tree": false,
+            "type": "fieldset",
+            "input": false,
+            "label": "Contactgegevens",
+            "hidden": false,
+            "legend": "Contactgegevens",
+            "prefix": "",
+            "suffix": "",
+            "unique": false,
+            "widget": null,
+            "dbIndex": false,
+            "overlay":
+            {
+                "top": "",
+                "left": "",
+                "style": "",
+                "width": "",
+                "height": ""
+            },
+            "tooltip": "",
+            "disabled": false,
+            "multiple": false,
+            "redrawOn": "",
+            "tabindex": "",
+            "validate":
+            {
+                "custom": "",
+                "unique": false,
+                "multiple": false,
+                "required": false,
+                "customPrivate": false,
+                "strictDateValidation": false
+            },
+            "autofocus": false,
+            "encrypted": false,
+            "hideLabel": false,
+            "modalEdit": false,
+            "protected": false,
+            "refreshOn": "",
+            "tableView": false,
+            "attributes":
+            {},
+            "components":
+            [
+                {
+                    "id": "eclqr5",
+                    "key": "email",
+                    "mask": false,
+                    "type": "email",
+                    "input": true,
+                    "label": "Email",
+                    "hidden": false,
+                    "prefix": "",
+                    "suffix": "",
+                    "unique": false,
+                    "widget":
+                    {
+                        "type": "input"
+                    },
+                    "dbIndex": false,
+                    "kickbox":
+                    {
+                        "enabled": false
+                    },
+                    "overlay":
+                    {
+                        "top": "",
+                        "left": "",
+                        "style": "",
+                        "width": "",
+                        "height": ""
+                    },
+                    "tooltip": "",
+                    "disabled": false,
+                    "multiple": false,
+                    "redrawOn": "",
+                    "tabindex": "",
+                    "validate":
+                    {
+                        "custom": "",
+                        "unique": false,
+                        "pattern": "",
+                        "plugins":
+                        [],
+                        "multiple": false,
+                        "required": false,
+                        "maxLength": "",
+                        "minLength": "",
+                        "customPrivate": false,
+                        "strictDateValidation": false
+                    },
+                    "autofocus": false,
+                    "encrypted": false,
+                    "hideLabel": false,
+                    "inputMask": "",
+                    "inputType": "email",
+                    "modalEdit": false,
+                    "protected": false,
+                    "refreshOn": "",
+                    "tableView": true,
+                    "attributes":
+                    {},
+                    "errorLabel": "",
+                    "persistent": true,
+                    "properties":
+                    {},
+                    "spellcheck": true,
+                    "validateOn": "blur",
+                    "clearOnHide": true,
+                    "conditional":
+                    {
+                        "eq": "",
+                        "show": null,
+                        "when": null
+                    },
+                    "customClass": "",
+                    "description": "",
+                    "inputFormat": "plain",
+                    "placeholder": "",
+                    "showInEmail": true,
+                    "defaultValue": "",
+                    "registration":
+                    {
+                        "attribute": ""
+                    },
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "showCharCount": false,
+                    "showWordCount": false,
+                    "calculateValue": "",
+                    "calculateServer": false,
+                    "isSensitiveData": true,
+                    "allowMultipleMasks": false,
+                    "customDefaultValue": "",
+                    "confirmationRecipient": true,
+                    "allowCalculateOverride": false
+                },
+                {
+                    "id": "e461fqm",
+                    "key": "telefoonnummer",
+                    "mask": false,
+                    "type": "phoneNumber",
+                    "input": true,
+                    "label": "Telefoonnummer",
+                    "hidden": false,
+                    "prefix": "",
+                    "suffix": "",
+                    "unique": false,
+                    "widget":
+                    {
+                        "type": "input"
+                    },
+                    "dbIndex": false,
+                    "overlay":
+                    {
+                        "top": "",
+                        "left": "",
+                        "style": "",
+                        "width": "",
+                        "height": ""
+                    },
+                    "tooltip": "",
+                    "disabled": false,
+                    "multiple": false,
+                    "redrawOn": "",
+                    "tabindex": "",
+                    "validate":
+                    {
+                        "custom": "",
+                        "unique": false,
+                        "pattern": "",
+                        "plugins":
+                        [],
+                        "multiple": false,
+                        "required": false,
+                        "maxLength": "",
+                        "minLength": "",
+                        "customPrivate": false,
+                        "strictDateValidation": false
+                    },
+                    "autofocus": false,
+                    "encrypted": false,
+                    "hideLabel": false,
+                    "inputMask": null,
+                    "inputMode": "decimal",
+                    "inputType": "tel",
+                    "modalEdit": false,
+                    "protected": false,
+                    "refreshOn": "",
+                    "tableView": true,
+                    "attributes":
+                    {},
+                    "errorLabel": "",
+                    "persistent": true,
+                    "properties":
+                    {},
+                    "spellcheck": true,
+                    "validateOn": "change",
+                    "clearOnHide": true,
+                    "conditional":
+                    {
+                        "eq": "",
+                        "show": null,
+                        "when": null
+                    },
+                    "customClass": "",
+                    "description": "",
+                    "inputFormat": "plain",
+                    "placeholder": "",
+                    "showInEmail": true,
+                    "defaultValue": "",
+                    "registration":
+                    {
+                        "attribute": ""
+                    },
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "showCharCount": false,
+                    "showWordCount": false,
+                    "calculateValue": "",
+                    "calculateServer": false,
+                    "isSensitiveData": true,
+                    "allowMultipleMasks": false,
+                    "customDefaultValue": "",
+                    "allowCalculateOverride": false
+                }
+            ],
+            "errorLabel": "",
+            "persistent": false,
+            "properties":
+            {},
+            "validateOn": "change",
+            "clearOnHide": true,
+            "conditional":
+            {
+                "eq": "",
+                "show": null,
+                "when": null
+            },
+            "customClass": "",
+            "description": "",
+            "placeholder": "",
+            "defaultValue": null,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "showCharCount": false,
+            "showWordCount": false,
+            "calculateValue": "",
+            "calculateServer": false,
+            "allowMultipleMasks": false,
+            "customDefaultValue": "",
+            "allowCalculateOverride": false
+        },
+        {
+            "id": "eahkb8",
+            "key": "content",
+            "html": "<h2>Privacy</h2><p>P<span style=\"color:rgb(0,0,0);font-family:Verdana, Geneva, sans-serif;\">ersoonlijke gegevens die u als bezoeker van deze website afgeeft behandelen we vertrouwelijk. We gebruiken uw gegevens niet voor andere doelen en geven ze niet aan derden. Uw gegevens worden niet langer bewaard dan is toegestaan volgens de (Archief)wet. Wilt u meer weten over hoe wij omgaan met uw gegevens? Bekijk onze privacyverklaring: venray.nl/privacyverklaring.</span></p><p>{{ labels }}, {{ defaultPostcode }} vs. {{ postcode }}</p>",
+            "tags":
+            [],
+            "type": "content",
+            "input": false,
+            "label": "Privacyverklaring",
+            "logic":
+            [],
+            "hidden": false,
+            "prefix": "",
+            "suffix": "",
+            "unique": false,
+            "widget": null,
+            "dbIndex": false,
+            "overlay":
+            {
+                "top": "",
+                "left": "",
+                "page": "",
+                "style": "",
+                "width": "",
+                "height": ""
+            },
+            "tooltip": "",
+            "disabled": false,
+            "multiple": false,
+            "redrawOn": "",
+            "tabindex": "",
+            "validate":
+            {
+                "custom": "",
+                "unique": false,
+                "multiple": false,
+                "required": false,
+                "customPrivate": false,
+                "strictDateValidation": false
+            },
+            "autofocus": false,
+            "encrypted": false,
+            "hideLabel": false,
+            "modalEdit": false,
+            "protected": false,
+            "refreshOn": "",
+            "tableView": false,
+            "attributes":
+            {},
+            "errorLabel": "",
+            "persistent": true,
+            "properties":
+            {},
+            "validateOn": "change",
+            "clearOnHide": true,
+            "conditional":
+            {
+                "eq": "",
+                "json": "",
+                "show": null,
+                "when": null
+            },
+            "customClass": "",
+            "description": "",
+            "placeholder": "",
+            "defaultValue": null,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "showCharCount": false,
+            "showWordCount": false,
+            "calculateValue": "",
+            "calculateServer": false,
+            "refreshOnChange": false,
+            "customConditional": "",
+            "allowMultipleMasks": false,
+            "customDefaultValue": "",
+            "allowCalculateOverride": false
+        }
+    ]
+}
