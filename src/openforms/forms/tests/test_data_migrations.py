@@ -376,3 +376,67 @@ class AdvancedFormLogicOrderingMigrationTests(TestMigrations):
             [form.id for form in self.expected_order],
             transform=lambda x: x,
         )
+
+
+class ConvertLogicActionValueToVariableTests(TestMigrations):
+    app = "forms"
+    migrate_from = "0040_set_number_of_formio_components"
+    migrate_to = "0041_convert_logic_action_type_value_to_variable"
+
+    def setUpBeforeMigration(self, apps):
+        Form = apps.get_model("forms", "Form")
+        FormLogic = apps.get_model("forms", "FormLogic")
+        FormStep = apps.get_model("forms", "FormStep")
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        FormVariable = apps.get_model("forms", "FormVariable")
+
+        fd = FormDefinition.objects.create(
+            slug="fd",
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "text1",
+                    }
+                ]
+            },
+        )
+        form = Form.objects.create(slug="form")
+        FormStep.objects.create(form=form, form_definition=fd, order=0)
+        FormVariable.objects.create_for_form(form)
+        FormLogic.objects.create(
+            form=form,
+            order=0,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "component": "text1",
+                    "formStep": "",
+                    "action": {
+                        "type": "value",
+                        "property": {},
+                        "value": "Updated value",
+                    },
+                }
+            ],
+            is_advanced=True,
+        )
+
+    def test_logic_check_calculates_new_value(self):
+        Form = self.apps.get_model("forms", "Form")
+        form = Form.objects.get()
+        logic = form.formlogic_set.get()
+
+        self.assertEqual(
+            logic.actions[0],
+            {
+                "component": "",
+                "variable": "text1",
+                "formStep": "",
+                "action": {
+                    "type": "variable",
+                    "property": {},
+                    "value": "Updated value",
+                },
+            },
+        )
