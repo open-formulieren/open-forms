@@ -131,4 +131,3 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
 
 class FormLogicListSerializer(ListWithChildSerializer):
     child_serializer_class = FormLogicSerializer
-    model = FormLogic

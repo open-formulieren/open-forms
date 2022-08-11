@@ -19,4 +19,3 @@ class FormPriceLogicSerializer(FormLogicBaseSerializer):
 
 class FormPriceLogicListSerializer(ListWithChildSerializer):
     child_serializer_class = FormPriceLogicSerializer
-    model = FormPriceLogic

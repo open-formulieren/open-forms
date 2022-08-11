@@ -1594,7 +1594,7 @@ paths:
         description: A unique integer value identifying this form.
         required: true
       tags:
-      - forms
+      - logic-rules
       security:
       - tokenAuth: []
       - cookieAuth: []
@@ -1669,7 +1669,7 @@ paths:
         description: A unique integer value identifying this form.
         required: true
       tags:
-      - forms
+      - logic-rules
       requestBody:
         content:
           application/json:
@@ -1751,7 +1751,7 @@ paths:
         description: A unique integer value identifying this form.
         required: true
       tags:
-      - forms
+      - logic-rules
       security:
       - tokenAuth: []
       - cookieAuth: []
@@ -1826,7 +1826,7 @@ paths:
         description: A unique integer value identifying this form.
         required: true
       tags:
-      - forms
+      - logic-rules
       requestBody:
         content:
           application/json:

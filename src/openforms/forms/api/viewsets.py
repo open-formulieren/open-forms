@@ -270,7 +270,7 @@ _FORM_ADMIN_FIELDS_MARKDOWN = "\n".join(
             "By sending a list of LogicRules to this endpoint, all the LogicRules related to the form will be "
             "replaced with the data sent to the endpoint."
         ),
-        tags=["forms"],
+        tags=["logic-rules"],
         request=FormLogicListSerializer,
         responses={
             status.HTTP_200_OK: FormLogicListSerializer,
@@ -287,7 +287,7 @@ _FORM_ADMIN_FIELDS_MARKDOWN = "\n".join(
             "By sending a list of FormPriceLogic to this endpoint, all the FormPriceLogic related to the form will be "
             "replaced with the data sent to the endpoint."
         ),
-        tags=["forms"],
+        tags=["logic-rules"],
         request=FormPriceLogicListSerializer,
         responses={
             status.HTTP_200_OK: FormPriceLogicListSerializer,
@@ -550,7 +550,7 @@ class FormViewSet(viewsets.ModelViewSet):
     @extend_schema(
         summary=_("List logic rules"),
         description=_("List all logic rules defined for a form."),
-        tags=["forms"],
+        tags=["logic-rules"],
         request=FormLogicListSerializer,
         responses={
             status.HTTP_200_OK: FormLogicListSerializer,
@@ -597,7 +597,7 @@ class FormViewSet(viewsets.ModelViewSet):
     @extend_schema(
         summary=_("List price logic rules"),
         description=_("List all price logic rules defined for a form."),
-        tags=["forms"],
+        tags=["logic-rules"],
         request=FormPriceLogicListSerializer,
         responses={
             status.HTTP_200_OK: FormPriceLogicListSerializer,

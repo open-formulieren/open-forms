@@ -52,7 +52,6 @@ class ValidationErrorSerializer(ExceptionSerializer):
 
 class ListWithChildSerializer(serializers.ListSerializer):
     child_serializer_class = None
-    model = None
 
     def __init__(self, *args, **kwargs):
         child_serializer_class = (
@@ -68,9 +67,11 @@ class ListWithChildSerializer(serializers.ListSerializer):
         return obj
 
     def create(self, validated_data):
+        model = self.get_child_serializer_class().Meta.model
+
         objects_to_create = []
         for data_dict in self.validated_data:
-            obj = self.model(**data_dict)
+            obj = model(**data_dict)
             objects_to_create.append(self.process_object(obj))
 
-        return self.model.objects.bulk_create(objects_to_create)
+        return model.objects.bulk_create(objects_to_create)

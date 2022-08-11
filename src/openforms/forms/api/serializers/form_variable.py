@@ -13,8 +13,6 @@ from ...models import FormVariable
 
 
 class FormVariableListSerializer(ListWithChildSerializer):
-    model = FormVariable
-
     def get_child_serializer_class(self):
         return FormVariableSerializer
 
