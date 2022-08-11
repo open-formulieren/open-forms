@@ -40,7 +40,7 @@ class HaalCentraalPrefillTest(TestCase):
         config.service = service
         config.save()
 
-        submission = SubmissionFactory(bsn="999990676")
+        submission = SubmissionFactory(auth_info__value="999990676")
         values = HaalCentraalPrefill.get_prefill_values(
             submission,
             [Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
@@ -71,7 +71,7 @@ class HaalCentraalPrefillTest(TestCase):
         config.service = service
         config.save()
 
-        submission = SubmissionFactory(bsn="999990676")
+        submission = SubmissionFactory(auth_info__value="999990676")
         values = HaalCentraalPrefill.get_prefill_values(
             submission,
             [Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
@@ -99,7 +99,7 @@ class HaalCentraalPrefillTest(TestCase):
         config.service = service
         config.save()
 
-        submission = SubmissionFactory(bsn="999990676")
+        submission = SubmissionFactory(auth_info__value="999990676")
         values = HaalCentraalPrefill.get_prefill_values(
             submission,
             [Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],

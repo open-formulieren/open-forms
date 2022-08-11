@@ -19,7 +19,9 @@ class EventTests(TestCase):
             self.assertEqual(_("Anonymous user"), log.fmt_user)
 
         with self.subTest("auth bsn"):
-            submission = SubmissionFactory.create(auth_plugin="mock", bsn="123456789")
+            submission = SubmissionFactory.create(
+                auth_info__value="123456789", auth_info__plugin="mock"
+            )
             logevent.submission_start(submission)
 
             log = TimelineLogProxy.objects.last()
@@ -28,9 +30,9 @@ class EventTests(TestCase):
                 log.fmt_user,
             )
 
-        with self.subTest("bsn but no auth"):
+        with self.subTest("No auth"):
             # Github #1467
-            submission = SubmissionFactory.create(bsn="123456789")
+            submission = SubmissionFactory.create()
             logevent.submission_start(submission)
 
             log = TimelineLogProxy.objects.last()

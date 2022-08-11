@@ -1,6 +1,7 @@
 import factory
 
 from ..constants import AuthAttribute
+from ..models import AuthInfo
 
 
 class AuthInfoFactory(factory.django.DjangoModelFactory):
@@ -8,6 +9,9 @@ class AuthInfoFactory(factory.django.DjangoModelFactory):
     attribute = AuthAttribute.bsn
     value = "123456782"
     machtigen = {}
+    submission = factory.SubFactory(
+        "openforms.submissions.tests.factories.SubmissionFactory"
+    )
 
     class Meta:
-        model = "authentication.AuthInfo"
+        model = AuthInfo

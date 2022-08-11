@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from privates.test import temp_private_root
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
@@ -81,8 +82,8 @@ class SubmissionFactoryTests(TestCase):
             bsn="111222333",
         )
 
-        self.assertEqual(submission.bsn, "111222333")
         self.assertEqual(submission.form.name, "MyForm")
+        self.assertEqual(submission.auth_info.value, "111222333")
 
     def test_from_data__simple(self):
         submission = SubmissionFactory.from_data(
@@ -106,7 +107,7 @@ class SubmissionFactoryTests(TestCase):
                 "bar": 2,
             },
             form__name="MyForm",
-            bsn="111222333",
+            kvk="111222333",
         )
 
         actual = submission.get_merged_data()
@@ -116,4 +117,5 @@ class SubmissionFactoryTests(TestCase):
         }
         self.assertEqual(actual, expected)
         self.assertEqual(submission.form.name, "MyForm")
-        self.assertEqual(submission.bsn, "111222333")
+        self.assertEqual(submission.auth_info.attribute, AuthAttribute.kvk)
+        self.assertEqual(submission.auth_info.value, "111222333")

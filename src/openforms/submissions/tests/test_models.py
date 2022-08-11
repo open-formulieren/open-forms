@@ -11,6 +11,7 @@ from django_capture_on_commit_callbacks import capture_on_commit_callbacks
 from privates.test import temp_private_root
 from testfixtures import LogCapture
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -264,8 +265,7 @@ class SubmissionTests(TestCase):
             submission_step_2.data["textFieldNotSensitive2"], "this is not sensitive"
         )
         self.assertTrue(submission._is_cleaned)
-        self.assertEqual(submission.bsn, "")
-        self.assertEqual(submission.kvk, "")
+        self.assertEqual(submission.auth_info.value, "")
 
         with self.subTest("attachment deletion"):
             self.assertFalse(attachment.content.storage.exists(attachment.content.name))
@@ -479,9 +479,7 @@ class SubmissionTests(TestCase):
         )
 
     def test_copy_submission(self):
-        submission = SubmissionFactory.create(
-            kvk="kvk1", bsn="bsn1", pseudo="pseudo1", auth_plugin="digid"
-        )
+        submission = SubmissionFactory.create(auth_info__value="bsn1")
         SubmissionStepFactory.create(
             submission=submission,
             data={"key1": "value1", "key2": "value2"},
@@ -499,10 +497,9 @@ class SubmissionTests(TestCase):
         self.assertEqual(new_submission.form_url, submission.form_url)
         self.assertEqual(new_submission.previous_submission, submission)
         self.assertEqual(new_submission.data, submission.data)
-        self.assertEqual(new_submission.kvk, "kvk1")
-        self.assertEqual(new_submission.bsn, "bsn1")
-        self.assertEqual(new_submission.pseudo, "pseudo1")
-        self.assertEqual(new_submission.auth_plugin, "digid")
+        self.assertEqual(new_submission.auth_info.value, "bsn1")
+        self.assertEqual(new_submission.auth_info.plugin, "digid")
+        self.assertEqual(new_submission.auth_info.attribute, AuthAttribute.bsn)
         self.assertNotEqual(new_submission.id, submission.id)
         self.assertNotEqual(new_submission.uuid, submission.uuid)
 
@@ -559,44 +556,22 @@ class SubmissionTests(TestCase):
                     self.fail(f"Unexpected validation error(s): {exc}")
 
     def test_get_auth_mode_display(self):
-        submission = SubmissionFactory.build(auth_plugin="digid", bsn="123", kvk="123")
+        submission = SubmissionFactory.create(
+            auth_info__plugin="digid",
+            auth_info__value="123",
+            auth_info__attribute=AuthAttribute.bsn,
+        )
 
-        self.assertEqual(submission.get_auth_mode_display(), "digid (bsn,kvk)")
+        self.assertEqual(submission.get_auth_mode_display(), "digid (bsn)")
 
     def test_is_authenticated(self):
         with self.subTest("yes"):
-            submission = SubmissionFactory.build(auth_plugin="digid")
+            submission = SubmissionFactory.create(auth_info__plugin="digid")
             self.assertTrue(submission.is_authenticated)
 
         with self.subTest("no"):
-            submission = SubmissionFactory.build(auth_plugin="")
+            submission = SubmissionFactory.create()
             self.assertFalse(submission.is_authenticated)
-
-    @override_settings(
-        PASSWORD_HASHERS=["django.contrib.auth.hashers.PBKDF2PasswordHasher"]
-    )
-    def test_hash_identifying_attributes_after_completion(self):
-        """
-        Test that the factory properly hashes the identifying attributes.
-        """
-        attrs = {
-            "bsn": "000000000",
-            "kvk": "123455789",
-            "pseudo": "some-pseudo",
-        }
-        submission = SubmissionFactory.create(
-            **attrs,
-            completed=True,
-            with_hashed_identifying_attributes=True,
-        )
-
-        submission.refresh_from_db()
-
-        for attr, original_value in attrs.items():
-            with self.subTest(**{attr: original_value}):
-                current_val = getattr(submission, attr)
-                self.assertNotEqual(current_val, original_value)
-                self.assertTrue(current_val.startswith("pbkdf2_sha256$"))
 
     def test_submission_data_with_dotted_keys(self):
         form_step = FormStepFactory.create(

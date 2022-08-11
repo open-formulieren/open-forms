@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.authentication.tests.factories import AuthInfoFactory
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -135,8 +136,7 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
             self.assertFalse(response.json()["isAuthenticated"])
 
         with self.subTest("yes"):
-            self.submission.auth_plugin = "digid"
-            self.submission.save()
+            AuthInfoFactory.create(submission=self.submission)
 
             response = self.client.get(self.endpoint)
 

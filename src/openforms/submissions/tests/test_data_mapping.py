@@ -47,7 +47,7 @@ class MappingTests(TestCase):
                 "test.geslacht", transform=lambda v: str(v).upper()
             ),
             # form and submission fields
-            "bsn": FieldConf(submission_field="bsn"),
+            "bsn": FieldConf(submission_auth_info_attribute="bsn"),
             "form.name": FieldConf(form_field="name"),
         }
 
@@ -239,7 +239,7 @@ class MappingTests(TestCase):
         mapping = {
             "persoon.voornaam": "xyz_voornaam",
             "form": FieldConf(form_field="name"),
-            "bsn": FieldConf(submission_field="bsn"),
+            "bsn": FieldConf(submission_auth_info_attribute="bsn"),
         }
         submission = SubmissionFactory.from_components(
             [

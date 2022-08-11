@@ -12,26 +12,24 @@ class CommandTests(TestCase):
             form__generate_minimal_setup=True,
             form__authentication_backends=[],
             form__formstep__form_definition__login_required=False,
-            auth_plugin="",
         )
         SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__authentication_backends=["demo"],
             form__formstep__form_definition__login_required=False,
-            auth_plugin="",
         )
         SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__authentication_backends=["demo"],
             form__formstep__form_definition__login_required=False,
-            auth_plugin="demo",
+            auth_info__plugin="demo",
         )
         SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__authentication_backends=["demo"],
             form__formstep__form_definition__login_required=True,
-            auth_plugin="demo",
-            bsn="123456782",
+            auth_info__plugin="demo",
+            auth_info__value="123456782",
         )
         stdout, stderr = StringIO(), StringIO()
 
@@ -53,26 +51,23 @@ class CommandTests(TestCase):
             form__generate_minimal_setup=True,
             form__authentication_backends=[],
             form__formstep__form_definition__login_required=False,
-            auth_plugin="",
         )
         SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__authentication_backends=["demo"],
             form__formstep__form_definition__login_required=False,
-            auth_plugin="",
         )
         sub3 = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__authentication_backends=["demo"],
             form__formstep__form_definition__login_required=True,
-            auth_plugin="",
         )
         SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__authentication_backends=["demo"],
             form__formstep__form_definition__login_required=True,
-            auth_plugin="demo",
-            bsn="123456782",
+            auth_info__plugin="demo",
+            auth_info__value="123456782",
         )
         stdout, stderr = StringIO(), StringIO()
 

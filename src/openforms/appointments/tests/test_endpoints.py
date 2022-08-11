@@ -145,7 +145,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
-            auth_plugin="digid",
+            auth_info__plugin="digid",
             completed=True,
         )
         AppointmentInfoFactory.create(
@@ -177,10 +177,10 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
-            auth_plugin="digid",
             form_url="http://testserver/myform/",
             completed=True,
-            bsn="123456782",
+            auth_info__value="123456782",
+            auth_info__plugin="digid",
         )
         start_time = datetime(2021, 7, 21, 12, 00, 00, tzinfo=timezone.utc)
         AppointmentInfoFactory.create(
@@ -228,10 +228,10 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
-            auth_plugin="wrong-plugin",
+            auth_info__plugin="wrong-plugin",
             form_url="http://testserver/myform/",
             completed=True,
-            bsn="123456782",
+            auth_info__value="123456782",
         )
         AppointmentInfoFactory.create(
             submission=submission,
@@ -265,10 +265,11 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
-            auth_plugin="digid",
             form_url="http://testserver/myform/",
             completed=True,
-            kvk="123456782",
+            auth_info__plugin="digid",
+            auth_info__value="123456782",
+            auth_info__attribute=AuthAttribute.kvk,
         )
         AppointmentInfoFactory.create(
             submission=submission,
@@ -302,10 +303,10 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
-            auth_plugin="digid",
+            auth_info__plugin="digid",
             form_url="http://testserver/myform/",
             completed=True,
-            bsn="wrong-bsn",
+            auth_info__value="wrong-bsn",
         )
         AppointmentInfoFactory.create(
             submission=submission,
@@ -341,7 +342,6 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
     def test_good_token_and_submission_redirect_and_add_submission_to_session(self):
         submission = SubmissionFactory.from_components(
             completed=True,
-            bsn="000000000",
             components_list=[
                 {
                     "key": "product",
@@ -359,6 +359,7 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
                 "time": "2021-08-25T17:00:00",
             },
             form_url="http://maykinmedia.nl/myform/",
+            bsn="000000000",
         )
         form_definition = submission.form.formstep_set.get().form_definition
         AppointmentInfoFactory.create(
@@ -389,7 +390,7 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
 
         new_submission = Submission.objects.exclude(id=submission.id).get()
         # after initiating change, we expect the bsn to be stored in plain text (again)
-        self.assertEqual(new_submission.bsn, "000000000")
+        self.assertEqual(new_submission.auth_info.value, "000000000")
         expected_redirect_url = (
             f"http://maykinmedia.nl/myform/stap/{form_definition.slug}"
             f"?submission_uuid={new_submission.uuid}"
@@ -582,7 +583,7 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
-            auth_plugin="digid",
+            auth_info__plugin="digid",
             completed=True,
         )
         AppointmentInfoFactory.create(
@@ -615,10 +616,10 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
             form__formstep__form_definition__slug="test-step",
-            auth_plugin="digid",
+            auth_info__plugin="digid",
             form_url="http://testserver/myform/",
             completed=True,
-            bsn="123456782",
+            auth_info__value="123456782",
         )
         AppointmentInfoFactory.create(
             submission=submission,
@@ -668,10 +669,10 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
             form__formstep__form_definition__slug="test-step",
-            auth_plugin="wrong-plugin",
+            auth_info__plugin="wrong-plugin",
             form_url="http://testserver/myform/",
             completed=True,
-            bsn="123456782",
+            auth_info__value="123456782",
         )
         AppointmentInfoFactory.create(
             submission=submission,
@@ -706,10 +707,11 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
             form__formstep__form_definition__slug="test-step",
-            auth_plugin="digid",
+            auth_info__plugin="digid",
             form_url="http://testserver/myform/",
             completed=True,
-            kvk="123456782",
+            auth_info__value="123456782",
+            auth_info__attribute=AuthAttribute.kvk,
         )
         AppointmentInfoFactory.create(
             submission=submission,
@@ -744,10 +746,10 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
             form__formstep__form_definition__slug="test-step",
-            auth_plugin="digid",
+            auth_info__plugin="digid",
             form_url="http://testserver/myform/",
             completed=True,
-            bsn="wrong-bsn",
+            auth_info__value="wrong-bsn",
         )
         AppointmentInfoFactory.create(
             submission=submission,

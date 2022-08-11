@@ -72,11 +72,6 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
                 factory_related_name="submission",
             )
         )
-        with_hashed_identifying_attributes = factory.Trait(
-            _hashed_id_attrs=factory.PostGenerationMethodCall(
-                "hash_identifying_attributes"
-            ),
-        )
 
     @factory.post_generation
     def prefill_data(obj, create, extracted, **kwargs):
@@ -84,6 +79,16 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         if extracted:
             state.save_prefill_data(extracted)
         return extracted
+
+    @factory.post_generation
+    def auth_info(obj, create, extracted, **kwargs):
+        if (extracted is None and not kwargs) or not create:
+            return
+
+        from openforms.authentication.tests.factories import AuthInfoFactory
+
+        kwargs["submission"] = obj
+        AuthInfoFactory.create(**kwargs)
 
     @classmethod
     def from_components(
@@ -100,7 +105,32 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         remember to generate from privates.test import temp_private_root
         """
         kwargs.setdefault("with_report", True)
+
+        bsn = kwargs.pop("bsn", None)
+        kvk = kwargs.pop("kvk", None)
+        pseudo = kwargs.pop("pseudo", None)
+        auth_plugin = kwargs.pop("auth_plugin", None)
+
         submission = cls.create(**kwargs)
+        if bsn or kvk or pseudo:
+            from openforms.authentication.constants import AuthAttribute
+            from openforms.authentication.tests.factories import AuthInfoFactory
+
+            attribute = AuthAttribute.bsn
+            if kvk:
+                attribute = AuthAttribute.kvk
+            elif pseudo:
+                attribute = AuthAttribute.pseudo
+
+            attrs = {
+                "value": bsn or kvk or pseudo,
+                "attribute": attribute,
+                "submission": submission,
+            }
+            if auth_plugin:
+                attrs["plugin"] = auth_plugin
+            AuthInfoFactory.create(**attrs)
+
         form = submission.form
 
         components = list()

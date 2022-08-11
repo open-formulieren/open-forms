@@ -137,7 +137,7 @@ class ObjectsAPIRegistration(BasePlugin):
             )
             object_data["csv_url"] = submission_csv_document["url"]
 
-        if submission.auth_info:
+        if hasattr(submission, "auth_info"):
             object_data[submission.auth_info.attribute] = submission.auth_info.value
 
         object_data = {

@@ -27,7 +27,7 @@ class StufBgPrefillTests(TestCase):
         super().setUp()
 
         self.plugin = StufBgPrefill("test-plugin")
-        self.submission = SubmissionFactory.create(bsn="999992314")
+        self.submission = SubmissionFactory(auth_info__value="999992314")
 
         # mock out django-solo interface (we don't have to deal with caches then)
         stufbg_config_patcher = patch(
