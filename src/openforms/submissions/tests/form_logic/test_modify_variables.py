@@ -88,9 +88,9 @@ class VariableModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step2, submission.data)
 
-        updated_variable_value = submission_step2._unsaved_data.get("nTotalBoxes")
-
-        self.assertEqual(7, updated_variable_value)
+        variables_state = submission.load_submission_value_variables_state()
+        variable = variables_state.variables["nTotalBoxes"]
+        self.assertEqual(7, variable.value)
 
     def test_modify_variable_related_to_another_step_than_the_one_being_edited(self):
         form = FormFactory.create()
@@ -167,7 +167,9 @@ class VariableModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step2, submission.data)
 
-        self.assertEqual(7, submission_step2.data["nTotalBoxes"])
+        variables_state = submission.load_submission_value_variables_state()
+        variable = variables_state.variables["nTotalBoxes"]
+        self.assertEqual(7, variable.value)
 
     def test_modify_variable_not_related_to_a_step(self):
         form = FormFactory.create()
@@ -244,4 +246,6 @@ class VariableModificationTests(TestCase):
 
         evaluate_form_logic(submission, submission_step2, submission.data)
 
-        self.assertEqual(7, submission_step2.data["nTotalBoxes"])
+        variables_state = submission.load_submission_value_variables_state()
+        variable = variables_state.variables["nTotalBoxes"]
+        self.assertEqual(7, variable.value)

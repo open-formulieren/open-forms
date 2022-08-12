@@ -66,6 +66,7 @@ class EventTests(TestCase):
             submission,
             [{"rule": rule, "trigger": True}, {"rule": rule_2, "trigger": False}],
             submission.data,
+            submission.data,
         )
 
         log = TimelineLogProxy.objects.get(object_id=submission.id)

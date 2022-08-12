@@ -223,7 +223,10 @@ class LogicLogsAdminTests(WebTest):
         merged_data = self.submission.get_merged_data()
 
         logevent.submission_logic_evaluated(
-            self.submission, [{"rule": rule, "trigger": True}], merged_data
+            self.submission,
+            [{"rule": rule, "trigger": True}],
+            merged_data,
+            merged_data,
         )
 
         response = self.app.get(
