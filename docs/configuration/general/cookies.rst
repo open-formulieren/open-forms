@@ -97,10 +97,7 @@ and to ask to user for consent).
 
 7. Click **Save**.
 
-8. For all other cookies, you can create similar entries as done in step 6. If
-   you enable Google Analytics for example, you need entries with the names:
-   ``_ga``, ``_gat`` and ``_gid``, and set their cookie group to 
-   ``Analytics cookies``.
+8. For all other cookies, you can create similar entries as done in step 6.
 
 .. note::
 
@@ -110,25 +107,6 @@ and to ask to user for consent).
     do not  match the actual cookie names, they are not deleted!
 
 
-Known cookies by data analytics tools
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The data analytics tools are third party scripts and can change their cookies
-at any time. For your convenience, we made an effort to document their cookies
-so you can configure these in the settings.
-
-**Google Analytics**
-
-* ``_ga``
-* ``_gat``
-* ``_gid``
-
-**SiteImprove**
-
-* ``AWSELBCORS``
-* ``nmstat``
-
-
 Configure privacy
 -----------------
 
@@ -136,7 +114,6 @@ Configure privacy
 
 2. Scroll down to **Privacy & cookies** and consider the fields below:
 
-   * **Analytics cookie consent group**: *Select the group created for this (see above)*
    * **Ask permission to process data**: *Check this option to show a checkbox on the overview page of all forms*
    * **Privacy policy URL**: *Your main website's privacy policy URL*
    * **Privacy policy label**: *The text to show next to the checkbox. For example:* ``Yes, I read and agree to the {% privacy_policy %}``.
