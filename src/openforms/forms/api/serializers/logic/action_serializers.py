@@ -1,3 +1,5 @@
+import warnings
+
 from django.utils.translation import ugettext_lazy as _
 
 from drf_polymorphic.serializers import PolymorphicSerializer
@@ -57,7 +59,10 @@ class LogicActionPolymorphicSerializer(PolymorphicSerializer):
     type = serializers.ChoiceField(
         choices=LogicActionTypes,
         label=_("Type"),
-        help_text=_("Action type for this particular action"),
+        help_text=_(
+            "Action type for this particular action. \n\nNote that the type `value` is "
+            "**DEPRECATED** - use `variable` instead."
+        ),
     )
 
     discriminator_field = "type"
@@ -78,14 +83,31 @@ class LogicComponentActionSerializer(serializers.Serializer):
         label=_("Form.io component"),
         help_text=_(
             "Key of the Form.io component that the action applies to. This field is "
-            "optional if the action type is `{action_type}`, otherwise required."
-        ).format(action_type=LogicActionTypes.disable_next),
+            "required for the action types {action_types} - otherwise it's optional."
+        ).format(
+            action_types=", ".join(
+                [
+                    f"`{action_type}`"
+                    for action_type in sorted(LogicActionTypes.requires_component)
+                ]
+            )
+        ),
     )
     variable = serializers.CharField(
         required=False,  # validated against the action.type
         allow_blank=True,
         label=_("Key of the target variable"),
-        help_text=_("Key of the target variable whose value will be changed."),
+        help_text=_(
+            "Key of the target variable whose value will be changed. This field is "
+            "required for the action types {action_types} - otherwise it's optional."
+        ).format(
+            action_types=", ".join(
+                [
+                    f"`{action_type}`"
+                    for action_type in sorted(LogicActionTypes.requires_variable)
+                ]
+            )
+        ),
     )
     form_step = URLRelatedField(
         allow_null=True,
@@ -141,5 +163,18 @@ class LogicComponentActionSerializer(serializers.Serializer):
                 {"form_step": self.fields["form_step"].error_messages["null"]},
                 code="blank",
             )
+
+        # handle deprecated type 'value' and convert to equivalent 'variable'
+        if action_type == LogicActionTypes.value:
+            warnings.warn(
+                "Logic action type 'value' is deprecated, please use the equivalent "
+                "type 'variable' instead.",
+                DeprecationWarning,
+            )
+            # convert to variable action type
+            variable = component
+            data["variable"] = variable
+            data["component"] = ""
+            data["action"]["type"] = LogicActionTypes.variable
 
         return data

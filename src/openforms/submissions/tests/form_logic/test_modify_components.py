@@ -577,10 +577,10 @@ class ComponentModificationTests(TestCase):
             json_logic_trigger={"==": [1, 1]},
             actions=[
                 {
-                    "component": "step2_textfield1",
+                    "variable": "step2_textfield1",
                     "action": {
                         "name": "Set extracted value",
-                        "type": "value",
+                        "type": LogicActionTypes.variable,
                         "value": {"var": "step1_textfield1"},
                     },
                 }
@@ -608,7 +608,6 @@ class ComponentModificationTests(TestCase):
                     "type": "textfield",
                     "key": "step2_textfield1",
                     "hidden": False,
-                    "value": "some value",
                 }
             ]
         }
@@ -1017,10 +1016,10 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
-                    "component": "changingKey",
+                    "variable": "changingKey",
                     "action": {
                         "name": "Set value",
-                        "type": LogicActionTypes.value,
+                        "type": LogicActionTypes.variable,
                         "value": "changed",
                     },
                 }

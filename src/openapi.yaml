@@ -5057,7 +5057,8 @@ components:
         type:
           allOf:
           - $ref: '#/components/schemas/LogicActionPolymorphicSharedTypeEnum'
-          description: Action type for this particular action
+          description: "Action type for this particular action. \n\nNote that the\
+            \ type `value` is **DEPRECATED** - use `variable` instead."
       required:
       - type
     LogicActionPolymorphicSharedTypeEnum:
@@ -5074,13 +5075,14 @@ components:
         component:
           type: string
           title: Form.io component
-          description: 'Sleutel van de Form.io-component waarop de actie van toepassing
-            is. Dit veld is optioneel als het actietype `disable-next` is, anders
-            vereist. '
+          description: Key of the Form.io component that the action applies to. This
+            field is required for the action types `property`, `value` - otherwise
+            it's optional.
         variable:
           type: string
           title: Key of the target variable
-          description: Key of the target variable whose value will be changed.
+          description: Key of the target variable whose value will be changed. This
+            field is required for the action types `variable` - otherwise it's optional.
         formStep:
           type: string
           format: uri
