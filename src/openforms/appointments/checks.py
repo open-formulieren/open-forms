@@ -40,7 +40,7 @@ def check_single_config(config):
         client = config.get_client()
     except Exception as e:
         entry.status = False
-        entry.status_message = str(e)
+        entry.error = str(e)
     else:
         # we got something configured
         entry.name = client.get_label()
@@ -50,15 +50,14 @@ def check_single_config(config):
             client.check_config()
         except InvalidPluginConfiguration as e:
             entry.status = False
-            entry.status_message = e
+            entry.error = str(e)
         except NotImplementedError:
             entry.status = None
-            entry.status_message = _("Not implemented")
+            entry.error = _("Not implemented")
         except Exception as e:
             entry.status = False
-            entry.status_message = _("Internal error: {exception}").format(exception=e)
+            entry.error = _("Internal error: {exception}").format(exception=e)
         else:
             entry.status = True
-            entry.status_message = ""
 
     return entry

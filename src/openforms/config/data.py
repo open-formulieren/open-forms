@@ -8,8 +8,8 @@ from django.contrib.admin.templatetags.admin_list import _boolean_icon
 class Entry:
     name: str
     status: Optional[bool] = None
-    status_message: str = ""
     actions: Optional[List[Tuple[str, str]]] = None
+    error: str = ""
 
     @property
     def status_icon(self):
