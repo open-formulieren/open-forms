@@ -1,5 +1,9 @@
+from unittest.mock import patch
+
+from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 import requests_mock
@@ -67,7 +71,10 @@ class ConfigCheckTests(TestCase):
         )
 
     @requests_mock.Mocker()
-    def test_check_config_service_failure_correctly_reported(self, m):
+    @patch(
+        "stuf.stuf_zds.client.parse_soap_error_text", return_value="(parsed error text)"
+    )
+    def test_check_config_service_failure_correctly_reported(self, m, *mocks):
         self.service = StufServiceFactory.create()
         config = StufZDSConfig.get_solo()
         config.service = self.service
@@ -79,19 +86,18 @@ class ConfigCheckTests(TestCase):
             content=load_mock("soap-error.xml"),
             headers={"content-type": "text/xml"},
         )
-
         user = StaffUserFactory(user_permissions=["configuration_overview"])
         self.client.force_login(user)
 
         response = self.client.get(self.url)
+
         self.assertEqual(response.status_code, 200)
-        self.assertContains(
-            response,
-            f"""<td title="{_('Could not connect: {exception}').format(
-                exception='Error while making backend request: HTTP 500'
-            )}""",
+        expected_entry = format_html(
+            '<td title="{error}">{status_icon}{failure_message}</td>',
+            error=_("Could not connect: {exception}").format(
+                exception="Error while making backend request: HTTP 500: (parsed error text)"
+            ),
+            status_icon=_boolean_icon(False),
+            failure_message=_("Failed to validate the configuration."),
         )
-        self.assertContains(
-            response,
-            f'{_("Failed to validate the configuration")}',
-        )
+        self.assertContains(response, expected_entry, html=True)
