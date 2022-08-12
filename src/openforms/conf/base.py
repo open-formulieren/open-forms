@@ -171,6 +171,7 @@ INSTALLED_APPS = [
     "django_camunda",
     # Project applications.
     "openforms.accounts",
+    "openforms.analytics_tools",
     "openforms.appointments.apps.AppointmentsAppConfig",
     "openforms.appointments.contrib.jcc.apps.JccPlugin",
     "openforms.appointments.contrib.qmatic.apps.QmaticPlugin",

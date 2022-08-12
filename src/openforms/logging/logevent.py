@@ -10,6 +10,7 @@ from openforms.utils.json_logic import ComponentMeta, introspect_json_logic
 
 if TYPE_CHECKING:  # pragma: nocover
     from openforms.accounts.models import User
+    from openforms.analytics_tools.models import AnalyticsToolsConfiguration
     from openforms.appointments.models import AppointmentInfo
     from openforms.forms.models import Form
     from openforms.plugins.plugin import AbstractBasePlugin
@@ -62,6 +63,29 @@ def _create_log(
         user=user,
     )
     # logger.debug('Logged event in %s %s %s', event, object._meta.object_name, object.pk)
+
+
+def enabling_analytics_tool(
+    analytics_tools_configuration: "AnalyticsToolsConfiguration", analytics_tool: str
+):
+    _create_log(
+        analytics_tools_configuration,
+        "analytics_tool_enabled",
+        extra_data={"analytics_tool": analytics_tool},
+    )
+
+
+def disabling_analytics_tool(
+    analytics_tools_configuration: "AnalyticsToolsConfiguration", analytics_tool: str
+):
+    _create_log(
+        analytics_tools_configuration,
+        "analytics_tool_disabled",
+        extra_data={"analytics_tool": analytics_tool},
+    )
+
+
+# - - -
 
 
 def submission_start(submission: "Submission"):

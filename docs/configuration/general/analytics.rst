@@ -46,45 +46,20 @@ Configuration
 1. Please make sure there's an analytics cookie group available. You can check
    or configure this via :ref:`configure_cookies`.
 
-2. Navigate to **Configuration** > **General configuration**.
+2. Navigate to **Configuration** > **Analytics tools configuration**.
 
-3. Scroll down to **Analytics: ...** and configure one of the supported data
-   analytics tools.
-
-4. Scroll down more to **Privacy & cookies**
-
-5. In **Analytics cookie consent group** select the appropriate *cookie group*
+3. In **Analytics cookie consent group** select the appropriate *cookie group*
    configured in step 1.
 
-   .. warning::
+    .. warning::
 
        If you don't do this, the data analytics tools will not work!
 
+5. Configure one of the supported data analytics tools.
+
+    .. note::
+        Cookies and Content-Security-Policy will be set up automatically by providing
+        the information needed for the specific data analytics tool and activate it.
+
 6. Scroll to the bottom and click **Save**.
 
-Content Security Policy (CSP)
------------------------------
-
-Piwik PRO
-"""""""""
-
-* Required to enable Piwik PRO's nonce mechanism: ``script-src``.
-
-* Required to load all necessary assets from Piwik PRO's Tag Manager: ``img-src``, ``font-src`` and ``style-src``.
-
-* Required if your website is GDPR compliant: ``connect-src``, ``style-src`` and ``img-src``.
-
-Example:
-
-.. code-block:: text
-
-    Content-Security-Policy: default-src 'self';
-                             script-src  'self' client.piwik.pro 'nonce-nceIOfn39fn3e9h3sd';
-                             connect-src 'self' client.containers.piwik.pro client.piwik.pro;
-                             img-src     'self' client.containers.piwik.pro client.piwik.pro;
-                             font-src    'self' client.containers.piwik.pro;
-                             style-src   'self' client.containers.piwik.pro 'nonce-nceIOfn39fn3e9h3sd';
-
-Please refer to the `Piwik PRO CSP documentation`_ for more information.
-
-.. _`Piwik PRO CSP documentation`: https://developers.piwik.pro/en/latest/tag_manager/content_security_policy.html

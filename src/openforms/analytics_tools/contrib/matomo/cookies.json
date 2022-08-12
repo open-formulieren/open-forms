@@ -1,0 +1,10 @@
+[
+    {
+        "name": "_pk_id.SITE_ID.DOMAIN_HASH",
+        "path": "/"
+    },
+    {
+        "name": "_pk_ses.SITE_ID.DOMAIN_HASH",
+        "path": "/"
+    }
+]

@@ -2,16 +2,16 @@
   Documentation: https://developer.matomo.org/guides/tracking-javascript-guide
 {% endcomment %}
 {% load solo_tags %}
-{% get_solo 'config.GlobalConfiguration' as config %}
+{% get_solo 'analytics_tools.AnalyticsToolsConfiguration' as analytics_tools_config %}
 
-{% if config.matomo_enabled %}
+{% if analytics_tools_config.matomo_enabled %}
 <!-- Matomo -->
 <script type="text/javascript" nonce="{{ request.csp_nonce }}">
   var _paq = window._paq = window._paq || [];
   _paq.push(['trackPageView']);
   _paq.push(['enableLinkTracking']);
   (function() {
-    var u="//{{ config.matomo_url|escapejs }}/";
+    var u="//{{ analytics_tools_config.matomo_url|escapejs }}/";
     _paq.push(['setTrackerUrl', u+'matomo.php']);
     _paq.push(['setSiteId', {{ config.matomo_site_id|escapejs }}]);
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];

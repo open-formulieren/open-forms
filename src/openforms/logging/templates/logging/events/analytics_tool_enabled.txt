@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_lead  analytics_tool=log.extra_data.analytics_tool%}
+   {{ lead }}: {{ analytics_tool }} has been enabled
+{% endblocktrans %}

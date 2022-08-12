@@ -288,85 +288,6 @@ class GlobalConfiguration(SingletonModel):
         validators=[validate_payment_order_id_prefix],
     )
 
-    # analytics/tracking
-    gtm_code = models.CharField(
-        _("Google Tag Manager code"),
-        max_length=50,
-        blank=True,
-        help_text=_(
-            "Typically looks like 'GTM-XXXX'. Supplying this installs Google Tag Manager."
-        ),
-    )
-    ga_code = models.CharField(
-        _("Google Analytics code"),
-        max_length=50,
-        blank=True,
-        help_text=_(
-            "Typically looks like 'UA-XXXXX-Y'. Supplying this installs Google Analytics."
-        ),
-    )
-    matomo_url = models.CharField(
-        _("Matomo server URL"),
-        max_length=255,
-        blank=True,
-        help_text=_("The base URL of your Matomo server, e.g. 'matomo.example.com'."),
-    )
-    matomo_site_id = models.PositiveIntegerField(
-        _("Matomo site ID"),
-        blank=True,
-        null=True,
-        help_text=_("The 'idsite' of the website you're tracking in Matomo."),
-    )
-    piwik_url = models.CharField(
-        _("Piwik server URL"),
-        max_length=255,
-        blank=True,
-        help_text=_("The base URL of your Piwik server, e.g. 'piwik.example.com'."),
-    )
-    piwik_site_id = models.PositiveIntegerField(
-        _("Piwik site ID"),
-        blank=True,
-        null=True,
-        help_text=_("The 'idsite' of the website you're tracking in Piwik."),
-    )
-    piwik_pro_url = models.CharField(
-        _("Piwik PRO server URL"),
-        max_length=255,
-        blank=True,
-        help_text=_(
-            "The base URL of your Piwik PRO server, e.g. 'https://your-instance-name.piwik.pro/'."
-        ),
-    )
-    piwik_pro_site_id = models.UUIDField(
-        _("Piwik PRO site ID"),
-        blank=True,
-        null=True,
-        help_text=_(
-            "The 'idsite' of the website you're tracking in Piwik PRO. https://help.piwik.pro/support/questions/find-website-id/"
-        ),
-    )
-    siteimprove_id = models.CharField(
-        _("SiteImprove ID"),
-        max_length=10,
-        blank=True,
-        help_text=_(
-            "Your SiteImprove ID - you can find this from the embed snippet example, "
-            "which should contain a URL like '//siteimproveanalytics.com/js/siteanalyze_XXXXX.js'. "
-            "The XXXXX is your ID."
-        ),
-    )
-
-    analytics_cookie_consent_group = models.ForeignKey(
-        "cookie_consent.CookieGroup",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        help_text=_(
-            "The cookie group used for analytical cookies. The analytics scripts are "
-            "loaded only if this cookie group is accepted by the end-user."
-        ),
-    )
-
     # Privacy policy related fields
     ask_privacy_consent = models.BooleanField(
         _("ask privacy consent"),
@@ -500,30 +421,6 @@ class GlobalConfiguration(SingletonModel):
     def __str__(self):
         return force_str(self._meta.verbose_name)
 
-    @property
-    def matomo_enabled(self) -> bool:
-        return self.matomo_url and self.matomo_site_id
-
-    @property
-    def piwik_enabled(self) -> bool:
-        return self.piwik_url and self.piwik_site_id
-
-    @property
-    def piwik_pro_enabled(self) -> bool:
-        return self.piwik_pro_url and self.piwik_pro_site_id
-
-    @property
-    def siteimprove_enabled(self) -> bool:
-        return bool(self.siteimprove_id)
-
-    def get_csp_updates(self):
-        updates = defaultdict(list)
-        if self.siteimprove_enabled:
-            updates["default-src"].append("siteimproveanalytics.com")
-            updates["img-src"].append("*.siteimproveanalytics.io")
-        # TODO support more contributions
-        return updates
-
     def render_privacy_policy_label(self):
         template = self.privacy_policy_label
         rendered_content = Template(template).render(Context({}))
@@ -537,34 +434,6 @@ class GlobalConfiguration(SingletonModel):
             default=True,
         )
         return enabled
-
-
-class RichTextColor(models.Model):
-    color = ColorField(
-        _("color"),
-        format="hex",
-        help_text=_("Color in RGB hex format (#RRGGBB)"),
-    )
-    label = models.CharField(
-        _("label"),
-        max_length=64,
-        help_text=_("Human readable label for reference"),
-    )
-
-    class Meta:
-        verbose_name = _("text editor color preset")
-        verbose_name_plural = _("text editor color presets")
-        ordering = ("label",)
-
-    def __str__(self):
-        return f"{self.label} ({self.color})"
-
-    def example(self):
-        return mark_safe(
-            f'<span style="background-color: {self.color};">&nbsp; &nbsp; &nbsp;</span>'
-        )
-
-    example.short_description = _("Example")
 
 
 class CSPSettingQuerySet(models.QuerySet):
@@ -595,3 +464,31 @@ class CSPSetting(models.Model):
 
     def __str__(self):
         return f"{self.directive} '{self.value}'"
+
+
+class RichTextColor(models.Model):
+    color = ColorField(
+        _("color"),
+        format="hex",
+        help_text=_("Color in RGB hex format (#RRGGBB)"),
+    )
+    label = models.CharField(
+        _("label"),
+        max_length=64,
+        help_text=_("Human readable label for reference"),
+    )
+
+    class Meta:
+        verbose_name = _("text editor color preset")
+        verbose_name_plural = _("text editor color presets")
+        ordering = ("label",)
+
+    def __str__(self):
+        return f"{self.label} ({self.color})"
+
+    def example(self):
+        return mark_safe(
+            f'<span style="background-color: {self.color};">&nbsp; &nbsp; &nbsp;</span>'
+        )
+
+    example.short_description = _("Example")

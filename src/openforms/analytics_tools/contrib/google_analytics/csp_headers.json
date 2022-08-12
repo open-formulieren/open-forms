@@ -1,0 +1,10 @@
+[
+    {
+        "directive" : "script-src",
+        "value": "https://www.googleanalytics.com"
+    },
+    {
+        "directive" : "script-src",
+        "value": "https://www.googletagmanager.com"
+    }
+]
