@@ -19,7 +19,7 @@ const GROUP_LABEL = {
     'The label that will be shown above each repeating group in the ' +
     'summary page, the submission report and the confirmation email. ' +
     'The index of the item will be added next to it, i.e. if you enter ' +
-    '"Item" it will be displayed as "Item 1", "Item 2" ...',
+    "'Item' it will be displayed as 'Item 1', 'Item 2', ...",
   defaultValue: 'Item',
 };
 
