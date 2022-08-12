@@ -10,7 +10,7 @@ from cookie_consent.models import CookieGroup
 from django_webtest import WebTest
 from furl import furl
 
-from openforms.config.models import GlobalConfiguration
+from openforms.analytics_tools.models import AnalyticsToolsConfiguration
 from openforms.forms.tests.factories import FormFactory
 from openforms.tests.utils import NOOP_CACHES
 
@@ -27,7 +27,7 @@ class CookieNoticeTests(WebTest):
         # load some default cookie groups and cookies
         call_command("loaddata", "cookie_consent", stdout=StringIO())
 
-        config = GlobalConfiguration.get_solo()
+        config = AnalyticsToolsConfiguration.get_solo()
 
         # configure analytics so that the JS snippets are not empty
         config.gtm_code = "GTM-XXXX"
@@ -40,6 +40,7 @@ class CookieNoticeTests(WebTest):
         config.analytics_cookie_consent_group = CookieGroup.objects.get(
             varname="analytical"
         )
+
         config.save()
 
         # workaround for https://github.com/bmihelac/django-cookie-consent/issues/41
@@ -91,9 +92,8 @@ class CookieNoticeTests(WebTest):
         """
         with self.subTest(case="no cookies accepted or declined"):
             form_page = self.app.get(self.url)
-
-            self.assertTemplateNotUsed(form_page, "includes/analytics/all_head.html")
-            self.assertTemplateNotUsed(form_page, "includes/analytics/all_bottom.html")
+            self.assertTemplateNotUsed(form_page, "analytics_tools/all_head.html")
+            self.assertTemplateNotUsed(form_page, "analytics_tools/all_bottom.html")
 
         with self.subTest(case="cookies rejected"):
             decline_form = form_page.forms[1]
@@ -102,10 +102,10 @@ class CookieNoticeTests(WebTest):
             refreshed_form_page = decline_form.submit().follow()
 
             self.assertTemplateNotUsed(
-                refreshed_form_page, "includes/analytics/all_head.html"
+                refreshed_form_page, "analytics_tools/all_head.html"
             )
             self.assertTemplateNotUsed(
-                refreshed_form_page, "includes/analytics/all_bottom.html"
+                refreshed_form_page, "analytics_tools/all_bottom.html"
             )
 
         self.renew_app()
@@ -119,10 +119,10 @@ class CookieNoticeTests(WebTest):
             refreshed_form_page = accept_form.submit().follow()
 
             self.assertTemplateUsed(
-                refreshed_form_page, "includes/analytics/all_head.html"
+                refreshed_form_page, "analytics_tools/all_head.html"
             )
             self.assertTemplateUsed(
-                refreshed_form_page, "includes/analytics/all_bottom.html"
+                refreshed_form_page, "analytics_tools/all_bottom.html"
             )
 
     @tag("GHSA-c97h-m5qf-j8mf")

@@ -1,8 +1,6 @@
-from unittest.mock import patch
-
 from django.test import TestCase, override_settings
 
-from openforms.config.models import CSPSetting, GlobalConfiguration
+from ..models import CSPSetting
 
 
 def parse_csp_policy(header_value):
@@ -15,9 +13,7 @@ def parse_csp_policy(header_value):
     return csp_values
 
 
-@override_settings(
-    CSP_REPORT_ONLY=False,
-)
+@override_settings(CSP_REPORT_ONLY=False)
 class CSPUpdateTests(TestCase):
     def test_middleware_applies_cspsetting_models(self):
         CSPSetting.objects.create(directive="img-src", value="http://foo.bar")
@@ -31,17 +27,3 @@ class CSPUpdateTests(TestCase):
         self.assertIn("http://foo.bar", csp_policy["img-src"])
         self.assertIn("http://bazz.bar", csp_policy["img-src"])
         self.assertIn("http://buzz.bazz", csp_policy["default-src"])
-
-    @patch(
-        "openforms.plugins.registry.GlobalConfiguration.get_solo",
-        return_value=GlobalConfiguration(siteimprove_id=123),
-    )
-    def test_global_config_contributes(self, mock_config):
-        response = self.client.get("/")
-        self.assertIn("Content-Security-Policy", response.headers)
-        csp_policy = parse_csp_policy(response.headers["Content-Security-Policy"])
-
-        self.assertTrue(mock_config.siteimprove_enabled)
-
-        self.assertIn("*.siteimproveanalytics.io", csp_policy["img-src"])
-        self.assertIn("siteimproveanalytics.com", csp_policy["default-src"])
