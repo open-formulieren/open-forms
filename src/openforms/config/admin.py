@@ -10,7 +10,6 @@ from .models import CSPSetting, GlobalConfiguration, RichTextColor
 
 @admin.register(GlobalConfiguration)
 class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
-    autocomplete_fields = ("analytics_cookie_consent_group",)
     form = GlobalConfigurationAdminForm
     fieldsets = (
         (
@@ -70,40 +69,9 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
             },
         ),
         (
-            _("Analytics: Google"),
-            {
-                "fields": ("gtm_code", "ga_code"),
-            },
-        ),
-        (
-            _("Analytics: Matomo"),
-            {
-                "fields": ("matomo_url", "matomo_site_id"),
-            },
-        ),
-        (
-            _("Analytics: SiteImprove"),
-            {
-                "fields": ("siteimprove_id",),
-            },
-        ),
-        (
-            _("Analytics: Piwik"),
-            {
-                "fields": ("piwik_url", "piwik_site_id"),
-            },
-        ),
-        (
-            _("Analytics: Piwik PRO"),
-            {
-                "fields": ("piwik_pro_url", "piwik_pro_site_id"),
-            },
-        ),
-        (
-            _("Privacy & cookies"),
+            _("Privacy"),
             {
                 "fields": (
-                    "analytics_cookie_consent_group",
                     "ask_privacy_consent",
                     "privacy_policy_url",
                     "privacy_policy_label",

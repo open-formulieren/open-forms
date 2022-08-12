@@ -1,16 +1,15 @@
 {% load solo_tags %}
-{% get_solo 'config.GlobalConfiguration' as config %}
-
-{% if config.piwik_pro_enabled %}
+{% get_solo 'analytics_tools.AnalyticsToolsConfiguration' as analytics_tools_config %}
+{% if analytics_tools_config.piwik_pro_enabled %}
 <!-- End Piwik PRO head tag -->
 <script type="text/javascript">
   var _paq = _paq || [];
   _paq.push(["trackPageView"]);
   _paq.push(["enableLinkTracking"]);
   (function() {
-    var u="{{ config.piwik_pro_url|escapejs }}";
+    var u="{{ analytics_tools_config.piwik_pro_url|escapejs }}";
     _paq.push(["setTrackerUrl", u+"ppms.php"]);
-    _paq.push(["setSiteId", "{{ config.piwik_pro_id|escapejs }}"]);
+    _paq.push(["setSiteId", "{{ analytics_tools_config.piwik_pro_id|escapejs }}"]);
     var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0];
     g.type="text/javascript"; g.async=true; g.defer=true; g.src=u+"ppms.js"; s.parentNode.insertBefore(g,s);
   })();
