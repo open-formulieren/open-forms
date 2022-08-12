@@ -859,6 +859,8 @@ COOKIE_CONSENT_NAME = "cookie_consent"
 DIGID_METADATA = config("DIGID_METADATA", "")
 SSL_CERTIFICATE_PATH = config("SSL_CERTIFICATE_PATH", "")
 SSL_KEY_PATH = config("SSL_KEY_PATH", "")
+DIGID_SSL_CERTIFICATE_PATH = config("DIGID_SSL_CERTIFICATE_PATH", "")
+DIGID_SSL_KEY_PATH = config("DIGID_SSL_KEY_PATH", "")
 DIGID_SERVICE_ENTITY_ID = config(
     "DIGID_SERVICE_ENTITY_ID", "https://was-preprod1.digid.nl/saml/idp/metadata"
 )
@@ -870,8 +872,8 @@ DIGID = {
     # This is the metadata of the **Identity provider** NOT our own!
     "metadata_file": DIGID_METADATA,
     # SSL/TLS key
-    "key_file": SSL_KEY_PATH,
-    "cert_file": SSL_CERTIFICATE_PATH,
+    "key_file": DIGID_SSL_KEY_PATH,
+    "cert_file": DIGID_SSL_CERTIFICATE_PATH,
     "service_entity_id": DIGID_SERVICE_ENTITY_ID,
     "attribute_consuming_service_index": "1",
     "requested_attributes": ["bsn"],
@@ -885,6 +887,8 @@ DIGID = {
 #
 
 EHERKENNING_METADATA = config("EHERKENNING_METADATA", "")
+EHERKENNING_SSL_CERTIFICATE_PATH = config("EHERKENNING_SSL_CERTIFICATE_PATH", "")
+EHERKENNING_SSL_KEY_PATH = config("EHERKENNING_SSL_KEY_PATH", "")
 EHERKENNING_SERVICE_ENTITY_ID = config("EHERKENNING_SERVICE_ENTITY_ID", "")
 EHERKENNING_ENTITY_ID = config("EHERKENNING_ENTITY_ID", "")
 EHERKENNING_LOA = config("EHERKENNING_LOA", "urn:etoegang:core:assurance-class:loa3")
@@ -912,8 +916,8 @@ EHERKENNING = {
     "want_assertions_encrypted": EHERKENNING_WANT_ASSERTIONS_ENCRYPTED,
     "signature_algorithm": EHERKENNING_SIGNATURE_ALGORITHM,
     "metadata_file": EHERKENNING_METADATA,
-    "key_file": SSL_KEY_PATH,
-    "cert_file": SSL_CERTIFICATE_PATH,
+    "key_file": EHERKENNING_SSL_KEY_PATH,
+    "cert_file": EHERKENNING_SSL_CERTIFICATE_PATH,
     "base_url": BASE_URL,
     "service_entity_id": EHERKENNING_SERVICE_ENTITY_ID,
     "entity_id": EHERKENNING_ENTITY_ID,
