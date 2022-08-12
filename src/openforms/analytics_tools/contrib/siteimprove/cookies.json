@@ -1,0 +1,10 @@
+[
+    {
+        "name": "AWSELBCORS",
+        "path": "/"
+    },
+    {
+        "name": "nmstat",
+        "path": "/"
+    }
+]
