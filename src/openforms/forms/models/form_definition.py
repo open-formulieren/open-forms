@@ -20,6 +20,14 @@ from ..models import Form
 from ..tasks import detect_formiojs_configuration_snake_case
 
 
+def _get_number_of_components(form_definition: "FormDefinition") -> int:
+    """
+    Given a form definition, count the total number of (nested) components in the configuration.
+    """
+    all_components = iter_components(form_definition.configuration, recursive=True)
+    return len(list(all_components))
+
+
 class FormDefinition(models.Model):
     """
     Form Definition containing the form configuration that is created by the form builder,
@@ -52,10 +60,20 @@ class FormDefinition(models.Model):
         help_text="Allow this definition to be re-used in multiple forms",
     )
 
+    # de-normalized fields that cannot be easily computed on the fly in the DB
+    _num_components = models.PositiveIntegerField(
+        _("number of Formio components"),
+        default=0,
+        help_text=_("The total number of Formio components used in the configuration"),
+    )
+
     def __str__(self):
         return self.admin_name
 
     def save(self, *args, **kwargs):
+        # on every save, keep track of the number of components
+        self._num_components = _get_number_of_components(self)
+
         super().save(*args, **kwargs)
 
         self._check_configuration_integrity()
