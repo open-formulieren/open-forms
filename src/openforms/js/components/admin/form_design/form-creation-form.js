@@ -47,7 +47,7 @@ import {
   getFormComponents,
   findComponent,
   checkKeyChange,
-  replaceComponentKeyInLogic,
+  updateKeyReferencesInLogic,
   getUniqueKey,
   getFormStep,
   parseValidationErrors,
@@ -357,7 +357,7 @@ function reducer(draft, action) {
       // Check if a key has been changed and if the logic rules need updating
       const hasKeyChanged = checkKeyChange(mutationType, schema, originalComp);
       if (mutationType === 'changed' && hasKeyChanged) {
-        draft.logicRules = replaceComponentKeyInLogic(
+        draft.logicRules = updateKeyReferencesInLogic(
           draft.logicRules,
           originalComp.key,
           schema.key
@@ -637,6 +637,9 @@ function reducer(draft, action) {
             Array.from(uniqueKeysAfterUpdate)
           );
         }
+
+        // upate logic rules with updated keys
+        draft.logicRules = updateKeyReferencesInLogic(draft.logicRules, key, propertyValue);
       }
       break;
     }

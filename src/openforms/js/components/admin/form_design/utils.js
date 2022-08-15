@@ -54,7 +54,7 @@ const checkKeyChange = (mutationType, newComponent, oldComponent) => {
   return newComponent.key !== oldComponent.key;
 };
 
-const replaceComponentKeyInLogic = (existingLogicRules, originalKey, newKey) => {
+const updateKeyReferencesInLogic = (existingLogicRules, originalKey, newKey) => {
   return existingLogicRules.map((rule, index) => {
     if (!JSON.stringify(rule).includes(originalKey)) {
       return rule;
@@ -69,14 +69,15 @@ const replaceComponentKeyInLogic = (existingLogicRules, originalKey, newKey) => 
     );
     // Replace the key in the actions
     newRule.actions = newRule.actions.map((action, index) => {
-      if (action.component !== originalKey) {
-        return action;
+      // component references
+      if (action.component && action.component === originalKey) {
+        return {...action, component: newKey};
       }
-
-      return {
-        ...action,
-        component: newKey,
-      };
+      // variable references
+      if (action.variable && action.variable === originalKey) {
+        return {...action, variable: newKey};
+      }
+      return action;
     });
 
     return newRule;
@@ -126,7 +127,7 @@ export {
   getFormComponents,
   findComponent,
   checkKeyChange,
-  replaceComponentKeyInLogic,
+  updateKeyReferencesInLogic,
   getUniqueKey,
   getFormStep,
   parseValidationErrors,
