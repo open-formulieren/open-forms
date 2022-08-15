@@ -324,7 +324,7 @@ class Submission(models.Model):
     def remove_sensitive_data(self):
         from .submission_files import SubmissionFileAttachment
 
-        if hasattr(self, "auth_info"):
+        if self.is_authenticated:
             self.auth_info.clear_sensitive_data()
 
         sensitive_variables = self.submissionvaluevariable_set.filter(
@@ -558,7 +558,7 @@ class Submission(models.Model):
 
     def get_auth_mode_display(self):
         # compact anonymous display of authentication method
-        if not hasattr(self, "auth_info"):
+        if not self.is_authenticated:
             return ""
 
         return f"{self.auth_info.plugin} ({self.auth_info.attribute})"

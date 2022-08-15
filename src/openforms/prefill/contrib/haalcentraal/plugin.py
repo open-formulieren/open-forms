@@ -73,11 +73,11 @@ class HaalCentraalPrefill(BasePlugin):
         cls, submission: Submission, attributes: List[str]
     ) -> Dict[str, Any]:
         if (
-            not hasattr(submission, "auth_info")
+            not submission.is_authenticated
             or submission.auth_info.attribute != AuthAttribute.bsn
         ):
             #  If there is no bsn we can't prefill any values so just return
-            logger.warning("No BSN associated with submission, cannot prefill.")
+            logger.info("No BSN associated with submission, cannot prefill.")
             return {}
         return cls._get_values_for_bsn(submission.auth_info.value, attributes)
 

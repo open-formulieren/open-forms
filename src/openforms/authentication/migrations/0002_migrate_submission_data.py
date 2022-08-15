@@ -5,6 +5,16 @@ from django.db.models import Q
 
 from ..constants import AuthAttribute
 
+REGISTER = {
+    "digid": AuthAttribute.bsn,
+    "eherkenning": AuthAttribute.kvk,
+    "eidas": AuthAttribute.pseudo,
+    "digid_oidc": AuthAttribute.bsn,
+    "digid_oidc_machtigen": AuthAttribute.bsn,
+    "eherkenning_oidc": AuthAttribute.kvk,
+    "eherkenning_bewindvoering_oidc": AuthAttribute.kvk,
+}
+
 
 def forward(apps, schema_editor):
     AuthInfo = apps.get_model("of_authentication", "AuthInfo")
@@ -17,19 +27,15 @@ def forward(apps, schema_editor):
         if hasattr(submission, "auth_info"):
             continue
 
-        value = submission.bsn or submission.kvk or submission.pseudo
-
-        attribute = AuthAttribute.bsn
-        if submission.kvk:
-            attribute = AuthAttribute.kvk
-        elif submission.pseudo:
-            attribute = AuthAttribute.pseudo
+        plugin = submission.auth_plugin
+        attribute = REGISTER[plugin]
+        value = getattr(submission, attribute)
 
         auth_info_to_create.append(
             AuthInfo(
                 attribute=attribute,
                 value=value,
-                plugin=submission.auth_plugin,
+                plugin=plugin,
                 attribute_hashed=submission.auth_attributes_hashed,
                 submission=submission,
             )

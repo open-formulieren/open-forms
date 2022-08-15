@@ -83,8 +83,8 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                "verbose_name": "Authentication Information",
-                "verbose_name_plural": "Authentication Information",
+                "verbose_name": "Authentication details",
+                "verbose_name_plural": "Authentication details",
             },
         ),
     ]

@@ -48,8 +48,8 @@ class AuthInfo(models.Model):
     )
 
     class Meta:
-        verbose_name = _("Authentication Information")
-        verbose_name_plural = _("Authentication Information")
+        verbose_name = _("Authentication details")
+        verbose_name_plural = _("Authentication details")
 
     def clear_sensitive_data(self):
         self.value = ""

@@ -106,7 +106,7 @@ def apply_data_mapping(
         value = NOT_SET
         if conf.form_field:
             value = getattr(submission.form, conf.form_field, NOT_SET)
-        elif conf.submission_auth_info_attribute and hasattr(submission, "auth_info"):
+        elif conf.submission_auth_info_attribute and submission.is_authenticated:
             if submission.auth_info.attribute == conf.submission_auth_info_attribute:
                 value = submission.auth_info.value
         elif data_key := attr_key_lookup.get(conf.attribute):

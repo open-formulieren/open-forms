@@ -69,7 +69,7 @@ class ResumeFormMixin:
         return redirect_url.url
 
     def is_auth_data_correct(self, submission: Submission) -> bool:
-        if not hasattr(submission, "auth_info"):
+        if not submission.is_authenticated:
             return False
 
         is_auth_plugin_correct = (

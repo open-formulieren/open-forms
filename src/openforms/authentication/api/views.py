@@ -63,7 +63,7 @@ class AuthenticationLogoutView(APIView):
         # is still a resume link somewhere).
         submissions = get_submissions_from_session(request.session)
         for submission in submissions:
-            if hasattr(submission, "auth_info"):
+            if submission.is_authenticated:
                 submission.auth_info.hash_identifying_attributes()
 
         for plugin in register.iter_enabled_plugins():
@@ -100,10 +100,7 @@ class SubmissionLogoutView(GenericAPIView):
         if FORM_AUTH_SESSION_KEY in request.session:
             del request.session[FORM_AUTH_SESSION_KEY]
 
-        if (
-            hasattr(submission, "auth_info")
-            and not submission.auth_info.attribute_hashed
-        ):
+        if submission.is_authenticated and not submission.auth_info.attribute_hashed:
             submission.auth_info.hash_identifying_attributes()
 
         for plugin in register.iter_enabled_plugins():
