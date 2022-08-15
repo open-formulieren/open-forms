@@ -123,9 +123,8 @@ class StaticVariablesTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(
-            {
-                "isJohn": True
-            },  # Only changed data is returned and static variables are not present in the data
+            # Only changed data is returned and static variables are not present in the data
+            {},
             response.data["step"]["data"],
         )
 

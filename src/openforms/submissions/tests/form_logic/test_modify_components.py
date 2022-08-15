@@ -1034,7 +1034,7 @@ class StepModificationTests(TestCase):
             "changingKey": "original",
         }
 
-        evaluate_form_logic(submission, submission_step, dirty_data)
+        evaluate_form_logic(submission, submission_step, dirty_data, dirty=True)
 
         self.assertEqual(
             submission_step.data,

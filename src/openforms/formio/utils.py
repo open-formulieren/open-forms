@@ -1,6 +1,6 @@
 import logging
 from datetime import date, datetime
-from typing import Any, Dict, Iterator, List
+from typing import Any, Iterator, List, Optional
 
 from openforms.forms.constants import FormVariableDataTypes
 
@@ -37,19 +37,6 @@ def get_component(configuration: JSONObject, key: str) -> JSONObject:
     for component in iter_components(configuration=configuration, recursive=True):
         if component["key"] == key:
             return component
-
-
-def get_default_values(configuration: dict) -> Dict[str, Any]:
-    defaults = {}
-
-    for component in iter_components(configuration, recursive=True):
-        if "key" not in component:
-            continue
-        if "defaultValue" not in component:
-            continue
-        defaults[component["key"]] = component["defaultValue"]
-
-    return defaults
 
 
 def is_layout_component(component):
@@ -108,7 +95,7 @@ def get_component_datatype(component):
     return COMPONENT_DATATYPES.get(component_type, FormVariableDataTypes.string)
 
 
-def get_component_default_value(component):
+def get_component_default_value(component) -> Optional[Any]:
     # Formio has a getter for the:
     # - emptyValue: https://github.com/formio/formio.js/blob/4.13.x/src/components/textfield/TextField.js#L58
     # - defaultValue:

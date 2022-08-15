@@ -166,6 +166,26 @@ class SubmissionValueVariablesState:
 
         SubmissionValueVariable.objects.bulk_create(variables_to_prefill)
 
+    def set_values(self, data: Dict[str, Any]) -> None:
+        """
+        Apply the values from ``data`` to the current state of the variables.
+
+        This does NOT persist the values, it only mutates the value instances in place.
+        The ``data`` structure maps variable key and (new) values to set on the
+        variables in the state.
+
+        :arg data: mapping of variable key to value.
+
+        .. todo:: apply variable.datatype/format to obtain python objects? This also
+           needs to properly serialize back to JSON though!
+        """
+        for key, variable in self.variables.items():
+            try:
+                new_value = glom(data, key)
+            except PathAccessError:
+                continue
+            variable.value = new_value
+
 
 class SubmissionValueVariableManager(models.Manager):
     def bulk_create_or_update_from_data(

@@ -1,4 +1,3 @@
-import copy
 from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Dict
 
@@ -6,57 +5,17 @@ import elasticapm
 from json_logic import jsonLogic
 
 from openforms.formio.service import get_dynamic_configuration
-from openforms.formio.utils import get_component, get_default_values, iter_components
+from openforms.formio.utils import get_component, get_component_default_value
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
 from openforms.logging import logevent
-from openforms.prefill import JSONObject
 
+from .logic.actions import compile_action_operation
+from .logic.datastructures import DataContainer
 from .models.submission_step import DirtyData
 
 if TYPE_CHECKING:  # pragma: nocover
     from .models import Submission, SubmissionStep
-
-
-def set_property_value(
-    configuration: JSONObject,
-    component_key: str,
-    property_name: str,
-    property_value: str,
-) -> JSONObject:
-    # iter over the (nested) components, and when we find the specified key, mutate it and break
-    # out of the loop
-    for component in iter_components(configuration=configuration, recursive=True):
-        if component["key"] == component_key:
-            component[property_name] = property_value
-            break
-
-    return configuration
-
-
-class DataForLogic:
-    """Manage data during logic evaluation
-
-    This class contains the initial data that was passed to the evaluate_form_logic function
-    (submission data plus any data entered by the user that hasn't been saved yet).
-    It then contains any data added by the logic rules and the static data for this submission.
-    """
-
-    initial_data: dict
-    _data: dict
-    static_data: dict
-
-    def __init__(self, initial_data, static_data):
-        self.initial_data = copy.deepcopy(initial_data)
-        self.static_data = static_data
-        self._data = copy.deepcopy(initial_data)
-
-    def update_data(self, new_data: dict) -> None:
-        self._data = {**self.initial_data, **new_data}
-
-    @property
-    def data(self) -> dict:
-        return {**self._data, **self.static_data}
 
 
 @elasticapm.capture_span(span_type="app.submissions.logic")
@@ -69,35 +28,45 @@ def evaluate_form_logic(
 ) -> Dict[str, Any]:
     """
     Process all the form logic rules and mutate the step configuration if required.
+
+    The form logic evaluation is split up in multiple stages to achieve a deterministic
+    output while respecting the ordering of logic rules. The logic evaluation has a
+    number of side effects:
+
+    * setting/writing values for variables
+    * dynamic Formio configuration updates, based on the variable values
+    * dynamic Formio configuration updates, based on the logic actions
+    * dynamic Formio configuration based on the request context
+
+    We achieve this by:
+
+    1. Loading the submission and submission step (passed as function arguments)
+    2. Prefilled data is saved at submission start and available in the variables
+    3. Loading the variable state, which populates non-saved values with their defaults.
+    4. Apply any dirty data (unsaved) to the variable state
+    5. Evaluate the logic rules in order, for each action in each triggered rule:
+
+       1. If a variable value is being update, update the variable state
+       2. Else record the action to perform to the configuration (but don't apply it yet!)
+
+    6. The variables state is now completely resolved and can be used as input for the
+       dynamic configuration.
+    7. Apply the dynamic configuration
+
+       1. Apply the component property mutations that were recorded in 5.
+       2. Interpolate the component configuration with the variables.
+       3. Handle custom formio types (which require variables as input!)
+
     """
-    # grab the configuration that can be **mutated**
+    # grab the configuration that will be mutated
     configuration = step.form_step.form_definition.configuration
 
-    # we need to apply the context-specific configurations first before we can apply
-    # mutations based on logic, which is then in turn passed to the serializer(s)
-    configuration = get_dynamic_configuration(
-        configuration,
-        # context is expected to contain request, as is the default behaviour with DRF
-        # view(set)s and serializers. Note that :func:`get_dynamic_configuration` is
-        # planned for refactor as part of #1068, which should drop the ``request``
-        # argument. The required information is available on the ``submission`` object
-        # already.
-        request=context.get("request"),
-        submission=submission,
-    )
-
-    # check what the default data values are
-    defaults = get_default_values(configuration)
-
-    submission_variables_state = submission.load_submission_value_variables_state()
-    static_data = submission_variables_state.static_data(context.get("request"))
-
-    # merge the default values and supplied data - supplied data overwrites defaults
-    # if keys are present in both dicts
-    data_container = DataForLogic(
-        initial_data={**defaults, **data}, static_data=static_data
-    )
-
+    # 1. we have `submission` and `step` available and ...
+    # 2. the prefilled variables are already recorded in the variables state
+    #
+    # The Formio *default values* are also recorded in here, because the `FormVariable`
+    # for each component derives that from the configuration at save-time.
+    #
     if not step.data:
         step.data = DirtyData({})
 
@@ -105,6 +74,13 @@ def evaluate_form_logic(
     _evaluated = getattr(step, "_form_logic_evaluated", False)
     if _evaluated:
         return configuration
+
+    # 3. Load the (variables) state
+    submission_state = submission.load_execution_state()
+    submission_variables_state = submission.load_submission_value_variables_state()
+
+    # 4. Apply the (dirty) data to the variable state.
+    submission_variables_state.set_values(data)
 
     # renderer evaluates logic for all steps at once, so we can avoid repeated queries
     # by caching the rules on the form instance.
@@ -117,13 +93,17 @@ def evaluate_form_logic(
         )
         submission.form._cached_logic_rules = rules
 
-    submission_state = submission.load_execution_state()
     step_index = submission_state.form_steps.index(step.form_step)
 
-    updated_step_data = deepcopy(step.data)
-    evaluated_rules = []
-    for rule in rules:
+    data_container = DataContainer(
+        state=submission_variables_state, request=context.get("request")
+    )
 
+    # 5. Evaluate the logic rules in order
+    mutation_operations = []
+    evaluated_rules = []
+
+    for rule in rules:
         # only evaluate a logic rule if it either:
         # - is not limited to a particular trigger point/step
         # - is limited to a particular trigger point/step and the current submission step
@@ -134,63 +114,88 @@ def evaluate_form_logic(
             )
             if step_index < trigger_from_index:
                 continue
+
         trigger_rule = jsonLogic(rule.json_logic_trigger, data_container.data)
         evaluated_rules.append({"rule": rule, "trigger": bool(trigger_rule)})
+        # rule is not triggered - do not process the actions.
         if not trigger_rule:
             continue
+
+        # process all the actions in order for the triggered rule
         for action in rule.actions:
             action_details = action["action"]
-            if action_details["type"] == LogicActionTypes.property:
-                property_name = action_details["property"]["value"]
-                property_value = action_details["state"]
-                configuration = set_property_value(
-                    configuration,
-                    action["component"],
-                    property_name,
-                    property_value,
-                )
-            elif action_details["type"] == LogicActionTypes.disable_next:
-                step._can_submit = False
-            elif action_details["type"] == LogicActionTypes.step_not_applicable:
-                submission_step_to_modify = submission_state.resolve_step(
-                    action["form_step"]
-                )
-                submission_step_to_modify._is_applicable = False
-                # This clears data in the database to make sure that saved steps which later become
-                # not-applicable don't have old data
-                submission_step_to_modify.data = {}
-                if submission_step_to_modify == step:
-                    updated_step_data = {}
-                    step._is_applicable = False
-            elif action_details["type"] == LogicActionTypes.variable:
+
+            # 5.1 - if the action type is to set a variable, update the variable state.
+            # This is the ONLY operation that is allowed to execute while we're looping
+            # through the rules.
+            if action_details["type"] == LogicActionTypes.variable:
                 new_value = jsonLogic(action_details["value"], data_container.data)
-                variable_key = action["variable"]
-                updated_step_data[variable_key] = new_value
-                data_container.update_data(updated_step_data)
+                data_container.update({action["variable"]: new_value})
+            else:
+                operation = compile_action_operation(action)
+                mutation_operations.append(operation)
+
+    # 6. The variable state is now completely resolved - we can start processing the
+    # dynamic configuration and side effects.
+
+    # Calculate which data has changed from the initial, for the step.
+    updated_step_data = data_container.get_updated_step_data(step)
     step.data = DirtyData(updated_step_data)
 
+    # 7. finally, apply the dynamic configuration
+
+    # we need to apply the context-specific configurations before we can apply
+    # mutations based on logic, which is then in turn passed to the serializer(s)
+    # TODO: refactor this to rely on variables state, which will move this down to
+    configuration = deepcopy(configuration)
+    configuration = get_dynamic_configuration(
+        configuration,
+        # context is expected to contain request, as is the default behaviour with DRF
+        # view(set)s and serializers. Note that :func:`get_dynamic_configuration` is
+        # planned for refactor as part of #1068, which should drop the ``request``
+        # argument. The required information is available on the ``submission`` object
+        # already.
+        request=context.get("request"),
+        submission=submission,
+    )
+
+    # 7.1 Apply the component mutation operations
+    for mutation in mutation_operations:
+        mutation.apply(step, configuration)
+
+    # 7.2 Interpolate the component configuration with the variables.
+    # TODO!
+
+    # 7.3 Handle custom formio types - TODO: this needs to be lifted out of
+    # :func:`get_dynamic_configuration` so that it can use variables.
+
     # Logging the rules
+    initial_data = data_container.initial_data
     logevent.submission_logic_evaluated(
         submission,
         evaluated_rules,
-        {**data_container.static_data, **data_container.initial_data},
+        initial_data,
+        data_container.data,
     )
 
+    # process the output for logic checks with dirty data
     if dirty:
         # only keep the changes in the data, so that old values do not overwrite otherwise
         # debounced client-side data changes
         data_diff = {}
+
         for key, new_value in step.data.items():
-            original_value = data_container.initial_data.get(key)
+            original_value = initial_data.get(key)
             # Reset the value of any field that may have become hidden again after evaluating the logic
             if original_value:
                 component = get_component(configuration, key)
+                default = get_component_default_value(component)
                 if (
                     component
                     and component.get("hidden")
                     and component.get("clearOnHide")
                 ):
-                    data_diff[key] = defaults.get(key, "")
+                    data_diff[key] = default or ""
                     continue
 
             if new_value == original_value:
@@ -198,8 +203,8 @@ def evaluate_form_logic(
             data_diff[key] = new_value
 
         # only return the 'overrides'
-        if data_diff:
-            step.data = DirtyData(data_diff)
+        step.data = DirtyData(data_diff)
+
     step._form_logic_evaluated = True
 
     return configuration

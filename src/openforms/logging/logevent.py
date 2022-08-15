@@ -465,7 +465,10 @@ def submission_export_list(form: "Form", user: "User"):
 
 
 def submission_logic_evaluated(
-    submission: "Submission", evaluated_rules, resulting_data
+    submission: "Submission",
+    evaluated_rules,
+    initial_data: dict,
+    resolved_data: dict,
 ):
     if not evaluated_rules:
         return
@@ -495,7 +498,7 @@ def submission_logic_evaluated(
 
         rule = evaluated_rule["rule"]
         rule_introspection = introspect_json_logic(
-            rule.json_logic_trigger, components_map, resulting_data
+            rule.json_logic_trigger, components_map, initial_data
         )
 
         # Gathering all the input component of each evaluated rule
@@ -545,7 +548,7 @@ def submission_logic_evaluated(
                     action_log_data["value"] = value_expression
                 else:
                     action_logic_introspection = introspect_json_logic(
-                        action_details["value"], components_map, resulting_data
+                        action_details["value"], components_map, initial_data
                     )
                     action_log_data["value"] = action_logic_introspection.as_string()
             targeted_components.append(action_log_data)
@@ -568,6 +571,7 @@ def submission_logic_evaluated(
         extra_data={
             "evaluated_rules": evaluated_rules_list,
             "input_data": deduplicated_input_data,
+            "resolved_data": resolved_data,
         },
     )
 
