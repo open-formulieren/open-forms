@@ -13,7 +13,6 @@ class PiwikTests(AnalyticsToolsMixinTestCase):
         super().setUpTestData()
         cls.piwik_url = "https://example.com"
         cls.piwik_site_id = 1234
-
         cls.json_cookies = [
             {"name": f"_pk_id.{cls.piwik_site_id}.e5c3", "path": "/"},
             {"name": f"_pk_ses.{cls.piwik_site_id}.e5c3", "path": "/"},

@@ -1,5 +1,4 @@
 from django.core.exceptions import ValidationError
-from django.test import tag
 
 from cookie_consent.models import Cookie
 
@@ -14,6 +13,7 @@ class MatomoTests(AnalyticsToolsMixinTestCase):
         super().setUpTestData()
         cls.matomo_url = "https://example.com"
         cls.matomo_site_id = 1234
+
         cls.json_cookies = [
             {"name": f"_pk_id.{cls.matomo_site_id}.e5c3", "path": "/"},
             {"name": f"_pk_ses.{cls.matomo_site_id}.e5c3", "path": "/"},
@@ -21,7 +21,6 @@ class MatomoTests(AnalyticsToolsMixinTestCase):
 
         cls.json_csp = [{"directive": "script-src", "value": cls.matomo_url}]
 
-    @tag("debug")
     def test_matomo_properly_enabled(self):
 
         self.config.matomo_url = self.matomo_url

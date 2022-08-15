@@ -15,7 +15,6 @@ class PiwikProTests(AnalyticsToolsMixinTestCase):
         super().setUpTestData()
         cls.piwik_pro_url = "https://example.com"
         cls.piwik_pro_site_id = uuid.uuid4()
-
         cls.json_cookies = [
             {"name": f"_pk_id.{cls.piwik_pro_site_id}.e5c3", "path": "/"},
             {"name": f"_pk_ses.{cls.piwik_pro_site_id}.e5c3", "path": "/"},
@@ -40,7 +39,7 @@ class PiwikProTests(AnalyticsToolsMixinTestCase):
         for cookie in self.json_cookies:
             with self.subTest("Test creation of cookies"):
                 try:
-                    Cookie.objects.filter(name=cookie["name"])
+                    Cookie.objects.get(name=cookie["name"])
                 except Cookie.DoesNotExist as e:
                     self.fail(f"Unexpected exception : {e}")
 

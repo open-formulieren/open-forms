@@ -5,9 +5,7 @@ from cookie_consent.models import CookieGroup
 from openforms.analytics_tools.models import AnalyticsToolsConfiguration
 
 
-@override_settings(
-    SOLO_CACHE=None,
-)
+@override_settings(SOLO_CACHE=None, ALLOWED_HOSTS=["*"])
 class AnalyticsToolsMixinTestCase(TestCase):
     def setUp(self):
         super().setUp()
