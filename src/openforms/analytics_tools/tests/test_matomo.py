@@ -1,13 +1,15 @@
 from django.core.exceptions import ValidationError
+from django.test import TestCase, override_settings
 
 from cookie_consent.models import Cookie
 
 from openforms.config.models import CSPSetting
 
-from .mixin import AnalyticsToolsMixinTestCase
+from .mixin import AnalyticsMixin
 
 
-class MatomoTests(AnalyticsToolsMixinTestCase):
+@override_settings(SOLO_CACHE=None, ALLOWED_HOSTS=["*"])
+class MatomoTests(AnalyticsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -33,8 +35,7 @@ class MatomoTests(AnalyticsToolsMixinTestCase):
         for cookie in self.json_cookies:
             with self.subTest(cookie=cookie):
                 try:
-                    print(Cookie.objects.all())
-                    print(Cookie.objects.get(name=cookie["name"]))
+                    Cookie.objects.get(name=cookie["name"])
                 except Cookie.DoesNotExist as e:
                     self.fail(f"Unexpected exception : {e}")
 

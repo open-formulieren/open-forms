@@ -1,15 +1,17 @@
 import uuid
 
 from django.core.exceptions import ValidationError
+from django.test import TestCase, override_settings
 
 from cookie_consent.models import Cookie
 
 from openforms.config.models import CSPSetting
 
-from .mixin import AnalyticsToolsMixinTestCase
+from .mixin import AnalyticsMixin
 
 
-class PiwikProTests(AnalyticsToolsMixinTestCase):
+@override_settings(SOLO_CACHE=None, ALLOWED_HOSTS=["*"])
+class PiwikProTests(AnalyticsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
