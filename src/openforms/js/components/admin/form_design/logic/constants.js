@@ -70,13 +70,6 @@ const ACTION_TYPES = [
     }),
   ],
   [
-    'value',
-    defineMessage({
-      description: 'action type "value" label',
-      defaultMessage: 'change the value of a component',
-    }),
-  ],
-  [
     'variable',
     defineMessage({
       description: 'action type "variable" label',
@@ -94,7 +87,7 @@ const ACTION_TYPES = [
 
 // Action types that once they are selected need further configurations.
 // For example, picking which property of a component should be changed.
-const ACTIONS_WITH_OPTIONS = ['property', 'value'];
+const ACTIONS_WITH_OPTIONS = ['property'];
 
 const TYPE_TO_OPERAND_TYPE = {
   float: ['literal', 'variable'],

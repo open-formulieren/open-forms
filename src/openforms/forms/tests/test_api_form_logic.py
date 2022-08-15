@@ -433,9 +433,9 @@ class FormLogicAPITests(APITestCase):
             "actions": [
                 {
                     "formStep": "",
-                    "component": "surname",
+                    "variable": "surname",
                     "action": {
-                        "type": "value",
+                        "type": "variable",
                         "property": {},
                         "value": {"var": "name"},
                     },

@@ -140,15 +140,7 @@ def evaluate_form_logic(
             continue
         for action in rule.actions:
             action_details = action["action"]
-            # TODO this action will be replaced by changing the value of variables
-            if action_details["type"] == LogicActionTypes.value:
-                new_value = jsonLogic(action_details["value"], data_container.data)
-                configuration = set_property_value(
-                    configuration, action["component"], "value", new_value
-                )
-                updated_step_data[action["component"]] = new_value
-                data_container.update_data(updated_step_data)
-            elif action_details["type"] == LogicActionTypes.property:
+            if action_details["type"] == LogicActionTypes.property:
                 property_name = action_details["property"]["value"]
                 property_value = action_details["state"]
                 configuration = set_property_value(

@@ -539,10 +539,15 @@ def submission_logic_evaluated(
                     }
                 )
             elif action_details["type"] == LogicActionTypes.variable:
-                action_logic_introspection = introspect_json_logic(
-                    action_details["value"], components_map, resulting_data
-                )
-                action_log_data["value"] = action_logic_introspection.as_string()
+                # check if it's a primitive value, which doesn't require introspection
+                value_expression = action_details["value"]
+                if not isinstance(value_expression, dict):
+                    action_log_data["value"] = value_expression
+                else:
+                    action_logic_introspection = introspect_json_logic(
+                        action_details["value"], components_map, resulting_data
+                    )
+                    action_log_data["value"] = action_logic_introspection.as_string()
             targeted_components.append(action_log_data)
 
         evaluated_rule_data = {

@@ -11,9 +11,7 @@ class LogicActionTypes(DjangoChoices):
     )
     disable_next = ChoiceItem("disable-next", _("Disable the next step"))
     property = ChoiceItem("property", _("Modify a component property"))
-    value = ChoiceItem(
-        "value", _("Set the value of a component")
-    )  # TODO remove once variables are
+    value = ChoiceItem("value", _("Set the value of a component"))  # DEPRECATED!
     variable = ChoiceItem("variable", _("Set the value of a variable"))
 
     requires_component = {property.value, value.value}
