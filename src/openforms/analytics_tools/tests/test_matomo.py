@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.test import tag
 
 from cookie_consent.models import Cookie
 
@@ -20,6 +21,7 @@ class MatomoTests(AnalyticsToolsMixinTestCase):
 
         cls.json_csp = [{"directive": "script-src", "value": cls.matomo_url}]
 
+    @tag("debug")
     def test_matomo_properly_enabled(self):
 
         self.config.matomo_url = self.matomo_url
@@ -30,9 +32,10 @@ class MatomoTests(AnalyticsToolsMixinTestCase):
         self.config.save()
 
         for cookie in self.json_cookies:
-            with self.subTest("Test creation of cookies"):
+            with self.subTest(cookie=cookie):
                 try:
-                    Cookie.objects.get(name=cookie["name"])
+                    print(Cookie.objects.all())
+                    print(Cookie.objects.get(name=cookie["name"]))
                 except Cookie.DoesNotExist as e:
                     self.fail(f"Unexpected exception : {e}")
 
