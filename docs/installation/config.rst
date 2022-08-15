@@ -148,8 +148,6 @@ Log settings
 DigiD/EHerkenning/eIDAS settings
 --------------------------------
 
-* ``SSL_CERTIFICATE_PATH``: Path to the TLS/SSL certificate on the server.
-* ``SSL_KEY_PATH``: Path to the TLS/SSL key on the server.
 * ``BASE_URL``: Base url on which open-forms is deployed.
 * ``DIGID_METADATA``: This is the path to the metadata file provided by the Identity Provider.
 * ``DIGID_SSL_CERTIFICATE_PATH``: Path to the DigiD TLS/SSL certificate on the server.
