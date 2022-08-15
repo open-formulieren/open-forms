@@ -148,14 +148,16 @@ Log settings
 DigiD/EHerkenning/eIDAS settings
 --------------------------------
 
-* ``SSL_CERTIFICATE_PATH``: Path to the TLS/SSL certificate on the server.
-* ``SSL_KEY_PATH``: Path to the TLS/SSL key on the server.
 * ``BASE_URL``: Base url on which open-forms is deployed.
 * ``DIGID_METADATA``: This is the path to the metadata file provided by the Identity Provider.
+* ``DIGID_SSL_CERTIFICATE_PATH``: Path to the DigiD TLS/SSL certificate on the server.
+* ``DIGID_SSL_KEY_PATH``: Path to the DigiD TLS/SSL key on the server.
 * ``DIGID_SERVICE_ENTITY_ID``: The URL where the Identity Provider serves its metadata.
 * ``DIGID_WANT_ASSERTIONS_SIGNED``: If ``True``, the XML assertions need to be signed, otherwise the whole response needs to be signed. Defaults to ``True``.
 * ``EHERKENNING_METADATA``: Path to the metadata file provided by the Identity Provider.
 * ``EHERKENNING_SERVICE_ENTITY_ID``: Value that matches the ``entityID`` attribute in the ``md:EntityDescriptor`` tag of the Identity Provider metadata.
+* ``EHERKENNING_SSL_CERTIFICATE_PATH``: Path to the EHerkenning TLS/SSL certificate on the server.
+* ``EHERKENNING_SSL_KEY_PATH``: Path to the EHerkenning TLS/SSL key on the server.
 * ``EHERKENNING_ENTITY_ID``: It has the format ``urn:etoegang:DV:<OIN>:entities:<index>``. More information can be found `here <https://afsprakenstelsel.etoegang.nl/display/as/EntityID>`__.
 * ``EHERKENNING_LOA``: LOA stands for 'Level Of Assurance'. The possible values can be found `here <https://afsprakenstelsel.etoegang.nl/display/as/Level+of+assurance>`__. Defaults to ``"urn:etoegang:core:assurance-class:loa3"``.
 * ``EHERKENNING_OIN``: The OIN for the organisation. There is a OIN `catalogue <https://portaal.digikoppeling.nl/registers/>`_ that can be used to search for OINs.
