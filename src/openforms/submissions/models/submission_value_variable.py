@@ -13,8 +13,6 @@ from ..constants import SubmissionValueVariableSources
 from .submission import Submission
 
 if TYPE_CHECKING:  # pragma: nocover
-    from rest_framework.request import Request
-
     from .submission_step import SubmissionStep
 
 
@@ -136,11 +134,11 @@ class SubmissionValueVariablesState:
             if key in self._variables:
                 del self._variables[key]
 
-    def static_data(self, request: "Request") -> dict:
+    def static_data(self) -> dict:
         if self._static_data is None:
             self._static_data = {
                 variable.key: variable.initial_value
-                for variable in FormVariable.get_static_data(request)
+                for variable in FormVariable.get_static_data(self.submission)
             }
         return self._static_data
 

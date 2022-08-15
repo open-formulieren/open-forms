@@ -9,7 +9,6 @@ from django.utils.translation import gettext_lazy as _
 
 from glom import Path, glom
 
-from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 from openforms.formio.utils import (
     component_in_editgrid,
     get_component,
@@ -27,9 +26,10 @@ from ..constants import (
 from .form_definition import FormDefinition
 
 if TYPE_CHECKING:
-    from .form import Form
-    from rest_framework.request import Request
+    from openforms.authentication.utils import FormAuth
+    from openforms.submissions.models import Submission
 
+    from .form import Form
     from .form_step import FormStep
 
 
@@ -37,12 +37,21 @@ def get_now() -> str:
     return timezone.now().isoformat()
 
 
-def get_auth_identifier(request: Optional["Request"]) -> Optional[str]:
-    if not request or not hasattr(request, "session"):
+def get_auth_identifier(submission: Optional["Submission"]) -> Optional["FormAuth"]:
+    if not submission or not hasattr(submission, "auth_info"):
         return None
 
-    # TODO what is the structure of the data in the machtigen field?
-    return request.session.get(FORM_AUTH_SESSION_KEY)
+    from openforms.authentication.utils import FormAuth
+
+    auth_data = FormAuth(
+        plugin=submission.auth_info.plugin,
+        attribute=submission.auth_info.attribute,
+        value=submission.auth_info.value,
+        # TODO what is the structure of the data in the machtigen field?
+        machtigen=submission.auth_info.machtigen,
+    )
+
+    return auth_data
 
 
 STATIC_INITIAL_VALUES = {
@@ -234,7 +243,9 @@ class FormVariable(models.Model):
         return self.initial_value or None
 
     @staticmethod
-    def get_static_data(request: Optional["Request"] = None) -> List["FormVariable"]:
+    def get_static_data(
+        submission: Optional["Submission"] = None,
+    ) -> List["FormVariable"]:
         now = FormVariable(
             name="Now",
             key="now",
@@ -246,7 +257,7 @@ class FormVariable(models.Model):
             name="Authentication identifier",
             key="auth_identifier",
             data_type=FormVariableDataTypes.object,
-            initial_value=STATIC_INITIAL_VALUES["auth_identifier"](request),
+            initial_value=STATIC_INITIAL_VALUES["auth_identifier"](submission),
         )
 
         return [now, auth_identifier]
