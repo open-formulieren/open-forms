@@ -4,7 +4,7 @@ Roadmap
 =======
 
 The Open Forms roadmap describes broader topics that will be picked up in the
-nearby future. 
+nearby future.
 
 As with most software projects, the codebase of Open Forms grows dynamically, driven
 by user stories, user feedback and developer experience. Inevitably, some technical
@@ -105,24 +105,6 @@ The internal page to check the (configuration) status of various plugins current
 checks all plugins sequentially and leads to a slow page.
 
 This should be optimized to only consider enabled plugins and work asynchronously.
-
-**Authentication module**
-
-Status: not planned yet
-
-The plugins in the authentication module work fairly decoupled - each implements the
-appropriate authentication flow and stores the resulting attribute in the user
-session.
-
-When a submission is started, this attribute is then taken from the session and stored
-on the appropriate ``Submission`` database model field. This currently requires some
-hardcoded, inflexible database columns and tightly couples authentication and
-submissions.
-
-We should research a pattern where the authentication attributes/metadata is stored in
-a database model owned by the plugin itself, relating it to the submission when
-appropriate. This increases the flexibility of new/existing plugins to manage their
-own data.
 
 **Full submission-data validation using Formio.js**
 
