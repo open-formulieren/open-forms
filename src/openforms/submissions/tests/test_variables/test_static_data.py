@@ -3,10 +3,10 @@ from django.test import override_settings
 from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse
-from rest_framework.test import APIRequestFactory, APITestCase
+from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import StaffUserFactory
-from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.tests.factories import AuthInfoFactory
 from openforms.forms.constants import FormVariableSources
 from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
@@ -164,21 +164,25 @@ class StaticVariablesTests(SubmissionsMixin, APITestCase):
         self.assertEqual("name", submission.submissionvaluevariable_set.get().key)
 
     def test_auth_static_data(self):
-        factory = APIRequestFactory()
-        request = factory.get("/foo")
-        request.user = StaffUserFactory.build()
-        auth_data = {
-            "plugin": "test-plugin",
-            "attribute": AuthAttribute.bsn,
-            "value": "111222333",
-            "machtigen": {AuthAttribute.bsn: "123456789"},
-        }
-        request.session = {FORM_AUTH_SESSION_KEY: auth_data}
+        auth_info = AuthInfoFactory.create(
+            plugin="test-plugin",
+            attribute=AuthAttribute.bsn,
+            value="111222333",
+            machtigen={AuthAttribute.bsn: "123456789"},
+        )
 
-        static_data = FormVariable.get_static_data(request)
+        static_data = FormVariable.get_static_data(auth_info.submission)
 
         self.assertEqual(2, len(static_data))
-        self.assertEqual(auth_data, static_data[1].initial_value)
+        self.assertEqual(
+            {
+                "plugin": "test-plugin",
+                "attribute": AuthAttribute.bsn,
+                "value": "111222333",
+                "machtigen": {AuthAttribute.bsn: "123456789"},
+            },
+            static_data[1].initial_value,
+        )
 
     def test_auth_static_data_no_request(self):
         static_data = FormVariable.get_static_data()

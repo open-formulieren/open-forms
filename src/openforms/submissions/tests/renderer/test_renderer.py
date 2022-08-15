@@ -116,6 +116,12 @@ class FormNodeTests(TestCase):
             submission=self.submission, mode=RenderModes.pdf, as_html=True
         )
 
+        import logging
+
+        logger = logging.getLogger("django.db.backends")
+        logger.setLevel(logging.DEBUG)
+        logger.addHandler(logging.StreamHandler())
+
         # Expected queries:
         # 1. Retrieve all the variables defined for the submission form
         # 2. Retrieve all the submission variable values
@@ -123,6 +129,7 @@ class FormNodeTests(TestCase):
         # 4. Get the step-specific data from submission variable values (TODO: this can probably be optimized away?)
         # 5. Load submission state: get form steps
         # 6. Load submission state: get submission steps
-        # 7. Query the form logic rules for the submission form (and this is cached)
-        with self.assertNumQueries(7):
+        # 7. Retrieve the submission auth info
+        # 8. Query the form logic rules for the submission form (and this is cached)
+        with self.assertNumQueries(8):
             list(renderer)

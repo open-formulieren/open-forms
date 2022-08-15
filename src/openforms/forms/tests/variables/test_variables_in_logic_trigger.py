@@ -274,4 +274,3 @@ class VariablesInLogicBulkAPITests(APITestCase):
         response = self.client.put(url, data=form_logic_data)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
-
