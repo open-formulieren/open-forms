@@ -65,5 +65,5 @@ class DataContainer:
         return {
             key: variable.value
             for key, variable in relevant_variables.items()
-            if variable.value and variable.value != variable.form_variable.initial_value
+            if variable.value != variable.form_variable.initial_value
         }
