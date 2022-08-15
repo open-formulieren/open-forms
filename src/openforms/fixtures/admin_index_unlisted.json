@@ -16,5 +16,6 @@
     "zgw_apis.ZgwConfig",
     "forms.FormsExport",
     "config.RichTextColor",
-    "forms.FormLogic"
+    "forms.FormLogic",
+    "of_authentication.AuthInfo"
 ]

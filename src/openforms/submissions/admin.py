@@ -11,6 +11,7 @@ from privates.admin import PrivateMediaMixin
 from privates.views import PrivateMediaView
 
 from openforms.appointments.models import AppointmentInfo
+from openforms.authentication.admin import AuthInfoInline
 from openforms.logging.constants import TimelineLogTags
 from openforms.logging.logevent import (
     submission_details_view_admin,
@@ -178,6 +179,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     )
     inlines = [
         SubmissionStepInline,
+        AuthInfoInline,
         SubmissionValueVariableInline,
         SubmissionPaymentInline,
         SubmissionLogInline,

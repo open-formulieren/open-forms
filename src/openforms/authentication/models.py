@@ -2,6 +2,9 @@ from django.contrib.auth.hashers import make_password as get_salted_hash
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from openforms.contrib.kvk.validators import validate_kvk
+from openforms.utils.validators import validate_bsn
+
 from .constants import AuthAttribute
 
 
@@ -67,4 +70,8 @@ class AuthInfo(models.Model):
         self.attribute_hashed = True
         self.save()
 
-    # TODO Add attribute validation
+    def clean(self):
+        if self.attribute == AuthAttribute.bsn:
+            validate_bsn(self.value)
+        elif self.attribute == AuthAttribute.kvk:
+            validate_kvk(self.value)
