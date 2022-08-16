@@ -85,13 +85,6 @@ class SubmissionValueVariablesState:
             and variable.form_variable.form_definition == form_definition
         }
 
-    def get_variables_unrelated_to_a_step(self) -> Dict[str, "SubmissionValueVariable"]:
-        return {
-            variable_key: variable
-            for variable_key, variable in self.variables.items()
-            if not variable.form_variable.form_definition
-        }
-
     def collect_variables(
         self, submission: "Submission"
     ) -> Dict[str, "SubmissionValueVariable"]:

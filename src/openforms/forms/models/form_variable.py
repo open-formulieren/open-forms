@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 
 from glom import Path, glom
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.formio.utils import (
     component_in_editgrid,
     get_component,
@@ -25,7 +26,7 @@ from ..constants import (
 )
 from .form_definition import FormDefinition
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from openforms.authentication.utils import FormAuth
     from openforms.submissions.models import Submission
 
@@ -54,9 +55,22 @@ def get_auth_identifier(submission: Optional["Submission"]) -> Optional["FormAut
     return auth_data
 
 
+def get_auth_value(submission: Optional["Submission"], attribute: str) -> str:
+    if not submission or not hasattr(submission, "auth_info"):
+        return ""
+
+    if submission.auth_info.attribute == attribute:
+        return submission.auth_info.value
+
+    return ""
+
+
 STATIC_INITIAL_VALUES = {
     FormVariableStaticInitialValues.now: get_now,
     FormVariableStaticInitialValues.auth_identifier: get_auth_identifier,
+    FormVariableStaticInitialValues.auth_bsn: get_auth_value,
+    FormVariableStaticInitialValues.auth_kvk: get_auth_value,
+    FormVariableStaticInitialValues.auth_pseudo: get_auth_value,
 }
 
 
@@ -260,7 +274,34 @@ class FormVariable(models.Model):
             initial_value=STATIC_INITIAL_VALUES["auth_identifier"](submission),
         )
 
-        return [now, auth_identifier]
+        auth_bsn = FormVariable(
+            name="Authentication BSN",
+            key="auth_bsn",
+            data_type=FormVariableDataTypes.string,
+            initial_value=STATIC_INITIAL_VALUES["auth_bsn"](
+                submission, AuthAttribute.bsn
+            ),
+        )
+
+        auth_kvk = FormVariable(
+            name="Authentication KvK",
+            key="auth_kvk",
+            data_type=FormVariableDataTypes.string,
+            initial_value=STATIC_INITIAL_VALUES["auth_kvk"](
+                submission, AuthAttribute.kvk
+            ),
+        )
+
+        auth_pseudo = FormVariable(
+            name="Authentication pseudo",
+            key="auth_pseudo",
+            data_type=FormVariableDataTypes.string,
+            initial_value=STATIC_INITIAL_VALUES["auth_pseudo"](
+                submission, AuthAttribute.pseudo
+            ),
+        )
+
+        return [now, auth_identifier, auth_bsn, auth_kvk, auth_pseudo]
 
     def derive_info_from_component(self):
         if self.source != FormVariableSources.component or not self.form_definition:

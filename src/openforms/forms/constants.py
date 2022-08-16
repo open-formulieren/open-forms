@@ -56,3 +56,6 @@ class FormVariableDataTypes(DjangoChoices):
 class FormVariableStaticInitialValues(DjangoChoices):
     now = ChoiceItem("now", _("Now"))
     auth_identifier = ChoiceItem("auth_identifier", "Authentication identifier")
+    auth_bsn = ChoiceItem("auth_bsn", "Authentication BSN")
+    auth_kvk = ChoiceItem("auth_kvk", "Authentication KvK")
+    auth_pseudo = ChoiceItem("auth_pseudo", "Authentication pseudo")
