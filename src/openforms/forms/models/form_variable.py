@@ -3,13 +3,11 @@ from typing import TYPE_CHECKING, List, Optional
 from django.core.validators import RegexValidator
 from django.db import models, transaction
 from django.db.models import CheckConstraint, Q
-from django.utils import timezone
 from django.utils.regex_helper import _lazy_re_compile
 from django.utils.translation import gettext_lazy as _
 
 from glom import Path, glom
 
-from openforms.authentication.constants import AuthAttribute
 from openforms.formio.utils import (
     component_in_editgrid,
     get_component,
@@ -18,60 +16,16 @@ from openforms.formio.utils import (
     is_layout_component,
     iter_components,
 )
+from openforms.variables.registry import static_variables_register
 
-from ..constants import (
-    FormVariableDataTypes,
-    FormVariableSources,
-    FormVariableStaticInitialValues,
-)
+from ..constants import FormVariableDataTypes, FormVariableSources
 from .form_definition import FormDefinition
 
 if TYPE_CHECKING:  # pragma: nocover
-    from openforms.authentication.utils import FormAuth
     from openforms.submissions.models import Submission
 
     from .form import Form
     from .form_step import FormStep
-
-
-def get_now() -> str:
-    return timezone.now().isoformat()
-
-
-def get_auth_identifier(submission: Optional["Submission"]) -> Optional["FormAuth"]:
-    if not submission or not hasattr(submission, "auth_info"):
-        return None
-
-    from openforms.authentication.utils import FormAuth
-
-    auth_data = FormAuth(
-        plugin=submission.auth_info.plugin,
-        attribute=submission.auth_info.attribute,
-        value=submission.auth_info.value,
-        # TODO what is the structure of the data in the machtigen field?
-        machtigen=submission.auth_info.machtigen,
-    )
-
-    return auth_data
-
-
-def get_auth_value(submission: Optional["Submission"], attribute: str) -> str:
-    if not submission or not hasattr(submission, "auth_info"):
-        return ""
-
-    if submission.auth_info.attribute == attribute:
-        return submission.auth_info.value
-
-    return ""
-
-
-STATIC_INITIAL_VALUES = {
-    FormVariableStaticInitialValues.now: get_now,
-    FormVariableStaticInitialValues.auth_identifier: get_auth_identifier,
-    FormVariableStaticInitialValues.auth_bsn: get_auth_value,
-    FormVariableStaticInitialValues.auth_kvk: get_auth_value,
-    FormVariableStaticInitialValues.auth_pseudo: get_auth_value,
-}
 
 
 class FormVariableManager(models.Manager):
@@ -260,48 +214,11 @@ class FormVariable(models.Model):
     def get_static_data(
         submission: Optional["Submission"] = None,
     ) -> List["FormVariable"]:
-        now = FormVariable(
-            name="Now",
-            key="now",
-            data_type=FormVariableDataTypes.datetime,
-            initial_value=STATIC_INITIAL_VALUES["now"](),
-        )
 
-        auth_identifier = FormVariable(
-            name="Authentication identifier",
-            key="auth_identifier",
-            data_type=FormVariableDataTypes.object,
-            initial_value=STATIC_INITIAL_VALUES["auth_identifier"](submission),
-        )
-
-        auth_bsn = FormVariable(
-            name="Authentication BSN",
-            key="auth_bsn",
-            data_type=FormVariableDataTypes.string,
-            initial_value=STATIC_INITIAL_VALUES["auth_bsn"](
-                submission, AuthAttribute.bsn
-            ),
-        )
-
-        auth_kvk = FormVariable(
-            name="Authentication KvK",
-            key="auth_kvk",
-            data_type=FormVariableDataTypes.string,
-            initial_value=STATIC_INITIAL_VALUES["auth_kvk"](
-                submission, AuthAttribute.kvk
-            ),
-        )
-
-        auth_pseudo = FormVariable(
-            name="Authentication pseudo",
-            key="auth_pseudo",
-            data_type=FormVariableDataTypes.string,
-            initial_value=STATIC_INITIAL_VALUES["auth_pseudo"](
-                submission, AuthAttribute.pseudo
-            ),
-        )
-
-        return [now, auth_identifier, auth_bsn, auth_kvk, auth_pseudo]
+        return [
+            registered_variable.get_static_variable(submission)
+            for registered_variable in static_variables_register
+        ]
 
     def derive_info_from_component(self):
         if self.source != FormVariableSources.component or not self.form_definition:
