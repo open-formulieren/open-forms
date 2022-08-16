@@ -36,6 +36,9 @@ template_engine = SandboxedDjangoTemplates(
         "OPTIONS": {
             "autoescape": True,
             "libraries": [],  # no access to our custom template tags
+            "builtins": [
+                "django.templatetags.l10n",  # allow usage of localize/unlocalize
+            ],
         },
     }
 )

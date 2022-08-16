@@ -114,12 +114,12 @@ class VariableInjectionTests(SimpleTestCase):
             self.assertEqual(text1["defaultValue"], "123")
 
         with self.subTest("Stringified default value (float)"):
-            self.assertEqual(text2["defaultValue"], "123.45")  # unlocalized!
+            # localized! Formio seems to handle localized values correctly
+            self.assertEqual(text2["defaultValue"], "123,45")
 
         with self.subTest("Default values with multiple=true"):
-            self.assertEqual(
-                textfield_multi["defaultValue"], ["123", "123.4"]
-            )  # unlocalized!
+            # localized! Formio seems to handle localized values correctly
+            self.assertEqual(textfield_multi["defaultValue"], ["123", "123,5"])
 
         with self.subTest("Builtin template filters"):
             self.assertEqual(date1["label"], "Het is vandaag dinsdag")
@@ -127,7 +127,11 @@ class VariableInjectionTests(SimpleTestCase):
 
         # questionable but convenient formio behaviour - it parses the string as a number
         with self.subTest("Number default floatformat, unlocalized"):
-            self.assertEqual(number1["defaultValue"], "0.30")  # unlocalized!
+            # localized! Formio seems to handle localized values correctly.
+            # We can't combine `{% localize off %}` with the floatformat template filter,
+            # as the use_l10n parameter is not passed down inside of floatformat. This is fixed
+            # in newer django versions than 3.2. For now, we can accept localized values.
+            self.assertEqual(number1["defaultValue"], "0,30")
 
         # questionable but convenient formio behaviour - it parses the string as a boolean
         with self.subTest("Checkbox default value boolean-ish"):
