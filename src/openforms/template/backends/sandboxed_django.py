@@ -2,6 +2,15 @@ from django.template.backends.django import DjangoTemplates
 
 
 class SandboxedDjangoTemplates(DjangoTemplates):
+    """
+    A 'sandboxed' Django templates backend.
+
+    The sandboxed backend (by default) does not allow:
+
+    * looking up template files from file-system
+    * loading or using non-builtin templatetag libraries (except for the ``l10n`` library)
+    """
+
     def __init__(self, params):
         params = params.copy()
         params.setdefault("NAME", "django_sandboxed")
@@ -24,7 +33,7 @@ class SandboxedDjangoTemplates(DjangoTemplates):
         )
         super().__init__(params)
 
-    def get_templatetag_libraries(self, custom_libraries):
+    def get_templatetag_libraries(self, custom_libraries: dict) -> dict:
         """
         Do not automatically discover template tag libraries.
 
@@ -37,9 +46,4 @@ class SandboxedDjangoTemplates(DjangoTemplates):
 backend = SandboxedDjangoTemplates({})
 """
 An instance of the 'sandboxed' Django templates backend.
-
-The sandboxed backend (by default) does not allow:
-
-* looking up template files from file-system
-* loading or using non-builtin templatetag libraries (except for the ``l10n`` library)
 """

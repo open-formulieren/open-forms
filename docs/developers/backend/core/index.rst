@@ -41,3 +41,4 @@ same thing twice.
    tokens
    testing-tools
    variables
+   templating
