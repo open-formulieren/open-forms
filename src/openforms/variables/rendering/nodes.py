@@ -13,11 +13,19 @@ from openforms.submissions.rendering.base import Node
 class VariablesNode(Node):
     submission: Submission
 
+    _variables = None
+
     @property
     def is_visible(self) -> bool:
-        return self.submission.submissionvaluevariable_set.filter(
-            form_variable__source=FormVariableSources.user_defined
-        ).exists()
+        return len(self.variables) > 0
+
+    @property
+    def variables(self):
+        if not self._variables:
+            self._variables = self.submission.submissionvaluevariable_set.filter(
+                form_variable__source=FormVariableSources.user_defined
+            ).select_related("form_variable")
+        return self._variables
 
     def render(self) -> str:
         return "Variables"
@@ -26,10 +34,7 @@ class VariablesNode(Node):
         if not self.is_visible:
             return
 
-        variables = self.submission.submissionvaluevariable_set.filter(
-            form_variable__source=FormVariableSources.user_defined
-        ).select_related("form_variable")
-        for variable in variables:
+        for variable in self.variables:
             node = SubmissionValueVariableNode(
                 renderer=self.renderer, variable=variable
             )
