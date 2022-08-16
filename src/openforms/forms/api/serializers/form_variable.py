@@ -72,6 +72,9 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
             "data_format",
             "is_sensitive_data",
             "initial_value",
+            "show_in_email",
+            "show_in_pdf",
+            "show_in_summary",
         )
         extra_kwargs = {
             "form": {
