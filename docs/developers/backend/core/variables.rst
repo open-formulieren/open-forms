@@ -35,3 +35,43 @@ The flow of how static variables are used in the backend is:
 
 #. When the step is persisted to the database:
    All the data corresponding to variables of type component / user defined is saved in a ``SubmissionValueVariable``.
+
+
+Adding new static FormVariables
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Static variables can be defined by each app with the same mechanism used for plugins (see :ref:`adding_your_plugin`
+for more details).
+
+The steps to add a static variable to an app are:
+
+#. Within the app, create a python package ``static_variables``.
+#. Add an ``apps.py`` file with an ``AppConfig``. The static variables need to be imported in the ``ready`` method to be
+   added to the register:
+
+   .. code-block:: python
+
+        from django.apps import AppConfig
+
+        class StaticVariables(AppConfig):
+            name = "openforms.<app_name>.static_variables"
+            label = "<app_name>_static_variables"
+            verbose_name = "<App name> static variables"
+
+            def ready(self):
+                from . import static_variables  # noqa
+
+#. Add ``openforms.<app_name>.static_variable.apps.StaticVariables`` to the ``settings.INSTALLED_APPS``.
+#. Create a ``static_apps.py`` in the ``static_variables`` package of the app which you just created.
+#. Define any new static variable here using the ``BaseStaticVariable`` base class and the ``static_variables_register``
+   decorator (which adds the variable to the register).
+
+   .. code-block:: python
+
+        @static_variables_register("<variable key>")
+        class NewStaticVariable(BaseStaticVariable):
+            name = _("<variable name>")
+            data_type = "<variable type>"
+
+            def get_initial_value(self, *args, **kwargs):
+                ...
