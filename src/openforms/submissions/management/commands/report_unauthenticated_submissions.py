@@ -9,7 +9,7 @@ class Command(BaseCommand):
     def handle(self, **options):
         queryset = Submission.objects.filter(
             form__formstep__form_definition__login_required=True,
-            auth_plugin="",
+            auth_info__isnull=True,
         ).values_list("id", "uuid")
 
         if not queryset.exists():

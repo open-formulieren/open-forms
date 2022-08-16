@@ -45,17 +45,19 @@ class LogoutTest(SubmissionsMixin, APITestCase):
         self.assertNotIn(AuthAttribute.kvk, self.client.session)
         self.assertNotIn(AuthAttribute.pseudo, self.client.session)
 
-    def test_submissions_in_session_auth_attributes_hashed(self):
-        submission = SubmissionFactory.create(completed=False, bsn="000000000")
+    def test_submissions_in_session_auth_attribute_hashed(self):
+        submission = SubmissionFactory.create(
+            completed=False, auth_info__value="000000000"
+        )
         self._add_submission_to_session(submission)
 
         response = self.client.delete(reverse("api:logout"))
 
         self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
         submission.refresh_from_db()
-        self.assertNotEqual(submission.bsn, "")
+        self.assertNotEqual(submission.auth_info.value, "")
         # check that the submission is hashed
-        self.assertNotEqual(submission.bsn, "000000000")
+        self.assertNotEqual(submission.auth_info.value, "000000000")
 
 
 class SubmissionLogoutTest(SubmissionsMixin, APITestCase):
@@ -65,7 +67,9 @@ class SubmissionLogoutTest(SubmissionsMixin, APITestCase):
             response = self.client.delete(url)
             self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
-        submission = SubmissionFactory.create(completed=False, bsn="000000000")
+        submission = SubmissionFactory.create(
+            completed=False, auth_info__value="000000000"
+        )
         url = reverse("api:submission-logout", kwargs={"uuid": submission.uuid})
 
         with self.subTest("fails when submission not in session"):
@@ -101,10 +105,10 @@ class SubmissionLogoutTest(SubmissionsMixin, APITestCase):
         session.save()
 
         login_submission = SubmissionFactory.create(
-            completed=False, bsn="000000000", auth_plugin="plugin1"
+            completed=False, auth_info__value="000000000", auth_info__plugin="plugin1"
         )
         other_submission = SubmissionFactory.create(
-            completed=False, bsn="000000000", auth_plugin="plugin1"
+            completed=False, auth_info__value="000000000", auth_info__plugin="plugin1"
         )
 
         self._add_submission_to_session(login_submission)
@@ -126,9 +130,9 @@ class SubmissionLogoutTest(SubmissionsMixin, APITestCase):
         self.assertIn(str(other_submission.uuid), uuids)
 
         # check that the submission is hashed
-        self.assertNotEqual(login_submission.bsn, "")
-        self.assertNotEqual(login_submission.bsn, "000000000")
-        self.assertTrue(login_submission.auth_attributes_hashed)
+        self.assertNotEqual(login_submission.auth_info.value, "")
+        self.assertNotEqual(login_submission.auth_info.value, "000000000")
+        self.assertTrue(login_submission.auth_info.attribute_hashed)
 
         self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)
 

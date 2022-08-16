@@ -52,7 +52,7 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
             ],
         }
         submission = SubmissionFactory.create(
-            bsn="111222333",
+            auth_info__value="111222333",
             form__generate_minimal_setup=True,
             form__formstep__form_definition__configuration=configuration,
         )

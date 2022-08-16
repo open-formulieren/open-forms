@@ -7,7 +7,7 @@ from django.urls import reverse
 from freezegun import freeze_time
 from furl import furl
 
-from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
+from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from openforms.config.models import GlobalConfiguration
 
 from ..constants import SUBMISSIONS_SESSION_KEY
@@ -159,7 +159,7 @@ class SubmissionResumeViewTests(TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
-            auth_plugin="digid",
+            auth_info__plugin="digid",
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -191,9 +191,9 @@ class SubmissionResumeViewTests(TestCase):
             components_list=[{"key": "foo", "type": "textfield"}],
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
-            auth_plugin="digid",
+            auth_info__plugin="digid",
             form_url="http://testserver/myform/",
-            bsn="123456782",
+            auth_info__value="123456782",
         )
         form_step = submission.form.formstep_set.first()
         SubmissionStepFactory.create(
@@ -233,13 +233,13 @@ class SubmissionResumeViewTests(TestCase):
             str(submission.uuid), self.client.session[SUBMISSIONS_SESSION_KEY]
         )
 
-    def test_invalid_auth_plugin_raises_exception(self):
+    def test_invalid_auth_info_plugin_raises_exception(self):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
-            auth_plugin="wrong-plugin",
+            auth_info__plugin="wrong-plugin",
             form_url="http://testserver/myform/",
-            bsn="123456782",
+            auth_info__value="123456782",
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -273,9 +273,10 @@ class SubmissionResumeViewTests(TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
-            auth_plugin="digid",
+            auth_info__plugin="digid",
             form_url="http://testserver/myform/",
-            kvk="123456782",
+            auth_info__attribute=AuthAttribute.kvk,
+            auth_info__value="123456782",
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -309,9 +310,9 @@ class SubmissionResumeViewTests(TestCase):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
-            auth_plugin="digid",
+            auth_info__plugin="digid",
             form_url="http://testserver/myform/",
-            bsn="wrong-bsn",
+            auth_info__value="wrong-bsn",
         )
         SubmissionStepFactory.create(
             submission=submission,

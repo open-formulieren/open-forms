@@ -135,7 +135,7 @@ class TimelineLogProxyTests(TestCase):
     @freeze_time("2020-01-02 12:34:00")
     def test_formatting_accessors(self):
         submission = SubmissionFactory.create(
-            form__name="MyForm", auth_plugin="digid", bsn="111222333"
+            form__name="MyForm", auth_info__value="111222333"
         )
         # log with authenticated submission and plugin info
         log = TimelineLogProxyFactory.create(
@@ -170,7 +170,7 @@ class TimelineLogProxyTests(TestCase):
         # log with auth
         log = TimelineLogProxyFactory.create(
             content_object=SubmissionFactory.create(
-                auth_plugin="mock", bsn="123456789"
+                auth_info__value="123456789", auth_info__plugin="mock"
             ),
         )
         with self.subTest("user auth bsn"):

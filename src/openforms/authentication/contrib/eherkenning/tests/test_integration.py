@@ -56,4 +56,4 @@ class SubmissionIntegrationTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         submission = Submission.objects.get()
-        self.assertEqual(submission.kvk, "12345")
+        self.assertEqual(submission.auth_info.value, "12345")

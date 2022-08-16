@@ -22,15 +22,17 @@ class FieldConf:
     form_field: str = ""
 
     # support attributes from submission
-    submission_field: str = ""
+    submission_auth_info_attribute: str = ""
 
     # default value if data not found in submission
     default: Any = SKIP
 
     def __post_init__(self):
-        assert not (self.attribute and (self.form_field or self.submission_field))
-        assert not (self.form_field and self.submission_field)
-        assert self.attribute or self.form_field or self.submission_field
+        assert not (
+            self.attribute and (self.form_field or self.submission_auth_info_attribute)
+        )
+        assert not (self.form_field and self.submission_auth_info_attribute)
+        assert self.attribute or self.form_field or self.submission_auth_info_attribute
 
 
 def apply_data_mapping(
@@ -104,8 +106,9 @@ def apply_data_mapping(
         value = NOT_SET
         if conf.form_field:
             value = getattr(submission.form, conf.form_field, NOT_SET)
-        elif conf.submission_field:
-            value = getattr(submission, conf.submission_field, NOT_SET)
+        elif conf.submission_auth_info_attribute and submission.is_authenticated:
+            if submission.auth_info.attribute == conf.submission_auth_info_attribute:
+                value = submission.auth_info.value
         elif data_key := attr_key_lookup.get(conf.attribute):
             value = data.get(data_key, NOT_SET)
 

@@ -53,7 +53,10 @@ class ResumeFormMixin:
         auth_start_url = reverse(
             "authentication:start",
             request=self.request,
-            kwargs={"slug": submission.form.slug, "plugin_id": submission.auth_plugin},
+            kwargs={
+                "slug": submission.form.slug,
+                "plugin_id": submission.auth_info.plugin,
+            },
         )
 
         redirect_url = furl(auth_start_url)
@@ -66,21 +69,26 @@ class ResumeFormMixin:
         return redirect_url.url
 
     def is_auth_data_correct(self, submission: Submission) -> bool:
+        if not submission.is_authenticated:
+            return False
+
         is_auth_plugin_correct = (
-            submission.auth_plugin
+            submission.auth_info.plugin
             == self.request.session[FORM_AUTH_SESSION_KEY]["plugin"]
         )
-        submission_auth_value = getattr(
-            submission, self.request.session[FORM_AUTH_SESSION_KEY]["attribute"]
+        is_auth_attribute_correct = (
+            submission.auth_info.attribute
+            == self.request.session[FORM_AUTH_SESSION_KEY]["attribute"]
         )
 
+        submission_auth_value = submission.auth_info.value
         # there are two modus operandi - the submission may not be completed yet, in
         # which case we don't have a hashed value yet, but the raw value (used for
         # prefill and the like). There are also other flows where the attributes may
         # be hashed despite the submission not being completed yet.
         current_auth_value = self.request.session[FORM_AUTH_SESSION_KEY]["value"]
 
-        if submission.auth_attributes_hashed:
+        if submission.auth_info.attribute_hashed:
             is_auth_data_correct = check_salted_hash(
                 current_auth_value, submission_auth_value, setter=None
             )
@@ -92,7 +100,11 @@ class ResumeFormMixin:
             # anyway.
             is_auth_data_correct = submission_auth_value == current_auth_value
 
-        return is_auth_plugin_correct and is_auth_data_correct
+        return (
+            is_auth_plugin_correct
+            and is_auth_data_correct
+            and is_auth_attribute_correct
+        )
 
     def custom_submission_modifications(self, submission: Submission) -> Submission:
         return submission

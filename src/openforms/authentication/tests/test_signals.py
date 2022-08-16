@@ -44,8 +44,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
                         )
 
                 instance.refresh_from_db()
-                value = getattr(instance, RequiresAdminPlugin.provides_auth)
-                self.assertEqual(value, "")
+                self.assertFalse(hasattr(instance, "auth_info"))
 
     def test_attribute_set_for_demo_plugin_with_staff_user(self):
         register = Registry()
@@ -67,5 +66,4 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
             )
 
         instance.refresh_from_db()
-        value = getattr(instance, RequiresAdminPlugin.provides_auth)
-        self.assertEqual(value, "123")
+        self.assertEqual(instance.auth_info.value, "123")

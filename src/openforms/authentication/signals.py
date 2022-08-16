@@ -64,6 +64,7 @@ def set_auth_attribute_on_session(
         plugin,
         attribute,
     )
+
     store_auth_details(instance, form_auth)
 
 

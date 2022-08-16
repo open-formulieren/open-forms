@@ -137,11 +137,8 @@ class ObjectsAPIRegistration(BasePlugin):
             )
             object_data["csv_url"] = submission_csv_document["url"]
 
-        if submission.bsn:
-            object_data["bsn"] = submission.bsn
-
-        if submission.kvk:
-            object_data["kvk"] = submission.kvk
+        if submission.is_authenticated:
+            object_data[submission.auth_info.attribute] = submission.auth_info.value
 
         object_data = {
             "type": options["objecttype"],

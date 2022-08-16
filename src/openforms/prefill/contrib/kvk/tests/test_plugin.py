@@ -3,6 +3,8 @@ from django.test import TestCase
 import requests_mock
 from zgw_consumers.test import mock_service_oas_get
 
+from openforms.authentication.constants import AuthAttribute
+from openforms.authentication.tests.factories import AuthInfoFactory
 from openforms.contrib.kvk.tests.base import KVKTestMixin
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -21,7 +23,12 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
         )
 
         plugin = KVK_KVKNumberPrefill(identifier="kvk")
-        submission = SubmissionFactory(kvk="69599084")
+
+        submission = SubmissionFactory(
+            auth_info__value="69599084",
+            auth_info__plugin="kvk",
+            auth_info__attribute=AuthAttribute.kvk,
+        )
         values = plugin.get_prefill_values(
             submission,
             [Attributes.bezoekadres_straatnaam, Attributes.kvkNummer],
@@ -42,7 +49,11 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
         )
 
         plugin = KVK_KVKNumberPrefill(identifier="kvk")
-        submission = SubmissionFactory(kvk="90000749")
+        submission = SubmissionFactory(
+            auth_info__value="90000749",
+            auth_info__plugin="kvk",
+            auth_info__attribute=AuthAttribute.kvk,
+        )
         values = plugin.get_prefill_values(
             submission,
             [Attributes.bezoekadres_straatnaam, Attributes.kvkNummer],
@@ -62,7 +73,10 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
         )
 
         plugin = KVK_KVKNumberPrefill(identifier="kvk")
-        submission = SubmissionFactory(kvk="69599084")
+        auth_info = AuthInfoFactory.create(
+            value="69599084", plugin="kvk", attribute=AuthAttribute.kvk
+        )
+        submission = SubmissionFactory(auth_info=auth_info)
         values = plugin.get_prefill_values(
             submission,
             [Attributes.bezoekadres_straatnaam, Attributes.kvkNummer],
@@ -79,7 +93,10 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
         )
 
         plugin = KVK_KVKNumberPrefill(identifier="kvk")
-        submission = SubmissionFactory(kvk="69599084")
+        auth_info = AuthInfoFactory.create(
+            value="69599084", plugin="kvk", attribute=AuthAttribute.kvk
+        )
+        submission = SubmissionFactory(auth_info=auth_info)
         values = plugin.get_prefill_values(
             submission,
             [Attributes.bezoekadres_straatnaam, Attributes.kvkNummer],

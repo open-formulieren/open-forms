@@ -82,7 +82,9 @@ class ZGWRegistration(BasePlugin):
         "betrokkeneIdentificatie.voorvoegselGeslachtsnaam": RegistrationAttribute.initiator_tussenvoegsel,
         "betrokkeneIdentificatie.geboortedatum": RegistrationAttribute.initiator_geboortedatum,
         # "betrokkeneIdentificatie.aanschrijfwijze": FieldConf(RegistrationAttribute.initiator_aanschrijfwijze),
-        "betrokkeneIdentificatie.inpBsn": FieldConf(submission_field="bsn"),
+        "betrokkeneIdentificatie.inpBsn": FieldConf(
+            submission_auth_info_attribute="bsn"
+        ),
     }
     zaak_mapping = {
         "zaakgeometrie": FieldConf(

@@ -1,3 +1,4 @@
+import copy
 from typing import TYPE_CHECKING
 
 from django.db import models, transaction
@@ -62,7 +63,10 @@ class BaseSubmissionManager(models.Manager):
     def copy(
         self,
         original: "Submission",
-        fields=("form", "form_url", "bsn", "kvk", "pseudo", "auth_plugin"),
+        fields=(
+            "form",
+            "form_url",
+        ),
     ) -> "Submission":
         """
         Copy an existing submission into a new, cleaned submission record.
@@ -79,6 +83,11 @@ class BaseSubmissionManager(models.Manager):
             previous_submission=original,  # store the reference from where it was copied
             **{field: getattr(original, field) for field in fields},
         )
+        if hasattr(original, "auth_info"):
+            new_auth_info = copy.deepcopy(original.auth_info)
+            new_auth_info.pk = None
+            new_auth_info.submission = new_instance
+            new_auth_info.save()
 
         new_steps = []
         related_steps_manager = original.submissionstep_set

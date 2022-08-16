@@ -127,8 +127,8 @@ class SubmissionStartTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         submission = Submission.objects.get()
-        self.assertEqual(submission.bsn, "123456782")
-        self.assertEqual(submission.auth_plugin, "digid")
+        self.assertEqual(submission.auth_info.value, "123456782")
+        self.assertEqual(submission.auth_info.plugin, "digid")
 
     def test_start_submission_in_maintenance_mode(self):
         form = FormFactory.create(maintenance_mode=True)

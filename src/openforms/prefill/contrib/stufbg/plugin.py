@@ -124,11 +124,15 @@ class StufBgPrefill(BasePlugin):
     def get_prefill_values(
         self, submission: Submission, attributes: List[str]
     ) -> Dict[str, Any]:
-        if not submission.bsn:
+        if (
+            not submission.is_authenticated
+            or submission.auth_info.attribute != AuthAttribute.bsn
+        ):
             #  If there is no bsn we can't prefill any values so just return
+            logger.info("No BSN associated with submission, cannot prefill.")
             return {}
 
-        return self._get_values_for_bsn(submission.bsn, attributes)
+        return self._get_values_for_bsn(submission.auth_info.value, attributes)
 
     def get_co_sign_values(self, identifier: str) -> Tuple[Dict[str, Any], str]:
         """
