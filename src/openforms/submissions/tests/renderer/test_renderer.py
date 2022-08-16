@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from rest_framework.reverse import reverse
 
+from openforms.forms.constants import FormVariableSources
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
@@ -10,7 +11,11 @@ from openforms.forms.tests.factories import (
 
 from ...rendering import Renderer, RenderModes
 from ...rendering.nodes import FormNode, SubmissionStepNode
-from ..factories import SubmissionFactory, SubmissionStepFactory
+from ..factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+    SubmissionValueVariableFactory,
+)
 
 
 class FormNodeTests(TestCase):
@@ -49,6 +54,24 @@ class FormNodeTests(TestCase):
         submission = SubmissionFactory.create(form=form)
         sstep1 = SubmissionStepFactory.create(submission=submission, form_step=step1)
         sstep2 = SubmissionStepFactory.create(submission=submission, form_step=step2)
+        SubmissionValueVariableFactory.create(
+            key="ud1",
+            value="Some data 1",
+            submission=submission,
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__show_in_email=True,
+            form_variable__show_in_pdf=True,
+            form_variable__show_in_summary=True,
+        )
+        SubmissionValueVariableFactory.create(
+            key="ud2",
+            value="Some data 2",
+            submission=submission,
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__show_in_email=False,
+            form_variable__show_in_pdf=False,
+            form_variable__show_in_summary=False,
+        )
 
         # expose test data to test methods
         cls.submission = submission
@@ -124,5 +147,6 @@ class FormNodeTests(TestCase):
         # 5. Load submission state: get form steps
         # 6. Load submission state: get submission steps
         # 7. Query the form logic rules for the submission form (and this is cached)
-        with self.assertNumQueries(7):
+        # 8. Query if there are user defined variables
+        with self.assertNumQueries(8):
             list(renderer)
