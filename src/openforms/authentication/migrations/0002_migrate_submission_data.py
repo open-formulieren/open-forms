@@ -10,9 +10,16 @@ REGISTER = {
     "eherkenning": AuthAttribute.kvk,
     "eidas": AuthAttribute.pseudo,
     "digid_oidc": AuthAttribute.bsn,
-    "digid_oidc_machtigen": AuthAttribute.bsn,
+    "digid_machtigen_oidc": AuthAttribute.bsn,
     "eherkenning_oidc": AuthAttribute.kvk,
     "eherkenning_bewindvoering_oidc": AuthAttribute.kvk,
+    # demo/test plugins
+    "demo": AuthAttribute.bsn,
+    "demo-kvk": AuthAttribute.kvk,
+    "demo-outage": AuthAttribute.bsn,
+    "bsn-outage": AuthAttribute.bsn,
+    "kvk-outage": AuthAttribute.kvk,
+    "digid-mock": AuthAttribute.bsn,
 }
 
 
