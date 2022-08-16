@@ -5,10 +5,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.authentication.constants import AuthAttribute
-from openforms.authentication.tests.factories import AuthInfoFactory
 from openforms.forms.constants import FormVariableSources
-from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
@@ -162,80 +159,3 @@ class StaticVariablesTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(1, submission.submissionvaluevariable_set.count())
         self.assertEqual("name", submission.submissionvaluevariable_set.get().key)
-
-    def test_auth_static_data(self):
-        auth_info = AuthInfoFactory.create(
-            plugin="test-plugin",
-            attribute=AuthAttribute.bsn,
-            value="111222333",
-            machtigen={AuthAttribute.bsn: "123456789"},
-        )
-
-        static_data = FormVariable.get_static_data(auth_info.submission)
-
-        self.assertEqual(5, len(static_data))
-        self.assertEqual(
-            {
-                "plugin": "test-plugin",
-                "attribute": AuthAttribute.bsn,
-                "value": "111222333",
-                "machtigen": {AuthAttribute.bsn: "123456789"},
-            },
-            static_data[1].initial_value,
-        )
-
-        self.assertEqual(
-            "auth_bsn",
-            static_data[2].key,
-        )
-        self.assertEqual(
-            "111222333",
-            static_data[2].initial_value,
-        )
-        self.assertEqual(
-            "auth_kvk",
-            static_data[3].key,
-        )
-        self.assertEqual(
-            "",
-            static_data[3].initial_value,
-        )
-        self.assertEqual(
-            "auth_pseudo",
-            static_data[4].key,
-        )
-        self.assertEqual(
-            "",
-            static_data[4].initial_value,
-        )
-
-    def test_auth_static_data_no_submission(self):
-        static_data = FormVariable.get_static_data()
-
-        self.assertEqual(5, len(static_data))
-        self.assertIsNone(static_data[1].initial_value)
-
-        self.assertEqual(
-            "auth_bsn",
-            static_data[2].key,
-        )
-        self.assertEqual(
-            "",
-            static_data[2].initial_value,
-        )
-        self.assertEqual(
-            "auth_kvk",
-            static_data[3].key,
-        )
-        self.assertEqual(
-            "",
-            static_data[3].initial_value,
-        )
-        self.assertEqual(
-            "auth_pseudo",
-            static_data[4].key,
-        )
-        self.assertEqual(
-            "",
-            static_data[4].initial_value,
-        )
