@@ -132,3 +132,39 @@ class VariableInjectionTests(SimpleTestCase):
         # questionable but convenient formio behaviour - it parses the string as a boolean
         with self.subTest("Checkbox default value boolean-ish"):
             self.assertEqual(checkbox1["defaultValue"], "true")
+
+    def test_custom_libraries_not_available(self):
+        configuration = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "textfield1",
+                    "label": "{% load multidomain %}{% multidomain_switcher %}",
+                }
+            ]
+        }
+
+        inject_variables(configuration, {})
+
+        self.assertEqual(
+            configuration["components"][0]["label"],
+            "{% load multidomain %}{% multidomain_switcher %}",
+        )
+
+    def test_custom_builtins_not_available(self):
+        configuration = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "textfield1",
+                    "label": "{% privacy_policy %}",
+                }
+            ]
+        }
+
+        inject_variables(configuration, {})
+
+        self.assertEqual(
+            configuration["components"][0]["label"],
+            "{% privacy_policy %}",
+        )
