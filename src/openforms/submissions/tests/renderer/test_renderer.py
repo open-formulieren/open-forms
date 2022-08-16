@@ -116,12 +116,6 @@ class FormNodeTests(TestCase):
             submission=self.submission, mode=RenderModes.pdf, as_html=True
         )
 
-        import logging
-
-        logger = logging.getLogger("django.db.backends")
-        logger.setLevel(logging.DEBUG)
-        logger.addHandler(logging.StreamHandler())
-
         # Expected queries:
         # 1. Retrieve all the variables defined for the submission form
         # 2. Retrieve all the submission variable values
