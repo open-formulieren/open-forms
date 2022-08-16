@@ -1,10 +1,11 @@
 import logging
+from typing import Union
 
 from django.template import TemplateSyntaxError
 from django.template.backends.django import DjangoTemplates
 
 from openforms.submissions.logic.datastructures import DataMapping
-from openforms.typing import JSONObject
+from openforms.typing import JSONObject, JSONPrimitive, JSONValue
 
 from .utils import iter_components
 
@@ -44,9 +45,39 @@ template_engine = SandboxedDjangoTemplates(
 )
 
 
-def render(source: str, context: dict) -> str:
+def _render(source: str, context: dict) -> str:
     template = template_engine.from_string(source)
     return template.render(context)
+
+
+def render(formio_bit: JSONValue, context: dict) -> JSONValue:
+    """
+    Take a formio property value and evaluate the templates inside.
+
+    The ``formio_bit`` may be a string to be used as template, another JSON primitive
+    that we can't pass through the template engine or a complex JSON object to
+    recursively render.
+
+    Returns the same datatype as the input datatype, which should be ready for
+    JSON serialization.
+    """
+    # string primitive - we can throw it into the template engine
+    if isinstance(formio_bit, str):
+        return _render(formio_bit, context)
+
+    # collection - map every item recursively
+    if isinstance(formio_bit, list):
+        return [render(nested_bit, context) for nested_bit in formio_bit]
+
+    # mapping - map every key/value pair recursively
+    if isinstance(formio_bit, dict):
+        return {
+            key: render(nested_bit, context) for key, nested_bit in formio_bit.items()
+        }
+
+    # other primitive or complex object - we can't template this out, so return it
+    # unmodified.
+    return formio_bit
 
 
 def inject_variables(configuration: JSONObject, values: DataMapping) -> None:
