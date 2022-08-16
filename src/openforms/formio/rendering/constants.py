@@ -9,3 +9,10 @@ class RenderConfigurationOptions(DjangoChoices):
     show_in_confirmation_email = ChoiceItem(
         "showInEmail", _("Show in confirmation email")
     )
+
+
+RENDER_CONFIGURATION_CAMEL_TO_SNAKE = {
+    RenderConfigurationOptions.show_in_confirmation_email: "show_in_email",
+    RenderConfigurationOptions.show_in_pdf: "show_in_pdf",
+    RenderConfigurationOptions.show_in_summary: "show_in_summary",
+}

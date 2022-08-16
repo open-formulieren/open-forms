@@ -185,6 +185,21 @@ class FormVariable(models.Model):
         blank=True,
         null=True,
     )
+    show_in_summary = models.BooleanField(
+        verbose_name=_("show in summary"),
+        help_text=_("Should be displayed in the summary page?"),
+        default=True,
+    )
+    show_in_pdf = models.BooleanField(
+        verbose_name=_("show in pdf"),
+        help_text=_("Should be displayed in the pdf confirmation report?"),
+        default=True,
+    )
+    show_in_email = models.BooleanField(
+        verbose_name=_("show in email"),
+        help_text=_("Should be displayed in the confirmation email?"),
+        default=False,
+    )
 
     objects = FormVariableManager()
 

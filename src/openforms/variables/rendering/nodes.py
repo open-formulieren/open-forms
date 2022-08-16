@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Any, Iterator, Union
 
+from openforms.formio.rendering.conf import RENDER_CONFIGURATION
+from openforms.formio.rendering.constants import RENDER_CONFIGURATION_CAMEL_TO_SNAKE
 from openforms.forms.constants import FormVariableSources
 from openforms.submissions.models import Submission, SubmissionValueVariable
 from openforms.submissions.rendering import RenderModes
@@ -28,7 +30,11 @@ class VariablesNode(Node):
             form_variable__source=FormVariableSources.user_defined
         ).select_related("form_variable")
         for variable in variables:
-            yield SubmissionValueVariableNode(renderer=self.renderer, variable=variable)
+            node = SubmissionValueVariableNode(
+                renderer=self.renderer, variable=variable
+            )
+            if node.is_visible:
+                yield node
 
 
 @dataclass
@@ -39,7 +45,16 @@ class SubmissionValueVariableNode(Node):
 
     @property
     def is_visible(self) -> bool:
-        return True
+        render_configuration = RENDER_CONFIGURATION[self.mode]
+        if render_configuration.key is None:
+            return render_configuration.default
+
+        should_render = getattr(
+            self.variable.form_variable,
+            RENDER_CONFIGURATION_CAMEL_TO_SNAKE[render_configuration.key],
+            render_configuration.default,
+        )
+        return should_render
 
     @property
     def value(self) -> Any:
