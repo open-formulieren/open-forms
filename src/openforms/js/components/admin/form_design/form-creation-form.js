@@ -638,7 +638,7 @@ function reducer(draft, action) {
           );
         }
 
-        // upate logic rules with updated keys
+        // update logic rules with updated keys
         draft.logicRules = updateKeyReferencesInLogic(draft.logicRules, key, propertyValue);
       }
       break;

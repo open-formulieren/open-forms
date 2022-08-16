@@ -19,6 +19,9 @@ const Variable = PropTypes.shape({
     PropTypes.string,
   ]),
   errors: PropTypes.object,
+  showInEmail: PropTypes.bool,
+  showInPdf: PropTypes.bool,
+  showInSummary: PropTypes.bool,
 });
 
 export default Variable;

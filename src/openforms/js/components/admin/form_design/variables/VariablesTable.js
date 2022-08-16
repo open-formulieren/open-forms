@@ -93,7 +93,6 @@ const VariableRow = ({index, variable}) => {
         <SensitiveData isSensitive={variable.isSensitiveData} />
       </td>
       <td>{JSON.stringify(variable.initialValue)}</td>
-      <td>{variable.dataFormat}</td>
     </tr>
   );
 };
@@ -234,12 +233,38 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
-        <Field name="dataFormat" errors={variable.errors?.dataFormat}>
-          <TextInput
-            name="dataFormat"
-            value={variable.dataFormat}
-            onChange={onValueChanged}
-            noVTextField
+        <Field name="showInSummary" errors={variable.errors?.showInSummary}>
+          <Checkbox
+            name=""
+            label=""
+            checked={variable.showInSummary}
+            onChange={e =>
+              onValueChanged({target: {name: 'showInSummary', value: !variable.showInSummary}})
+            }
+          />
+        </Field>
+      </td>
+      <td>
+        <Field name="showInPdf" errors={variable.errors?.showInPdf}>
+          <Checkbox
+            name=""
+            label=""
+            checked={variable.showInPdf}
+            onChange={e =>
+              onValueChanged({target: {name: 'showInPdf', value: !variable.showInPdf}})
+            }
+          />
+        </Field>
+      </td>
+      <td>
+        <Field name="showInEmail" errors={variable.errors?.showInEmail}>
+          <Checkbox
+            name=""
+            label=""
+            checked={variable.showInEmail}
+            onChange={e =>
+              onValueChanged({target: {name: 'showInEmail', value: !variable.showInEmail}})
+            }
           />
         </Field>
       </td>
@@ -305,14 +330,34 @@ const VariablesTable = ({variables, editable, onChange, onDelete}) => {
           />
         }
       />
-      <HeadColumn
-        content={
-          <FormattedMessage
-            defaultMessage="Data format"
-            description="Variable table data format title"
+      {editable && (
+        <>
+          <HeadColumn
+            content={
+              <FormattedMessage
+                defaultMessage="Show in summary"
+                description="Show this variable in the summary page"
+              />
+            }
           />
-        }
-      />
+          <HeadColumn
+            content={
+              <FormattedMessage
+                defaultMessage="Show in PDF"
+                description="Show this variable in the confirmation PDF"
+              />
+            }
+          />
+          <HeadColumn
+            content={
+              <FormattedMessage
+                defaultMessage="Show in confirmation email"
+                description="Show this variable in the confirmation email"
+              />
+            }
+          />
+        </>
+      )}
     </>
   );
 

@@ -1,4 +1,5 @@
 import {defineMessage} from 'react-intl';
+import PropTypes from 'prop-types';
 
 const COMPONENT_DATATYPES = {
   date: 'datetime',
@@ -86,6 +87,9 @@ const EMPTY_VARIABLE = {
   isSensitiveData: false,
   dataType: 'string',
   initial_value: '',
+  showInEmail: false,
+  showInPdf: false,
+  showInSummary: false,
 };
 
 export {COMPONENT_DATATYPES, VARIABLE_SOURCES, DATATYPES_CHOICES, EMPTY_VARIABLE};

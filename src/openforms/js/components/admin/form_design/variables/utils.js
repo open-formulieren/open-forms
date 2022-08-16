@@ -3,6 +3,7 @@ import {Utils as FormioUtils} from 'formiojs';
 import {defineMessage} from 'react-intl';
 
 import {COMPONENT_DATATYPES, VARIABLE_SOURCES} from './constants';
+import PropTypes from 'prop-types';
 
 const getComponentDatatype = component => {
   if (component.multiple) {
@@ -48,6 +49,9 @@ const makeNewVariableFromComponent = (component, formDefinition) => {
     prefillAttribute: component.prefill?.attribute || '',
     dataType: getComponentDatatype(component),
     initialValue: getDefaultValue(component),
+    showInEmail: component.showInEmail,
+    showInPdf: component.showInPDF,
+    showInSummary: component.showInSummary,
     _id: component.id,
   };
 };
