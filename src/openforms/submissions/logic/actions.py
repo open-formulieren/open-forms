@@ -57,6 +57,8 @@ class PropertyAction(ActionOperation):
 
     def apply(self, step: SubmissionStep, configuration: JSONObject) -> None:
         component = get_component(configuration, key=self.component)
+        if component is None:
+            return
         component[self.property] = self.value
 
 
