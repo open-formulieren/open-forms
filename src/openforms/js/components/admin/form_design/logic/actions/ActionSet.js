@@ -25,6 +25,7 @@ const ACTION_SELECTION_ORDER = [
   'action.type',
   'formStep',
   'component',
+  'variable',
   'action.property',
   'action.state',
   'action.value',
