@@ -1699,12 +1699,6 @@
       "value": "(Herbruikbare) stapgegevens"
     }
   ],
-  "jAraWj": [
-    {
-      "type": 0,
-      "value": "wijzig de waarde van een veld/component."
-    }
-  ],
   "jU/t8O": [
     {
       "type": 0,
@@ -1787,6 +1781,12 @@
     {
       "type": 0,
       "value": "Item toevoegen"
+    }
+  ],
+  "li/63B": [
+    {
+      "type": 0,
+      "value": "No"
     }
   ],
   "mH3X/G": [
@@ -2043,6 +2043,12 @@
       "value": "Maak een nieuwe formulierdefinitie"
     }
   ],
+  "vhL8+4": [
+    {
+      "type": 0,
+      "value": "to the value"
+    }
+  ],
   "viEfGU": [
     {
       "type": 0,
@@ -2089,6 +2095,12 @@
     {
       "type": 0,
       "value": "Annuleren"
+    }
+  ],
+  "x5XvId": [
+    {
+      "type": 0,
+      "value": "Yes"
     }
   ],
   "xJBMaf": [
