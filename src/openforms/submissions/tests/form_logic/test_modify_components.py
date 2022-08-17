@@ -772,6 +772,76 @@ class ComponentModificationTests(TestCase):
 
         self.assertTrue(configuration["components"][1]["hidden"])
 
+    def test_change_component_in_another_step_to_hidden(self):
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "step1_textfield",
+                    }
+                ]
+            },
+        )
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "step2_textfield",
+                        "hidden": False,
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [
+                    {"var": "step1_textfield"},
+                    "hide step2_textfield",
+                ]
+            },
+            actions=[
+                {
+                    "component": "step2_textfield1",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        submission_step1 = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"step1_textfield": "hide step2_textfield"},
+        )
+
+        configuration = evaluate_form_logic(
+            submission, submission_step1, submission.data
+        )
+
+        # Nothing changed in the current step, because the action in the rule references a component in another step
+        expected = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "step1_textfield",
+                }
+            ]
+        }
+        self.assertEqual(configuration, expected)
+
 
 class StepModificationTests(TestCase):
     def test_next_button_disabled(self):
