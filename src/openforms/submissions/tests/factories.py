@@ -6,6 +6,7 @@ from django.utils import timezone
 
 import factory
 import magic
+from faker import Faker
 from glom import PathAccessError, glom
 
 from openforms.forms.tests.factories import (
@@ -148,8 +149,9 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
 
         configuration = {"components": components}
 
+        faker = Faker()
         form_definition = FormDefinitionFactory.create(
-            name=f"definition-{key}", configuration=configuration
+            name=f"definition-{faker.word()}", configuration=configuration
         )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
 

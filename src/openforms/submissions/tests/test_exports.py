@@ -5,9 +5,11 @@ from django.utils import timezone
 
 from freezegun import freeze_time
 
+from openforms.forms.constants import FormVariableSources
+
 from ..exports import create_submission_export
 from ..models import Submission
-from .factories import SubmissionFactory
+from .factories import SubmissionFactory, SubmissionValueVariableFactory
 
 
 class ExportTests(TestCase):
@@ -117,5 +119,51 @@ class ExportTests(TestCase):
                 None,
                 None,
                 None,
+            ),
+        )
+
+    @freeze_time("2022-05-09T13:00:00Z")
+    def test_user_defined_variables_in_export(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "input1",
+                    "hidden": False,
+                }
+            ],
+            submitted_data={
+                "input1": "Input 1",
+            },
+            form__name="Export test",
+            completed=True,
+            completed_on=timezone.now(),
+        )
+        SubmissionValueVariableFactory.create(
+            key="ud1",
+            value="Some value",
+            submission=submission,
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__form=submission.form,
+        )
+
+        dataset = create_submission_export(Submission.objects.all())
+
+        self.assertEqual(
+            dataset.headers,
+            [
+                "Formuliernaam",
+                "Inzendingdatum",
+                "input1",
+                "ud1",
+            ],
+        )
+        self.assertEqual(
+            dataset[0],
+            (
+                "Export test",
+                datetime(2022, 5, 9, 15, 0, 0),
+                "Input 1",
+                "Some value",
             ),
         )
