@@ -1228,7 +1228,7 @@ class FormLogicAPITests(APITestCase):
                 ]
             },
         )
-        FormLogicFactory.create(form=form)  # existing rule will be replaced
+        FormLogicFactory.create(form=form)
 
         form_logic_data = [
             {

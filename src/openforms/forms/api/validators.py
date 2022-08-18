@@ -21,7 +21,7 @@ class JsonLogicValidator:
     def __call__(self, value: dict):
         try:
             jsonLogic(value)
-        except ValueError:
+        except Exception:
             raise serializers.ValidationError(_("Invalid JSON logic."), code="invalid")
 
 
