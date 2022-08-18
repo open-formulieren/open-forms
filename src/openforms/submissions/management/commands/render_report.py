@@ -12,6 +12,10 @@ from django.core.management import BaseCommand
 from tabulate import tabulate
 
 from openforms.formio.rendering.nodes import ComponentNode
+from openforms.variables.rendering.nodes import (
+    SubmissionValueVariableNode,
+    VariablesNode,
+)
 
 from ...models import Submission
 from ...rendering.nodes import Node, SubmissionStepNode
@@ -19,7 +23,9 @@ from ...rendering.renderer import Renderer, RenderModes
 
 INDENT_SIZES = {
     SubmissionStepNode: 1,
+    VariablesNode: 1,
     ComponentNode: 2,
+    SubmissionValueVariableNode: 2,
 }
 
 INDENT = "    "
@@ -97,11 +103,15 @@ class Command(BaseCommand):
                 tabulate_data.append([node.label, node.display_value])
                 prev_node_type = ComponentNode
                 continue
-            else:
-                # changed from component node to something else -> print the tabular data
-                if prev_node_type == ComponentNode:
-                    self._print_tabulate_data(tabulate_data)
-                    tabulate_data = []
+            elif isinstance(node, SubmissionValueVariableNode):
+                tabulate_data.append([node.label, node.display_value])
+                prev_node_type = SubmissionValueVariableNode
+                continue
+            elif prev_node_type == ComponentNode and (
+                isinstance(node, SubmissionStepNode) or isinstance(node, VariablesNode)
+            ):
+                self._print_tabulate_data(tabulate_data)
+                tabulate_data = []
 
             if lead:
                 self.stdout.write(lead, ending="")
