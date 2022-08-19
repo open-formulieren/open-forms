@@ -7,7 +7,11 @@ import requests_mock
 from furl import furl
 from rest_framework import status
 
-from digid_eherkenning_oidc_generics.models import OpenIDConnectPublicConfig
+from oidc_generics.models import (
+    OpenIDConnectDigiDMachtigenConfig,
+    OpenIDConnectEHerkenningBewindvoeringConfig,
+    OpenIDConnectPublicConfig,
+)
 from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.forms.tests.factories import FormFactory
 
@@ -16,7 +20,7 @@ default_config = dict(
     oidc_rp_client_id="testclient",
     oidc_rp_client_secret="secret",
     oidc_rp_sign_algo="RS256",
-    oidc_rp_scopes_list=["openid", "bsn"],
+    oidc_rp_scopes_list=["openid"],
     oidc_op_jwks_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/certs",
     oidc_op_authorization_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/auth",
     oidc_op_token_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/token",
@@ -25,25 +29,29 @@ default_config = dict(
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True, IS_HTTPS=True)
-class DigiDOIDCTests(TestCase):
+@patch(
+    "oidc_generics.models.OpenIDConnectEHerkenningBewindvoeringConfig.get_solo",
+    return_value=OpenIDConnectEHerkenningBewindvoeringConfig(**default_config),
+)
+class EHerkenningBewindvoeringOIDCTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.form = FormFactory.create(
-            generate_minimal_setup=True, authentication_backends=["digid_oidc"]
+            generate_minimal_setup=True,
+            authentication_backends=["eherkenning_bewindvoering_oidc"],
         )
 
-    @patch(
-        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
-        return_value=OpenIDConnectPublicConfig(**default_config),
-    )
-    def test_redirect_to_digid_oidc(self, *m):
+    def test_redirect_to_eherkenning_bewindvoering_oidc(self, m_get_solo):
         login_url = reverse(
             "authentication:start",
-            kwargs={"slug": self.form.slug, "plugin_id": "digid_oidc"},
+            kwargs={
+                "slug": self.form.slug,
+                "plugin_id": "eherkenning_bewindvoering_oidc",
+            },
         )
 
         form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
-        form_url = str(furl(f"http://testserver{form_path}").set({"_start": "1"}))
+        form_url = furl(f"http://testserver{form_path}").set({"_start": "1"}).url
         start_url = furl(login_url).set({"next": form_url})
         response = self.client.get(start_url)
 
@@ -53,7 +61,10 @@ class DigiDOIDCTests(TestCase):
         query_params = parsed.query.params
 
         self.assertEqual(parsed.host, "testserver")
-        self.assertEqual(parsed.path, reverse("digid_oidc:oidc_authentication_init"))
+        self.assertEqual(
+            parsed.path,
+            reverse("eherkenning_bewindvoering_oidc:oidc_authentication_init"),
+        )
 
         parsed = furl(query_params["next"])
         query_params = parsed.query.params
@@ -62,7 +73,10 @@ class DigiDOIDCTests(TestCase):
             parsed.path,
             reverse(
                 "authentication:return",
-                kwargs={"slug": self.form.slug, "plugin_id": "digid_oidc"},
+                kwargs={
+                    "slug": self.form.slug,
+                    "plugin_id": "eherkenning_bewindvoering_oidc",
+                },
             ),
         )
         self.assertEqual(query_params["next"], form_url)
@@ -83,11 +97,11 @@ class DigiDOIDCTests(TestCase):
         self.assertEqual(
             parsed.path, "/auth/realms/master/protocol/openid-connect/auth"
         )
-        self.assertEqual(query_params["scope"], "openid bsn")
+        self.assertEqual(query_params["scope"], "openid")
         self.assertEqual(query_params["client_id"], "testclient")
         self.assertEqual(
             query_params["redirect_uri"],
-            f"http://testserver{reverse('digid_oidc:oidc_authentication_callback')}",
+            f"http://testserver{reverse('eherkenning_bewindvoering_oidc:oidc_authentication_callback')}",
         )
 
         parsed = furl(self.client.session["oidc_login_next"])
@@ -97,19 +111,23 @@ class DigiDOIDCTests(TestCase):
             parsed.path,
             reverse(
                 "authentication:return",
-                kwargs={"slug": self.form.slug, "plugin_id": "digid_oidc"},
+                kwargs={
+                    "slug": self.form.slug,
+                    "plugin_id": "eherkenning_bewindvoering_oidc",
+                },
             ),
         )
         self.assertEqual(query_params["next"], form_url)
 
-    @patch(
-        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
-        return_value=OpenIDConnectPublicConfig(**default_config),
-    )
-    def test_redirect_to_digid_oidc_internal_server_error(self, *m):
+    def test_redirect_to_eherkenning_bewindvoering_oidc_internal_server_error(
+        self, m_get_solo
+    ):
         login_url = reverse(
             "authentication:start",
-            kwargs={"slug": self.form.slug, "plugin_id": "digid_oidc"},
+            kwargs={
+                "slug": self.form.slug,
+                "plugin_id": "eherkenning_bewindvoering_oidc",
+            },
         )
 
         form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
@@ -131,20 +149,23 @@ class DigiDOIDCTests(TestCase):
 
         self.assertEqual(parsed.host, "testserver")
         self.assertEqual(parsed.path, form_path)
-        self.assertEqual(query_params["of-auth-problem"], "digid_oidc")
+        self.assertEqual(
+            query_params["of-auth-problem"], "eherkenning_bewindvoering_oidc"
+        )
 
-    @patch(
-        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
-        return_value=OpenIDConnectPublicConfig(**default_config),
-    )
-    def test_redirect_to_digid_oidc_callback_error(self, *m):
+    def test_redirect_to_eherkenning_bewindvoering_oidc_callback_error(
+        self, m_get_solo
+    ):
         form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
         form_url = f"http://testserver{form_path}"
         redirect_form_url = furl(form_url).set({"_start": "1"})
         redirect_url = furl(
             reverse(
                 "authentication:return",
-                kwargs={"slug": self.form.slug, "plugin_id": "digid_oidc"},
+                kwargs={
+                    "slug": self.form.slug,
+                    "plugin_id": "eherkenning_bewindvoering_oidc",
+                },
             )
         ).set({"next": redirect_form_url})
 
@@ -153,10 +174,12 @@ class DigiDOIDCTests(TestCase):
         session.save()
 
         with patch(
-            "openforms.authentication.contrib.digid_eherkenning_oidc.backends.OIDCAuthenticationDigiDBackend.verify_claims",
+            "openforms.authentication.contrib.oidc.backends.OIDCAuthenticationEHerkenningBewindvoeringBackend.verify_claims",
             return_value=False,
         ):
-            response = self.client.get(reverse("digid_oidc:callback"))
+            response = self.client.get(
+                reverse("eherkenning_bewindvoering_oidc:callback")
+            )
 
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)
 
@@ -165,16 +188,15 @@ class DigiDOIDCTests(TestCase):
 
         self.assertEqual(parsed.path, form_path)
         self.assertEqual(query_params["_start"], "1")
-        self.assertEqual(query_params[BACKEND_OUTAGE_RESPONSE_PARAMETER], "digid_oidc")
+        self.assertEqual(
+            query_params[BACKEND_OUTAGE_RESPONSE_PARAMETER],
+            "eherkenning_bewindvoering_oidc",
+        )
 
     @override_settings(CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=[])
-    @patch(
-        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
-        return_value=OpenIDConnectPublicConfig(**default_config),
-    )
-    def test_redirect_to_disallowed_domain(self, *m):
+    def test_redirect_to_disallowed_domain(self, m_get_solo):
         login_url = reverse(
-            "digid_oidc:oidc_authentication_init",
+            "eherkenning_bewindvoering_oidc:oidc_authentication_init",
         )
 
         form_url = "http://example.com"
@@ -186,24 +208,25 @@ class DigiDOIDCTests(TestCase):
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://example.com"]
     )
-    @patch(
-        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
-        return_value=OpenIDConnectPublicConfig(
+    def test_redirect_to_allowed_domain(self, m_get_solo):
+        m_get_solo.return_value = OpenIDConnectDigiDMachtigenConfig(
             enabled=True,
             oidc_rp_client_id="testclient",
             oidc_rp_client_secret="secret",
             oidc_rp_sign_algo="RS256",
-            oidc_rp_scopes_list=["openid", "bsn"],
+            oidc_rp_scopes_list=["openid"],
             oidc_op_jwks_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/certs",
             oidc_op_authorization_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/auth",
             oidc_op_token_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/token",
             oidc_op_user_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/userinfo",
-        ),
-    )
-    def test_redirect_to_allowed_domain(self, *m):
+        )
+
         login_url = reverse(
             "authentication:start",
-            kwargs={"slug": self.form.slug, "plugin_id": "digid_oidc"},
+            kwargs={
+                "slug": self.form.slug,
+                "plugin_id": "eherkenning_bewindvoering_oidc",
+            },
         )
 
         form_url = "http://example.com"
@@ -216,7 +239,10 @@ class DigiDOIDCTests(TestCase):
         query_params = parsed.query.params
 
         self.assertEqual(parsed.host, "testserver")
-        self.assertEqual(parsed.path, reverse("digid_oidc:oidc_authentication_init"))
+        self.assertEqual(
+            parsed.path,
+            reverse("eherkenning_bewindvoering_oidc:oidc_authentication_init"),
+        )
 
         parsed = furl(query_params["next"])
         query_params = parsed.query.params
@@ -225,7 +251,10 @@ class DigiDOIDCTests(TestCase):
             parsed.path,
             reverse(
                 "authentication:return",
-                kwargs={"slug": self.form.slug, "plugin_id": "digid_oidc"},
+                kwargs={
+                    "slug": self.form.slug,
+                    "plugin_id": "eherkenning_bewindvoering_oidc",
+                },
             ),
         )
         self.assertEqual(query_params["next"], form_url)
@@ -246,32 +275,33 @@ class DigiDOIDCTests(TestCase):
         self.assertEqual(
             parsed.path, "/auth/realms/master/protocol/openid-connect/auth"
         )
-        self.assertEqual(query_params["scope"], "openid bsn")
+        self.assertEqual(query_params["scope"], "openid")
         self.assertEqual(query_params["client_id"], "testclient")
         self.assertEqual(
             query_params["redirect_uri"],
-            f"http://testserver{reverse('digid_oidc:oidc_authentication_callback')}",
+            f"http://testserver{reverse('eherkenning_bewindvoering_oidc:oidc_authentication_callback')}",
         )
 
-    @patch(
-        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
-        return_value=OpenIDConnectPublicConfig(
+    def test_redirect_with_keycloak_identity_provider_hint(self, m_get_solo):
+        m_get_solo.return_value = OpenIDConnectPublicConfig(
             enabled=True,
             oidc_rp_client_id="testclient",
             oidc_rp_client_secret="secret",
             oidc_rp_sign_algo="RS256",
-            oidc_rp_scopes_list=["openid", "bsn"],
+            oidc_rp_scopes_list=["openid"],
             oidc_op_jwks_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/certs",
             oidc_op_authorization_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/auth",
             oidc_op_token_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/token",
             oidc_op_user_endpoint="http://provider.com/auth/realms/master/protocol/openid-connect/userinfo",
-            oidc_keycloak_idp_hint="oidc-digid",
-        ),
-    )
-    def test_redirect_with_keycloak_identity_provider_hint(self, *m):
+            oidc_keycloak_idp_hint="oidc-digid-machtigen",
+        )
+
         login_url = reverse(
             "authentication:start",
-            kwargs={"slug": self.form.slug, "plugin_id": "digid_oidc"},
+            kwargs={
+                "slug": self.form.slug,
+                "plugin_id": "eherkenning_bewindvoering_oidc",
+            },
         )
 
         form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
@@ -285,7 +315,10 @@ class DigiDOIDCTests(TestCase):
         query_params = parsed.query.params
 
         self.assertEqual(parsed.host, "testserver")
-        self.assertEqual(parsed.path, reverse("digid_oidc:oidc_authentication_init"))
+        self.assertEqual(
+            parsed.path,
+            reverse("eherkenning_bewindvoering_oidc:oidc_authentication_init"),
+        )
 
         parsed = furl(query_params["next"])
         query_params = parsed.query.params
@@ -294,7 +327,10 @@ class DigiDOIDCTests(TestCase):
             parsed.path,
             reverse(
                 "authentication:return",
-                kwargs={"slug": self.form.slug, "plugin_id": "digid_oidc"},
+                kwargs={
+                    "slug": self.form.slug,
+                    "plugin_id": "eherkenning_bewindvoering_oidc",
+                },
             ),
         )
         self.assertEqual(query_params["next"], form_url)
@@ -315,10 +351,10 @@ class DigiDOIDCTests(TestCase):
         self.assertEqual(
             parsed.path, "/auth/realms/master/protocol/openid-connect/auth"
         )
-        self.assertEqual(query_params["scope"], "openid bsn")
+        self.assertEqual(query_params["scope"], "openid")
         self.assertEqual(query_params["client_id"], "testclient")
         self.assertEqual(
             query_params["redirect_uri"],
-            f"http://testserver{reverse('digid_oidc:oidc_authentication_callback')}",
+            f"http://testserver{reverse('eherkenning_bewindvoering_oidc:oidc_authentication_callback')}",
         )
-        self.assertEqual(query_params["kc_idp_hint"], "oidc-digid")
+        self.assertEqual(query_params["kc_idp_hint"], "oidc-digid-machtigen")

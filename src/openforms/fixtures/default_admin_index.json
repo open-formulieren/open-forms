@@ -159,19 +159,19 @@
                 "familymemberstypeconfig"
             ],
             [
-                "digid_eherkenning_oidc_generics",
+                "oidc_generics",
                 "openidconnectdigidmachtigenconfig"
             ],
             [
-                "digid_eherkenning_oidc_generics",
+                "oidc_generics",
                 "openidconnecteherkenningbewindvoeringconfig"
             ],
             [
-                "digid_eherkenning_oidc_generics",
+                "oidc_generics",
                 "openidconnecteherkenningconfig"
             ],
             [
-                "digid_eherkenning_oidc_generics",
+                "oidc_generics",
                 "openidconnectpublicconfig"
             ],
             [

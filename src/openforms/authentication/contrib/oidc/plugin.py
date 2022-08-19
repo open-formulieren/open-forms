@@ -5,9 +5,10 @@ from django.utils.translation import gettext_lazy as _
 
 import requests
 from furl import furl
+from mozilla_django_oidc_db.models import OpenIDConnectConfig
 from rest_framework.reverse import reverse
 
-from digid_eherkenning_oidc_generics.models import (
+from oidc_generics.models import (
     OpenIDConnectDigiDMachtigenConfig,
     OpenIDConnectEHerkenningBewindvoeringConfig,
     OpenIDConnectEHerkenningConfig,
@@ -193,3 +194,12 @@ class EHerkenningBewindvoeringOIDCAuthentication(OIDCAuthentication):
 
     def get_logo(self, request) -> Optional[LoginLogo]:
         return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))
+
+
+@register("azure_ad_oidc")
+class AzureADOIDCAuthentication(OIDCAuthentication):
+    verbose_name = _("Azure AD via OpenID Connect")
+    provides_auth = AuthAttribute.pseudo
+    init_url = "azure_ad_oidc:init"
+    session_key = DIGID_OIDC_AUTH_SESSION_KEY
+    config_class = OpenIDConnectConfig

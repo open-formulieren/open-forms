@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("digid_eherkenning_oidc_generics", "0003_auto_20220421_1732"),
+        ("oidc_generics", "0003_auto_20220421_1732"),
     ]
 
     operations = [

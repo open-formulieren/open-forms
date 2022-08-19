@@ -39,7 +39,7 @@ src/manage.py dumpdata \
     jcc.JccConfig \
     qmatic.QmaticConfig \
     mozilla_django_oidc_db \
-    digid_eherkenning_oidc_generics \
+    oidc_generics \
     multidomain \
     bag \
     brp \

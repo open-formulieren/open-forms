@@ -4,11 +4,11 @@ from django.test import RequestFactory, TestCase
 
 import requests_mock
 
-from digid_eherkenning_oidc_generics.models import (
+from oidc_generics.models import (
     OpenIDConnectEHerkenningConfig,
     OpenIDConnectPublicConfig,
 )
-from openforms.authentication.contrib.digid_eherkenning_oidc.plugin import (
+from openforms.authentication.contrib.oidc.plugin import (
     DigiDOIDCAuthentication,
     eHerkenningOIDCAuthentication,
 )
@@ -16,7 +16,7 @@ from openforms.authentication.contrib.digid_eherkenning_oidc.plugin import (
 
 class PluginLogoutTest(TestCase):
     @patch(
-        "digid_eherkenning_oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
+        "oidc_generics.models.OpenIDConnectPublicConfig.get_solo",
         return_value=OpenIDConnectPublicConfig(
             oidc_op_logout_endpoint="http://foo/logout",
         ),
@@ -55,7 +55,7 @@ class PluginLogoutTest(TestCase):
             self.assertTrue(mocker.called)
 
     @patch(
-        "digid_eherkenning_oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
+        "oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
         return_value=OpenIDConnectEHerkenningConfig(
             oidc_op_logout_endpoint="http://foo/logout",
         ),

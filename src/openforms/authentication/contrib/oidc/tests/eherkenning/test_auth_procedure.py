@@ -7,7 +7,7 @@ import requests_mock
 from furl import furl
 from rest_framework import status
 
-from digid_eherkenning_oidc_generics.models import OpenIDConnectEHerkenningConfig
+from oidc_generics.models import OpenIDConnectEHerkenningConfig
 from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.forms.tests.factories import FormFactory
 
@@ -33,7 +33,7 @@ class eHerkenningOIDCTests(TestCase):
         )
 
     @patch(
-        "digid_eherkenning_oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
+        "oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
         return_value=OpenIDConnectEHerkenningConfig(**default_config),
     )
     def test_redirect_to_eherkenning_oidc(self, *m):
@@ -105,7 +105,7 @@ class eHerkenningOIDCTests(TestCase):
         self.assertEqual(query_params["next"], form_url)
 
     @patch(
-        "digid_eherkenning_oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
+        "oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
         return_value=OpenIDConnectEHerkenningConfig(**default_config),
     )
     def test_redirect_to_eherkenning_oidc_internal_server_error(self, *m):
@@ -136,7 +136,7 @@ class eHerkenningOIDCTests(TestCase):
         self.assertEqual(query_params["of-auth-problem"], "eherkenning_oidc")
 
     @patch(
-        "digid_eherkenning_oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
+        "oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
         return_value=OpenIDConnectEHerkenningConfig(**default_config),
     )
     def test_redirect_to_eherkenning_oidc_callback_error(self, *m):
@@ -155,7 +155,7 @@ class eHerkenningOIDCTests(TestCase):
         session.save()
 
         with patch(
-            "openforms.authentication.contrib.digid_eherkenning_oidc.backends.OIDCAuthenticationEHerkenningBackend.verify_claims",
+            "openforms.authentication.contrib.oidc.backends.OIDCAuthenticationEHerkenningBackend.verify_claims",
             return_value=False,
         ):
             response = self.client.get(reverse("eherkenning_oidc:callback"))
@@ -173,7 +173,7 @@ class eHerkenningOIDCTests(TestCase):
 
     @override_settings(CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=[])
     @patch(
-        "digid_eherkenning_oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
+        "oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
         return_value=OpenIDConnectEHerkenningConfig(**default_config),
     )
     def test_redirect_to_disallowed_domain(self, *m):
@@ -191,7 +191,7 @@ class eHerkenningOIDCTests(TestCase):
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://example.com"]
     )
     @patch(
-        "digid_eherkenning_oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
+        "oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
         return_value=OpenIDConnectEHerkenningConfig(
             enabled=True,
             oidc_rp_client_id="testclient",
@@ -261,7 +261,7 @@ class eHerkenningOIDCTests(TestCase):
         )
 
     @patch(
-        "digid_eherkenning_oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
+        "oidc_generics.models.OpenIDConnectEHerkenningConfig.get_solo",
         return_value=OpenIDConnectEHerkenningConfig(
             enabled=True,
             oidc_rp_client_id="testclient",

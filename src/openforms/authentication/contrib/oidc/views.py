@@ -7,19 +7,21 @@ import requests
 from furl import furl
 from mozilla_django_oidc.views import get_next_url
 
-from digid_eherkenning_oidc_generics.mixins import (
+from oidc_generics.mixins import (
+    SoloConfigAzureADMixin,
     SoloConfigDigiDMachtigenMixin,
     SoloConfigDigiDMixin,
     SoloConfigEHerkenningBewindvoeringMixin,
     SoloConfigEHerkenningMixin,
 )
-from digid_eherkenning_oidc_generics.views import (
+from oidc_generics.views import (
     OIDCAuthenticationCallbackView as _OIDCAuthenticationCallbackView,
     OIDCAuthenticationRequestView as _OIDCAuthenticationRequestView,
 )
 
 from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from .backends import (
+    OIDCAuthenticationAzureADBackend,
     OIDCAuthenticationDigiDBackend,
     OIDCAuthenticationDigiDMachtigenBackend,
     OIDCAuthenticationEHerkenningBackend,
@@ -122,3 +124,16 @@ class EHerkenningBewindvoeringOIDCAuthenticationCallbackView(
 ):
     plugin_identifier = "eherkenning_bewindvoering_oidc"
     auth_backend_class = OIDCAuthenticationEHerkenningBewindvoeringBackend
+
+
+class AzureADOIDCAuthenticationRequestView(
+    SoloConfigAzureADMixin, OIDCAuthenticationRequestView
+):
+    plugin_identifier = "azure_ad_oidc"
+
+
+class AzureADOIDCAuthenticationCallbackView(
+    SoloConfigAzureADMixin, OIDCAuthenticationCallbackView
+):
+    plugin_identifier = "azure_ad_oidc"
+    auth_backend_class = OIDCAuthenticationAzureADBackend

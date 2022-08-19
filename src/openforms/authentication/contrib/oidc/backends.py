@@ -1,8 +1,9 @@
 import logging
 
-from digid_eherkenning_oidc_generics.backends import OIDCAuthenticationBackend
-from digid_eherkenning_oidc_generics.mixins import (
+from oidc_generics.backends import OIDCAuthenticationBackend
+from oidc_generics.mixins import (
     MachtigenBackendMixin,
+    SoloConfigAzureADMixin,
     SoloConfigDigiDMachtigenMixin,
     SoloConfigDigiDMixin,
     SoloConfigEHerkenningBewindvoeringMixin,
@@ -10,6 +11,7 @@ from digid_eherkenning_oidc_generics.mixins import (
 )
 
 from .constants import (
+    AZURE_AD_OIDC_AUTH_SESSION_KEY,
     DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY,
     DIGID_OIDC_AUTH_SESSION_KEY,
     EHERKENNING_BEWINDVOERING_OIDC_AUTH_SESSION_KEY,
@@ -63,3 +65,14 @@ class OIDCAuthenticationEHerkenningBewindvoeringBackend(
             self.config.vertegenwoordigde_company_claim_name,
             self.config.gemachtigde_person_claim_name,
         ]
+
+
+class OIDCAuthenticationAzureADBackend(
+    SoloConfigAzureADMixin,
+    OIDCAuthenticationBackend,
+):
+    session_key = AZURE_AD_OIDC_AUTH_SESSION_KEY
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        setattr(self.config, self.config_identifier_field, self.config.username_claim)

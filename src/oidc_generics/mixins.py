@@ -6,9 +6,11 @@ from django.core.exceptions import SuspiciousOperation
 
 from glom import PathAccessError, glom
 from mozilla_django_oidc_db.mixins import SoloConfigMixin as _SoloConfigMixin
+from mozilla_django_oidc_db.models import OpenIDConnectConfig
 from mozilla_django_oidc_db.utils import obfuscate_claim_value
 
 from . import (
+    azure_ad_settings,
     digid_machtigen_settings,
     digid_settings,
     eherkenning_bewindvoering_settings,
@@ -52,6 +54,11 @@ class SoloConfigDigiDMachtigenMixin(SoloConfigMixin):
 class SoloConfigEHerkenningBewindvoeringMixin(SoloConfigMixin):
     config_class = OpenIDConnectEHerkenningBewindvoeringConfig
     settings_attribute = eherkenning_bewindvoering_settings
+
+
+class SoloConfigAzureADMixin(SoloConfigMixin):
+    config_class = OpenIDConnectConfig
+    settings_attribute = azure_ad_settings
 
 
 class MachtigenBackendMixin:

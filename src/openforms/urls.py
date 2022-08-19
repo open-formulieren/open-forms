@@ -76,25 +76,31 @@ urlpatterns = [
     path(
         "digid-oidc/",
         include(
-            "openforms.authentication.contrib.digid_eherkenning_oidc.digid_urls",
+            "openforms.authentication.contrib.oidc.digid_urls",
         ),
     ),
     path(
         "eherkenning-oidc/",
         include(
-            "openforms.authentication.contrib.digid_eherkenning_oidc.eherkenning_urls",
+            "openforms.authentication.contrib.oidc.eherkenning_urls",
         ),
     ),
     path(
         "digid-machtigen-oidc/",
         include(
-            "openforms.authentication.contrib.digid_eherkenning_oidc.digid_machtigen_urls",
+            "openforms.authentication.contrib.oidc.digid_machtigen_urls",
         ),
     ),
     path(
         "eherkenning-bewindvoering-oidc/",
         include(
-            "openforms.authentication.contrib.digid_eherkenning_oidc.eherkenning_bewindvoering_urls",
+            "openforms.authentication.contrib.oidc.eherkenning_bewindvoering_urls",
+        ),
+    ),
+    path(
+        "azure-ad-oidc/",
+        include(
+            "openforms.authentication.contrib.oidc.azure_ad_urls",
         ),
     ),
     path("payment/", include("openforms.payments.urls", namespace="payments")),

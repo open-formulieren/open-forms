@@ -8,7 +8,7 @@ import django_better_admin_arrayfield.models.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("digid_eherkenning_oidc_generics", "0002_openidconnectdigidmachtigenconfig"),
+        ("oidc_generics", "0002_openidconnectdigidmachtigenconfig"),
     ]
 
     operations = [

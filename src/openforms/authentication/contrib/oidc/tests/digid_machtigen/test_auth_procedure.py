@@ -7,7 +7,7 @@ import requests_mock
 from furl import furl
 from rest_framework import status
 
-from digid_eherkenning_oidc_generics.models import (
+from oidc_generics.models import (
     OpenIDConnectDigiDMachtigenConfig,
     OpenIDConnectPublicConfig,
 )
@@ -29,7 +29,7 @@ default_config = dict(
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True, IS_HTTPS=True)
 @patch(
-    "digid_eherkenning_oidc_generics.models.OpenIDConnectDigiDMachtigenConfig.get_solo",
+    "oidc_generics.models.OpenIDConnectDigiDMachtigenConfig.get_solo",
     return_value=OpenIDConnectDigiDMachtigenConfig(**default_config),
 )
 class DigiDMachtigenOIDCTests(TestCase):
@@ -151,7 +151,7 @@ class DigiDMachtigenOIDCTests(TestCase):
         session.save()
 
         with patch(
-            "openforms.authentication.contrib.digid_eherkenning_oidc.backends.OIDCAuthenticationDigiDMachtigenBackend.verify_claims",
+            "openforms.authentication.contrib.oidc.backends.OIDCAuthenticationDigiDMachtigenBackend.verify_claims",
             return_value=False,
         ):
             response = self.client.get(reverse("digid_machtigen_oidc:callback"))
