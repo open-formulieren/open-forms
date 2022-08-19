@@ -4,6 +4,7 @@ from django.test import TestCase, tag
 
 from requests import RequestException
 
+from openforms.logging.models import TimelineLogProxy
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
 from stuf.stuf_bg.constants import FieldChoices
@@ -135,6 +136,17 @@ class StufBgPrefillTests(TestCase):
 
             self.assertEqual(values, {})
             self.assertEqual(logs.records[0].fault, {})
+
+    def test_get_available_attributes_when_no_answer_is_returned_logs_failure(self):
+        client_patcher = mock_stufbg_client("StufBgNoAnswerResponse.xml")
+        self.addCleanup(client_patcher.stop)
+        attributes = FieldChoices.attributes.keys()
+
+        self.plugin.get_prefill_values(self.submission, attributes)
+
+        log = TimelineLogProxy.objects.last()
+        self.assertEqual(log.event, "prefill_retrieve_failure")
+        self.assertEqual(log.fmt_plugin, '"StUF-BG" (test-plugin)')
 
     def test_get_available_attributes_when_object_not_found_reponse_is_returned(self):
         client_patcher = mock_stufbg_client("StufBgNotFoundResponse.xml")
