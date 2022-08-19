@@ -9,7 +9,9 @@ from lxml import etree
 from requests import HTTPError, RequestException
 
 from openforms.authentication.constants import AuthAttribute
+from openforms.logging import logevent
 from openforms.plugins.exceptions import InvalidPluginConfiguration
+from openforms.prefill.exceptions import NoPrefillDataException
 from openforms.submissions.models import Submission
 from openforms.utils.xml import fromstring
 from stuf.stuf_bg.constants import FieldChoices
@@ -103,7 +105,10 @@ class StufBgPrefill(BasePlugin):
         config = StufBGConfig.get_solo()
         client = config.get_client()
 
-        data = client.get_values(bsn, attributes)
+        try:
+            data = client.get_values(bsn, attributes)
+        except Exception as e:
+            raise NoPrefillDataException from e
 
         response_dict = {}
         for attribute in attributes:
@@ -132,7 +137,11 @@ class StufBgPrefill(BasePlugin):
             logger.info("No BSN associated with submission, cannot prefill.")
             return {}
 
-        return self._get_values_for_bsn(submission.auth_info.value, attributes)
+        try:
+            return self._get_values_for_bsn(submission.auth_info.value, attributes)
+        except NoPrefillDataException as e:
+            logevent.prefill_retrieve_failure(submission, self, e)
+            return {}
 
     def get_co_sign_values(self, identifier: str) -> Tuple[Dict[str, Any], str]:
         """

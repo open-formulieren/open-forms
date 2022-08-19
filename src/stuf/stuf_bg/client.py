@@ -111,4 +111,4 @@ class StufBGClient:
                     extra={"response": dict_response, "fault": fault},
                     exc_info=exc,
                 )
-                return {}
+                raise exc

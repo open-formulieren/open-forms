@@ -1,0 +1,2 @@
+class NoPrefillDataException(Exception):
+    pass
