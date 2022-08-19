@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {defineMessage, FormattedMessage, useIntl} from 'react-intl';
 
@@ -8,8 +8,11 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 import {getTranslatedChoices} from 'utils/i18n';
+import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
+import ErrorList from 'components/admin/forms/ErrorList';
 
 import TinyMCEEditor from './Editor';
+import {parseValidationErrors} from './utils';
 
 const EMAIL_OPTIONS = [
   [
@@ -45,6 +48,8 @@ const Confirmation = ({
   const intl = useIntl();
   const emailOptions = getTranslatedChoices(intl, EMAIL_OPTIONS);
 
+  const formValidationErrors = parseValidationErrors(useContext(ValidationErrorContext), 'form');
+
   const {subject, content} = emailTemplate;
 
   const onCheckboxChange = (event, currentValue) => {
@@ -55,7 +60,7 @@ const Confirmation = ({
   };
 
   return (
-    <>
+    <div className="confirmation-page">
       <Fieldset
         title={
           <FormattedMessage
@@ -64,6 +69,11 @@ const Confirmation = ({
           />
         }
       >
+        {formValidationErrors.submissionConfirmationTemplate?.nonFieldErrors && (
+          <ErrorList classNamePrefix="confirmation-page">
+            {formValidationErrors.submissionConfirmationTemplate.nonFieldErrors}
+          </ErrorList>
+        )}
         <FormRow>
           <Field
             name="form.submissionConfirmationTemplate"
@@ -116,6 +126,11 @@ const Confirmation = ({
           />
         }
       >
+        {formValidationErrors.confirmationEmailTemplate?.nonFieldErrors && (
+          <ErrorList classNamePrefix="confirmation-page">
+            {formValidationErrors.confirmationEmailTemplate.nonFieldErrors}
+          </ErrorList>
+        )}
         <FormRow>
           <Field
             name="form.confirmationEmailTemplate.subject"
@@ -174,7 +189,7 @@ const Confirmation = ({
           </Field>
         </FormRow>
       </Fieldset>
-    </>
+    </div>
   );
 };
 

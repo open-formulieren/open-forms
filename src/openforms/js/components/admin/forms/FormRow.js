@@ -13,7 +13,7 @@ const FormRow = ({fields = [], children}) => {
   // process (validation) errors here
   const processedChildren = React.Children.map(children, child => {
     // check if it *looks* like a field
-    const {name} = child.props;
+    let {name, errors} = child.props;
     if (!name) return child;
 
     const childErrors = validationErrors
@@ -33,10 +33,11 @@ const FormRow = ({fields = [], children}) => {
       // filter out falsy values
       .filter(err => err);
 
-    if (childErrors.length > 0) {
+    // Avoid overwriting errors if they are added directly on the child
+    if (errors || childErrors.length > 0) {
       hasErrors = true;
     }
-    return React.cloneElement(child, {errors: childErrors});
+    return React.cloneElement(child, {errors: errors || childErrors});
   });
 
   const className = classNames(

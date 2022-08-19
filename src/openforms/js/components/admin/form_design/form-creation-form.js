@@ -202,7 +202,8 @@ function reducer(draft, action) {
     case 'FIELD_CHANGED': {
       const {name, value} = action.payload;
       // names are prefixed like `form.foo` and `literals.bar`
-      const [prefix, ...rest] = name.split('.');
+      const nameBits = name.split('.');
+      const [prefix, ...rest] = nameBits;
       const fieldName = rest.join('.');
 
       switch (prefix) {
@@ -219,8 +220,23 @@ function reducer(draft, action) {
         }
       }
 
+      const componentContextPath = nameBits.splice(0, nameBits.length - 1).join('.');
+
       // remove any validation errors
-      draft.validationErrors = draft.validationErrors.filter(([key]) => !key.startsWith(name));
+      draft.validationErrors = draft.validationErrors.filter(([key]) => {
+        // The validation error contains either the name of the changed field exactly
+        // or a field that is nested inside the changed field.
+        const clearSpecificFieldError = key.startsWith(name);
+        // A field has changed in a section with non field errors, so we need to clear
+        // those.
+        const errorBits = key.split('.');
+        const errorContextPath = errorBits.splice(0, errorBits.length - 1).join('.');
+        const clearNonFieldError =
+          errorContextPath.startsWith(componentContextPath) &&
+          errorBits[errorBits.length - 1] === 'nonFieldErrors';
+
+        return !(clearSpecificFieldError || clearNonFieldError);
+      });
 
       // check which tabs still need the marker and which don't
       const errorsPerTab = groupBy(draft.validationErrors, ([key]) => {
@@ -736,7 +752,6 @@ function reducer(draft, action) {
 
             let key;
             switch (fieldPrefix) {
-              case 'form':
               // literals are tracked separately in the state
               case 'literals': {
                 key = err.name;
