@@ -14,3 +14,4 @@ Voorbeelden
    appointment_creation
    prefill
    fields_for_logintype
+   calculations
