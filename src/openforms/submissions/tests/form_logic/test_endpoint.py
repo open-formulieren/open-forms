@@ -1,13 +1,15 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
-from rest_framework.test import APITestCase
+from rest_framework.test import APIRequestFactory, APITestCase
 
+from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
     FormStepFactory,
 )
 
+from ...api.viewsets import SubmissionStepViewSet
 from ..factories import SubmissionFactory, SubmissionStepFactory
 from ..mixins import SubmissionsMixin
 
@@ -118,3 +120,26 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertFalse(response.data["submission"]["steps"][1]["is_applicable"])
         self.assertTrue(response.data["submission"]["steps"][2]["is_applicable"])
+
+    def test_endpoint_loads_submission_with_auth_info(self):
+        submission = SubmissionFactory.create()
+        submission_step = SubmissionStepFactory.create(submission=submission)
+
+        request = APIRequestFactory().get("/")
+        request.user = SuperUserFactory.create()
+
+        def check_object_permissions(request, submission_step):
+            return True
+
+        endpoint = SubmissionStepViewSet()
+        endpoint.kwargs = dict(
+            submission_uuid=submission.uuid, step_uuid=submission_step.form_step.uuid
+        )
+        endpoint.request = request
+        endpoint.check_object_permissions = check_object_permissions
+
+        object = endpoint.get_object()
+
+        # Check that get_object retrieves also the auth info as part of the select related
+        with self.assertNumQueries(0):
+            hasattr(object.submission, "auth_info")
