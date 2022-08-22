@@ -112,6 +112,7 @@ class FormNodeTests(TestCase):
         """
         Assert that the number of queries stays low while rendering a submission.
         """
+        self.submission.is_authenticated  # Load the auth info (otherwise an extra query is needed)
         renderer = Renderer(
             submission=self.submission, mode=RenderModes.pdf, as_html=True
         )
@@ -123,7 +124,6 @@ class FormNodeTests(TestCase):
         # 4. Get the step-specific data from submission variable values (TODO: this can probably be optimized away?)
         # 5. Load submission state: get form steps
         # 6. Load submission state: get submission steps
-        # 7. Retrieve the submission auth info
-        # 8. Query the form logic rules for the submission form (and this is cached)
-        with self.assertNumQueries(8):
+        # 7. Query the form logic rules for the submission form (and this is cached)
+        with self.assertNumQueries(7):
             list(renderer)
