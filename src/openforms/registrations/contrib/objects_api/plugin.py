@@ -126,7 +126,7 @@ class ObjectsAPIRegistration(BasePlugin):
                 },
             )
             submission_csv = create_submission_export(
-                Submission.objects.filter(pk=submission.pk)
+                Submission.objects.filter(pk=submission.pk).select_related("auth_info")
             ).export("csv")
 
             submission_csv_document = create_csv_document(

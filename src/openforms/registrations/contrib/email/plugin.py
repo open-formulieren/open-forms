@@ -132,7 +132,9 @@ class EmailRegistration(BasePlugin):
             mime_type = types_map[f".{attachment_format}"]
             if attachment_format in [AttachmentFormat.csv, AttachmentFormat.xlsx]:
                 export_data = create_submission_export(
-                    Submission.objects.filter(pk=submission.pk)
+                    Submission.objects.filter(pk=submission.pk).select_related(
+                        "auth_info"
+                    )
                 ).export(attachment_format)
 
                 attachment = (

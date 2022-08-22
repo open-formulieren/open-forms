@@ -39,7 +39,7 @@ def register_submission(submission_id: int) -> None:
     Submission registration is only executed for "completed" forms, and is delegated
     to the underlying registration backend (if set).
     """
-    submission = Submission.objects.get(id=submission_id)
+    submission = Submission.objects.select_related("auth_info").get(id=submission_id)
     is_retrying = submission.needs_on_completion_retry
 
     logger.debug("Register submission '%s'", submission)
