@@ -1,4 +1,4 @@
-.. _example_calculations:
+.. _examples_calculations:
 
 ==========================
 Formulier met berekeningen
