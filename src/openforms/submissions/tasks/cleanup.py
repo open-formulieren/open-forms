@@ -81,7 +81,7 @@ def finalize_completion_retry(submission_id: int):
 
 
 @app.task(ignore_result=True)
-def maybe_hash_identifying_attributes(submission_id: int):
+def maybe_hash_identifying_attributes(submission_id: int) -> None:
     """
     If the registration was successful or not relevant, hash the identifying attributes.
 
@@ -96,7 +96,8 @@ def maybe_hash_identifying_attributes(submission_id: int):
     if submission.registration_status != RegistrationStatuses.success:
         return
 
-    if submission.auth_info.attribute_hashed:
+    if not submission.is_authenticated:
         return
 
-    submission.auth_info.hash_identifying_attributes()
+    if not submission.auth_info.attribute_hashed:
+        submission.auth_info.hash_identifying_attributes()

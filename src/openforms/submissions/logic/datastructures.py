@@ -2,7 +2,6 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, Tuple
 
 from glom import assign
-from rest_framework.request import Request
 
 from ..models import SubmissionStep
 from ..models.submission_value_variable import SubmissionValueVariablesState
@@ -13,11 +12,10 @@ DataMapping = Dict[str, Any]
 @dataclass
 class DataContainer:
     """
-    A data container to manage the data/variables lifecyle during logic evaluation.
+    A data container to manage the data/variables lifecycle during logic evaluation.
     """
 
     state: SubmissionValueVariablesState
-    request: Request  # TODO: to replace with submission instance for context
 
     _initial_data: Tuple[Tuple[str, Any]] = field(init=False, default_factory=tuple)
 
@@ -43,7 +41,7 @@ class DataContainer:
         dynamic_values = {
             key: variable.value for key, variable in self.state.variables.items()
         }
-        static_values = self.state.static_data(self.request)
+        static_values = self.state.static_data()
         # this construct may have dots in the key names, so we need to expand that
         # into nested objects
         flattened_data = {**dynamic_values, **static_values}

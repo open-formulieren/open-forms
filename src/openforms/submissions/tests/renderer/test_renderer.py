@@ -112,6 +112,7 @@ class FormNodeTests(TestCase):
         """
         Assert that the number of queries stays low while rendering a submission.
         """
+        self.submission.is_authenticated  # Load the auth info (otherwise an extra query is needed)
         renderer = Renderer(
             submission=self.submission, mode=RenderModes.pdf, as_html=True
         )

@@ -95,9 +95,7 @@ def evaluate_form_logic(
 
     step_index = submission_state.form_steps.index(step.form_step)
 
-    data_container = DataContainer(
-        state=submission_variables_state, request=context.get("request")
-    )
+    data_container = DataContainer(state=submission_variables_state)
 
     # 5. Evaluate the logic rules in order
     mutation_operations = []

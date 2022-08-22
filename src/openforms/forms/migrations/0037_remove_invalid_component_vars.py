@@ -2,7 +2,7 @@
 
 from django.db import migrations
 
-from openforms.forms.constants import FormVariableSources
+from openforms.variables.constants import FormVariableSources
 
 
 def remove_component_variables_without_definition(apps, schema_editor):

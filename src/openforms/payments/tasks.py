@@ -22,7 +22,7 @@ def update_submission_payment_status(submission_id: int):
     logger.info(
         "Updating payment information for submission %d (if needed!)", submission_id
     )
-    submission = Submission.objects.get(id=submission_id)
+    submission = Submission.objects.select_related("auth_info").get(id=submission_id)
     is_retrying = submission.needs_on_completion_retry
     try:
         update_submission_payment_registration(submission)

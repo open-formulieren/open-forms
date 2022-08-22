@@ -26,7 +26,7 @@ const ActionProperty = ({action, errors, onChange}) => {
   const castValueTypeToString = action => {
     const valueType = action.action.property.type;
     const value = action.action.state;
-    return value ? TYPE_TO_STRING[valueType](value) : value;
+    return TYPE_TO_STRING[valueType](value);
   };
 
   const castValueStringToType = value => {

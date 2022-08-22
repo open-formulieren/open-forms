@@ -11,8 +11,8 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import SuperUserFactory, TokenFactory
 from openforms.tests.utils import NOOP_CACHES
+from openforms.variables.constants import FormVariableSources
 
-from ..constants import FormVariableSources
 from ..models import Form, FormDefinition, FormStep, FormVariable
 from .factories import (
     FormDefinitionFactory,

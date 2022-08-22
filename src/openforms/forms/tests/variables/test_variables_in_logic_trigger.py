@@ -7,10 +7,37 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.authentication.constants import AuthAttribute
+from openforms.variables.base import BaseStaticVariable
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+from openforms.variables.registry import Registry
 
-from ...constants import FormVariableSources
-from ...models import FormVariable
 from ..factories import FormFactory, FormVariableFactory
+
+
+class DemoNow(BaseStaticVariable):
+    name = "Now"
+    data_type = FormVariableDataTypes.datetime
+
+    def get_initial_value(self, *args, **kwargs):
+        return "2021-07-16T21:15:00+00:00"
+
+
+class DemoAuthIdentifier(BaseStaticVariable):
+    name = "Authentication identifier"
+    data_type = FormVariableDataTypes.object
+
+    def get_initial_value(self, *args, **kwargs):
+        return {
+            "plugin": "digid",
+            "attribute": AuthAttribute.bsn,
+            "value": "123456782",
+        }
+
+
+register = Registry()
+register("now")(DemoNow)
+register("auth_identifier")(DemoAuthIdentifier)
 
 
 # TODO Remove once the FormLogicViewSet endpoint is removed
@@ -87,11 +114,7 @@ class VariablesInLogicAPITests(APITestCase):
             error["invalidParams"][0]["reason"],
         )
 
-    @patch(
-        "openforms.forms.models.FormVariable.get_static_data",
-        return_value=[FormVariable(key="now")],
-    )
-    def test_static_variable_in_trigger(self, m_get_static_data):
+    def test_static_variable_in_trigger(self):
         user = SuperUserFactory.create()
         form = FormFactory.create()
 
@@ -115,7 +138,45 @@ class VariablesInLogicAPITests(APITestCase):
 
         self.client.force_authenticate(user=user)
         url = reverse("api:form-logics-list")
-        response = self.client.post(url, data=form_logic_data)
+
+        with patch(
+            "openforms.forms.models.form_variable.static_variables_register",
+            new=register,
+        ):
+            response = self.client.post(url, data=form_logic_data)
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+    def test_auth_static_variable_in_trigger(self):
+        user = SuperUserFactory.create()
+        form = FormFactory.create()
+
+        form_logic_data = {
+            "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+            "order": 0,
+            "json_logic_trigger": {
+                "==": [
+                    {"var": "auth_identifier.plugin"},
+                    "digid",
+                ]
+            },
+            "actions": [
+                {
+                    "action": {
+                        "type": "disable-next",
+                    }
+                }
+            ],
+        }
+
+        self.client.force_authenticate(user=user)
+        url = reverse("api:form-logics-list")
+
+        with patch(
+            "openforms.forms.models.form_variable.static_variables_register",
+            new=register,
+        ):
+            response = self.client.post(url, data=form_logic_data)
 
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
 
@@ -197,11 +258,7 @@ class VariablesInLogicBulkAPITests(APITestCase):
             error["invalidParams"][0]["reason"],
         )
 
-    @patch(
-        "openforms.forms.models.FormVariable.get_static_data",
-        return_value=[FormVariable(key="now")],
-    )
-    def test_static_variable_in_trigger(self, m_get_static_data):
+    def test_static_variable_in_trigger(self):
         user = SuperUserFactory.create()
         form = FormFactory.create()
 
@@ -227,6 +284,10 @@ class VariablesInLogicBulkAPITests(APITestCase):
 
         self.client.force_authenticate(user=user)
         url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
-        response = self.client.put(url, data=form_logic_data)
+        with patch(
+            "openforms.forms.models.form_variable.static_variables_register",
+            new=register,
+        ):
+            response = self.client.put(url, data=form_logic_data)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)

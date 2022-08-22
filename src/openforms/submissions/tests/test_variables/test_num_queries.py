@@ -43,6 +43,7 @@ class SubmissionVariablesPerformanceTests(APITestCase):
 
         # ensure there is a submission
         submission = SubmissionFactory.create(form=form)
+        submission.is_authenticated  # Load the auth info (otherwise an extra query is needed)
         SubmissionStepFactory.create(
             submission=submission,
             form_step=form_step1,
@@ -90,6 +91,7 @@ class SubmissionVariablesPerformanceTests(APITestCase):
 
         # ensure there is a submission
         submission = SubmissionFactory.create(form=form)
+        submission.is_authenticated  # Load the auth info (otherwise an extra query is needed)
         SubmissionStepFactory.create(
             submission=submission,
             form_step=form_step1,
@@ -372,6 +374,7 @@ class SubmissionVariablesPerformanceTests(APITestCase):
 
         # ensure there is a submission
         submission = SubmissionFactory.create(form=form)
+        submission.is_authenticated  # Load the auth info (otherwise an extra query is needed)
         SubmissionStepFactory.create(
             submission=submission,
             form_step=form_step1,

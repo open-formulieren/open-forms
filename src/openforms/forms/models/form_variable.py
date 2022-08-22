@@ -1,9 +1,8 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
 from django.core.validators import RegexValidator
 from django.db import models, transaction
 from django.db.models import CheckConstraint, Q
-from django.utils import timezone
 from django.utils.regex_helper import _lazy_re_compile
 from django.utils.translation import gettext_lazy as _
 
@@ -17,24 +16,18 @@ from openforms.formio.utils import (
     is_layout_component,
     iter_components,
 )
-
-from ..constants import (
-    FormVariableDataTypes,
-    FormVariableSources,
-    FormVariableStaticInitialValues,
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+from openforms.variables.registry import (
+    register_static_variable as static_variables_register,
 )
+
 from .form_definition import FormDefinition
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
+    from openforms.submissions.models import Submission
+
     from .form import Form
     from .form_step import FormStep
-
-
-def get_now() -> str:
-    return timezone.now().isoformat()
-
-
-STATIC_INITIAL_VALUES = {FormVariableStaticInitialValues.now: get_now}
 
 
 class FormVariableManager(models.Manager):
@@ -220,15 +213,14 @@ class FormVariable(models.Model):
         return self.initial_value or None
 
     @staticmethod
-    def get_static_data() -> List["FormVariable"]:
-        now = FormVariable(
-            name="Now",
-            key="now",
-            data_type=FormVariableDataTypes.datetime,
-            initial_value=STATIC_INITIAL_VALUES["now"](),
-        )
+    def get_static_data(
+        submission: Optional["Submission"] = None,
+    ) -> List["FormVariable"]:
 
-        return [now]
+        return [
+            registered_variable.get_static_variable(submission=submission)
+            for registered_variable in static_variables_register
+        ]
 
     def derive_info_from_component(self):
         if self.source != FormVariableSources.component or not self.form_definition:

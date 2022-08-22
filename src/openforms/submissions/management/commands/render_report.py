@@ -67,9 +67,11 @@ class Command(BaseCommand):
         )
 
     def handle(self, **options):
-        submissions = Submission.objects.filter(
-            id__in=options["submission_id"]
-        ).order_by("id")
+        submissions = (
+            Submission.objects.filter(id__in=options["submission_id"])
+            .select_related("auth_info")
+            .order_by("id")
+        )
         for submission in submissions:
             self.render_submission(
                 submission,

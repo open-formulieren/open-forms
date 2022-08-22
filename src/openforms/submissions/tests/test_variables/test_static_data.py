@@ -5,13 +5,13 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.forms.constants import FormVariableSources
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
     FormStepFactory,
     FormVariableFactory,
 )
+from openforms.variables.constants import FormVariableSources
 
 from ...models import Submission
 from ..factories import SubmissionFactory
@@ -28,7 +28,7 @@ class StaticVariablesTests(SubmissionsMixin, APITestCase):
                 "components": [
                     {
                         "key": "content",
-                        "html": "<p>The raw time now is: {{ now }}</p>",
+                        "html": "<p>The raw time now is: {{ now.isoformat }}</p>",
                         "type": "content",
                         "label": "Content",
                     },

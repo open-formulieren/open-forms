@@ -358,7 +358,7 @@ class SubmissionStepViewSet(
         qs = SubmissionStep.objects.filter(
             submission__uuid=submission_uuid,
             form_step__uuid=self.kwargs["step_uuid"],
-        ).select_related("submission", "submission__form")
+        ).select_related("submission", "submission__form", "submission__auth_info")
         try:
             submission_step = qs.get()
         except SubmissionStep.DoesNotExist:

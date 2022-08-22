@@ -146,13 +146,14 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
                 )
 
             # Check if the trigger references a static variable
-            if needle in [variable.key for variable in FormVariable.get_static_data()]:
-                return
+            needle_bits = needle.split(".")
+            for variable in FormVariable.get_static_data():
+                if needle_bits[0] == variable.key:
+                    return
 
             variable_related_to_form = form.formvariable_set.filter(key=needle)
             if not variable_related_to_form:
                 # selectboxes case
-                needle_bits = needle.split(".")
                 variable_related_to_form = form.formvariable_set.filter(
                     key=".".join(needle_bits[:-1])
                 )

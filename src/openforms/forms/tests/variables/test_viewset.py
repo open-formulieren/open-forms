@@ -11,13 +11,13 @@ from openforms.accounts.tests.factories import (
     SuperUserFactory,
     UserFactory,
 )
-from openforms.forms.constants import FormVariableDataTypes, FormVariableSources
 from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormVariableFactory,
 )
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 
 @override_settings(LANGUAGE_CODE="en")
@@ -324,7 +324,7 @@ class FormVariableViewsetTest(APITestCase):
         self.client.force_authenticate(user)
 
         with patch(
-            "openforms.forms.api.serializers.form_variable.FormVariableSerializer"
+            "openforms.forms.models.form_variable.FormVariable.get_static_data"
         ) as m:
             m.return_value = [
                 FormVariable(

@@ -13,8 +13,6 @@ from ..constants import SubmissionValueVariableSources
 from .submission import Submission
 
 if TYPE_CHECKING:  # pragma: nocover
-    from rest_framework.request import Request
-
     from .submission_step import SubmissionStep
 
 
@@ -87,13 +85,6 @@ class SubmissionValueVariablesState:
             and variable.form_variable.form_definition == form_definition
         }
 
-    def get_variables_unrelated_to_a_step(self) -> Dict[str, "SubmissionValueVariable"]:
-        return {
-            variable_key: variable
-            for variable_key, variable in self.variables.items()
-            if not variable.form_variable.form_definition
-        }
-
     def collect_variables(
         self, submission: "Submission"
     ) -> Dict[str, "SubmissionValueVariable"]:
@@ -136,13 +127,11 @@ class SubmissionValueVariablesState:
             if key in self._variables:
                 del self._variables[key]
 
-    # TODO: Argument request present for when we will use the data in the session to put
-    #  data returned from DigiD/eHerkenning into static vars
-    def static_data(self, request: "Request") -> dict:
+    def static_data(self) -> dict:
         if self._static_data is None:
             self._static_data = {
                 variable.key: variable.initial_value
-                for variable in FormVariable.get_static_data()
+                for variable in FormVariable.get_static_data(self.submission)
             }
         return self._static_data
 

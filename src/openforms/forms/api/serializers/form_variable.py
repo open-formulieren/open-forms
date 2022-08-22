@@ -7,8 +7,8 @@ from rest_framework.exceptions import ValidationError
 
 from openforms.api.serializers import ListWithChildSerializer
 from openforms.formio.utils import get_component
+from openforms.variables.constants import FormVariableSources
 
-from ...constants import FormVariableSources
 from ...models import FormVariable
 
 

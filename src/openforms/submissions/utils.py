@@ -15,9 +15,9 @@ from openforms.emails.utils import (
     send_mail_html,
     strip_tags_plus,
 )
-from openforms.forms.constants import FormVariableSources
 from openforms.forms.models import FormVariable
 from openforms.logging import logevent
+from openforms.variables.constants import FormVariableSources
 
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from .models import Submission, SubmissionValueVariable, TemporaryFileUpload

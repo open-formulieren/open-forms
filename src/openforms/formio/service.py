@@ -26,21 +26,17 @@ def get_dynamic_configuration(
     configuration = handle_custom_types(
         configuration, request=request, submission=submission
     )
-    configuration = insert_variables(
-        configuration, submission=submission, request=request
-    )
+    configuration = insert_variables(configuration, submission=submission)
     return configuration
 
 
-def insert_variables(
-    configuration: dict, submission: Submission, request: "Request"
-) -> dict:
+def insert_variables(configuration: dict, submission: Submission) -> dict:
     # TODO: refactor when interpolating configuration properties with variables
     inject_prefill(configuration, submission)
 
     value_variables_state = submission.load_submission_value_variables_state()
     data = value_variables_state.get_data()
-    static_data = value_variables_state.static_data(request)
+    static_data = value_variables_state.static_data()
 
     for component in iter_components(configuration):
         if "html" in component:

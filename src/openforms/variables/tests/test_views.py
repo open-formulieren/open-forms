@@ -1,10 +1,14 @@
+from unittest.mock import patch
+
 from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
-from openforms.forms.constants import FormVariableDataTypes
+from openforms.variables.base import BaseStaticVariable
+from openforms.variables.constants import FormVariableDataTypes
+from openforms.variables.registry import Registry
 
 
 class GetStaticVariablesViewTest(APITestCase):
@@ -39,7 +43,22 @@ class GetStaticVariablesViewTest(APITestCase):
         )
 
         self.client.force_authenticate(user=user)
-        response = self.client.get(url)
+
+        class DemoNow(BaseStaticVariable):
+            name = "Now"
+            data_type = FormVariableDataTypes.datetime
+
+            def get_initial_value(self, *args, **kwargs):
+                return "2021-07-16T21:15:00+00:00"
+
+        register = Registry()
+        register("now")(DemoNow)
+
+        with patch(
+            "openforms.forms.models.form_variable.static_variables_register",
+            new=register,
+        ):
+            response = self.client.get(url)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 

@@ -7,8 +7,9 @@ from django.test import TestCase, override_settings
 
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 from openforms.products.tests.factories import ProductFactory
+from openforms.variables.constants import FormVariableSources
 
-from ..constants import EXPORT_META_KEY, FormVariableSources
+from ..constants import EXPORT_META_KEY
 from ..models import Form, FormDefinition, FormLogic, FormStep
 from .factories import (
     CategoryFactory,
