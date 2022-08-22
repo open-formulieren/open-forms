@@ -25,12 +25,9 @@ from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 from openforms.utils.validators import DjangoTemplateValidator
+from openforms.variables.constants import FormVariableSources
 
-from ..constants import (
-    ConfirmationEmailOptions,
-    FormVariableSources,
-    SubmissionAllowedChoices,
-)
+from ..constants import ConfirmationEmailOptions, SubmissionAllowedChoices
 from .utils import literal_getter
 
 User = get_user_model()

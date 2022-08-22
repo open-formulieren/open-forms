@@ -1,14 +1,18 @@
-from dataclasses import dataclass
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
 
 from openforms.forms.models import FormVariable
 
 
 @dataclass
-class BaseStaticVariable:
+class BaseStaticVariable(ABC):
     identifier: str
+    name: str = field(init=False)
+    data_type: str = field(init=False)
 
+    @abstractmethod
     def get_initial_value(self, *args, **kwargs):
-        raise NotImplementedError()
+        raise NotImplementedError()  # pragma: nocover
 
     def get_static_variable(self, *args, **kwargs):
         return FormVariable(

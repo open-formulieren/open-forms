@@ -11,4 +11,4 @@ class Registry(BaseRegistry):
 
 # Sentinel to provide the default registry. You can easily instantiate another
 # :class:`Registry` object to use as dependency injection in tests.
-static_variables_register = Registry()
+register_static_variable = Registry()

@@ -16,9 +16,11 @@ from openforms.formio.utils import (
     is_layout_component,
     iter_components,
 )
-from openforms.variables.registry import static_variables_register
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+from openforms.variables.registry import (
+    register_static_variable as static_variables_register,
+)
 
-from ..constants import FormVariableDataTypes, FormVariableSources
 from .form_definition import FormDefinition
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -216,7 +218,7 @@ class FormVariable(models.Model):
     ) -> List["FormVariable"]:
 
         return [
-            registered_variable.get_static_variable(submission)
+            registered_variable.get_static_variable(submission=submission)
             for registered_variable in static_variables_register
         ]
 

@@ -13,6 +13,8 @@ from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
+from openforms.variables.constants import FormVariableSources
+
 from .api.serializers import (
     FormDefinitionSerializer,
     FormExportSerializer,
@@ -21,7 +23,7 @@ from .api.serializers import (
     FormStepSerializer,
     FormVariableSerializer,
 )
-from .constants import EXPORT_META_KEY, FormVariableSources
+from .constants import EXPORT_META_KEY
 from .models import Form, FormDefinition, FormLogic, FormStep, FormVariable
 
 IMPORT_ORDER = {

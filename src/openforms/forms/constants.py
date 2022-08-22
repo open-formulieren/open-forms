@@ -35,27 +35,3 @@ class SubmissionAllowedChoices(DjangoChoices):
     no_without_overview = ChoiceItem(
         "no_without_overview", _("No (without overview page)")
     )
-
-
-class FormVariableSources(DjangoChoices):
-    component = ChoiceItem("component", _("Component"))
-    user_defined = ChoiceItem("user_defined", _("User defined"))
-
-
-class FormVariableDataTypes(DjangoChoices):
-    string = ChoiceItem("string", _("String"))
-    boolean = ChoiceItem("boolean", _("Boolean"))
-    object = ChoiceItem("object", _("Object"))
-    array = ChoiceItem("array", _("Array"))
-    int = ChoiceItem("int", _("Integer"))
-    float = ChoiceItem("float", _("Float"))
-    datetime = ChoiceItem("datetime", _("Datetime"))
-    time = ChoiceItem("time", _("Time"))
-
-
-class FormVariableStaticInitialValues(DjangoChoices):
-    now = ChoiceItem("now", _("Now"))
-    auth_identifier = ChoiceItem("auth_identifier", "Authentication identifier")
-    auth_bsn = ChoiceItem("auth_bsn", "Authentication BSN")
-    auth_kvk = ChoiceItem("auth_kvk", "Authentication KvK")
-    auth_pseudo = ChoiceItem("auth_pseudo", "Authentication pseudo")

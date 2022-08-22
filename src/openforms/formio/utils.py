@@ -2,7 +2,7 @@ import logging
 from datetime import date, datetime
 from typing import Any, Iterator, List, Optional
 
-from openforms.forms.constants import FormVariableDataTypes
+from openforms.variables.constants import FormVariableDataTypes
 
 from ..typing import JSONObject
 from .constants import COMPONENT_DATATYPES
