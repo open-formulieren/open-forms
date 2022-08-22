@@ -48,24 +48,6 @@ breaking change for existing templates.
 
 This also aligns with the following topic.
 
-**Form steps and definitions namespacing**
-
-Status: not planned yet
-
-Formio.js by default ensures you have unique keys for the different form fields. However,
-Open Forms introduces the concept of form steps, each pointing to a separate Formio.js
-configuration that is not aware of the other configurations. Additionally, some steps
-can be re-used, so a configuration has no idea about the bigger picture it's used in.
-
-This leads to data key collisions across form-steps, and other annoying problems such
-as slugs (used in URLs) having to be unique across all forms rather than within the
-form.
-
-The plan is to re-organize the data so that keys are properly namespaced under each
-form/form-step. This has an impact on the PDF generation, submission data exports,
-templates using submission data and is going to be a breaking change that needs proper
-preparation and mitigation.
-
 **API documentation**
 
 Status: not planned yet
