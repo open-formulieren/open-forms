@@ -2,9 +2,8 @@ import logging
 
 from django.template import TemplateSyntaxError
 
-from openforms.submissions.logic.datastructures import DataMapping
 from openforms.template import render_from_string
-from openforms.typing import JSONObject, JSONValue
+from openforms.typing import DataMapping, JSONObject, JSONValue
 
 from .utils import iter_components
 

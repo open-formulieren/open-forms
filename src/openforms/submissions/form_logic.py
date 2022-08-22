@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Dict
 import elasticapm
 from json_logic import jsonLogic
 
-from openforms.formio.service import get_dynamic_configuration
+from openforms.formio.service import get_dynamic_configuration, inject_variables
 from openforms.formio.utils import get_component, get_component_default_value
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
@@ -162,7 +162,7 @@ def evaluate_form_logic(
         mutation.apply(step, configuration)
 
     # 7.2 Interpolate the component configuration with the variables.
-    # TODO!
+    inject_variables(configuration, data_container.data)
 
     # 7.3 Handle custom formio types - TODO: this needs to be lifted out of
     # :func:`get_dynamic_configuration` so that it can use variables.
