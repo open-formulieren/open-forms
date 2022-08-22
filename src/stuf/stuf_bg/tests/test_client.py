@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from django.conf import settings
 from django.template import loader
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.utils import timezone
 
 import requests_mock
@@ -165,3 +165,39 @@ class StufBGConfigTests(TestCase):
                             self.fail(
                                 f"missing attribute in request {attribute} (as {glom_target}"
                             )
+
+    @tag("gh-1842")
+    def test_errors_are_not_swallowed(self):
+        """
+        Assert that client exceptions are propagated to the caller.
+
+        Regression test for #1842 - in this issue the exceptions were logged to Sentry,
+        but not visible in the submission (prefill) logs (neither success nor error).
+        The client may not swallow exceptions, but must re-raise them so that the
+        generic prefill error handler can properly dispatch the logevents (see
+        :func:`openforms.prefill._fetch_prefill_values`).
+        """
+        with requests_mock.Mocker() as m:
+            m.post(
+                self.service.soap_service.url,
+                content=bytes(
+                    loader.render_to_string(
+                        "stuf_bg/tests/responses/StufBgNoAnswerResponse.xml",
+                        context={
+                            "referentienummer": "38151851-0fe9-4463-ba39-416042b8f406",
+                            "tijdstip_bericht": timezone.now(),
+                            "zender_organisatie": self.service.ontvanger_organisatie,
+                            "zender_applicatie": self.service.ontvanger_applicatie,
+                            "zender_administratie": self.service.ontvanger_administratie,
+                            "zender_gebruiker": self.service.ontvanger_gebruiker,
+                            "ontvanger_organisatie": self.service.zender_organisatie,
+                            "ontvanger_applicatie": self.service.zender_applicatie,
+                            "ontvanger_administratie": self.service.zender_administratie,
+                            "ontvanger_gebruiker": self.service.zender_gebruiker,
+                        },
+                    ),
+                    encoding="utf-8",
+                ),
+            )
+            with self.assertRaises(TypeError):
+                self.client.get_values("999992314", list(FieldChoices.values.keys()))
