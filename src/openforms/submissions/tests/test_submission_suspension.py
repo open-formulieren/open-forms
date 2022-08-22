@@ -13,6 +13,7 @@ from urllib.parse import urljoin
 
 from django.core import mail
 from django.template import defaulttags
+from django.test import override_settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -23,6 +24,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import UserFactory
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
 from ..constants import SUBMISSIONS_SESSION_KEY
@@ -102,7 +104,13 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         self.assertIsNone(submission.suspended_on)
 
     @freeze_time("2021-11-15")
-    def test_email_sent(self):
+    @patch(
+        "openforms.submissions.api.serializers.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            save_form_email_subject="Saved form {{ form_name }}"
+        ),
+    )
+    def test_email_sent(self, *mocks):
         submission = SubmissionFactory.create()
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-suspend", kwargs={"uuid": submission.uuid})
@@ -116,10 +124,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
 
         email = mail.outbox[0]
         self.assertEqual(email.to, ["hello@open-forms.nl"])
-        self.assertEqual(
-            email.subject,
-            _("Saved form %(form_name)s") % {"form_name": submission.form.name},
-        )
+        self.assertEqual(email.subject, f"Saved form {submission.form.name}")
 
         self.assertIn(submission.form.name, email.body)
         self.assertIn(defaulttags.date(timezone.now()), email.body)
@@ -140,6 +145,33 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         datetime_removed = datetime(2021, 11, 22, 12, 00, 00, tzinfo=timezone.utc)
 
         self.assertIn(defaulttags.date(datetime_removed), email.body)
+
+    @freeze_time("2021-11-15")
+    @patch("openforms.submissions.api.serializers.GlobalConfiguration.get_solo")
+    @override_settings(LANGUAGE_CODE="nl")
+    def test_email_sent_with_custom_configuration(self, m_solo):
+        m_solo.return_value = GlobalConfiguration(
+            save_form_email_subject="The Subject: {{ form_name }}",
+            save_form_email_content="The Content: {{ form_name }} ({{ save_date }})",
+        )
+
+        submission = SubmissionFactory.create(form__name="Form 000")
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-suspend", kwargs={"uuid": submission.uuid})
+
+        with capture_on_commit_callbacks(execute=True) as callbacks:
+            response = self.client.post(endpoint, {"email": "hello@open-forms.nl"})
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(len(callbacks), 1)
+        self.assertEqual(len(mail.outbox), 1)
+
+        email = mail.outbox[0]
+        self.assertEqual(email.to, ["hello@open-forms.nl"])
+        self.assertEqual(email.subject, "The Subject: Form 000")
+        self.assertEqual(
+            email.body.strip(), "The Content: Form 000 (15 november 2021 01:00)"
+        )
 
     @freeze_time("2020-11-15T12:00:00+01:00")
     def test_resume_url_does_not_work_after_submission_has_been_completed(self):

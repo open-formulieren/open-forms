@@ -7,9 +7,8 @@ from openforms.utils.views import DevViewMixin, EmailDebugViewMixin
 from .confirmation_emails import (
     get_confirmation_email_context_data,
     get_confirmation_email_templates,
-    render_confirmation_email_template,
 )
-from .utils import strip_tags_plus
+from .utils import render_email_template, strip_tags_plus
 
 
 class EmailWrapperTestView(
@@ -26,7 +25,7 @@ class EmailWrapperTestView(
             mode = self._get_mode()
             if mode == "text":
                 context["rendering_text"] = True
-            content = render_confirmation_email_template(content_template, context)
+            content = render_email_template(content_template, context)
             if mode == "text":
                 content = strip_tags_plus(content, keep_leading_whitespace=True)
 

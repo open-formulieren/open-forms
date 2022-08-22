@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import partial
 
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
@@ -24,13 +25,12 @@ from openforms.utils.validators import DjangoTemplateValidator
 
 
 @ensure_default_language()
-def get_confirmation_email_subject():
-    return render_to_string("emails/confirmation_email/subject.txt").strip()
+def _render(filename):
+    return render_to_string(filename).strip()
 
 
-@ensure_default_language()
-def get_confirmation_email_content():
-    return render_to_string("emails/confirmation_email/content.html")
+get_confirmation_email_subject = partial(_render, "emails/confirmation/subject.txt")
+get_confirmation_email_content = partial(_render, "emails/confirmation/content.html")
 
 
 class GlobalConfiguration(SingletonModel):
@@ -65,7 +65,6 @@ class GlobalConfiguration(SingletonModel):
         default=get_confirmation_email_subject,
         validators=[DjangoTemplateValidator()],
     )
-
     confirmation_email_content = HTMLField(
         _("content"),
         help_text=_(
@@ -79,6 +78,23 @@ class GlobalConfiguration(SingletonModel):
                     "payment_information",
                 ]
             ),
+            URLSanitationValidator(),
+        ],
+    )
+
+    save_form_email_subject = models.CharField(
+        _("subject"),
+        max_length=1000,
+        help_text=_("Subject of the save form email message."),
+        default=partial(_render, "emails/save_form/subject.txt"),
+        validators=[DjangoTemplateValidator()],
+    )
+    save_form_email_content = HTMLField(
+        _("content"),
+        help_text=_("Content of the save form email message."),
+        default=partial(_render, "emails/save_form/content.html"),
+        validators=[
+            DjangoTemplateValidator(),
             URLSanitationValidator(),
         ],
     )

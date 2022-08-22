@@ -34,6 +34,15 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
             },
         ),
         (
+            _("Save Form Email"),
+            {
+                "fields": (
+                    "save_form_email_subject",
+                    "save_form_email_content",
+                ),
+            },
+        ),
+        (
             _("Button labels"),
             {
                 "fields": (

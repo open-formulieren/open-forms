@@ -143,6 +143,20 @@ class AdminTests(WebTest):
             modules_and_plugins["authentication"],
         )
 
+    def test_configuration_save_form_email_can_be_added(self):
+        config = GlobalConfiguration.get_solo()
+        url = reverse("admin:config_globalconfiguration_change", args=(1,))
+
+        change_page = self.app.get(url)
+
+        change_page.form["save_form_email_subject"] = "Subject {{form_name}}"
+        change_page.form["save_form_email_content"] = "Content {{form_name}}"
+        change_page.form.submit()
+
+        config.refresh_from_db()
+        self.assertEqual(config.save_form_email_subject, "Subject {{form_name}}")
+        self.assertEqual(config.save_form_email_content, "Content {{form_name}}")
+
 
 class GlobalConfirmationEmailTests(TestCase):
     def setUp(self):
@@ -181,6 +195,40 @@ class GlobalConfirmationEmailTests(TestCase):
 
         with self.subTest("invalid"):
             config.confirmation_email_content = "bla bla http://bad.net/bla?x=1 {% appointment_information %} {% payment_information %}"
+            with self.assertRaisesMessage(
+                ValidationError,
+                _("This domain is not in the global netloc allowlist: {netloc}").format(
+                    netloc="bad.net"
+                ),
+            ):
+                config.full_clean()
+
+
+class GlobalSaveFormEmailTests(TestCase):
+    def setUp(self):
+        super().setUp()
+        config = GlobalConfiguration.get_solo()
+        config.email_template_netloc_allowlist = ["good.net"]
+        config.save()
+
+    def test_validate_content_syntax(self):
+        config = GlobalConfiguration.get_solo()
+        config.save_form_email_content = "{{{}}}"
+
+        with self.assertRaisesRegex(ValidationError, "Could not parse the remainder:"):
+            config.full_clean()
+
+    def test_validate_content_netloc_sanitation_validation(self):
+        config = GlobalConfiguration.get_solo()
+        config.save_form_email_content = "no tags here"
+
+        with self.subTest("valid"):
+            config.save_form_email_content = "bla bla http://good.net/bla?x=1 {% appointment_information %} {% payment_information %}"
+
+            config.full_clean()
+
+        with self.subTest("invalid"):
+            config.save_form_email_content = "bla bla http://bad.net/bla?x=1 {% appointment_information %} {% payment_information %}"
             with self.assertRaisesMessage(
                 ValidationError,
                 _("This domain is not in the global netloc allowlist: {netloc}").format(
