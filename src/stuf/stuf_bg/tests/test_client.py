@@ -178,26 +178,7 @@ class StufBGConfigTests(TestCase):
         :func:`openforms.prefill._fetch_prefill_values`).
         """
         with requests_mock.Mocker() as m:
-            m.post(
-                self.service.soap_service.url,
-                content=bytes(
-                    loader.render_to_string(
-                        "stuf_bg/tests/responses/StufBgNoAnswerResponse.xml",
-                        context={
-                            "referentienummer": "38151851-0fe9-4463-ba39-416042b8f406",
-                            "tijdstip_bericht": timezone.now(),
-                            "zender_organisatie": self.service.ontvanger_organisatie,
-                            "zender_applicatie": self.service.ontvanger_applicatie,
-                            "zender_administratie": self.service.ontvanger_administratie,
-                            "zender_gebruiker": self.service.ontvanger_gebruiker,
-                            "ontvanger_organisatie": self.service.zender_organisatie,
-                            "ontvanger_applicatie": self.service.zender_applicatie,
-                            "ontvanger_administratie": self.service.zender_administratie,
-                            "ontvanger_gebruiker": self.service.zender_gebruiker,
-                        },
-                    ),
-                    encoding="utf-8",
-                ),
-            )
-            with self.assertRaises(TypeError):
+            m.post(self.service.soap_service.url, content=b"I am not valid XML")
+
+            with self.assertRaises(Exception):
                 self.client.get_values("999992314", list(FieldChoices.values.keys()))

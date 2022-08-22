@@ -8,6 +8,7 @@ from django.utils import dateformat, timezone
 
 import requests
 import xmltodict
+from glom import glom
 
 from openforms.logging.logevent import stuf_bg_request, stuf_bg_response
 from stuf.constants import SOAP_VERSION_CONTENT_TYPES, EndpointType
@@ -97,19 +98,24 @@ class StufBGClient:
             namespaces=NAMESPACE_REPLACEMENTS,
         )
 
-        try:
-            return dict_response["Envelope"]["Body"]["npsLa01"]["antwoord"]["object"]
-        except (TypeError, KeyError) as exc:
-            try:
-                # Get the fault information if there
-                fault = dict_response["Envelope"]["Body"]["Fault"]
-            except Exception:
-                fault = {}
+        # handle missing keys/empty data graciously, see #1842
+        # some include a fault response, others use an empty <antwoord /> XML element
+        antwoord_object = glom(
+            dict_response, "Envelope.Body.npsLa01.antwoord.object", default=None
+        )
+        fault = glom(dict_response, "Envelope.Body.Fault", default=None)
 
-            # ensure it gets logged to Sentry before re-raising
-            logger.error(
-                "Response data has an unexpected shape",
-                extra={"response": dict_response, "fault": fault},
-                exc_info=exc,
-            )
-            raise
+        # success case - we did receive a meaningful response
+        if antwoord_object is not None:
+            return antwoord_object
+
+        # no fault, but also empty antwoord data -> treat this as empty response
+        if fault is None:
+            return {}
+
+        # we have a fault -> log it appropriately and raise an exception
+        logger.error(
+            "Response data has an unexpected shape",
+            extra={"response": dict_response, "fault": fault},
+        )
+        raise ValueError("Problem processing StUF-BG response")
