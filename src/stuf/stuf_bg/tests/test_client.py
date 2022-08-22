@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from django.conf import settings
 from django.template import loader
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.utils import timezone
 
 import requests_mock
@@ -165,3 +165,20 @@ class StufBGConfigTests(TestCase):
                             self.fail(
                                 f"missing attribute in request {attribute} (as {glom_target}"
                             )
+
+    @tag("gh-1842")
+    def test_errors_are_not_swallowed(self):
+        """
+        Assert that client exceptions are propagated to the caller.
+
+        Regression test for #1842 - in this issue the exceptions were logged to Sentry,
+        but not visible in the submission (prefill) logs (neither success nor error).
+        The client may not swallow exceptions, but must re-raise them so that the
+        generic prefill error handler can properly dispatch the logevents (see
+        :func:`openforms.prefill._fetch_prefill_values`).
+        """
+        with requests_mock.Mocker() as m:
+            m.post(self.service.soap_service.url, content=b"I am not valid XML")
+
+            with self.assertRaises(Exception):
+                self.client.get_values("999992314", list(FieldChoices.values.keys()))
