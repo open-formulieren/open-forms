@@ -1,7 +1,6 @@
 from django.test import TestCase
 
-from openforms.forms.constants import FormVariableDataTypes
-from openforms.forms.models import FormVariable
+from openforms.variables.constants import FormVariableDataTypes
 
 from ..base import BaseStaticVariable
 from ..registry import Registry
@@ -13,13 +12,11 @@ class RegistryTests(TestCase):
 
         @test_static_variables_register("demo")
         class DemoVariable(BaseStaticVariable):
-            def get_static_variable(self, *args, **kwargs):
-                return FormVariable(
-                    name="Demo",
-                    key="demo",
-                    data_type=FormVariableDataTypes.string,
-                    initial_value="Test!",
-                )
+            name = "Test"
+            data_type = FormVariableDataTypes.string
+
+            def get_initial_value(self, *args, **kwargs):
+                return "Test!"
 
         static_vars = list(test_static_variables_register)
 

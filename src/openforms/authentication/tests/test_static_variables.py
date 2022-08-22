@@ -17,6 +17,13 @@ class TestStaticVariables(TestCase):
         static_data = FormVariable.get_static_data(auth_info.submission)
 
         self.assertEqual(5, len(static_data))
+        (
+            form_auth_var,
+            auth_identifier_var,
+            auth_bsn_var,
+            auth_kvk_var,
+            auth_pseudo_var,
+        ) = static_data
         self.assertEqual(
             {
                 "plugin": "test-plugin",
@@ -24,7 +31,7 @@ class TestStaticVariables(TestCase):
                 "value": "111222333",
                 "machtigen": {AuthAttribute.bsn: "123456789"},
             },
-            static_data[1].initial_value,
+            auth_identifier_var.initial_value,
         )
 
         self.assertEqual(

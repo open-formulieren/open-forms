@@ -1,7 +1,8 @@
 from django.db import IntegrityError
 from django.test import TestCase
 
-from ...constants import FormVariableDataTypes, FormVariableSources
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+
 from ..factories import FormFactory, FormVariableFactory
 
 

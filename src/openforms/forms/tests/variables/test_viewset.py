@@ -11,13 +11,13 @@ from openforms.accounts.tests.factories import (
     SuperUserFactory,
     UserFactory,
 )
-from openforms.forms.constants import FormVariableDataTypes, FormVariableSources
 from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
     FormVariableFactory,
 )
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 
 @override_settings(LANGUAGE_CODE="en")

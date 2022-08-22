@@ -1,8 +1,8 @@
 import factory
 
 from openforms.products.tests.factories import ProductFactory
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
-from ..constants import FormVariableDataTypes, FormVariableSources
 from ..models import FormStep, FormVariable
 from ..utils import form_to_json
 

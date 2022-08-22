@@ -1,15 +1,15 @@
 import copy
 import datetime
 import json
-from unittest.mock import patch
 
 from django.test import TestCase
 from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
 
-from ..constants import FormVariableDataTypes, FormVariableSources
-from ..models import FormDefinition, FormStep, FormVariable, FormVersion
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+
+from ..models import FormDefinition, FormStep, FormVersion
 from .factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -351,17 +351,6 @@ FORM_VARIABLES = [
 ]
 
 
-@patch(
-    "openforms.forms.models.FormVariable.get_static_data",
-    return_value=[
-        FormVariable(
-            name="Now",
-            key="now",
-            data_type=FormVariableDataTypes.datetime,
-            initial_value="2021-07-16T21:15:00+00:00",
-        )
-    ],
-)
 class RestoreVersionsWithVariablesTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -376,7 +365,7 @@ class RestoreVersionsWithVariablesTest(TestCase):
             "formLogic": json.dumps([]),
         }
 
-    def test_restore_form_with_more_component_variables(self, m):
+    def test_restore_form_with_more_component_variables(self):
         form_definition = FormDefinitionFactory.create(
             name="Icecream questionnaire",
             internal_name="Icecream questionnaire",
@@ -398,7 +387,7 @@ class RestoreVersionsWithVariablesTest(TestCase):
 
         self.assertEqual(1, form.formvariable_set.count())
 
-    def test_restore_form_with_fewer_component_variables(self, m):
+    def test_restore_form_with_fewer_component_variables(self):
         form_definition = FormDefinitionFactory.create(
             name="Icecream questionnaire",
             internal_name="Icecream questionnaire",
@@ -429,7 +418,7 @@ class RestoreVersionsWithVariablesTest(TestCase):
 
         self.assertEqual(1, form.formvariable_set.count())
 
-    def test_restore_form_with_user_defined_variables(self, m):
+    def test_restore_form_with_user_defined_variables(self):
         form_definition = FormDefinitionFactory.create(
             name="Icecream questionnaire",
             internal_name="Icecream questionnaire",

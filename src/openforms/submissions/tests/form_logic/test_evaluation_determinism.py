@@ -1,12 +1,12 @@
 from django.test import TestCase
 
-from openforms.forms.constants import FormVariableDataTypes, FormVariableSources
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
     FormStepFactory,
     FormVariableFactory,
 )
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory

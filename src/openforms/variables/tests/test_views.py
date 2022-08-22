@@ -6,8 +6,8 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
-from openforms.forms.constants import FormVariableDataTypes
 from openforms.forms.models import FormVariable
+from openforms.variables.constants import FormVariableDataTypes
 
 
 class GetStaticVariablesViewTest(APITestCase):
