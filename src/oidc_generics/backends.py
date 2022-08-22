@@ -17,6 +17,12 @@ class OIDCAuthenticationBackend(_OIDCAuthenticationBackend):
     def extract_claims(self, payload):
         self.request.session[self.session_key] = self.retrieve_identifier_claim(payload)
 
+    def update_user(self, user, claims):
+        """Update user with claim mapping."""
+        values = self.get_user_instance_values(claims)
+        for field, value in values.items():
+            setattr(user, field, value)
+
     def get_or_create_user(self, access_token, id_token, payload):
         user_info = self.get_userinfo(access_token, id_token, payload)
         claims_verified = self.verify_claims(user_info)
@@ -28,4 +34,5 @@ class OIDCAuthenticationBackend(_OIDCAuthenticationBackend):
 
         user = AnonymousUser()
         user.is_active = True
+        self.update_user(user, payload)
         return user
