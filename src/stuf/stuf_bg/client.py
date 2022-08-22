@@ -103,12 +103,13 @@ class StufBGClient:
             try:
                 # Get the fault information if there
                 fault = dict_response["Envelope"]["Body"]["Fault"]
-            except KeyError:
+            except Exception:
                 fault = {}
-            finally:
-                logger.error(
-                    "Response data has an unexpected shape",
-                    extra={"response": dict_response, "fault": fault},
-                    exc_info=exc,
-                )
-                return {}
+
+            # ensure it gets logged to Sentry before re-raising
+            logger.error(
+                "Response data has an unexpected shape",
+                extra={"response": dict_response, "fault": fault},
+                exc_info=exc,
+            )
+            raise
