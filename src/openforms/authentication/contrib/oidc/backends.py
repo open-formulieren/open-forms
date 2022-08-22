@@ -2,7 +2,7 @@ import logging
 
 from oidc_generics.backends import OIDCAuthenticationBackend
 from oidc_generics.mixins import (
-    MachtigenBackendMixin,
+    MultipleClaimMixin,
     SoloConfigAzureADMixin,
     SoloConfigDigiDMachtigenMixin,
     SoloConfigDigiDMixin,
@@ -40,7 +40,7 @@ class OIDCAuthenticationEHerkenningBackend(
 
 
 class OIDCAuthenticationDigiDMachtigenBackend(
-    MachtigenBackendMixin, SoloConfigDigiDMachtigenMixin, OIDCAuthenticationBackend
+    MultipleClaimMixin, SoloConfigDigiDMachtigenMixin, OIDCAuthenticationBackend
 ):
     session_key = DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY
 
@@ -53,7 +53,7 @@ class OIDCAuthenticationDigiDMachtigenBackend(
 
 
 class OIDCAuthenticationEHerkenningBewindvoeringBackend(
-    MachtigenBackendMixin,
+    MultipleClaimMixin,
     SoloConfigEHerkenningBewindvoeringMixin,
     OIDCAuthenticationBackend,
 ):

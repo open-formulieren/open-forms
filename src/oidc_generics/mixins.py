@@ -61,7 +61,7 @@ class SoloConfigAzureADMixin(SoloConfigMixin):
     settings_attribute = azure_ad_settings
 
 
-class MachtigenBackendMixin:
+class MultipleClaimMixin:
     def get_or_create_user(self, access_token, id_token, payload):
         claims_verified = self.verify_claims(payload)
         if not claims_verified:
@@ -103,7 +103,7 @@ class MachtigenBackendMixin:
                 glom(claims, expected_claim)
             except PathAccessError:
                 logger.error(
-                    "`%s` not in OIDC claims, cannot proceed with eHerkenning bewindvoering authentication",
+                    "`%s` not in OIDC claims, cannot proceed with authentication",
                     expected_claim,
                 )
                 return False

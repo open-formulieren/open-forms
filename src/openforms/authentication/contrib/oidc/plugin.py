@@ -25,6 +25,7 @@ from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...exceptions import InvalidCoSignData
 from ...registry import register
 from .constants import (
+    AZURE_AD_OIDC_AUTH_SESSION_KEY,
     DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY,
     DIGID_OIDC_AUTH_SESSION_KEY,
     EHERKENNING_BEWINDVOERING_OIDC_AUTH_SESSION_KEY,
@@ -201,5 +202,5 @@ class AzureADOIDCAuthentication(OIDCAuthentication):
     verbose_name = _("Azure AD via OpenID Connect")
     provides_auth = AuthAttribute.pseudo
     init_url = "azure_ad_oidc:init"
-    session_key = DIGID_OIDC_AUTH_SESSION_KEY
+    session_key = AZURE_AD_OIDC_AUTH_SESSION_KEY
     config_class = OpenIDConnectConfig
