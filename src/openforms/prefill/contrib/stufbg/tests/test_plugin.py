@@ -113,9 +113,9 @@ class StufBgPrefillTests(TestCase):
         attributes = FieldChoices.attributes.keys()
 
         with self.assertLogs() as logs:
-            values = self.plugin.get_prefill_values(self.submission, attributes)
+            with self.assertRaises(ValueError):
+                self.plugin.get_prefill_values(self.submission, attributes)
 
-            self.assertEqual(values, {})
             self.assertEqual(logs.records[0].fault["faultcode"], "soapenv:Server")
             self.assertEqual(logs.records[0].fault["faultstring"], "Policy Falsified")
             self.assertEqual(
@@ -130,11 +130,13 @@ class StufBgPrefillTests(TestCase):
         self.addCleanup(client_patcher.stop)
         attributes = FieldChoices.attributes.keys()
 
-        with self.assertLogs() as logs:
+        try:
             values = self.plugin.get_prefill_values(self.submission, attributes)
+        except ValueError:
+            # empty responses should be handled graciously
+            self.fail("No fault/error expected.")
 
-            self.assertEqual(values, {})
-            self.assertEqual(logs.records[0].fault, {})
+        self.assertEqual(values, {})
 
     def test_get_available_attributes_when_object_not_found_reponse_is_returned(self):
         client_patcher = mock_stufbg_client("StufBgNotFoundResponse.xml")
@@ -142,9 +144,9 @@ class StufBgPrefillTests(TestCase):
         attributes = FieldChoices.attributes.keys()
 
         with self.assertLogs() as logs:
-            values = self.plugin.get_prefill_values(self.submission, attributes)
+            with self.assertRaises(ValueError):
+                self.plugin.get_prefill_values(self.submission, attributes)
 
-            self.assertEqual(values, {})
             self.assertEqual(
                 logs.records[0].fault, {"faultstring": "Object niet gevonden"}
             )
@@ -154,11 +156,13 @@ class StufBgPrefillTests(TestCase):
         self.addCleanup(client_patcher.stop)
         attributes = FieldChoices.attributes.keys()
 
-        with self.assertLogs() as logs:
+        try:
             values = self.plugin.get_prefill_values(self.submission, attributes)
+        except ValueError:
+            # empty responses should be handled graciously
+            self.fail("No fault/error expected.")
 
-            self.assertEqual(values, {})
-            self.assertEqual(logs.records[0].fault, {})
+        self.assertEqual(values, {})
 
     @tag("gh-1617")
     def test_onvolledige_datum(self):
