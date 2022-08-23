@@ -209,6 +209,7 @@ def evaluate_form_logic(
 
 
 def check_submission_logic(submission, unsaved_data=None):
+    # TODO: https://github.com/open-formulieren/open-forms/issues/1913
     logic_rules = FormLogic.objects.filter(
         form=submission.form,
         actions__contains=[{"action": {"type": LogicActionTypes.step_not_applicable}}],
@@ -223,6 +224,9 @@ def check_submission_logic(submission, unsaved_data=None):
     for rule in logic_rules:
         if jsonLogic(rule.json_logic_trigger, merged_data):
             for action in rule.actions:
+                # TODO: this should not be necessary because of the query filter above?
+                # but perhaps we might want to re-use the logic rules cached on the
+                # submission instance?
                 if action["action"]["type"] != LogicActionTypes.step_not_applicable:
                     continue
 
