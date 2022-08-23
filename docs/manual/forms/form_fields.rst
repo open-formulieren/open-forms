@@ -17,16 +17,57 @@ Basic
 -----
 
 * **Label**: Het label bij het veld dat zichtbaar is voor de eindgebruiker.
-* **Property Name**: De interne naam van het veld. Deze naam wordt gebruikt om 
+* **Eigenschapnaam**: De interne naam van het veld. Deze naam wordt gebruikt om
   eenduidig naar dit veld te verwijzen vanuit andere velden of in 
   :ref:`sjablonen <manual_templates>`.
-* **Description**: Een optionele help tekst bij het veld.
-* **Show in email**: Indien aangevinkt, dan wordt dit veld opgenomen in de 
-  bevestigingse-mail naar de eindgebruiker.
-* **Hidden**: Indien aangevinkt, dan is het veld onzichtbaar voor de 
+* **Beschrijving**: Een optionele help tekst bij het veld.
+* **Weergeven in bevestigingsmail**: Indien aangevinkt, dan wordt dit veld opgenomen in de
+  bevestigingsmail naar de eindgebruiker.
+* **Verborgen**: Indien aangevinkt, dan is het veld onzichtbaar voor de
   eindgebruiker. Dit kan bijvoorbeeld gebruikt worden om informatie voor in te 
   vullen en door te zetten naar achterliggende registratiesystemen. Beheerders
   kunnen de waarden van onzichtbare velden uiteraard wel zien.
+
+Variabelen
+~~~~~~~~~~
+
+.. todo:: add reference to vars documentation (see
+   https://github.com/open-formulieren/open-forms/pull/1893)
+
+U kunt variabelen gebruiken in het ontwerp van formulieren, bijvoorbeeld om een
+(voor-)ingevulde naam in het label van een ander formulierveld weer te geven. Hiervoor
+is de :ref:`sjabloonfunctionaliteit <manual_templates>` beschikbaar.
+
+.. note::
+
+    Alle velden in een formulier zijn als variabele beschikbaar. Daarnaast zijn er ook
+    altijd een aantal vast variabelen beschikbaar én u kunt zelf ook variabelen
+    definiëren.
+
+Stel dat u een formulier hebt met de volgende velden:
+
+* Voornaam partner (met eigenschapnaam ``partnerNaam``)
+* Achternaam partner (met eigenschapnaam ``partnerAchternaam``)
+
+Dan kunt u een veld toevoegen met:
+
+* **Eigenschapnaam**: ``partnerGeboortedatum``
+* **Label**: ``Geboortedatum {{ partnerNaam }}``
+
+.. image:: _assets/form_field_template_variables.png
+    :width: 100%
+
+Wanneer eindgebruiker dan als voornaam "Willy" invult, dan wordt het label voor de
+geboortedatum "Geboortedatum Willy". Merk op dat dit niet beschikbaar is in de
+formulierdesigner, enkel bij het daadwerkelijk invullen van een formulier.
+
+Deze functionaliteit is beschikbaar op de volgende opties:
+
+* **Label**
+* **Standaardwaarde**
+* **Beschrijving**
+* **Placeholder**
+* **Inhoud** bij vrije-tekst
 
 Geavanceerd
 -----------
@@ -43,7 +84,7 @@ Geavanceerd
 
 Stel er zijn 2 velden:
 
-* Een *Radio* ``Stelling`` met als *Property Name* ``stelling``, en 3 waarden: 
+* Een *Radio* ``Stelling`` met als *Eigenschapnaam* ``stelling``, en 3 waarden:
   ``ja``, ``nee`` en ``anders``.
 * Een *Text Field* ``Toelichting bij anders``. Dit veld wordt als volgt 
   ingesteld:
