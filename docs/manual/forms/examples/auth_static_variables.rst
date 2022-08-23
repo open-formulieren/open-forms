@@ -5,7 +5,7 @@ Formulier met authenticatie
 ===========================
 
 In dit voorbeeld maken we een fictief formulier bestaande uit 1 stap, waarbij
-logica en static variabelen worden gebruikt om te zien of de gebruiker als persoon of als bedrijf ingelogd is.
+logica en vaste variabelen worden gebruikt om te zien of de gebruiker als persoon of als bedrijf ingelogd is.
 
 In dit voorbeeld gaan we er van uit dat u een
 :ref:`formulier met eenvoudige logica <example_logic_rules>` kan maken en dat

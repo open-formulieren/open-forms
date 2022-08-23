@@ -4,7 +4,8 @@
 Variables
 =========
 
-There are two models for variables, ``FormVariable`` and ``SubmissionValueVariable``. ``FormVariable`` are related to
+There are two models for variables, :class:`openforms.forms.models.FormVariable` and
+:class:`openforms.submissions.models.SubmissionValueVariable`. ``FormVariable`` are related to
 a form while ``SubmissionValueVariable`` are related to a submission.
 
 Form Variables
@@ -25,9 +26,9 @@ a related ``FormVariable``. The result of this situation is that any data input 
 
 .. note::
 
-   In Open Forms versions < 1.2, form components could have the same key across different steps. Now, there is a unique
+   In Open Forms versions < 2.0, form components could have the same key across different steps. Now, there is a unique
    together constraint on the ``form`` and ``key`` attributes of the ``FormVariable``. So all components must have
-   different keys *across the form*. Before upgrading to 1.2, it is important to fix any duplicate keys.
+   different keys *across the form*. Before upgrading to 2.0, it is important to fix any duplicate keys.
 
    There is the management command ``check_duplicate_component_keys`` to check for duplicate keys on an environment.
 
@@ -35,7 +36,7 @@ a related ``FormVariable``. The result of this situation is that any data input 
 Static variables
 ----------------
 
-There is also the concept of static variables. These are not saved in the database and only live in memory.
+Static variables are a third type of (form). These are not saved in the database and only live in memory.
 The endpoint ``/api/v1/variables/static`` gives a list of the static variables to which every form will have access to.
 
 Adding new static variables
@@ -111,9 +112,9 @@ Flow during form filling
 #. Going to the next step (persisting a step to the database):
 
    * ``PUT /submissions/<submission_uuid>/steps/<submission_step_uuid>``:
-     When the ``SubmissionStepSerializer`` is saved during this request, any ``SubmissionValueVariables`` related to it
+     When the ``SubmissionStepSerializer`` is saved during this request, any ``SubmissionValueVariable`` related to it
      is persisted to the database.
-     After the serializer is saved, and ``SubmissionValueVariables`` unrelated to a particular step is persisted if its
+     After the serializer is saved, any ``SubmissionValueVariable`` unrelated to a particular step is persisted if its
      data was changed in this submission step.
 
 Rendering
