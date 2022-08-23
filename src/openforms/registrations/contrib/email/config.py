@@ -36,3 +36,12 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "ensure that the total file upload sizes do not exceed the email size limit."
         ),
     )
+    email_subject = serializers.CharField(
+        label=_("Email subject"),
+        help_text=_(
+            "Subject of the email sent to the registration backend. You can use the expressions "
+            "'{{ form_name }}' and '{{ submission_reference }}' to include the form name and the reference "
+            "number to the submission in the subject."
+        ),
+        required=False,
+    )

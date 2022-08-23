@@ -3,6 +3,7 @@ from mimetypes import types_map
 from typing import List, NoReturn, Optional, Tuple, TypedDict
 
 from django.conf import settings
+from django.template import Context, Template
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils import timezone
@@ -29,6 +30,7 @@ class EmailOptions(TypedDict):
     attachment_formats: List[str]
     payment_emails: List[str]
     attach_files_to_email: Optional[bool]
+    email_subject: Optional[str]
 
 
 @register("email")
@@ -45,10 +47,23 @@ class EmailRegistration(BasePlugin):
         # explicitly get a reference before registering
         set_submission_reference(submission)
 
-        subject = _("[Open Forms] {form_name} - submission {public_reference}").format(
-            form_name=submission.form.admin_name,
-            public_reference=submission.public_registration_reference,
-        )
+        if subject_template := options.get("email_subject"):
+            subject = Template(subject_template).render(
+                Context(
+                    {
+                        "form_name": submission.form.admin_name,
+                        "submission_reference": submission.public_registration_reference,
+                    }
+                )
+            )
+        else:
+            subject = _(
+                "[Open Forms] {form_name} - submission {public_reference}"
+            ).format(
+                form_name=submission.form.admin_name,
+                public_reference=submission.public_registration_reference,
+            )
+
         self.send_registration_email(options["to_emails"], subject, submission, options)
 
     @staticmethod
