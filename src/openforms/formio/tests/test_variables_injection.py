@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from freezegun import freeze_time
 
-from ..variables import inject_variables
+from ..variables import inject_variables, render
 
 VARIABLES = {
     "html_variable": "<span>HTML injection!</span>",
@@ -171,4 +171,15 @@ class VariableInjectionTests(SimpleTestCase):
         self.assertEqual(
             configuration["components"][0]["label"],
             "{% privacy_policy %}",
+        )
+
+    def test_rendering_nested_structures(self):
+        structure = {"topLevel": {"nested": "{{ expression }}"}}
+        context = {"expression": "yepp"}
+
+        result = render(structure, context)
+
+        self.assertEqual(
+            result,
+            {"topLevel": {"nested": "yepp"}},
         )
