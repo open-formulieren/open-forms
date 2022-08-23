@@ -98,7 +98,10 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             file_name="my-bar.txt",
             content_type="text/bar",
         )
-        email_form_options = dict(to_emails=["foo@bar.nl", "bar@foo.nl"])
+        email_form_options = dict(
+            to_emails=["foo@bar.nl", "bar@foo.nl"],
+            email_subject="Test submission custom subject - {{ form_name }} - submission {{ submission_reference }}",
+        )
         email_submission = EmailRegistration("email")
 
         email_submission.register_submission(submission, email_form_options)
@@ -112,10 +115,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         message = mail.outbox[0]
         self.assertEqual(
             message.subject,
-            _("[Open Forms] {form_name} - submission {public_reference}").format(
-                form_name=submission.form.admin_name,
-                public_reference=submission.public_registration_reference,
-            ),
+            f"Test submission custom subject - {submission.form.admin_name} - submission {submission.public_registration_reference}",
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
