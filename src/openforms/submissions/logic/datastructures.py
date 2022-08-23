@@ -1,12 +1,12 @@
 from dataclasses import dataclass, field
-from typing import Any, Dict, Tuple
+from typing import Any, Tuple
 
 from glom import assign
 
+from openforms.typing import DataMapping
+
 from ..models import SubmissionStep
 from ..models.submission_value_variable import SubmissionValueVariablesState
-
-DataMapping = Dict[str, Any]
 
 
 @dataclass

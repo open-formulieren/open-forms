@@ -11,3 +11,7 @@ Testing tools
 
 .. automodule:: openforms.utils.tests.test_migrations
    :members:
+
+.. automodule:: openforms.formio.tests.assertions
+   :members:
+   :undoc-members:

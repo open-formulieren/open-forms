@@ -33,7 +33,7 @@ def iter_components(
                 )
 
 
-def get_component(configuration: JSONObject, key: str) -> JSONObject:
+def get_component(configuration: JSONObject, key: str) -> Optional[Component]:
     for component in iter_components(configuration=configuration, recursive=True):
         if component["key"] == key:
             return component

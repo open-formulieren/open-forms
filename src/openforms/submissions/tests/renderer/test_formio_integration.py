@@ -97,3 +97,21 @@ class SubmissionRendererIntegrationTests(TestCase):
             "Input 4: fourth input",
         ]
         self.assertEqual(rendered, expected)
+
+    def test_variables_in_formio_config_are_templated_out(self):
+        """
+        Assert that the formio configuration has properly templated out variables.
+
+        This ensures the renderer-aspect from #1708.
+        """
+        fd = self.submission.steps[0].form_step.form_definition
+        fd.configuration["components"][3]["label"] = "Templated out value: {{ input1 }}"
+        fd.save()
+        renderer = Renderer(
+            submission=self.submission, mode=RenderModes.pdf, as_html=True
+        )
+
+        nodelist = list(renderer)
+
+        fieldset_node = nodelist[-2]
+        self.assertEqual(fieldset_node.render(), "Templated out value: first input")

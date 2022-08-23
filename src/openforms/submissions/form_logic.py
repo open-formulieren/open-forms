@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Dict
 import elasticapm
 from json_logic import jsonLogic
 
-from openforms.formio.service import get_dynamic_configuration
+from openforms.formio.service import get_dynamic_configuration, inject_variables
 from openforms.formio.utils import get_component, get_component_default_value
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
@@ -162,7 +162,7 @@ def evaluate_form_logic(
         mutation.apply(step, configuration)
 
     # 7.2 Interpolate the component configuration with the variables.
-    # TODO!
+    inject_variables(configuration, data_container.data)
 
     # 7.3 Handle custom formio types - TODO: this needs to be lifted out of
     # :func:`get_dynamic_configuration` so that it can use variables.
@@ -209,6 +209,7 @@ def evaluate_form_logic(
 
 
 def check_submission_logic(submission, unsaved_data=None):
+    # TODO: https://github.com/open-formulieren/open-forms/issues/1913
     logic_rules = FormLogic.objects.filter(
         form=submission.form,
         actions__contains=[{"action": {"type": LogicActionTypes.step_not_applicable}}],
@@ -223,6 +224,9 @@ def check_submission_logic(submission, unsaved_data=None):
     for rule in logic_rules:
         if jsonLogic(rule.json_logic_trigger, merged_data):
             for action in rule.actions:
+                # TODO: this should not be necessary because of the query filter above?
+                # but perhaps we might want to re-use the logic rules cached on the
+                # submission instance?
                 if action["action"]["type"] != LogicActionTypes.step_not_applicable:
                     continue
 

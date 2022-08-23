@@ -156,6 +156,12 @@ class FormVariableFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "forms.FormVariable"
 
+    class Params:
+        user_defined = factory.Trait(
+            source=FormVariableSources.user_defined,
+            form_definition=None,
+        )
+
 
 class CategoryFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: "Category %03d" % n)
