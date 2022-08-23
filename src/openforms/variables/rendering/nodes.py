@@ -16,8 +16,6 @@ class VariablesNode(Node):
 
     This node is only 'visible' for certain render modes (cli and registration), but it is not rendered if there are
     user defined variables related to the form.
-
-    Rendering this node outputs the name of the step within the form.
     """
 
     submission: Submission
@@ -79,11 +77,8 @@ class SubmissionValueVariableNode(Node):
 
     @property
     def display_value(self) -> Union[str, Any]:
-        # in export mode, expose the raw datatype
-        if self.mode == RenderModes.export:
-            return self.variable.value
-
-        # TODO add a registry of formatters like for Formio ComponentNodes
+        # If we are going to render in different modes, we will need to add a registry of formatters
+        # like for Formio ComponentNodes
         return self.variable.value
 
     def render(self) -> str:
