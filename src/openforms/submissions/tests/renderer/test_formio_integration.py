@@ -114,5 +114,5 @@ class SubmissionRendererIntegrationTests(TestCase):
 
         nodelist = list(renderer)
 
-        fieldset_node = nodelist[-2]
+        fieldset_node = nodelist[4]
         self.assertEqual(fieldset_node.render(), "Templated out value: first input")

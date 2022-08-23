@@ -1,6 +1,5 @@
 from django.test import TestCase
 
-from openforms.forms.constants import FormVariableSources
 from openforms.submissions.exports import iter_submission_data_nodes
 from openforms.submissions.rendering import Renderer, RenderModes
 from openforms.submissions.tests.factories import (
@@ -8,6 +7,7 @@ from openforms.submissions.tests.factories import (
     SubmissionStepFactory,
     SubmissionValueVariableFactory,
 )
+from openforms.variables.constants import FormVariableSources
 
 
 class VariablesNodeTests(TestCase):

@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from freezegun import freeze_time
 
-from openforms.forms.constants import FormVariableSources
+from openforms.variables.constants import FormVariableSources
 
 from ..exports import create_submission_export
 from ..models import Submission

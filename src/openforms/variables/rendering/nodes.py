@@ -3,10 +3,10 @@ from typing import Any, Iterator, Union
 
 from django.utils.translation import gettext_lazy as _
 
-from openforms.forms.constants import FormVariableSources
 from openforms.submissions.models import Submission, SubmissionValueVariable
 from openforms.submissions.rendering import RenderModes
 from openforms.submissions.rendering.base import Node
+from openforms.variables.constants import FormVariableSources
 
 
 @dataclass

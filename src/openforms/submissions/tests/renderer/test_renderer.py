@@ -2,12 +2,12 @@ from django.test import TestCase
 
 from rest_framework.reverse import reverse
 
-from openforms.forms.constants import FormVariableSources
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
     FormStepFactory,
 )
+from openforms.variables.constants import FormVariableSources
 
 from ...rendering import Renderer, RenderModes
 from ...rendering.nodes import FormNode, SubmissionStepNode

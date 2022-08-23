@@ -11,7 +11,6 @@ from django.utils.translation import ugettext_lazy as _
 from furl import furl
 
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.constants import FormVariableSources
 from openforms.forms.tests.factories import FormFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
@@ -25,6 +24,7 @@ from openforms.submissions.tests.factories import (
     SubmissionValueVariableFactory,
 )
 from openforms.utils.tests.html_assert import HTMLAssertMixin
+from openforms.variables.constants import FormVariableSources
 
 from ....service import NoSubmissionReference, extract_submission_reference
 from ..constants import AttachmentFormat

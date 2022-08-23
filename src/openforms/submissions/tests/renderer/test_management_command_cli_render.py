@@ -6,7 +6,7 @@ from io import StringIO
 from django.core.management import call_command
 from django.test import TestCase
 
-from openforms.forms.constants import FormVariableSources
+from openforms.variables.constants import FormVariableSources
 
 from ..factories import SubmissionFactory, SubmissionValueVariableFactory
 
