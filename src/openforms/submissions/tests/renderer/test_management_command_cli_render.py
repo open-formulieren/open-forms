@@ -6,7 +6,9 @@ from io import StringIO
 from django.core.management import call_command
 from django.test import TestCase
 
-from ..factories import SubmissionFactory
+from openforms.variables.constants import FormVariableSources
+
+from ..factories import SubmissionFactory, SubmissionValueVariableFactory
 
 FORMIO_CONFIGURATION_COMPONENTS = [
     # visible component, leaf node
@@ -77,6 +79,20 @@ class CLIRendererIntegrationTests(TestCase):
             form__name="public name",
             form__internal_name="internal name",
         )
+        SubmissionValueVariableFactory.create(
+            key="ud1",
+            form_variable__name="User defined var 1",
+            value="Some data 1",
+            submission=submission,
+            form_variable__source=FormVariableSources.user_defined,
+        )
+        SubmissionValueVariableFactory.create(
+            key="ud2",
+            form_variable__name="User defined var 2",
+            value="Some data 2",
+            submission=submission,
+            form_variable__source=FormVariableSources.user_defined,
+        )
 
         form_definition = submission.steps[0].form_step.form_definition
         form_definition.name = "Stap 1"
@@ -107,6 +123,11 @@ Submission {submission.id} - public name
         Input 4                            fourth input
         WYSIWYG Content                    WYSIWYG with markup
         ---------------------------------  -------------------
+    Variables
+        ------------------  -----------
+        User defined var 1  Some data 1
+        User defined var 2  Some data 2
+        ------------------  -----------
 """
         self.assertEqual(output, expected)
 
@@ -121,6 +142,20 @@ Submission {submission.id} - public name
             },
             form__name="public name",
             form__internal_name="internal name",
+        )
+        SubmissionValueVariableFactory.create(
+            key="ud1",
+            form_variable__name="User defined var 1",
+            value="Some data 1",
+            submission=submission,
+            form_variable__source=FormVariableSources.user_defined,
+        )
+        SubmissionValueVariableFactory.create(
+            key="ud2",
+            form_variable__name="User defined var 2",
+            value="Some data 2",
+            submission=submission,
+            form_variable__source=FormVariableSources.user_defined,
         )
 
         form_definition = submission.steps[0].form_step.form_definition
@@ -152,5 +187,10 @@ Submission {submission.id} - public name
         Input 4                            fourth input
         WYSIWYG Content                    <p>WYSIWYG with <strong>markup</strong></p>
         ---------------------------------  -------------------------------------------
+    Variables
+        ------------------  -----------
+        User defined var 1  Some data 1
+        User defined var 2  Some data 2
+        ------------------  -----------
 """
         self.assertEqual(output, expected)

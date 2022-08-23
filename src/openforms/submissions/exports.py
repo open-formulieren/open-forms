@@ -32,11 +32,11 @@ class ExportFileTypes:
 
 def iter_submission_data_nodes(submission: Submission) -> Iterator[Node]:
     renderer = Renderer(submission, mode=RenderModes.export, as_html=False)
-    for step_node in renderer.get_children():
-        for component_node in step_node.get_children():
-            if component_node.is_layout:
+    for data_nodes in renderer.get_children():
+        for node in data_nodes.get_children():
+            if node.is_layout:
                 continue
-            yield component_node
+            yield node
 
 
 def create_submission_export(queryset: SubmissionQuerySet) -> tablib.Dataset:
@@ -51,8 +51,11 @@ def create_submission_export(queryset: SubmissionQuerySet) -> tablib.Dataset:
 
     first_submission = queryset[0]
     headers = ["Formuliernaam", "Inzendingdatum"]
-    for component_node in iter_submission_data_nodes(first_submission):
-        headers.append(component_node.component["key"])
+    for data_node in iter_submission_data_nodes(first_submission):
+        if hasattr(data_node, "component"):
+            headers.append(data_node.component["key"])
+        elif hasattr(data_node, "variable"):
+            headers.append(data_node.variable.key)
 
     data = tablib.Dataset(headers=headers)
 
@@ -63,10 +66,7 @@ def create_submission_export(queryset: SubmissionQuerySet) -> tablib.Dataset:
         submission_data = [
             submission.form.admin_name,
             inzending_datum,
-            *[
-                component_node.value
-                for component_node in iter_submission_data_nodes(submission)
-            ],
+            *[data_node.value for data_node in iter_submission_data_nodes(submission)],
         ]
         data.append(submission_data)
     return data

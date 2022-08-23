@@ -10,7 +10,9 @@ from openforms.submissions.form_logic import evaluate_form_logic
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionStepFactory,
+    SubmissionValueVariableFactory,
 )
+from openforms.variables.constants import FormVariableSources
 
 from ...models.submission_value_variable import (
     SubmissionValueVariable,
@@ -385,6 +387,20 @@ class SubmissionVariablesPerformanceTests(APITestCase):
             form_step=form_step2,
             data={"var3": "test3", "var4": "test4"},
         )
+        SubmissionValueVariableFactory.create(
+            key="ud1",
+            value="Some data 1",
+            submission=submission,
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__name="User defined var 2",
+        )
+        SubmissionValueVariableFactory.create(
+            key="ud2",
+            value="Some data 2",
+            submission=submission,
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__name="User defined var 2",
+        )
 
         renderer = Renderer(submission=submission, mode=RenderModes.pdf, as_html=True)
 
@@ -394,7 +410,8 @@ class SubmissionVariablesPerformanceTests(APITestCase):
         # 5. Retrieve logic rules
         # 6. Load submission state: Retrieve formsteps,
         # 7. Load submission state: Retrieve submission steps
-        with self.assertNumQueries(7):
+        # 8. Query if there are user defined variables
+        with self.assertNumQueries(8):
             nodes = [node for node in renderer]
 
         with self.assertNumQueries(0):

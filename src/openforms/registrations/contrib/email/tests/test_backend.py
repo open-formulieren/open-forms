@@ -21,8 +21,10 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
     SubmissionReportFactory,
     SubmissionStepFactory,
+    SubmissionValueVariableFactory,
 )
 from openforms.utils.tests.html_assert import HTMLAssertMixin
+from openforms.variables.constants import FormVariableSources
 
 from ....service import NoSubmissionReference, extract_submission_reference
 from ..constants import AttachmentFormat
@@ -735,3 +737,39 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                 self.assertEqual(file2[0], "my-bar.txt")
                 self.assertEqual(file2[1], "content")  # this is text now
                 self.assertEqual(file2[2], "text/bar")
+
+    def test_user_defined_variables_included(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            completed_on=timezone.make_aware(datetime(2021, 1, 1, 12, 0, 0)),
+            components_list=[],
+            form__registration_backend="email",
+        )
+        SubmissionValueVariableFactory.create(
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__name="User defined var 1",
+            submission=submission,
+            key="user_defined_var1",
+            value="test1",
+        )
+        SubmissionValueVariableFactory.create(
+            form_variable__source=FormVariableSources.user_defined,
+            form_variable__name="User defined var 2",
+            submission=submission,
+            key="user_defined_var2",
+            value="test2",
+        )
+
+        email_form_options = dict(to_emails=["foo@bar.nl", "bar@foo.nl"])
+        email_submission = EmailRegistration("email")
+
+        email_submission.register_submission(submission, email_form_options)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        message_text = message.body
+
+        self.assertIn("User defined var 1: test1", message_text)
+        self.assertIn("User defined var 2: test2", message_text)
