@@ -10,7 +10,7 @@ from .utils import iter_components
 logger = logging.getLogger(__name__)
 
 
-SUPPOORTED_TEMPLATE_PROPERTIES = (
+SUPPORTED_TEMPLATE_PROPERTIES = (
     "label",
     "legend",
     "defaultValue",
@@ -61,14 +61,14 @@ def inject_variables(configuration: JSONObject, values: DataMapping) -> None:
 
     :arg configuration: A dictionary containing the static Formio configuration (from
       the form designer)
-    :arg values: A mapping of variable name to its value (Python native objects)
+    :arg values: A mapping of variable key to its value (Python native objects)
     :returns: None - this function mutates the datastructures in place
 
     .. todo:: Support getting non-string based configuration from variables, such as
        `validate.required` etc.
     """
     for component in iter_components(configuration=configuration, recursive=True):
-        for property_name in SUPPOORTED_TEMPLATE_PROPERTIES:
+        for property_name in SUPPORTED_TEMPLATE_PROPERTIES:
             property_value = component.get(property_name)
             if not property_value:
                 continue
