@@ -1,19 +1,29 @@
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.conf import settings
+from django.core.cache import caches
+from django.test import TestCase, override_settings, tag
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
+CACHES = settings.CACHES.copy()
+CACHES["default"] = {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
 
+
+@override_settings(CACHES=CACHES)
 class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
         cls.submission = SubmissionFactory.create()
 
     def setUp(self):
+        super().setUp()
+        caches["default"].clear()
+        self.addCleanup(caches["default"].clear)
         self._add_submission_to_session(self.submission)
 
     @patch("openforms.locations.api.views.import_string")
@@ -122,3 +132,21 @@ class GetStreetNameAndCityViewAPITests(SubmissionsMixin, TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {})
+
+    @tag("gh-1832")
+    @patch("openforms.locations.api.views.import_string")
+    def test_endpoint_uses_caching(self, import_string_mock):
+        import_string_mock.return_value.get_address.return_value = {
+            "street_name": "Keizersgracht",
+            "city": "Amsterdam",
+        }
+        endpoint = reverse("api:get-street-name-and-city-list")
+
+        # make the request twice, second one should use cache
+        self.client.get(endpoint, {"postcode": "1015CJ", "house_number": "117"})
+        self.client.get(endpoint, {"postcode": "1015CJ", "house_number": "117"})
+
+        # assert that the client call was only made once
+        import_string_mock.return_value.get_address.assert_called_once_with(
+            "1015CJ", "117"
+        )
