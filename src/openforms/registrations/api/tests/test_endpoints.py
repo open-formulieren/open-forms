@@ -7,7 +7,7 @@ from rest_framework import serializers, status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import UserFactory
+from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from ...base import BasePlugin
@@ -161,3 +161,31 @@ class ListPluginsTests(APITestCase):
         response = self.client.get(endpoint)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+
+class TestInvalidOptions(APITestCase):
+    def test_invalid_email_subject_template(self):
+        self.user = SuperUserFactory.create()
+        self.client.force_authenticate(user=self.user)
+
+        url = reverse("api:form-list")
+        data = {
+            "name": "Test Post Form",
+            "slug": "test-post-form",
+            "registrationBackend": "email",
+            "registrationBackendOptions": {
+                "attachFilesToEmail": None,
+                "emailSubject": "Invalid template {{ _name }}",
+                "toEmails": ["test@email.nl"],
+            },
+        }
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        error = response.json()
+
+        self.assertEqual(
+            error["invalidParams"][0]["name"], "registrationBackendOptions.emailSubject"
+        )
+        self.assertEqual(error["invalidParams"][0]["code"], "syntax_error")

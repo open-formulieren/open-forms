@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from openforms.utils.mixins import JsonSchemaSerializerMixin
+from openforms.utils.validators import DjangoTemplateValidator
 
 from .constants import AttachmentFormat
 
@@ -35,4 +36,14 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "overrides the global default. Form designers should take special care to "
             "ensure that the total file upload sizes do not exceed the email size limit."
         ),
+    )
+    email_subject = serializers.CharField(
+        label=_("Email subject"),
+        help_text=_(
+            "Subject of the email sent to the registration backend. You can use the expressions "
+            "'{{ form_name }}' and '{{ submission_reference }}' to include the form name and the reference "
+            "number to the submission in the subject."
+        ),
+        required=False,
+        validators=[DjangoTemplateValidator()],
     )
