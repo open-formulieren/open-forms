@@ -3,11 +3,10 @@ from mimetypes import types_map
 from typing import List, NoReturn, Optional, Tuple, TypedDict
 
 from django.conf import settings
-from django.template import Context, Template
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext, ugettext_lazy as _
 
 from openforms.emails.utils import send_mail_html, strip_tags_plus
 from openforms.submissions.exports import create_submission_export
@@ -15,6 +14,7 @@ from openforms.submissions.models import Submission
 from openforms.submissions.rendering.constants import RenderModes
 from openforms.submissions.rendering.renderer import Renderer
 from openforms.submissions.tasks.registration import set_submission_reference
+from openforms.template import render_from_string
 
 from ...base import BasePlugin
 from ...exceptions import NoSubmissionReference
@@ -47,22 +47,16 @@ class EmailRegistration(BasePlugin):
         # explicitly get a reference before registering
         set_submission_reference(submission)
 
-        if subject_template := options.get("email_subject"):
-            subject = Template(subject_template).render(
-                Context(
-                    {
-                        "form_name": submission.form.admin_name,
-                        "submission_reference": submission.public_registration_reference,
-                    }
-                )
-            )
-        else:
-            subject = _(
-                "[Open Forms] {form_name} - submission {public_reference}"
-            ).format(
-                form_name=submission.form.admin_name,
-                public_reference=submission.public_registration_reference,
-            )
+        subject_template = options.get("email_subject") or ugettext(
+            "[Open Forms] {{ form_name }} - submission {{ submission_reference }}"
+        )
+        subject = render_from_string(
+            subject_template,
+            {
+                "form_name": submission.form.admin_name,
+                "submission_reference": submission.public_registration_reference,
+            },
+        )
 
         self.send_registration_email(options["to_emails"], subject, submission, options)
 

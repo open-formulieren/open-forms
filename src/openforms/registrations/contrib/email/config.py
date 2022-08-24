@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from openforms.utils.mixins import JsonSchemaSerializerMixin
+from openforms.utils.validators import DjangoTemplateValidator
 
 from .constants import AttachmentFormat
 
@@ -44,4 +45,5 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "number to the submission in the subject."
         ),
         required=False,
+        validators=[DjangoTemplateValidator()],
     )
