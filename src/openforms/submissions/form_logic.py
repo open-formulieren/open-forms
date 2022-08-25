@@ -5,7 +5,11 @@ import elasticapm
 from json_logic import jsonLogic
 
 from openforms.formio.service import get_dynamic_configuration, inject_variables
-from openforms.formio.utils import get_component, get_component_default_value
+from openforms.formio.utils import (
+    get_component,
+    get_component_default_value,
+    is_visible_in_frontend,
+)
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
 from openforms.logging import logevent
@@ -190,7 +194,7 @@ def evaluate_form_logic(
                 default = get_component_default_value(component)
                 if (
                     component
-                    and component.get("hidden")
+                    and not is_visible_in_frontend(component, data_container.data)
                     and component.get("clearOnHide")
                 ):
                     data_diff[key] = default or ""

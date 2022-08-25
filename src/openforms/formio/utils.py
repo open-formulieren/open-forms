@@ -221,3 +221,30 @@ def conform_to_mask(value: str, mask: str) -> str:
             )
 
     return "".join(result)
+
+
+def is_visible_in_frontend(component: dict, data: dict) -> bool:
+    """Check if the component is visible because of frontend logic
+
+    The rules in formio are expressed as:
+
+    .. code-block:: json
+
+        {
+            "show": true/false,
+            "when": <key of trigger component>,
+            "eq": <value>
+        }
+
+    """
+    hidden = component.get("hidden")
+    conditional = component.get("conditional", {})
+
+    if conditional.get("show") is None:
+        return not hidden
+
+    trigger_component_key = conditional.get("when")
+    if data.get(trigger_component_key) == conditional.get("eq"):
+        return conditional.get("show")
+
+    return not conditional.get("show")
