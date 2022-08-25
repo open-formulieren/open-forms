@@ -249,3 +249,108 @@ class VariableModificationTests(TestCase):
         variables_state = submission.load_submission_value_variables_state()
         variable = variables_state.variables["nTotalBoxes"]
         self.assertEqual(7, variable.value)
+
+    def test_logic_with_repeating_groups(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "cars",
+                        "components": [
+                            {"type": "textfield", "key": "colour"},
+                            {"type": "number", "key": "price"},
+                        ],
+                    },
+                ]
+            },
+        )
+
+        FormVariableFactory.create(
+            form=form,
+            key="numberOfCars",
+            source=FormVariableSources.user_defined,
+            data_type=FormVariableDataTypes.float,
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="totalPrice",
+            source=FormVariableSources.user_defined,
+            data_type=FormVariableDataTypes.float,
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="priceOfThirdCar",
+            source=FormVariableSources.user_defined,
+            data_type=FormVariableDataTypes.float,
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"!!": [True]},
+            actions=[
+                # Action to calculate the number of cars
+                {
+                    "variable": "numberOfCars",
+                    "action": {
+                        "type": "variable",
+                        "value": {
+                            "reduce": [
+                                {"var": "cars"},
+                                {"+": [{"var": "accumulator"}, 1]},
+                                0,
+                            ]
+                        },
+                    },
+                },
+                # Action to calculate the total price
+                {
+                    "variable": "totalPrice",
+                    "action": {
+                        "type": "variable",
+                        "value": {
+                            "reduce": [
+                                {"var": "cars"},
+                                {
+                                    "+": [
+                                        {"var": "accumulator"},
+                                        {"var": "current.price"},
+                                    ]
+                                },
+                                0,
+                            ]
+                        },
+                    },
+                },
+                # Get the price of the 3rd car (which will be undefined)
+                {
+                    "variable": "priceOfThirdCar",
+                    "action": {
+                        "type": "variable",
+                        "value": {"var": ["cars.2.price", 0]},
+                    },
+                },
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={
+                "cars": [
+                    {"colour": "blue", "price": 2000},
+                    {"colour": "red", "price": 3000},
+                ]
+            },
+        )
+
+        evaluate_form_logic(submission, submission_step, submission.data)
+
+        variables_state = submission.load_submission_value_variables_state()
+
+        self.assertEqual(2, variables_state.variables["numberOfCars"].value)
+        self.assertEqual(5000, variables_state.variables["totalPrice"].value)
+        self.assertEqual(0, variables_state.variables["priceOfThirdCar"].value)
