@@ -1,8 +1,6 @@
 from django.test import tag
 
 from freezegun import freeze_time
-from django.test import tag
-
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -354,29 +352,24 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             kwargs={"submission_uuid": submission.uuid, "step_uuid": form_step.uuid},
         )
 
-        response_json = self.client.post(
+        response = self.client.post(
             logic_check_endpoint, data={"data": {"checkbox": True}}
-        ).json()
+        )
+        data = response.json()
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertFalse(
-            response_json["step"]["formStep"]["configuration"]["components"][0][
-                "hidden"
-            ],
+            data["step"]["formStep"]["configuration"]["components"][0]["hidden"],
         )
 
-        response_json = self.client.post(
+        response = self.client.post(
             logic_check_endpoint,
             data={"data": {"checkbox": False, "textfield": "Test data"}},
-        ).json()
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
-        self.assertEqual(
-            {"textfield": ""},
-            response_json["step"]["data"],
         )
+        data = response.json()
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual({"textfield": ""}, data["step"]["data"])
         self.assertTrue(
-            response_json["step"]["formStep"]["configuration"]["components"][0][
-                "hidden"
-            ],
+            data["step"]["formStep"]["configuration"]["components"][0]["hidden"],
         )
 
     def test_response_contains_submission(self):

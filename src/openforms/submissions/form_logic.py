@@ -6,10 +6,7 @@ from django.utils.functional import empty
 import elasticapm
 
 from openforms.formio.service import get_dynamic_configuration, inject_variables
-from openforms.formio.utils import (
-    get_component,
-    is_visible_in_frontend,
-)
+from openforms.formio.utils import is_visible_in_frontend, iter_components
 from openforms.logging import logevent
 
 from .logic.actions import PropertyAction
@@ -153,12 +150,13 @@ def evaluate_form_logic(
         # debounced client-side data changes
         data_diff = {}
 
-        for key in map(lambda x: x["key"], configuration["components"]):
+        # Iterate over all components instead of `step.data`, to take hidden fields into account (See: #1755)
+        for component in iter_components(configuration):
+            key = component["key"]
             new_value = updated_step_data.get(key, empty)
             original_value = initial_data.get(key, empty)
             # Reset the value of any field that may have become hidden again after evaluating the logic
             if original_value is not empty:
-                component = get_component(configuration, key)
                 if (
                     component
                     and not is_visible_in_frontend(component, data_container.data)
@@ -173,6 +171,7 @@ def evaluate_form_logic(
 
         # only return the 'overrides'
         step.data = DirtyData(data_diff)
+
     step._form_logic_evaluated = True
 
     return configuration
