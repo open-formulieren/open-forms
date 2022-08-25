@@ -557,7 +557,7 @@ maykin-django-two-factor-auth[phonenumbers]==2.0.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-maykin-json-logic-py @ git+https://github.com/maykinmedia/json-logic-py.git@c880c76aa3e5b56ada082a8da9afdc8368481f2d
+maykin-json-logic-py @ git+https://github.com/maykinmedia/json-logic-py.git@f877f5326231bdcf4621783278f22c8565ec7913
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
