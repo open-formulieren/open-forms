@@ -1,12 +1,13 @@
 from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
+from django.utils.functional import empty
+
 import elasticapm
 
 from openforms.formio.service import get_dynamic_configuration, inject_variables
 from openforms.formio.utils import (
     get_component,
-    get_component_default_value,
     is_visible_in_frontend,
 )
 from openforms.logging import logevent
@@ -152,12 +153,12 @@ def evaluate_form_logic(
         # debounced client-side data changes
         data_diff = {}
 
-        for key, new_value in step.data.items():
-            original_value = initial_data.get(key)
+        for key in map(lambda x: x["key"], configuration["components"]):
+            new_value = updated_step_data.get(key, empty)
+            original_value = initial_data.get(key, empty)
             # Reset the value of any field that may have become hidden again after evaluating the logic
-            if original_value:
+            if original_value is not empty:
                 component = get_component(configuration, key)
-                default = get_component_default_value(component)
                 if (
                     component
                     and not is_visible_in_frontend(component, data_container.data)
@@ -166,7 +167,7 @@ def evaluate_form_logic(
                     data_diff[key] = ""
                     continue
 
-            if new_value == original_value:
+            if new_value is empty or new_value == original_value:
                 continue
             data_diff[key] = new_value
 

@@ -1,6 +1,8 @@
 from django.test import tag
 
 from freezegun import freeze_time
+from django.test import tag
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -290,6 +292,92 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         data = response.json()
 
         self.assertFalse(data["steps"][1]["isApplicable"])
+
+    @tag("gh-1755")
+    def test_check_logic_hide_with_default_value(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                        "hidden": True,
+                        "clearOnHide": True,
+                        "defaultValue": "Test data",
+                    },
+                    {
+                        "type": "checkbox",
+                        "key": "checkbox",
+                        "hidden": False,
+                    },
+                ]
+            },
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [
+                    {"var": "checkbox"},
+                    True,
+                ]
+            },
+            actions=[
+                {
+                    "component": "textfield",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+
+        submission_detail_endpoint = reverse(
+            "api:submission-detail",
+            kwargs={"uuid": submission.uuid},
+        )
+        response = self.client.get(submission_detail_endpoint)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": form_step.uuid},
+        )
+
+        response_json = self.client.post(
+            logic_check_endpoint, data={"data": {"checkbox": True}}
+        ).json()
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertFalse(
+            response_json["step"]["formStep"]["configuration"]["components"][0][
+                "hidden"
+            ],
+        )
+
+        response_json = self.client.post(
+            logic_check_endpoint,
+            data={"data": {"checkbox": False, "textfield": "Test data"}},
+        ).json()
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(
+            {"textfield": ""},
+            response_json["step"]["data"],
+        )
+        self.assertTrue(
+            response_json["step"]["formStep"]["configuration"]["components"][0][
+                "hidden"
+            ],
+        )
 
     def test_response_contains_submission(self):
         form = FormFactory.create()
