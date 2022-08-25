@@ -119,6 +119,37 @@ Voorbeeld
          Hoi Joe!
 
 
+Formattering van variabelen
+---------------------------
+
+Vaak wilt u variabelen op een bepaalde manier formatteren. Dit is mogelijk met behulp
+van de *sjabloonfilters* die standaard ingebouwd zijn. Alle beschikbare filters
+zijn gedocumenteerd op de `Django defaultfilters reference`_.
+
+Hieronder vindt u een tabel met vaak-voorkomende patronen.
+
+=================================== ================================== ===============================================
+Expressie                           Voorbeeld output                   Toelichting
+=================================== ================================== ===============================================
+``{{ now|date:"l j F Y" }}``        ``dinsdag 23 augustus 2022``       Datum van vandaag, tekstueel
+``{{ now|date:"d/m/Y" }}``          ``23/08/2022``                     Datum van vandaag, d/m/y
+``{{ now|date:"m" }}``              ``08``                             Huidige maand
+``{{ now|date:"d" }}``              ``23``                             Huidige dag
+``{{ now|date:"Y" }}``              ``2022``                           Huidig jaar
+``{{ now|date:"F" }}``              ``augustus``                       Huidige maandnaam
+``{{ now|date:"l" }}``              ``dinsdag``                        Huidige dagnaam
+``{{ now|time:"H:i" }}``            ``09:08``                          Huidig tijstip (uren en minuten)
+``{{ now|time:"H:i:s" }}``          ``09:08:42``                       Huidig tijstip (uren, minuten en seconden)
+``{{ now|date:"W" }}``              ``34``                             ISO-8601 weeknummer
+``{{ legeVariabele|default:"-" }}`` ``-``                              Terugvalwaarde indien de variabele "leeg" is
+``{{ filesize|filesizeformat }}``   ``117,7 MB``                       Weergave van bytes (nummer) in leesbare vorm
+``{{ consent|yesno:"ok,niet ok"}}`` ``niet ok``                        Weergave op basis van ``True``/``False`` waarde
+=================================== ================================== ===============================================
+
+.. note:: Op dit moment krijgt u altijd de Nederlandse vertalingen/localisatie.
+   Er is nog geen ondersteuning voor andere talen.
+
+
 Bevestigingsmail
 ================
 
@@ -281,3 +312,5 @@ Voorbeeld
          **Productinformatie**
 
          Neem alstublieft uw afspraakbevestiging mee.
+
+.. _Django defaultfilters reference: https://docs.djangoproject.com/en/3.2/ref/templates/builtins/#built-in-filter-reference
