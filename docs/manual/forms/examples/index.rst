@@ -16,3 +16,4 @@ Voorbeelden
    fields_for_logintype
    calculations
    auth_static_variables
+   repeating_groups
