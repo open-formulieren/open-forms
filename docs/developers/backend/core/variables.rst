@@ -30,13 +30,13 @@ a related ``FormVariable``. The result of this situation is that any data input 
    together constraint on the ``form`` and ``key`` attributes of the ``FormVariable``. So all components must have
    different keys *across the form*. Before upgrading to 2.0, it is important to fix any duplicate keys.
 
-   There is the management command ``check_duplicate_component_keys`` to check for duplicate keys on an environment.
+   Use the management command ``check_duplicate_component_keys`` to check for duplicate keys on an environment.
 
 
 Static variables
 ----------------
 
-Static variables are a third type of (form). These are not saved in the database and only live in memory.
+Static variables are a third type of ``FormVariable``. These are not saved in the database and only live in memory.
 The endpoint ``/api/v1/variables/static`` gives a list of the static variables to which every form will have access to.
 
 Adding new static variables

@@ -1,12 +1,12 @@
-.. _examples_repeating_groups:
+.. _examples_repeating_groeps:
 
 ================================
-Formulier met herhalende groupen
+Formulier met herhalende groepen
 ================================
 
 In dit voorbeeld maken we een fictief formulier bestaande uit 1 stap met
-een herhalende group component. We gaan berekeningen laten zien die gebruike maken van de waarden
-ingevuld in de herhalende group.
+een herhalende groep component. We gaan berekeningen laten zien die gebruike maken van de waarden
+ingevuld in de herhalende groep.
 
 In dit voorbeeld gaan we er van uit dat u een
 :ref:`formulier met berekeningen <examples_calculations>` kan maken en dat
@@ -17,44 +17,45 @@ Formulier maken
 
 #. Maak een formulier aan met de volgende gegevens:
 
-   * **Naam**: Herhalende group demo
+   * **Naam**: Herhalende groep demo
 
 #. Klik op het tabblad **Stappen en velden**.
 #. Klik aan de linkerkant op **Stap toevoegen** en selecteer **Maak een nieuwe
    formulierdefinitie**.
 #. Onder de sectie **(Herbruikbare) stapgegevens** vul het volgende in:
 
-   * **Naam**: Stap met herhalende group
+   * **Naam**: Stap met herhalende groep
 
 #. Scroll naar de sectie **Velden** en klik op **Speciale velden**.
-#. Sleep een **Herhalende group** component op het witte vlak, vul de volgende
+#. Sleep een **Herhalende groep** component op het witte vlak, vul de volgende
    gegevens in en druk daarna op **Opslaan**:
 
-   * **Basis** > **Label**: Autos
-   * **Weergave** > **Open eerste group als leeg**: *aangevinkt*
+   * **Basis** > **Label**: Auto's
+   * **Weergave** > **Open eerste groep als leeg**: *aangevinkt*
 
-#. Klik op **Formuliervelden** en sleep een **Tekstveld** component binnen de herhalende group. Vul de volgende
+#. Klik op **Formuliervelden** en sleep een **Tekstveld** component binnen de herhalende groep. Vul de volgende
    gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Kleur
-#. Sleep een **Bedrag** component binnen de herhalende group. Vul de volgende
+
+#. Sleep een **Bedrag** component binnen de herhalende groep. Vul de volgende
    gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Waarde
 
 #. Klik op **Opmaak** en sleep een vrije tekst component op het witte vlak. Vul de volgende gegevens in:
 
-   * Onder **Vrije tekst component**: ``De totale waarde van uw autos is: €{{ totaleWaarde|localize }}``
+   * Onder **Vrije tekst component**: ``De totale waarde van uw auto's is: €{{ totaleWaarde|localize }}``
    * **Verborgen**: *aangevinkt*
 
 #. Druk daarna op **Opslaan en opnieuw bewerken**.
 #. Klik op het tabblad **Variabelen** en daarna op het tabblad **User defined**.
-#. Voeg een variabel toe met de volgende gegevens:
+#. Voeg een variabele toe met de volgende gegevens:
 
    * **Naam**: Aantal autos
    * **Data type**: float
 
-#. Voeg nog een variabel toe met de volgende gegevens:
+#. Voeg nog een variabele toe met de volgende gegevens:
 
    * **Naam**: Totale waarde
    * **Data type**: float
@@ -64,7 +65,7 @@ Formulier maken
    * Trigger: ``{"!!": [true]}``
    * Acties:
 
-     * **Wijzig de waarde van een variabel/component** > **Totale waarde** >
+     * **Wijzig de waarde van een variabele/component** > **Totale waarde** >
 
      .. code-block:: json
 
@@ -76,7 +77,7 @@ Formulier maken
             ]
         }
 
-     * **Wijzig de waarde van een variabel/component** > **Aantal autos** >
+     * **Wijzig de waarde van een variabele/component** > **Aantal autos** >
 
      .. code-block:: json
 
@@ -85,7 +86,7 @@ Formulier maken
 #. Voeg een envoudige regel toe met de volgende gegevens:
 
    * Trigger: Als **Antal autos (aantalAutos)** > **is groter dan** > **de waarde** > ``0``
-   * Actie: dan **wijzig een attribuut van een veld/component** > **Stap met herhalende group: Content (content)**
+   * Actie: dan **wijzig een attribuut van een veld/component** > **Stap met herhalende groep: Content (content)**
      > **Verborgen** > **Nee**
 
 #. Klik op opslaan
