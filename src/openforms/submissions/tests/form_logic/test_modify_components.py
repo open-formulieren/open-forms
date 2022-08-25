@@ -834,3 +834,41 @@ class ComponentModificationTests(TestCase):
             ]
         }
         self.assertEqual(configuration, expected)
+
+    def test_component_visible_in_frontend(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "radio",
+                        "type": "radio",
+                        "values": [
+                            {"label": "yes", "value": "yes"},
+                            {"label": "no", "value": "no"},
+                        ],
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textField",
+                        "hidden": True,
+                        "conditional": {"eq": "yes", "show": True, "when": "radio"},
+                        "clearOnHide": True,
+                    },
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={"radio": "yes", "textField": "Some data that must not be cleared!"},
+        )
+
+        evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
+
+        self.assertEqual(
+            "Some data that must not be cleared!", submission_step.data["textField"]
+        )
