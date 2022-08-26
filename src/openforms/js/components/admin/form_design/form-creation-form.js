@@ -191,11 +191,16 @@ function reducer(draft, action) {
         }));
       if (priceRules) draft.priceRules = priceRules;
 
-      // set the form steps of the form and initialize the validation errors array
+      // Add component FormVariables and validation errors to the state
       draft.formSteps = steps;
+      let stepsFormVariables = [];
       for (const step of draft.formSteps) {
+        stepsFormVariables = stepsFormVariables.concat(
+          getFormVariables(step.formDefinition, step.configuration)
+        );
         step.validationErrors = [];
       }
+      draft.formVariables = draft.formVariables.concat(stepsFormVariables);
       break;
     }
 
