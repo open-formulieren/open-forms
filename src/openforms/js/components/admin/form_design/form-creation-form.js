@@ -191,7 +191,7 @@ function reducer(draft, action) {
         }));
       if (priceRules) draft.priceRules = priceRules;
 
-      // Add component FormVariables and validation errors to the state
+      // Add component FormVariables and the step validation errors to the state
       draft.formSteps = steps;
       let stepsFormVariables = [];
       for (const step of draft.formSteps) {
@@ -201,9 +201,13 @@ function reducer(draft, action) {
         step.validationErrors = [];
       }
       draft.formVariables = draft.formVariables.concat(stepsFormVariables);
+      draft.validationErrors = checkForDuplicateKeys(
+        draft.formVariables,
+        draft.staticVariables,
+        draft.validationErrors
+      );
       break;
     }
-
     case 'FIELD_CHANGED': {
       const {name, value} = action.payload;
       // names are prefixed like `form.foo` and `literals.bar`
