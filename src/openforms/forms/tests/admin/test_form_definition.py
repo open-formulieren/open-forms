@@ -149,3 +149,33 @@ class TestFormDefinitionAdmin(WebTest):
             ),
             str(response.content),
         )
+
+    def test_template_syntax_errors_in_formio_config(self):
+        fd = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "invalidTemplate",
+                        "label": "{% bad tag and syntax %}",
+                    }
+                ]
+            }
+        )
+
+        change_page = self.app.get(
+            reverse("admin:forms_formdefinition_change", kwargs={"object_id": fd.pk}),
+        )
+        assert "{% bad tag and syntax %}" in change_page.form["configuration"].value
+
+        # submit the form, which throws validation errors
+        submit_response = change_page.form.submit()
+
+        self.assertEqual(submit_response.status_code, 200)
+        errors = submit_response.context["adminform"].errors
+        expected_error = _(
+            "The component '{key}' (at JSON path '{path}') has template syntax errors "
+            "in the field '{field}'."
+        ).format(key="invalidTemplate", path="components.0", field="label")
+        self.assertEqual(errors["configuration"], [expected_error])
+        self.assertContains(submit_response, expected_error.replace("'", "&#x27;"))

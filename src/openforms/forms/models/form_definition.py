@@ -18,6 +18,7 @@ from openforms.formio.utils import iter_components
 
 from ..models import Form
 from ..tasks import detect_formiojs_configuration_snake_case
+from ..validators import validate_template_expressions
 
 
 def _get_number_of_components(form_definition: "FormDefinition") -> int:
@@ -48,6 +49,7 @@ class FormDefinition(models.Model):
     configuration = models.JSONField(
         _("Form.io configuration"),
         help_text=_("The form definition as Form.io JSON schema"),
+        validators=[validate_template_expressions],
     )
     login_required = models.BooleanField(
         _("login required"),
