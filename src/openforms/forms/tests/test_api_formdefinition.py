@@ -291,6 +291,115 @@ class FormDefinitionsAPITests(APITestCase):
             response_data["usedIn"][0]["url"], f"http://testserver{form_url}"
         )
 
+    def test_template_expressions_in_configuration_validation(self):
+        """
+        Assert that the supported formio component properties templates are validated.
+
+        The API endpoint must validate templates that lead to syntax errors.
+        """
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
+
+        url = reverse("api:formdefinition-list")
+
+        counter = 0
+
+        def _do_create(components: list):
+            nonlocal counter
+            counter += 1
+            return self.client.post(
+                url,
+                data={
+                    "name": "Name",
+                    "slug": f"fd-{counter}",
+                    "configuration": {
+                        "display": "form",
+                        "components": components,
+                    },
+                },
+            )
+
+        with self.subTest("valid templates"):
+            response = _do_create(
+                [
+                    {
+                        "type": "textfield",
+                        "key": "text1",
+                        "description": "Simple {{ missingVariable }} print",
+                        "placeholder": 'Placeholder with date filter {{ now|date:"d-m-Y" }}',
+                    },
+                    {
+                        "label": "Field 1 value: {{ text1|default:'-' }}",
+                        "type": "fieldset",
+                        "key": "fieldset1",
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "text2",
+                                "label": '{% now "jS F Y H:i" %}',
+                            },
+                            {
+                                "type": "content",
+                                "html": "<p>{{ missingVariable }} hello</p>",
+                                # syntax errors in non-supported properties should be accepted
+                                "unvalidated": "{{ foo ",
+                            },
+                        ],
+                    },
+                ]
+            )
+
+            self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        with self.subTest("syntax error"):
+            response = _do_create(
+                [
+                    {
+                        "type": "textfield",
+                        "key": "text1",
+                        "description": "Broken {{ var {{ brokenNestedVar }} }}",
+                    },
+                    {
+                        "label": "{% load i18n %}",  # only builtins are exposed
+                        "type": "fieldset",
+                        "key": "fieldset1",
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "text2",
+                                "label": "{% bad_tag usage %}",
+                            },
+                        ],
+                    },
+                ]
+            )
+
+            self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+            errors = response.json()["invalidParams"]
+            error_text1, error_fieldset, error_text2 = errors
+
+            with self.subTest("text1 error"):
+                self.assertEqual(error_text1["code"], "invalid-template-syntax")
+                self.assertEqual(
+                    error_text1["name"],
+                    "configuration.components.0.description",
+                )
+
+            with self.subTest("fieldset error"):
+                self.assertEqual(error_fieldset["code"], "invalid-template-syntax")
+                self.assertEqual(
+                    error_fieldset["name"],
+                    "configuration.components.1.label",
+                )
+
+            with self.subTest("text2 error"):
+                self.assertEqual(error_text2["code"], "invalid-template-syntax")
+                self.assertEqual(
+                    error_text2["name"],
+                    "configuration.components.1.components.0.label",
+                )
+
 
 class FormioCoSignComponentValidationTests(APITestCase):
     """
