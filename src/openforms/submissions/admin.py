@@ -172,8 +172,6 @@ class SubmissionAdmin(admin.ModelAdmin):
     search_fields = (
         "form__name",
         "uuid",
-        "bsn",
-        "kvk",
         "form_url",
         "public_registration_reference",
     )

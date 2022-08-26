@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
+from furl import furl
 from rest_framework import status
 
 from openforms.accounts.tests.factories import (
@@ -153,6 +154,17 @@ class TestSubmissionAdmin(WebTest):
 
         # avg log not visible
         self.assertNotContains(response, avg_log.get_message())
+
+    def test_search(self):
+        list_url = furl(reverse("admin:submissions_submission_changelist"))
+        list_url.args["q"] = "some value"
+
+        response = self.app.get(
+            list_url.url,
+            user=self.user,
+        )
+
+        self.assertEqual(200, response.status_code)
 
 
 @disable_2fa
