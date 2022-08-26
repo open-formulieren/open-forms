@@ -14,7 +14,18 @@ Possible future features:
 """
 from .backends.sandboxed_django import backend as sandbox_backend
 
-__all__ = ["render_from_string", "sandbox_backend"]
+__all__ = ["render_from_string", "parse", "sandbox_backend"]
+
+
+def parse(source: str, backend=sandbox_backend):
+    """
+    Parse the template fragment using the specified backend.
+
+    :returns: A template instance of the specified backend
+    :raises: :class:`django.template.TemplateSyntaxError` if there are any
+      syntax errors
+    """
+    return backend.from_string(source)
 
 
 def render_from_string(source: str, context: dict, backend=sandbox_backend) -> str:
@@ -28,5 +39,5 @@ def render_from_string(source: str, context: dict, backend=sandbox_backend) -> s
     :raises: :class:`django.template.TemplateSyntaxError` if the template source is
       invalid
     """
-    template = backend.from_string(source)
+    template = parse(source, backend=backend)
     return template.render(context)
