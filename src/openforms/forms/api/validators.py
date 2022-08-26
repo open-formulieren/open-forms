@@ -2,12 +2,14 @@ from typing import Any, Union
 
 from django.utils.translation import gettext as _
 
+from glom import assign
 from json_logic import jsonLogic
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
 from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.formio.utils import iter_components
+from openforms.formio.variables import validate_configuration
 from openforms.typing import JSONObject
 from openforms.utils.json_logic import JsonLogicTest
 
@@ -212,3 +214,24 @@ class FormLogicTriggerFromStepFormValidator:
                     )
                 }
             )
+
+
+def validate_template_expressions(configuration: JSONObject) -> None:
+    """
+    Validate that any template expressions in supported properties are correct.
+
+    This runs syntax validation on template fragments inside Formio configuration
+    objects.
+    """
+    errored_components = validate_configuration(configuration)
+    if not errored_components:
+        return
+
+    all_errors = {}
+    error = ErrorDetail(
+        _("There are template syntax errors in the expression."),
+        code="invalid-template-syntax",
+    )
+    for path in errored_components.values():
+        assign(all_errors, path, error, missing=dict)
+    raise serializers.ValidationError(all_errors)

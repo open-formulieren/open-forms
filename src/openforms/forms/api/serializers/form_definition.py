@@ -12,7 +12,7 @@ from openforms.formio.service import (
 
 from ...models import Form, FormDefinition
 from ...validators import validate_form_definition_is_reusable
-from ..validators import FormIOComponentsValidator
+from ..validators import FormIOComponentsValidator, validate_template_expressions
 
 
 class UsedInFormSerializer(serializers.HyperlinkedModelSerializer):
@@ -87,7 +87,10 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
                 "lookup_field": "uuid",
             },
             "configuration": {
-                "validators": [FormIOComponentsValidator()],
+                "validators": [
+                    FormIOComponentsValidator(),
+                    validate_template_expressions,
+                ],
             },
         }
 
