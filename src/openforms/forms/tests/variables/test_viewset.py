@@ -15,6 +15,7 @@ from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
+    FormStepFactory,
     FormVariableFactory,
 )
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
@@ -204,6 +205,75 @@ class FormVariableViewsetTest(APITestCase):
 
         self.assertIn(form_variable1.key, variables_keys)
         self.assertIn(form_variable2.key, variables_keys)
+
+    def test_list_form_variables_source_filter(self):
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user)
+
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test",
+                    }
+                ]
+            },
+        )
+        form_variable1 = FormVariableFactory.create(
+            form=form, source=FormVariableSources.user_defined
+        )
+        form_variable2 = FormVariableFactory.create(
+            form=form, source=FormVariableSources.user_defined
+        )
+
+        response_user_defined = self.client.get(
+            reverse("api:form-variables", kwargs={"uuid_or_slug": form.uuid}),
+            {"source": FormVariableSources.user_defined},
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response_user_defined.status_code)
+
+        response_data = response_user_defined.json()
+
+        self.assertEqual(2, len(response_data))
+
+        variables_keys = [variable["key"] for variable in response_data]
+
+        self.assertIn(form_variable1.key, variables_keys)
+        self.assertIn(form_variable2.key, variables_keys)
+
+        response_component = self.client.get(
+            reverse("api:form-variables", kwargs={"uuid_or_slug": form.uuid}),
+            {"source": FormVariableSources.component},
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response_component.status_code)
+
+        response_data = response_component.json()
+
+        self.assertEqual(1, len(response_data))
+        self.assertEqual("test", response_data[0]["key"])
+
+    def test_list_form_variables_invalid_source(self):
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user)
+
+        form = FormFactory.create()
+        FormVariableFactory.create(form=form, source=FormVariableSources.user_defined)
+
+        response_user_defined = self.client.get(
+            reverse("api:form-variables", kwargs={"uuid_or_slug": form.uuid}),
+            {"invalid": FormVariableSources.user_defined},
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response_user_defined.status_code)
+
+        response_data = response_user_defined.json()
+
+        self.assertEqual(1, len(response_data))
 
     def test_dotted_variable_keys(self):
         user = SuperUserFactory.create()
