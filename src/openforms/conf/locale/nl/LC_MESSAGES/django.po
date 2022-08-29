@@ -3087,13 +3087,13 @@ msgstr ""
 msgid "The variable cannot be empty."
 msgstr "De componentverwijzing mag niet leeg zijn."
 
-#: openforms/forms/api/validators.py:167
+#: openforms/forms/api/validators.py:164
 #, fuzzy
 #| msgid "The specified component is not present in the form definition"
 msgid "The specified variable is not related to the form"
 msgstr "De opgegeven component is niet aanwezig in de formulierdefinitie"
 
-#: openforms/forms/api/validators.py:211 openforms/forms/models/logic.py:61
+#: openforms/forms/api/validators.py:208 openforms/forms/models/logic.py:61
 msgid ""
 "You must specify a step that belongs to the same form as the logic rule "
 "itself."
@@ -3496,9 +3496,9 @@ msgstr ""
 msgid "You may edit it again below."
 msgstr "U kunt deze hieronder weer bewerken."
 
-#: openforms/forms/models/category.py:10 openforms/forms/models/form.py:50
-#: openforms/forms/models/form.py:446
-#: openforms/forms/models/form_definition.py:38
+#: openforms/forms/models/category.py:10 openforms/forms/models/form.py:53
+#: openforms/forms/models/form.py:449
+#: openforms/forms/models/form_definition.py:37
 #: openforms/forms/models/form_step.py:17
 #: openforms/forms/models/form_version.py:42 openforms/forms/models/logic.py:11
 #: openforms/forms/models/pricing_logic.py:30 openforms/payments/models.py:78
@@ -3520,18 +3520,18 @@ msgstr "Eenvoudige naam"
 msgid "categories"
 msgstr ""
 
-#: openforms/forms/models/form.py:53
-#: openforms/forms/models/form_definition.py:41
+#: openforms/forms/models/form.py:56
+#: openforms/forms/models/form_definition.py:40
 msgid "internal name"
 msgstr "interne naam"
 
-#: openforms/forms/models/form.py:56
-#: openforms/forms/models/form_definition.py:44
+#: openforms/forms/models/form.py:59
+#: openforms/forms/models/form_definition.py:43
 msgid "internal name for management purposes"
 msgstr "interne naam voor beheerdoeleinden "
 
-#: openforms/forms/models/form.py:59
-#: openforms/forms/models/form_definition.py:47
+#: openforms/forms/models/form.py:62
+#: openforms/forms/models/form_definition.py:46
 msgid "slug"
 msgstr "URL-deel"
 
@@ -3731,15 +3731,36 @@ msgstr "{name} (verwijderd)"
 msgid "{backend} (invalid)"
 msgstr "{backend} (ongeldig)"
 
-#: openforms/forms/models/form.py:347 openforms/forms/models/form.py:349
+#: openforms/forms/models/form.py:350 openforms/forms/models/form.py:352
+#: openforms/forms/models/form_definition.py:98
 #: openforms/forms/models/form_definition.py:100
-#: openforms/forms/models/form_definition.py:102
+#: openforms/forms/tests/admin/test_form.py:379
+#: openforms/forms/tests/admin/test_form.py:382
+#: openforms/forms/tests/admin/test_form.py:420
+#: openforms/forms/tests/admin/test_form_definition.py:97
+#: openforms/forms/tests/test_copy.py:79 openforms/forms/tests/test_copy.py:133
+#: openforms/forms/tests/test_copy.py:147
+#: openforms/forms/tests/test_copy.py:157
+#: openforms/forms/tests/test_models.py:53
+#: openforms/forms/tests/test_models.py:55
+#: openforms/forms/tests/test_models.py:58
+#: openforms/forms/tests/test_models.py:60
+#: openforms/forms/tests/test_models.py:290
+#: openforms/forms/tests/test_models.py:294
+#: openforms/forms/tests/test_models.py:298
+#: openforms/forms/tests/test_models.py:302
 #, python-brace-format
 msgid "{name} (copy)"
 msgstr "{name} (kopie)"
 
-#: openforms/forms/models/form.py:353
-#: openforms/forms/models/form_definition.py:106
+#: openforms/forms/models/form.py:356
+#: openforms/forms/models/form_definition.py:104
+#: openforms/forms/tests/admin/test_form.py:374
+#: openforms/forms/tests/admin/test_form.py:422
+#: openforms/forms/tests/admin/test_form_definition.py:100
+#: openforms/forms/tests/test_copy.py:81 openforms/forms/tests/test_copy.py:136
+#: openforms/forms/tests/test_models.py:52
+#: openforms/forms/tests/test_models.py:287
 #, python-brace-format
 msgid "{slug}-copy"
 msgstr "{slug}-kopie"
@@ -4258,25 +4279,6 @@ msgstr "Formulier staat in onderhoudsmodus."
 #: openforms/forms/validators.py:52
 msgid "Form is deleted."
 msgstr "Formulier is verwijderd"
-
-#: openforms/forms/validators.py:72
-#, fuzzy
-#| msgid ""
-#| "This form definition cannot be removed because it is used in one or more "
-#| "forms."
-msgid ""
-"This form definition cannot be marked as 'not-reusable' as it is used in "
-"multiple existing forms."
-msgstr ""
-"Deze formulier definitie kan niet verwijderd worden omdat deze in één of "
-"meerdere formulieren gebruikt wordt."
-
-#: openforms/forms/validators.py:95
-#, python-brace-format
-msgid ""
-"The component '{key}' (at JSON path '{path}') has template syntax errors in "
-"the field '{field}'."
-msgstr ""
 
 #: openforms/locations/api/serializers.py:8
 msgid "postal code"
@@ -7295,48 +7297,6 @@ msgstr "internationaal"
 #: openforms/validations/validators/formats.py:65
 msgid "Dutch phone number"
 msgstr "Nederlands telefoonnummer"
-
-#: openforms/variables/constants.py:8
-msgid "User defined"
-msgstr ""
-
-#: openforms/variables/constants.py:16
-msgid "Integer"
-msgstr ""
-
-#: openforms/variables/constants.py:17
-msgid "Float"
-msgstr ""
-
-#: openforms/variables/constants.py:18
-#, fuzzy
-#| msgid "Date and time"
-msgid "Datetime"
-msgstr "Datum en tijd"
-
-#: openforms/variables/constants.py:19
-msgid "Time"
-msgstr ""
-
-#: openforms/variables/static_variables/static_variables.py:16
-msgid "Now"
-msgstr ""
-
-#: openforms/variables/static_variables/static_variables.py:25
-msgid "Environment"
-msgstr ""
-
-#: openforms/variables/static_variables/static_variables.py:34
-#, fuzzy
-#| msgid "First name"
-msgid "Form name"
-msgstr "Voornaam"
-
-#: openforms/variables/static_variables/static_variables.py:43
-#, fuzzy
-#| msgid "Forms"
-msgid "Form ID"
-msgstr "Formulieren"
 
 #: openforms/variables/views.py:15
 #, fuzzy
