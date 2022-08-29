@@ -1,5 +1,6 @@
 from typing import Optional
 
+from django.conf import settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -17,3 +18,12 @@ class Now(BaseStaticVariable):
 
     def get_initial_value(self, submission: Optional[Submission] = None):
         return timezone.now()
+
+
+@register_static_variable("environment")
+class Environment(BaseStaticVariable):
+    name = _("Environment")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Optional[Submission] = None) -> str:
+        return str(settings.ENVIRONMENT)
