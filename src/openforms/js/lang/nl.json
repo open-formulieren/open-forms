@@ -339,11 +339,6 @@
     "description": "Form step internal name field help text",
     "originalDefault": "Internal name of the form definition used in this form step"
   },
-  "C6xxed": {
-    "defaultMessage": "Example initial",
-    "description": "Variable table initial value title",
-    "originalDefault": "Example initial"
-  },
   "CN9j+L": {
     "defaultMessage": "Verwijderen",
     "description": "Delete icon title",
@@ -1223,11 +1218,6 @@
     "defaultMessage": "(Herbruikbare) stapgegevens",
     "description": "Form definition module title",
     "originalDefault": "Form definition"
-  },
-  "jAraWj": {
-    "defaultMessage": "wijzig de waarde van een veld/component.",
-    "description": "action type \"value\" label",
-    "originalDefault": "change the value of a component"
   },
   "jU/t8O": {
     "defaultMessage": "Wijzig complexe waarde",
