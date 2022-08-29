@@ -1,6 +1,5 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
-import {defineMessage, FormattedMessage} from 'react-intl';
 
 import ComponentSelection from 'components/admin/forms/ComponentSelection';
 import Select from 'components/admin/forms/Select';
@@ -83,71 +82,13 @@ const ActionProperty = ({action, errors, onChange}) => {
   );
 };
 
-const JsonWidgetWrapper = ({name, value, onChange}) => (
-  <JsonWidget name={name} logic={value} onChange={onChange} />
-);
-
-const BoolJsonSelect = ({name, value, onChange}) => {
-  const choices = [
-    [
-      JSON.stringify({'!!': [true]}),
-      defineMessage({
-        description: 'Action variable bool "true"',
-        defaultMessage: 'Yes',
-      }),
-    ],
-    [
-      JSON.stringify({'!': [true]}),
-      defineMessage({
-        description: 'Action variable bool "false"',
-        defaultMessage: 'No',
-      }),
-    ],
-  ];
-
-  return (
-    <Select
-      name={name}
-      choices={choices}
-      allowBlank
-      onChange={event => {
-        const {name, value} = event.target;
-        onChange({target: {name, value: JSON.parse(value)}});
-      }}
-      value={JSON.stringify(value)}
-      translateChoices={true}
-    />
-  );
-};
-
 const ActionVariableValue = ({action, errors, onChange}) => {
   const formContext = useContext(FormContext);
   const allVariables = formContext.formVariables;
-  const [selectedVariable, setSelectedVariable] = useState(null);
 
   const getVariableChoices = variables => {
     return variables.map(variable => [variable.key, variable.name]);
   };
-
-  useEffect(() => {
-    for (const variable of allVariables) {
-      if (variable.key === action.variable) {
-        setSelectedVariable(variable);
-        break;
-      }
-    }
-  }, [action]);
-
-  let InputComponent;
-  switch (selectedVariable?.dataType) {
-    case 'boolean': {
-      InputComponent = BoolJsonSelect;
-      break;
-    }
-    default: {
-      InputComponent = JsonWidgetWrapper;
-    }
-  }
 
   return (
     <>
@@ -161,19 +102,9 @@ const ActionVariableValue = ({action, errors, onChange}) => {
           value={action.variable}
         />
       </DSLEditorNode>
-      {selectedVariable && (
-        <>
-          <DSLEditorNode errors={null}>
-            <FormattedMessage
-              description="dsl editor node message: to the value"
-              defaultMessage="to the value"
-            />
-          </DSLEditorNode>
-          <DSLEditorNode errors={errors.action?.value}>
-            <InputComponent name="action.value" value={action.action.value} onChange={onChange} />
-          </DSLEditorNode>
-        </>
-      )}
+      <DSLEditorNode errors={errors.action?.value}>
+        <JsonWidget name="action.value" logic={action.action.value} onChange={onChange} />
+      </DSLEditorNode>
     </>
   );
 };
