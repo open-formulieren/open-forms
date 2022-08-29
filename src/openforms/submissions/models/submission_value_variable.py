@@ -97,11 +97,7 @@ class SubmissionValueVariablesState:
 
         # Get all the form variables for the SubmissionVariables that have not been created yet
         form_variables = FormVariable.objects.filter(
-            ~Q(
-                id__in=saved_submission_value_variables.values_list(
-                    "form_variable__id", flat=True
-                )
-            ),
+            ~Q(key__in=saved_submission_value_variables.values_list("key", flat=True)),
             form=submission.form,
         ).select_related("form_definition")
 
