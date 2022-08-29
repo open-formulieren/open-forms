@@ -27,3 +27,21 @@ class Environment(BaseStaticVariable):
 
     def get_initial_value(self, submission: Optional[Submission] = None) -> str:
         return str(settings.ENVIRONMENT)
+
+
+@register_static_variable("form_name")
+class FormName(BaseStaticVariable):
+    name = _("Form name")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Optional[Submission] = None) -> str:
+        return submission.form.name if submission else ""
+
+
+@register_static_variable("form_id")
+class FormID(BaseStaticVariable):
+    name = _("Form ID")
+    data_type = FormVariableDataTypes.string
+
+    def get_initial_value(self, submission: Optional[Submission] = None) -> str:
+        return str(submission.form.uuid) if submission else ""
