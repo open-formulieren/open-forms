@@ -1901,6 +1901,14 @@ paths:
       description: List all variables defined for a form.
       summary: List form variables
       parameters:
+      - in: query
+        name: source
+        schema:
+          type: string
+          enum:
+          - component
+          - user_defined
+        description: Filter by form variable source
       - in: path
         name: uuid_or_slug
         schema:
