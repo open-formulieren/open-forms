@@ -191,14 +191,23 @@ function reducer(draft, action) {
         }));
       if (priceRules) draft.priceRules = priceRules;
 
-      // set the form steps of the form and initialize the validation errors array
+      // Add component FormVariables and the step validation errors to the state
       draft.formSteps = steps;
+      let stepsFormVariables = [];
       for (const step of draft.formSteps) {
+        stepsFormVariables = stepsFormVariables.concat(
+          getFormVariables(step.formDefinition, step.configuration)
+        );
         step.validationErrors = [];
       }
+      draft.formVariables = draft.formVariables.concat(stepsFormVariables);
+      draft.validationErrors = checkForDuplicateKeys(
+        draft.formVariables,
+        draft.staticVariables,
+        draft.validationErrors
+      );
       break;
     }
-
     case 'FIELD_CHANGED': {
       const {name, value} = action.payload;
       // names are prefixed like `form.foo` and `literals.bar`

@@ -20,6 +20,7 @@ from rest_framework.response import Response
 from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
+from openforms.variables.constants import FormVariableSources
 
 from ..messages import add_success_message
 from ..models import (
@@ -32,7 +33,7 @@ from ..models import (
     FormVersion,
 )
 from ..utils import export_form, import_form
-from .filters import FormLogicFilter, FormPriceLogicFilter
+from .filters import FormLogicFilter, FormPriceLogicFilter, FormVariableFilter
 from .parsers import (
     FormCamelCaseJSONParser,
     IgnoreConfigurationFieldCamelCaseJSONParser,
@@ -512,14 +513,24 @@ class FormViewSet(viewsets.ModelViewSet):
             status.HTTP_404_NOT_FOUND: ExceptionSerializer,
             status.HTTP_405_METHOD_NOT_ALLOWED: ExceptionSerializer,
         },
+        parameters=[
+            OpenApiParameter(
+                name="source",
+                description=_("Filter by form variable source"),
+                type=str,
+                enum=FormVariableSources.values,
+            )
+        ],
     )
     @variables_bulk_update.mapping.get
     def variables_list(self, request, *args, **kwargs):
         form = self.get_object()
-        form_variables = form.formvariable_set.all()
+        filterset = FormVariableFilter(
+            request.GET, queryset=form.formvariable_set.all()
+        )
 
         serializer = FormVariableSerializer(
-            instance=form_variables,
+            instance=filterset.qs,
             many=True,
             context={"request": request, "form": form},
         )

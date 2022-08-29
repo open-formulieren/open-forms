@@ -2,6 +2,7 @@
  * Implement the API calls to fetch the data for a given form.
  */
 import {FORM_ENDPOINT} from 'components/admin/form_design/constants';
+import {VARIABLE_SOURCES} from 'components/admin/form_design/variables/constants';
 import {get} from 'utils/fetch';
 
 const loadForm = async formUuid => {
@@ -14,7 +15,7 @@ const loadForm = async formUuid => {
   const requests = [
     get(`${FORM_ENDPOINT}/${formUuid}`),
     get(`${FORM_ENDPOINT}/${formUuid}/steps`),
-    get(`${FORM_ENDPOINT}/${formUuid}/variables`),
+    get(`${FORM_ENDPOINT}/${formUuid}/variables?source=${VARIABLE_SOURCES.userDefined}`),
     get(`${FORM_ENDPOINT}/${formUuid}/logic-rules`),
     get(`${FORM_ENDPOINT}/${formUuid}/price-logic-rules`),
   ];
