@@ -5,8 +5,8 @@ Formulier met herhalende groepen
 ================================
 
 In dit voorbeeld maken we een fictief formulier bestaande uit 1 stap met
-een herhalende groep component. We gaan berekeningen laten zien die gebruike maken van de waarden
-ingevuld in de herhalende groep.
+een herhalende groep component. We gaan berekeningen laten zien die gebruik maken van de waarden
+die ingevuld zijn in de herhalende groepen.
 
 In dit voorbeeld gaan we er van uit dat u een
 :ref:`formulier met berekeningen <examples_calculations>` kan maken en dat
@@ -30,7 +30,7 @@ Formulier maken
 #. Sleep een **Herhalende groep** component op het witte vlak, vul de volgende
    gegevens in en druk daarna op **Opslaan**:
 
-   * **Basis** > **Label**: Auto's
+   * **Basis** > **Label**: _`Auto's`
    * **Weergave** > **Open eerste groep als leeg**: *aangevinkt*
 
 #. Klik op **Formuliervelden** en sleep een **Tekstveld** component binnen de herhalende groep. Vul de volgende
@@ -77,18 +77,38 @@ Formulier maken
             ]
         }
 
+     .. note::
+
+        De variabele ``autos`` moet overeenkomen met de eigenschapsnaam van het :ref:`herhalende groep component<Auto's>`.
+        De variabelen ``accumulator`` en ``current`` refereren binnen de ``reduce`` functie naar respectievelijk de
+        resultaatwaarde en het huidige groep.
+        Binnen een groep kunnen we weer verwijzen naar een individueel component.
+        Hier wordt dat bijvoorbeeld gedaan naar het component met de eigenschapsnaam ``waarde``.
+
      * **Wijzig de waarde van een variabele/component** > **Aantal autos** >
 
      .. code-block:: json
 
         {"reduce": [{"var": "autos"}, {"+": [{"var": "accumulator"}, 1]}, 0]}
 
-#. Voeg een envoudige regel toe met de volgende gegevens:
+    .. note::
 
-   * Trigger: Als **Antal autos (aantalAutos)** > **is groter dan** > **de waarde** > ``0``
+       Hier wordt bijna hetzelfde gedaan als hierboven, maar in plaats van de ``waarde`` tellen we nu steeds het
+       getal ``1`` op per iteratie om tot een totaal aantal te komen.
+
+#. Voeg een eenvoudige regel toe met de volgende gegevens:
+
+   * Trigger: Als **Aantal autos (aantalAutos)** > **is groter dan** > **de waarde** > ``0``
    * Actie: dan **wijzig een attribuut van een veld/component** > **Stap met herhalende groep: Content (content)**
      > **Verborgen** > **Nee**
 
 #. Klik op opslaan
 
 U kunt nu het formulier bekijken.
+
+.. image:: _assets/repeating_groups_fill_form.png
+    :width: 51%
+
+.. image:: _assets/repeating_groups_result_calculation.png
+    :width: 51%
+

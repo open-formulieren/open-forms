@@ -28,21 +28,21 @@ Formulier maken
    * **Naam**: Eerste stap
 
 #. Scroll naar de sectie **Velden**.
-#. Sleep een **Vrijetekst** component op het witte vlak, vul de volgende
+#. Sleep een **Vrije tekst** component op het witte vlak, vul de volgende
    gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Content BSN
    * Onder **Content component**: "U bent ingelogd als persoon."
    * **Verborgen**: *Aangevinkt*
 
-#. Sleep een **Vrijetekst** component op het witte vlak, vul de volgende
+#. Sleep een **Vrije tekst** component op het witte vlak, vul de volgende
    gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Content KvK
    * Onder **Content component**: "U bent ingelogd als bedrijf."
    * **Verborgen**: *Aangevinkt*
 
-#. Sleep een **Vrijetekst** component op het witte vlak, vul de volgende
+#. Sleep een **Vrije tekst** component op het witte vlak, vul de volgende
    gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Content Anoniem
@@ -66,5 +66,5 @@ Formulier maken
 #. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
 
 U kunt nu het formulier bekijken. Als u de met de demo KvK-Nummer / DigiD simulatie plugin inlogt, dan verschijnt in het
-formulier de vrijetekst component "Content KvK" / "Content BSN". Als u het formulier start zonder in te loggen, dan
-zal alleen de vrijetekst component "Content Anoniem" zichtbaar zijn.
+formulier de vrije tekst component "Content KvK" / "Content BSN". Als u het formulier start zonder in te loggen, dan
+zal alleen de vrije tekst component "Content Anoniem" zichtbaar zijn.
