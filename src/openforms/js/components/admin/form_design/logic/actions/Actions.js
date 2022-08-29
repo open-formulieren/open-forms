@@ -11,8 +11,6 @@ import {
   STRING_TO_TYPE,
   TYPE_TO_STRING,
 } from 'components/admin/form_design/logic/constants';
-import OperandTypeSelection from 'components/admin/form_design/logic/OperandTypeSelection';
-import LiteralValueInput from 'components/admin/form_design/logic/LiteralValueInput';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 
 import {Action as ActionType, ActionError} from './types';

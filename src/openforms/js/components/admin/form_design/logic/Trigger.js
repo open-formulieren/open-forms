@@ -9,10 +9,7 @@ import ArrayInput from 'components/admin/forms/ArrayInput';
 import Select from 'components/admin/forms/Select';
 import {FormContext} from 'components/admin/form_design/Context';
 import VariableSelection from 'components/admin/forms/VariableSelection';
-import {
-  COMPONENT_DATATYPES,
-  VARIABLE_SOURCES,
-} from 'components/admin/form_design/variables/constants';
+import {VARIABLE_SOURCES} from 'components/admin/form_design/variables/constants';
 
 import {OPERATORS, TYPE_TO_OPERATORS, TYPE_TO_OPERAND_TYPE} from './constants';
 import LiteralValueInput from './LiteralValueInput';

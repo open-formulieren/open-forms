@@ -107,6 +107,23 @@ const TYPE_TO_STRING = {
   json: typedValue => JSON.stringify(typedValue),
 };
 
+const BOOL_OPTIONS = [
+  [
+    'true',
+    defineMessage({
+      description: 'Component property boolean value "true"',
+      defaultMessage: 'Yes',
+    }),
+  ],
+  [
+    'false',
+    defineMessage({
+      description: 'Component property boolean value "false"',
+      defaultMessage: 'No',
+    }),
+  ],
+];
+
 const MODIFIABLE_PROPERTIES = {
   validate: {
     label: defineMessage({
@@ -137,22 +154,7 @@ const MODIFIABLE_PROPERTIES = {
       defaultMessage: 'hidden',
     }),
     type: 'bool',
-    options: [
-      [
-        'true',
-        defineMessage({
-          description: 'Component property boolean value "true"',
-          defaultMessage: 'Yes',
-        }),
-      ],
-      [
-        'false',
-        defineMessage({
-          description: 'Component property boolean value "false"',
-          defaultMessage: 'No',
-        }),
-      ],
-    ],
+    options: BOOL_OPTIONS,
   },
   disabled: {
     label: defineMessage({
@@ -188,4 +190,5 @@ export {
   STRING_TO_TYPE,
   TYPE_TO_STRING,
   TYPE_TO_OPERAND_TYPE,
+  BOOL_OPTIONS,
 };

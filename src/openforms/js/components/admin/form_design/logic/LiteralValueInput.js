@@ -2,11 +2,34 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {TextInput, NumberInput, DateInput} from 'components/admin/forms/Inputs';
+import Select from 'components/admin/forms/Select';
+
+import {BOOL_OPTIONS} from './constants';
+
+const CheckboxChoices = ({name, value, onChange}) => {
+  return (
+    <Select
+      name={name}
+      choices={BOOL_OPTIONS}
+      allowBlank
+      onChange={onChange}
+      value={value}
+      translateChoices={true}
+    />
+  );
+};
+
+CheckboxChoices.propTypes = {
+  name: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func,
+};
 
 const TYPE_TO_INPUT_TYPE = {
   float: NumberInput,
   string: TextInput,
   datetime: DateInput,
+  boolean: CheckboxChoices,
 };
 
 const LiteralValueInput = ({name, type, value = '', onChange, ...extraProps}) => {

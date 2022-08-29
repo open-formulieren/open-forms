@@ -1695,12 +1695,6 @@
       "value": "Form definition"
     }
   ],
-  "jAraWj": [
-    {
-      "type": 0,
-      "value": "change the value of a component"
-    }
-  ],
   "jU/t8O": [
     {
       "type": 0,
@@ -1783,6 +1777,12 @@
     {
       "type": 0,
       "value": "Add item"
+    }
+  ],
+  "li/63B": [
+    {
+      "type": 0,
+      "value": "No"
     }
   ],
   "mH3X/G": [
@@ -2039,6 +2039,12 @@
       "value": "Create a new form definition"
     }
   ],
+  "vhL8+4": [
+    {
+      "type": 0,
+      "value": "to the value"
+    }
+  ],
   "viEfGU": [
     {
       "type": 0,
@@ -2085,6 +2091,12 @@
     {
       "type": 0,
       "value": "Cancel"
+    }
+  ],
+  "x5XvId": [
+    {
+      "type": 0,
+      "value": "Yes"
     }
   ],
   "xJBMaf": [
