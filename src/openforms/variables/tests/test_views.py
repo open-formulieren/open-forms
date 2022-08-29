@@ -54,10 +54,7 @@ class GetStaticVariablesViewTest(APITestCase):
         register = Registry()
         register("now")(DemoNow)
 
-        with patch(
-            "openforms.forms.models.form_variable.static_variables_register",
-            new=register,
-        ):
+        with patch("openforms.variables.service.register", new=register):
             response = self.client.get(url)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)

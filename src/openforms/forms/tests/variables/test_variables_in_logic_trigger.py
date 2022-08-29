@@ -139,10 +139,7 @@ class VariablesInLogicAPITests(APITestCase):
         self.client.force_authenticate(user=user)
         url = reverse("api:form-logics-list")
 
-        with patch(
-            "openforms.forms.models.form_variable.static_variables_register",
-            new=register,
-        ):
+        with patch("openforms.variables.service.register", new=register):
             response = self.client.post(url, data=form_logic_data)
 
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
@@ -172,10 +169,7 @@ class VariablesInLogicAPITests(APITestCase):
         self.client.force_authenticate(user=user)
         url = reverse("api:form-logics-list")
 
-        with patch(
-            "openforms.forms.models.form_variable.static_variables_register",
-            new=register,
-        ):
+        with patch("openforms.variables.service.register", new=register):
             response = self.client.post(url, data=form_logic_data)
 
         self.assertEqual(status.HTTP_201_CREATED, response.status_code)
@@ -284,10 +278,7 @@ class VariablesInLogicBulkAPITests(APITestCase):
 
         self.client.force_authenticate(user=user)
         url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
-        with patch(
-            "openforms.forms.models.form_variable.static_variables_register",
-            new=register,
-        ):
+        with patch("openforms.variables.service.register", new=register):
             response = self.client.put(url, data=form_logic_data)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)

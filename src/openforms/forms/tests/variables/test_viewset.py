@@ -394,7 +394,7 @@ class FormVariableViewsetTest(APITestCase):
         self.client.force_authenticate(user)
 
         with patch(
-            "openforms.forms.models.form_variable.FormVariable.get_static_data"
+            "openforms.forms.api.serializers.form_variable.get_static_variables"
         ) as m:
             m.return_value = [
                 FormVariable(

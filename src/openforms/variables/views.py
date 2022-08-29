@@ -6,8 +6,9 @@ from rest_framework.views import APIView
 
 from openforms.api.serializers import ExceptionSerializer
 from openforms.forms.api.serializers import FormVariableSerializer
-from openforms.forms.models import FormVariable
 from openforms.utils.api.views import ListMixin
+
+from .service import get_static_variables
 
 
 @extend_schema_view(
@@ -26,4 +27,4 @@ class StaticFormVariablesView(ListMixin, APIView):
     serializer_class = FormVariableSerializer
 
     def get_objects(self):
-        return FormVariable.get_static_data()
+        return get_static_variables()
