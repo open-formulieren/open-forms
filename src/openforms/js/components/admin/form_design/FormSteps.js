@@ -33,7 +33,6 @@ const FormSteps = ({
           <Loader />
         </div>
       ) : null}
-
       <div className="edit-panel__nav">
         <FormStepsNav
           steps={steps}
@@ -44,7 +43,6 @@ const FormSteps = ({
           onAdd={onAdd}
         />
       </div>
-
       <div className="edit-panel__edit-area">
         {activeStep ? (
           <ValidationErrorsProvider errors={activeStep.validationErrors}>
