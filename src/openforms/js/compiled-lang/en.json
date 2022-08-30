@@ -547,12 +547,6 @@
       "value": "Internal name of the form definition used in this form step"
     }
   ],
-  "C6xxed": [
-    {
-      "type": 0,
-      "value": "Example initial"
-    }
-  ],
   "CN9j+L": [
     {
       "type": 0,
@@ -719,6 +713,20 @@
     {
       "type": 0,
       "value": "Use linked product price"
+    }
+  ],
+  "GjQdpb": [
+    {
+      "type": 0,
+      "value": ", at location \""
+    },
+    {
+      "type": 1,
+      "value": "location"
+    },
+    {
+      "type": 0,
+      "value": "\""
     }
   ],
   "GjcAY2": [
@@ -1355,6 +1363,48 @@
       "value": "Save"
     }
   ],
+  "YbnFnL": [
+    {
+      "type": 0,
+      "value": "The component \""
+    },
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": "\" (with key \""
+    },
+    {
+      "type": 1,
+      "value": "key"
+    },
+    {
+      "type": 0,
+      "value": "\""
+    },
+    {
+      "type": 1,
+      "value": "location"
+    },
+    {
+      "type": 0,
+      "value": ") has a problem in the field \""
+    },
+    {
+      "type": 1,
+      "value": "field"
+    },
+    {
+      "type": 0,
+      "value": "\": "
+    },
+    {
+      "type": 1,
+      "value": "error"
+    }
+  ],
   "YdIu8k": [
     {
       "type": 0,
@@ -1779,12 +1829,6 @@
       "value": "Add item"
     }
   ],
-  "li/63B": [
-    {
-      "type": 0,
-      "value": "No"
-    }
-  ],
   "mH3X/G": [
     {
       "type": 0,
@@ -2039,12 +2083,6 @@
       "value": "Create a new form definition"
     }
   ],
-  "vhL8+4": [
-    {
-      "type": 0,
-      "value": "to the value"
-    }
-  ],
   "viEfGU": [
     {
       "type": 0,
@@ -2091,12 +2129,6 @@
     {
       "type": 0,
       "value": "Cancel"
-    }
-  ],
-  "x5XvId": [
-    {
-      "type": 0,
-      "value": "Yes"
     }
   ],
   "xJBMaf": [

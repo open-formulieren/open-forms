@@ -551,12 +551,6 @@
       "value": "Interne naam van de formulierdefinitie voor deze stap"
     }
   ],
-  "C6xxed": [
-    {
-      "type": 0,
-      "value": "Example initial"
-    }
-  ],
   "CN9j+L": [
     {
       "type": 0,
@@ -723,6 +717,20 @@
     {
       "type": 0,
       "value": "Gebruik gekoppelde productprijs"
+    }
+  ],
+  "GjQdpb": [
+    {
+      "type": 0,
+      "value": ", at location \""
+    },
+    {
+      "type": 1,
+      "value": "location"
+    },
+    {
+      "type": 0,
+      "value": "\""
     }
   ],
   "GjcAY2": [
@@ -1359,6 +1367,48 @@
       "value": "Opslaan"
     }
   ],
+  "YbnFnL": [
+    {
+      "type": 0,
+      "value": "The component \""
+    },
+    {
+      "type": 1,
+      "value": "label"
+    },
+    {
+      "type": 0,
+      "value": "\" (with key \""
+    },
+    {
+      "type": 1,
+      "value": "key"
+    },
+    {
+      "type": 0,
+      "value": "\""
+    },
+    {
+      "type": 1,
+      "value": "location"
+    },
+    {
+      "type": 0,
+      "value": ") has a problem in the field \""
+    },
+    {
+      "type": 1,
+      "value": "field"
+    },
+    {
+      "type": 0,
+      "value": "\": "
+    },
+    {
+      "type": 1,
+      "value": "error"
+    }
+  ],
   "YdIu8k": [
     {
       "type": 0,
@@ -1783,12 +1833,6 @@
       "value": "Item toevoegen"
     }
   ],
-  "li/63B": [
-    {
-      "type": 0,
-      "value": "No"
-    }
-  ],
   "mH3X/G": [
     {
       "type": 0,
@@ -2043,12 +2087,6 @@
       "value": "Maak een nieuwe formulierdefinitie"
     }
   ],
-  "vhL8+4": [
-    {
-      "type": 0,
-      "value": "to the value"
-    }
-  ],
   "viEfGU": [
     {
       "type": 0,
@@ -2095,12 +2133,6 @@
     {
       "type": 0,
       "value": "Annuleren"
-    }
-  ],
-  "x5XvId": [
-    {
-      "type": 0,
-      "value": "Yes"
     }
   ],
   "xJBMaf": [
