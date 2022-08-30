@@ -33,7 +33,6 @@ from ..tokens import submission_status_token_generator
 from ..utils import (
     add_submmission_to_session,
     initialise_user_defined_variables,
-    persist_user_defined_variables_unrelated_to_a_step,
     remove_submission_from_session,
     remove_submission_uploads_from_session,
 )
@@ -401,10 +400,6 @@ class SubmissionStepViewSet(
         serializer.save()
 
         logevent.submission_step_fill(instance)
-
-        persist_user_defined_variables_unrelated_to_a_step(
-            serializer.validated_data["data"], instance.submission
-        )
         attach_uploads_to_submission_step(instance)
 
         # See #1480 - if there is navigation between steps and original form field values
