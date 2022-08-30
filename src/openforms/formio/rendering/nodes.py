@@ -9,7 +9,7 @@ from openforms.submissions.rendering.constants import RenderModes
 
 from ..formatters.service import format_value
 from ..typing import Component
-from ..utils import is_layout_component, iter_components
+from ..utils import is_layout_component, is_visible_in_frontend, iter_components
 
 if TYPE_CHECKING:
     from openforms.submissions.rendering import Renderer
@@ -94,8 +94,9 @@ class ComponentNode(Node):
             return True
 
         # explicitly hidden components never show up. Note that this property can be set
-        # by form logic!
-        if self.component.get("hidden") is True:
+        # by logic rules or by frontend logic!
+        # We only pass the step data, since frontend logic only has access to the current step data.
+        if not is_visible_in_frontend(self.component, self.step.data):
             return False
 
         render_configuration = RENDER_CONFIGURATION[self.mode]
