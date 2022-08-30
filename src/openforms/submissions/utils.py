@@ -15,7 +15,6 @@ from openforms.emails.utils import (
     send_mail_html,
     strip_tags_plus,
 )
-from openforms.forms.models import FormVariable
 from openforms.logging import logevent
 from openforms.variables.constants import FormVariableSources
 
@@ -150,23 +149,6 @@ def send_confirmation_email(submission: Submission):
     submission.save(update_fields=("confirmation_email_sent",))
 
     logevent.confirmation_email_success(submission)
-
-
-def persist_user_defined_variables_unrelated_to_a_step(
-    data: dict, submission: Submission
-) -> None:
-    keys_in_data = [key for key, value in data.items()]
-    form_vars_keys = FormVariable.objects.filter(
-        form=submission.form,
-        key__in=keys_in_data,
-        form_definition__isnull=True,
-    ).values_list("key", flat=True)
-    filtered_data = {key: value for key, value in data.items() if key in form_vars_keys}
-
-    if filtered_data:
-        SubmissionValueVariable.objects.bulk_create_or_update_from_data(
-            filtered_data, submission
-        )
 
 
 def initialise_user_defined_variables(submission: Submission):
