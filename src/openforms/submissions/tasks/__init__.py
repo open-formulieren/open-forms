@@ -7,6 +7,9 @@ from django.utils import timezone
 from celery import chain, group
 from celery.result import AsyncResult
 
+from openforms.celery import app
+
+from ..models import Submission
 from .appointments import *  # noqa
 from .cleanup import *  # noqa
 from .emails import *  # noqa
@@ -14,7 +17,6 @@ from .payments import *  # noqa
 from .pdf import *  # noqa
 from .registration import *  # noqa
 from .user_uploads import *  # noqa
-from .variables import *  # noqa
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +30,6 @@ def on_completion(submission_id: int) -> None:
     """
     # use immutable signatures so that the result of previous tasks is not passed
     # in as an argument to chained tasks
-    persist_user_defined_variables_task = persist_user_defined_variables.si(
-        submission_id
-    )
     register_appointment_task = maybe_register_appointment.si(submission_id)
     update_appointment_task = maybe_update_appointment.si(submission_id)
     generate_report_task = generate_submission_report.si(submission_id)
@@ -46,9 +45,6 @@ def on_completion(submission_id: int) -> None:
     # The linked task (= next task) is only executed if the previous task returns
     # successfully, so error handling needs to happen inside each task.
     on_completion_chain = chain(
-        # User defined variables need to be persisted. To do this, the logic needs to be evaluated
-        # for each step
-        persist_user_defined_variables_task,
         # The appointment must be registered before a confirmation PDF is generated and
         # any backend registration happens, as on-failure, the user should get feedback
         # about the failure.

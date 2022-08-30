@@ -33,6 +33,7 @@ from ..tokens import submission_status_token_generator
 from ..utils import (
     add_submmission_to_session,
     initialise_user_defined_variables,
+    persist_user_defined_variables,
     remove_submission_from_session,
     remove_submission_uploads_from_session,
 )
@@ -205,6 +206,8 @@ class SubmissionViewSet(
         submission.calculate_price(save=False)
         submission.completed_on = timezone.now()
         submission.save()
+
+        persist_user_defined_variables(submission, self.request)
 
         logevent.form_submit_success(submission)
 
