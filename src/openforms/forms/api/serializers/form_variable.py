@@ -8,6 +8,7 @@ from rest_framework.exceptions import ValidationError
 from openforms.api.serializers import ListWithChildSerializer
 from openforms.formio.utils import get_component
 from openforms.variables.constants import FormVariableSources
+from openforms.variables.service import get_static_variables
 
 from ...models import FormVariable
 
@@ -16,12 +17,12 @@ class FormVariableListSerializer(ListWithChildSerializer):
     def get_child_serializer_class(self):
         return FormVariableSerializer
 
-    def process_object(self, variable: "FormVariable"):
+    def process_object(self, variable: FormVariable):
         variable.derive_info_from_component()
         return variable
 
     def validate(self, attrs):
-        static_data_keys = [item.key for item in FormVariable.get_static_data()]
+        static_data_keys = [item.key for item in get_static_variables()]
 
         existing_form_key_combinations = []
         errors = defaultdict(list)

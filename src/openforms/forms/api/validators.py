@@ -10,8 +10,8 @@ from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.formio.utils import iter_components
 from openforms.typing import JSONObject
 from openforms.utils.json_logic import JsonLogicTest
+from openforms.variables.service import get_static_variables
 
-from ..models import FormVariable
 from ..validation.registry import register as formio_validators_registry
 
 
@@ -147,7 +147,7 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
 
             # Check if the trigger references a static variable
             needle_bits = needle.split(".")
-            for variable in FormVariable.get_static_data():
+            for variable in get_static_variables():
                 if needle_bits[0] == variable.key:
                     return
 

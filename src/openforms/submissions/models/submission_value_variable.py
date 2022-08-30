@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from glom import Assign, PathAccessError, glom
 
 from openforms.forms.models.form_variable import FormVariable
+from openforms.variables.service import get_static_variables
 
 from ..constants import SubmissionValueVariableSources
 from .submission import Submission
@@ -131,7 +132,7 @@ class SubmissionValueVariablesState:
         if self._static_data is None:
             self._static_data = {
                 variable.key: variable.initial_value
-                for variable in FormVariable.get_static_data(self.submission)
+                for variable in get_static_variables(submission=self.submission)
             }
         return self._static_data
 

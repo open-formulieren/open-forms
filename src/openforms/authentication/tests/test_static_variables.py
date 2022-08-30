@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.authentication.tests.factories import AuthInfoFactory
-from openforms.forms.models import FormVariable
+from openforms.variables.service import get_static_variables
 
 
 class TestStaticVariables(TestCase):
@@ -16,7 +16,7 @@ class TestStaticVariables(TestCase):
 
         static_data = {
             variable.key: variable
-            for variable in FormVariable.get_static_data(auth_info.submission)
+            for variable in get_static_variables(submission=auth_info.submission)
         }
 
         expected = {
@@ -37,9 +37,7 @@ class TestStaticVariables(TestCase):
                 self.assertEqual(static_data[variable_key].initial_value, value)
 
     def test_auth_static_data_no_submission(self):
-        static_data = {
-            variable.key: variable for variable in FormVariable.get_static_data()
-        }
+        static_data = {variable.key: variable for variable in get_static_variables()}
 
         expected = {
             "auth_identifier": None,

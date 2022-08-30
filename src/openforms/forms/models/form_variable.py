@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List
 
 from django.core.validators import RegexValidator
 from django.db import models, transaction
@@ -17,15 +17,10 @@ from openforms.formio.utils import (
     iter_components,
 )
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
-from openforms.variables.registry import (
-    register_static_variable as static_variables_register,
-)
 
 from .form_definition import FormDefinition
 
 if TYPE_CHECKING:  # pragma: nocover
-    from openforms.submissions.models import Submission
-
     from .form import Form
     from .form_step import FormStep
 
@@ -211,16 +206,6 @@ class FormVariable(models.Model):
 
     def get_initial_value(self):
         return self.initial_value or None
-
-    @staticmethod
-    def get_static_data(
-        submission: Optional["Submission"] = None,
-    ) -> List["FormVariable"]:
-
-        return [
-            registered_variable.get_static_variable(submission=submission)
-            for registered_variable in static_variables_register
-        ]
 
     def derive_info_from_component(self):
         if self.source != FormVariableSources.component or not self.form_definition:
