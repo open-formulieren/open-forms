@@ -1,11 +1,11 @@
-.. _examples_repeating_groeps:
+.. _examples_repeating_groups:
 
 ================================
 Formulier met herhalende groepen
 ================================
 
 In dit voorbeeld maken we een fictief formulier bestaande uit 1 stap met
-een herhalende groep component. We gaan berekeningen laten zien die gebruik maken van de waarden
+een "herhalende groep"-component. We gaan berekeningen laten zien die gebruik maken van de waarden
 die ingevuld zijn in de herhalende groepen.
 
 In dit voorbeeld gaan we er van uit dat u een
@@ -17,7 +17,7 @@ Formulier maken
 
 #. Maak een formulier aan met de volgende gegevens:
 
-   * **Naam**: Herhalende groep demo
+   * **Naam**: "Herhalende groep"-demo
 
 #. Klik op het tabblad **Stappen en velden**.
 #. Klik aan de linkerkant op **Stap toevoegen** en selecteer **Maak een nieuwe
@@ -43,7 +43,7 @@ Formulier maken
 
    * **Label**: Waarde
 
-#. Klik op **Opmaak** en sleep een vrije tekst component op het witte vlak. Vul de volgende gegevens in:
+#. Klik op **Opmaak** en sleep een "vrije tekst"-component op het witte vlak. Vul de volgende gegevens in:
 
    * Onder **Vrije tekst component**: ``De totale waarde van uw auto's is: €{{ totaleWaarde|localize }}``
    * **Verborgen**: *aangevinkt*
@@ -79,9 +79,9 @@ Formulier maken
 
      .. note::
 
-        De variabele ``autos`` moet overeenkomen met de eigenschapsnaam van het :ref:`herhalende groep component<Auto's>`.
+        De variabele ``autos`` moet overeenkomen met de eigenschapsnaam van het :ref:`"herhalende groep"-component<Auto's>`.
         De variabelen ``accumulator`` en ``current`` refereren binnen de ``reduce`` functie naar respectievelijk de
-        resultaatwaarde en het huidige groep.
+        resultaatwaarde en de huidige groep.
         Binnen een groep kunnen we weer verwijzen naar een individueel component.
         Hier wordt dat bijvoorbeeld gedaan naar het component met de eigenschapsnaam ``waarde``.
 
@@ -94,7 +94,7 @@ Formulier maken
     .. note::
 
        Hier wordt bijna hetzelfde gedaan als hierboven, maar in plaats van de ``waarde`` tellen we nu steeds het
-       getal ``1`` op per iteratie om tot een totaal aantal te komen.
+       getal ``1`` op per iteratie om tot het totale aantal te komen.
 
 #. Voeg een eenvoudige regel toe met de volgende gegevens:
 

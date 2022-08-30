@@ -66,5 +66,5 @@ Formulier maken
 #. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
 
 U kunt nu het formulier bekijken. Als u de met de demo KvK-Nummer / DigiD simulatie plugin inlogt, dan verschijnt in het
-formulier de vrije tekst component "Content KvK" / "Content BSN". Als u het formulier start zonder in te loggen, dan
-zal alleen de vrije tekst component "Content Anoniem" zichtbaar zijn.
+formulier de "vrije tekst"-component "Content KvK" / "Content BSN". Als u het formulier start zonder in te loggen, dan
+zal alleen de "vrije tekst"-component "Content Anoniem" zichtbaar zijn.

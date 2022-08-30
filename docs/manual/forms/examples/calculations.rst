@@ -99,3 +99,9 @@ Formulier maken
 
 U kunt nu het formulier bekijken. Als u waarden invult in de velden **Number A**, **Number B** en **Number C**
 dan verschijnt het resultaat van de berekening in het veld **Number A+B\*C**
+
+.. image:: _assets/calculations_input_data.png
+    :width: 49%
+
+.. image:: _assets/calculations_show_result.png
+    :width: 49%
