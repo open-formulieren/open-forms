@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from glom import Assign, PathAccessError, glom
 
+from openforms.formio.utils import get_all_component_keys
 from openforms.forms.models.form_variable import FormVariable
 
 from ..constants import SubmissionValueVariableSources
@@ -72,7 +73,8 @@ class SubmissionValueVariablesState:
         submission_step: "SubmissionStep",
         include_unsaved=True,
     ) -> Dict[str, "SubmissionValueVariable"]:
-        form_definition = submission_step.form_step.form_definition
+        configuration = submission_step.form_step.form_definition.configuration
+        keys_in_step = get_all_component_keys(configuration)
 
         variables = self.variables
         if not include_unsaved:
@@ -81,8 +83,7 @@ class SubmissionValueVariablesState:
         return {
             variable_key: variable
             for variable_key, variable in variables.items()
-            if variable.form_variable
-            and variable.form_variable.form_definition == form_definition
+            if variable.key in keys_in_step
         }
 
     def collect_variables(
