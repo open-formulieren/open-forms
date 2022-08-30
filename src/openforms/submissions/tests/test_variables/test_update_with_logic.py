@@ -11,6 +11,7 @@ from openforms.forms.tests.factories import (
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ...models import SubmissionValueVariable
+from ...tasks import persist_user_defined_variables
 from ..factories import SubmissionFactory, SubmissionStepFactory
 from ..mixins import SubmissionsMixin
 
@@ -399,60 +400,9 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
             ).exists()
         )
 
-    def test_variables_not_related_to_a_step_are_persisted(self):
-        form = FormFactory.create()
-        form_step = FormStepFactory.create(
-            form=form,
-            form_definition__configuration={
-                "components": [
-                    {
-                        "type": "number",
-                        "key": "nGreenApples",
-                    },
-                    {
-                        "type": "number",
-                        "key": "nRedApples",
-                    },
-                ]
-            },
-        )
-        tot_apples_var = FormVariableFactory.create(
-            form=form,
-            key="totApples",
-            source=FormVariableSources.user_defined,
-            data_type=FormVariableDataTypes.float,
-            form_definition=None,
-        )
-
-        submission = SubmissionFactory.create(form=form)
-
-        self._add_submission_to_session(submission)
-        endpoint = reverse(
-            "api:submission-steps-detail",
-            kwargs={
-                "submission_uuid": submission.uuid,
-                "step_uuid": form_step.uuid,
-            },
-        )
-        body = {
-            "data": {"nGreenApples": 3, "nRedApples": 5, "totApples": 8}
-        }  # Tot apples is added to the step data during the logic check call
-
-        # Persist the step
-        response = self.client.put(endpoint, body)
-
-        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
-
-        variable = SubmissionValueVariable.objects.filter(
-            submission=submission, form_variable=tot_apples_var
-        ).first()
-
-        self.assertIsNotNone(variable)
-        self.assertEqual(8, variable.value)
-
     def test_user_defined_variables_are_persisted(self):
         form = FormFactory.create()
-        form_step = FormStepFactory.create(
+        form_step1 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
                 "components": [
@@ -467,36 +417,88 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                 ]
             },
         )
-        tot_apples_var = FormVariableFactory.create(
+        form_step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "nYellowApples",
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
             form=form,
             key="totApples",
             source=FormVariableSources.user_defined,
             data_type=FormVariableDataTypes.float,
-            form_definition=form_step.form_definition,
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="totApplesFirstStep",
+            source=FormVariableSources.user_defined,
+            data_type=FormVariableDataTypes.float,
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"!!": [True]},
+            actions=[
+                {
+                    "variable": "totApplesFirstStep",
+                    "action": {
+                        "name": "Update variable",
+                        "type": "variable",
+                        "value": {
+                            "+": [
+                                {"var": ["nRedApples", 0]},
+                                {"var": ["nGreenApples", 0]},
+                            ]
+                        },
+                    },
+                }
+            ],
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"!!": [True]},
+            actions=[
+                {
+                    "variable": "totApples",
+                    "action": {
+                        "name": "Update variable",
+                        "type": "variable",
+                        "value": {
+                            "+": [
+                                {"var": ["nRedApples", 0]},
+                                {"var": ["nGreenApples", 0]},
+                                {"var": ["nYellowApples", 0]},
+                            ]
+                        },
+                    },
+                }
+            ],
         )
 
         submission = SubmissionFactory.create(form=form)
-
-        self._add_submission_to_session(submission)
-        endpoint = reverse(
-            "api:submission-steps-detail",
-            kwargs={
-                "submission_uuid": submission.uuid,
-                "step_uuid": form_step.uuid,
-            },
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step1,
+            data={"nRedApples": 2, "nGreenApples": 4},
         )
-        body = {
-            "data": {"nGreenApples": 3, "nRedApples": 5, "totApples": 8}
-        }  # Tot apples is added to the step data during the logic check call
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step2, data={"nYellowApples": 3}
+        )
 
-        # Persist the step
-        response = self.client.put(endpoint, body)
+        persist_user_defined_variables(submission.id)
 
-        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        tot_apples_first_step = SubmissionValueVariable.objects.get(
+            submission=submission, key="totApplesFirstStep"
+        )
+        tot_apples = SubmissionValueVariable.objects.get(
+            submission=submission, key="totApples"
+        )
 
-        variable = SubmissionValueVariable.objects.filter(
-            submission=submission, form_variable=tot_apples_var
-        ).first()
-
-        self.assertIsNotNone(variable)
-        self.assertEqual(8, variable.value)
+        self.assertEqual(6, tot_apples_first_step.value)
+        self.assertEqual(9, tot_apples.value)

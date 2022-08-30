@@ -15,7 +15,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.forms.custom_field_types import register, unregister
-from openforms.forms.tests.factories import FormStepFactory, FormVariableFactory
+from openforms.forms.tests.factories import FormStepFactory
 
 from ..models import Submission
 from .factories import SubmissionFactory, SubmissionStepFactory
@@ -165,15 +165,10 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
         self.assertFalse(self.submission.submissionstep_set.exists())
 
         # create submission step data
-        FormVariableFactory.create(
-            form=self.submission.form,
-            key="dummy",
-            form_definition=self.step.form_definition,
-        )
         SubmissionStepFactory.create(
             submission=self.submission,
             form_step=self.step,
-            data={"dummy": "data"},
+            data={"someField": "data"},
         )
 
         response = self.client.get(self.step_url)
@@ -181,5 +176,5 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.json()["data"],
-            {"dummy": "data"},
+            {"someField": "data"},
         )

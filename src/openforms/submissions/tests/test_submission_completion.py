@@ -30,8 +30,9 @@ from openforms.forms.tests.factories import (
     FormVariableFactory,
 )
 
+from ...variables.constants import FormVariableDataTypes, FormVariableSources
 from ..constants import SUBMISSIONS_SESSION_KEY
-from ..models import SubmissionStep
+from ..models import SubmissionStep, SubmissionValueVariable
 from .factories import SubmissionFactory, SubmissionStepFactory
 from .mixins import SubmissionsMixin
 
@@ -439,3 +440,70 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
         submission.refresh_from_db()
         self.assertTrue(submission.payment_required)
         self.assertEqual(submission.price, Decimal("123.45"))
+
+    def test_user_defined_variables_are_persisted(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "nGreenApples",
+                    },
+                    {
+                        "type": "number",
+                        "key": "nRedApples",
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="totApples",
+            source=FormVariableSources.user_defined,
+            data_type=FormVariableDataTypes.float,
+            form_definition=None,
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"!!": [True]},
+            actions=[
+                {
+                    "variable": "totApples",
+                    "action": {
+                        "name": "Update variable",
+                        "type": "variable",
+                        "value": {
+                            "+": [
+                                {"var": ["nRedApples", 0]},
+                                {"var": ["nGreenApples", 0]},
+                            ]
+                        },
+                    },
+                }
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={"nGreenApples": 3, "nRedApples": 5},
+        )
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            with capture_on_commit_callbacks(execute=True):
+                response = self.client.post(endpoint)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        variable = SubmissionValueVariable.objects.get(
+            submission=submission, key="totApples"
+        )
+
+        self.assertIsNotNone(variable)
+        self.assertEqual(8, variable.value)
