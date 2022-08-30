@@ -122,6 +122,39 @@ const parseValidationErrors = (errors, prefix) => {
   return parsedErrors;
 };
 
+// FormioUtils.eachComponent doesn't give us any useful information, so let's implement
+// it similar to the backend.
+function* _componentWithPathGenerator(components, prefix = 'components') {
+  for (let index = 0; index < components.length; index++) {
+    const component = components[index];
+    const fullPath = `${prefix}.${index}`;
+    yield [fullPath, component];
+
+    // taken from FormioUtils.eachComponent
+    const hasColumns = component.columns && Array.isArray(component.columns);
+    // const hasRows = component.rows && Array.isArray(component.rows);
+    const hasComps = component.components && Array.isArray(component.components);
+
+    if (hasColumns) {
+      for (let colIndex = 0; j < component.columns.length; colIndex++) {
+        const nestedPrefix = `${fullPath}.columns.${colIndex}.components`;
+        yield* _componentWithPathGenerator(column.components, nestedPrefix);
+      }
+    } else if (hasComps) {
+      yield* _componentWithPathGenerator(component.components, `${fullPath}.components`);
+    }
+  }
+}
+
+const getPathToComponent = (configuration, key) => {
+  const generator = _componentWithPathGenerator(configuration.components);
+  for (const [path, component] of generator) {
+    if (component.key !== key) continue;
+    return path;
+  }
+  return '';
+};
+
 export {
   stripIdFromComponents,
   getFormComponents,
@@ -131,4 +164,5 @@ export {
   getUniqueKey,
   getFormStep,
   parseValidationErrors,
+  getPathToComponent,
 };

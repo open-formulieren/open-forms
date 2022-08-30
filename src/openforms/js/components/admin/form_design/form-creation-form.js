@@ -1,4 +1,5 @@
 import zip from 'lodash/zip';
+import cloneDeep from 'lodash/cloneDeep';
 import getObjectValue from 'lodash/get';
 import set from 'lodash/set';
 import groupBy from 'lodash/groupBy';
@@ -50,6 +51,7 @@ import {
   updateKeyReferencesInLogic,
   getUniqueKey,
   getFormStep,
+  getPathToComponent,
   parseValidationErrors,
 } from './utils';
 import {
@@ -402,6 +404,20 @@ function reducer(draft, action) {
 
       // TODO: This could break if a reusable definition is used multiple times in a form
       const step = getFormStep(formDefinition, draft.formSteps, true);
+
+      if (!isNew) {
+        // the component was either changed or removed. Using the original key and
+        // step configuration, we can build the full json path, after which we can
+        // clear validation errors for that.
+        const path = getPathToComponent(step.configuration, originalComp.key);
+        // split into component path + field name
+        const pathBits = path.split('.');
+        pathBits.pop();
+        const componentPath = `configuration.${pathBits.join('.')}`;
+        step.validationErrors = step.validationErrors.filter(
+          ([path]) => !path.startsWith(componentPath)
+        );
+      }
 
       // Check if the formVariables need updating
       draft.formVariables = updateFormVariables(
