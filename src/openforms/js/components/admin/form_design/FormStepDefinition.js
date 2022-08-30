@@ -8,6 +8,7 @@ import {FormattedMessage} from 'react-intl';
 
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
 import Field, {normalizeErrors} from 'components/admin/forms/Field';
+import MessageList from 'components/admin/MessageList';
 import FormRow from 'components/admin/forms/FormRow';
 import FormIOBuilder from 'components/formio_builder/builder';
 
@@ -80,19 +81,22 @@ const FormStepDefinition = ({
       ) : (
         ''
       );
-      return (
-        <FormattedMessage
-          description="Formio configuration backend validation error for specific component property"
-          defaultMessage={`The component "{label}" (with key "{key}"{location}) has a problem in the field "{field}": {error}`}
-          values={{
-            field,
-            label: component.label,
-            key: component.key,
-            location,
-            error: message,
-          }}
-        />
-      );
+      return {
+        level: 'error',
+        message: (
+          <FormattedMessage
+            description="Formio configuration backend validation error for specific component property"
+            defaultMessage={`The component "{label}" (with key "{key}"{location}) has a problem in the field "{field}": {error}`}
+            values={{
+              field,
+              label: component.label,
+              key: component.key,
+              location,
+              error: message,
+            }}
+          />
+        ),
+      };
     }
   );
 
@@ -251,7 +255,7 @@ const FormStepDefinition = ({
 
       <div className="formio-builder-wrapper">
         <ConfigurationErrors errors={errors} />
-        <ConfigurationErrorList errors={componentErrors} />
+        <MessageList messages={componentErrors} />
         <FormIOBuilder
           configuration={configuration}
           onChange={onChange}
@@ -281,29 +285,13 @@ FormStepDefinition.propTypes = {
   errors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
 };
 
-const ConfigurationErrorList = ({errors = []}) => {
-  if (!errors.length) return null;
-  return (
-    <ul className="messagelist">
-      {errors.map((err, index) => (
-        <li key={index} className="error">
-          {err}
-        </li>
-      ))}
-    </ul>
-  );
-};
-
-ConfigurationErrorList.propTypes = {
-  errors: PropTypes.arrayOf(PropTypes.node),
-};
-
 const ConfigurationErrors = ({errors = []}) => {
   const configurationErrors = errors.filter(([name, err]) => name === 'configuration');
   const [hasConfigurationErrors, formattedConfigurationErrors] =
     normalizeErrors(configurationErrors);
   if (!hasConfigurationErrors) return null;
-  return <ConfigurationErrorList errors={formattedConfigurationErrors} />;
+  const errorMessages = formattedConfigurationErrors.map(msg => ({level: 'error', message: msg}));
+  return <MessageList messages={errorMessages} />;
 };
 
 ConfigurationErrors.propTypes = {
