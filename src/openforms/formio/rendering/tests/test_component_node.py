@@ -163,6 +163,30 @@ class FormNodeTests(TestCase):
                         }
                     ],
                 },
+                # hidden component, made visible by frontend logic, leaf node
+                {
+                    "key": "input14",
+                    "type": "textfield",
+                    "label": "Input 14",
+                    "hidden": True,
+                    "conditional": {
+                        "show": True,
+                        "when": "input1",
+                        "eq": "aaaaa",
+                    },
+                },
+                # visible component, made hidden by frontend logic, leaf node
+                {
+                    "key": "input15",
+                    "type": "textfield",
+                    "label": "Input 15",
+                    "hidden": False,
+                    "conditional": {
+                        "show": False,
+                        "when": "input1",
+                        "eq": "aaaaa",
+                    },
+                },
                 # TODO columns
             ]
         }
@@ -188,6 +212,8 @@ class FormNodeTests(TestCase):
                 {"input13": "ooooo"},
                 {"input13": "ppppp"},
             ],
+            "input14": "qqqqq",
+            "input15": "rrrrr",
         }
 
         submission = SubmissionFactory.from_components(
@@ -294,7 +320,7 @@ class FormNodeTests(TestCase):
             )
             nodelist += list(component_node)
 
-        self.assertEqual(len(nodelist), 16)
+        self.assertEqual(len(nodelist), 18)
         labels = [node.label for node in nodelist]
         # The fieldset/editgrid components have no labels
         self.assertEqual(
@@ -317,6 +343,8 @@ class FormNodeTests(TestCase):
                 "input12",
                 "input13",
                 "input13",
+                "input14",
+                "input15",
             ],
         )
 
@@ -335,7 +363,7 @@ class FormNodeTests(TestCase):
                 )
                 nodelist += list(component_node)
 
-        self.assertEqual(len(nodelist), 9)
+        self.assertEqual(len(nodelist), 10)
         labels = [node.label for node in nodelist]
         expected_labels = [
             "Input 1",
@@ -347,6 +375,7 @@ class FormNodeTests(TestCase):
             "Visible editgrid with visible children",
             "Input 11",
             "Visible editgrid with hidden children",
+            "Input 14",
         ]
         self.assertEqual(labels, expected_labels)
 
