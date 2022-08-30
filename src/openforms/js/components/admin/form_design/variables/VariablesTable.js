@@ -12,6 +12,7 @@ import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 import {FormContext} from 'components/admin/form_design/Context';
 import {get} from 'utils/fetch';
 import Field from 'components/admin/forms/Field';
+import LiteralValueInput from 'components/admin/form_design/logic/LiteralValueInput';
 
 import {DATATYPES_CHOICES} from './constants';
 import {variableHasErrors} from './utils';
@@ -93,7 +94,6 @@ const VariableRow = ({index, variable}) => {
         <SensitiveData isSensitive={variable.isSensitiveData} />
       </td>
       <td>{JSON.stringify(variable.initialValue)}</td>
-      <td>{variable.dataFormat}</td>
     </tr>
   );
 };
@@ -168,17 +168,6 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
         </Field>
       </td>
       <td>
-        <Field name="formDefinition" errors={variable.errors?.formDefinition}>
-          <Select
-            name="formDefinition"
-            choices={formStepsChoices}
-            value={variable.formDefinition}
-            onChange={onValueChanged}
-            allowBlank
-          />
-        </Field>
-      </td>
-      <td>
         <Field name="prefillPlugin" errors={variable.errors?.prefillPlugin}>
           <Select
             name="prefillPlugin"
@@ -225,21 +214,11 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
       </td>
       <td>
         <Field name="initialValue" errors={variable.errors?.initialValue}>
-          <TextInput
+          <LiteralValueInput
             name="initialValue"
+            type={variable.dataType}
             value={variable.initialValue || ''}
             onChange={onValueChanged}
-            noVTextField
-          />
-        </Field>
-      </td>
-      <td>
-        <Field name="dataFormat" errors={variable.errors?.dataFormat}>
-          <TextInput
-            name="dataFormat"
-            value={variable.dataFormat}
-            onChange={onValueChanged}
-            noVTextField
           />
         </Field>
       </td>
@@ -257,14 +236,16 @@ const VariablesTable = ({variables, editable, onChange, onDelete}) => {
       <HeadColumn
         content={<FormattedMessage defaultMessage="Key" description="Variable table key title" />}
       />
-      <HeadColumn
-        content={
-          <FormattedMessage
-            defaultMessage="Form definition"
-            description="Variable table form definition title"
-          />
-        }
-      />
+      {!editable && (
+        <HeadColumn
+          content={
+            <FormattedMessage
+              defaultMessage="Form definition"
+              description="Variable table form definition title"
+            />
+          }
+        />
+      )}
       <HeadColumn
         content={
           <FormattedMessage
@@ -302,14 +283,6 @@ const VariablesTable = ({variables, editable, onChange, onDelete}) => {
           <FormattedMessage
             defaultMessage="Initial value"
             description="Variable table initial value title"
-          />
-        }
-      />
-      <HeadColumn
-        content={
-          <FormattedMessage
-            defaultMessage="Data format"
-            description="Variable table data format title"
           />
         }
       />
