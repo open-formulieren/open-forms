@@ -1,6 +1,6 @@
 import logging
 from datetime import date, datetime
-from typing import Any, Iterator, List, Optional
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 from glom import glom
 
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def iter_components(
-    configuration: dict, recursive=True, _is_root=True, _mark_root=False
+    configuration: JSONObject, recursive=True, _is_root=True, _mark_root=False
 ) -> Iterator[Component]:
     components = configuration.get("components")
     if configuration.get("type") == "columns" and recursive:
@@ -39,6 +39,38 @@ def get_component(configuration: JSONObject, key: str) -> Optional[Component]:
     for component in iter_components(configuration=configuration, recursive=True):
         if component["key"] == key:
             return component
+
+
+def flatten_by_path(configuration: JSONObject) -> Dict[str, Component]:
+    """
+    Flatten the formio configuration.
+
+    Takes a (nested) Formio configuration object and flattens it, using the full
+    JSON path as key and the component as value in the returned mapping.
+    """
+
+    def _generator(
+        _configuration: JSONObject, prefix: str = "components"
+    ) -> Iterator[Tuple[str, Component]]:
+        for index, component in enumerate(
+            iter_components(_configuration, recursive=False)
+        ):
+            full_path = f"{prefix}.{index}"
+            yield full_path, component
+
+            # could be a component, could be something else
+            has_components = "components" in component
+            has_columns = "columns" in component
+
+            if has_columns:
+                for col_index, column in enumerate(component["columns"]):
+                    nested_prefix = f"{full_path}.columns.{col_index}.components"
+                    yield from _generator(column, prefix=nested_prefix)
+            elif has_components:
+                yield from _generator(component, prefix=f"{full_path}.components")
+
+    result = dict(_generator(configuration))
+    return result
 
 
 def is_layout_component(component):

@@ -1,11 +1,13 @@
 import logging
+from typing import Callable, Dict, Iterator, Tuple
 
 from django.template import TemplateSyntaxError
 
-from openforms.template import render_from_string
+from openforms.template import parse, render_from_string
 from openforms.typing import DataMapping, JSONObject, JSONValue
 
-from .utils import iter_components
+from .typing import Component
+from .utils import flatten_by_path, iter_components
 
 logger = logging.getLogger(__name__)
 
@@ -20,9 +22,9 @@ SUPPORTED_TEMPLATE_PROPERTIES = (
 )
 
 
-def render(formio_bit: JSONValue, context: dict) -> JSONValue:
+def _recursive_apply(formio_bit: JSONValue, func: Callable, *args, **kwargs):
     """
-    Take a formio property value and evaluate the templates inside.
+    Take a formio property value and recursively apply ``func`` to it.
 
     The ``formio_bit`` may be a string to be used as template, another JSON primitive
     that we can't pass through the template engine or a complex JSON object to
@@ -33,21 +35,59 @@ def render(formio_bit: JSONValue, context: dict) -> JSONValue:
     """
     # string primitive - we can throw it into the template engine
     if isinstance(formio_bit, str):
-        return render_from_string(formio_bit, context)
+        return func(formio_bit, *args, **kwargs)
 
     # collection - map every item recursively
     if isinstance(formio_bit, list):
-        return [render(nested_bit, context) for nested_bit in formio_bit]
+        return [
+            _recursive_apply(nested_bit, func, *args, **kwargs)
+            for nested_bit in formio_bit
+        ]
 
     # mapping - map every key/value pair recursively
     if isinstance(formio_bit, dict):
         return {
-            key: render(nested_bit, context) for key, nested_bit in formio_bit.items()
+            key: _recursive_apply(nested_bit, func, *args, **kwargs)
+            for key, nested_bit in formio_bit.items()
         }
 
     # other primitive or complex object - we can't template this out, so return it
     # unmodified.
     return formio_bit
+
+
+def render(formio_bit: JSONValue, context: dict) -> JSONValue:
+    return _recursive_apply(formio_bit, render_from_string, context=context)
+
+
+def iter_template_properties(component: Component) -> Iterator[Tuple[str, JSONValue]]:
+    """
+    Return an iterator over the formio component properties that are template-enabled.
+
+    Each item returns a tuple with the key and value of the formio component.
+    """
+    for property_name in SUPPORTED_TEMPLATE_PROPERTIES:
+        property_value = component.get(property_name)
+        yield (property_name, property_value)
+
+
+def validate_configuration(configuration: JSONObject) -> Dict[str, str]:
+    """
+    Check the Formio configuration for template syntax errors.
+
+    Returns a mapping of component key and (json) path of the component within the
+    configuration for the components that have template syntax errors.
+    """
+    flattened_components = flatten_by_path(configuration)
+
+    errored_components = {}
+    for path, component in flattened_components.items():
+        for property_name, property_value in iter_template_properties(component):
+            try:
+                _recursive_apply(property_value, parse)
+            except TemplateSyntaxError:
+                errored_components[component["key"]] = f"{path}.{property_name}"
+    return errored_components
 
 
 def inject_variables(configuration: JSONObject, values: DataMapping) -> None:
@@ -68,8 +108,7 @@ def inject_variables(configuration: JSONObject, values: DataMapping) -> None:
        `validate.required` etc.
     """
     for component in iter_components(configuration=configuration, recursive=True):
-        for property_name in SUPPORTED_TEMPLATE_PROPERTIES:
-            property_value = component.get(property_name)
+        for property_name, property_value in iter_template_properties(component):
             if not property_value:
                 continue
 
@@ -80,6 +119,6 @@ def inject_variables(configuration: JSONObject, values: DataMapping) -> None:
                     "Error during formio configuration 'template' rendering",
                     exc_info=exc,
                 )
-                # return the original config instead
-                return property_value
+                # keep the original value on error
+                continue
             component[property_name] = templated_value

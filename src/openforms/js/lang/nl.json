@@ -479,6 +479,11 @@
     "description": "static pricing mode label",
     "originalDefault": "Use linked product price"
   },
+  "GjQdpb": {
+    "defaultMessage": ", at location \"{location}\"",
+    "description": "Formio configuration backend validation error location suffix",
+    "originalDefault": ", at location \"{location}\""
+  },
   "GjcAY2": {
     "defaultMessage": "Leeg (null)",
     "description": "JSON variable type \"null\" representation",
@@ -939,6 +944,11 @@
     "description": "Admin save submit button",
     "originalDefault": "Save"
   },
+  "YbnFnL": {
+    "defaultMessage": "The component \"{label}\" (with key \"{key}\"{location}) has a problem in the field \"{field}\": {error}",
+    "description": "Formio configuration backend validation error for specific component property",
+    "originalDefault": "The component \"{label}\" (with key \"{key}\"{location}) has a problem in the field \"{field}\": {error}"
+  },
   "YdIu8k": {
     "defaultMessage": "Item toevoegen",
     "description": "JSON editor: add array value button",
@@ -1289,11 +1299,6 @@
     "description": "Add item to multi-input field",
     "originalDefault": "Add item"
   },
-  "li/63B": {
-    "defaultMessage": "No",
-    "description": "Action variable bool \"false\"",
-    "originalDefault": "No"
-  },
   "mH3X/G": {
     "defaultMessage": "vandaag",
     "description": "\"today\" operand type",
@@ -1494,11 +1499,6 @@
     "description": "Create form definition tile",
     "originalDefault": "Create a new form definition"
   },
-  "vhL8+4": {
-    "defaultMessage": "to the value",
-    "description": "dsl editor node message: to the value",
-    "originalDefault": "to the value"
-  },
   "viEfGU": {
     "defaultMessage": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken.",
     "description": "Confirmation template help text",
@@ -1538,11 +1538,6 @@
     "defaultMessage": "Annuleren",
     "description": "JSON editor: cancel variable edit",
     "originalDefault": "Cancel"
-  },
-  "x5XvId": {
-    "defaultMessage": "Yes",
-    "description": "Action variable bool \"true\"",
-    "originalDefault": "Yes"
   },
   "xJBMaf": {
     "defaultMessage": "Sjabloon bevestigingspagina",

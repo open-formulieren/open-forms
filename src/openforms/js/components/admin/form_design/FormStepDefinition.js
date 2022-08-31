@@ -1,12 +1,14 @@
 /*
 global URLify;
  */
+import get from 'lodash/get';
 import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
 import Field, {normalizeErrors} from 'components/admin/forms/Field';
+import MessageList from 'components/admin/MessageList';
 import FormRow from 'components/admin/forms/FormRow';
 import FormIOBuilder from 'components/formio_builder/builder';
 
@@ -68,6 +70,35 @@ const FormStepDefinition = ({
 
   const {changed, affectedForms} = useDetectConfigurationChanged(url, configuration);
   const {warnings} = useDetectSimpleLogicErrors(configuration);
+  const componentErrors = getComponentValidationErrors(configuration, errors).map(
+    ({component, field, componentLocation, message}) => {
+      const location = componentLocation.trim() ? (
+        <FormattedMessage
+          description="Formio configuration backend validation error location suffix"
+          defaultMessage={`, at location "{location}"`}
+          values={{location: componentLocation}}
+        />
+      ) : (
+        ''
+      );
+      return {
+        level: 'error',
+        message: (
+          <FormattedMessage
+            description="Formio configuration backend validation error for specific component property"
+            defaultMessage={`The component "{label}" (with key "{key}"{location}) has a problem in the field "{field}": {error}`}
+            values={{
+              field,
+              label: component.label,
+              key: component.key,
+              location,
+              error: message,
+            }}
+          />
+        ),
+      };
+    }
+  );
 
   return (
     <>
@@ -224,6 +255,7 @@ const FormStepDefinition = ({
 
       <div className="formio-builder-wrapper">
         <ConfigurationErrors errors={errors} />
+        <MessageList messages={componentErrors} />
         <FormIOBuilder
           configuration={configuration}
           onChange={onChange}
@@ -257,21 +289,41 @@ const ConfigurationErrors = ({errors = []}) => {
   const configurationErrors = errors.filter(([name, err]) => name === 'configuration');
   const [hasConfigurationErrors, formattedConfigurationErrors] =
     normalizeErrors(configurationErrors);
-
   if (!hasConfigurationErrors) return null;
-  return (
-    <ul className="messagelist">
-      {formattedConfigurationErrors.map((err, index) => (
-        <li key={index} className="error">
-          {err}
-        </li>
-      ))}
-    </ul>
-  );
+  const errorMessages = formattedConfigurationErrors.map(msg => ({level: 'error', message: msg}));
+  return <MessageList messages={errorMessages} />;
 };
 
 ConfigurationErrors.propTypes = {
   errors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+};
+
+const getComponentValidationErrors = (configuration, errors) => {
+  const componentsWithErrors = errors
+    .map(([path, message]) => {
+      const [prefix, ...pathBits] = path.split('.');
+      if (prefix !== 'configuration') return false;
+      const field = pathBits.pop(); // last element = formio field name
+      const component = get(configuration, pathBits);
+      if (!component) return false;
+
+      const intermediateComponents = [];
+      for (let num = 1; num < pathBits.length - 1; num++) {
+        const lookupPath = pathBits.slice(0, num);
+        const intermediateComponent = get(configuration, lookupPath);
+        if (!intermediateComponent.hasOwnProperty('label')) continue;
+        intermediateComponents.push(intermediateComponent.label);
+      }
+      const componentLocation = intermediateComponents.join(' > ');
+      return {
+        componentLocation,
+        component,
+        field,
+        message,
+      };
+    })
+    .filter(Boolean);
+  return componentsWithErrors;
 };
 
 export default FormStepDefinition;

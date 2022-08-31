@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
 import {FormContext} from './Context';
-import MessageList from './warnings/MessageList';
+import MessageList from 'components/admin/MessageList';
 
 const PluginWarning = ({loginRequired, configuration}) => {
   const formContext = useContext(FormContext);
@@ -81,7 +81,11 @@ const PluginWarning = ({loginRequired, configuration}) => {
   checkPrefillsAuth(configuration);
 
   if (warnings.length > 0) {
-    return <MessageList warnings={warnings} />;
+    const messages = warnings.map(warning => ({
+      level: 'warning',
+      message: warning,
+    }));
+    return <MessageList messages={messages} />;
   }
 
   return null;

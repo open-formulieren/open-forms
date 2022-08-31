@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-29 12:49+0200\n"
+"POT-Creation-Date: 2022-08-30 15:09+0200\n"
 "PO-Revision-Date: 2022-08-22 14:53+0020\n"
 "Last-Translator: Sergei Maertens <sergei@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -596,7 +596,7 @@ msgstr "Unieke sleutel van het product"
 #: openforms/forms/admin/form.py:220
 #: openforms/forms/admin/form_definition.py:61
 #: openforms/forms/models/category.py:13 openforms/forms/models/form.py:51
-#: openforms/forms/models/form_definition.py:38
+#: openforms/forms/models/form_definition.py:39
 #: openforms/forms/models/form_variable.py:115
 #: openforms/multidomain/models.py:7 openforms/products/models/product.py:22
 msgid "name"
@@ -2891,11 +2891,11 @@ msgstr "admin URL"
 msgid "Link to the change/view page in the admin interface"
 msgstr "Link naar de wijzigen/weergave pagina in de beheeromgeving"
 
-#: openforms/forms/api/serializers/form_definition.py:106
+#: openforms/forms/api/serializers/form_definition.py:109
 msgid "Used in forms"
 msgstr "Gebruikt in formulieren"
 
-#: openforms/forms/api/serializers/form_definition.py:108
+#: openforms/forms/api/serializers/form_definition.py:111
 msgid ""
 "The collection of forms making use of this definition. This includes both "
 "active and inactive forms."
@@ -3068,146 +3068,150 @@ msgid ""
 "will cause the rules before/after this rule to be re-calculated."
 msgstr ""
 
-#: openforms/forms/api/validators.py:25
+#: openforms/forms/api/validators.py:27
 msgid "Invalid JSON logic."
 msgstr "Ongeldige JSON-logic"
 
-#: openforms/forms/api/validators.py:30
+#: openforms/forms/api/validators.py:32
 msgid "This field needs to refer to a form component"
 msgstr "Dit veld moet een geldige verwijzing naar een formuliercomponent zijn."
 
-#: openforms/forms/api/validators.py:54
+#: openforms/forms/api/validators.py:56
 msgid "The first operand must be a `{\"var\": \"<componentKey>\"}` expression."
 msgstr ""
 "De eerste operand moet een `{\"var\": \"<componentKey>\"}` expressie zijn."
 
-#: openforms/forms/api/validators.py:142
+#: openforms/forms/api/validators.py:144
 #, fuzzy
 #| msgid "The component cannot be empty."
 msgid "The variable cannot be empty."
 msgstr "De componentverwijzing mag niet leeg zijn."
 
-#: openforms/forms/api/validators.py:165
+#: openforms/forms/api/validators.py:167
 #, fuzzy
 #| msgid "The specified component is not present in the form definition"
 msgid "The specified variable is not related to the form"
 msgstr "De opgegeven component is niet aanwezig in de formulierdefinitie"
 
-#: openforms/forms/api/validators.py:209 openforms/forms/models/logic.py:61
+#: openforms/forms/api/validators.py:211 openforms/forms/models/logic.py:61
 msgid ""
 "You must specify a step that belongs to the same form as the logic rule "
 "itself."
 msgstr ""
 
-#: openforms/forms/api/viewsets.py:67 openforms/forms/api/viewsets.py:210
+#: openforms/forms/api/validators.py:232
+msgid "There are template syntax errors in the expression."
+msgstr ""
+
+#: openforms/forms/api/viewsets.py:68 openforms/forms/api/viewsets.py:211
 msgid "Either a UUID4 or a slug identifiying the form."
 msgstr "Een UUID4 of een slug die het formulier identificeert."
 
-#: openforms/forms/api/viewsets.py:72
+#: openforms/forms/api/viewsets.py:73
 msgid "List form steps"
 msgstr "Formulierstappen weergeven"
 
-#: openforms/forms/api/viewsets.py:73
+#: openforms/forms/api/viewsets.py:74
 msgid "Retrieve form step details"
 msgstr "Formulierstap details weergeven"
 
-#: openforms/forms/api/viewsets.py:74
+#: openforms/forms/api/viewsets.py:75
 msgid "Create a form step"
 msgstr "Formulierstap aanmaken"
 
-#: openforms/forms/api/viewsets.py:75
+#: openforms/forms/api/viewsets.py:76
 msgid "Update all details of a form step"
 msgstr "Formulierstap in zijn geheel bijwerken"
 
-#: openforms/forms/api/viewsets.py:76
+#: openforms/forms/api/viewsets.py:77
 msgid "Update some details of a form step"
 msgstr "Formulierstap gedeeltelijk bijwerken"
 
-#: openforms/forms/api/viewsets.py:77
+#: openforms/forms/api/viewsets.py:78
 msgid "Delete a form step"
 msgstr "Formulierstap verwijderen"
 
-#: openforms/forms/api/viewsets.py:100 openforms/forms/api/viewsets.py:551
+#: openforms/forms/api/viewsets.py:101 openforms/forms/api/viewsets.py:562
 msgid "List logic rules"
 msgstr "Logicaregels weergeven"
 
-#: openforms/forms/api/viewsets.py:101
+#: openforms/forms/api/viewsets.py:102
 msgid "Retrieve logic rule details"
 msgstr "Logicaregel details weergeven"
 
-#: openforms/forms/api/viewsets.py:102
+#: openforms/forms/api/viewsets.py:103
 msgid "Create a logic rule"
 msgstr "Logicaregel aanmaken"
 
-#: openforms/forms/api/viewsets.py:103
+#: openforms/forms/api/viewsets.py:104
 msgid "Update all details of a logic rule"
 msgstr "Logicaregel in zijn geheel bijwerken"
 
-#: openforms/forms/api/viewsets.py:104
+#: openforms/forms/api/viewsets.py:105
 msgid "Update some details of a logic rule"
 msgstr "Logicaregel gedeeltelijk bijwerken"
 
-#: openforms/forms/api/viewsets.py:105
+#: openforms/forms/api/viewsets.py:106
 msgid "Delete a logic rule"
 msgstr "Logicaregel verwijderen"
 
-#: openforms/forms/api/viewsets.py:124
+#: openforms/forms/api/viewsets.py:125
 msgid "List pricing logic rules"
 msgstr "Logica-prijsregels weergeven"
 
-#: openforms/forms/api/viewsets.py:125
+#: openforms/forms/api/viewsets.py:126
 msgid "Retrieve pricing logic rule details"
 msgstr "Logica-prijsregel details weergeven"
 
-#: openforms/forms/api/viewsets.py:126
+#: openforms/forms/api/viewsets.py:127
 msgid "Create a pricing logic rule"
 msgstr "Logica-prijsregel aanmaken"
 
-#: openforms/forms/api/viewsets.py:127
+#: openforms/forms/api/viewsets.py:128
 msgid "Update all details of a pricing logic rule"
 msgstr "Logica-prijsregel in zijn geheel bijwerken"
 
-#: openforms/forms/api/viewsets.py:129
+#: openforms/forms/api/viewsets.py:130
 msgid "Update some details of a pricing logic rule"
 msgstr "Logica-prijsregel gedeeltelijk bijwerken"
 
-#: openforms/forms/api/viewsets.py:131
+#: openforms/forms/api/viewsets.py:132
 msgid "Delete a pricing logic rule"
 msgstr "Logica-prijsregel verwijderen"
 
-#: openforms/forms/api/viewsets.py:144
+#: openforms/forms/api/viewsets.py:145
 msgid "List form step definitions"
 msgstr "Formulierstap definities weergeven"
 
-#: openforms/forms/api/viewsets.py:148
+#: openforms/forms/api/viewsets.py:149
 msgid "Retrieve form step definition details"
 msgstr "Formulierstap definitie details weergeven"
 
-#: openforms/forms/api/viewsets.py:152
+#: openforms/forms/api/viewsets.py:153
 msgid "Create a form definition"
 msgstr "Formulier definitie toevoegen"
 
-#: openforms/forms/api/viewsets.py:156
+#: openforms/forms/api/viewsets.py:157
 msgid "Update all details of a form definition"
 msgstr "Formulier definitie in zijn geheel bijwerken"
 
-#: openforms/forms/api/viewsets.py:160
+#: openforms/forms/api/viewsets.py:161
 msgid "Update some details of a form definition"
 msgstr "formulier definitie gedeeltelijk bijwerken"
 
-#: openforms/forms/api/viewsets.py:164
+#: openforms/forms/api/viewsets.py:165
 msgid "Delete a form definition"
 msgstr "Verwijder een formulier definitie"
 
-#: openforms/forms/api/viewsets.py:189
+#: openforms/forms/api/viewsets.py:190
 msgid "Retrieve form definition JSON schema"
 msgstr "Formulier definitie JSON schema weergeven"
 
-#: openforms/forms/api/viewsets.py:220
+#: openforms/forms/api/viewsets.py:221
 msgid "List forms"
 msgstr "Formulieren weergeven"
 
-#: openforms/forms/api/viewsets.py:222
+#: openforms/forms/api/viewsets.py:223
 #, python-brace-format
 msgid ""
 "List the active forms, including the pointers to the form steps. Form steps "
@@ -3233,27 +3237,27 @@ msgstr ""
 "\n"
 "{admin_fields}"
 
-#: openforms/forms/api/viewsets.py:230
+#: openforms/forms/api/viewsets.py:231
 msgid "Retrieve form details"
 msgstr "Formulier details weergeven"
 
-#: openforms/forms/api/viewsets.py:233
+#: openforms/forms/api/viewsets.py:234
 msgid "Create form"
 msgstr "Formulier aanmaken"
 
-#: openforms/forms/api/viewsets.py:235
+#: openforms/forms/api/viewsets.py:236
 msgid "Update all details of a form"
 msgstr "Formulier in zijn geheel bijwerken"
 
-#: openforms/forms/api/viewsets.py:239
+#: openforms/forms/api/viewsets.py:240
 msgid "Update given details of a form"
 msgstr "Formulier gedeeltelijk bijwerken"
 
-#: openforms/forms/api/viewsets.py:243
+#: openforms/forms/api/viewsets.py:244
 msgid "Mark form as deleted"
 msgstr "Formulier markeren als verwijderd"
 
-#: openforms/forms/api/viewsets.py:245
+#: openforms/forms/api/viewsets.py:246
 msgid ""
 "Destroying a form leads to a soft-delete to protect related submissions. "
 "These deleted forms are no longer visible in the API endpoints."
@@ -3262,106 +3266,112 @@ msgstr ""
 "verwijderd om gerelateerde inzendingen te beschermen. Formulieren die "
 "gemarkeerd zijn als verwijderd komen niet meer in de API naar voren."
 
-#: openforms/forms/api/viewsets.py:251
+#: openforms/forms/api/viewsets.py:252
 msgid "Bulk configure form variables"
 msgstr ""
 
-#: openforms/forms/api/viewsets.py:253
+#: openforms/forms/api/viewsets.py:254
 msgid ""
 "By sending a list of FormVariables to this endpoint, all the FormVariables "
 "related to the form will be replaced with the data sent to the endpoint."
 msgstr ""
 
-#: openforms/forms/api/viewsets.py:268
+#: openforms/forms/api/viewsets.py:269
 #, fuzzy
 #| msgid "form price rules"
 msgid "Bulk configure logic rules"
 msgstr "Formulierlogica-prijsregels"
 
-#: openforms/forms/api/viewsets.py:270
+#: openforms/forms/api/viewsets.py:271
 msgid ""
 "By sending a list of LogicRules to this endpoint, all the LogicRules related "
 "to the form will be replaced with the data sent to the endpoint."
 msgstr ""
 
-#: openforms/forms/api/viewsets.py:285
+#: openforms/forms/api/viewsets.py:286
 #, fuzzy
 #| msgid "List pricing logic rules"
 msgid "Bulk configure price logic rules"
 msgstr "Logica-prijsregels weergeven"
 
-#: openforms/forms/api/viewsets.py:287
+#: openforms/forms/api/viewsets.py:288
 msgid ""
 "By sending a list of FormPriceLogic to this endpoint, all the FormPriceLogic "
 "related to the form will be replaced with the data sent to the endpoint."
 msgstr ""
 
-#: openforms/forms/api/viewsets.py:370
+#: openforms/forms/api/viewsets.py:371
 msgid "Copy form"
 msgstr "Formulier kopieren"
 
-#: openforms/forms/api/viewsets.py:407
+#: openforms/forms/api/viewsets.py:408
 msgid "Export form"
 msgstr "Formulier exporteren"
 
-#: openforms/forms/api/viewsets.py:442
+#: openforms/forms/api/viewsets.py:443
 msgid "Prepare form edit admin message"
 msgstr "Admin berichten voor formulier bewerken voorbereiden"
 
-#: openforms/forms/api/viewsets.py:504
+#: openforms/forms/api/viewsets.py:505
 #, fuzzy
 #| msgid "List form versions"
 msgid "List form variables"
 msgstr "Formulierversies weergeven"
 
-#: openforms/forms/api/viewsets.py:505
+#: openforms/forms/api/viewsets.py:506
 msgid "List all variables defined for a form."
 msgstr ""
 
-#: openforms/forms/api/viewsets.py:552
+#: openforms/forms/api/viewsets.py:519
+#, fuzzy
+#| msgid "List form versions"
+msgid "Filter by form variable source"
+msgstr "Formulierversies weergeven"
+
+#: openforms/forms/api/viewsets.py:563
 msgid "List all logic rules defined for a form."
 msgstr ""
 
-#: openforms/forms/api/viewsets.py:598
+#: openforms/forms/api/viewsets.py:609
 #, fuzzy
 #| msgid "List pricing logic rules"
 msgid "List price logic rules"
 msgstr "Logica-prijsregels weergeven"
 
-#: openforms/forms/api/viewsets.py:599
+#: openforms/forms/api/viewsets.py:610
 #, fuzzy
 #| msgid "List pricing logic rules"
 msgid "List all price logic rules defined for a form."
 msgstr "Logica-prijsregels weergeven"
 
-#: openforms/forms/api/viewsets.py:634 openforms/forms/api/viewsets.py:651
-#: openforms/forms/api/viewsets.py:670
+#: openforms/forms/api/viewsets.py:645 openforms/forms/api/viewsets.py:662
+#: openforms/forms/api/viewsets.py:681
 msgid "Either a UUID4 or a slug identifying the form."
 msgstr "Een UUID4 of een slug die het formulier identificeert."
 
-#: openforms/forms/api/viewsets.py:640
+#: openforms/forms/api/viewsets.py:651
 msgid "Save form version"
 msgstr "Formulierversie opslaan"
 
-#: openforms/forms/api/viewsets.py:644
+#: openforms/forms/api/viewsets.py:655
 msgid "Restore form version"
 msgstr "Formulierversie terugzetten"
 
-#: openforms/forms/api/viewsets.py:657
+#: openforms/forms/api/viewsets.py:668
 msgid "The UUID of the form version"
 msgstr "Het UUID van de formulierversie"
 
-#: openforms/forms/api/viewsets.py:663
+#: openforms/forms/api/viewsets.py:674
 msgid "List form versions"
 msgstr "Formulierversies weergeven"
 
-#: openforms/forms/api/viewsets.py:711
+#: openforms/forms/api/viewsets.py:722
 #: openforms/forms/templates/admin/forms/form/import_form.html:15
 #: openforms/forms/templates/admin/forms/form/import_form.html:20
 msgid "Import form"
 msgstr "Formulier importeren"
 
-#: openforms/forms/api/viewsets.py:713
+#: openforms/forms/api/viewsets.py:724
 msgid "No response body"
 msgstr "Geen antwoordbericht inhoud"
 
@@ -3488,7 +3498,7 @@ msgstr "U kunt deze hieronder weer bewerken."
 
 #: openforms/forms/models/category.py:10 openforms/forms/models/form.py:50
 #: openforms/forms/models/form.py:446
-#: openforms/forms/models/form_definition.py:37
+#: openforms/forms/models/form_definition.py:38
 #: openforms/forms/models/form_step.py:17
 #: openforms/forms/models/form_version.py:42 openforms/forms/models/logic.py:11
 #: openforms/forms/models/pricing_logic.py:30 openforms/payments/models.py:78
@@ -3511,17 +3521,17 @@ msgid "categories"
 msgstr ""
 
 #: openforms/forms/models/form.py:53
-#: openforms/forms/models/form_definition.py:40
+#: openforms/forms/models/form_definition.py:41
 msgid "internal name"
 msgstr "interne naam"
 
 #: openforms/forms/models/form.py:56
-#: openforms/forms/models/form_definition.py:43
+#: openforms/forms/models/form_definition.py:44
 msgid "internal name for management purposes"
 msgstr "interne naam voor beheerdoeleinden "
 
 #: openforms/forms/models/form.py:59
-#: openforms/forms/models/form_definition.py:46
+#: openforms/forms/models/form_definition.py:47
 msgid "slug"
 msgstr "URL-deel"
 
@@ -3722,14 +3732,14 @@ msgid "{backend} (invalid)"
 msgstr "{backend} (ongeldig)"
 
 #: openforms/forms/models/form.py:347 openforms/forms/models/form.py:349
-#: openforms/forms/models/form_definition.py:98
 #: openforms/forms/models/form_definition.py:100
+#: openforms/forms/models/form_definition.py:102
 #, python-brace-format
 msgid "{name} (copy)"
 msgstr "{name} (kopie)"
 
 #: openforms/forms/models/form.py:353
-#: openforms/forms/models/form_definition.py:104
+#: openforms/forms/models/form_definition.py:106
 #, python-brace-format
 msgid "{slug}-copy"
 msgstr "{slug}-kopie"
@@ -3772,33 +3782,33 @@ msgstr "Formulierexports"
 msgid "Bulk export requested by %(username)s on %(datetime)s"
 msgstr "Bulk-export aangevraagd door %(username)s op %(datetime)s"
 
-#: openforms/forms/models/form_definition.py:49
+#: openforms/forms/models/form_definition.py:50
 msgid "Form.io configuration"
 msgstr "Form.io configuratie"
 
-#: openforms/forms/models/form_definition.py:50
+#: openforms/forms/models/form_definition.py:51
 msgid "The form definition as Form.io JSON schema"
 msgstr "De formulier definitie als Form.io JSON schema"
 
-#: openforms/forms/models/form_definition.py:53
+#: openforms/forms/models/form_definition.py:55
 msgid "login required"
 msgstr "inloggen verplicht"
 
-#: openforms/forms/models/form_definition.py:58
+#: openforms/forms/models/form_definition.py:60
 msgid "is reusable"
 msgstr "is herbruikbaar"
 
-#: openforms/forms/models/form_definition.py:65
+#: openforms/forms/models/form_definition.py:67
 #, fuzzy
 #| msgid "Form.io component"
 msgid "number of Formio components"
 msgstr "Form.io component"
 
-#: openforms/forms/models/form_definition.py:67
+#: openforms/forms/models/form_definition.py:69
 msgid "The total number of Formio components used in the configuration"
 msgstr ""
 
-#: openforms/forms/models/form_definition.py:135
+#: openforms/forms/models/form_definition.py:137
 msgid ""
 "This form definition cannot be removed because it is used in one or more "
 "forms."
@@ -3806,11 +3816,11 @@ msgstr ""
 "Deze formulier definitie kan niet verwijderd worden omdat deze in één of "
 "meerdere formulieren gebruikt wordt."
 
-#: openforms/forms/models/form_definition.py:177
+#: openforms/forms/models/form_definition.py:179
 msgid "Form definition"
 msgstr "Formulier definitie"
 
-#: openforms/forms/models/form_definition.py:178
+#: openforms/forms/models/form_definition.py:180
 msgid "Form definitions"
 msgstr "formulier definities"
 
@@ -4229,27 +4239,27 @@ msgstr "Gebruikte Javascript SDK"
 msgid "FormIO '{type}' component validator"
 msgstr "FormIO '{type}' component validatie"
 
-#: openforms/forms/validators.py:19
+#: openforms/forms/validators.py:23
 msgid "Top-level value must be an Object."
 msgstr "De waarde op het hoogste niveau moet een Object zijn."
 
-#: openforms/forms/validators.py:26
+#: openforms/forms/validators.py:30
 msgid "Top-level key 'components' is missing."
 msgstr "De sleutel 'components' ontbreekt op het hoogste niveau."
 
-#: openforms/forms/validators.py:32
+#: openforms/forms/validators.py:36
 msgid "The 'components' value must be a list of components."
 msgstr "De waarde van 'components' moet een lijst van componenten zijn."
 
-#: openforms/forms/validators.py:40
+#: openforms/forms/validators.py:44
 msgid "Form is in maintenance mode."
 msgstr "Formulier staat in onderhoudsmodus."
 
-#: openforms/forms/validators.py:48
+#: openforms/forms/validators.py:52
 msgid "Form is deleted."
 msgstr "Formulier is verwijderd"
 
-#: openforms/forms/validators.py:68
+#: openforms/forms/validators.py:72
 #, fuzzy
 #| msgid ""
 #| "This form definition cannot be removed because it is used in one or more "
@@ -4260,6 +4270,13 @@ msgid ""
 msgstr ""
 "Deze formulier definitie kan niet verwijderd worden omdat deze in één of "
 "meerdere formulieren gebruikt wordt."
+
+#: openforms/forms/validators.py:95
+#, python-brace-format
+msgid ""
+"The component '{key}' (at JSON path '{path}') has template syntax errors in "
+"the field '{field}'."
+msgstr ""
 
 #: openforms/locations/api/serializers.py:8
 msgid "postal code"
@@ -7301,9 +7318,25 @@ msgstr "Datum en tijd"
 msgid "Time"
 msgstr ""
 
-#: openforms/variables/static_variables/static_variables.py:12
+#: openforms/variables/static_variables/static_variables.py:16
 msgid "Now"
 msgstr ""
+
+#: openforms/variables/static_variables/static_variables.py:25
+msgid "Environment"
+msgstr ""
+
+#: openforms/variables/static_variables/static_variables.py:34
+#, fuzzy
+#| msgid "First name"
+msgid "Form name"
+msgstr "Voornaam"
+
+#: openforms/variables/static_variables/static_variables.py:43
+#, fuzzy
+#| msgid "Forms"
+msgid "Form ID"
+msgstr "Formulieren"
 
 #: openforms/variables/views.py:15
 #, fuzzy

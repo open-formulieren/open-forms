@@ -4,7 +4,7 @@ import {FormattedMessage} from 'react-intl';
 
 import Modal from 'components/admin/Modal';
 import {ChangelistTable, ChangelistColumn} from 'components/admin/tables';
-import MessageList from 'components/admin/form_design/warnings/MessageList';
+import MessageList from 'components/admin/MessageList';
 
 const AffectedFormType = PropTypes.shape({
   url: PropTypes.string.isRequired,
@@ -68,7 +68,7 @@ const ChangedFormDefinitionWarning = ({changed, affectedForms = []}) => {
         <AffectedFormsTable>{affectedForms}</AffectedFormsTable>
       </Modal>
 
-      <MessageList warnings={[formattedWarning]} />
+      <MessageList messages={[{level: 'warning', message: formattedWarning}]} />
     </>
   );
 };

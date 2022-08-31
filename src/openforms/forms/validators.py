@@ -1,9 +1,13 @@
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from openforms.forms.models import FormDefinition
+from openforms.formio.variables import validate_configuration
+from openforms.typing import JSONObject
+
+if TYPE_CHECKING:
+    from openforms.forms.models import FormDefinition
 
 
 def validate_formio_js_schema(value: dict):
@@ -51,7 +55,7 @@ def validate_not_deleted(form):
 
 
 def validate_form_definition_is_reusable(
-    form_definition: FormDefinition,
+    form_definition: "FormDefinition",
     new_value: Optional[bool] = None,
 ) -> None:
     """
@@ -69,3 +73,30 @@ def validate_form_definition_is_reusable(
                 ),
             }
         )
+
+
+def validate_template_expressions(configuration: JSONObject) -> None:
+    """
+    Validate that any template expressions in supported properties are correct.
+
+    This runs syntax validation on template fragments inside Formio configuration
+    objects.
+    """
+    errored_components = validate_configuration(configuration)
+    if not errored_components:
+        return
+
+    all_errors = []
+
+    for key, path in errored_components.items():
+        component_path, field = path.rsplit(".", 1)
+        err = ValidationError(
+            _(
+                "The component '{key}' (at JSON path '{path}') has template syntax "
+                "errors in the field '{field}'."
+            ).format(key=key, path=component_path, field=field),
+            code="invalid-template-syntax",
+        )
+        all_errors.append(err)
+
+    raise ValidationError(all_errors)
