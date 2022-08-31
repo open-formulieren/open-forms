@@ -14,6 +14,7 @@ from openforms.api.exceptions import RequestEntityTooLarge
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.tests.utils import disable_2fa
 
+from ...config.models import GlobalConfiguration
 from ..attachments import (
     append_file_num_postfix,
     attach_uploads_to_submission_step,
@@ -604,6 +605,65 @@ class SubmissionAttachmentTest(TestCase):
             self.fail(
                 "Uploads should be accepted since the content types match the wildcard"
             )
+
+    @patch("openforms.submissions.attachments.GlobalConfiguration.get_solo")
+    def test_attach_upload_validates_file_content_types_default_configuration(
+        self, m_solo
+    ):
+        m_solo.return_value = GlobalConfiguration(
+            form_upload_default_file_types=["application/pdf", "image/jpeg"],
+        )
+
+        with open(TEST_FILES_DIR / "image-256x256.png", "rb") as infile:
+            upload = TemporaryFileUploadFactory.create(
+                file_name="my-img.png",
+                content=File(infile),
+                content_type="image/png",
+            )
+
+        data = {
+            "my_file": [
+                {
+                    "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                        "form": "",
+                        "name": "my-img.png",
+                        "size": 585,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "my-img-12305610-2da4-4694-a341-ccb919c3d543.png",
+                    "size": 585,
+                    "type": "image/png",  # we are lying!
+                    "storage": "url",
+                    "originalName": "my-img.png",
+                },
+            ],
+        }
+        formio_components = {
+            "key": "my_file",
+            "type": "file",
+            "multiple": True,
+            "file": {
+                "name": "",
+                "type": ["*"],
+            },
+            "filePattern": "*",
+            "useConfigFiletypes": True,
+        }
+
+        submission = SubmissionFactory.from_components(
+            [formio_components],
+            submitted_data=data,
+        )
+        submission_step = submission.submissionstep_set.get()
+
+        with self.assertRaises(ValidationError) as err_context:
+            validate_uploads(submission_step, data=data)
+
+        validation_error = err_context.exception.get_full_details()
+        self.assertEqual(len(validation_error["my_file"]), 1)
 
     @disable_2fa
     def test_attachment_retrieve_view_requires_permission(self):

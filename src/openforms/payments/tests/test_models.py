@@ -4,9 +4,9 @@ from django.test import TestCase
 
 from freezegun import freeze_time
 
+from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ...config.models import GlobalConfiguration
 from ..constants import PaymentStatus
 from ..models import SubmissionPayment
 from .factories import SubmissionPaymentFactory
