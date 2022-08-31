@@ -32,6 +32,7 @@ from ..models import (
     FormStep,
     FormVersion,
 )
+from ..tasks import recouple_submission_variables_to_form_variables
 from ..utils import export_form, import_form
 from .filters import FormLogicFilter, FormPriceLogicFilter, FormVariableFilter
 from .parsers import (
@@ -498,6 +499,8 @@ class FormViewSet(viewsets.ModelViewSet):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        recouple_submission_variables_to_form_variables.delay(form.id)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 

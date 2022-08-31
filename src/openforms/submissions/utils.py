@@ -4,6 +4,8 @@ from typing import Any
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
 
+from rest_framework.request import Request
+
 from openforms.appointments.service import get_confirmation_mail_suffix
 from openforms.emails.confirmation_emails import (
     SkipConfirmationEmail,
@@ -15,11 +17,11 @@ from openforms.emails.utils import (
     send_mail_html,
     strip_tags_plus,
 )
-from openforms.forms.models import FormVariable
 from openforms.logging import logevent
 from openforms.variables.constants import FormVariableSources
 
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
+from .form_logic import evaluate_form_logic
 from .models import Submission, SubmissionValueVariable, TemporaryFileUpload
 from .query import SubmissionQuerySet
 
@@ -152,23 +154,6 @@ def send_confirmation_email(submission: Submission):
     logevent.confirmation_email_success(submission)
 
 
-def persist_user_defined_variables_unrelated_to_a_step(
-    data: dict, submission: Submission
-) -> None:
-    keys_in_data = [key for key, value in data.items()]
-    form_vars_keys = FormVariable.objects.filter(
-        form=submission.form,
-        key__in=keys_in_data,
-        form_definition__isnull=True,
-    ).values_list("key", flat=True)
-    filtered_data = {key: value for key, value in data.items() if key in form_vars_keys}
-
-    if filtered_data:
-        SubmissionValueVariable.objects.bulk_create_or_update_from_data(
-            filtered_data, submission
-        )
-
-
 def initialise_user_defined_variables(submission: Submission):
     state = submission.load_submission_value_variables_state()
     variables = {
@@ -179,3 +164,29 @@ def initialise_user_defined_variables(submission: Submission):
     SubmissionValueVariable.objects.bulk_create(
         [variable for key, variable in variables.items() if not variable.pk]
     )
+
+
+def persist_user_defined_variables(
+    submission: "Submission", request: "Request"
+) -> None:
+    data = submission.data
+
+    last_form_step = submission.submissionstep_set.order_by("form_step__order").last()
+    if not last_form_step:
+        return
+
+    evaluate_form_logic(submission, last_form_step, data, dirty=False, request=request)
+
+    state = submission.load_submission_value_variables_state()
+    variables = state.variables
+
+    user_defined_vars_data = {
+        variable.key: variable.value
+        for variable_key, variable in variables.items()
+        if variable.form_variable.source == FormVariableSources.user_defined
+    }
+
+    if user_defined_vars_data:
+        SubmissionValueVariable.objects.bulk_create_or_update_from_data(
+            user_defined_vars_data, submission
+        )
