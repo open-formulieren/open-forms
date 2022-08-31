@@ -31,12 +31,13 @@ Basic
 Variabelen
 ~~~~~~~~~~
 
-.. todo:: add reference to vars documentation (see
-   https://github.com/open-formulieren/open-forms/pull/1893)
-
 U kunt variabelen gebruiken in het ontwerp van formulieren, bijvoorbeeld om een
 (voor-)ingevulde naam in het label van een ander formulierveld weer te geven. Hiervoor
 is de :ref:`sjabloonfunctionaliteit <manual_templates>` beschikbaar.
+
+Ontwikkelaars kunnen meer lezen in de technische documentatie voor
+:ref:`variabelen <developers_backend_core_variables>` en
+:ref:`sjablonen <developers_backend_core_templating>`.
 
 .. note::
 
