@@ -12,6 +12,28 @@ const jsonFormat = value => {
   return JSON.stringify(value, null, 2);
 };
 
+const isJsonLogic = jsonExpression => {
+  // jsonLogic accepts primitives
+  if (
+    jsonExpression == null || // typeof null -> 'object'
+    typeof jsonExpression === 'string' ||
+    typeof jsonExpression === 'boolean' ||
+    typeof jsonExpression === 'number'
+  ) {
+    return true;
+  }
+
+  if (Array.isArray(jsonExpression)) {
+    for (const item of jsonExpression) {
+      const isValid = isJsonLogic(item);
+      if (!isValid) return false;
+    }
+    return true;
+  }
+
+  return jsonLogic.is_logic(jsonExpression);
+};
+
 const JsonWidget = ({name, logic, onChange}) => {
   const intl = useIntl();
   const [jsonError, setJsonError] = useState('');
@@ -48,7 +70,7 @@ const JsonWidget = ({name, logic, onChange}) => {
       }
     }
 
-    if (!jsonLogic.is_logic(updatedJson)) {
+    if (!isJsonLogic(updatedJson)) {
       setJsonError(invalidLogicMessage);
       return;
     }
