@@ -73,6 +73,7 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
                     "main_website",
                     "theme_classname",
                     "theme_stylesheet",
+                    "theme_stylesheet_file",
                     "design_token_values",
                 ),
             },
