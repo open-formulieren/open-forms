@@ -2,9 +2,8 @@
 {% load i18n static openforms admin_urls %}
 
 {% block extrahead %}
+    {% include "admin/includes/formio_config.html" %}
     {{ block.super }}
-    {{ required_default|json_script:'config-REQUIRED_DEFAULT' }}
-    {{ rich_text_colors|json_script:'config-RICH_TEXT_COLORS' }}
 {% endblock extrahead %}
 
 {% block extrastyle %}
@@ -18,7 +17,9 @@
 
 {% block field_sets %}
 {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
+
 {{ feature_flags|json_script:"feature-flags" }}
+{{ configuration|json_script:"configuration" }}
 <div
     class="react-form-create"
     data-form-uuid="{{ original.uuid|default:'' }}"

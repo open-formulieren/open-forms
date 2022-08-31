@@ -20,7 +20,7 @@ from glom import glom
 from solo.models import SingletonModel
 from tinymce.models import HTMLField
 
-from openforms.config.constants import CSPDirective
+from openforms.config.constants import CSPDirective, UploadFileType
 from openforms.data_removal.constants import RemovalMethods
 from openforms.emails.validators import URLSanitationValidator
 from openforms.payments.validators import validate_payment_order_id_prefix
@@ -190,6 +190,15 @@ class GlobalConfiguration(SingletonModel):
             "fields are unmarked. If unchecked, optional fields will be marked with "
             "'(optional)' and required fields are unmarked."
         ),
+    )
+    form_upload_default_file_types = ArrayField(
+        models.CharField(max_length=128, choices=UploadFileType.choices),
+        verbose_name=_("Default allowed file upload types"),
+        help_text=_(
+            "Provide a list of default allowed file upload types. If empty, all extensions are allowed."
+        ),
+        default=list,
+        blank=True,
     )
 
     # 'subdomain' styling & content configuration

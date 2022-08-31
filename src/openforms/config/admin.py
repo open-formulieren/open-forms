@@ -4,13 +4,18 @@ from django.utils.translation import ugettext_lazy as _
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
 from solo.admin import SingletonModelAdmin
 
+from openforms.forms.admin.mixins import FormioConfigMixin
+
 from .forms import GlobalConfigurationAdminForm
 from .models import CSPSetting, GlobalConfiguration, RichTextColor
 
 
 @admin.register(GlobalConfiguration)
-class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
+class GlobalConfigurationAdmin(
+    FormioConfigMixin, DynamicArrayMixin, SingletonModelAdmin
+):
     form = GlobalConfigurationAdminForm
+    change_form_template = "admin/config/change_form.html"
     fieldsets = (
         (
             _("Email security configuration"),
@@ -62,6 +67,7 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
                 "fields": (
                     "form_fields_required_default",
                     "form_display_required_with_asterisk",
+                    "form_upload_default_file_types",
                 )
             },
         ),
