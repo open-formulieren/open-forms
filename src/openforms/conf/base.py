@@ -232,6 +232,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+    "openforms.middleware.CsrfTokenMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "hijack.middleware.HijackUserMiddleware",
     "openforms.middleware.SessionTimeoutMiddleware",

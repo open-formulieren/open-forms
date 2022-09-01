@@ -1,8 +1,12 @@
 from datetime import timedelta
 
+from django.middleware.csrf import get_token
+
+from openforms.api.urls import app_name
 from openforms.config.models import GlobalConfiguration
 
 SESSION_EXPIRES_IN_HEADER = "X-Session-Expires-In"
+CSRF_TOKEN_HEADER_NAME = "X-CSRFToken"
 
 
 class SessionTimeoutMiddleware:
@@ -26,4 +30,23 @@ class SessionTimeoutMiddleware:
         request.session.set_expiry(expires_in)
         response = self.get_response(request)
         response[SESSION_EXPIRES_IN_HEADER] = expires_in
+        return response
+
+
+class CsrfTokenMiddleware:
+    """
+    Add a CSRF Token to a response header
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+
+        # Only add the CSRF token header if it's an api endpoint
+        if request.resolver_match.namespace != app_name:
+            return response
+
+        response[CSRF_TOKEN_HEADER_NAME] = get_token(request)
         return response
