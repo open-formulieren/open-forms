@@ -406,10 +406,12 @@ function reducer(draft, action) {
       const step = getFormStep(formDefinition, draft.formSteps, true);
 
       if (!isNew) {
+        // In the case the component was removed, originalComp is null
+        const componentKey = originalComp ? originalComp.key : schema.key;
         // the component was either changed or removed. Using the original key and
         // step configuration, we can build the full json path, after which we can
         // clear validation errors for that.
-        const path = getPathToComponent(step.configuration, originalComp.key);
+        const path = getPathToComponent(step.configuration, componentKey);
         // split into component path + field name
         const pathBits = path.split('.');
         pathBits.pop();
