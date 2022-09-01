@@ -212,6 +212,7 @@ INSTALLED_APPS = [
     "openforms.authentication.contrib.digid.apps.DigidApp",
     "openforms.authentication.contrib.eherkenning.apps.EHerkenningApp",
     "openforms.authentication.contrib.digid_eherkenning_oidc.apps.DigiDEHerkenningOIDCApp",
+    "openforms.authentication.contrib.oidc.apps.OIDCApp",
     "openforms.payments.apps.PaymentsConfig",
     "openforms.payments.contrib.demo.apps.DemoApp",
     "openforms.payments.contrib.ogone.apps.OgoneApp",

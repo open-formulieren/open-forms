@@ -34,7 +34,7 @@ from .constants import (
 class OIDCAuthentication(BasePlugin):
     verbose_name = ""
     provides_auth = ""
-    init_url = ""
+    init_url = "oidc_authentication_init"
     session_key = ""
     config_class = None
 
