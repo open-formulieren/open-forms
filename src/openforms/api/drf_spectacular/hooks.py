@@ -8,7 +8,7 @@ from drf_spectacular.plumbing import (
 from drf_spectacular.settings import spectacular_settings
 from drf_spectacular.utils import OpenApiParameter
 
-from openforms.middleware import SESSION_EXPIRES_IN_HEADER
+from openforms.middleware import CSRF_TOKEN_HEADER_NAME, SESSION_EXPIRES_IN_HEADER
 
 SESSION_EXPIRES_IN_PARAMETER = build_parameter_type(
     name=SESSION_EXPIRES_IN_HEADER,
@@ -34,12 +34,30 @@ SESSION_EXPIRES_IN_COMPONENT = ResolvedComponent(
     object=SESSION_EXPIRES_IN_HEADER,
 )
 
+# CSRF Token header
+CSRF_TOKEN_PARAMETER = build_parameter_type(
+    name=CSRF_TOKEN_HEADER_NAME,
+    schema=build_basic_type(str),
+    location=OpenApiParameter.HEADER,
+    description=_("CSRF Token"),
+    required=True,
+)
+del CSRF_TOKEN_PARAMETER["in"]
+del CSRF_TOKEN_PARAMETER["name"]
+CSRF_TOKEN_COMPONENT = ResolvedComponent(
+    name=CSRF_TOKEN_HEADER_NAME,
+    type="headers",
+    schema=CSRF_TOKEN_PARAMETER,
+    object=CSRF_TOKEN_HEADER_NAME,
+)
+
 
 def add_middleware_headers(result, generator, request, public):
     """
     Schema generator hook to add headers to responses set by middleware.
     """
     generator.registry.register_on_missing(SESSION_EXPIRES_IN_COMPONENT)
+    generator.registry.register_on_missing(CSRF_TOKEN_COMPONENT)
 
     for path in result["paths"].values():
         for operation in path.values():
@@ -50,9 +68,12 @@ def add_middleware_headers(result, generator, request, public):
             for response in operation["responses"].values():
                 # spec: https://swagger.io/specification/#response-object
                 response.setdefault("headers", {})
-                response["headers"][
-                    SESSION_EXPIRES_IN_HEADER
-                ] = SESSION_EXPIRES_IN_COMPONENT.ref
+                response["headers"].update(
+                    {
+                        SESSION_EXPIRES_IN_HEADER: SESSION_EXPIRES_IN_COMPONENT.ref,
+                        CSRF_TOKEN_HEADER_NAME: CSRF_TOKEN_COMPONENT.ref,
+                    }
+                )
 
     result["components"] = generator.registry.build(
         spectacular_settings.APPEND_COMPONENTS
