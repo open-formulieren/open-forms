@@ -1,7 +1,12 @@
 from collections import defaultdict
 from functools import partial
 
-from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
+from django.core.validators import (
+    FileExtensionValidator,
+    MaxValueValidator,
+    MinValueValidator,
+    RegexValidator,
+)
 from django.db import models
 from django.template import Context, Template
 from django.template.loader import render_to_string
@@ -262,6 +267,18 @@ class GlobalConfiguration(SingletonModel):
             "This will be included as final stylesheet, overriding previously defined styles. "
             "Note that you also have to include the host to the `style-src` CSP directive. "
             "Example value: https://unpkg.com/@utrecht/design-tokens@1.0.0-alpha.20/dist/index.css."
+        ),
+    )
+    theme_stylesheet_file = models.FileField(
+        _("theme stylesheet"),
+        blank=True,
+        upload_to="config/themes/",
+        validators=[FileExtensionValidator(allowed_extensions=("css",))],
+        help_text=_(
+            "A stylesheet with theme-specific rules for your organization. "
+            "This will be included as final stylesheet, overriding previously defined styles. "
+            "If both a URL to a stylesheet and a stylesheet file have been configured, the "
+            "uploaded file is included after the stylesheet URL."
         ),
     )
 

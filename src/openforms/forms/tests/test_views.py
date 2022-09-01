@@ -1,5 +1,8 @@
+import tempfile
+from io import BytesIO
 from unittest.mock import patch
 
+from django.core.files import File
 from django.test import override_settings
 from django.urls import reverse, reverse_lazy
 
@@ -112,3 +115,29 @@ class FormDetailViewTests(WebTest):
         scripts = form_page.pyquery("script[nonce]")
         for script in scripts:
             self.assertTrue(bool(script.attrib["nonce"]))
+
+    @override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+    def test_theme_stylesheets_included(self):
+        """
+        Assert that configured theme stylesheets are loaded in the correct order.
+        """
+        self.config.theme_stylesheet = "https://example.com/theme.css"
+        self.config.theme_stylesheet_file = File(
+            BytesIO(b".foo{display: block;}"), name="my-theme.css"
+        )
+        self.config.save()
+
+        form_page = self.app.get(self.url)
+
+        # look up the last two stylesheet links in the page
+        stylesheet_links = [
+            link for link in form_page.pyquery('link[rel="stylesheet"]')
+        ][-2:]
+
+        self.assertEqual(
+            stylesheet_links[0].attrib["href"], "https://example.com/theme.css"
+        )
+        self.assertEqual(
+            stylesheet_links[1].attrib["href"],
+            self.config.theme_stylesheet_file.url,
+        )

@@ -15,8 +15,9 @@
     <link href="{% static 'bundles/core-css.css' %}" media="all" rel="stylesheet"/>
     {% block extra_css %}{% endblock %}
 
-    {# Note that the custom stylesheet is deliberately kept outside of extra_css to ensure it is the last stylesheet loaded! #}
+    {# Note that the custom stylesheets are deliberately kept outside of extra_css to ensure it is the last stylesheet loaded! #}
     {% if config.theme_stylesheet %}<link href="{{ config.theme_stylesheet }}" media="all" rel="stylesheet" />{% endif %}
+    {% if config.theme_stylesheet_file %}<link href="{{ config.theme_stylesheet_file.url }}" media="all" rel="stylesheet" />{% endif %}
 
     {% if enable_analytics %}
         {# Load the various supported analytics provider snippets #}

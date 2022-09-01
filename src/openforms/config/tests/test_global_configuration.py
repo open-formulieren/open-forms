@@ -157,6 +157,19 @@ class AdminTests(WebTest):
         self.assertEqual(config.save_form_email_subject, "Subject {{form_name}}")
         self.assertEqual(config.save_form_email_content, "Content {{form_name}}")
 
+    def test_can_upload_stylesheet(self):
+        url = reverse("admin:config_globalconfiguration_change", args=(1,))
+        upload = Upload("my-theme.css", b".foo { display: block }", "text/css")
+
+        change_page = self.app.get(url)
+
+        change_page.form["theme_stylesheet_file"] = upload
+        response = change_page.form.submit()
+
+        self.assertEqual(response.status_code, 302)
+        config = GlobalConfiguration.get_solo()
+        self.assertEqual(config.theme_stylesheet_file, "config/themes/my-theme.css")
+
 
 class GlobalConfirmationEmailTests(TestCase):
     def setUp(self):
