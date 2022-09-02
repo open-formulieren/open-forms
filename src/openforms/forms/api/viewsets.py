@@ -338,7 +338,7 @@ class FormViewSet(viewsets.ModelViewSet):
         if not self.request.user.is_staff:
             # if not staff then only show active
             queryset = queryset.filter(active=True).filter(_is_deleted=False)
-        elif self.request.user.is_staff and self.action != "retrieve":
+        elif self.action == "list":
             # So that the admin can display deleted forms, but the list endpoint doesn't return them
             queryset = queryset.filter(_is_deleted=False)
 
