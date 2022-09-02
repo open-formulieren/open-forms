@@ -116,6 +116,50 @@ class TestSubmissionAdmin(WebTest):
         on_completion_retry_mock.assert_called_once_with(failed.id)
         on_completion_retry_mock.return_value.delay.assert_called_once()
 
+    @patch("openforms.submissions.admin.on_completion_retry")
+    def test_retry_processing_submissions_resends_all_failed_submissions(
+        self, on_completion_retry_mock
+    ):
+        failed = SubmissionFactory.create(
+            needs_on_completion_retry=False,
+            completed=True,
+            registration_status=RegistrationStatuses.failed,
+        )
+        failed_needs_retry = SubmissionFactory.create(
+            needs_on_completion_retry=True,
+            completed=True,
+            registration_status=RegistrationStatuses.failed,
+        )
+        pending = SubmissionFactory.create(
+            needs_on_completion_retry=False,
+            completed=True,
+            registration_status=RegistrationStatuses.pending,
+        )
+        pending_needs_retry = SubmissionFactory.create(
+            needs_on_completion_retry=True,
+            completed=True,
+            registration_status=RegistrationStatuses.pending,
+        )
+
+        response = self.app.get(
+            reverse("admin:submissions_submission_changelist"), user=self.user
+        )
+
+        form = response.forms["changelist-form"]
+        form["action"] = "retry_processing_submissions"
+        form["_selected_action"] = [
+            str(failed.pk),
+            str(failed_needs_retry.pk),
+            str(pending.pk),
+            str(pending_needs_retry.pk),
+        ]
+
+        form.submit()
+
+        on_completion_retry_mock.assert_any_call(failed.id)
+        on_completion_retry_mock.assert_any_call(failed_needs_retry.id)
+        self.assertEqual(on_completion_retry_mock.return_value.delay.call_count, 2)
+
     def test_change_view_displays_logs_if_not_avg(self):
         # add regular submission log
         submission_start(self.submission_1)
