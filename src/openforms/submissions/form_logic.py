@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 import elasticapm
 from json_logic import jsonLogic
@@ -212,29 +212,77 @@ def evaluate_form_logic(
     return configuration
 
 
-def check_submission_logic(submission, unsaved_data=None):
-    # TODO: https://github.com/open-formulieren/open-forms/issues/1913
-    logic_rules = FormLogic.objects.filter(
-        form=submission.form,
-        actions__contains=[{"action": {"type": LogicActionTypes.step_not_applicable}}],
-    )
+def check_submission_logic(
+    submission: "Submission", unsaved_data: Optional[dict] = None
+) -> None:
+    rules = getattr(submission.form, "_cached_logic_rules", None)
+    if rules is None:
+        rules = FormLogic.objects.select_related("trigger_from_step").filter(
+            form=submission.form
+        )
+        submission.form._cached_logic_rules = rules
 
-    merged_data = submission.data
+    # load the data state and all variables
+    submission_variables_state = submission.load_submission_value_variables_state()
     if unsaved_data:
-        merged_data = {**merged_data, **unsaved_data}
+        submission_variables_state.set_values(unsaved_data)
+    data_container = DataContainer(state=submission_variables_state)
 
+    # check "which step" would be shown in the frontend from the submission state. This
+    # determines which logic rules with triggers related to steps to evaluate.
     submission_state = submission.load_execution_state()
+    if not submission_state.form_steps:
+        return
+    last_completed_step = submission_state.get_last_completed_step()
+    # no steps completed -> current index is first step: 0
+    if last_completed_step is None:
+        current_index = 0
+    else:
+        last_completed_step_index = submission_state.form_steps.index(
+            last_completed_step.form_step
+        )
+        current_index = min(
+            last_completed_step_index + 1, len(submission_state.form_steps) - 1
+        )
 
-    for rule in logic_rules:
-        if jsonLogic(rule.json_logic_trigger, merged_data):
-            for action in rule.actions:
-                # TODO: this should not be necessary because of the query filter above?
-                # but perhaps we might want to re-use the logic rules cached on the
-                # submission instance?
-                if action["action"]["type"] != LogicActionTypes.step_not_applicable:
-                    continue
+    step = submission_state.submission_steps[current_index]
 
-                submission_step_to_modify = submission_state.resolve_step(
-                    action["form_step"]
-                )
-                submission_step_to_modify._is_applicable = False
+    mutation_operations = []
+    for rule in rules:
+        # only evaluate a logic rule if it either:
+        # - is not limited to a particular trigger point/step
+        # - is limited to a particular trigger point/step and the "current submission step"
+        #   is equal to or later than the trigger point
+        if rule.trigger_from_step:
+            trigger_from_index = submission_state.form_steps.index(
+                rule.trigger_from_step
+            )
+            if current_index < trigger_from_index:
+                continue
+
+        trigger_rule = jsonLogic(rule.json_logic_trigger, data_container.data)
+        # rule is not triggered - do not process the actions.
+        if not trigger_rule:
+            continue
+
+        # process all the actions in order for the triggered rule
+        for action in rule.actions:
+            action_details = action["action"]
+
+            # component mutations can be skipped as we're not in the context of a single
+            # form step.
+            if action_details["type"] == LogicActionTypes.property:
+                continue
+
+            # if the action type is to set a variable, update the variable state.
+            # This is the ONLY operation that is allowed to execute while we're looping
+            # through the rules.
+            if action_details["type"] == LogicActionTypes.variable:
+                new_value = jsonLogic(action_details["value"], data_container.data)
+                data_container.update({action["variable"]: new_value})
+            else:
+                operation = compile_action_operation(action)
+                mutation_operations.append(operation)
+
+    for mutation in mutation_operations:
+        mutation.apply(step, {})
