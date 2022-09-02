@@ -105,3 +105,37 @@ class DownloadSubmissionReportPermission(TimestampedTokenPermission):
 
 class SubmissionStatusPermission(TimestampedTokenPermission):
     token_generator = submission_status_token_generator
+
+
+class CanNavigateBetweenSubmissionStepsPermission(permissions.BasePermission):
+    """
+    Check if the user is allowed to interact with a submission step if the previous submission steps are not completed.
+    """
+
+    def has_object_permission(
+        self, request: Request, view: APIView, obj: SubmissionStep
+    ) -> bool:
+        user = request.user
+
+        order = obj.form_step.order
+        if user.is_superuser or (
+            user.is_staff
+            and user.has_perm("accounts.can_navigate_between_submission_steps")
+        ):
+            return True
+
+        # If it's the first step in the form, then it can always be accessed
+        if order == 0:
+            return True
+
+        # If it's NOT the first step, then check that all previous steps are completed
+        # Here we check if there are the right number of saved submission steps
+        number_previous_completed_steps = obj.submission.submissionstep_set.filter(
+            form_step__order__lt=order
+        ).count()
+
+        # order starts at 0
+        if number_previous_completed_steps == order:
+            return True
+
+        return False
