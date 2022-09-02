@@ -50,6 +50,23 @@ class FormLogicAPITests(APITestCase):
 
         self.assertEqual(1, len(response_data))
 
+    def test_list_form_logic_with_soft_deleted_form(self):
+        user = SuperUserFactory.create(username="test", password="test")
+        form1 = FormFactory.create(deleted_=True)
+
+        FormLogicFactory.create(form=form1)
+
+        self.client.force_authenticate(user)
+
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form1.uuid})
+        response = self.client.get(url)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        response_data = response.json()
+
+        self.assertEqual(1, len(response_data))
+
     def test_create_form_logic(self):
         user = SuperUserFactory.create(username="test", password="test")
         form = FormFactory.create()
