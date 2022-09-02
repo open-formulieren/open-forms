@@ -93,3 +93,8 @@ class FormVariableModelTests(TestCase):
         self.assertEqual(FormVariableDataTypes.array, variable1.data_type)
         self.assertEqual(FormVariableDataTypes.array, variable2.data_type)
         self.assertEqual(FormVariableDataTypes.array, variable3.data_type)
+
+    def test_variable_with_array_default_value(self):
+        variable = FormVariableFactory.create(initial_value=[])
+
+        self.assertEqual([], variable.get_initial_value())
