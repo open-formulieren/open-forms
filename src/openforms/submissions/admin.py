@@ -145,7 +145,12 @@ class SubmissionAdmin(admin.ModelAdmin):
         "created_on",
         "completed_on",
     )
-    list_filter = (SubmissionTypeListFilter, "form")
+    list_filter = (
+        SubmissionTypeListFilter,
+        "registration_status",
+        "needs_on_completion_retry",
+        "form",
+    )
     search_fields = (
         "form__name",
         "uuid",
@@ -279,7 +284,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     )
 
     def retry_processing_submissions(self, request, queryset):
-        submissions = queryset.filter(needs_on_completion_retry=True)
+        submissions = queryset.filter(registration_status=RegistrationStatuses.failed)
         messages.success(
             request,
             ngettext(
