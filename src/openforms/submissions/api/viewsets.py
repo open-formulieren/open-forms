@@ -17,6 +17,7 @@ from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.logging import logevent
+from openforms.middleware import CSRF_TOKEN_HEADER_NAME
 from openforms.prefill import prefill_variables
 from openforms.utils.api.throttle_classes import PollingRateThrottle
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
@@ -39,6 +40,7 @@ from ..utils import (
 )
 from .permissions import (
     ActiveSubmissionPermission,
+    CanNavigateBetweenSubmissionStepsPermission,
     FormAuthenticationPermission,
     SubmissionStatusPermission,
 )
@@ -77,6 +79,14 @@ logger = logging.getLogger(__name__)
             "Start a submission for a particular form. The submission is added to the "
             "user session."
         ),
+        parameters=[
+            OpenApiParameter(
+                CSRF_TOKEN_HEADER_NAME,
+                OpenApiTypes.STR,
+                location=OpenApiParameter.HEADER,
+                required=True,
+            )
+        ],
         responses={
             201: SubmissionSerializer,
             400: ValidationErrorSerializer,
@@ -137,6 +147,14 @@ class SubmissionViewSet(
             404: ExceptionSerializer,
             405: ExceptionSerializer,
         },
+        parameters=[
+            OpenApiParameter(
+                CSRF_TOKEN_HEADER_NAME,
+                OpenApiTypes.STR,
+                location=OpenApiParameter.HEADER,
+                required=True,
+            )
+        ],
     )
     @action(detail=True, methods=["get"], url_name="co-sign", url_path="co-sign")
     def co_sign(self, request, *args, **kwargs) -> Response:
@@ -156,11 +174,17 @@ class SubmissionViewSet(
             200: SubmissionCompletionSerializer,
             400: CompletionValidationSerializer,
         },
+        parameters=[
+            OpenApiParameter(
+                CSRF_TOKEN_HEADER_NAME,
+                OpenApiTypes.STR,
+                location=OpenApiParameter.HEADER,
+                required=True,
+            )
+        ],
     )
     @transaction.atomic()
-    @action(
-        detail=True, methods=["post"], authentication_classes=(), url_name="complete"
-    )
+    @action(detail=True, methods=["post"], url_name="complete")
     def _complete(self, request, *args, **kwargs):
         """
         Mark the submission as completed.
@@ -278,11 +302,17 @@ class SubmissionViewSet(
             201: SubmissionSuspensionSerializer,
             # 400: TODO - schema for errors
         },
+        parameters=[
+            OpenApiParameter(
+                CSRF_TOKEN_HEADER_NAME,
+                OpenApiTypes.STR,
+                location=OpenApiParameter.HEADER,
+                required=True,
+            )
+        ],
     )
     @transaction.atomic()
-    @action(
-        detail=True, methods=["post"], authentication_classes=(), url_name="suspend"
-    )
+    @action(detail=True, methods=["post"], url_name="suspend")
     def _suspend(self, request, *args, **kwargs):
         """
         Suspend the submission.
@@ -323,6 +353,14 @@ class SubmissionViewSet(
             "form step configuration. If there is no data yet for the step, the ID "
             "will be `null`. Set the step data by making a `PUT` request."
         ),
+        parameters=[
+            OpenApiParameter(
+                CSRF_TOKEN_HEADER_NAME,
+                OpenApiTypes.STR,
+                location=OpenApiParameter.HEADER,
+                required=True,
+            )
+        ],
         responses={
             200: SubmissionStepSerializer,
             403: ExceptionSerializer,
@@ -338,8 +376,12 @@ class SubmissionStepViewSet(
 
     queryset = SubmissionStep.objects.all()
     serializer_class = SubmissionStepSerializer
-    authentication_classes = ()
-    permission_classes = [ActiveSubmissionPermission, FormAuthenticationPermission]
+    authentication_classes = (authentication.SessionAuthentication,)
+    permission_classes = [
+        ActiveSubmissionPermission,
+        FormAuthenticationPermission,
+        CanNavigateBetweenSubmissionStepsPermission,
+    ]
     lookup_url_kwarg = "step_uuid"
     submission_url_kwarg = "submission_uuid"
     parser_classes = [IgnoreDataFieldCamelCaseJSONParser]
@@ -386,6 +428,14 @@ class SubmissionStepViewSet(
             400: ValidationErrorSerializer,
             403: ExceptionSerializer,
         },
+        parameters=[
+            OpenApiParameter(
+                CSRF_TOKEN_HEADER_NAME,
+                OpenApiTypes.STR,
+                location=OpenApiParameter.HEADER,
+                required=True,
+            )
+        ],
     )
     @transaction.atomic()
     def update(self, request, *args, **kwargs):
@@ -440,6 +490,14 @@ class SubmissionStepViewSet(
             400: ValidationErrorSerializer,
             403: ExceptionSerializer,
         },
+        parameters=[
+            OpenApiParameter(
+                CSRF_TOKEN_HEADER_NAME,
+                OpenApiTypes.STR,
+                location=OpenApiParameter.HEADER,
+                required=True,
+            )
+        ],
     )
     @action(detail=True, methods=["post"])
     def validate(self, request, *args, **kwargs):
@@ -472,6 +530,14 @@ class SubmissionStepViewSet(
             200: SubmissionStateLogicSerializer,
             403: ExceptionSerializer,
         },
+        parameters=[
+            OpenApiParameter(
+                CSRF_TOKEN_HEADER_NAME,
+                OpenApiTypes.STR,
+                location=OpenApiParameter.HEADER,
+                required=True,
+            )
+        ],
     )
     @action(
         detail=True,
