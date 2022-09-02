@@ -205,7 +205,7 @@ class FormVariable(models.Model):
         return _("Form variable '{key}'").format(key=self.key)
 
     def get_initial_value(self):
-        return self.initial_value or None
+        return self.initial_value
 
     def derive_info_from_component(self):
         if self.source != FormVariableSources.component or not self.form_definition:
@@ -213,7 +213,7 @@ class FormVariable(models.Model):
 
         component = get_component(self.form_definition.configuration, self.key)
 
-        if not self.initial_value:
+        if self.initial_value is None:
             self.initial_value = get_component_default_value(component)
 
         self.data_type = get_component_datatype(component)
