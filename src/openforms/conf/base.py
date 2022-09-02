@@ -232,6 +232,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+    "openforms.middleware.CsrfTokenMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "hijack.middleware.HijackUserMiddleware",
     "openforms.middleware.SessionTimeoutMiddleware",
@@ -682,7 +683,7 @@ CORS_ALLOW_HEADERS = (
     + [NONCE_HTTP_HEADER]
     + config("CORS_EXTRA_ALLOW_HEADERS", split=True, default=[])
 )
-CORS_EXPOSE_HEADERS = ["X-Session-Expires-In"]
+CORS_EXPOSE_HEADERS = ["X-Session-Expires-In", "X-CSRFToken"]
 CORS_ALLOW_CREDENTIALS = True  # required to send cross domain cookies
 
 #
