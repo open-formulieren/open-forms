@@ -14,8 +14,10 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.accounts.tests.factories import StaffUserFactory, SuperUserFactory
 from openforms.forms.custom_field_types import register, unregister
-from openforms.forms.tests.factories import FormStepFactory
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.middleware import CSRF_TOKEN_HEADER_NAME
 
 from ..models import Submission
 from .factories import SubmissionFactory, SubmissionStepFactory
@@ -178,3 +180,119 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             response.json()["data"],
             {"someField": "data"},
         )
+
+
+class GetSubmissionStepTests(SubmissionsMixin, APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        form = FormFactory.create()
+        form_step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [{"type": "textfield", "key": "field1"}]
+            },
+        )
+        form_step2 = FormStepFactory.create(
+            form=form,
+        )
+        form_step3 = FormStepFactory.create(
+            form=form,
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        cls.submission_step1 = SubmissionStepFactory.create(
+            form_step=form_step1, submission=submission, data={"field1": "data1"}
+        )
+
+        cls.form_step1 = form_step1
+        cls.form_step2 = form_step2
+        cls.form_step3 = form_step3
+        cls.submission = submission
+
+    def test_step_retrieved_if_previous_steps_completed(self):
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": self.submission.uuid,
+                "step_uuid": self.form_step2.uuid,
+            },
+        )
+
+        self._add_submission_to_session(self.submission)
+        response = self.client.get(
+            url, headers={CSRF_TOKEN_HEADER_NAME: self._get_csrf_token(self.submission)}
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+    def test_step_retrieved_if_no_previous_steps(self):
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": self.submission.uuid,
+                "step_uuid": self.form_step1.uuid,
+            },
+        )
+
+        self._add_submission_to_session(self.submission)
+        response = self.client.get(
+            url, headers={CSRF_TOKEN_HEADER_NAME: self._get_csrf_token(self.submission)}
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+    def test_error_raised_if_previous_step_not_completed_for_non_admin(self):
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": self.submission.uuid,
+                "step_uuid": self.form_step3.uuid,  # Step 2 is not completed yet!
+            },
+        )
+
+        self._add_submission_to_session(self.submission)
+        response = self.client.get(
+            url, headers={CSRF_TOKEN_HEADER_NAME: self._get_csrf_token(self.submission)}
+        )
+
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+    def test_step_retrieved_if_not_completed_for_superuser(self):
+        user = SuperUserFactory.create()
+        self.client.force_login(user=user)
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": self.submission.uuid,
+                "step_uuid": self.form_step3.uuid,  # Step 2 is not completed yet!
+            },
+        )
+
+        self._add_submission_to_session(self.submission)
+        response = self.client.get(
+            url, headers={CSRF_TOKEN_HEADER_NAME: self._get_csrf_token(self.submission)}
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+    def test_step_retrieved_if_not_completed_for_staff_with_permission(self):
+        user = StaffUserFactory.create(
+            user_permissions=["can_navigate_between_submission_steps"]
+        )
+        self.client.force_login(user=user)
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": self.submission.uuid,
+                "step_uuid": self.form_step3.uuid,  # Step 2 is not completed yet!
+            },
+        )
+
+        self._add_submission_to_session(self.submission)
+        response = self.client.get(
+            url, headers={CSRF_TOKEN_HEADER_NAME: self._get_csrf_token(self.submission)}
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
