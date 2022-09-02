@@ -1,3 +1,5 @@
+from django.test import tag
+
 from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -7,8 +9,10 @@ from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
     FormStepFactory,
+    FormVariableFactory,
 )
 from openforms.logging.models import TimelineLogProxy
+from openforms.variables.constants import FormVariableDataTypes
 
 from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory
@@ -82,6 +86,143 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         data = response.json()
 
         self.assertFalse(data["steps"][1]["isApplicable"])
+
+    @tag("gh-1913")
+    def test_check_logic_on_whole_submission_with_variables(self):
+        """
+        Assert that the submission logic check takes all variables into account.
+
+        * We only submit step1 and not step2, while setting up a logic rule that only
+          becomes relevant from step3 onwards
+        * We include calculated variables that determine the availability of step3
+        """
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "text1",
+                    }
+                ]
+            },
+        )
+        # we don't progress through these and set up user-defined variables, so it doesn't matter
+        # that there are no components.
+        step2 = FormStepFactory.create(
+            form=form, form_definition__configuration={"components": []}
+        )
+        step3 = FormStepFactory.create(
+            form=form, form_definition__configuration={"components": []}
+        )
+        # set up a number of variables to mutate with logic
+        FormVariableFactory.create(
+            form=form,
+            key="var1",
+            user_defined=True,
+            data_type=FormVariableDataTypes.float,
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="var2",
+            user_defined=True,
+            data_type=FormVariableDataTypes.float,
+            initial_value=0,
+        )
+        FormVariableFactory.create(
+            form=form,
+            key="var3",
+            user_defined=True,
+            data_type=FormVariableDataTypes.float,
+        )
+        # set up logic rules:
+        # 1. set the variable var1 to the value 10, always
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "text1"}, "trigger-rule"]},
+            actions=[
+                {
+                    "variable": "var1",
+                    "action": {"type": "variable", "value": 10},
+                }
+            ],
+        )
+        # 2. set the variable var2 to the value 5, only from step3
+        FormLogicFactory.create(
+            form=form,
+            trigger_from_step=step3,
+            json_logic_trigger={"==": [{"var": "text1"}, "trigger-rule"]},
+            actions=[
+                {
+                    "variable": "var2",
+                    "action": {"type": "variable", "value": 5},
+                }
+            ],
+        )
+        # 3. set the variable var3 to the sum of var1 and var2, always.
+        # In this test, the resulting value is 10 (10 + 0) because step3 has not been reached.
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "text1"}, "trigger-rule"]},
+            actions=[
+                {
+                    "variable": "var3",
+                    "action": {
+                        "type": "variable",
+                        "value": {"+": [{"var": "var1"}, {"var": "var2"}]},
+                    },
+                }
+            ],
+        )
+        # 4. Disable step 2 if var1 is not equal to 10 - this should not happen because
+        # we always set it
+        form_step2_path = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": form.uuid, "uuid": step2.uuid},
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"!=": [{"var": "var1"}, 10]},
+            actions=[
+                {
+                    "form_step": f"http://example.com{form_step2_path}",
+                    "action": {
+                        "name": "Step is not applicable",
+                        "type": "step-not-applicable",
+                    },
+                }
+            ],
+        )
+        # if the rule gets executed that sets var2 to 5, then the total is 15 (which
+        # should not happen). We can verify this by blocking submission.
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"!=": [{"var": "var3"}, 15]},
+            actions=[
+                {
+                    "action": {
+                        "type": "disable-next",
+                    },
+                }
+            ],
+        )
+        # create a submission where only step1 is submitted
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission, form_step=step1, data={"text1": "trigger-rule"}
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-detail", kwargs={"uuid": submission.uuid})
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        data = response.json()
+
+        self.assertTrue(data["steps"][1]["isApplicable"])
+        self.assertFalse(data["steps"][1]["canSubmit"])
 
     def test_check_logic_with_full_datetime(self):
         form = FormFactory.create()
