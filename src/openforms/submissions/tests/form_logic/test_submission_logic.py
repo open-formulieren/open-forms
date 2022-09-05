@@ -683,3 +683,71 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self.assertEqual(1, logs.count())
         log = logs[0]
         self.assertFalse(log.extra_data["evaluated_rules"][0]["trigger"])
+
+    def test_evaluate_logic_log_event_can_handle_primitives(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "test",
+                        "hidden": False,
+                    },
+                ]
+            },
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "component": "test",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={
+                "firstname": "foo",
+            },
+        )
+
+        configuration = evaluate_form_logic(
+            submission, submission_step, submission.get_merged_data()
+        )
+
+        expected = {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": "test",
+                    "hidden": True,
+                }
+            ]
+        }
+        self.assertEqual(configuration, expected)
+
+        logs = TimelineLogProxy.objects.all()
+
+        self.assertEqual(1, logs.count())
+
+        log_rule = logs[0].extra_data["evaluated_rules"][0]
+
+        self.assertTrue(log_rule["trigger"])
+        self.assertTrue(log_rule["raw_logic_expression"])
+        self.assertEqual("True", log_rule["readable_rule"])
+        self.assertEqual("test", log_rule["targeted_components"][0]["key"])
