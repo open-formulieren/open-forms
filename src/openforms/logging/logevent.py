@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from django.db.models import Model
 
-from openforms.forms.constants import LogicActionTypes
 from openforms.logging.constants import TimelineLogTags
 from openforms.payments.constants import PaymentStatus
 from openforms.utils.json_logic import ComponentMeta, introspect_json_logic
@@ -492,11 +491,6 @@ def submission_logic_evaluated(
     all_variables = submission.form.formvariable_set.distinct("key").in_bulk(
         field_name="key"
     )
-    component_key_lookup = {
-        LogicActionTypes.value: "component",
-        LogicActionTypes.property: "component",
-        LogicActionTypes.variable: "variable",
-    }
     for evaluated_rule in evaluated_rules:
         rule = evaluated_rule.rule
 
@@ -508,7 +502,6 @@ def submission_logic_evaluated(
                 "readable_rule": str(trigger),
                 "targeted_components": get_targeted_components(
                     rule,
-                    component_key_lookup,
                     components_map,
                     all_variables,
                     initial_data,
@@ -527,7 +520,7 @@ def submission_logic_evaluated(
         input_data.extend(rule_introspection.get_input_components())
 
         targeted_components = get_targeted_components(
-            rule, component_key_lookup, components_map, all_variables, initial_data
+            rule, components_map, all_variables, initial_data
         )
         evaluated_rule_data = {
             "raw_logic_expression": rule_introspection.expression,

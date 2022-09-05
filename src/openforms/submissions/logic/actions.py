@@ -1,9 +1,11 @@
 from dataclasses import dataclass
-from typing import Any, TypedDict
+from typing import Any, Dict, TypedDict
 
 from openforms.formio.utils import get_component
 from openforms.forms.constants import LogicActionTypes
+from openforms.forms.models import FormVariable
 from openforms.typing import JSONObject
+from openforms.utils.json_logic import ComponentMeta, introspect_json_logic
 
 from ..models import SubmissionStep
 from ..models.submission_step import DirtyData
@@ -40,6 +42,15 @@ class ActionOperation:
         """
         pass
 
+    def get_action_log_data(
+        self,
+        component_map: Dict[str, ComponentMeta],
+        all_variables: Dict[str, FormVariable],
+        initial_data: dict,
+    ) -> dict:
+        """Get action information to log"""
+        pass
+
 
 @dataclass
 class PropertyAction(ActionOperation):
@@ -61,6 +72,33 @@ class PropertyAction(ActionOperation):
             return
         component[self.property] = self.value
 
+    def get_action_log_data(
+        self,
+        component_map: Dict[str, ComponentMeta],
+        all_variables: Dict[str, FormVariable],
+        initial_data: dict,
+    ) -> dict:
+
+        component_meta = component_map.get(self.component)
+
+        # figure out the best possible label
+        # 1. fall back to component label if there is a label, else empty string
+        # 2. if there is a variable, use the name if it's set, else fall back to
+        # component label
+        label = component_meta.component.get("label", "") if component_meta else ""
+        if self.component in all_variables:
+            label = all_variables[self.component].name or label
+
+        return {
+            "key": self.component,
+            "type_display": LogicActionTypes.get_choice(
+                LogicActionTypes.property
+            ).label,
+            "value": self.property,
+            "state": self.value,
+            "label": label,
+        }
+
 
 class DisableNextAction(ActionOperation):
     @classmethod
@@ -69,6 +107,19 @@ class DisableNextAction(ActionOperation):
 
     def apply(self, step: SubmissionStep, configuration: JSONObject) -> None:
         step._can_submit = False
+
+    def get_action_log_data(
+        self,
+        component_map: Dict[str, ComponentMeta],
+        all_variables: Dict[str, FormVariable],
+        initial_data: dict,
+    ) -> dict:
+
+        return {
+            "type_display": LogicActionTypes.get_choice(
+                LogicActionTypes.disable_next
+            ).label,
+        }
 
 
 @dataclass
@@ -97,9 +148,56 @@ class StepNotApplicableAction(ActionOperation):
             step._is_applicable = False
             step.data = DirtyData({})
 
+    def get_action_log_data(
+        self,
+        component_map: Dict[str, ComponentMeta],
+        all_variables: Dict[str, FormVariable],
+        initial_data: dict,
+    ) -> dict:
+        return {
+            "type_display": LogicActionTypes.get_choice(
+                LogicActionTypes.step_not_applicable
+            ).label,
+            "step_name": self.form_step_identifier,
+        }
+
+
+@dataclass
+class VariableAction(ActionOperation):
+    variable: str
+    value: JSONObject
+
+    @classmethod
+    def from_action(cls, action: ActionDict) -> "VariableAction":
+        return cls(variable=action["variable"], value=action["action"]["value"])
+
+    def get_action_log_data(
+        self,
+        component_map: Dict[str, ComponentMeta],
+        all_variables: Dict[str, FormVariable],
+        initial_data: dict,
+    ) -> dict:
+        # Check if it's a primitive value, which doesn't require introspection
+        if not isinstance(self.value, dict):
+            value = self.value
+        else:
+            action_logic_introspection = introspect_json_logic(
+                self.value, component_map, initial_data
+            )
+            value = action_logic_introspection.as_string()
+
+        return {
+            "key": self.variable,
+            "type_display": LogicActionTypes.get_choice(
+                LogicActionTypes.variable
+            ).label,
+            "value": value,
+        }
+
 
 ACTION_TYPE_MAPPING = {
     LogicActionTypes.property: PropertyAction,
     LogicActionTypes.disable_next: DisableNextAction,
     LogicActionTypes.step_not_applicable: StepNotApplicableAction,
+    LogicActionTypes.variable: VariableAction,
 }
