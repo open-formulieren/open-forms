@@ -1,8 +1,14 @@
-from typing import Iterable, List, Optional
+from dataclasses import dataclass
+from typing import Callable, Iterable, Iterator, List, Optional
 
+from json_logic import jsonLogic
+
+from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic, FormStep
 
 from ..models import Submission, SubmissionStep
+from .actions import ActionOperation, compile_action_operation
+from .datastructures import DataContainer
 
 
 def _include_rule(form_steps: List[FormStep], rule: FormLogic, step_index: int) -> bool:
@@ -98,3 +104,54 @@ def get_current_step(submission: Submission) -> Optional[SubmissionStep]:
 
     step = submission_state.submission_steps[current_index]
     return step
+
+
+@dataclass()
+class EvaluatedRule:
+    rule: FormLogic
+    triggered: bool
+
+
+def iter_evaluate_rules(
+    rules: Iterable[FormLogic],
+    data_container: DataContainer,
+    on_rule_check: Optional[Callable[[EvaluatedRule], None]] = None,
+) -> Iterator[ActionOperation]:
+    """
+    Iterate over the rules and evaluate the trigger, yielding action operations.
+
+    Every rule trigger is checked, and if the trigger evaluates to be truthy, all
+    actions in the rule are compiled, yielding action operations for each of them. Any
+    action operator that updates a variable is processed immediately. The caller is
+    responsible for processing (all other) actions accordingly.
+
+    :arg rules: An iterable of form logic rules to evaluate.
+    :arg data_container: The :class:`DataContainer` instance wrapping the
+      submission/step data and everything contained within. Note that the internal state
+      can and should be mutated while processing the action operations (e.g. when updating
+      variable values).
+    :arg on_rule_check: Optional callable taking a :class:`EvaluatedRule` instance as
+      sole argument. Useful to gather metadata about rule evaluation.
+    :returns: An iterator yielding :class:`ActionOperation` instances.
+    """
+    for rule in rules:
+        triggered = bool(jsonLogic(rule.json_logic_trigger, data_container.data))
+
+        if on_rule_check is not None:
+            on_rule_check(EvaluatedRule(rule=rule, triggered=triggered))
+
+        if not triggered:
+            continue
+
+        # process all the actions in order for the triggered rule
+        for action in rule.actions:
+            action_details = action["action"]
+            # If the action type is to set a variable, update the variable state.
+            # This is the ONLY operation that is allowed to execute while we're looping
+            # through the rules.
+            if action_details["type"] == LogicActionTypes.variable:
+                new_value = jsonLogic(action_details["value"], data_container.data)
+                data_container.update({action["variable"]: new_value})
+            else:
+                operation = compile_action_operation(action)
+                yield operation

@@ -1,9 +1,13 @@
+from typing import cast
+
 from django.test import TestCase
 from django.utils.translation import gettext as _
 
+from openforms.forms.models import FormLogic
 from openforms.forms.tests.factories import FormLogicFactory
 from openforms.logging import logevent
 from openforms.logging.models import TimelineLogProxy
+from openforms.submissions.logic.rules import EvaluatedRule
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
@@ -58,15 +62,20 @@ class EventTests(TestCase):
             json_logic_trigger=json_logic_trigger,
             actions=[],
         )
+        rule = cast(FormLogic, rule)
         rule_2 = FormLogicFactory(
             form=submission.form,
             json_logic_trigger=json_logic_trigger_2,
             actions=[],
         )
+        rule_2 = cast(FormLogic, rule_2)
 
         logevent.submission_logic_evaluated(
             submission,
-            [{"rule": rule, "trigger": True}, {"rule": rule_2, "trigger": False}],
+            [
+                EvaluatedRule(rule=rule, triggered=True),
+                EvaluatedRule(rule=rule_2, triggered=False),
+            ],
             submission.data,
             submission.data,
         )

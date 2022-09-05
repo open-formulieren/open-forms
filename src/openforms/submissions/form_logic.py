@@ -1,8 +1,7 @@
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import elasticapm
-from json_logic import jsonLogic
 
 from openforms.formio.service import get_dynamic_configuration, inject_variables
 from openforms.formio.utils import (
@@ -10,12 +9,16 @@ from openforms.formio.utils import (
     get_component_default_value,
     is_visible_in_frontend,
 )
-from openforms.forms.constants import LogicActionTypes
 from openforms.logging import logevent
 
-from .logic.actions import compile_action_operation
+from .logic.actions import PropertyAction
 from .logic.datastructures import DataContainer
-from .logic.rules import get_current_step, get_rules_to_evaluate
+from .logic.rules import (
+    EvaluatedRule,
+    get_current_step,
+    get_rules_to_evaluate,
+    iter_evaluate_rules,
+)
 from .models.submission_step import DirtyData
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -90,28 +93,15 @@ def evaluate_form_logic(
 
     # 5. Evaluate the logic rules in order
     mutation_operations = []
-    evaluated_rules = []
+    evaluated_rules: List[EvaluatedRule] = []
 
-    for rule in rules:
-        trigger_rule = jsonLogic(rule.json_logic_trigger, data_container.data)
-        evaluated_rules.append({"rule": rule, "trigger": bool(trigger_rule)})
-        # rule is not triggered - do not process the actions.
-        if not trigger_rule:
-            continue
-
-        # process all the actions in order for the triggered rule
-        for action in rule.actions:
-            action_details = action["action"]
-
-            # 5.1 - if the action type is to set a variable, update the variable state.
-            # This is the ONLY operation that is allowed to execute while we're looping
-            # through the rules.
-            if action_details["type"] == LogicActionTypes.variable:
-                new_value = jsonLogic(action_details["value"], data_container.data)
-                data_container.update({action["variable"]: new_value})
-            else:
-                operation = compile_action_operation(action)
-                mutation_operations.append(operation)
+    # 5.1 - if the action type is to set a variable, update the variable state. This
+    # happens inside of iter_evaluate_rules. This is the ONLY operation that is allowed
+    # to execute while we're looping through the rules.
+    for operation in iter_evaluate_rules(
+        rules, data_container, on_rule_check=evaluated_rules.append
+    ):
+        mutation_operations.append(operation)
 
     # 6. The variable state is now completely resolved - we can start processing the
     # dynamic configuration and side effects.
@@ -206,30 +196,12 @@ def check_submission_logic(
     data_container = DataContainer(state=submission_variables_state)
 
     mutation_operations = []
-    for rule in rules:
-        trigger_rule = jsonLogic(rule.json_logic_trigger, data_container.data)
-        # rule is not triggered - do not process the actions.
-        if not trigger_rule:
+    for operation in iter_evaluate_rules(rules, data_container):
+        # component mutations can be skipped as we're not in the context of a single
+        # form step.
+        if isinstance(operation, PropertyAction):
             continue
-
-        # process all the actions in order for the triggered rule
-        for action in rule.actions:
-            action_details = action["action"]
-
-            # component mutations can be skipped as we're not in the context of a single
-            # form step.
-            if action_details["type"] == LogicActionTypes.property:
-                continue
-
-            # if the action type is to set a variable, update the variable state.
-            # This is the ONLY operation that is allowed to execute while we're looping
-            # through the rules.
-            if action_details["type"] == LogicActionTypes.variable:
-                new_value = jsonLogic(action_details["value"], data_container.data)
-                data_container.update({action["variable"]: new_value})
-            else:
-                operation = compile_action_operation(action)
-                mutation_operations.append(operation)
+        mutation_operations.append(operation)
 
     for mutation in mutation_operations:
         mutation.apply(step, {})
