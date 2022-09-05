@@ -100,6 +100,7 @@ django==3.2.15
     #   django-redis
     #   django-relativedelta
     #   django-sendfile2
+    #   django-simple-certmanager
     #   django-solo
     #   django-timeline-logger
     #   django-treebeard
@@ -134,6 +135,7 @@ django-choices==1.7.1
     # via
     #   -r requirements/base.in
     #   django-digid-eherkenning
+    #   django-simple-certmanager
     #   zgw-consumers
 django-colorfield==0.7.0
     # via -r requirements/base.in
@@ -168,13 +170,15 @@ django-phonenumber-field==5.2.0
 django-privates==1.2.1
     # via
     #   -r requirements/base.in
-    #   zgw-consumers
+    #   django-simple-certmanager
 django-redis==5.2.0
     # via -r requirements/base.in
 django-relativedelta==1.1.1
     # via zgw-consumers
 django-sendfile2==0.7.0
     # via django-privates
+django-simple-certmanager==1.0.0
+    # via zgw-consumers
 django-solo==2.0.0
     # via
     #   -r requirements/base.in
@@ -304,6 +308,7 @@ pyjwt==1.7.1
 pyopenssl==19.1.0
     # via
     #   -r requirements/base.in
+    #   django-simple-certmanager
     #   josepy
     #   python3-saml
     #   zgw-consumers
@@ -444,7 +449,7 @@ xmltodict==0.12.0
     # via -r requirements/base.in
 zeep==4.1.0
     # via -r requirements/base.in
-zgw-consumers==0.19.0
+zgw-consumers==0.21.0
     # via -r requirements/base.in
 
 # The following packages are considered to be unsafe in a requirements file:
