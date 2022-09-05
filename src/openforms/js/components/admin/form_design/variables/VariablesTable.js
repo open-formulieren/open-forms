@@ -217,7 +217,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
           <LiteralValueInput
             name="initialValue"
             type={variable.dataType}
-            value={variable.initialValue || ''}
+            value={variable.initialValue}
             onChange={onValueChanged}
           />
         </Field>
