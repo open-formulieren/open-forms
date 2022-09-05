@@ -471,6 +471,8 @@ def submission_logic_evaluated(
     initial_data: dict,
     resolved_data: dict,
 ):
+    from openforms.submissions.logic.rules import get_targeted_components
+
     if not evaluated_rules:
         return
     evaluated_rules_list = []
@@ -479,8 +481,8 @@ def submission_logic_evaluated(
     form_steps = submission_state.form_steps
 
     # Keep a mapping for each component's key for each component in the entire form.
-    # The key of the mapping is the component key, the value is a dataclasse composed of
-    # form_step and component defintion
+    # The key of the mapping is the component key, the value is a dataclass composed of
+    # form_step and component definition
     components_map = {}
     for form_step in form_steps:
         for component in form_step.form_definition.iter_components():
@@ -496,64 +498,37 @@ def submission_logic_evaluated(
         LogicActionTypes.variable: "variable",
     }
     for evaluated_rule in evaluated_rules:
-
         rule = evaluated_rule.rule
+
+        trigger = rule.json_logic_trigger
+        if not isinstance(trigger, dict) and not isinstance(trigger, list):
+            # The trigger was a primitive, no need to introspect
+            evaluated_rule_data = {
+                "raw_logic_expression": trigger,
+                "readable_rule": str(trigger),
+                "targeted_components": get_targeted_components(
+                    rule,
+                    component_key_lookup,
+                    components_map,
+                    all_variables,
+                    initial_data,
+                ),
+                "trigger": evaluated_rule.triggered,
+            }
+
+            evaluated_rules_list.append(evaluated_rule_data)
+            continue
+
         rule_introspection = introspect_json_logic(
-            rule.json_logic_trigger, components_map, initial_data
+            trigger, components_map, initial_data
         )
 
         # Gathering all the input component of each evaluated rule
         input_data.extend(rule_introspection.get_input_components())
 
-        targeted_components = []
-        for action in rule.actions:
-            action_details = action["action"]
-            component_key = action.get(component_key_lookup.get(action_details["type"]))
-            component_meta = components_map.get(component_key)
-            component = component_meta.component if component_meta else None
-
-            # figure out the best possible label
-            # 1. fall back to component label if there is a label, else empty string
-            # 2. if there is a variable, use the name if it's set, else fall back to
-            # component label
-            label = component.get("label", "") if component else ""
-            if component_key in all_variables:
-                label = all_variables[component_key].name or label
-
-            action_log_data = {
-                "key": component_key,
-                "type_display": LogicActionTypes.get_choice(
-                    action_details["type"]
-                ).label,
-                "label": label,
-                "step_name": component_meta.form_step.form_definition.name
-                if component_meta
-                else "",
-                "value": "",
-            }
-
-            # process the value
-            if action_details["type"] == LogicActionTypes.value:
-                action_log_data["value"] = action_details["value"]
-            elif action_details["type"] == LogicActionTypes.property:
-                action_log_data.update(
-                    {
-                        "value": action_details["property"]["value"],
-                        "state": action_details["state"],
-                    }
-                )
-            elif action_details["type"] == LogicActionTypes.variable:
-                # check if it's a primitive value, which doesn't require introspection
-                value_expression = action_details["value"]
-                if not isinstance(value_expression, dict):
-                    action_log_data["value"] = value_expression
-                else:
-                    action_logic_introspection = introspect_json_logic(
-                        action_details["value"], components_map, initial_data
-                    )
-                    action_log_data["value"] = action_logic_introspection.as_string()
-            targeted_components.append(action_log_data)
-
+        targeted_components = get_targeted_components(
+            rule, component_key_lookup, components_map, all_variables, initial_data
+        )
         evaluated_rule_data = {
             "raw_logic_expression": rule_introspection.expression,
             "readable_rule": rule_introspection.as_string(),

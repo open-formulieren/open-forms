@@ -1,11 +1,12 @@
 from dataclasses import dataclass
-from typing import Callable, Iterable, Iterator, List, Optional
+from typing import Callable, Dict, Iterable, Iterator, List, Optional
 
 import elasticapm
 from json_logic import jsonLogic
 
 from openforms.forms.constants import LogicActionTypes
-from openforms.forms.models import FormLogic, FormStep
+from openforms.forms.models import FormLogic, FormStep, FormVariable
+from openforms.utils.json_logic import introspect_json_logic
 
 from ..models import Submission, SubmissionStep
 from .actions import ActionOperation, compile_action_operation
@@ -161,3 +162,60 @@ def iter_evaluate_rules(
                 else:
                     operation = compile_action_operation(action)
                     yield operation
+
+
+def get_targeted_components(
+    rule: FormLogic,
+    component_key_lookup: dict,
+    components_map: dict,
+    all_variables: Dict[str, FormVariable],
+    initial_data: dict,
+) -> List[dict]:
+    targeted_components = []
+    for action in rule.actions:
+        action_details = action["action"]
+        component_key = action.get(component_key_lookup.get(action_details["type"]))
+        component_meta = components_map.get(component_key)
+        component = component_meta.component if component_meta else None
+
+        # figure out the best possible label
+        # 1. fall back to component label if there is a label, else empty string
+        # 2. if there is a variable, use the name if it's set, else fall back to
+        # component label
+        label = component.get("label", "") if component else ""
+        if component_key in all_variables:
+            label = all_variables[component_key].name or label
+
+        action_log_data = {
+            "key": component_key,
+            "type_display": LogicActionTypes.get_choice(action_details["type"]).label,
+            "label": label,
+            "step_name": component_meta.form_step.form_definition.name
+            if component_meta
+            else "",
+            "value": "",
+        }
+
+        # process the value
+        if action_details["type"] == LogicActionTypes.value:
+            action_log_data["value"] = action_details["value"]
+        elif action_details["type"] == LogicActionTypes.property:
+            action_log_data.update(
+                {
+                    "value": action_details["property"]["value"],
+                    "state": action_details["state"],
+                }
+            )
+        elif action_details["type"] == LogicActionTypes.variable:
+            # check if it's a primitive value, which doesn't require introspection
+            value_expression = action_details["value"]
+            if not isinstance(value_expression, dict):
+                action_log_data["value"] = value_expression
+            else:
+                action_logic_introspection = introspect_json_logic(
+                    action_details["value"], components_map, initial_data
+                )
+                action_log_data["value"] = action_logic_introspection.as_string()
+        targeted_components.append(action_log_data)
+
+    return targeted_components
