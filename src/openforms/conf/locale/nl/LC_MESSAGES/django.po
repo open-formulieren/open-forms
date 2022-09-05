@@ -3496,6 +3496,18 @@ msgstr ""
 msgid "You may edit it again below."
 msgstr "U kunt deze hieronder weer bewerken."
 
+#: openforms/forms/migrations/0042_explanation_template_data_migration.py:22
+msgid "Please authenticate to start the form."
+msgstr "Log in om het formulier te starten."
+
+#: openforms/forms/migrations/0042_explanation_template_data_migration.py:24
+msgid "Please authenticate or start the form anonymously."
+msgstr "Log in om het formulier te starten."
+
+#: openforms/forms/migrations/0042_explanation_template_data_migration.py:26
+msgid "Please click the button below to start the form."
+msgstr "Klik op de startknop om te beginnen."
+
 #: openforms/forms/models/category.py:10 openforms/forms/models/form.py:53
 #: openforms/forms/models/form.py:449
 #: openforms/forms/models/form_definition.py:37
