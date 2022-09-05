@@ -141,3 +141,16 @@ class FormDetailViewTests(WebTest):
             stylesheet_links[1].attrib["href"],
             self.config.theme_stylesheet_file.url,
         )
+
+    def test_block_robots_indexing(self):
+        self.config.allow_indexing_form_detail = False
+        self.config.save()
+
+        form_page = self.app.get(self.url)
+
+        # see https://developers.google.com/search/docs/advanced/robots/robots_meta_tag#directives
+        self.assertIn("X-Robots-Tag", form_page.headers)
+        self.assertEqual(form_page.headers["X-Robots-Tag"], "noindex, nofollow")
+
+        meta_tag = form_page.pyquery("meta[name='robots']")[0]
+        self.assertEqual(meta_tag.attrib["content"], "noindex, nofollow")
