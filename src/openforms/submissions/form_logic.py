@@ -1,8 +1,7 @@
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import elasticapm
-from json_logic import jsonLogic
 
 from openforms.formio.service import get_dynamic_configuration, inject_variables
 from openforms.formio.utils import (
@@ -10,12 +9,16 @@ from openforms.formio.utils import (
     get_component_default_value,
     is_visible_in_frontend,
 )
-from openforms.forms.constants import LogicActionTypes
-from openforms.forms.models import FormLogic
 from openforms.logging import logevent
 
-from .logic.actions import compile_action_operation
+from .logic.actions import PropertyAction
 from .logic.datastructures import DataContainer
+from .logic.rules import (
+    EvaluatedRule,
+    get_current_step,
+    get_rules_to_evaluate,
+    iter_evaluate_rules,
+)
 from .models.submission_step import DirtyData
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -80,62 +83,25 @@ def evaluate_form_logic(
         return configuration
 
     # 3. Load the (variables) state
-    submission_state = submission.load_execution_state()
     submission_variables_state = submission.load_submission_value_variables_state()
 
     # 4. Apply the (dirty) data to the variable state.
     submission_variables_state.set_values(data)
 
-    # renderer evaluates logic for all steps at once, so we can avoid repeated queries
-    # by caching the rules on the form instance.
-    # Note that form.formlogic_set.all() is never cached by django, so we can't rely
-    # on that.
-    rules = getattr(submission.form, "_cached_logic_rules", None)
-    if rules is None:
-        rules = FormLogic.objects.select_related("trigger_from_step").filter(
-            form=submission.form
-        )
-        submission.form._cached_logic_rules = rules
-
-    step_index = submission_state.form_steps.index(step.form_step)
-
+    rules = get_rules_to_evaluate(submission, step)
     data_container = DataContainer(state=submission_variables_state)
 
     # 5. Evaluate the logic rules in order
     mutation_operations = []
-    evaluated_rules = []
+    evaluated_rules: List[EvaluatedRule] = []
 
-    for rule in rules:
-        # only evaluate a logic rule if it either:
-        # - is not limited to a particular trigger point/step
-        # - is limited to a particular trigger point/step and the current submission step
-        #   is equal to or later than the trigger point
-        if rule.trigger_from_step:
-            trigger_from_index = submission_state.form_steps.index(
-                rule.trigger_from_step
-            )
-            if step_index < trigger_from_index:
-                continue
-
-        trigger_rule = jsonLogic(rule.json_logic_trigger, data_container.data)
-        evaluated_rules.append({"rule": rule, "trigger": bool(trigger_rule)})
-        # rule is not triggered - do not process the actions.
-        if not trigger_rule:
-            continue
-
-        # process all the actions in order for the triggered rule
-        for action in rule.actions:
-            action_details = action["action"]
-
-            # 5.1 - if the action type is to set a variable, update the variable state.
-            # This is the ONLY operation that is allowed to execute while we're looping
-            # through the rules.
-            if action_details["type"] == LogicActionTypes.variable:
-                new_value = jsonLogic(action_details["value"], data_container.data)
-                data_container.update({action["variable"]: new_value})
-            else:
-                operation = compile_action_operation(action)
-                mutation_operations.append(operation)
+    # 5.1 - if the action type is to set a variable, update the variable state. This
+    # happens inside of iter_evaluate_rules. This is the ONLY operation that is allowed
+    # to execute while we're looping through the rules.
+    for operation in iter_evaluate_rules(
+        rules, data_container, on_rule_check=evaluated_rules.append
+    ):
+        mutation_operations.append(operation)
 
     # 6. The variable state is now completely resolved - we can start processing the
     # dynamic configuration and side effects.
@@ -212,29 +178,30 @@ def evaluate_form_logic(
     return configuration
 
 
-def check_submission_logic(submission, unsaved_data=None):
-    # TODO: https://github.com/open-formulieren/open-forms/issues/1913
-    logic_rules = FormLogic.objects.filter(
-        form=submission.form,
-        actions__contains=[{"action": {"type": LogicActionTypes.step_not_applicable}}],
-    )
-
-    merged_data = submission.data
-    if unsaved_data:
-        merged_data = {**merged_data, **unsaved_data}
-
+def check_submission_logic(
+    submission: "Submission", unsaved_data: Optional[dict] = None
+) -> None:
     submission_state = submission.load_execution_state()
+    # if there are no form steps at all, then there's nothing to do
+    if not submission_state.form_steps:
+        return
 
-    for rule in logic_rules:
-        if jsonLogic(rule.json_logic_trigger, merged_data):
-            for action in rule.actions:
-                # TODO: this should not be necessary because of the query filter above?
-                # but perhaps we might want to re-use the logic rules cached on the
-                # submission instance?
-                if action["action"]["type"] != LogicActionTypes.step_not_applicable:
-                    continue
+    step = get_current_step(submission)
+    rules = get_rules_to_evaluate(submission)
 
-                submission_step_to_modify = submission_state.resolve_step(
-                    action["form_step"]
-                )
-                submission_step_to_modify._is_applicable = False
+    # load the data state and all variables
+    submission_variables_state = submission.load_submission_value_variables_state()
+    if unsaved_data:
+        submission_variables_state.set_values(unsaved_data)
+    data_container = DataContainer(state=submission_variables_state)
+
+    mutation_operations = []
+    for operation in iter_evaluate_rules(rules, data_container):
+        # component mutations can be skipped as we're not in the context of a single
+        # form step.
+        if isinstance(operation, PropertyAction):
+            continue
+        mutation_operations.append(operation)
+
+    for mutation in mutation_operations:
+        mutation.apply(step, {})

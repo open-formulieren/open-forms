@@ -14,6 +14,7 @@ if TYPE_CHECKING:  # pragma: nocover
     from openforms.appointments.models import AppointmentInfo
     from openforms.forms.models import Form
     from openforms.plugins.plugin import AbstractBasePlugin
+    from openforms.submissions.logic.rules import EvaluatedRule
     from openforms.submissions.models import (
         Submission,
         SubmissionPayment,
@@ -466,7 +467,7 @@ def submission_export_list(form: "Form", user: "User"):
 
 def submission_logic_evaluated(
     submission: "Submission",
-    evaluated_rules,
+    evaluated_rules: List["EvaluatedRule"],
     initial_data: dict,
     resolved_data: dict,
 ):
@@ -496,7 +497,7 @@ def submission_logic_evaluated(
     }
     for evaluated_rule in evaluated_rules:
 
-        rule = evaluated_rule["rule"]
+        rule = evaluated_rule.rule
         rule_introspection = introspect_json_logic(
             rule.json_logic_trigger, components_map, initial_data
         )
@@ -557,7 +558,7 @@ def submission_logic_evaluated(
             "raw_logic_expression": rule_introspection.expression,
             "readable_rule": rule_introspection.as_string(),
             "targeted_components": targeted_components,
-            "trigger": evaluated_rule["trigger"],
+            "trigger": evaluated_rule.triggered,
         }
 
         evaluated_rules_list.append(evaluated_rule_data)

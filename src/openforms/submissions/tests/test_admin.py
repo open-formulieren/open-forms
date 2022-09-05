@@ -1,3 +1,4 @@
+from typing import cast
 from unittest.mock import patch
 
 from django.urls import reverse
@@ -13,11 +14,12 @@ from openforms.accounts.tests.factories import (
     SuperUserFactory,
     UserFactory,
 )
-from openforms.forms.models import FormVariable
+from openforms.forms.models import FormLogic, FormVariable
 from openforms.forms.tests.factories import FormLogicFactory
 from openforms.logging import logevent
 from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
+from openforms.submissions.logic.rules import EvaluatedRule
 from openforms.tests.utils import disable_2fa
 
 from ..constants import RegistrationStatuses
@@ -244,7 +246,7 @@ class LogicLogsAdminTests(WebTest):
 
         logevent.submission_logic_evaluated(
             self.submission,
-            [{"rule": rule, "trigger": True}],
+            [EvaluatedRule(rule=cast(FormLogic, rule), triggered=False)],
             merged_data,
             merged_data,
         )
