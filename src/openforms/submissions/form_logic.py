@@ -11,11 +11,11 @@ from openforms.formio.utils import (
     is_visible_in_frontend,
 )
 from openforms.forms.constants import LogicActionTypes
-from openforms.forms.models import FormLogic
 from openforms.logging import logevent
 
 from .logic.actions import compile_action_operation
 from .logic.datastructures import DataContainer
+from .logic.rules import get_current_step, get_rules_to_evaluate
 from .models.submission_step import DirtyData
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -80,25 +80,12 @@ def evaluate_form_logic(
         return configuration
 
     # 3. Load the (variables) state
-    submission_state = submission.load_execution_state()
     submission_variables_state = submission.load_submission_value_variables_state()
 
     # 4. Apply the (dirty) data to the variable state.
     submission_variables_state.set_values(data)
 
-    # renderer evaluates logic for all steps at once, so we can avoid repeated queries
-    # by caching the rules on the form instance.
-    # Note that form.formlogic_set.all() is never cached by django, so we can't rely
-    # on that.
-    rules = getattr(submission.form, "_cached_logic_rules", None)
-    if rules is None:
-        rules = FormLogic.objects.select_related("trigger_from_step").filter(
-            form=submission.form
-        )
-        submission.form._cached_logic_rules = rules
-
-    step_index = submission_state.form_steps.index(step.form_step)
-
+    rules = get_rules_to_evaluate(submission, step)
     data_container = DataContainer(state=submission_variables_state)
 
     # 5. Evaluate the logic rules in order
@@ -106,17 +93,6 @@ def evaluate_form_logic(
     evaluated_rules = []
 
     for rule in rules:
-        # only evaluate a logic rule if it either:
-        # - is not limited to a particular trigger point/step
-        # - is limited to a particular trigger point/step and the current submission step
-        #   is equal to or later than the trigger point
-        if rule.trigger_from_step:
-            trigger_from_index = submission_state.form_steps.index(
-                rule.trigger_from_step
-            )
-            if step_index < trigger_from_index:
-                continue
-
         trigger_rule = jsonLogic(rule.json_logic_trigger, data_container.data)
         evaluated_rules.append({"rule": rule, "trigger": bool(trigger_rule)})
         # rule is not triggered - do not process the actions.
@@ -215,12 +191,13 @@ def evaluate_form_logic(
 def check_submission_logic(
     submission: "Submission", unsaved_data: Optional[dict] = None
 ) -> None:
-    rules = getattr(submission.form, "_cached_logic_rules", None)
-    if rules is None:
-        rules = FormLogic.objects.select_related("trigger_from_step").filter(
-            form=submission.form
-        )
-        submission.form._cached_logic_rules = rules
+    submission_state = submission.load_execution_state()
+    # if there are no form steps at all, then there's nothing to do
+    if not submission_state.form_steps:
+        return
+
+    step = get_current_step(submission)
+    rules = get_rules_to_evaluate(submission)
 
     # load the data state and all variables
     submission_variables_state = submission.load_submission_value_variables_state()
@@ -228,38 +205,8 @@ def check_submission_logic(
         submission_variables_state.set_values(unsaved_data)
     data_container = DataContainer(state=submission_variables_state)
 
-    # check "which step" would be shown in the frontend from the submission state. This
-    # determines which logic rules with triggers related to steps to evaluate.
-    submission_state = submission.load_execution_state()
-    if not submission_state.form_steps:
-        return
-    last_completed_step = submission_state.get_last_completed_step()
-    # no steps completed -> current index is first step: 0
-    if last_completed_step is None:
-        current_index = 0
-    else:
-        last_completed_step_index = submission_state.form_steps.index(
-            last_completed_step.form_step
-        )
-        current_index = min(
-            last_completed_step_index + 1, len(submission_state.form_steps) - 1
-        )
-
-    step = submission_state.submission_steps[current_index]
-
     mutation_operations = []
     for rule in rules:
-        # only evaluate a logic rule if it either:
-        # - is not limited to a particular trigger point/step
-        # - is limited to a particular trigger point/step and the "current submission step"
-        #   is equal to or later than the trigger point
-        if rule.trigger_from_step:
-            trigger_from_index = submission_state.form_steps.index(
-                rule.trigger_from_step
-            )
-            if current_index < trigger_from_index:
-                continue
-
         trigger_rule = jsonLogic(rule.json_logic_trigger, data_container.data)
         # rule is not triggered - do not process the actions.
         if not trigger_rule:
