@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable, Iterable, Iterator, List, Optional
 
+import elasticapm
 from json_logic import jsonLogic
 
 from openforms.forms.constants import LogicActionTypes
@@ -135,23 +136,28 @@ def iter_evaluate_rules(
     :returns: An iterator yielding :class:`ActionOperation` instances.
     """
     for rule in rules:
-        triggered = bool(jsonLogic(rule.json_logic_trigger, data_container.data))
+        with elasticapm.capture_span(
+            "evaluate_rule",
+            span_type="app.submissions.logic",
+            labels={"ruleId": rule.pk},
+        ):
+            triggered = bool(jsonLogic(rule.json_logic_trigger, data_container.data))
 
-        if on_rule_check is not None:
-            on_rule_check(EvaluatedRule(rule=rule, triggered=triggered))
+            if on_rule_check is not None:
+                on_rule_check(EvaluatedRule(rule=rule, triggered=triggered))
 
-        if not triggered:
-            continue
+            if not triggered:
+                continue
 
-        # process all the actions in order for the triggered rule
-        for action in rule.actions:
-            action_details = action["action"]
-            # If the action type is to set a variable, update the variable state.
-            # This is the ONLY operation that is allowed to execute while we're looping
-            # through the rules.
-            if action_details["type"] == LogicActionTypes.variable:
-                new_value = jsonLogic(action_details["value"], data_container.data)
-                data_container.update({action["variable"]: new_value})
-            else:
-                operation = compile_action_operation(action)
-                yield operation
+            # process all the actions in order for the triggered rule
+            for action in rule.actions:
+                action_details = action["action"]
+                # If the action type is to set a variable, update the variable state.
+                # This is the ONLY operation that is allowed to execute while we're looping
+                # through the rules.
+                if action_details["type"] == LogicActionTypes.variable:
+                    new_value = jsonLogic(action_details["value"], data_container.data)
+                    data_container.update({action["variable"]: new_value})
+                else:
+                    operation = compile_action_operation(action)
+                    yield operation
