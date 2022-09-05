@@ -1,4 +1,4 @@
-{% load static cookie_consent_tags solo_tags %}<!DOCTYPE html>
+{% load static cookie_consent_tags solo_tags openforms %}<!DOCTYPE html>
 
 {% get_solo 'config.GlobalConfiguration' as config %}
 {% get_solo 'analytics_tools.AnalyticsToolsConfiguration' as analytics_tools_config %}
@@ -10,6 +10,9 @@
     <meta charset="utf-8">
     <title>{% block title %}Openforms{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if request.indexing_options.block %}
+    <meta name="robots" content="{{ request.indexing_options.content }}">
+    {% endif %}
     <link href="{% static 'ico/favicon.png' %}" rel="shortcut icon">
     <link href="{% static 'bundles/openforms-css.css' %}" media="all" rel="stylesheet"/>
     <link href="{% static 'bundles/core-css.css' %}" media="all" rel="stylesheet"/>
