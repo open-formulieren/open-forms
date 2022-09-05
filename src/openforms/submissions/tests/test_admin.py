@@ -149,15 +149,7 @@ class TestSubmissionAdmin(WebTest):
             ),
             user=self.user,
         )
-        start_log, avg_log = TimelineLogProxy.objects.all()
-
-        # HEISENBUG - print some output to aid in debugging what's going wrong on Github
-        # CI. This is not reproducible in a local env (yet).
-        # See: https://github.com/open-formulieren/open-forms/runs/8116978945?check_suite_focus=true
-        print("Expected: ", start_log.get_message())
-        print(f"Response status: {response.status_code}")
-        print("Response body:")
-        print(response.testbody)
+        start_log, avg_log = TimelineLogProxy.objects.order_by("pk")
 
         # regular log visible
         self.assertContains(response, start_log.get_message())
