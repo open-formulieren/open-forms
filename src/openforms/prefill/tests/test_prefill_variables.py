@@ -2,12 +2,19 @@ from unittest.mock import patch
 
 from django.test import RequestFactory, TestCase
 
+import requests_mock
+
+from openforms.authentication.constants import AuthAttribute
 from openforms.formio.service import get_dynamic_configuration
 from openforms.forms.tests.factories import FormStepFactory
+from openforms.logging.models import TimelineLogProxy
+from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.constants import SubmissionValueVariableSources
 from openforms.submissions.tests.factories import SubmissionStepFactory
 
 from .. import prefill_variables
+from ..contrib.haalcentraal.models import HaalCentraalConfig
+from ..contrib.haalcentraal.tests.utils import load_binary_mock
 
 CONFIGURATION = {
     "display": "form",
@@ -109,3 +116,53 @@ class PrefillVariablesTests(TestCase):
         component = configuration["components"][0]
         self.assertEqual(component["type"], "postcode")
         self.assertEqual(component["defaultValue"], "1015 CJ")
+
+    @requests_mock.Mocker()
+    @patch("openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo")
+    def test_no_success_message_on_failure(self, m, m_solo):
+        m.get(
+            "https://personen/api/schema/openapi.yaml?v=3",
+            status_code=200,
+            content=load_binary_mock("personen.yaml"),
+        )
+        m.get(
+            "https://personen/api/ingeschrevenpersonen/999990676",
+            status_code=404,
+        )
+
+        service = ServiceFactory(
+            api_root="https://personen/api/",
+            oas="https://personen/api/schema/openapi.yaml",
+        )
+        config = HaalCentraalConfig(service=service)
+        m_solo.return_value = config
+
+        form_step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "postcode",
+                        "key": "postcode",
+                        "inputMask": "9999 AA",
+                        "prefill": {
+                            "plugin": "haalcentraal",
+                            "attribute": "test-field",
+                        },
+                        "defaultValue": "",
+                    }
+                ]
+            }
+        )
+        submission_step = SubmissionStepFactory.create(
+            submission__form=form_step.form,
+            form_step=form_step,
+            submission__auth_info__value="999990676",
+            submission__auth_info__attribute=AuthAttribute.bsn,
+        )
+
+        prefill_variables(submission=submission_step.submission)
+
+        logs = TimelineLogProxy.objects.filter(object_id=submission_step.submission.id)
+
+        for log in logs:
+            self.assertNotEqual(log.event, "prefill_retrieve_success")
