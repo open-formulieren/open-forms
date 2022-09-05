@@ -448,6 +448,16 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
 
+    # search engine configuration
+    allow_indexing_form_detail = models.BooleanField(
+        _("Allow form page indexing"),
+        default=True,
+        help_text=_(
+            "Whether form detail pages may be indexed and displayed in search engine "
+            "result lists. Disable this to prevent listing."
+        ),
+    )
+
     class Meta:
         verbose_name = _("General configuration")
 
