@@ -2,7 +2,7 @@
 from django.db import migrations
 from django.db.models import Prefetch
 from django.utils.html import format_html
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 from openforms.authentication.registry import register as auth_register
 
