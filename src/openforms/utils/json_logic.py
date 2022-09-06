@@ -116,7 +116,7 @@ def convert_json_logic_in_json_tree(
 ) -> JsonLogicOperation:
     """returns a tree of JsonLogicNode's type nodes
 
-    This function transforms a logic_rule into a tree with informations related to the
+    This function transforms a logic_rule into a tree with information related to the
     components involved in the rule such as its `value`, `label`, `step name`...
 
     :param logics:  :class:`JsonLogicTest` the logic rule
