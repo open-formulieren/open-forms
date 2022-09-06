@@ -140,11 +140,14 @@ class ResumeSubmissionView(ResumeFormMixin, RedirectView):
 
     def get_form_resume_url(self, submission: Submission) -> str:
         form_resume_url = furl(submission.form_url)
+
+        state = submission.load_execution_state()
+        last_completed_step = state.get_last_completed_step()
+        target_step = last_completed_step or state.submission_steps[0]
+
         # furl adds paths with the /= operator
         form_resume_url /= "stap"
-        form_resume_url /= (
-            submission.get_last_completed_step().form_step.form_definition.slug
-        )
+        form_resume_url /= target_step.form_step.form_definition.slug
         # Add the submission uuid to the query param
         form_resume_url.add({"submission_uuid": submission.uuid})
         return form_resume_url.url
