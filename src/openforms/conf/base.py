@@ -157,6 +157,7 @@ INSTALLED_APPS = [
     "tinymce",
     "treebeard",
     "privates",
+    "simple_certmanager",
     "zgw_consumers",
     "stuf",
     "stuf.stuf_bg",

@@ -7,8 +7,8 @@ from django.template.loader import render_to_string
 from django.test import TestCase, tag
 
 import requests_mock
-from zgw_consumers.constants import CertificateTypes
-from zgw_consumers.models import Certificate
+from simple_certmanager.constants import CertificateTypes
+from simple_certmanager.models import Certificate
 
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.tests.utils import can_connect

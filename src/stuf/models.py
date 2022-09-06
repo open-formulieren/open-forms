@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from zgw_consumers.models import Certificate
+from simple_certmanager.models import Certificate
 
 from stuf.constants import EndpointSecurity, SOAPVersion
 

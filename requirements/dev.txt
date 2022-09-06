@@ -197,6 +197,7 @@ django==3.2.15
     #   django-rosetta
     #   django-sendfile2
     #   django-silk
+    #   django-simple-certmanager
     #   django-solo
     #   django-timeline-logger
     #   django-treebeard
@@ -249,6 +250,7 @@ django-choices==1.7.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-digid-eherkenning
+    #   django-simple-certmanager
     #   zgw-consumers
 django-colorfield==0.7.0
     # via
@@ -323,7 +325,7 @@ django-privates==1.2.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   zgw-consumers
+    #   django-simple-certmanager
 django-redis==5.2.0
     # via
     #   -c requirements/ci.txt
@@ -342,6 +344,11 @@ django-sendfile2==0.7.0
     #   django-privates
 django-silk==4.1.0
     # via -r requirements/dev.in
+django-simple-certmanager==1.0.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   zgw-consumers
 django-solo==2.0.0
     # via
     #   -c requirements/ci.txt
@@ -701,6 +708,7 @@ pyopenssl==19.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   django-simple-certmanager
     #   josepy
     #   python3-saml
     #   zgw-consumers
@@ -1074,7 +1082,7 @@ zeep==4.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-zgw-consumers==0.19.0
+zgw-consumers==0.21.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

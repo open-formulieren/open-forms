@@ -2,10 +2,19 @@
 Changelog
 =========
 
-1.2.0 (2022-??-??) - in development
+2.0.0 (2022-??-??) - in development
 ===================================
 
-BEFORE upgrading to 1.2.x, please read the release notes carefully.
+BEFORE upgrading to 2.0.0, please read the release notes carefully.
+
+**Upgrade procedure**
+
+.. warning::
+
+    You must first upgrade to the latest 1.1.x version before upgrading to 2.0.
+
+    This ensures that all the relevant database changes are applied before the changes
+    for 2.0 are applied. Failing to do so may result in data loss.
 
 **Changes**
 

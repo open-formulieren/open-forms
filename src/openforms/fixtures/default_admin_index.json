@@ -195,7 +195,7 @@
                 "soapservice"
             ],
             [
-                "zgw_consumers",
+                "simple_certmanager",
                 "certificate"
             ],
             [
