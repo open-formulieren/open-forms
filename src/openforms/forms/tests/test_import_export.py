@@ -10,7 +10,7 @@ from openforms.products.tests.factories import ProductFactory
 from openforms.variables.constants import FormVariableSources
 
 from ..constants import EXPORT_META_KEY
-from ..models import Form, FormDefinition, FormLogic, FormStep
+from ..models import Form, FormDefinition, FormLogic, FormStep, FormVariable
 from .factories import (
     CategoryFactory,
     FormDefinitionFactory,
@@ -133,7 +133,12 @@ class ImportExportTests(TestCase):
             configuration={"components": [{"key": "test-key", "type": "textfield"}]}
         )
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
-        form_logic = FormLogicFactory.create(form=form)
+        FormVariableFactory.create(
+            form=form, user_defined=True, key="test-user-defined"
+        )
+        form_logic = FormLogicFactory.create(
+            form=form, json_logic_trigger={"==": [{"var": "test-user-defined"}, 1]}
+        )
 
         form_pk, form_definition_pk, form_step_pk, form_logic_pk = (
             form.pk,
@@ -191,6 +196,11 @@ class ImportExportTests(TestCase):
         self.assertEqual(fs2.form_definition.pk, fd2.pk)
         self.assertEqual(fs2.optional, form_step.optional)
         self.assertEqual(fs2.order, form_step.order)
+
+        user_defined_vars = FormVariable.objects.filter(
+            source=FormVariableSources.user_defined
+        )
+        self.assertEqual(2, user_defined_vars.count())
 
         form_logics = FormLogic.objects.all()
         self.assertEqual(2, form_logics.count())

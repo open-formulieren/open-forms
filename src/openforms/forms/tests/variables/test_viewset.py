@@ -223,10 +223,10 @@ class FormVariableViewsetTest(APITestCase):
             },
         )
         form_variable1 = FormVariableFactory.create(
-            form=form, source=FormVariableSources.user_defined
+            form=form, source=FormVariableSources.user_defined, key="test1"
         )
         form_variable2 = FormVariableFactory.create(
-            form=form, source=FormVariableSources.user_defined
+            form=form, source=FormVariableSources.user_defined, key="test2"
         )
 
         response_user_defined = self.client.get(
