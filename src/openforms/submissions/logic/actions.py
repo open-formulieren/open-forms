@@ -77,7 +77,7 @@ class PropertyAction(ActionOperation):
         component_map: Dict[str, ComponentMeta],
         all_variables: Dict[str, FormVariable],
         initial_data: dict,
-    ) -> dict:
+    ) -> JSONObject:
 
         component_meta = component_map.get(self.component)
 
@@ -113,7 +113,7 @@ class DisableNextAction(ActionOperation):
         component_map: Dict[str, ComponentMeta],
         all_variables: Dict[str, FormVariable],
         initial_data: dict,
-    ) -> dict:
+    ) -> JSONObject:
 
         return {
             "type_display": LogicActionTypes.get_choice(
@@ -153,7 +153,7 @@ class StepNotApplicableAction(ActionOperation):
         component_map: Dict[str, ComponentMeta],
         all_variables: Dict[str, FormVariable],
         initial_data: dict,
-    ) -> dict:
+    ) -> JSONObject:
         return {
             "type_display": LogicActionTypes.get_choice(
                 LogicActionTypes.step_not_applicable
@@ -176,7 +176,7 @@ class VariableAction(ActionOperation):
         component_map: Dict[str, ComponentMeta],
         all_variables: Dict[str, FormVariable],
         initial_data: dict,
-    ) -> dict:
+    ) -> JSONObject:
         # Check if it's a primitive value, which doesn't require introspection
         if not isinstance(self.value, (dict, list)):
             value = self.value
