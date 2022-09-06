@@ -8,7 +8,10 @@ Functional requirements are:
 
 * multiple submissions for the same flow must be able to exist at the same time
 * data of different submissions should not affect each other
-* "login" makes no sense, as we are usually dealing with anonymous users
+* "login" usually is not releavnt, as we mostly deal with anonymous users. However,
+  some plugins/functionality is limited to staff users.
+
+See ``test_disabled_forms.py`` for more extensive tests around maintenance mode.
 """
 from django.test import override_settings
 
@@ -129,20 +132,6 @@ class SubmissionStartTests(APITestCase):
         submission = Submission.objects.get()
         self.assertEqual(submission.auth_info.value, "123456782")
         self.assertEqual(submission.auth_info.plugin, "digid")
-
-    def test_start_submission_in_maintenance_mode(self):
-        form = FormFactory.create(maintenance_mode=True)
-        FormStepFactory.create(form=form)
-
-        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        body = {
-            "form": f"http://testserver.com{form_url}",
-            "formUrl": "http://testserver.com/my-form",
-        }
-
-        response = self.client.post(self.endpoint, body)
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_start_submission_on_deleted_form(self):
         form = FormFactory.create(deleted_=True)
