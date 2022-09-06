@@ -30,8 +30,8 @@ IMPORT_ORDER = {
     "formDefinitions": FormDefinition,
     "forms": Form,
     "formSteps": FormStep,
-    "formLogic": FormLogic,
     "formVariables": FormVariable,
+    "formLogic": FormLogic,
 }
 
 SERIALIZERS = {
