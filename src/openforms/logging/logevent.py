@@ -470,7 +470,7 @@ def submission_logic_evaluated(
     initial_data: dict,
     resolved_data: dict,
 ):
-    from openforms.submissions.logic.rules import get_targeted_components
+    from openforms.submissions.logic.log_utils import get_targeted_components
 
     if not evaluated_rules:
         return
@@ -495,7 +495,7 @@ def submission_logic_evaluated(
         rule = evaluated_rule.rule
 
         trigger = rule.json_logic_trigger
-        if not isinstance(trigger, dict) and not isinstance(trigger, list):
+        if not isinstance(trigger, (dict, list)):
             # The trigger was a primitive, no need to introspect
             evaluated_rule_data = {
                 "raw_logic_expression": trigger,

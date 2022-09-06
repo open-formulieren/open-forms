@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, TypedDict
+from typing import Any, Dict, Optional, TypedDict
 
 from openforms.formio.utils import get_component
 from openforms.forms.constants import LogicActionTypes
@@ -25,7 +25,7 @@ class ActionDict(TypedDict):
     action: ActionDetails
 
 
-def compile_action_operation(action: ActionDict):
+def compile_action_operation(action: ActionDict) -> "ActionOperation":
     return ActionOperation.from_action(action)
 
 
@@ -47,9 +47,9 @@ class ActionOperation:
         component_map: Dict[str, ComponentMeta],
         all_variables: Dict[str, FormVariable],
         initial_data: dict,
-    ) -> dict:
+    ) -> Optional[JSONObject]:
         """Get action information to log"""
-        pass
+        return None
 
 
 @dataclass
@@ -178,7 +178,7 @@ class VariableAction(ActionOperation):
         initial_data: dict,
     ) -> dict:
         # Check if it's a primitive value, which doesn't require introspection
-        if not isinstance(self.value, dict):
+        if not isinstance(self.value, (dict, list)):
             value = self.value
         else:
             action_logic_introspection = introspect_json_logic(
