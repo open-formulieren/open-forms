@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_lead logic=log.extra_data.logic%}
+   {{ lead }}: JSON logic raised an error during evaluation
+{% endblocktrans %}

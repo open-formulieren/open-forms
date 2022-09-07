@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import Callable, Iterable, Iterator, List, Optional
 
 import elasticapm
-from json_logic import jsonLogic
 
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic, FormStep
@@ -10,6 +9,7 @@ from openforms.forms.models import FormLogic, FormStep
 from ..models import Submission, SubmissionStep
 from .actions import ActionOperation, compile_action_operation
 from .datastructures import DataContainer
+from .log_utils import evaluate_json_logic
 
 
 def _include_rule(form_steps: List[FormStep], rule: FormLogic, step_index: int) -> bool:
@@ -141,7 +141,9 @@ def iter_evaluate_rules(
             span_type="app.submissions.logic",
             labels={"ruleId": rule.pk},
         ):
-            triggered = bool(jsonLogic(rule.json_logic_trigger, data_container.data))
+            triggered = bool(
+                evaluate_json_logic(rule.json_logic_trigger, data_container.data, rule)
+            )
 
             if on_rule_check is not None:
                 on_rule_check(EvaluatedRule(rule=rule, triggered=triggered))
@@ -156,7 +158,9 @@ def iter_evaluate_rules(
                 # This is the ONLY operation that is allowed to execute while we're looping
                 # through the rules.
                 if action_details["type"] == LogicActionTypes.variable:
-                    new_value = jsonLogic(action_details["value"], data_container.data)
+                    new_value = evaluate_json_logic(
+                        action_details["value"], data_container.data, rule
+                    )
                     data_container.update({action["variable"]: new_value})
                 else:
                     operation = compile_action_operation(action)
