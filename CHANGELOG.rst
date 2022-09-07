@@ -3,7 +3,7 @@ Changelog
 =========
 
 2.0.0 "Règâh" (2022-??-??) - in development
-===================================
+===========================================
 
 *The symbol of The Hague is the stork, a majestic bird, which is somewhat disrespectfully called a Règâh, or heron, by the residents of The Hague.*
 
