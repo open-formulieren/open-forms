@@ -18,7 +18,7 @@ class FormVariableListSerializer(ListWithChildSerializer):
         return FormVariableSerializer
 
     def process_object(self, variable: FormVariable):
-        variable.derive_info_from_component()
+        variable.check_data_type_and_initial_value()
         return variable
 
     def validate(self, attrs):

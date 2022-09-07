@@ -1,4 +1,5 @@
 from openforms.utils.tests.test_migrations import TestMigrations
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 
 class AddFormVariablesTests(TestMigrations):
@@ -90,3 +91,30 @@ class AddFormVariablesTests(TestMigrations):
         self.assertEqual("float", new_form_component_vars.get(key="var2").data_type)
         self.assertEqual("object", new_form_component_vars.get(key="var3").data_type)
         self.assertEqual("boolean", new_form_component_vars.get(key="var4").data_type)
+
+
+class FixInitialValuesTest(TestMigrations):
+    migrate_from = "0043_explanation_template_data_migration"
+    migrate_to = "0044_fix_user_defined_vars_initial_value"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        Form = apps.get_model("forms", "Form")
+        FormVariable = apps.get_model("forms", "FormVariable")
+
+        form = Form.objects.create(name="Form 000", slug="form-000")
+        variable = FormVariable.objects.create(
+            key="var_float",
+            form=form,
+            source=FormVariableSources.user_defined,
+            data_type=FormVariableDataTypes.float,
+            initial_value="",
+        )
+        self.variable_id = variable.id
+
+    def test_fix_initial_value(self):
+        FormVariable = self.apps.get_model("forms", "FormVariable")
+
+        variable = FormVariable.objects.get(id=self.variable_id)
+
+        self.assertIsNone(variable.initial_value)

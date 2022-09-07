@@ -832,3 +832,127 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self.assertTrue(log_rule["raw_logic_expression"])
         self.assertEqual("True", log_rule["readable_rule"])
         self.assertEqual("test", log_rule["targeted_components"][0]["key"])
+
+    def test_json_logic_in_trigger_doesnt_raise_error(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "number1",
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="number2",
+            data_type=FormVariableDataTypes.float,
+            user_defined=True,
+            form=form,
+            initial_value="",
+        )
+        logic_rule = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"<": [{"var": "number1"}, {"var": "number2"}]},
+            actions=[
+                {
+                    "action": {
+                        "type": "disable-next",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form.formstep_set.first(),
+            data={"number1": "", "number2": 50},
+        )
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form.formstep_set.get().uuid,
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        logs = TimelineLogProxy.objects.filter(
+            template="logging/events/logic_evaluation_failed.txt"
+        )
+
+        self.assertEqual(1, logs.count())
+
+        logged_rule = logs[0].content_object
+
+        self.assertEqual(logged_rule, logic_rule)
+
+    def test_json_logic_in_action_doesnt_raise_error(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "number1",
+                    },
+                    {
+                        "type": "number",
+                        "key": "number2",
+                    },
+                ]
+            },
+        )
+        FormVariableFactory.create(
+            key="isGreater",
+            data_type=FormVariableDataTypes.boolean,
+            user_defined=True,
+            form=form,
+            initial_value=False,
+        )
+        logic_rule = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": "isGreater",
+                    "action": {
+                        "type": "variable",
+                        "value": {"<": [{"var": "number1"}, {"var": "number2"}]},
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form.formstep_set.first(),
+            data={"number1": "", "number2": 50},
+        )
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form.formstep_set.get().uuid,
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        logs = TimelineLogProxy.objects.filter(
+            template="logging/events/logic_evaluation_failed.txt"
+        )
+
+        self.assertEqual(1, logs.count())
+
+        logged_rule = logs[0].content_object
+
+        self.assertEqual(logged_rule, logic_rule)

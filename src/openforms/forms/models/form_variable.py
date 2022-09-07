@@ -17,6 +17,7 @@ from openforms.formio.utils import (
     iter_components,
 )
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+from openforms.variables.utils import check_initial_value
 
 from .form_definition import FormDefinition
 
@@ -218,7 +219,13 @@ class FormVariable(models.Model):
 
         self.data_type = get_component_datatype(component)
 
-    def save(self, *args, **kwargs):
+    def check_data_type_and_initial_value(self):
         self.derive_info_from_component()
+
+        if self.source == FormVariableSources.user_defined:
+            self.initial_value = check_initial_value(self.initial_value, self.data_type)
+
+    def save(self, *args, **kwargs):
+        self.check_data_type_and_initial_value()
 
         super().save(*args, **kwargs)

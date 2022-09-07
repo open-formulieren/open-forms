@@ -5,6 +5,7 @@ from django.db.models import Model
 
 from openforms.logging.constants import TimelineLogTags
 from openforms.payments.constants import PaymentStatus
+from openforms.typing import JSONObject
 from openforms.utils.json_logic import ComponentMeta, introspect_json_logic
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -13,7 +14,7 @@ if TYPE_CHECKING:  # pragma: nocover
     from openforms.appointments.models import AppointmentInfo
     from openforms.forms.models import Form
     from openforms.plugins.plugin import AbstractBasePlugin
-    from openforms.submissions.logic.rules import EvaluatedRule
+    from openforms.submissions.logic.rules import EvaluatedRule, FormLogic
     from openforms.submissions.models import (
         Submission,
         SubmissionPayment,
@@ -542,6 +543,16 @@ def submission_logic_evaluated(
             "input_data": deduplicated_input_data,
             "resolved_data": resolved_data,
         },
+    )
+
+
+def logic_evaluation_failed(
+    rule: "FormLogic",
+    error: Exception,
+    logic: JSONObject,
+) -> None:
+    _create_log(
+        rule, "logic_evaluation_failed", error=error, extra_data={"logic": logic}
     )
 
 
