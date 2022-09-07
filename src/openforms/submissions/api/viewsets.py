@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from openforms.api import pagination
+from openforms.api.exceptions import UnprocessableEntity
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.logging import logevent
@@ -33,6 +34,7 @@ from ..tasks import on_completion
 from ..tokens import submission_status_token_generator
 from ..utils import (
     add_submmission_to_session,
+    check_form_status,
     initialise_user_defined_variables,
     persist_user_defined_variables,
     remove_submission_from_session,
@@ -113,6 +115,7 @@ class SubmissionViewSet(
     def get_object(self):
         if not hasattr(self, "_get_object_cache"):
             submission = super().get_object()
+            check_form_status(self.request, submission.form)
             self._get_object_cache = submission
             # on the fly, calculate the price if it's not set yet (required for overview screen)
             if submission.completed_on is None:
@@ -122,6 +125,8 @@ class SubmissionViewSet(
     @transaction.atomic
     def perform_create(self, serializer):
         super().perform_create(serializer)
+
+        check_form_status(self.request, serializer.validated_data["form"])
 
         # dispatch signal for modules to tap into
         submission_start.send(
@@ -410,6 +415,7 @@ class SubmissionStepViewSet(
                 form_step=form_step,
             )
         self.check_object_permissions(self.request, submission_step)
+        check_form_status(self.request, submission_step.submission.form)
         return submission_step
 
     @extend_schema(

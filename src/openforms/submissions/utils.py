@@ -1,9 +1,12 @@
 import logging
-from typing import Any
+from typing import Any, Union
 
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
+from django.http import HttpRequest
+from django.utils.translation import gettext as _
 
+from rest_framework.permissions import SAFE_METHODS
 from rest_framework.request import Request
 
 from openforms.appointments.service import get_confirmation_mail_suffix
@@ -17,10 +20,12 @@ from openforms.emails.utils import (
     send_mail_html,
     strip_tags_plus,
 )
+from openforms.forms.models import Form
 from openforms.logging import logevent
 from openforms.variables.constants import FormVariableSources
 
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
+from .exceptions import FormDeactivated, FormMaintenance
 from .form_logic import evaluate_form_logic
 from .models import Submission, SubmissionValueVariable, TemporaryFileUpload
 from .query import SubmissionQuerySet
@@ -190,3 +195,35 @@ def persist_user_defined_variables(
         SubmissionValueVariable.objects.bulk_create_or_update_from_data(
             user_defined_vars_data, submission
         )
+
+
+def check_form_status(
+    request: Union[HttpRequest, Request],
+    form: Form,
+    include_safe_methods: bool = False,
+) -> None:
+    """
+    Verify the availability of the submission's form.
+
+    Forms can be set to maintenance mode or be deactivated while a submission
+    is not completed - this has an impact on different types of users:
+
+    * Nobody can fill out/continue deactivated forms
+    * Staff users can continue filling out a form in maintenance mode, while
+      non-staff are blocked from doing so.
+
+    :raises: :class:`FormDeactivated` if the form is deactivated
+    :raises: :class`FormMaintenance` if the form is in maintenance mode and the user
+      is not a staff user.
+    """
+    # live forms -> shortcut, this is okay, proceed as usual
+    if form.is_available:
+        return
+
+    # only block for write operations
+    if not include_safe_methods and request.method in SAFE_METHODS:
+        return
+
+    if not form.active:
+        # TODO: clear submission from session!
+        raise FormDeactivated()

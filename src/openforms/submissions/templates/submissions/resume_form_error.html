@@ -1,0 +1,6 @@
+{% extends "core/views/form/form_detail.html" %}
+
+{% block card %}
+    {# TODO: style #}
+    HTTP {{ error.status_code }} - {{ error.detail }} ({{ error.detail.code }})
+{% endblock %}

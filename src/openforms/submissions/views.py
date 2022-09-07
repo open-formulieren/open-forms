@@ -4,29 +4,41 @@ import uuid
 from django.contrib.auth.hashers import check_password as check_salted_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.http import HttpRequest
 from django.utils.crypto import constant_time_compare
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import RedirectView
+from django.views.generic.base import TemplateResponseMixin
 
 from furl import furl
 from privates.views import PrivateMediaView
 from rest_framework.reverse import reverse
 
+from openforms.api.exceptions import ServiceUnavailable, UnprocessableEntity
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
+from openforms.tokens import BaseTokenGenerator
 
 from .constants import RegistrationStatuses
 from .models import Submission, SubmissionFileAttachment
 from .tokens import submission_resume_token_generator
-from .utils import add_submmission_to_session
+from .utils import add_submmission_to_session, check_form_status
 
 logger = logging.getLogger(__name__)
 
 
-class ResumeFormMixin:
-    token_generator = None
+class ResumeFormMixin(TemplateResponseMixin):
+    request: HttpRequest
+    token_generator: BaseTokenGenerator
+    template_name = "submissions/resume_form_error.html"
+
+    def dispatch(self, request: HttpRequest, *args, **kwargs):
+        try:
+            return super().dispatch(request, *args, **kwargs)
+        except (UnprocessableEntity, ServiceUnavailable) as exc:
+            return self.render_to_response({"error": exc})
 
     def validate_url_and_get_submission(
-        self, submission_uuid: uuid, token: str
+        self, submission_uuid: uuid.UUID, token: str
     ) -> Submission:
         try:
             submission = Submission.objects.get(uuid=submission_uuid)
@@ -41,6 +53,8 @@ class ResumeFormMixin:
         if not valid:
             logger.debug("Called endpoint with an invalid token: %s", token)
             raise PermissionDenied("Url is not valid")
+
+        check_form_status(self.request, submission.form, include_safe_methods=True)
 
         return submission
 
@@ -110,7 +124,7 @@ class ResumeFormMixin:
         return submission
 
     def get_redirect_url(
-        self, submission_uuid: uuid, token: str, *args, **kwargs
+        self, submission_uuid: uuid.UUID, token: str, *args, **kwargs
     ) -> str:
         submission = self.validate_url_and_get_submission(submission_uuid, token)
 
