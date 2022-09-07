@@ -1,6 +1,8 @@
 import copy
 import logging
 
+from django.db.utils import IntegrityError
+
 from djangorestframework_camel_case.util import camelize
 
 from ..celery import app
@@ -71,6 +73,11 @@ def recouple_submission_variables_to_form_variables(form_id: int) -> None:
             submission_variable.form_variable = form_variable
             submission_variables_to_update.append(submission_variable)
 
-    SubmissionValueVariable.objects.bulk_update(
-        submission_variables_to_update, fields=["form_variable"]
-    )
+    try:
+        SubmissionValueVariable.objects.bulk_update(
+            submission_variables_to_update, fields=["form_variable"]
+        )
+    except IntegrityError:
+        # Issue #1970: If the form is saved again from the form editor while this task was running, the form variables
+        # retrieved don't exist anymore. Another task will be scheduled from the endpoint, so nothing more to do here.
+        logger.info("Form variables were updated while this task was runnning.")
