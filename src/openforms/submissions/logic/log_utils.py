@@ -1,7 +1,6 @@
+import contextlib
 import logging
 from typing import Any, Dict, List
-
-from json_logic import jsonLogic
 
 from openforms.forms.models import FormLogic, FormVariable
 from openforms.logging import logevent
@@ -31,11 +30,12 @@ def get_targeted_components(
     return targeted_components
 
 
-def evaluate_json_logic(logic: JSONObject, data: dict, rule: FormLogic) -> Any:
+@contextlib.contextmanager
+def log_errors(logic: JSONObject, rule: FormLogic) -> Any:
     try:
-        return jsonLogic(logic, data)
+        yield
     except Exception as error:
         logger.error(
-            "Error in rule %s: evaluation of %s raised error: %s", rule.pk, logic, error
+            "Error in rule %s: evaluation of %s failed.", rule.pk, logic, exc_info=error
         )
         logevent.logic_evaluation_failed(rule, error, logic)

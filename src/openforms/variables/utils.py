@@ -1,5 +1,6 @@
 from datetime import date, datetime, time
-from typing import Any
+
+from openforms.typing import JSONObject
 
 
 def check_date(value: str) -> str:
@@ -18,7 +19,7 @@ def check_time(value: str) -> str:
     return value
 
 
-def check_initial_value(initial_value: Any, data_type: str) -> Any:
+def check_initial_value(initial_value: JSONObject, data_type: str) -> JSONObject:
     from .constants import CHECK_VARIABLE_TYPE, DEFAULT_INITIAL_VALUE
 
     try:
