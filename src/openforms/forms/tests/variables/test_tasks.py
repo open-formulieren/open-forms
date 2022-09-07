@@ -1,4 +1,6 @@
-from django.test import TestCase
+import threading
+
+from django.test import TestCase, TransactionTestCase, tag
 
 from openforms.forms.tasks import recouple_submission_variables_to_form_variables
 from openforms.forms.tests.factories import FormFactory, FormVariableFactory
@@ -55,3 +57,71 @@ class FormVariableTasksTest(TestCase):
                 submission__form=form, form_variable__isnull=True
             ).count(),
         )
+
+
+class FormVariableRaceConditionTasksTest(TransactionTestCase):
+    @tag("gh-1970")
+    def test_recouple_submission_variables_race_condition(self):
+        """
+        Race condition:
+
+        The task recouple_submission_variables_to_form_variables starts, it retrieves the form variables on a form and
+        tries to relate them to existing submission variables.
+
+        While it's processing the submission vars, the form is saved again, triggering an update of form variables.
+
+        The task gives an integrity error when saving the submission variables because they are being related to
+        non-existing form variables.
+        """
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "test1"},
+                    {"type": "textfield", "key": "test2"},
+                ]
+            },
+        )
+        form_step = form.formstep_set.first()
+        submission = SubmissionFactory.create(form=form)
+
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={"test1": "some data 1", "test2": "some data 1"},
+        )
+
+        form.formvariable_set.all().delete()
+
+        FormVariableFactory.create(key="test1", form=form)
+        FormVariableFactory.create(key="test2", form=form)
+
+        class ThreadWithExceptionHandling(threading.Thread):
+            def run(self):
+                self.exc = None
+                try:
+                    super().run()
+                except Exception as e:
+                    self.exc = e
+
+            def join(self, *args, **kwargs):
+                threading.Thread.join(self, *args, **kwargs)
+                if self.exc:
+                    raise self.exc
+
+        def recouple_variables_task():
+            recouple_submission_variables_to_form_variables(form.id)
+
+        def race_condition():
+            form.formvariable_set.all().delete()
+
+        recouple_variables_thread = ThreadWithExceptionHandling(
+            target=recouple_variables_task
+        )
+        race_condition_thread = threading.Thread(target=race_condition)
+
+        recouple_variables_thread.start()
+        race_condition_thread.start()
+
+        race_condition_thread.join()
+        recouple_variables_thread.join()
