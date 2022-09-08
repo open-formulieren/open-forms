@@ -9,8 +9,8 @@ from drf_spectacular.settings import spectacular_settings
 from drf_spectacular.utils import OpenApiParameter
 
 from openforms.middleware import (
-    CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME,
     CSRF_TOKEN_HEADER_NAME,
+    IS_FORM_DESIGNER_HEADER_NAME,
     SESSION_EXPIRES_IN_HEADER,
 )
 
@@ -55,8 +55,8 @@ CSRF_TOKEN_COMPONENT = ResolvedComponent(
     object=CSRF_TOKEN_HEADER_NAME,
 )
 # Can navigate between submission steps header
-CAN_NAVIGATE_BETWEEN_STEPS_PARAMETER = build_parameter_type(
-    name=CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME,
+IS_FORM_DESIGNER_PARAMETER = build_parameter_type(
+    name=IS_FORM_DESIGNER_HEADER_NAME,
     schema=build_basic_type(str),
     location=OpenApiParameter.HEADER,
     description=_(
@@ -65,13 +65,13 @@ CAN_NAVIGATE_BETWEEN_STEPS_PARAMETER = build_parameter_type(
     ),
     required=True,
 )
-del CAN_NAVIGATE_BETWEEN_STEPS_PARAMETER["in"]
-del CAN_NAVIGATE_BETWEEN_STEPS_PARAMETER["name"]
-CAN_NAVIGATE_BETWEEN_STEPS_COMPONENT = ResolvedComponent(
-    name=CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME,
+del IS_FORM_DESIGNER_PARAMETER["in"]
+del IS_FORM_DESIGNER_PARAMETER["name"]
+IS_FORM_DESIGNER_COMPONENT = ResolvedComponent(
+    name=IS_FORM_DESIGNER_HEADER_NAME,
     type="headers",
-    schema=CAN_NAVIGATE_BETWEEN_STEPS_PARAMETER,
-    object=CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME,
+    schema=IS_FORM_DESIGNER_PARAMETER,
+    object=IS_FORM_DESIGNER_HEADER_NAME,
 )
 
 
@@ -81,7 +81,7 @@ def add_middleware_headers(result, generator, request, public):
     """
     generator.registry.register_on_missing(SESSION_EXPIRES_IN_COMPONENT)
     generator.registry.register_on_missing(CSRF_TOKEN_COMPONENT)
-    generator.registry.register_on_missing(CAN_NAVIGATE_BETWEEN_STEPS_COMPONENT)
+    generator.registry.register_on_missing(IS_FORM_DESIGNER_COMPONENT)
 
     for path in result["paths"].values():
         for operation in path.values():
@@ -96,7 +96,7 @@ def add_middleware_headers(result, generator, request, public):
                     {
                         SESSION_EXPIRES_IN_HEADER: SESSION_EXPIRES_IN_COMPONENT.ref,
                         CSRF_TOKEN_HEADER_NAME: CSRF_TOKEN_COMPONENT.ref,
-                        CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME: CAN_NAVIGATE_BETWEEN_STEPS_COMPONENT.ref,
+                        IS_FORM_DESIGNER_HEADER_NAME: IS_FORM_DESIGNER_COMPONENT.ref,
                     }
                 )
 

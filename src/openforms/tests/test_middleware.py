@@ -3,10 +3,7 @@ from django.test import TestCase
 from rest_framework.reverse import reverse
 
 from openforms.accounts.tests.factories import StaffUserFactory, SuperUserFactory
-from openforms.middleware import (
-    CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME,
-    CSRF_TOKEN_HEADER_NAME,
-)
+from openforms.middleware import CSRF_TOKEN_HEADER_NAME, IS_FORM_DESIGNER_HEADER_NAME
 
 
 class CSRFTokenMiddleware(TestCase):
@@ -29,15 +26,13 @@ class CanNavigateBetweenStepsMiddlewareTests(TestCase):
 
         response = self.client.get(url)
 
-        self.assertIn(CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME, response.headers)
-        self.assertEqual(
-            "false", response.headers[CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME]
-        )
+        self.assertIn(IS_FORM_DESIGNER_HEADER_NAME, response.headers)
+        self.assertEqual("false", response.headers[IS_FORM_DESIGNER_HEADER_NAME])
 
     def test_header_not_api_endpoint_not_authenticated(self):
         response = self.client.get("/")
 
-        self.assertNotIn(CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME, response.headers)
+        self.assertNotIn(IS_FORM_DESIGNER_HEADER_NAME, response.headers)
 
     def test_header_api_endpoint_superuser(self):
         user = SuperUserFactory.create()
@@ -46,10 +41,8 @@ class CanNavigateBetweenStepsMiddlewareTests(TestCase):
 
         response = self.client.get(url)
 
-        self.assertIn(CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME, response.headers)
-        self.assertEqual(
-            "true", response.headers[CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME]
-        )
+        self.assertIn(IS_FORM_DESIGNER_HEADER_NAME, response.headers)
+        self.assertEqual("true", response.headers[IS_FORM_DESIGNER_HEADER_NAME])
 
     def test_header_api_endpoint_staff_without_permissions(self):
         user = StaffUserFactory.create()
@@ -58,10 +51,8 @@ class CanNavigateBetweenStepsMiddlewareTests(TestCase):
 
         response = self.client.get(url)
 
-        self.assertIn(CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME, response.headers)
-        self.assertEqual(
-            "false", response.headers[CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME]
-        )
+        self.assertIn(IS_FORM_DESIGNER_HEADER_NAME, response.headers)
+        self.assertEqual("false", response.headers[IS_FORM_DESIGNER_HEADER_NAME])
 
     def test_header_api_endpoint_staff_with_permissions(self):
         user = StaffUserFactory.create(user_permissions=["forms.change_form"])
@@ -70,7 +61,5 @@ class CanNavigateBetweenStepsMiddlewareTests(TestCase):
 
         response = self.client.get(url)
 
-        self.assertIn(CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME, response.headers)
-        self.assertEqual(
-            "true", response.headers[CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME]
-        )
+        self.assertIn(IS_FORM_DESIGNER_HEADER_NAME, response.headers)
+        self.assertEqual("true", response.headers[IS_FORM_DESIGNER_HEADER_NAME])

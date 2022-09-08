@@ -6,7 +6,7 @@ from openforms.config.models import GlobalConfiguration
 
 SESSION_EXPIRES_IN_HEADER = "X-Session-Expires-In"
 CSRF_TOKEN_HEADER_NAME = "X-CSRFToken"
-CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME = "X-Is-Staff"
+IS_FORM_DESIGNER_HEADER_NAME = "X-Is-Form-Designer"
 
 
 class SessionTimeoutMiddleware:
@@ -68,10 +68,10 @@ class CanNavigateBetweenStepsMiddleware:
         if not request.path.startswith("/api"):
             return response
 
-        response[CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME] = "false"
+        response[IS_FORM_DESIGNER_HEADER_NAME] = "false"
 
         user = request.user
         if user.is_staff and user.has_perm("forms.change_form"):
-            response[CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME] = "true"
+            response[IS_FORM_DESIGNER_HEADER_NAME] = "true"
 
         return response
