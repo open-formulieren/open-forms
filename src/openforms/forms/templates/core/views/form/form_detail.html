@@ -2,8 +2,8 @@
 {% load static openforms %}
 
 {% block extra_css %}
-{{ block.super }}
-{% include "forms/sdk_css_snippet.html" %}
+    {% include "forms/sdk_css_snippet.html" %}
+    {{ block.super }} {# Called after SDK CSS for custom design overrides #}
 {% endblock %}
 
 {% block card %}
