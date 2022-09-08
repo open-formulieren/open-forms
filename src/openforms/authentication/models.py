@@ -6,6 +6,7 @@ from openforms.contrib.kvk.validators import validate_kvk
 from openforms.utils.validators import validate_bsn
 
 from .constants import AuthAttribute
+from .tasks import hash_identifying_attributes as hash_identifying_attributes_task
 
 
 # TODO: what about co-sign data?
@@ -55,7 +56,7 @@ class AuthInfo(models.Model):
         self.value = ""
         self.save()
 
-    def hash_identifying_attributes(self):
+    def hash_identifying_attributes(self, delay=False):
         """
         Generate a salted hash for each of the identifying attributes.
 
@@ -66,6 +67,10 @@ class AuthInfo(models.Model):
         We use :module:`django.contrib.auth.hashers` for the actual salting and hashing,
         relying on the global Django ``PASSWORD_HASHERS`` setting.
         """
+        if delay:
+            hash_identifying_attributes_task.delay(self.pk)
+            return
+
         self.value = get_salted_hash(self.value)
         self.attribute_hashed = True
         self.save()

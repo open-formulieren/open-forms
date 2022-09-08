@@ -38,14 +38,6 @@ def validate_formio_js_schema(value: dict):
         )
 
 
-def validate_not_maintainance_mode(form):
-    if form.maintenance_mode:
-        raise ValidationError(
-            _("Form is in maintenance mode."),
-            code="invalid",
-        )
-
-
 def validate_not_deleted(form):
     if form._is_deleted:
         raise ValidationError(

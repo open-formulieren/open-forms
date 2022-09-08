@@ -1,3 +1,4 @@
+import contextlib
 import logging
 from typing import Tuple
 
@@ -10,6 +11,7 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework import authentication, mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
@@ -23,6 +25,7 @@ from openforms.utils.api.throttle_classes import PollingRateThrottle
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..attachments import attach_uploads_to_submission_step
+from ..exceptions import FormDeactivated
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionStep
 from ..models.submission_step import DirtyData
@@ -33,6 +36,7 @@ from ..tasks import on_completion
 from ..tokens import submission_status_token_generator
 from ..utils import (
     add_submmission_to_session,
+    check_form_status,
     initialise_user_defined_variables,
     persist_user_defined_variables,
     remove_submission_from_session,
@@ -58,6 +62,19 @@ from .serializers import (
 from .validation import CompletionValidationSerializer, validate_submission_completion
 
 logger = logging.getLogger(__name__)
+
+
+@contextlib.contextmanager
+def cleanup_deactivated_form_session(request: Request, submission: Submission):
+    try:
+        yield
+    except FormDeactivated:
+        remove_submission_from_session(submission, request.session)
+        if submission.is_authenticated:
+            # do this async, as the transaction is rolled back because of the raised
+            # exception.
+            submission.auth_info.hash_identifying_attributes(delay=True)
+        raise
 
 
 @extend_schema_view(
@@ -113,6 +130,10 @@ class SubmissionViewSet(
     def get_object(self):
         if not hasattr(self, "_get_object_cache"):
             submission = super().get_object()
+
+            with cleanup_deactivated_form_session(self.request, submission):
+                check_form_status(self.request, submission.form)
+
             self._get_object_cache = submission
             # on the fly, calculate the price if it's not set yet (required for overview screen)
             if submission.completed_on is None:
@@ -122,6 +143,8 @@ class SubmissionViewSet(
     @transaction.atomic
     def perform_create(self, serializer):
         super().perform_create(serializer)
+
+        check_form_status(self.request, serializer.validated_data["form"])
 
         # dispatch signal for modules to tap into
         submission_start.send(
@@ -410,6 +433,11 @@ class SubmissionStepViewSet(
                 form_step=form_step,
             )
         self.check_object_permissions(self.request, submission_step)
+
+        submission = submission_step.submission
+        with cleanup_deactivated_form_session(self.request, submission):
+            check_form_status(self.request, submission.form)
+
         return submission_step
 
     @extend_schema(

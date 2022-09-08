@@ -26,3 +26,15 @@ class RequestEntityTooLarge(APIException):
     status_code = 413  # does not exist in rest_framework.status
     default_detail = _("Request entity too large")
     default_code = "request_entity_too_large"
+
+
+class UnprocessableEntity(APIException):
+    status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+    default_detail = _("Request understood and validated, but cannot be processed.")
+    default_code = "unprocessable_entity"
+
+
+class ServiceUnavailable(APIException):
+    status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+    default_detail = _("Service is not available.")
+    default_code = "service_unavailable"

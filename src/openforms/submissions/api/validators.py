@@ -3,6 +3,9 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.serializers import JSONField
 
+from openforms.forms.models import Form
+
+from ..exceptions import FormMaintenance
 from ..models import SubmissionStep
 
 
@@ -41,3 +44,17 @@ class ValidatePrefillData:
 
         if errors:
             raise serializers.ValidationError(errors)
+
+
+class FormMaintenanceModeValidator:
+    code = FormMaintenance.default_code
+    message = FormMaintenance.default_detail
+    requires_context = True
+
+    def __call__(self, form: Form, field: serializers.RelatedField):
+        if (request := field.context.get("request")) is not None:
+            # Staff users can start forms that are in maintenance mode
+            if request.user.is_staff:
+                return
+        if form.maintenance_mode:
+            raise serializers.ValidationError(self.message, code=self.code)

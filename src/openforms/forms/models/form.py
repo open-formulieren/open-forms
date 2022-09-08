@@ -273,6 +273,15 @@ class Form(models.Model):
         else:
             return self.admin_name
 
+    @property
+    def is_available(self) -> bool:
+        """
+        Soft deleted, deactivated or forms in maintenance mode are not available.
+        """
+        if any((self._is_deleted, not self.active, self.maintenance_mode)):
+            return False
+        return True
+
     def get_absolute_url(self):
         return reverse("forms:form-detail", kwargs={"slug": self.slug})
 

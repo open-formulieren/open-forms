@@ -31,9 +31,13 @@ class VariablesNode(Node):
     @property
     def variables(self):
         if not self._variables:
-            self._variables = self.submission.submissionvaluevariable_set.filter(
-                form_variable__source=FormVariableSources.user_defined
-            ).select_related("form_variable")
+            self._variables = (
+                self.submission.submissionvaluevariable_set.filter(
+                    form_variable__source=FormVariableSources.user_defined
+                )
+                .select_related("form_variable")
+                .order_by("pk")
+            )
         return self._variables
 
     def render(self) -> str:
