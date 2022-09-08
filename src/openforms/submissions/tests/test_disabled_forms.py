@@ -13,6 +13,8 @@ Other contenders are HTTP 409 (conflict) and HTTP 410 (Gone), but the client can
 resolve the 409, and it's not the submission/step resource itself that's gone, but
 the form it belongs to.
 """
+from unittest.mock import patch
+
 from django.test import override_settings, tag
 
 from rest_framework import status
@@ -20,6 +22,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.authentication.tests.factories import AuthInfoFactory
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.models import Submission
 
@@ -194,6 +197,20 @@ class InactiveFormTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTemplateUsed(response, "submissions/resume_form_error.html")
         self._assert_submission_removed_from_session(submission)
+
+    @patch("openforms.authentication.models.hash_identifying_attributes_task")
+    def test_submission_auth_attributes_hashed(self, mock_hash_task):
+        submission = SubmissionFactory.create(form=self.form)
+        AuthInfoFactory.create(submission=submission, value="123456782")
+        step = self.form.formstep_set.get()
+        SubmissionStepFactory.create(submission=submission, form_step=step, data={})
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
+        mock_hash_task.delay.assert_called_once_with(submission.auth_info.id)
 
 
 class InactiveFormAuthenticatedUserTests(InactiveFormTests):

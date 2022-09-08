@@ -120,7 +120,10 @@ class SubmissionViewSet(
                 check_form_status(self.request, submission.form)
             except FormDeactivated:
                 remove_submission_from_session(submission, self.request.session)
-                # TODO: hash auth attributes of submission?
+                if submission.is_authenticated:
+                    # do this async, as the transaction is rolled back because of the raised
+                    # exception.
+                    submission.auth_info.hash_identifying_attributes(delay=True)
                 raise
 
             self._get_object_cache = submission
@@ -428,7 +431,10 @@ class SubmissionStepViewSet(
             check_form_status(self.request, submission.form)
         except FormDeactivated:
             remove_submission_from_session(submission, self.request.session)
-            # TODO: hash auth attributes of submission?
+            if submission.is_authenticated:
+                # do this async, as the transaction is rolled back because of the raised
+                # exception.
+                submission.auth_info.hash_identifying_attributes(delay=True)
             raise
 
         return submission_step
