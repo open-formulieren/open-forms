@@ -21,6 +21,7 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.forms.tests.factories import FormFactory
+from openforms.submissions.models import Submission
 
 from ..tokens import submission_resume_token_generator
 from .factories import SubmissionFactory, SubmissionStepFactory
@@ -45,6 +46,16 @@ class InactiveFormTests(SubmissionsMixin, APITestCase):
         cls.form_url = reverse(
             "api:form-detail", kwargs={"uuid_or_slug": cls.form.uuid}
         )
+
+    def _assert_submission_removed_from_session(self, submission: Submission):
+        with self.subTest("submission removed from session"):
+            endpoint = reverse(
+                "api:submission-detail", kwargs={"uuid": submission.uuid}
+            )
+
+            response = self.client.get(endpoint)
+
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_retrieve_form_detail(self):
         form_detail = self.client.get(self.form_url)
@@ -87,6 +98,7 @@ class InactiveFormTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         error = response.json()
         self.assertEqual(error["code"], "form-inactive")
+        self._assert_submission_removed_from_session(submission)
 
     def test_cannot_logic_check_step_data(self):
         """
@@ -111,6 +123,7 @@ class InactiveFormTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         error = response.json()
         self.assertEqual(error["code"], "form-inactive")
+        self._assert_submission_removed_from_session(submission)
 
     def test_cannot_submit_step_data(self):
         submission = SubmissionFactory.create(form=self.form)
@@ -127,6 +140,7 @@ class InactiveFormTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         error = response.json()
         self.assertEqual(error["code"], "form-inactive")
+        self._assert_submission_removed_from_session(submission)
 
     def test_cannot_complete_submission(self):
         submission = SubmissionFactory.create(form=self.form)
@@ -140,6 +154,7 @@ class InactiveFormTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         error = response.json()
         self.assertEqual(error["code"], "form-inactive")
+        self._assert_submission_removed_from_session(submission)
 
     def test_cannot_suspend_submission(self):
         submission = SubmissionFactory.create(form=self.form)
@@ -151,6 +166,7 @@ class InactiveFormTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         error = response.json()
         self.assertEqual(error["code"], "form-inactive")
+        self._assert_submission_removed_from_session(submission)
 
     def test_resume_submission(self):
         """
@@ -177,6 +193,7 @@ class InactiveFormTests(SubmissionsMixin, APITestCase):
         # _not_ 301/302/30x redirect
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTemplateUsed(response, "submissions/resume_form_error.html")
+        self._assert_submission_removed_from_session(submission)
 
 
 class InactiveFormAuthenticatedUserTests(InactiveFormTests):
