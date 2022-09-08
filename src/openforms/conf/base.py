@@ -685,7 +685,11 @@ CORS_ALLOW_HEADERS = (
     + [NONCE_HTTP_HEADER]
     + config("CORS_EXTRA_ALLOW_HEADERS", split=True, default=[])
 )
-CORS_EXPOSE_HEADERS = ["X-Session-Expires-In", "X-CSRFToken"]
+CORS_EXPOSE_HEADERS = [
+    "X-Session-Expires-In",
+    "X-CSRFToken",
+    "X-Is-Form-Designer",
+]
 CORS_ALLOW_CREDENTIALS = True  # required to send cross domain cookies
 
 #
