@@ -14,7 +14,6 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from openforms.api import pagination
-from openforms.api.exceptions import UnprocessableEntity
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.logging import logevent
@@ -24,6 +23,7 @@ from openforms.utils.api.throttle_classes import PollingRateThrottle
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..attachments import attach_uploads_to_submission_step
+from ..exceptions import FormDeactivated
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionStep
 from ..models.submission_step import DirtyData
@@ -115,7 +115,14 @@ class SubmissionViewSet(
     def get_object(self):
         if not hasattr(self, "_get_object_cache"):
             submission = super().get_object()
-            check_form_status(self.request, submission.form)
+
+            try:
+                check_form_status(self.request, submission.form)
+            except FormDeactivated:
+                remove_submission_from_session(submission, self.request.session)
+                # TODO: hash auth attributes of submission?
+                raise
+
             self._get_object_cache = submission
             # on the fly, calculate the price if it's not set yet (required for overview screen)
             if submission.completed_on is None:
@@ -415,7 +422,15 @@ class SubmissionStepViewSet(
                 form_step=form_step,
             )
         self.check_object_permissions(self.request, submission_step)
-        check_form_status(self.request, submission_step.submission.form)
+
+        submission = submission_step.submission
+        try:
+            check_form_status(self.request, submission.form)
+        except FormDeactivated:
+            remove_submission_from_session(submission, self.request.session)
+            # TODO: hash auth attributes of submission?
+            raise
+
         return submission_step
 
     @extend_schema(

@@ -224,8 +224,6 @@ def check_form_status(
         return
 
     if not form.active:
-        # TODO: clear submission from session!
-        # TODO: hash auth attributes of submission?
         raise FormDeactivated()
 
     # do not clear the submission from the session, as maintenance mode is supposed
