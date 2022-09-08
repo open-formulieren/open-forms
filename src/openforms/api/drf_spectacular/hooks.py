@@ -8,7 +8,11 @@ from drf_spectacular.plumbing import (
 from drf_spectacular.settings import spectacular_settings
 from drf_spectacular.utils import OpenApiParameter
 
-from openforms.middleware import CSRF_TOKEN_HEADER_NAME, SESSION_EXPIRES_IN_HEADER
+from openforms.middleware import (
+    CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME,
+    CSRF_TOKEN_HEADER_NAME,
+    SESSION_EXPIRES_IN_HEADER,
+)
 
 SESSION_EXPIRES_IN_PARAMETER = build_parameter_type(
     name=SESSION_EXPIRES_IN_HEADER,
@@ -50,6 +54,25 @@ CSRF_TOKEN_COMPONENT = ResolvedComponent(
     schema=CSRF_TOKEN_PARAMETER,
     object=CSRF_TOKEN_HEADER_NAME,
 )
+# Can navigate between submission steps header
+CAN_NAVIGATE_BETWEEN_STEPS_PARAMETER = build_parameter_type(
+    name=CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME,
+    schema=build_basic_type(str),
+    location=OpenApiParameter.HEADER,
+    description=_(
+        "If true, the user is allowed to navigate between submission steps even if previous submission steps have not"
+        " been completed yet."
+    ),
+    required=True,
+)
+del CAN_NAVIGATE_BETWEEN_STEPS_PARAMETER["in"]
+del CAN_NAVIGATE_BETWEEN_STEPS_PARAMETER["name"]
+CAN_NAVIGATE_BETWEEN_STEPS_COMPONENT = ResolvedComponent(
+    name=CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME,
+    type="headers",
+    schema=CAN_NAVIGATE_BETWEEN_STEPS_PARAMETER,
+    object=CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME,
+)
 
 
 def add_middleware_headers(result, generator, request, public):
@@ -72,6 +95,7 @@ def add_middleware_headers(result, generator, request, public):
                     {
                         SESSION_EXPIRES_IN_HEADER: SESSION_EXPIRES_IN_COMPONENT.ref,
                         CSRF_TOKEN_HEADER_NAME: CSRF_TOKEN_COMPONENT.ref,
+                        CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME: CAN_NAVIGATE_BETWEEN_STEPS_COMPONENT.ref,
                     }
                 )
 
