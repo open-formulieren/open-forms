@@ -2,7 +2,8 @@ from django.test import TestCase
 
 from rest_framework.reverse import reverse
 
-from openforms.middleware import CSRF_TOKEN_HEADER_NAME
+from openforms.accounts.tests.factories import StaffUserFactory, SuperUserFactory
+from openforms.middleware import CSRF_TOKEN_HEADER_NAME, IS_FORM_DESIGNER_HEADER_NAME
 
 
 class CSRFTokenMiddleware(TestCase):
@@ -17,3 +18,48 @@ class CSRFTokenMiddleware(TestCase):
         response = self.client.get("/")
 
         self.assertNotIn(CSRF_TOKEN_HEADER_NAME, response.headers)
+
+
+class CanNavigateBetweenStepsMiddlewareTests(TestCase):
+    def test_header_api_endpoint_not_authenticated(self):
+        url = reverse("api:form-list")
+
+        response = self.client.get(url)
+
+        self.assertIn(IS_FORM_DESIGNER_HEADER_NAME, response.headers)
+        self.assertEqual("false", response.headers[IS_FORM_DESIGNER_HEADER_NAME])
+
+    def test_header_not_api_endpoint_not_authenticated(self):
+        response = self.client.get("/")
+
+        self.assertNotIn(IS_FORM_DESIGNER_HEADER_NAME, response.headers)
+
+    def test_header_api_endpoint_superuser(self):
+        user = SuperUserFactory.create()
+        self.client.force_login(user=user)
+        url = reverse("api:form-list")
+
+        response = self.client.get(url)
+
+        self.assertIn(IS_FORM_DESIGNER_HEADER_NAME, response.headers)
+        self.assertEqual("true", response.headers[IS_FORM_DESIGNER_HEADER_NAME])
+
+    def test_header_api_endpoint_staff_without_permissions(self):
+        user = StaffUserFactory.create()
+        self.client.force_login(user=user)
+        url = reverse("api:form-list")
+
+        response = self.client.get(url)
+
+        self.assertIn(IS_FORM_DESIGNER_HEADER_NAME, response.headers)
+        self.assertEqual("false", response.headers[IS_FORM_DESIGNER_HEADER_NAME])
+
+    def test_header_api_endpoint_staff_with_permissions(self):
+        user = StaffUserFactory.create(user_permissions=["forms.change_form"])
+        self.client.force_login(user=user)
+        url = reverse("api:form-list")
+
+        response = self.client.get(url)
+
+        self.assertIn(IS_FORM_DESIGNER_HEADER_NAME, response.headers)
+        self.assertEqual("true", response.headers[IS_FORM_DESIGNER_HEADER_NAME])

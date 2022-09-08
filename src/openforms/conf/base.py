@@ -245,6 +245,7 @@ MIDDLEWARE = [
     "csp.contrib.rate_limiting.RateLimitedCSPMiddleware",
     # note: UpdateCSPMiddleware sets data on the **response** for use by RateLimitedCSPMiddleware, so has to come after
     "openforms.utils.middleware.UpdateCSPMiddleware",
+    "openforms.middleware.CanNavigateBetweenStepsMiddleware",
 ]
 
 ROOT_URLCONF = "openforms.urls"

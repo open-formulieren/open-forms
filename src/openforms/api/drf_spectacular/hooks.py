@@ -8,7 +8,11 @@ from drf_spectacular.plumbing import (
 from drf_spectacular.settings import spectacular_settings
 from drf_spectacular.utils import OpenApiParameter
 
-from openforms.middleware import CSRF_TOKEN_HEADER_NAME, SESSION_EXPIRES_IN_HEADER
+from openforms.middleware import (
+    CSRF_TOKEN_HEADER_NAME,
+    IS_FORM_DESIGNER_HEADER_NAME,
+    SESSION_EXPIRES_IN_HEADER,
+)
 
 SESSION_EXPIRES_IN_PARAMETER = build_parameter_type(
     name=SESSION_EXPIRES_IN_HEADER,
@@ -50,6 +54,25 @@ CSRF_TOKEN_COMPONENT = ResolvedComponent(
     schema=CSRF_TOKEN_PARAMETER,
     object=CSRF_TOKEN_HEADER_NAME,
 )
+# Can navigate between submission steps header
+IS_FORM_DESIGNER_PARAMETER = build_parameter_type(
+    name=IS_FORM_DESIGNER_HEADER_NAME,
+    schema=build_basic_type(str),
+    location=OpenApiParameter.HEADER,
+    description=_(
+        "If true, the user is allowed to navigate between submission steps even if previous submission steps have not"
+        " been completed yet."
+    ),
+    required=True,
+)
+del IS_FORM_DESIGNER_PARAMETER["in"]
+del IS_FORM_DESIGNER_PARAMETER["name"]
+IS_FORM_DESIGNER_COMPONENT = ResolvedComponent(
+    name=IS_FORM_DESIGNER_HEADER_NAME,
+    type="headers",
+    schema=IS_FORM_DESIGNER_PARAMETER,
+    object=IS_FORM_DESIGNER_HEADER_NAME,
+)
 
 
 def add_middleware_headers(result, generator, request, public):
@@ -58,6 +81,7 @@ def add_middleware_headers(result, generator, request, public):
     """
     generator.registry.register_on_missing(SESSION_EXPIRES_IN_COMPONENT)
     generator.registry.register_on_missing(CSRF_TOKEN_COMPONENT)
+    generator.registry.register_on_missing(IS_FORM_DESIGNER_COMPONENT)
 
     for path in result["paths"].values():
         for operation in path.values():
@@ -72,6 +96,7 @@ def add_middleware_headers(result, generator, request, public):
                     {
                         SESSION_EXPIRES_IN_HEADER: SESSION_EXPIRES_IN_COMPONENT.ref,
                         CSRF_TOKEN_HEADER_NAME: CSRF_TOKEN_COMPONENT.ref,
+                        IS_FORM_DESIGNER_HEADER_NAME: IS_FORM_DESIGNER_COMPONENT.ref,
                     }
                 )
 
