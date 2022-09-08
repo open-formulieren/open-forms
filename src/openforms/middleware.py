@@ -6,6 +6,7 @@ from openforms.config.models import GlobalConfiguration
 
 SESSION_EXPIRES_IN_HEADER = "X-Session-Expires-In"
 CSRF_TOKEN_HEADER_NAME = "X-CSRFToken"
+CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME = "X-Is-Staff"
 
 
 class SessionTimeoutMiddleware:
@@ -48,4 +49,29 @@ class CsrfTokenMiddleware:
             return response
 
         response[CSRF_TOKEN_HEADER_NAME] = get_token(request)
+        return response
+
+
+class CanNavigateBetweenStepsMiddleware:
+    """
+    Add a header to the response to let the frontend know if the user is allowed to navigate between submission steps
+    that have not been completed yet.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+
+        # Only add the header if it's an api endpoint
+        if not request.path.startswith("/api"):
+            return response
+
+        response[CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME] = "false"
+
+        user = request.user
+        if user.is_staff and user.has_perm("forms.change_form"):
+            response[CAN_NAVIGATE_BETWEEN_STEPS_HEADER_NAME] = "true"
+
         return response
