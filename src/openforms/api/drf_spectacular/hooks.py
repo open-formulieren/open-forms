@@ -81,6 +81,7 @@ def add_middleware_headers(result, generator, request, public):
     """
     generator.registry.register_on_missing(SESSION_EXPIRES_IN_COMPONENT)
     generator.registry.register_on_missing(CSRF_TOKEN_COMPONENT)
+    generator.registry.register_on_missing(CAN_NAVIGATE_BETWEEN_STEPS_COMPONENT)
 
     for path in result["paths"].values():
         for operation in path.values():
