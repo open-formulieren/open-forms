@@ -105,7 +105,7 @@ class FormVariableRaceConditionTasksTest(TransactionTestCase):
                     self.exc = e
 
             def join(self, *args, **kwargs):
-                threading.Thread.join(self, *args, **kwargs)
+                super().join(*args, **kwargs)
                 if self.exc:
                     raise self.exc
 
