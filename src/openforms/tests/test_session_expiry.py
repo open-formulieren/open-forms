@@ -164,15 +164,11 @@ class FormUserSessionExpiryTests(APITestCase):
                 self.assertEqual(
                     step1_response.json(),
                     {
-                        "type": "http://testserver/fouten/PermissionDenied/",
-                        "code": "permission_denied",
-                        "title": _(
-                            "You do not have permission to perform this action."
-                        ),
+                        "type": "http://testserver/fouten/NotAuthenticated/",
+                        "code": "not_authenticated",
+                        "title": _("Authentication credentials were not provided."),
                         "status": 403,
-                        "detail": _(
-                            "You do not have permission to perform this action."
-                        ),
+                        "detail": _("Authentication credentials were not provided."),
                         "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
                     },
                 )
