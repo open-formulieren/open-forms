@@ -59,6 +59,13 @@ class CompletionValidationSerializer(serializers.Serializer):
     )
 
 
+def is_step_unexpectedly_incomplete(submission_step: "SubmissionStep") -> bool:
+    if submission_step.form_step.optional:
+        return False
+    if not submission_step.completed and submission_step.is_applicable:
+        return True
+
+
 def validate_submission_completion(
     submission: Submission, request=None
 ) -> Optional[CompletionValidationSerializer]:
@@ -68,12 +75,11 @@ def validate_submission_completion(
     # When loading the state, knowledge of which steps are not applicable is lost
     check_submission_logic(submission)
 
-    incomplete_steps = []
-    for submission_step in state.submission_steps:
-        if submission_step.form_step.optional:
-            continue
-        if not submission_step.completed and submission_step.is_applicable:
-            incomplete_steps.append(submission_step)
+    incomplete_steps = [
+        submission_step
+        for submission_step in state.submission_steps
+        if is_step_unexpectedly_incomplete(submission_step)
+    ]
 
     completion = InvalidCompletion(
         submission=submission,

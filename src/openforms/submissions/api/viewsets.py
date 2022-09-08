@@ -147,14 +147,6 @@ class SubmissionViewSet(
             404: ExceptionSerializer,
             405: ExceptionSerializer,
         },
-        parameters=[
-            OpenApiParameter(
-                CSRF_TOKEN_HEADER_NAME,
-                OpenApiTypes.STR,
-                location=OpenApiParameter.HEADER,
-                required=True,
-            )
-        ],
     )
     @action(detail=True, methods=["get"], url_name="co-sign", url_path="co-sign")
     def co_sign(self, request, *args, **kwargs) -> Response:
@@ -460,7 +452,9 @@ class SubmissionStepViewSet(
         # happens, we need to wipe the data from those steps.
         submission = instance.submission
         merged_data = submission.data
-        execution_state = submission.load_execution_state()
+        # The endpoint permission evaluated the submission state, but now a step has been
+        # created/updated, so we need to refresh it
+        execution_state = submission.load_execution_state(refresh=True)
         current_step_index = execution_state.submission_steps.index(instance)
         subsequent_steps = execution_state.submission_steps[current_step_index + 1 :]
         for subsequent_step in subsequent_steps:

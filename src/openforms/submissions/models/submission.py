@@ -365,11 +365,11 @@ class Submission(models.Model):
         self._variables_state = SubmissionValueVariablesState(submission=self)
         return self._variables_state
 
-    def load_execution_state(self) -> SubmissionState:
+    def load_execution_state(self, refresh: bool = False) -> SubmissionState:
         """
         Retrieve the current execution state of steps from the database.
         """
-        if hasattr(self, "_execution_state"):
+        if hasattr(self, "_execution_state") and not refresh:
             return self._execution_state
 
         form_steps = self.form.formstep_set.select_related("form_definition").order_by(

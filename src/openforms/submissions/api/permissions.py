@@ -8,11 +8,13 @@ from rest_framework.views import APIView
 from openforms.api.permissions import TimestampedTokenPermission
 
 from ..constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
+from ..form_logic import check_submission_logic
 from ..models import SubmissionStep
 from ..tokens import (
     submission_report_token_generator,
     submission_status_token_generator,
 )
+from .validation import is_step_unexpectedly_incomplete
 
 
 def owns_submission(request: Request, submission_uuid: Union[str, UUID]) -> bool:
@@ -118,24 +120,24 @@ class CanNavigateBetweenSubmissionStepsPermission(permissions.BasePermission):
         user = request.user
 
         order = obj.form_step.order
-        if user.is_superuser or (
-            user.is_staff
-            and user.has_perm("accounts.can_navigate_between_submission_steps")
-        ):
+        if user.is_staff and user.has_perm("forms.change_form"):
             return True
 
         # If it's the first step in the form, then it can always be accessed
         if order == 0:
             return True
 
-        # If it's NOT the first step, then check that all previous steps are completed
-        # Here we check if there are the right number of saved submission steps
-        number_previous_completed_steps = obj.submission.submissionstep_set.filter(
-            form_step__order__lt=order
-        ).count()
+        submission = obj.submission
+        state = submission.load_execution_state()
+        check_submission_logic(submission)
 
-        # order starts at 0
-        if number_previous_completed_steps == order:
+        incomplete_steps = [
+            submission_step
+            for submission_step in state.submission_steps[:order]
+            if is_step_unexpectedly_incomplete(submission_step)
+        ]
+
+        if not incomplete_steps:
             return True
 
         return False

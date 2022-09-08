@@ -16,8 +16,11 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, SuperUserFactory
 from openforms.forms.custom_field_types import register, unregister
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
-from openforms.middleware import CSRF_TOKEN_HEADER_NAME
+from openforms.forms.tests.factories import (
+    FormFactory,
+    FormLogicFactory,
+    FormStepFactory,
+)
 
 from ..models import Submission
 from .factories import SubmissionFactory, SubmissionStepFactory
@@ -221,9 +224,7 @@ class GetSubmissionStepTests(SubmissionsMixin, APITestCase):
         )
 
         self._add_submission_to_session(self.submission)
-        response = self.client.get(
-            url, headers={CSRF_TOKEN_HEADER_NAME: self._get_csrf_token(self.submission)}
-        )
+        response = self.client.get(url)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
@@ -237,9 +238,7 @@ class GetSubmissionStepTests(SubmissionsMixin, APITestCase):
         )
 
         self._add_submission_to_session(self.submission)
-        response = self.client.get(
-            url, headers={CSRF_TOKEN_HEADER_NAME: self._get_csrf_token(self.submission)}
-        )
+        response = self.client.get(url)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
@@ -253,9 +252,7 @@ class GetSubmissionStepTests(SubmissionsMixin, APITestCase):
         )
 
         self._add_submission_to_session(self.submission)
-        response = self.client.get(
-            url, headers={CSRF_TOKEN_HEADER_NAME: self._get_csrf_token(self.submission)}
-        )
+        response = self.client.get(url)
 
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
@@ -271,16 +268,12 @@ class GetSubmissionStepTests(SubmissionsMixin, APITestCase):
         )
 
         self._add_submission_to_session(self.submission)
-        response = self.client.get(
-            url, headers={CSRF_TOKEN_HEADER_NAME: self._get_csrf_token(self.submission)}
-        )
+        response = self.client.get(url)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
     def test_step_retrieved_if_not_completed_for_staff_with_permission(self):
-        user = StaffUserFactory.create(
-            user_permissions=["can_navigate_between_submission_steps"]
-        )
+        user = StaffUserFactory.create(user_permissions=["forms.change_form"])
         self.client.force_login(user=user)
         url = reverse(
             "api:submission-steps-detail",
@@ -291,8 +284,65 @@ class GetSubmissionStepTests(SubmissionsMixin, APITestCase):
         )
 
         self._add_submission_to_session(self.submission)
-        response = self.client.get(
-            url, headers={CSRF_TOKEN_HEADER_NAME: self._get_csrf_token(self.submission)}
+        response = self.client.get(url)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+    def test_step_retrieved_if_previous_steps_completed_with_not_applicable_steps(self):
+        form = FormFactory.create()
+        form_step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [{"type": "textfield", "key": "field1"}]
+            },
         )
+        form_step2 = FormStepFactory.create(
+            form=form,
+        )
+        form_step2_path = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": form.uuid, "uuid": form_step2.uuid},
+        )
+        form_step3 = FormStepFactory.create(
+            form=form,
+        )
+
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [
+                    {"var": "field1"},
+                    "trigger-value",
+                ]
+            },
+            actions=[
+                {
+                    "form_step": f"http://example.com{form_step2_path}",
+                    "action": {
+                        "name": "Step is not applicable",
+                        "type": "step-not-applicable",
+                    },
+                }
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            form_step=form_step1,
+            submission=submission,
+            data={"field1": "trigger-value"},
+        )
+
+        # Step 2 is not applicable with the submitted data, so retrieving step 3 should succeed
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step3.uuid,
+            },
+        )
+
+        self._add_submission_to_session(submission)
+        response = self.client.get(url)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)

@@ -61,10 +61,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         permissions = (
             ("email_backend_test", _("Can use email backend test")),
             ("configuration_overview", _("Can access configuration overview")),
-            (
-                "can_navigate_between_submission_steps",
-                _("Can navigate between submission steps"),
-            ),
         )
 
     def get_full_name(self) -> str:
