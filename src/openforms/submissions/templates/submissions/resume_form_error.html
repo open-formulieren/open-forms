@@ -1,6 +1,29 @@
 {% extends "core/views/form/form_detail.html" %}
+{% load i18n %}
 
 {% block card %}
-    {# TODO: style #}
-    HTTP {{ error.status_code }} - {{ error.detail }} ({{ error.detail.code }})
+<div class="card">
+    <header class="card__header">
+        <h1 class="title">
+            {% if error.detail.code == 'form-inactive' %}
+                {% trans "Sorry - this form is no longer available" %}
+            {% elif error.detail.code == 'form-maintenance' %}
+                {% trans "Form temporarily unavailable" %}
+            {% endif %}
+        </h1>
+    </header>
+
+    <div class="card__body">
+        {% if error.detail.code == 'form-inactive' %}
+            {% blocktrans trimmed %}
+                Unfortunately, this form is no longer in use. We apologise for any
+                inconveniences.
+            {% endblocktrans %}
+        {% elif error.detail.code == 'form-maintenance' %}
+            {% blocktrans trimmed %}
+                This form is currently undergoing maintenance. Please try again later.
+            {% endblocktrans %}
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
