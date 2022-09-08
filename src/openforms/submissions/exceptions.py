@@ -9,4 +9,5 @@ class FormDeactivated(UnprocessableEntity):
 
 
 class FormMaintenance(ServiceUnavailable):
-    pass
+    default_detail = _("The form is currently disabled for maintenance.")
+    default_code = "form-maintenance"

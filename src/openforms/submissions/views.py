@@ -14,11 +14,11 @@ from furl import furl
 from privates.views import PrivateMediaView
 from rest_framework.reverse import reverse
 
-from openforms.api.exceptions import ServiceUnavailable, UnprocessableEntity
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 from openforms.tokens import BaseTokenGenerator
 
 from .constants import RegistrationStatuses
+from .exceptions import FormDeactivated, FormMaintenance
 from .models import Submission, SubmissionFileAttachment
 from .tokens import submission_resume_token_generator
 from .utils import add_submmission_to_session, check_form_status
@@ -34,8 +34,11 @@ class ResumeFormMixin(TemplateResponseMixin):
     def dispatch(self, request: HttpRequest, *args, **kwargs):
         try:
             return super().dispatch(request, *args, **kwargs)
-        except (UnprocessableEntity, ServiceUnavailable) as exc:
-            return self.render_to_response({"error": exc})
+        except (FormDeactivated, FormMaintenance) as exc:
+            return self.render_to_response(
+                context={"error": exc},
+                status=exc.status_code if isinstance(exc, FormMaintenance) else 200,
+            )
 
     def validate_url_and_get_submission(
         self, submission_uuid: uuid.UUID, token: str

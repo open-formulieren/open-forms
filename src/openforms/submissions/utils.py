@@ -4,7 +4,6 @@ from typing import Any, Union
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
 from django.http import HttpRequest
-from django.utils.translation import gettext as _
 
 from rest_framework.permissions import SAFE_METHODS
 from rest_framework.request import Request
@@ -226,4 +225,10 @@ def check_form_status(
 
     if not form.active:
         # TODO: clear submission from session!
+        # TODO: hash auth attributes of submission?
         raise FormDeactivated()
+
+    # do not clear the submission from the session, as maintenance mode is supposed
+    # to pass after a while
+    if form.maintenance_mode and not request.user.is_staff:
+        raise FormMaintenance()

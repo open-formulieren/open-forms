@@ -19,10 +19,7 @@ from openforms.emails.utils import render_email_template, send_mail_html
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import FormStep
-from openforms.forms.validators import (
-    validate_not_deleted,
-    validate_not_maintainance_mode,
-)
+from openforms.forms.validators import validate_not_deleted
 
 from ...utils.urls import build_absolute_uri
 from ..attachments import validate_uploads
@@ -31,7 +28,7 @@ from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep, TemporaryFileUpload
 from ..tokens import submission_resume_token_generator
 from .fields import NestedRelatedField
-from .validators import ValidatePrefillData
+from .validators import FormMaintenanceModeValidator, ValidatePrefillData
 
 logger = logging.getLogger(__name__)
 
@@ -188,7 +185,7 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
                 "lookup_field": "uuid",
                 "lookup_url_kwarg": "uuid_or_slug",
                 "validators": [
-                    validate_not_maintainance_mode,
+                    FormMaintenanceModeValidator(),
                     validate_not_deleted,
                 ],
             },
