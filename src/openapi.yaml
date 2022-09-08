@@ -3557,11 +3557,6 @@ paths:
       description: Retrieve co-sign state.
       summary: Retrieve co-sign state
       parameters:
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       - in: path
         name: uuid
         schema:
