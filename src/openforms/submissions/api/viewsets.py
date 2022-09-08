@@ -1,6 +1,7 @@
 import contextlib
 import logging
 from typing import Tuple
+from uuid import UUID
 
 from django.db import transaction
 from django.utils import timezone
@@ -10,6 +11,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import authentication, mixins, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound
 from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -414,24 +416,29 @@ class SubmissionStepViewSet(
         submission context and possibly transform the form definition.
         """
         submission_uuid = self.kwargs["submission_uuid"]
-        qs = SubmissionStep.objects.filter(
-            submission__uuid=submission_uuid,
-            form_step__uuid=self.kwargs["step_uuid"],
-        ).select_related("submission", "submission__form", "submission__auth_info")
-        try:
-            submission_step = qs.get()
-        except SubmissionStep.DoesNotExist:
-            submission = get_object_or_404(
-                Submission.objects.select_related("form"), uuid=submission_uuid
-            )
-            form_step = get_object_or_404(
-                submission.form.formstep_set, uuid=self.kwargs["step_uuid"]
-            )
-            submission_step = SubmissionStep(
-                uuid=None,
-                submission=submission,
-                form_step=form_step,
-            )
+        step_uuid = self.kwargs["step_uuid"]
+        if not isinstance(step_uuid, UUID):
+            step_uuid = UUID(step_uuid)
+
+        # we need to obtain the submission instance (which must exist!) and the
+        # form with related data, as efficiently as possible.
+        submission_qs = Submission.objects.select_related("form", "auth_info")
+        submission = get_object_or_404(submission_qs, uuid=submission_uuid)
+        # leverage the execution state which paints a complete picture of the (submitted)
+        # steps, including instances that haven't been saved to the DB yet. This is used
+        # throughout the different endpoints, so the benefit is that we save a lot of
+        # repeated calls due to the internal caching.
+        state = submission.load_execution_state()
+        submission_step = next(
+            (
+                step
+                for step in state.submission_steps
+                if step.form_step.uuid == step_uuid
+            ),
+            None,
+        )
+        if submission_step is None:
+            raise NotFound(_("Invalid form step reference given."))
         self.check_object_permissions(self.request, submission_step)
 
         submission = submission_step.submission
