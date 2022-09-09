@@ -6,12 +6,11 @@ Beheerprocessen
 
 Formulieren worden gemaakt, gepubliceerd, bijgewerkt, vervangen en eventueel
 uitgefaseerd. Hieronder staan de typische beheerprocessen voor formulieren die
-u kunt gebruiken om de levensloop van een formulier zo goed mogelijk te laten
-verlopen.
+u kunt gebruiken om de levensloop van een formulier te optimaliseren.
 
 Essentieel bij het beheer zijn 2 opties:
 
-* **Actief** geeft aan dat een formulier beschikbaar is voor iedereen.
+* **Actief** geeft de globale beschikbaarheid aan.
 * **Onderhoudsmodus** geeft aan dat een formulier tijdelijk niet beschikbaar 
   is.
 
@@ -35,7 +34,7 @@ Doorloop altijd eerst zelf het formulier voordat u een formulier actief maakt.
 .. note::
     
    Als u een nieuw formulier importeert staat de optie **Actief** automatisch
-   uit, en het geimporteerde formulier kan dus niet benaderd worden door
+   uit, en het geïmporteerde formulier kan dus niet benaderd worden door
    reguliere gebruikers en beheerders.
 
 
@@ -60,12 +59,12 @@ gebruiken.
    Lopende sessies blijven gewoon bestaan en ondervinden geen hinder.
 
 
-Bestaand formulieren bijwerken middels import
-=============================================
+Bestaande formulieren bijwerken middels import
+==============================================
 
 Als u een formulier heeft gemaakt op een andere omgeving (bijvoorbeeld een 
 test- of acceptatieomgeving) en deze wilt importeren om een bestaand formulier
-te vervangen, dan is dat is dat niet direct mogelijk.
+te vervangen, dan is dat niet direct mogelijk.
 
 U moet rekening houden met de volgende complicaties:
 
