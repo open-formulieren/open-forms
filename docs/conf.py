@@ -78,6 +78,7 @@ html_css_files = [
 todo_include_todos = True
 
 linkcheck_ignore = [
+    r"urn:*",
     r"https?://.*\.gemeente.nl",
     r"http://localhost:\d+/",
     r"https://.*sentry.*",

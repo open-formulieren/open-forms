@@ -18,8 +18,19 @@ be :ref:`prefilled <configuration_prefill_index>` with relevant personal data.
 
 .. note::
 
-    Open Forms currently only supports security level 
-    ``MobileTwoFactorContract`` (betrouwbaarheidsniveau "Midden").
+    Open Forms currently only supports security level (betrouwbaarheidsniveau)
+    "Midden".
+
+    ============= =================================================================
+    DigiD         SAML2 AuthnContextClassRef element
+    ============= =================================================================
+    Basis         urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport
+    Midden        urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract
+    Substantieel  urn:oasis:names:tc:SAML:2.0:ac:classes:Smartcard
+    Hoog          urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI
+    ============= =================================================================
+
+    Source: `Logius <https://www.logius.nl/diensten/digid/documentatie/koppelvlakspecificatie-digid-saml-authenticatie>`__
 
 
 Step by step overview
