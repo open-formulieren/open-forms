@@ -224,30 +224,36 @@ const FormStepDefinition = ({
           </Field>
         </FormRow>
         <FormRow>
-          <Checkbox
-            label={
-              <FormattedMessage
-                defaultMessage="Login required?"
-                description="Form step login required label"
-              />
-            }
-            name="loginRequired"
-            checked={loginRequired}
-            onChange={e => onFieldChange({target: {name: 'loginRequired', value: !loginRequired}})}
-          />
+          <Field name="loginRequired">
+            <Checkbox
+              label={
+                <FormattedMessage
+                  defaultMessage="Login required?"
+                  description="Form step login required label"
+                />
+              }
+              name="loginRequired"
+              checked={loginRequired}
+              onChange={e =>
+                onFieldChange({target: {name: 'loginRequired', value: !loginRequired}})
+              }
+            />
+          </Field>
         </FormRow>
         <FormRow>
-          <Checkbox
-            label={
-              <FormattedMessage
-                defaultMessage="Is reusable?"
-                description="Form step is reusable label"
-              />
-            }
-            name="isReusable"
-            checked={isReusable}
-            onChange={e => onFieldChange({target: {name: 'isReusable', value: !isReusable}})}
-          />
+          <Field name="isReusable">
+            <Checkbox
+              label={
+                <FormattedMessage
+                  defaultMessage="Is reusable?"
+                  description="Form step is reusable label"
+                />
+              }
+              name="isReusable"
+              checked={isReusable}
+              onChange={e => onFieldChange({target: {name: 'isReusable', value: !isReusable}})}
+            />
+          </Field>
         </FormRow>
       </fieldset>
 
