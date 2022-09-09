@@ -87,8 +87,8 @@ const VariableRow = ({index, variable}) => {
       <td>{variable.name}</td>
       <Td variable={variable} fieldName="key" />
       <td>{getFormDefinitionName(variable.formDefinition)}</td>
-      <td>{variable.prefillAttribute}</td>
       <td>{variable.prefillPlugin}</td>
+      <td>{variable.prefillAttribute}</td>
       <td>{variable.dataType}</td>
       <td>
         <SensitiveData isSensitive={variable.isSensitiveData} />
