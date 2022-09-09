@@ -27,7 +27,7 @@ from openforms.utils.api.throttle_classes import PollingRateThrottle
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..attachments import attach_uploads_to_submission_step
-from ..exceptions import FormDeactivated
+from ..exceptions import FormDeactivated, FormMaintenance
 from ..form_logic import evaluate_form_logic
 from ..models import Submission, SubmissionStep
 from ..models.submission_step import DirtyData
@@ -110,6 +110,8 @@ def cleanup_deactivated_form_session(request: Request, submission: Submission):
             201: SubmissionSerializer,
             400: ValidationErrorSerializer,
             403: ExceptionSerializer,
+            FormDeactivated.status_code: ExceptionSerializer,
+            FormMaintenance.status_code: ExceptionSerializer,
         },
     ),
 )
@@ -190,6 +192,8 @@ class SubmissionViewSet(
         responses={
             200: SubmissionCompletionSerializer,
             400: CompletionValidationSerializer,
+            FormDeactivated.status_code: ExceptionSerializer,
+            FormMaintenance.status_code: ExceptionSerializer,
         },
         parameters=[
             OpenApiParameter(
@@ -318,6 +322,8 @@ class SubmissionViewSet(
         responses={
             201: SubmissionSuspensionSerializer,
             # 400: TODO - schema for errors
+            FormDeactivated.status_code: ExceptionSerializer,
+            FormMaintenance.status_code: ExceptionSerializer,
         },
         parameters=[
             OpenApiParameter(
@@ -454,6 +460,8 @@ class SubmissionStepViewSet(
             201: SubmissionStepSerializer,
             400: ValidationErrorSerializer,
             403: ExceptionSerializer,
+            FormDeactivated.status_code: ExceptionSerializer,
+            FormMaintenance.status_code: ExceptionSerializer,
         },
         parameters=[
             OpenApiParameter(
@@ -518,6 +526,8 @@ class SubmissionStepViewSet(
             204: None,
             400: ValidationErrorSerializer,
             403: ExceptionSerializer,
+            FormDeactivated.status_code: ExceptionSerializer,
+            FormMaintenance.status_code: ExceptionSerializer,
         },
         parameters=[
             OpenApiParameter(
@@ -558,6 +568,8 @@ class SubmissionStepViewSet(
         responses={
             200: SubmissionStateLogicSerializer,
             403: ExceptionSerializer,
+            FormDeactivated.status_code: ExceptionSerializer,
+            FormMaintenance.status_code: ExceptionSerializer,
         },
         parameters=[
             OpenApiParameter(
