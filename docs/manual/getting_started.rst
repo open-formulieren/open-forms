@@ -148,7 +148,7 @@ Wisselen tussen klanten
 Beheert uw organisatie meerdere klanten, dan kunt u eenvoudig wisselen tussen
 Open Formulieren van verschillende klanten.
 
-Klik rechtsbovenin op de *puldown* en selecteer naar welke klant omgeving van
+Klik rechtsbovenin op de *pulldown* en selecteer naar welke klant omgeving van
 Open Formulieren wilt navigeren. Afhankelijk van de configuratie moet u daar
 opnieuw inloggen.
 
