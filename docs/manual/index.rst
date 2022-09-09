@@ -15,5 +15,6 @@ more technical configuration of Open Forms? Check out the
    accounts
    forms/index
    submissions
+   workflows
    templates
    mtls
