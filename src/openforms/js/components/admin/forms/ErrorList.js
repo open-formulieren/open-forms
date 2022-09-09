@@ -1,8 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
-const ErrorList = ({classNamePrefix, children}) => {
-  const ulClassNames = 'errorlist ' + (classNamePrefix ? classNamePrefix + '__errors' : '');
+const ErrorList = ({classNamePrefix, classNameModifier, children}) => {
+  const additionalClassName = `${classNamePrefix}__errors`;
+  const additionalClassNameModified = `${additionalClassName}--${classNameModifier}`;
+  let ulClassNames = classNames(
+    'errorlist',
+    {[additionalClassName]: classNamePrefix},
+    {[additionalClassNameModified]: classNameModifier}
+  );
+
   const errors = React.Children.map(children, (error, i) => (
     <li key={i} className={classNamePrefix ? `${classNamePrefix}__error` : ''}>
       {error}
@@ -17,6 +25,7 @@ const ErrorList = ({classNamePrefix, children}) => {
 ErrorList.propTypes = {
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.string), PropTypes.string]),
   classNamePrefix: PropTypes.string,
+  classNameModifier: PropTypes.string,
 };
 
 export default ErrorList;
