@@ -34,7 +34,7 @@ const isJsonLogic = jsonExpression => {
   return jsonLogic.is_logic(jsonExpression);
 };
 
-const JsonWidget = ({name, logic, onChange}) => {
+const JsonWidget = ({name, logic, onChange, cols = 60}) => {
   const intl = useIntl();
   const [jsonError, setJsonError] = useState('');
   const [editorValue, setEditorValue] = useState(jsonFormat(logic));
@@ -82,7 +82,7 @@ const JsonWidget = ({name, logic, onChange}) => {
   return (
     <div className="json-widget">
       <div className="json-widget__input">
-        <TextArea name={name} value={editorValue} onChange={onJsonChange} cols={60} />
+        <TextArea name={name} value={editorValue} onChange={onJsonChange} cols={cols} />
       </div>
       {jsonError.length ? <div className="json-widget__error">{jsonError}</div> : null}
     </div>
@@ -93,6 +93,7 @@ JsonWidget.propTypes = {
   name: PropTypes.string.isRequired,
   logic: jsonPropTypeValidator,
   onChange: PropTypes.func.isRequired,
+  cols: PropTypes.number,
 };
 
 export default JsonWidget;
