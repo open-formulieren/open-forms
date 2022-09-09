@@ -33,6 +33,8 @@ const Field = ({
   errors = [],
   children,
   fieldBox = false,
+  errorClassPrefix = '',
+  errorClassModifier = '',
 }) => {
   const intl = useIntl();
   const originalName = name;
@@ -47,9 +49,17 @@ const Field = ({
 
   return (
     <>
-      {!fieldBox && hasErrors ? <ErrorList>{formattedErrors}</ErrorList> : null}
+      {!fieldBox && hasErrors ? (
+        <ErrorList classNamePrefix={errorClassPrefix} classNameModifier={errorClassModifier}>
+          {formattedErrors}
+        </ErrorList>
+      ) : null}
       <div className={className}>
-        {fieldBox && hasErrors ? <ErrorList>{formattedErrors}</ErrorList> : null}
+        {fieldBox && hasErrors ? (
+          <ErrorList classNamePrefix={errorClassPrefix} classNameModifier={errorClassModifier}>
+            {formattedErrors}
+          </ErrorList>
+        ) : null}
         {label && (
           <label className={required ? 'required' : ''} htmlFor={htmlFor}>
             {label}

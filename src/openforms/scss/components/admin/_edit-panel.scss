@@ -45,4 +45,11 @@
     margin-left: 0;
     padding-left: 0;
   }
+
+  .checkbox__errors {
+    &--no-padding {
+      margin-left: 0 !important;
+      padding-left: 0 !important;
+    }
+  }
 }

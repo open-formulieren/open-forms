@@ -224,7 +224,11 @@ const FormStepDefinition = ({
           </Field>
         </FormRow>
         <FormRow>
-          <Field name="loginRequired">
+          <Field
+            name="loginRequired"
+            errorClassPrefix={'checkbox'}
+            errorClassModifier={'no-padding'}
+          >
             <Checkbox
               label={
                 <FormattedMessage
@@ -241,7 +245,7 @@ const FormStepDefinition = ({
           </Field>
         </FormRow>
         <FormRow>
-          <Field name="isReusable">
+          <Field name="isReusable" errorClassPrefix={'checkbox'} errorClassModifier={'no-padding'}>
             <Checkbox
               label={
                 <FormattedMessage
