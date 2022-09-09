@@ -63,10 +63,7 @@ In dit tabblad worden de algemene formulier gegevens weergegeven.
 * **Inlogopties**: Als voor een formulier ingelogd moet worden kan een van de
   beschikbare inlog opties worden aangevinkt.
 
-  .. toctree::
-     :maxdepth: 2
-
-     ../../configuration/authentication/index
+  Zie ook: :ref:`configuration_authentication_index`
 
 * **Toon voortgang**: Vink aan om de stappen bij een formulier te tonen. Typisch
   kan deze worden uitgevinkt indien er een slechts beperkt aantal stappen is.
@@ -165,10 +162,7 @@ In dit tabblad kunt u aangeven op welke manier uw inzendingen moeten worden
 geregistreerd. Alle inzendingen komen altijd binnen bij Open Formulieren zelf
 maar kunnen daarnaast doorgezet worden naar een extern systeem.
 
-.. toctree::
-   :maxdepth: 2
-
-   ../../configuration/registration/index
+Zie ook: :ref:`configuration_registration_index`
 
 
 Knopteksten
@@ -187,15 +181,12 @@ product bevat een prijs die gebruikt kan worden als betaald moet worden voor
 het product. Betaling kan ingesteld worden door de juiste **Betaalprovider** te
 selecteren.
 
-.. toctree::
-   :maxdepth: 2
-
-   ../../configuration/payment/index
-
 Ten slotte kunt u ervoor kiezen om de prijs van het gekoppeld product te 
 gebruiken of logica regels op te stellen voor het bepalen van de prijs. Dit 
 laatste kunt u instellen onder **Prijslogica**. De **Prijslogica** volgt verder 
 dezelfde regels als reguliere **Logica**.
+
+Zie ook: :ref:`configuration_payment_index`
 
 
 Gegevens opschonen
@@ -223,15 +214,12 @@ Als u een formulier wilt koppelen aan een afsprakensysteem, dan kunt u hier
 aangeven welke velden opgenomen moeten worden in de afspraak. Bij de meeste
 afspraaksystemen zijn alle velden verplicht.
 
+Zie ook: :ref:`configuration_appointment_index`
+
 .. note::
   
    U kunt hier niet kiezen voor een gekoppeld afspraaksysteem. Deze is alleen
    globaal te configureren.
-
-.. toctree::
-   :maxdepth: 2
-
-   ../../configuration/appointment/index
 
 
 .. _`variables`:
