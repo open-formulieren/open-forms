@@ -13,7 +13,7 @@ Veel veld typen (ook wel componenten genoemd) hebben soortgelijke opties en
 functies. Hieronder staan de meest voorkomende genoemd, onderverdeeld in de
 tabbladen binnen het component.
 
-Basic
+Basis
 -----
 
 * **Label**: Het label bij het veld dat zichtbaar is voor de eindgebruiker.
@@ -28,22 +28,21 @@ Basic
   vullen en door te zetten naar achterliggende registratiesystemen. Beheerders
   kunnen de waarden van onzichtbare velden uiteraard wel zien.
 
+.. _`variables_usage`:
+
 Variabelen
 ~~~~~~~~~~
 
-U kunt variabelen gebruiken in het ontwerp van formulieren, bijvoorbeeld om een
-(voor-)ingevulde naam in het label van een ander formulierveld weer te geven. Hiervoor
-is de :ref:`sjabloonfunctionaliteit <manual_templates>` beschikbaar.
-
-Ontwikkelaars kunnen meer lezen in de technische documentatie voor
-:ref:`variabelen <developers_backend_core_variables>` en
-:ref:`sjablonen <developers_backend_core_templating>`.
+U kunt :ref:`variabelen <variables>` gebruiken in het ontwerp van formulieren, 
+bijvoorbeeld om een (voor-)ingevulde naam in het label van een ander 
+formulierveld weer te geven. Hiervoor is de 
+:ref:`sjabloonfunctionaliteit <manual_templates>` beschikbaar.
 
 .. note::
 
     Alle velden in een formulier zijn als variabele beschikbaar. Daarnaast zijn er ook
-    altijd een aantal vast variabelen beschikbaar én u kunt zelf ook variabelen
-    definiëren.
+    altijd een aantal :ref:`vaste variabelen beschikbaar én u kunt zelf ook variabelen
+    definiëren <variables>`.
 
 Stel dat u een formulier hebt met de volgende velden:
 

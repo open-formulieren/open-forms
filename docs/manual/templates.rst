@@ -22,10 +22,11 @@ afhankelijk van het type sjabloon en het formulier.
 
 Stel, we hebben een formulier met daarin onderstaande velden en een gebruiker
 heeft voor elk formulierveld een bepaalde *waarde* ingevuld. Technisch heeft
-elk veld een *eigenschap*-attribuut wat het veld uniek identifieert.
+elk veld een *eigenschap*-attribuut. Dit attribuut identificeert elk veld uniek
+en dit is ook het attribuut dat we gebruiken als *variabele*.
 
 ==========  =============
-Eigenschap  Waarde
+Variabele   Waarde
 ==========  =============
 leeftijd    19
 geslacht    M
@@ -119,18 +120,22 @@ Voorbeeld
          Hoi Joe!
 
 
+.. _`formatting_of_variables`:
+
 Formattering van variabelen
 ---------------------------
 
-Vaak wilt u variabelen op een bepaalde manier formatteren. Dit is mogelijk met behulp
-van de *sjabloonfilters* die standaard ingebouwd zijn. Alle beschikbare filters
-zijn gedocumenteerd op de `Django defaultfilters reference`_.
+Vaak wilt u :ref:`variabelen <variables>` op een bepaalde manier formatteren. 
+Dit is mogelijk met behulp van de *sjabloonfilters* die standaard ingebouwd 
+zijn. Alle beschikbare filters zijn gedocumenteerd op de 
+`Django defaultfilters reference`_. Het patroon is typisch: 
+``{{ <variable>|<sjabloonfilter> }}``
 
 Hieronder vindt u een tabel met vaak-voorkomende patronen.
 
-=================================== ================================== ===============================================
-Expressie                           Voorbeeld output                   Toelichting
-=================================== ================================== ===============================================
+=================================== ================================== ================================================
+Expressie                           Voorbeeld waarde                   Toelichting
+=================================== ================================== ================================================
 ``{{ now|date:"l j F Y" }}``        ``dinsdag 23 augustus 2022``       Datum van vandaag, tekstueel
 ``{{ now|date:"d/m/Y" }}``          ``23/08/2022``                     Datum van vandaag, d/m/y
 ``{{ now|date:"m" }}``              ``08``                             Huidige maand
@@ -143,8 +148,8 @@ Expressie                           Voorbeeld output                   Toelichti
 ``{{ now|date:"W" }}``              ``34``                             ISO-8601 weeknummer
 ``{{ legeVariabele|default:"-" }}`` ``-``                              Terugvalwaarde indien de variabele "leeg" is
 ``{{ filesize|filesizeformat }}``   ``117,7 MB``                       Weergave van bytes (nummer) in leesbare vorm
-``{{ consent|yesno:"ok,niet ok"}}`` ``niet ok``                        Weergave op basis van ``True``/``False`` waarde
-=================================== ================================== ===============================================
+``{{ consent|yesno:"ok,niet ok"}}`` ``niet ok``                        Weergave op basis van ``True``/ ``False`` waarde
+=================================== ================================== ================================================
 
 .. note:: Op dit moment krijgt u altijd de Nederlandse vertalingen/localisatie.
    Er is nog geen ondersteuning voor andere talen.

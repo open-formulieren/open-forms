@@ -74,7 +74,8 @@ In dit tabblad worden de algemene formulier gegevens weergegeven.
   buitenwereld.
 * **Onderhoudsmodus**: Vink aan om het formulier in onderhoudsmodus te zetten.
   Als het formulier in onderhoudsmodus staat, kan het formulier niet gestart
-  worden en verschijnt er een melding voor de eindgebruiker.
+  worden en verschijnt er een melding voor de eindgebruiker. Beheerders kunnen
+  het formulier blijven gebruiken.
 * **Inzenden mogelijk**: Vink aan om eindgebruikers het formulier te laten
   versturen. Sommige formulieren dienen niet verstuurd te worden maar geven
   bijvoorbeeld alleen informatie of verwijzingen naar andere formulieren. In dat
@@ -231,3 +232,54 @@ afspraaksystemen zijn alle velden verplicht.
    :maxdepth: 2
 
    ../../configuration/appointment/index
+
+
+.. _`variables`:
+
+Variabelen
+----------
+
+Variabelen vormen een krachtige manier verschillende gegevens in een formulier
+bij elkaar te laten komen. U kunt :ref:`variabelen gebruiken <variables_usage>`
+in logica, of in andere velden, of om interne gegevens op te slaan die niet 
+voor de eindgebruiker bedoeld zijn.
+
+Er zijn 3 soorten variabelen:
+
+Formulier variabelen
+~~~~~~~~~~~~~~~~~~~~
+
+Alle velden in het formulier zijn ook beschikbaar als variabele. De 
+eigenschapsnaam van een veld wordt gebruikt als variabele. Dit gebeurt 
+automatisch.
+
+Gebruikersvariabelen
+~~~~~~~~~~~~~~~~~~~~
+
+Zelf te beheren variabelen die niet gekoppeld zijn aan een specifiek 
+formulierveld. U kunt hier bijvoorbeeld waarden opslaan die door logica worden 
+verkregen of uit externe koppelingen.
+
+Vaste variabelen
+~~~~~~~~~~~~~~~~
+
+Een vaste lijst met variabelen die beschikbaar zijn door het formulier heen.
+Afhankelijk van het type formulier zijn variabelen wel of niet voorzien van een
+waarde.
+
+=============== ========= =========================== ====================================================================================================================
+Variabele       Type      Voorbeeld waarde            Toelichting
+=============== ========= =========================== ====================================================================================================================
+now             datetime  ``2022-09-09 18:29:00``     Datum van vandaag. Hier zijn :ref:`verschillende weergaven <formatting_of_variables>` van mogelijk.
+environment     string    ``production``              De waarde die tijdens de installatie gezet is als ``ENVIRONMENT``. Zie: :ref:`installation_environment_config`.
+form_name       string    ``Paspoort aanvragen``      De naam van het formulier.
+form_id         string    ``1c453fc8-b10f-4510-``...  Het unieke ID van het formulier.
+auth            object                                Een verzameling van authenticatie gegevens. Zie hieronder.
+auth.plugin     string    ``DigiD``                   De naam van de gebruikte authenticatie plugin.
+auth.attribute  string    ``bsn``                     Kan de waarden ``bsn``, ``kvk`` of ``pseudo`` hebben.
+auth.value      string    ``111222333``               De identificerende waarde in het ``attribute`` van de authenticatie plugin.
+auth.machtigen  object    TODO                        
+auth_bsn        string    ``111222333``               De waarde van ``auth.value`` indien ``auth.attribute`` als waarde ``bsn`` heeft. Anders leeg.
+auth_kvk        string    ``90001354``                De waarde van ``auth.value`` indien ``auth.attribute`` als waarde ``kvk`` heeft. Anders leeg.
+auth_pseudo     string    ``a8bfe7a293dd``...         De waarde van ``auth.value`` indien ``auth.attribute`` als waarde ``psuedo`` heeft. Anders leeg.
+=============== ========= =========================== ====================================================================================================================
