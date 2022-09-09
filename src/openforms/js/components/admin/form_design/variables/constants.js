@@ -10,6 +10,7 @@ const COMPONENT_DATATYPES = {
   selectboxes: 'object',
   npFamilyMembers: 'object',
   map: 'array',
+  editgrid: 'array',
 };
 
 const DATATYPES_CHOICES = [

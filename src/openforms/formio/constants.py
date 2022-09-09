@@ -8,4 +8,5 @@ COMPONENT_DATATYPES = {
     "selectboxes": "object",
     "npFamilyMembers": "object",
     "map": "array",
+    "editgrid": "array",
 }
