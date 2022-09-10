@@ -29,37 +29,37 @@ Formulier maken
 
 5. Scroll naar de sectie **Velden**.
 6. Sleep een **Select** component op het witte vlak, vul de volgende
-   gegevens in en druk daarna op **Save**:
+   gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Producten
 
 7. Sleep een **Select** component op het witte vlak, vul de volgende
-   gegevens in en druk daarna op **Save**:
+   gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Locaties
 
 8. Sleep een **Select** component op het witte vlak, vul de volgende
-   gegevens in en druk daarna op **Save**:
+   gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Datums
 
 9. Sleep een **Select** component op het witte vlak, vul de volgende
-   gegevens in en druk daarna op **Save**:
+   gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Tijden
 
-10. Sleep een **Text Field** component op het witte vlak, vul de volgende
-    gegevens in en druk daarna op **Save**:
+10. Sleep een **Tekstveld** component op het witte vlak, vul de volgende
+    gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Achternaam
 
-11. Sleep een **Date Field** component op het witte vlak, vul de volgende
-    gegevens in en druk daarna op **Save**:
+11. Sleep een **Datum** component op het witte vlak, vul de volgende
+    gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Geboortedatum
 
-12. (Optioneel) Sleep een **Phone Numbers Field** component op het witte vlak, vul de volgende
-    gegevens in en druk daarna op **Save**:
+12. (Optioneel) Sleep een **Telefoonnummer** component op het witte vlak, vul de volgende
+    gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Telefoonnummer
 

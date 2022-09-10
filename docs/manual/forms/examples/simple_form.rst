@@ -52,42 +52,42 @@ Formulier maken
     * **Inloggen vereist?**: *Aangevinkt*
 
 7. Scroll naar de sectie **Velden**.
-8. Sleep een **Text Field** component van de kolom aan de linkerkant, naar 
+8. Sleep een **Tekstveld** component van de kolom aan de linkerkant, naar 
    rechts op het witte vlak, bovenin. Als een doorzichtige versie van 
-   **Text Field** zichtbaar wordt kunt u de muisknop loslaten.
+   **Tekstveld** zichtbaar wordt kunt u de muisknop loslaten.
 9.  Er verschijnt een een popup genaamd **Text Field Component**.
 10. Vul de volgende gegevens in onder In het tabblad **Basic**:
 
     * **Label**: Voornaam
-    * **Description**: Uw eerste voornaam zoals in uw paspoort staat vermeld.
-    * **Show in email**: *Aangevinkt*
+    * **Beschrijving**: Uw eerste voornaam zoals in uw paspoort staat vermeld.
+    * **Weergeven in bevestigingsmail**: *Aangevinkt*
 
-11. Klik op **Save**. Het component is nu toegevoegd aan de formulier definitie.
-12. Sleep een nieuw **Text Field** component op het witte vlak, vul de volgende 
-    gegevens in en druk daarna op **Save**.
+11. Klik op **Opslaan**. Het component is nu toegevoegd aan de formulier definitie.
+12. Sleep een nieuw **Tekstveld** component op het witte vlak, vul de volgende 
+    gegevens in en druk daarna op **Opslaan**.
 
     * **Basic** tab:
 
       * **Label**: Achternaam
-      * **Description**: Uw volledige achternaam.
-      * **Show in email**: *Aangevinkt*
+      * **Beschrijving**: Uw volledige achternaam.
+      * **Weergeven in bevestigingsmail**: *Aangevinkt*
 
-    * **Validation** tab:
+    * **Validatie** tab:
 
-      * **Required**: *Aangevinkt*
+      * **Verplicht**: *Aangevinkt*
 
 13. Sleep een **Email** component op het witte vlak, vul de volgende gegevens 
-    in en druk daarna op **Save**.
+    in en druk daarna op **Opslaan**.
 
     * **Basic** tab:
 
       * **Label**: E-mail
-      * **Description**: Het e-mail adres waarop u de bevestiging wilt ontvangen.
-      * **Receives confirmation email**: *Aangevinkt*
+      * **Beschrijving**: Het e-mail adres waarop u de bevestiging wilt ontvangen.
+      * **Ontvangt bevestigingsmail**: *Aangevinkt*
 
-    * **Validation** tab:
+    * **Validatie** tab:
 
-      * **Required**: *Aangevinkt*
+      * **Verplicht**: *Aangevinkt*
 
 14. Klik aan de linkerkant op **Stap toevoegen** en selecteer **Maak een nieuwe 
     formulierdefinitie**.
@@ -97,19 +97,19 @@ Formulier maken
     * **Naam**: Vraag of klacht
 
 16. Scroll naar de sectie **Velden**.
-17. Sleep een **Text Area** component op het witte vlak, vul de volgende 
-    gegevens in en druk daarna op **Save**.
+17. Sleep een **Textvlak** component op het witte vlak, vul de volgende 
+    gegevens in en druk daarna op **Opslaan**.
 
     * **Basic** tab:
 
       * **Label**: Omschrijving
-      * **Description**: Omschrijf uw vraag of klacht.
-      * **Show in email**: *Aangevinkt*
-      * **Show Character Counter**: *Aangevinkt*
+      * **Beschrijving**: Omschrijf uw vraag of klacht.
+      * **Weergeven in bevestigingsmail**: *Aangevinkt*
+      * **Toon aantal karakters**: *Aangevinkt*
 
-    * **Validation** tab:
+    * **Validatie** tab:
 
-      * **Required**: *Aangevinkt*
+      * **Verplicht**: *Aangevinkt*
       * **Maximum Length**: 500
 
 18. Klik op het tabblad **Bevestiging**.

@@ -42,36 +42,36 @@ Formulier maken
 
 5. Scroll naar de sectie **Velden**.
 6. Sleep een **Postcode Field** component op het witte vlak, vul de volgende
-   gegevens in en druk daarna op **Save**:
+   gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Postcode
 
-7. Sleep een **Text Field** component op het witte vlak, vul de volgende
-   gegevens in en druk daarna op **Save**:
+7. Sleep een **Tekstveld** component op het witte vlak, vul de volgende
+   gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Huisnummer
 
-8. Sleep een **Text Field** component op het witte vlak, vul de volgende
-   gegevens in en druk daarna op **Save**:
+8. Sleep een **Tekstveld** component op het witte vlak, vul de volgende
+   gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Straat
 
    Onder de **Location** tab:
 
-     * **Derive street name**: *Aangevinkt*
-     * **Postcode component**: ``Postcode (postcode)``
-     * **House number component**: ``Huisnummer (huisnummer)``
+     * **Straatnaam afleiden**: *Aangevinkt*
+     * **Postcodecomponent**: ``Postcode (postcode)``
+     * **Huisnummercomponent**: ``Huisnummer (huisnummer)``
 
-9. Sleep een **Text Field** component op het witte vlak, vul de volgende
-   gegevens in en druk daarna op **Save**:
+9. Sleep een **Tekstveld** component op het witte vlak, vul de volgende
+   gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Stad
 
    Onder de **Location** tab:
 
-   * **Derive city**: *Aangevinkt*
-   * **Postcode component**: ``Postcode (postcode)``
-   * **House number component**: ``Huisnummer (huisnummer)``
+   * **Stad afleiden**: *Aangevinkt*
+   * **Postcodecomponent**: ``Postcode (postcode)``
+   * **Huisnummercomponent**: ``Huisnummer (huisnummer)``
 
 10. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
 
