@@ -8,7 +8,7 @@ REGISTRATION_ATTRIBUTE = "registration.attribute"
 
 class RegistrationAttribute(DjangoChoices):
     # Initiator
-    ## Natuurlijk Persoon
+    # Natuurlijk Persoon
     initiator_voorletters = ChoiceItem(
         "initiator_voorletters", _("Initiator > Voorletters")
     )
@@ -29,7 +29,7 @@ class RegistrationAttribute(DjangoChoices):
         "initiator_aanschrijfwijze", _("Initiator > Aanschrijfwijze")
     )
 
-    ## Verblijfsadres for both Natuurlijk Persoon and Vestiging
+    # Verblijfsadres for both Natuurlijk Persoon and Vestiging
     initiator_straat = ChoiceItem("Strainitiator_straatat", _("Initiator > Straat"))
     initiator_huisnummer = ChoiceItem(
         "initiator_huisnummer", _("Initiator > Huisnummer")
@@ -45,13 +45,13 @@ class RegistrationAttribute(DjangoChoices):
         "initiator_woonplaats", _("Initiator > Woonplaats")
     )
 
-    ## Contactpersoon
+    # Contactpersoon
     initiator_telefoonnummer = ChoiceItem(
         "initiator_telefoonnummer", _("Initiator > Telefoonnummer")
     )
     initiator_emailadres = ChoiceItem("initiator_emailadres", _("Initiator > E-mail"))
 
-    ## Vestiging
+    # Vestiging
     initiator_handelsnaam = ChoiceItem(
         "initiator_handelsnaam", _("Initiator > Handelsnaam")
     )
@@ -62,5 +62,5 @@ class RegistrationAttribute(DjangoChoices):
         "initiator_vestigingsnummer", _("Initiator > Vestigingsnummer")
     )
 
-    ## Location
+    # Location
     locatie_coordinaat = ChoiceItem("locatie_coordinaat", _("Location > Coordinate"))

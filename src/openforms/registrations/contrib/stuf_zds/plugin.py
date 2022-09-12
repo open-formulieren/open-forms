@@ -157,7 +157,7 @@ class StufZDSRegistration(BasePlugin):
 
     zaak_mapping = {
         # Initiator
-        ## Natuurlijk Persoon
+        # Natuurlijk Persoon
         "initiator.voorletters": RegistrationAttribute.initiator_voorletters,
         "initiator.voornamen": RegistrationAttribute.initiator_voornamen,
         "initiator.voorvoegselGeslachtsnaam": RegistrationAttribute.initiator_tussenvoegsel,
@@ -170,17 +170,17 @@ class StufZDSRegistration(BasePlugin):
             RegistrationAttribute.initiator_geboortedatum, transform=PartialDate.parse
         ),
         # "initiator.aanschrijfwijze": FieldConf(RegistrationAttribute.initiator_aanschrijfwijze),
-        ## Verblijfsadres for both Natuurlijk Persoon and Vestiging
+        # Verblijfsadres for both Natuurlijk Persoon and Vestiging
         "initiator.verblijfsadres.woonplaatsNaam": RegistrationAttribute.initiator_woonplaats,
         "initiator.verblijfsadres.postcode": RegistrationAttribute.initiator_postcode,
         "initiator.verblijfsadres.straatnaam": RegistrationAttribute.initiator_straat,
         "initiator.verblijfsadres.huisnummer": RegistrationAttribute.initiator_huisnummer,
         "initiator.verblijfsadres.huisletter": RegistrationAttribute.initiator_huisletter,
         "initiator.verblijfsadres.huisnummertoevoeging": RegistrationAttribute.initiator_huisnummer_toevoeging,
-        ## Contactpersoon
+        # Contactpersoon
         "initiator.telefoonnummer": RegistrationAttribute.initiator_telefoonnummer,
         "initiator.emailadres": RegistrationAttribute.initiator_emailadres,
-        ## Vestiging
+        # Vestiging
         "initiator.vestigingsNummer": RegistrationAttribute.initiator_vestigingsnummer,
         "initiator.handelsnaam": RegistrationAttribute.initiator_handelsnaam,
         # Identifiers
