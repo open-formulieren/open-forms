@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.urls import reverse
 
 import elasticapm
@@ -6,8 +8,9 @@ from rest_framework.request import Request
 from openforms.forms.custom_field_types import handle_custom_types
 from openforms.prefill import inject_prefill
 from openforms.submissions.models import Submission
-from openforms.typing import JSONObject
+from openforms.typing import DataMapping, JSONObject
 
+from .dynamic_config.service import apply_dynamic_configuration
 from .normalization import normalize_value_for_component
 from .utils import format_date_value, iter_components, mimetype_allowed
 from .variables import inject_variables
@@ -27,7 +30,10 @@ __all__ = [
 # the context of the same request
 @elasticapm.capture_span(span_type="app.formio")
 def get_dynamic_configuration(
-    configuration: dict, request: Request, submission: Submission
+    configuration: dict,
+    request: Request,
+    submission: Submission,
+    data: Optional[DataMapping] = None,
 ) -> JSONObject:
     """
     Given a static Formio configuration, apply the hooks to dynamically transform this.
@@ -37,6 +43,7 @@ def get_dynamic_configuration(
     configuration = handle_custom_types(
         configuration, request=request, submission=submission
     )
+    apply_dynamic_configuration(configuration, data=data)
     # prefill is still 'special' even though it uses variables, as we specifically
     # set the `defaultValue` key to the resulting variable.
     # This *could* be refactored in the future by assigning a template expression to

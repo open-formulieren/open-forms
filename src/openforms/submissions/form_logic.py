@@ -123,6 +123,7 @@ def evaluate_form_logic(
         # already.
         request=context.get("request"),
         submission=submission,
+        data=data_container.data,
     )
 
     # 7.1 Apply the component mutation operations

@@ -20,7 +20,7 @@ class AbstractBasePlugin:
         return self.verbose_name
 
     @property
-    def is_enabled(self):
+    def is_enabled(self) -> bool:
         config = GlobalConfiguration.get_solo()
         return config.plugin_enabled(self.registry.module, self.identifier)
 
