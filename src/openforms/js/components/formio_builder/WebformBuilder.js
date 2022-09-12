@@ -54,6 +54,7 @@ class WebformBuilder extends WebformBuilderFormio {
     );
 
     // Extract the callback that will be called when a component is changed in the editor
+    if (!this.editForm) return;
     const existingOnChangeHandlers = this.editForm.events._events['formio.change'];
 
     const modifiedOnChangeCallback = event => {

@@ -47,3 +47,14 @@ $bootstrap-ratio-desktop: math.div(12, $grid-columns-desktop);
     }
   }
 }
+
+[ref='editForm'] {
+  .formio-component-columns.row {
+    margin-left: -7.5px;
+    margin-right: -7.5px;
+  }
+  .columns > * {
+    margin-left: 7.5px;
+    margin-right: 7.5px;
+  }
+}
