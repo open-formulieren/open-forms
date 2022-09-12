@@ -65,7 +65,7 @@ def _gender_choices(value):
     Convert value to lowercase, take only the first character and see if it's
     valid for ZGW APIs 'geslachtsaanduiding'.
     """
-    value = str(value).upper()[:1]
+    value = str(value).lower()[:1]
     if value not in ["m", "v", "o"]:
         return SKIP
     return value
@@ -89,7 +89,7 @@ class ZGWRegistration(BasePlugin):
 
     rol_mapping = {
         # Initiator
-        ## Natuurlijk Persoon
+        # Natuurlijk Persoon
         "betrokkeneIdentificatie.voorletters": RegistrationAttribute.initiator_voorletters,
         "betrokkeneIdentificatie.voornamen": RegistrationAttribute.initiator_voornamen,
         "betrokkeneIdentificatie.geslachtsnaam": RegistrationAttribute.initiator_geslachtsnaam,
@@ -100,17 +100,17 @@ class ZGWRegistration(BasePlugin):
             transform=_gender_choices,
         ),
         # "betrokkeneIdentificatie.aanschrijfwijze": FieldConf(RegistrationAttribute.initiator_aanschrijfwijze),
-        ## Verblijfsadres for both Natuurlijk Persoon and Vestiging
+        # Verblijfsadres for both Natuurlijk Persoon and Vestiging
         "betrokkeneIdentificatie.verblijfsadres.woonplaatsNaam": RegistrationAttribute.initiator_woonplaats,
         "betrokkeneIdentificatie.verblijfsadres.postcode": RegistrationAttribute.initiator_postcode,
         "betrokkeneIdentificatie.verblijfsadres.straatnaam": RegistrationAttribute.initiator_straat,
         "betrokkeneIdentificatie.verblijfsadres.huisnummer": RegistrationAttribute.initiator_huisnummer,
         "betrokkeneIdentificatie.verblijfsadres.huisletter": RegistrationAttribute.initiator_huisletter,
         "betrokkeneIdentificatie.verblijfsadres.huisnummertoevoeging": RegistrationAttribute.initiator_huisnummer_toevoeging,
-        ## Contactpersoon (NOT SUPPORTED BY ZGW APIs)
+        # Contactpersoon (NOT SUPPORTED BY ZGW APIs)
         # "betrokkeneIdentificatie.telefoonnummer": RegistrationAttribute.initiator_telefoonnummer,
         # "betrokkeneIdentificatie.emailadres": RegistrationAttribute.initiator_emailadres,
-        ## Vestiging
+        # Vestiging
         "betrokkeneIdentificatie.vestigingsNummer": RegistrationAttribute.initiator_vestigingsnummer,
         "betrokkeneIdentificatie.handelsnaam": RegistrationAttribute.initiator_handelsnaam,
         # Identifiers

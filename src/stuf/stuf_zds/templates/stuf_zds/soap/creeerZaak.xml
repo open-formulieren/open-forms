@@ -73,7 +73,7 @@
                             <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
                             {% if initiator.geslachtsnaam %}<BG:geslachtsnaam>{{ initiator.geslachtsnaam }}</BG:geslachtsnaam>{% endif %}
                             {% if initiator.voorvoegselGeslachtsnaam %}<BG:voorvoegselGeslachtsnaam>{{ initiator.voorvoegselGeslachtsnaam }}</BG:voorvoegselGeslachtsnaam>{% endif %}
-                            {% if initiator.voorletters %}<BG:voorletters>{% initiator.voorletters %}</BG:voorletters>{% endif %}
+                            {% if initiator.voorletters %}<BG:voorletters>{{ initiator.voorletters }}</BG:voorletters>{% endif %}
                             {% if initiator.voornamen %}<BG:voornamen>{{ initiator.voornamen }}</BG:voornamen>{% endif %}
                             {% if initiator.geslachtsaanduiding %}<BG:geslachtsaanduiding>{{ initiator.geslachtsaanduiding }}</BG:geslachtsaanduiding>{% endif %}
                             {% if initiator.geboortedatum %}<BG:geboortedatum StUF:indOnvolledigeDatum="{{ initiator.geboortedatum.indicator }}">{{ initiator.geboortedatum.value }}</BG:geboortedatum>{% endif %}
@@ -104,7 +104,7 @@
                             {% if initiator.emailadres %}<ZKN:emailadres>{{ initiator.emailadres }}</ZKN:emailadres>{% endif %}
                         </ZKN:gerelateerde>
                     </ZKN:heeftAlsAanspreekpunt>
-                {% endif}
+                {% endif %}
 
             </ZKN:heeftAlsInitiator>
         {% elif not global_config.allow_empty_initiator %}
