@@ -5,10 +5,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from openforms.formio.service import (
-    get_dynamic_configuration,
-    update_configuration_for_request,
-)
+from openforms.formio.service import update_configuration_for_request
 
 from ...models import Form, FormDefinition
 from ...validators import validate_form_definition_is_reusable
@@ -59,18 +56,6 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
         # TODO: move this to openforms.formio.dynamic_config
         update_configuration_for_request(configuration, request=self.context["request"])
 
-        _handle_custom_types = self.context.get("handle_custom_types", True)
-        # avoid doing a second pass if the dynamic config was already processed.
-        # TODO: this can probably be removed completely because of the logic check
-        # being called in submissions app?
-        if _handle_custom_types and not configuration.get(
-            "_dynamic_config_processed", False
-        ):
-            representation["configuration"] = get_dynamic_configuration(
-                configuration,
-                request=self.context["request"],
-                submission=self.context["submission"],
-            )
         return representation
 
     class Meta:

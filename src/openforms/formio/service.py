@@ -51,7 +51,6 @@ def get_dynamic_configuration(
     # this is still complicated in the form designer for non-text input defaults such
     # as checkboxes/dropdowns/radios/...
     inject_prefill(configuration, submission)
-    configuration["_dynamic_config_processed"] = True
     return configuration
 
 

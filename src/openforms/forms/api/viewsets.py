@@ -183,10 +183,6 @@ class FormDefinitionViewSet(viewsets.ModelViewSet):
             return FormDefinitionDetailSerializer
         return super().get_serializer_class()
 
-    def get_serializer_context(self) -> dict:
-        context = super().get_serializer_context()
-        return {**context, "handle_custom_types": False}
-
     @extend_schema(
         summary=_("Retrieve form definition JSON schema"),
         tags=["forms"],
