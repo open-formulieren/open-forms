@@ -55,19 +55,54 @@ def _point_coordinate(value):
     return {"type": "Point", "coordinates": [value[0], value[1]]}
 
 
+def _gender_choices(value):
+    """
+    Convert value to lowercase, take only the first character and see if it's
+    valid for ZGW APIs 'geslachtsaanduiding'.
+    """
+    value = str(value).lower()[:1]
+    if value not in ["m", "v", "o"]:
+        return SKIP
+    return value
+
+
 @register("zgw-create-zaak")
 class ZGWRegistration(BasePlugin):
     verbose_name = _("ZGW API's")
     configuration_options = ZaakOptionsSerializer
 
     rol_mapping = {
+        # Initiator
+        # Natuurlijk Persoon
+        "betrokkeneIdentificatie.voorletters": RegistrationAttribute.initiator_voorletters,
         "betrokkeneIdentificatie.voornamen": RegistrationAttribute.initiator_voornamen,
         "betrokkeneIdentificatie.geslachtsnaam": RegistrationAttribute.initiator_geslachtsnaam,
         "betrokkeneIdentificatie.voorvoegselGeslachtsnaam": RegistrationAttribute.initiator_tussenvoegsel,
         "betrokkeneIdentificatie.geboortedatum": RegistrationAttribute.initiator_geboortedatum,
+        "betrokkeneIdentificatie.geslachtsaanduiding": FieldConf(
+            RegistrationAttribute.initiator_geslachtsaanduiding,
+            transform=_gender_choices,
+        ),
         # "betrokkeneIdentificatie.aanschrijfwijze": FieldConf(RegistrationAttribute.initiator_aanschrijfwijze),
+        # Verblijfsadres for both Natuurlijk Persoon and Vestiging
+        "betrokkeneIdentificatie.verblijfsadres.woonplaatsNaam": RegistrationAttribute.initiator_woonplaats,
+        "betrokkeneIdentificatie.verblijfsadres.postcode": RegistrationAttribute.initiator_postcode,
+        "betrokkeneIdentificatie.verblijfsadres.straatnaam": RegistrationAttribute.initiator_straat,
+        "betrokkeneIdentificatie.verblijfsadres.huisnummer": RegistrationAttribute.initiator_huisnummer,
+        "betrokkeneIdentificatie.verblijfsadres.huisletter": RegistrationAttribute.initiator_huisletter,
+        "betrokkeneIdentificatie.verblijfsadres.huisnummertoevoeging": RegistrationAttribute.initiator_huisnummer_toevoeging,
+        # Contactpersoon (NOT SUPPORTED BY ZGW APIs)
+        # "betrokkeneIdentificatie.telefoonnummer": RegistrationAttribute.initiator_telefoonnummer,
+        # "betrokkeneIdentificatie.emailadres": RegistrationAttribute.initiator_emailadres,
+        # Vestiging
+        "betrokkeneIdentificatie.vestigingsNummer": RegistrationAttribute.initiator_vestigingsnummer,
+        "betrokkeneIdentificatie.handelsnaam": RegistrationAttribute.initiator_handelsnaam,
+        # Identifiers
         "betrokkeneIdentificatie.inpBsn": FieldConf(submission_field="bsn"),
+        # This field is not part of the StUF-ZDS standard.
+        "betrokkeneIdentificatie._kvk": FieldConf(submission_field="kvk"),
     }
+
     zaak_mapping = {
         "zaakgeometrie": FieldConf(
             RegistrationAttribute.locatie_coordinaat, transform=_point_coordinate
@@ -107,6 +142,14 @@ class ZGWRegistration(BasePlugin):
         rol_data = apply_data_mapping(
             submission, self.rol_mapping, REGISTRATION_ATTRIBUTE
         )
+        betrokkene_identificatie = rol_data.get("betrokkeneIdentificatie", {})
+        kvk = betrokkene_identificatie.pop("_kvk", None)
+
+        if kvk:
+            rol_data["betrokkeneType"] = "vestiging"
+        else:
+            rol_data["betrokkeneType"] = "natuurlijk_persoon"
+
         rol = create_rol(zaak, rol_data, options)
 
         # for now create generic status
