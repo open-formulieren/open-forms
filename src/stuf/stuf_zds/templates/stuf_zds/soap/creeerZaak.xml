@@ -57,21 +57,41 @@
         {% if initiator.bsn or initiator.kvk %}
             <ZKN:heeftAlsInitiator StUF:verwerkingssoort="T" StUF:entiteittype="ZAKBTRINI">
                 <ZKN:gerelateerde>
+                    {% comment SUPPORT FOR EMPLOYEES AS INITIATOR %}
+                    {% if initiator.TODO %}
+                        <ZKN:medewerker StUF:entiteittype="MDW" StUF:verwerkingssoort="T">
+                            <ZKN:identificatie>?</ZKN:identificatie>
+                            <ZKN:achternaam>?</ZKN:achternaam>
+                            <ZKN:voorletters>?</ZKN:voorletters>
+                            <ZKN:voorvoegselAchternaam>?</ZKN:voorvoegselAchternaam>
+                        </ZKN:medewerker>
+                    {% endif %}
+                    {% endcomment %}
                     {% if initiator.bsn %}
                         <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
                             <BG:inp.bsn>{{ initiator.bsn }}</BG:inp.bsn>
                             <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
                             {% if initiator.geslachtsnaam %}<BG:geslachtsnaam>{{ initiator.geslachtsnaam }}</BG:geslachtsnaam>{% endif %}
                             {% if initiator.voorvoegselGeslachtsnaam %}<BG:voorvoegselGeslachtsnaam>{{ initiator.voorvoegselGeslachtsnaam }}</BG:voorvoegselGeslachtsnaam>{% endif %}
-{#                            <BG:voorletters>?</BG:voorletters>#}
+                            {% if initiator.voorletters %}<BG:voorletters>{{ initiator.voorletters }}</BG:voorletters>{% endif %}
                             {% if initiator.voornamen %}<BG:voornamen>{{ initiator.voornamen }}</BG:voornamen>{% endif %}
-{#                            <BG:geslachtsaanduiding>?</BG:geslachtsaanduiding>#}
+                            {% if initiator.geslachtsaanduiding %}<BG:geslachtsaanduiding>{{ initiator.geslachtsaanduiding }}</BG:geslachtsaanduiding>{% endif %}
                             {% if initiator.geboortedatum %}<BG:geboortedatum StUF:indOnvolledigeDatum="{{ initiator.geboortedatum.indicator }}">{{ initiator.geboortedatum.value }}</BG:geboortedatum>{% endif %}
+
+                            {% if initiator.verblijfsadres.postcode or initiator.verblijfsadres.woonplaatsNaam %}
+                                {% include "stuf_zds/soap/includes/verblijfsadres.xml" %}
+                            {% endif %}
                         </ZKN:natuurlijkPersoon>
                     {% elif initiator.kvk %}
                         <ZKN:vestiging StUF:entiteittype="VES" StUF:verwerkingssoort="T">
-                            <BG:vestigingsNummer>{{ initiator.kvk }}</BG:vestigingsNummer>
-                            <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
+                            {# Fall back on KvK-number if no vestigingsnumber. #}
+                            {% if initiator.vestigingsNummer %}<BG:vestigingsNummer>{{ initiator.vestigingsNummer }}</BG:vestigingsNummer>{% endif %}
+                            <BG:authentiek>N</BG:authentiek>
+                            {% if initiator.handelsnaam %}<BG:handelsnaam>{{ initiator.handelsnaam }}</BG:handelsnaam>{% endif %}
+
+                            {% if initiator.verblijfsadres.postcode or initiator.verblijfsadres.woonplaatsNaam %}
+                                {% include "stuf_zds/soap/includes/verblijfsadres.xml" %}
+                            {% endif %}
                         </ZKN:vestiging>
                     {% endif %}
                 </ZKN:gerelateerde>
