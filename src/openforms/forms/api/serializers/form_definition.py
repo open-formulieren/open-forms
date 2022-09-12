@@ -53,17 +53,21 @@ class UsedInFormSerializer(serializers.HyperlinkedModelSerializer):
 class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance=instance)
+        configuration = representation["configuration"]
 
         # set upload urls etc
-        update_configuration_for_request(
-            representation["configuration"],
-            request=self.context["request"],
-        )
+        # TODO: move this to openforms.formio.dynamic_config
+        update_configuration_for_request(configuration, request=self.context["request"])
 
         _handle_custom_types = self.context.get("handle_custom_types", True)
-        if _handle_custom_types:
+        # avoid doing a second pass if the dynamic config was already processed.
+        # TODO: this can probably be removed completely because of the logic check
+        # being called in submissions app?
+        if _handle_custom_types and not configuration.get(
+            "_dynamic_config_processed", False
+        ):
             representation["configuration"] = get_dynamic_configuration(
-                representation["configuration"],
+                configuration,
                 request=self.context["request"],
                 submission=self.context["submission"],
             )

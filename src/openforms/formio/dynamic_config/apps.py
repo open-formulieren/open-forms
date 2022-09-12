@@ -6,4 +6,4 @@ class FormioDynamicConfigApp(AppConfig):
     label = "formio_dynamic_config"
 
     def ready(self):
-        from . import default  # noqa - register the plugins
+        from . import date  # noqa - register the plugins
