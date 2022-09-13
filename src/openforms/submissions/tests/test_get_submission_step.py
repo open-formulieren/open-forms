@@ -393,7 +393,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         )
         SubmissionValueVariableFactory.create(
             submission=submission,
-            form_variable__key="userDefinedDate",
+            key="userDefinedDate",
             form_variable__user_defined=True,
             form_variable__data_type=FormVariableDataTypes.datetime,
             value="2022-12-31",

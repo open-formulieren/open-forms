@@ -3,7 +3,6 @@ from datetime import datetime, time
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from django.db import models
-from django.db.models import Q
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.translation import gettext_lazy as _
@@ -34,7 +33,7 @@ class SubmissionValueVariablesState:
     @property
     def variables(self) -> Dict[str, "SubmissionValueVariable"]:
         if not self._variables:
-            self._variables = self.collect_variables(self.submission)
+            self._variables = self.collect_variables()
         return self._variables
 
     @property
@@ -91,38 +90,55 @@ class SubmissionValueVariablesState:
             if variable.key in keys_in_step
         }
 
-    def collect_variables(
-        self, submission: "Submission"
-    ) -> Dict[str, "SubmissionValueVariable"]:
-        # Get the SubmissionValueVariables already saved in the database
-        saved_submission_value_variables = (
-            submission.submissionvaluevariable_set.all().select_related(
-                "form_variable__form_definition"
-            )
-        )
+    def collect_variables(self) -> Dict[str, "SubmissionValueVariable"]:
+        # leverage the (already populated) submission state to get access to form
+        # steps and form definitions
+        submission_state = self.submission.load_execution_state()
+        form_definition_map = {
+            form_step.form_definition.id: form_step.form_definition
+            for form_step in submission_state.form_steps
+        }
 
-        # Get all the form variables for the SubmissionVariables that have not been created yet
-        form_variables = FormVariable.objects.filter(
-            ~Q(key__in=saved_submission_value_variables.values_list("key", flat=True)),
-            form=submission.form,
-        ).select_related("form_definition")
+        # Build a collection of all form variables
+        all_form_variables = {
+            form_variable.key: form_variable
+            for form_variable in self.submission.form.formvariable_set.all()
+        }
+        # optimize the access from form_variable.form_definition using the already
+        # existing map, saving a `select_related` call on data we (probably) already
+        # have
+        for form_variable in all_form_variables.values():
+            if not (form_def_id := form_variable.form_definition_id):
+                continue
+            form_variable.form_definition = form_definition_map[form_def_id]
 
-        unsaved_value_variables = {}
-        for form_variable in form_variables:
+        # now retrieve the persisted variables from the submission - avoiding select_related
+        # calls since we already have the relevant data
+        all_submission_variables = {
+            submission_value_variables.key: submission_value_variables
+            for submission_value_variables in self.submission.submissionvaluevariable_set.all()
+        }
+        # do the join by `key`, which is unique across the form
+        for variable_key, submission_value_variable in all_submission_variables.items():
+            if variable_key not in all_form_variables:
+                continue
+            submission_value_variable.form_variable = all_form_variables[variable_key]
+
+        # finally, add in the unsaved variables from defualt values
+        for variable_key, form_variable in all_form_variables.items():
+            # if the key exists from the saved values in the DB, do nothing
+            if variable_key in all_submission_variables:
+                continue
             # TODO Fill source field
-            key = form_variable.key
             unsaved_submission_var = SubmissionValueVariable(
-                submission=submission,
+                submission=self.submission,
                 form_variable=form_variable,
-                key=key,
+                key=variable_key,
                 value=form_variable.get_initial_value(),
             )
-            unsaved_value_variables[key] = unsaved_submission_var
+            all_submission_variables[variable_key] = unsaved_submission_var
 
-        return {
-            **{variable.key: variable for variable in saved_submission_value_variables},
-            **unsaved_value_variables,
-        }
+        return all_submission_variables
 
     def remove_variables(self, keys: list) -> None:
         for key in keys:

@@ -14,8 +14,8 @@ class VariablesNode(Node):
     """
     Render node for the user defined variables related to a form.
 
-    This node is only 'visible' for certain render modes (cli and registration), but it is not rendered if there are
-    user defined variables related to the form.
+    This node is only 'visible' for certain render modes (cli and registration), but it
+    is not rendered if there are user defined variables related to the form.
     """
 
     submission: Submission
@@ -31,13 +31,14 @@ class VariablesNode(Node):
     @property
     def variables(self):
         if not self._variables:
-            self._variables = (
-                self.submission.submissionvaluevariable_set.filter(
-                    form_variable__source=FormVariableSources.user_defined
-                )
-                .select_related("form_variable")
-                .order_by("pk")
-            )
+            variables_state = self.submission.load_submission_value_variables_state()
+            relevant_vars = [
+                variable
+                for variable in variables_state.variables.values()
+                if variable.pk
+                and variable.form_variable.source == FormVariableSources.user_defined
+            ]
+            self._variables = sorted(relevant_vars, key=lambda variable: variable.pk)
         return self._variables
 
     def render(self) -> str:

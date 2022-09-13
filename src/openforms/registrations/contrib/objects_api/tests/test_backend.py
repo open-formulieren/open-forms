@@ -964,13 +964,15 @@ class ObjectsAPIBackendTests(TestCase):
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
             },
+            completed=True,
         )
+        submission_step = submission.steps[0]
 
         SubmissionFileAttachmentFactory.create(
-            submission_step__submission=submission, file_name="attachment1.jpg"
+            submission_step=submission_step, file_name="attachment1.jpg"
         )
         SubmissionFileAttachmentFactory.create(
-            submission_step__submission=submission, file_name="attachment2.jpg"
+            submission_step=submission_step, file_name="attachment2.jpg"
         )
 
         mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")

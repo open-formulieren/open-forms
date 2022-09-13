@@ -328,6 +328,8 @@ class Form(models.Model):
 
     @property
     def login_required(self) -> bool:
+        # TODO: check if we have a prefetch cache, otherwise fall back to a simpler
+        # query with .exists()
         return any(
             [
                 form_step.form_definition.login_required

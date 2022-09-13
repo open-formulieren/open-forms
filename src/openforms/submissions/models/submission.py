@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Union
 
 from django.db import models, transaction
-from django.db.models import Q
 from django.template import Context, Template
 from django.urls import resolve
 from django.utils.translation import gettext_lazy as _
@@ -267,6 +266,7 @@ class Submission(models.Model):
 
     objects = SubmissionManager()
 
+    _form_login_required: Optional[bool] = None  # can be set via annotation
     _prefilled_data = None
 
     class Meta:
@@ -311,6 +311,18 @@ class Submission(models.Model):
             update_fields += ["needs_on_completion_retry"]
 
         self.save(update_fields=update_fields)
+
+    @property
+    def form_login_required(self):
+        # support annotated fields to save additional queries. Unfortunately,
+        # we cannot pass an annotated queryset to use within a select_related field,
+        # so instead in our viewset(s) we annotate the submission object.
+        #
+        # This saves a number of queries, since we can avoid prefetch calls for single
+        # objects or form.formstep_set.all() calls on the fly.
+        if self._form_login_required is not None:
+            return self._form_login_required
+        return self.form.login_required
 
     @property
     def is_authenticated(self):
@@ -372,34 +384,34 @@ class Submission(models.Model):
         if hasattr(self, "_execution_state") and not refresh:
             return self._execution_state
 
-        form_steps = self.form.formstep_set.select_related("form_definition").order_by(
-            "order"
+        form_steps = list(
+            self.form.formstep_set.select_related("form_definition").order_by("order")
         )
-        _submission_steps = self.submissionstep_set.select_related(
-            "form_step", "form_step__form_definition"
-        )
-        submission_steps = {step.form_step: step for step in _submission_steps}
+        # ⚡️ no select_related/prefetch ON PURPOSE - while processing the form steps,
+        # we're doing this in python as we have the objects already from the query
+        # above.
+        submission_steps = {
+            step.form_step_id: step for step in self.submissionstep_set.all()
+        }
 
         # build the resulting list - some SubmissionStep instances will probably not exist
         # in the database yet - this is on purpose!
         steps: List[SubmissionStep] = []
         for form_step in form_steps:
-            if form_step in submission_steps:
-                step = submission_steps[form_step]
+            if form_step.id in submission_steps:
+                step = submission_steps[form_step.id]
+                # replace the python objects to avoid extra queries and/or joins in the
+                # submission step query.
+                step.form_step = form_step
+                step.submission = self
             else:
                 # there's no known DB record for this, so we create a fresh, unsaved
                 # instance and return this
-                step = SubmissionStep(
-                    # nothing assigned yet, and on next call it'll be a different value
-                    # if we rely on the default
-                    uuid=None,
-                    submission=self,
-                    form_step=form_step,
-                )
+                step = SubmissionStep(uuid=None, submission=self, form_step=form_step)
             steps.append(step)
 
         state = SubmissionState(
-            form_steps=list(form_steps),
+            form_steps=form_steps,
             submission_steps=steps,
         )
         self._execution_state = state
@@ -565,9 +577,9 @@ class Submission(models.Model):
 
     def get_prefilled_data(self):
         if self._prefilled_data is None:
-            self._prefilled_data = dict(
-                self.submissionvaluevariable_set.filter(
-                    ~Q(form_variable__prefill_plugin="")
-                ).values_list("key", "value")
-            )
+            values_state = self.load_submission_value_variables_state()
+            prefill_vars = values_state.get_prefill_variables()
+            self._prefilled_data = {
+                variable.key: variable.value for variable in prefill_vars
+            }
         return self._prefilled_data

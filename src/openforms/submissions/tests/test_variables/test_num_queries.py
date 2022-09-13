@@ -57,12 +57,14 @@ class SubmissionVariablesPerformanceTests(APITestCase):
         submission_step2._unsaved_data = {"var3": "test3", "var4": "test4"}
         data = submission.data
 
-        # 1. get_dynamic_configuration: injects variables in configuration and *currently* does 1 query to retrieve
-        #    variables with prefill data, so the defaultValue on the components can be set.
-        # 2. Retrieve all logic rules related to a form
-        # 3. Load submission state: Retrieve formsteps,
-        # 4. Load submission state: Retrieve submission steps
-        with self.assertNumQueries(4):
+        # preload the execution state, this normally happens in the viewset/calling code
+        submission.load_execution_state()
+        del submission._variables_state  # force re-fetching this to count queries
+
+        # 1. Loading the variables state - fetch all the form variables
+        # 2. Loading the variables state - fetch all the submission variables
+        # 3. Retrieve all logic rules related to a form
+        with self.assertNumQueries(3):
             evaluate_form_logic(submission, submission_step2, data)
 
     def test_evaluate_form_logic_with_rules(self):
@@ -119,20 +121,23 @@ class SubmissionVariablesPerformanceTests(APITestCase):
         )
         data = submission.data
 
-        # 1.  get_dynamic_configuration: injects variables in configuration and *currently* does 1 query to retrieve
-        #     variables with prefill data, so the defaultValue on the components can be set.
-        # 2.  Retrieve all logic rules related to a form
-        # 3.  Load submission state: Retrieve formsteps,
-        # 4.  Load submission state: Retrieve submission steps
-        # 5.  Retrieve the submission variables to be deleted
-        # 6.  Retrieve the submission attachment files to be deleted
-        # 7.  SAVEPOINT
-        # 8.  Delete submission attachment files
-        # 9.  RELEASE SAVEPOINT
-        # 10. Delete submission values
-        # 11. Retrieve all form_variables
-        # 12. Creation of timelinelog
-        with self.assertNumQueries(12):
+        # preload the execution state, this normally happens in the viewset/calling code
+        submission.load_execution_state()
+        del submission._variables_state  # force re-fetching this to count queries
+
+        # 1.  Loading the variables state - fetch all the form variables
+        # 2.  Loading the variables state - fetch all the submission variables
+        # 3.  Retrieve all logic rules related to a form
+        # 4.  Retrieve the submission variables to be deleted - deletion of data happens
+        #     because the step is marked N/A
+        # 5.  Retrieve the submission attachment files to be deleted
+        # 6.  SAVEPOINT
+        # 7.  Delete submission attachment files
+        # 8.  RELEASE SAVEPOINT
+        # 9.  Delete submission values
+        # 10. Retrieve all form_variables
+        # 11. Creation of timelinelog
+        with self.assertNumQueries(11):
             evaluate_form_logic(submission, submission_step2, data)
 
     def test_update_step_data(self):
@@ -157,8 +162,11 @@ class SubmissionVariablesPerformanceTests(APITestCase):
             data={"var1": "test1", "var2": "test2"},
         )
 
-        # 1. load_submission_state: retrieve form variables
-        # 2. load_submission_state: retrieve submission value variables
+        # typically done in the viewset before the data is accessed
+        submission.load_execution_state()
+
+        # 1. load_variables_state: retrieve form variables
+        # 2. load_variables_state: retrieve submission value variables
         # 3. bulk_create var3 and var4 submission value variables
         # 4. bulk_update var1 and var2 submission value variables
         with self.assertNumQueries(4):
@@ -191,8 +199,11 @@ class SubmissionVariablesPerformanceTests(APITestCase):
             data={"var1": "test1", "var2": "test2"},
         )
 
-        # 1. load_submission_state: retrieve form variables
-        # 2. load_submission_state: retrieve submission value variables
+        # typically done in the viewset before the data is accessed
+        submission.load_execution_state()
+
+        # 1. load_variables_state: retrieve form variables
+        # 2. load_variables_state: retrieve submission value variables
         with self.assertNumQueries(2):
             submission_step.data
 
@@ -222,8 +233,11 @@ class SubmissionVariablesPerformanceTests(APITestCase):
         # ensure there is a submission
         submission = SubmissionFactory.create(form=form)
 
-        # 1. Get the submission variables that are already in the database
-        # 2. Get the form variables for which there is no corresponding submission variable in the database
+        # typically done in the viewset before the data is accessed
+        submission.load_execution_state()
+
+        # 1. Get the form variables
+        # 2. Get the submission variables
         with self.assertNumQueries(2):
             SubmissionValueVariablesState(submission).variables
 
@@ -259,11 +273,13 @@ class SubmissionVariablesPerformanceTests(APITestCase):
             submission=submission, form_step=form_step2
         )
         submission_step2._unsaved_data = {"var3": "test3", "var4": "test4"}
+        # typically done in the viewset before the data is accessed
+        submission.load_execution_state()
 
         self.assertEqual(2, submission.submissionvaluevariable_set.count())
 
-        # 1. Get the submission variables that are already in the database
-        # 2. Get the form variables for which there is no corresponding submission variable in the database
+        # 1. Get the form variables
+        # 2. Get the submission variables
         with self.assertNumQueries(2):
             SubmissionValueVariablesState(submission).variables
 
@@ -300,11 +316,13 @@ class SubmissionVariablesPerformanceTests(APITestCase):
             form_step=form_step2,
             data={"var3": "test3", "var4": "test4"},
         )
+        # typically done in the viewset before the data is accessed
+        submission.load_execution_state()
 
         self.assertEqual(4, submission.submissionvaluevariable_set.count())
 
-        # 1. Get the submission variables that are already in the database
-        # 2. Get the form variables for which there is no corresponding submission variable in the database
+        # 1. Get the form variables
+        # 2. Get the submission variables
         with self.assertNumQueries(2):
             SubmissionValueVariablesState(submission).variables
 
@@ -404,14 +422,13 @@ class SubmissionVariablesPerformanceTests(APITestCase):
 
         renderer = Renderer(submission=submission, mode=RenderModes.pdf, as_html=True)
 
-        # 1-2. renderer get_children: get submission data (get form variables and submission value variables)
-        # 3. renderer get_children: get submission steps
-        # 4. Retrieve prefill data
-        # 5. Retrieve logic rules
-        # 6. Load submission state: Retrieve formsteps,
-        # 7. Load submission state: Retrieve submission steps
-        # 8. Query if there are user defined variables
-        with self.assertNumQueries(8):
+        # typically done in the viewset/management command before the data is accessed
+        submission.load_execution_state()
+
+        # 1. Retrieve form variables
+        # 2. Retrieve submission variables
+        # 3. Retrieve logic rules
+        with self.assertNumQueries(3):
             nodes = [node for node in renderer]
 
         with self.assertNumQueries(0):

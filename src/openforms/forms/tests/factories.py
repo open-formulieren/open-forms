@@ -3,7 +3,7 @@ import factory
 from openforms.products.tests.factories import ProductFactory
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
-from ..models import FormStep, FormVariable
+from ..models import FormDefinition, FormStep, FormVariable
 from ..utils import form_to_json
 
 
@@ -148,7 +148,6 @@ class FormVariableFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: "Variable %03d" % n)
     form = factory.SubFactory(FormFactory)
     key = factory.Faker("word")
-    form_definition = factory.SubFactory(FormDefinitionFactory)
     source = FormVariableSources.user_defined
     data_type = FormVariableDataTypes.string
     initial_value = None
@@ -161,6 +160,29 @@ class FormVariableFactory(factory.django.DjangoModelFactory):
             source=FormVariableSources.user_defined,
             form_definition=None,
         )
+
+    @factory.post_generation
+    def form_definition(obj, create, extracted, **kwargs):
+        if obj.source == FormVariableSources.user_defined:
+            return
+
+        if extracted:
+            obj.form_definition = extracted
+        else:
+            candidates = FormDefinition.objects.filter(formstep__form=obj.form)
+            for candidate in candidates:
+                for component in candidate.iter_components(recursive=True):
+                    if component["key"] == obj.key:
+                        obj.form_definition = candidate
+                        break
+            else:
+                raise ValueError(
+                    "Bad test data setup - no form definition definition found "
+                    f"having the component key '{obj.key}'."
+                )
+
+        if create:
+            obj.save()
 
 
 class CategoryFactory(factory.django.DjangoModelFactory):
