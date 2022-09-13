@@ -45,14 +45,14 @@ Formulier maken
 
 #. Klik op **Opmaak** en sleep een "vrije tekst"-component op het witte vlak. Vul de volgende gegevens in:
 
-   * Onder **Vrije tekst component**: ``De totale waarde van uw auto's is: €{{ totaleWaarde|localize }}``
+   * Onder **Vrije tekst** component: ``De totale waarde van uw auto's is: €{{ totaleWaarde|localize }}``
    * **Verborgen**: *aangevinkt*
 
 #. Druk daarna op **Opslaan en opnieuw bewerken**.
 #. Klik op het tabblad **Variabelen** en daarna op het tabblad **User defined**.
 #. Voeg een variabele toe met de volgende gegevens:
 
-   * **Naam**: Aantal autos
+   * **Naam**: Aantal auto's
    * **Data type**: float
 
 #. Voeg nog een variabele toe met de volgende gegevens:
@@ -65,7 +65,7 @@ Formulier maken
    * Trigger: ``{"!!": [true]}``
    * Acties:
 
-     * **Wijzig de waarde van een variabele/component** > **Totale waarde** >
+     * **Wijzig de waarde van een variabele** > **Totale waarde** >
 
      .. code-block:: json
 
@@ -85,7 +85,7 @@ Formulier maken
         Binnen een groep kunnen we weer verwijzen naar een individueel component.
         Hier wordt dat bijvoorbeeld gedaan naar het component met de eigenschapsnaam ``waarde``.
 
-     * **Wijzig de waarde van een variabele/component** > **Aantal autos** >
+     * **Wijzig de waarde van een variabele** > **Aantal auto's** >
 
      .. code-block:: json
 
@@ -98,7 +98,7 @@ Formulier maken
 
 #. Voeg een eenvoudige regel toe met de volgende gegevens:
 
-   * Trigger: Als **Aantal autos (aantalAutos)** > **is groter dan** > **de waarde** > ``0``
+   * Trigger: Als **Aantal auto's (aantalAutos)** > **is groter dan** > **de waarde** > ``0``
    * Actie: dan **wijzig een attribuut van een veld/component** > **Stap met herhalende groep: Content (content)**
      > **Verborgen** > **Nee**
 

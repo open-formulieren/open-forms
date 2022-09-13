@@ -72,7 +72,7 @@ Formulier maken
           ]
         }
 
-   en de volgende actie: **wijzig de waarde van een variabel/component**, **Number A+B\*C**, met de waarde:
+   en de volgende actie: **wijzig de waarde van een variabele**, **Number A+B\*C**, met de waarde:
 
     .. code-block:: json
 

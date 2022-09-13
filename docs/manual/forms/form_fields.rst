@@ -108,7 +108,7 @@ alleen zichtbaar wordt indien als ``Stelling`` de waarde ``anders`` is gekozen.
 Validatie
 ---------
 
-* **Required**: Indien aangevinkt dan is dit veld verplicht voor de 
+* **Verplicht**: Indien aangevinkt dan is dit veld verplicht voor de 
   eindgebruiker.
 
 * **Plugin**: U kunt gebruik maken van een externe plugin om een veld te 
@@ -161,13 +161,13 @@ Basis
 Location
 --------
 
-* **Derive street name**: Indien aangevinkt, dan zal in dit veld automatisch de
+* **Straatnaam afleiden**: Indien aangevinkt, dan zal in dit veld automatisch de
   straatnaam worden ingevuld op basis van het ingevulde postcode en huisnummer.
-* **Derive city**: Indien aangevinkt, dan zal in dit veld automatisch de
+* **Stad afleiden**: Indien aangevinkt, dan zal in dit veld automatisch de
   stad worden ingevuld op basis van het ingevulde postcode en huisnummer.
-* **Postcode component**: Selecteer het veld waarin de eindgebruiker de postcode
+* **Postcodecomponent**: Selecteer het veld waarin de eindgebruiker de postcode
   zal invoeren. Dit wordt gebruikt voor het ophalen van de straatnaam en stad.
-* **House number component**: Selecteer het veld waarin de eindgebruiker het
+* **Huisnummercomponent**: Selecteer het veld waarin de eindgebruiker het
   huisnummer zal invoeren. Dit wordt gebruikt voor het ophalen van de straatnaam
   en stad.
 
@@ -179,15 +179,15 @@ Stel er zijn 4 velden:
 * Een *Text Field* ``Huisnummer``.
 * Een *Text Field* ``Straat`` dat als volgt is ingesteld:
 
-  * **Derive street name**: *Aangevinkt*
-  * **Postcode component**: ``Postcode (postcode)``
-  * **House number component**: ``Huisnummer (huisnummer)``
+  * **Straatnaam afleiden**: *Aangevinkt*
+  * **Postcodecomponent**: ``Postcode (postcode)``
+  * **Huisnummercomponent**: ``Huisnummer (huisnummer)``
 
 * Een *Text Field* ``Stad`` dat als volgt is ingesteld:
 
-  * **Derive city**: *Aangevinkt*
-  * **Postcode component**: ``Postcode (postcode)``
-  * **House number component**: ``Huisnummer (huisnummer)``
+  * **Stad afleiden**: *Aangevinkt*
+  * **Postcodecomponent**: ``Postcode (postcode)``
+  * **Huisnummercomponent**: ``Huisnummer (huisnummer)``
 
   Er is nu een formulier gemaakt waarbij de straat en de stad automatisch worden
   ingevuld als de postcode en het huisnummer zijn ingevuld.

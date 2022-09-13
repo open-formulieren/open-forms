@@ -24,7 +24,7 @@ Formulier maken
 
 1. Maak een formulier aan met de volgende gegevens:
 
-    * **Naam** Rijbewijs aanvraag demo
+    * **Naam**: Rijbewijs aanvraag demo
 
 2. Klik op het tabblad **Stappen en velden**.
 3. Klik aan de linkerkant op **Stap toevoegen** en selecteer **Maak een nieuwe
@@ -34,8 +34,8 @@ Formulier maken
     * **Naam**: Persoonlijke gegevens
 
 5. Scroll naar de sectie **Velden**.
-6. Sleep een **Text Field** component op het witte vlak, vul de volgende
-   gegevens in en druk daarna op **Save**:
+6. Sleep een **Tekstveld** component op het witte vlak, vul de volgende
+   gegevens in en druk daarna op **Opslaan**:
 
     * **Label**: Naam
 
@@ -43,14 +43,14 @@ Formulier maken
 
     * **Label**: Achternaam
 
-8. Sleep een **Date Field** component op het witte vlak, vul de volgende
-   gegevens in en druk daarna op **Save**:
+8. Sleep een **Datum** component op het witte vlak, vul de volgende
+   gegevens in en druk daarna op **Opslaan**:
 
     * **Label**: Geboorte datum
-    * Klik op het tabblad **Validation** en selecteer **Required**.
+    * Klik op het tabblad **Validatie** en selecteer **Verplicht**.
 
 9. Onder de formulier velden, klik op **Opmaak**. Sleep een **Content** component op het
-   witte vlak. Vul de volgende gegevens in en druk daarna op **Save**:
+   witte vlak. Vul de volgende gegevens in en druk daarna op **Opslaan**:
 
     * Onder **Content component**: Om een rijbewijs te kunnen aanvragen moet u ouder dan 18 jaar zijn.
     * **Label**: Warning.
@@ -58,9 +58,9 @@ Formulier maken
 
 10. Klik op het tabblad **Logica**.
 11. Klik op **Regel toevoegen**.
-12. Selecteer de **Geboorte datum** component van de drop down. Er verschijnt dan een nieuwe drop down.
-13. Selecteer **is groter dan**. Er verschijnt dan nog een drop down.
-14. Selecteer **today**. Er verschijnen dan een nieuwe drop down en drie nummer velden voor jaren, manden en dagen.
+12. Selecteer de **Geboorte datum** component van de drop-down. Er verschijnt dan een nieuwe drop-down.
+13. Selecteer **is groter dan**. Er verschijnt dan nog een drop-down.
+14. Selecteer **vandaag**. Er verschijnen dan een nieuwe drop-down en drie nummer velden voor jaren, manden en dagen.
 15. Selecteer **minus** en vult **18** in het jaren veld.
 
 .. note::
@@ -73,7 +73,7 @@ Formulier maken
 17. Selecteer **blokkeer doorgaan naar de volgende stap**.
 18. Klik opnieuw op **Voeg actie toe**.
 19. Selecteer **wijzig een attribuut van een veld/component.**. Er verschijnen dan nieuwe drop-downs.
-20. Selecteer de component **Warning** in de eerst drop down, dan **verborgen** en **Nee** in de laatste drop-down.
+20. Selecteer de component **Warning** in de eerst drop-down, dan **verborgen** en **Nee** in de laatste drop-down.
 
 .. note::
 

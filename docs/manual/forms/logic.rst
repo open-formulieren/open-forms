@@ -238,7 +238,7 @@ waar de JSON-logic op werkt).
    .. tab:: Formulier
 
       ========================  ============================  ==============
-      Veld                      Eigenschapsnaam / Variabele   Waarde 
+      Veld                      Eigenschapnaam / Variabele    Waarde 
       ========================  ============================  ==============
       Geslacht (keuzelijst)     ``geslacht``                  ``m``
       Leeftijd (getal)          ``leeftijd``                  ``18``

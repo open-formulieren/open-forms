@@ -39,17 +39,17 @@ Formulier maken
     * **Naam**: KvK Gegevens
 
 5. Scroll naar de sectie **Velden**.
-6. Sleep een **Text Field** component op het witte vlak.
-7. Vul de volgende gegevens in en druk daarna op **Save**:
+6. Sleep een **Tekstveld** component op het witte vlak.
+7. Vul de volgende gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Handelsnaam
 
 8. Onder de **Pre-fill** tab:
 
     * **Plugin**: ``KvK Bedrijf via KvK-nummer``
-    * **Plugin attribute**: ``handelsnaam``
+    * **Plugin attribuut**: ``handelsnaam``
 
-9. (Optioneel) Herhalen stappen 6 naar 8 met andere **Plugin attribute**
+9. (Optioneel) Herhalen stappen 6 naar 8 met andere **Plugin attribuut**
 10. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
 
 U kunt nu het formulier bekijken.
