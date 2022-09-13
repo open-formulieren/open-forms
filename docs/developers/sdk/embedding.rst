@@ -73,11 +73,12 @@ Available options
     default value of ``'nl'`` is used.
 
 ``sentryDSN``:
-    A `Sentry DSN <https://docs.sentry.io/>`_ to monitor the SDK.
+    Optional `Sentry DSN <https://docs.sentry.io/>`_ to monitor the SDK.
 
 ``sentryEnv``:
     The label of the Sentry environment to use, for example ``'production'``. Used in
-    combination with ``sentryDSN``. Defaults to an empty string.
+    combination with ``sentryDSN``. Defaults to an empty string. Should be filled if
+    ``sentryDSN`` is used but it's not required.
 
 Content Security Policy (CSP)
 -----------------------------
@@ -87,27 +88,77 @@ Security Policy.
 
 Certain components have :ref:`specific CSP requirements <developers_csp_sdk_embedding>`.
 
-Full example
-============
+Examples
+========
+
+Let's assume these examples are hosted on: ``example.com/some-cms-page``
+
+Minimal example
+---------------
 
 .. code-block:: html
 
-    <!-- Load stylesheet and SDK bundle -->
-    <link rel="stylesheet" href="https://example.com/sdk/1.0.0/open-forms-sdk.css" />
-    <script src="https://example.com/sdk/1.0.0/open-forms-sdk.js"></script>
+    <html>
+    <head>
+        <!-- Required for icons used by Open Forms -->
+        <meta charset="utf-8"> 
 
-    <!-- Load a form and render it -->
-    <div
-      id="openforms-root"
-      data-base-url="https://openforms.example.com/api/v1/"
-      data-form-id="0d2f5453-8987-43dd-952e-aad3dd8f2318"
-      data-base-path="/some-cms-page"
-    ></div>
-    <script>
-      var targetNode = document.getElementById('openforms-root');
-      var form = new OpenForms.OpenForm(targetNode, targetNode.dataset);
-      form.init();
-    </script>
+        <!-- Load stylesheet and SDK bundle -->
+        <link rel="stylesheet" href="https://openforms.example.com/sdk/1.0.0/open-forms-sdk.css" />
+        <script src="https://openforms.example.com/sdk/1.0.0/open-forms-sdk.js"></script>
+    </head>
+
+    <body>
+        <!-- Load an Open Forms form and render it -->
+        <div
+            id="openforms-root"
+            data-base-url="https://openforms.example.com/api/v1/"
+            data-form-id="0d2f5453-8987-43dd-952e-aad3dd8f2318"
+            data-base-path="/some-cms-page"
+        ></div>
+        <script>
+            var targetNode = document.getElementById('openforms-root');
+            var form = new OpenForms.OpenForm(targetNode, targetNode.dataset);
+            form.init();
+        </script>
+    </body>
+    </html>
+
+Full example
+------------
+
+.. code-block:: html
+
+    <!-- Optional to render Open Forms in the proper language -->
+    <html lang="nl">
+    <head>
+        <!-- Required for icons used by Open Forms -->
+        <meta charset="utf-8"> 
+
+        <!-- Load stylesheet and SDK bundle -->
+        <link rel="stylesheet" href="https://openforms.example.com/sdk/1.0.0/open-forms-sdk.css" />
+        <script src="https://openforms.example.com/sdk/1.0.0/open-forms-sdk.js"></script>
+    </head>
+
+    <body>
+        <!-- Load an Open Forms form and render it -->
+        <div
+            id="openforms-root"
+            data-base-url="https://openforms.example.com/api/v1/"
+            data-form-id="0d2f5453-8987-43dd-952e-aad3dd8f2318"
+            data-base-path="/some-cms-page"
+            data-csp-nonce="OSUzOHNqqL9HzWU0CVSC/w\u003D\u003D"
+            data-lang="nl"
+            data-sentry-dsn="https://a45b81b258d462ae4ec474c10b6430cb@sentry.example.com/1"
+            data-sentry-env="example"
+        ></div>
+        <script nonce="OSUzOHNqqL9HzWU0CVSC/w==">
+            var targetNode = document.getElementById('openforms-root');
+            var form = new OpenForms.OpenForm(targetNode, targetNode.dataset);
+            form.init();
+        </script>
+    </body>
+    </html>
 
 Deploying the SDK
 =================
