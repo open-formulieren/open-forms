@@ -289,7 +289,10 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
 
 class SubmissionValueVariableFactory(factory.django.DjangoModelFactory):
     submission = factory.SubFactory(SubmissionFactory)
-    form_variable = factory.SubFactory(FormVariableFactory)
+    form_variable = factory.SubFactory(
+        FormVariableFactory,
+        form=factory.SelfAttribute("..submission.form"),
+    )
     key = factory.SelfAttribute("form_variable.key")
     source = SubmissionValueVariableSources.user_input
 
