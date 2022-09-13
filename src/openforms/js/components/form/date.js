@@ -115,7 +115,7 @@ const getMinMaxValidationEditForm = fieldName => {
                 data: {
                   values: [
                     {
-                      label: 'Add',
+                      label: 'Add duration',
                       value: 'add',
                     },
                     {
