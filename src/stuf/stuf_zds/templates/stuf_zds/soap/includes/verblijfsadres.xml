@@ -2,7 +2,7 @@
     <BG:authentiek>N</BG:authentiek>
     {% if initiator.verblijfsadres.woonplaatsNaam %}<BG:wpl.woonplaatsNaam>{{ verblijfsadres.woonplaatsNaam }}</BG:wpl.woonplaatsNaam>{% endif %}
     {% if initiator.verblijfsadres.straatnaam %}<BG:gor.straatnaam>{{ verblijfsadres.straatnaam }}</BG:gor.straatnaam>{% endif %}
-    {% if initiator.verblijfsadres.postcode %}<BG:aoa.postcode>{{ verblijfsadres.postcode }}</BG:aoa.postcode>{% endif}
+    {% if initiator.verblijfsadres.postcode %}<BG:aoa.postcode>{{ verblijfsadres.postcode }}</BG:aoa.postcode>{% endif %}
     {% if initiator.verblijfsadres.huisnummer %}<BG:aoa.huisnummer>{{ verblijfsadres.huisnummer }}</BG:aoa.huisnummer>{% endif %}
     {% if initiator.verblijfsadres.huisletter %}<BG:aoa.huisletter>{{ verblijfsadres.huisletter }}</BG:aoa.huisletter>{% endif %}
     {% if initiator.verblijfsadres.huisnummertoevoeging %}<BG:aoa.huisnummertoevoeging>{{ verblijfsadres.huisnummertoevoeging }}</BG:aoa.huisnummertoevoeging>{% endif %}

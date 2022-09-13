@@ -79,7 +79,7 @@
                             {% if initiator.geboortedatum %}<BG:geboortedatum StUF:indOnvolledigeDatum="{{ initiator.geboortedatum.indicator }}">{{ initiator.geboortedatum.value }}</BG:geboortedatum>{% endif %}
 
                             {% if initiator.verblijfsadres.postcode or initiator.verblijfsadres.woonplaatsNaam %}
-                                {% include "templates/stuf_zds/soap/includes/verblijfsadres.xml" %}
+                                {% include "stuf_zds/soap/includes/verblijfsadres.xml" %}
                             {% endif %}
                         </ZKN:natuurlijkPersoon>
                     {% elif initiator.kvk %}
@@ -90,7 +90,7 @@
                             {% if initiator.handelsnaam %}<BG:handelsnaam>{{ initiator.handelsnaam }}</BG:handelsnaam>{% endif %}
 
                             {% if initiator.verblijfsadres.postcode or initiator.verblijfsadres.woonplaatsNaam %}
-                                {% include "templates/stuf_zds/soap/includes/verblijfsadres.xml" %}
+                                {% include "stuf_zds/soap/includes/verblijfsadres.xml" %}
                             {% endif %}
                         </ZKN:vestiging>
                     {% endif %}
