@@ -13,6 +13,7 @@ import logging
 import os
 import sys
 import warnings
+from datetime import datetime
 from pathlib import Path
 
 from django.conf import settings
@@ -143,7 +144,7 @@ def mute_deprecation_warnings():
         warnings.simplefilter("ignore", DeprecationWarning, append=False)
 
 
-# TODO Apply this fix to the fork of json-logic.py
+# TODO Apply these fixes to the fork of json-logic.py
 def monkeypatch_json_logic():
 
     from json_logic import operations
@@ -151,3 +152,12 @@ def monkeypatch_json_logic():
     operations["in"] = (
         lambda a, b: a in b if "__contains__" in dir(b) and a is not None else False
     )
+
+    _original_get_date = operations["date"]
+
+    def patched_get_date(arg, *extra):
+        if isinstance(arg, datetime):
+            return arg.date()
+        return _original_get_date(arg, *extra)
+
+    operations["date"] = patched_get_date
