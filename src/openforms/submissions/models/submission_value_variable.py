@@ -1,14 +1,18 @@
 from dataclasses import dataclass
+from datetime import datetime, time
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from django.db import models
 from django.db.models import Q
+from django.utils import timezone
+from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.translation import gettext_lazy as _
 
 from glom import Assign, PathAccessError, glom
 
 from openforms.formio.utils import get_all_component_keys
 from openforms.forms.models.form_variable import FormVariable
+from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.service import get_static_variables
 
 from ..constants import SubmissionValueVariableSources
@@ -289,3 +293,57 @@ class SubmissionValueVariable(models.Model):
                 name=self.form_variable.name
             )
         return _("Submission value variable {key}").format(key=self.key)
+
+    def to_python(self) -> Any:
+        """
+        Deserialize the value into the appropriate python type.
+
+        TODO: for dates/datetimes, we rely on our django settings for timezone
+        information, however - formio submission does send the user's configured
+        timezone as metadata, which we can store on the submission/submission step
+        to correctly interpret the data. For the time being, this is not needed yet
+        as we focus on NL first.
+        """
+        if self.value is None:
+            return None
+
+        # can't see any type information...
+        if not self.form_variable_id:
+            return self.value
+
+        # we expect JSON types to have been properly stored (and thus not as string!)
+        data_type = self.form_variable.data_type
+        if data_type in (
+            FormVariableDataTypes.string,
+            FormVariableDataTypes.boolean,
+            FormVariableDataTypes.object,
+            FormVariableDataTypes.int,
+            FormVariableDataTypes.float,
+            FormVariableDataTypes.array,
+        ):
+            return self.value
+
+        if self.value and data_type == FormVariableDataTypes.datetime:
+            naive_date = parse_date(self.value)
+            if naive_date is not None:
+                aware_date = timezone.make_aware(datetime.combine(naive_date, time.min))
+                return aware_date
+
+            # not a date - try parsing a datetime then
+            maybe_naive_datetime = parse_datetime(self.value)
+            if maybe_naive_datetime is not None:
+                if timezone.is_aware(maybe_naive_datetime):
+                    return maybe_naive_datetime
+                return timezone.make_aware(maybe_naive_datetime)
+
+            raise ValueError(
+                f"Could not parse date/datetime '{self.value}'"
+            )  # pragma: nocover
+
+        if self.value and data_type == FormVariableDataTypes.time:
+            value = parse_time(self.value)
+            if value is not None:
+                return value
+            raise ValueError(f"Could not parse time '{self.value}'")  # pragma: nocover
+
+        return self.value

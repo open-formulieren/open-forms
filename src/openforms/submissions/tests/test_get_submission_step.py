@@ -21,9 +21,14 @@ from openforms.forms.tests.factories import (
     FormLogicFactory,
     FormStepFactory,
 )
+from openforms.variables.constants import FormVariableDataTypes
 
 from ..models import Submission
-from .factories import SubmissionFactory, SubmissionStepFactory
+from .factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+    SubmissionValueVariableFactory,
+)
 from .mixins import SubmissionsMixin
 
 
@@ -346,3 +351,66 @@ class GetSubmissionStepTests(SubmissionsMixin, APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+
+class IntegrationTests(SubmissionsMixin, APITestCase):
+    """
+    Integration tests where various subsystems come together.
+    """
+
+    def test_dynamic_date_component_config_based_on_variables(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "date1",
+                    },
+                    {
+                        "type": "date",
+                        "key": "date2",
+                        "openForms": {
+                            "minDate": {
+                                "mode": "relativeToVariable",
+                                "variable": "date1",
+                                "operator": "add",
+                                "delta": {"days": 7},
+                            },
+                            "maxDate": {
+                                "mode": "relativeToVariable",
+                                "variable": "userDefinedDate",
+                            },
+                        },
+                    },
+                ]
+            },
+        )
+        step = form.formstep_set.get()
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            form_step=step, submission=submission, data={"date1": "2022-09-13"}
+        )
+        SubmissionValueVariableFactory.create(
+            submission=submission,
+            form_variable__key="userDefinedDate",
+            form_variable__user_defined=True,
+            form_variable__data_type=FormVariableDataTypes.datetime,
+            value="2022-12-31",
+        )
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        date2 = response.json()["formStep"]["configuration"]["components"][1]
+
+        self.assertEqual(date2["datePicker"]["minDate"], "2022-09-20T00:00:00+02:00")
+        self.assertEqual(date2["datePicker"]["maxDate"], "2022-12-31T00:00:00+01:00")

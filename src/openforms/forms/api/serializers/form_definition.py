@@ -5,10 +5,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from openforms.formio.service import (
-    get_dynamic_configuration,
-    update_configuration_for_request,
-)
+from openforms.formio.service import update_configuration_for_request
 
 from ...models import Form, FormDefinition
 from ...validators import validate_form_definition_is_reusable
@@ -53,20 +50,12 @@ class UsedInFormSerializer(serializers.HyperlinkedModelSerializer):
 class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance=instance)
+        configuration = representation["configuration"]
 
         # set upload urls etc
-        update_configuration_for_request(
-            representation["configuration"],
-            request=self.context["request"],
-        )
+        # TODO: move this to openforms.formio.dynamic_config
+        update_configuration_for_request(configuration, request=self.context["request"])
 
-        _handle_custom_types = self.context.get("handle_custom_types", True)
-        if _handle_custom_types:
-            representation["configuration"] = get_dynamic_configuration(
-                representation["configuration"],
-                request=self.context["request"],
-                submission=self.context["submission"],
-            )
         return representation
 
     class Meta:
