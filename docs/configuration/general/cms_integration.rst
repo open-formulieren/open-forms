@@ -23,8 +23,8 @@ integrating Open Forms forms in your own CMS.
    SDK.
 
 
-Gettings started
-================
+Getting started
+===============
 
 We assume you have access to Open Forms, and have designed some forms in the 
 *Admin UI*. To get these forms to show in your CMS you will need 3 things:
@@ -51,6 +51,9 @@ Access to the Open Forms API
 Providing access to the Open Forms API allows a CMS to integrate nicely with
 with Open Forms. For example, the CMS can show a list of forms that are 
 available and allows you to add an Open Forms form to a page in your CMS.
+
+.. note:: This is an optional feature to ease the use of Open Forms for content 
+   managers. It does however, require some development work on your end.
 
 To allow access to the Open Forms API, we need to create a user. This user will
 be assigned an API token and a limited set of permissions on what this user
