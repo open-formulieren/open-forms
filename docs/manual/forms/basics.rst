@@ -222,22 +222,22 @@ Zie ook: :ref:`configuration_appointment_index`
    globaal te configureren.
 
 
-.. _`variables`:
+.. _`manual_forms_basics_variables`:
 
 Variabelen
 ----------
 
-Variabelen vormen een krachtige manier verschillende gegevens in een formulier
-bij elkaar te laten komen. U kunt :ref:`variabelen gebruiken <variables_usage>`
-in logica, of in andere velden, of om interne gegevens op te slaan die niet 
-voor de eindgebruiker bedoeld zijn.
+Variabelen vormen een krachtige manier om verschillende gegevens in een formulier
+bij elkaar te laten komen. U kunt :ref:`variabelen gebruiken <manual_forms_form_fields_variables_usage>`
+in logica, in andere velden, of om interne gegevens op te slaan die niet voor 
+de eindgebruiker bedoeld zijn.
 
 Er zijn 3 soorten variabelen:
 
-Formulier variabelen
-~~~~~~~~~~~~~~~~~~~~
+Formuliervariabelen
+~~~~~~~~~~~~~~~~~~~
 
-Alle velden in het formulier zijn ook beschikbaar als variabele. De 
+Alle velden in het formulier zijn beschikbaar als variabele. De 
 eigenschapsnaam van een veld wordt gebruikt als variabele. Dit gebeurt 
 automatisch.
 
@@ -246,7 +246,7 @@ Gebruikersvariabelen
 
 Zelf te beheren variabelen die niet gekoppeld zijn aan een specifiek 
 formulierveld. U kunt hier bijvoorbeeld waarden opslaan die door logica worden 
-verkregen of uit externe koppelingen.
+verkregen of uit externe koppelingen opgehaald worden.
 
 Vaste variabelen
 ~~~~~~~~~~~~~~~~
@@ -258,12 +258,12 @@ waarde.
 =============== ========= =========================== ====================================================================================================================
 Variabele       Type      Voorbeeld waarde            Toelichting
 =============== ========= =========================== ====================================================================================================================
-now             datetime  ``2022-09-09 18:29:00``     Datum van vandaag. Hier zijn :ref:`verschillende weergaven <formatting_of_variables>` van mogelijk.
+now             datetime  ``2022-09-09 18:29:00``     Datum van vandaag. Hier zijn :ref:`verschillende weergaven <manual_templates_formatting_of_variables>` van mogelijk.
 environment     string    ``production``              De waarde die tijdens de installatie gezet is als ``ENVIRONMENT``. Zie: :ref:`installation_environment_config`.
 form_name       string    ``Paspoort aanvragen``      De naam van het formulier.
 form_id         string    ``1c453fc8-b10f-4510-``...  Het unieke ID van het formulier.
 auth            object                                Een verzameling van authenticatie gegevens. Zie hieronder.
-auth.plugin     string    ``DigiD``                   De naam van de gebruikte authenticatie plugin.
+auth.plugin     string    ``digid``                   De systeemnaam van de gebruikte authenticatie plugin.
 auth.attribute  string    ``bsn``                     Kan de waarden ``bsn``, ``kvk`` of ``pseudo`` hebben.
 auth.value      string    ``111222333``               De identificerende waarde in het ``attribute`` van de authenticatie plugin.
 auth.machtigen  object    TODO                        

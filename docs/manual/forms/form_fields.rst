@@ -28,12 +28,12 @@ Basis
   vullen en door te zetten naar achterliggende registratiesystemen. Beheerders
   kunnen de waarden van onzichtbare velden uiteraard wel zien.
 
-.. _`variables_usage`:
+.. _`manual_forms_form_fields_variables_usage`:
 
 Variabelen
 ~~~~~~~~~~
 
-U kunt :ref:`variabelen <variables>` gebruiken in het ontwerp van formulieren, 
+U kunt :ref:`variabelen <manual_forms_basics_variables>` gebruiken in het ontwerp van formulieren, 
 bijvoorbeeld om een (voor-)ingevulde naam in het label van een ander 
 formulierveld weer te geven. Hiervoor is de 
 :ref:`sjabloonfunctionaliteit <manual_templates>` beschikbaar.
@@ -42,7 +42,7 @@ formulierveld weer te geven. Hiervoor is de
 
     Alle velden in een formulier zijn als variabele beschikbaar. Daarnaast zijn er ook
     altijd een aantal :ref:`vaste variabelen beschikbaar én u kunt zelf ook variabelen
-    definiëren <variables>`.
+    definiëren <manual_forms_basics_variables>`.
 
 Stel dat u een formulier hebt met de volgende velden:
 

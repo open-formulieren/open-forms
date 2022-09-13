@@ -149,7 +149,7 @@ gegevens die de gebruiker invult. Er zijn verschillende acties mogelijk:
   * **uitgeschakeld** (ja/nee) - Een veld blijft zichtbaar maar kan niet meer
     worden gewijzigd.
 * **wijzig de waarde van een variabele** - Met deze actie kan de 
-  waarde van een *<veld>* of andere *<variabele* worden veranderd naar de waarde van een ander 
+  waarde van een *<veld>* of andere *<variabele>* worden veranderd naar de waarde van een ander 
   veld of een waarde gekozen door de beheerder.
 
   * *<veld>* - Het veld dat gewijzigd moet worden.

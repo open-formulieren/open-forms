@@ -120,12 +120,12 @@ Voorbeeld
          Hoi Joe!
 
 
-.. _`formatting_of_variables`:
+.. _`manual_templates_formatting_of_variables`:
 
 Formattering van variabelen
 ---------------------------
 
-Vaak wilt u :ref:`variabelen <variables>` op een bepaalde manier formatteren. 
+Vaak wilt u :ref:`variabelen <manual_forms_basics_variables>` op een bepaalde manier formatteren. 
 Dit is mogelijk met behulp van de *sjabloonfilters* die standaard ingebouwd 
 zijn. Alle beschikbare filters zijn gedocumenteerd op de 
 `Django defaultfilters reference`_. Het patroon is typisch: 
