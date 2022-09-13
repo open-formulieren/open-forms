@@ -17,3 +17,4 @@ Voorbeelden
    calculations
    auth_static_variables
    repeating_groups
+   decision_tree
