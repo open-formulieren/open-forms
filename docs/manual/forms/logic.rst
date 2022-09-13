@@ -47,21 +47,21 @@ Regels
 De eerder genoemde **Als** *<voorwaarde>* regel is een vereenvoudigde weergave
 van alle onderdelen:
 
-**Als** [*<veld>*] [*<operatie>*] [*<type waarde>*] *<waarde>*
+**Als** [*<variabele>*] [*<operatie>*] [*<type waarde>*] *<waarde>*
 
 Hieronder staat per onderdeel uitgelegd wat de mogelijkheden zijn, en wat ze 
 doen.
 
-* *<veld>* - Een veld uit een van de beschikbare formulierstappen. Voorbeeld:
-  [*Persoonlijk: Geslacht*]
+* *<variabele>* - Een veld uit een van de beschikbare formulierstappen of 
+  andere variabele. Voorbeeld: [*Persoonlijk: Geslacht*]
 * *<operatie>* - Er zijn diverse operaties mogelijk. Niet alle operaties zijn
   mogelijk voor alle *<velden>*:
 
-  * **is gelijk aan** - De waarde van het *<veld>* is hetzelfde als 
+  * **is gelijk aan** - De waarde van de *<variabele>* is hetzelfde als 
     de *<waarde>*
-  * **is niet gelijk aan** - De waarde van het *<veld>* is niet 
+  * **is niet gelijk aan** - De waarde van de *<variabele>* is niet 
     hetzelfde als de *<waarde>*
-  * **in** - De waarde van het *<veld>* is onderdeel van de 
+  * **in** - De waarde van de *<variabele>* is onderdeel van de 
     *<waarde>*. De *<waarde>* is hier veelal een lijst of een veld dat 
     meerdere waarden kan bevatten.
   * **is groter dan** - Werkt alleen bij datum- en nummer-velden.
@@ -73,7 +73,7 @@ doen.
   het type waarde kiezen:
 
   * **de waarde** - Een handmatig opgegeven waarde.
-  * **het veld** - De waarde van een specifiek veld.
+  * **de variabele** - De waarde van een specifiek veld.
   * **de lijst** - Een handmatig opgegeven lijst van waarden.
   * **vandaag** - Alleen beschikbaar i.c.m. een datum en geeft extra opties om
     een berekening te maken.
@@ -138,9 +138,9 @@ Nadat een regel is gedefinieerd, kunnen een of meerdere acties worden
 toegevoegd. De acties kunnen het formulier wijzigen afhankelijk van de 
 gegevens die de gebruiker invult. Er zijn verschillende acties mogelijk:
 
-* **blokkeer doorgaan naar de volgende stap.** - Doorgaan kan niet meer in 
+* **blokkeer doorgaan naar de volgende stap** - Doorgaan kan niet meer in 
   het formulier. De knop om naar de volgende stap te gaan is verdwenen.
-* **wijzig een attribuut van een veld/component.** - Met deze actie kan:
+* **wijzig een attribuut van een veld/component** - Met deze actie kan:
 
   * **verplicht** (ja/nee) - Een niet-verplicht veld wordt veranderd in een 
     verplicht veld (of een verplicht veld wordt optioneel).
@@ -148,8 +148,8 @@ gegevens die de gebruiker invult. Er zijn verschillende acties mogelijk:
     verborgen veld wordt zichtbaar)
   * **uitgeschakeld** (ja/nee) - Een veld blijft zichtbaar maar kan niet meer
     worden gewijzigd.
-* **wijzig de waarde van een veld/component.** - Met deze actie kan de 
-  waarde van een *<veld>* worden veranderd naar de waarde van een ander 
+* **wijzig de waarde van een variabele** - Met deze actie kan de 
+  waarde van een *<veld>* of andere *<variabele>* worden veranderd naar de waarde van een ander 
   veld of een waarde gekozen door de beheerder.
 
   * *<veld>* - Het veld dat gewijzigd moet worden.
@@ -237,14 +237,14 @@ waar de JSON-logic op werkt).
 
    .. tab:: Formulier
 
-      ========================  ======================  ==============
-      Veld                      Eigenschapsnaam         Waarde 
-      ========================  ======================  ==============
-      Geslacht (keuzelijst)     ``geslacht``            ``m``
-      Leeftijd (getal)          ``leeftijd``            ``18``
-      Uw inkomen (getal)        ``uwInkomen``           ``30000``
-      Partner inkomen (getal)   ``partnerInkomen``      ``40000``
-      ========================  ======================  ==============
+      ========================  ============================  ==============
+      Veld                      Eigenschapsnaam / Variabele   Waarde 
+      ========================  ============================  ==============
+      Geslacht (keuzelijst)     ``geslacht``                  ``m``
+      Leeftijd (getal)          ``leeftijd``                  ``18``
+      Uw inkomen (getal)        ``uwInkomen``                 ``30000``
+      Partner inkomen (getal)   ``partnerInkomen``            ``40000``
+      ========================  ============================  ==============
 
    .. tab:: JSON
 

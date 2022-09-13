@@ -25,6 +25,16 @@ that describes the authenticated entity (person or company).
 
     Open Forms currently only supports the same security level for all forms.
 
+    =========== =============== ===========================================
+    eHerkenning eIDAS           SAML2 AuthnContextClassRef element
+    =========== =============== ===========================================
+    EH2         basis/low       urn:etoegang:core:assurance-class:loa2
+    EH2+        basis/low       urn:etoegang:core:assurance-class:loa2plus
+    EH3         substantieel    urn:etoegang:core:assurance-class:loa3
+    EH4         hoog/high       urn:etoegang:core:assurance-class:loa4
+    =========== =============== ===========================================
+
+    Source: `Afsprakenstelsel eToegang <https://afsprakenstelsel.etoegang.nl/display/as/Level+of+assurance>`_
 
 .. note::
 
