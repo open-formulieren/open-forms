@@ -2,6 +2,7 @@ import {Formio} from 'formiojs';
 import {ADVANCED, SENSITIVE_BASIC, VALIDATION_BASIC} from './edit/tabs';
 import {DEFAULT_VALUE} from './edit/options';
 import {getFullyQualifiedUrl} from '../../utils/urls';
+import jsonScriptToVar from 'utils/json-script';
 
 const BaseFileField = Formio.Components.components.file;
 
@@ -26,43 +27,6 @@ const REGISTRATION = {
   ],
 };
 
-// https://github.com/open-formulieren/open-forms/issues/223
-
-// pdf xls vlsx (xlsx?) csv doc dockx (docx?) jpg png, zip, rar, tar en alle open office formaten
-
-const MIME_TYPE_FILTERS = {
-  All: '*',
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
-
-  '.pdf': 'application/pdf',
-
-  '.xls': 'application/vnd.ms-excel',
-  '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  '.csv': 'text/csv',
-
-  '.doc': 'application/msword',
-  '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-
-  'Open Office': [
-    'application/vnd.oasis.opendocument.*',
-    'application/vnd.stardivision.*',
-    'application/vnd.sun.xml.*',
-  ].join(','),
-
-  '.zip': 'application/zip',
-  '.rar': 'application/vnd.rar',
-  '.tar': 'application/x-tar',
-  // if we want .tar you'd expect .gz
-  // ".gz": "application/gzip",
-};
-
-function as_choices(obj) {
-  return Object.keys(obj).map(key => {
-    return {label: key, value: obj[key]};
-  });
-}
-
 const FILE_TAB = {
   key: 'file',
   label: 'File',
@@ -86,9 +50,20 @@ const FILE_TAB = {
       tableView: true,
       multiple: true,
       data: {
-        values: as_choices(MIME_TYPE_FILTERS),
+        get values() {
+          return jsonScriptToVar('config-UPLOAD_FILETYPES');
+        },
       },
       weight: 30,
+    },
+    {
+      type: 'checkbox',
+      input: true,
+      key: 'useConfigFiletypes',
+      label: 'Use globally configured filetypes',
+      tooltip:
+        'When this is checked, the filetypes configured in the global settings will be used.',
+      weight: 31,
     },
     {
       type: 'checkbox',

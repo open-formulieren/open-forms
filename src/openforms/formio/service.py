@@ -12,6 +12,7 @@ from openforms.typing import DataMapping, JSONObject
 
 from .dynamic_config.service import apply_dynamic_configuration
 from .normalization import normalize_value_for_component
+from .typing import Component
 from .utils import format_date_value, iter_components, mimetype_allowed
 from .variables import inject_variables
 
@@ -24,6 +25,8 @@ __all__ = [
     "mimetype_allowed",
     "inject_variables",
 ]
+
+from ..config.models import GlobalConfiguration
 
 
 # TODO: it might be beneficial to memoize this function if it runs multiple times in
@@ -60,12 +63,23 @@ def update_configuration_for_request(configuration: dict, request: Request) -> N
 
     The configuration is modified in the context of the provided :arg:`submission`.
     """
-    update_urls_in_place(configuration, request)
-
-
-def update_urls_in_place(configuration: dict, request: Request):
+    pipeline = (
+        update_urls_in_place,
+        update_default_file_types,
+    )
     for component in iter_components(configuration):
-        if component.get("type") == "file":
-            component["url"] = request.build_absolute_uri(
-                reverse("api:formio:temporary-file-upload")
-            )
+        for function in pipeline:
+            function(component, request=request)
+
+
+def update_urls_in_place(component: Component, request: Request) -> None:
+    if component.get("type") == "file":
+        component["url"] = request.build_absolute_uri(
+            reverse("api:formio:temporary-file-upload")
+        )
+
+
+def update_default_file_types(component: Component, **kwargs) -> None:
+    if component.get("type") == "file" and component.get("useConfigFiletypes"):
+        config = GlobalConfiguration.get_solo()
+        component["filePattern"] = ",".join(config.form_upload_default_file_types)

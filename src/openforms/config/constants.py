@@ -1,3 +1,5 @@
+from django.utils.translation import gettext_lazy as _
+
 from djchoices import ChoiceItem, DjangoChoices
 
 
@@ -53,3 +55,28 @@ class CSPDirective(DjangoChoices):
     # CSP_UPGRADE_INSECURE_REQUESTS  # Include upgrade-insecure-requests directive. A boolean. False See: upgrade-insecure-requests
     # CSP_BLOCK_ALL_MIXED_CONTENT  # Include block-all-mixed-content directive. A boolean. False See: block-all-mixed-content
     # CSP_INCLUDE_NONCE_IN  # Include dynamically generated nonce in all listed directives, e.g. CSP_INCLUDE_NONCE_IN=['script-src'] will add 'nonce-<b64-value>' to the script-src directive.
+
+
+class UploadFileType(DjangoChoices):
+    all = ChoiceItem("*", label=_("any filetype"))
+    png = ChoiceItem("image/png", label=_(".png"))
+    jpg = ChoiceItem("image/jpeg", label=_(".jpg"))
+    pdf = ChoiceItem("application/pdf", label=_(".pdf"))
+    xls = ChoiceItem("application/vnd.ms-excel", label=_(".xls"))
+    xlsx = ChoiceItem(
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        label=_(".xlsx"),
+    )
+    csv = ChoiceItem("text/csv", label=_(".csv"))
+    doc = ChoiceItem("application/msword", label=_(".doc"))
+    docx = ChoiceItem(
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        label=_(".docx"),
+    )
+    open_office = ChoiceItem(
+        "application/vnd.oasis.opendocument.*,application/vnd.stardivision.*,application/vnd.sun.xml.*",
+        label=_("Open Office"),
+    )
+    zip = ChoiceItem("application/zip", label=_(".zip"))
+    rar = ChoiceItem("application/vnd.rar", label=_(".rar"))
+    tar = ChoiceItem("application/x-tar", label=_(".tar"))

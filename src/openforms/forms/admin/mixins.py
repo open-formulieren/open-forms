@@ -1,6 +1,7 @@
 from django.utils.encoding import force_str
 from django.utils.translation import gettext as _
 
+from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration, RichTextColor
 
 
@@ -22,6 +23,11 @@ class FormioConfigMixin:
             {
                 "required_default": config.form_fields_required_default,
                 "rich_text_colors": get_rich_text_colors(),
+                "upload_filetypes": [
+                    {"label": label, "value": value}
+                    for value, label in UploadFileType.choices
+                ],
+                "feature_flags": {},
             }
         )
 

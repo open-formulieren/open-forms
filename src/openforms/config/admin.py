@@ -62,6 +62,7 @@ class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
                 "fields": (
                     "form_fields_required_default",
                     "form_display_required_with_asterisk",
+                    "form_upload_default_file_types",
                 )
             },
         ),
