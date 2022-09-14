@@ -50,7 +50,9 @@ const FILE_TAB = {
       tableView: true,
       multiple: true,
       data: {
-        values: jsonScriptToVar('config-UPLOAD_FILETYPES'),
+        get values() {
+          return jsonScriptToVar('config-UPLOAD_FILETYPES');
+        },
       },
       weight: 30,
     },

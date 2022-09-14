@@ -11,10 +11,10 @@ from rest_framework.exceptions import ValidationError
 
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.api.exceptions import RequestEntityTooLarge
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.tests.utils import disable_2fa
 
-from ...config.models import GlobalConfiguration
 from ..attachments import (
     append_file_num_postfix,
     attach_uploads_to_submission_step,

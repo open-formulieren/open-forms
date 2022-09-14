@@ -27,6 +27,7 @@ class FormioConfigMixin:
                     {"label": label, "value": value}
                     for value, label in UploadFileType.choices
                 ],
+                "feature_flags": {},
             }
         )
 

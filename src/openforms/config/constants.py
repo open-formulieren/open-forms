@@ -59,24 +59,24 @@ class CSPDirective(DjangoChoices):
 
 class UploadFileType(DjangoChoices):
     all = ChoiceItem("*", label=_("all"))
-    png = ChoiceItem("image/png", label=".png")
-    jpg = ChoiceItem("image/jpeg", label=".jpg")
-    pdf = ChoiceItem("application/pdf", label=".pdf")
-    xls = ChoiceItem("application/vnd.ms-excel", label=".xls")
+    png = ChoiceItem("image/png", label=_(".png"))
+    jpg = ChoiceItem("image/jpeg", label=_(".jpg"))
+    pdf = ChoiceItem("application/pdf", label=_(".pdf"))
+    xls = ChoiceItem("application/vnd.ms-excel", label=_(".xls"))
     xlsx = ChoiceItem(
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        label=".xlsx",
+        label=_(".xlsx"),
     )
-    csv = ChoiceItem("text/csv", label=".csv")
-    doc = ChoiceItem("application/msword", label=".doc")
+    csv = ChoiceItem("text/csv", label=_(".csv"))
+    doc = ChoiceItem("application/msword", label=_(".doc"))
     docx = ChoiceItem(
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        label=".docx",
+        label=_(".docx"),
     )
     open_office = ChoiceItem(
         "application/vnd.oasis.opendocument.*,application/vnd.stardivision.*,application/vnd.sun.xml.*",
         label=_("Open Office"),
     )
-    zip = ChoiceItem("application/zip", label=".zip")
-    rar = ChoiceItem("application/vnd.rar", label=".rar")
-    tar = ChoiceItem("application/x-tar", label=".tar")
+    zip = ChoiceItem("application/zip", label=_(".zip"))
+    rar = ChoiceItem("application/vnd.rar", label=_(".rar"))
+    tar = ChoiceItem("application/x-tar", label=_(".tar"))
