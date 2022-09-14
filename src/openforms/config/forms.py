@@ -29,3 +29,7 @@ class GlobalConfigurationAdminForm(forms.ModelForm):
         widgets = {
             "plugin_configuration": PluginConfigurationTextAreaReact,
         }
+
+    def clean_design_token_values(self):
+        value = self.cleaned_data["design_token_values"]
+        return value if value else {}
