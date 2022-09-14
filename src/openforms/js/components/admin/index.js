@@ -16,6 +16,7 @@ import './submissions/filter';
 import Debug from './debug';
 import SessionStatus from './SessionStatus';
 import {getIntlProviderProps} from './i18n';
+import setSeleniumMarker from './selenium';
 
 const mountForm = intlProps => {
   const formCreationFormNodes = document.getElementsByClassName('react-form-create');
@@ -93,3 +94,7 @@ const bootstrapApplication = async () => {
 
 bootstrapApplication();
 mountDebugComponent();
+
+// this must be the last call in the script, as we rely on the marker being absent
+// to detect crashes in the JS via Selenium tests
+setSeleniumMarker();

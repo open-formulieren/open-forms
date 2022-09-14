@@ -17,6 +17,8 @@ env:
   CAMUNDA_API_BASE_URL: http://localhost:8080/engine-rest/
   CAMUNDA_USER: demo
   CAMUNDA_PASSWORD: demo
+  # pre-installed according to https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2004-Readme.md
+  SELENIUM_WEBDRIVER: Chrome
 
 jobs:
   tests:
