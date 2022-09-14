@@ -1,6 +1,6 @@
 import operator
 from datetime import datetime, time
-from typing import Literal, Optional, TypedDict, cast
+from typing import Literal, Optional, TypedDict, Union, cast
 
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -113,12 +113,15 @@ class DateComponent(BasePlugin):
         assert config["mode"] == "relativeToVariable"
 
         base_value = cast(
-            Optional[datetime],
+            Optional[Union[datetime, str]],
             glom(data, config["variable"], default=None),
         )
-        # can't do calculations on values that don't exist
-        if base_value is None:
+        # can't do calculations on values that don't exist or are empty
+        if not base_value:
             return None
+
+        # if it's not empty-ish, it's a datetime
+        base_value = cast(datetime, base_value)
 
         assert (
             base_value.tzinfo is not None

@@ -161,6 +161,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
 
         # When the submission was initially created, the method calculate_price has already
         # loaded the submission_value_variables_state, but no submission variables existed at that point.
+        submission.load_execution_state(refresh=True)
         submission.load_submission_value_variables_state(refresh=True)
         return submission
 
@@ -292,8 +293,9 @@ class SubmissionValueVariableFactory(factory.django.DjangoModelFactory):
     form_variable = factory.SubFactory(
         FormVariableFactory,
         form=factory.SelfAttribute("..submission.form"),
+        key=factory.SelfAttribute("..key"),
     )
-    key = factory.SelfAttribute("form_variable.key")
+    key = factory.Faker("word")
     source = SubmissionValueVariableSources.user_input
 
     class Meta:

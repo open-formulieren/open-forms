@@ -136,14 +136,13 @@ class FormNodeTests(TestCase):
             submission=self.submission, mode=RenderModes.pdf, as_html=True
         )
 
+        # preload the execution state - this usually happens only once and is then
+        # cached.
+        self.submission.load_execution_state()
+
         # Expected queries:
-        # 1. Retrieve all the variables defined for the submission form
-        # 2. Retrieve all the submission variable values
-        # 3. Getting the submission steps for the given submission
-        # 4. Get the step-specific data from submission variable values (TODO: this can probably be optimized away?)
-        # 5. Load submission state: get form steps
-        # 6. Load submission state: get submission steps
-        # 7. Query the form logic rules for the submission form (and this is cached)
-        # 8. Query if there are user defined variables
-        with self.assertNumQueries(8):
+        # 1. Retrieve all the form variables
+        # 2. Retrieve all the submission variables
+        # 3. Query the form logic rules for the submission form (and this is cached)
+        with self.assertNumQueries(3):
             list(renderer)

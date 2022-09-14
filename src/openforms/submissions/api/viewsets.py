@@ -4,6 +4,7 @@ from typing import Tuple
 from uuid import UUID
 
 from django.db import transaction
+from django.db.models import Exists, OuterRef
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -20,6 +21,7 @@ from rest_framework.reverse import reverse
 from openforms.api import pagination
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
+from openforms.forms.models import FormStep
 from openforms.logging import logevent
 from openforms.middleware import CSRF_TOKEN_HEADER_NAME
 from openforms.prefill import prefill_variables
@@ -428,7 +430,13 @@ class SubmissionStepViewSet(
 
         # we need to obtain the submission instance (which must exist!) and the
         # form with related data, as efficiently as possible.
-        submission_qs = Submission.objects.select_related("form", "auth_info")
+        submission_qs = Submission.objects.select_related("form", "auth_info").annotate(
+            _form_login_required=Exists(
+                FormStep.objects.filter(
+                    form_definition__login_required=True, form=OuterRef("form__pk")
+                )
+            )
+        )
         submission = get_object_or_404(submission_qs, uuid=submission_uuid)
         # leverage the execution state which paints a complete picture of the (submitted)
         # steps, including instances that haven't been saved to the DB yet. This is used

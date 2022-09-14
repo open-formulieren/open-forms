@@ -50,7 +50,8 @@ class FormAuthenticationPermission(permissions.BasePermission):
     def has_object_permission(
         self, request: Request, view: APIView, step: SubmissionStep
     ) -> bool:
-        login_required = step.submission.form.login_required
+        # ⚡️ form_login_required leverages the optimized viewset query
+        login_required = step.submission.form_login_required
         if not login_required:
             return True
         return step.submission.is_authenticated

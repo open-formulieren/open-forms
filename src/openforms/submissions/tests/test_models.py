@@ -645,3 +645,32 @@ class SubmissionTests(TestCase):
             },
             submission.data,
         )
+
+    def test_form_login_required(self):
+        with self.subTest("form login not required"):
+            submission = SubmissionFactory.create(
+                form__generate_minimal_setup=True,
+                form__formstep__form_definition__login_required=False,
+            )
+
+            self.assertFalse(submission.form_login_required)
+
+        with self.subTest("form login required"):
+            submission = SubmissionFactory.create(
+                form__generate_minimal_setup=True,
+                form__formstep__form_definition__login_required=True,
+            )
+
+            self.assertTrue(submission.form_login_required)
+
+        with self.subTest("via annotate property, False"):
+            submission = SubmissionFactory.build()
+            submission._form_login_required = False
+
+            self.assertFalse(submission.form_login_required)
+
+        with self.subTest("via annotate property, True"):
+            submission = SubmissionFactory.build()
+            submission._form_login_required = True
+
+            self.assertTrue(submission.form_login_required)

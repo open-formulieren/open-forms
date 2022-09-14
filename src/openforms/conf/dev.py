@@ -92,7 +92,7 @@ CACHES.update(
 # Library settings
 #
 
-ELASTIC_APM["DEBUG"] = True
+ELASTIC_APM["DEBUG"] = config("DISABLE_APM_IN_DEV", default=True)
 
 # Django debug toolbar
 INSTALLED_APPS += ["debug_toolbar", "ddt_api_calls"]

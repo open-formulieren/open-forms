@@ -49,10 +49,8 @@ class Renderer:
         """
         Return the submission steps in the correct order.
         """
-        steps_qs = self.submission.submissionstep_set.select_related(
-            "form_step", "form_step__form_definition"
-        ).order_by("form_step__order")
-        return steps_qs
+        execution_state = self.submission.load_execution_state()
+        return [step for step in execution_state.submission_steps if step.pk]
 
     @property
     def has_children(self) -> bool:

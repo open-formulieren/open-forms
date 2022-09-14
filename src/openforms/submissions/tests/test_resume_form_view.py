@@ -37,6 +37,7 @@ class SubmissionResumeViewTests(TestCase):
             form_step__optional=False,
             data={"foo": "bar"},
         )
+        submission.load_execution_state(refresh=True)
 
         endpoint = reverse(
             "submissions:resume",

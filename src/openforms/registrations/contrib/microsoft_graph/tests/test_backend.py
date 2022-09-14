@@ -45,18 +45,29 @@ class MSGraphRegistrationBackendTests(TestCase):
     def test_submission(self, upload_mock):
         data = {"foo": "bar", "some_list": ["value1", "value2"]}
 
-        submission = SubmissionFactory.create(
+        components = [
+            {
+                "key": "foo",
+                "type": "textfield",
+            },
+            {
+                "key": "some_list",
+                "type": "textfield",
+                "multiple": True,
+            },
+        ]
+        submission = SubmissionFactory.from_components(
+            components,
+            data,
             completed=True,
+            with_report=True,
             form__name="MyName",
             form__internal_name="MyInternalName: with (extra)",
             form__registration_backend="microsoft-graph",
             form__product__price=Decimal("11.35"),
             form__payment_backend="demo",
         )
-        submission_step = SubmissionStepFactory.create(submission=submission, data=data)
-        submission.save()
-
-        SubmissionReportFactory.create(submission=submission)
+        submission_step = submission.steps[0]
         SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="my-foo.bin",
