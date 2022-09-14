@@ -23,7 +23,7 @@ class DemoNow(BaseStaticVariable):
         return "2021-07-16T21:15:00+00:00"
 
 
-class DemoAuthIdentifier(BaseStaticVariable):
+class DemoAuth(BaseStaticVariable):
     name = "Authentication identifier"
     data_type = FormVariableDataTypes.object
 
@@ -37,7 +37,7 @@ class DemoAuthIdentifier(BaseStaticVariable):
 
 register = Registry()
 register("now")(DemoNow)
-register("auth_identifier")(DemoAuthIdentifier)
+register("auth")(DemoAuth)
 
 
 # TODO Remove once the FormLogicViewSet endpoint is removed
@@ -153,7 +153,7 @@ class VariablesInLogicAPITests(APITestCase):
             "order": 0,
             "json_logic_trigger": {
                 "==": [
-                    {"var": "auth_identifier.plugin"},
+                    {"var": "auth.plugin"},
                     "digid",
                 ]
             },

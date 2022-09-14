@@ -14,9 +14,9 @@ if TYPE_CHECKING:  # pragma: nocover
     from ..utils import FormAuth
 
 
-@register_static_variable("auth_identifier")
-class AuthIdentifier(BaseStaticVariable):
-    name = _("Authentication identifier")
+@register_static_variable("auth")
+class Auth(BaseStaticVariable):
+    name = _("Authentication")
     data_type = FormVariableDataTypes.object
 
     def get_initial_value(

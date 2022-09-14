@@ -20,7 +20,7 @@ class TestStaticVariables(TestCase):
         }
 
         expected = {
-            "auth_identifier": {
+            "auth": {
                 "plugin": "test-plugin",
                 "attribute": AuthAttribute.bsn,
                 "value": "111222333",
@@ -40,7 +40,7 @@ class TestStaticVariables(TestCase):
         static_data = {variable.key: variable for variable in get_static_variables()}
 
         expected = {
-            "auth_identifier": None,
+            "auth": None,
             "auth_bsn": "",
             "auth_kvk": "",
             "auth_pseudo": "",
