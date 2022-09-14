@@ -20,13 +20,14 @@ from glom import glom
 from solo.models import SingletonModel
 from tinymce.models import HTMLField
 
-from openforms.config.constants import CSPDirective, UploadFileType
 from openforms.data_removal.constants import RemovalMethods
 from openforms.emails.validators import URLSanitationValidator
 from openforms.payments.validators import validate_payment_order_id_prefix
 from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import ensure_default_language, runtime_gettext
 from openforms.utils.validators import DjangoTemplateValidator
+
+from .constants import CSPDirective, UploadFileType
 
 
 @ensure_default_language()

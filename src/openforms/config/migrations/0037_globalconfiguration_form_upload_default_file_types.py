@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             field=django_better_admin_arrayfield.models.fields.ArrayField(
                 base_field=models.CharField(
                     choices=[
-                        ("*", "all"),
+                        ("*", "any filetype"),
                         ("image/png", ".png"),
                         ("image/jpeg", ".jpg"),
                         ("application/pdf", ".pdf"),

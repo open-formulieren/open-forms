@@ -58,7 +58,7 @@ class CSPDirective(DjangoChoices):
 
 
 class UploadFileType(DjangoChoices):
-    all = ChoiceItem("*", label=_("all"))
+    all = ChoiceItem("*", label=_("any filetype"))
     png = ChoiceItem("image/png", label=_(".png"))
     jpg = ChoiceItem("image/jpeg", label=_(".jpg"))
     pdf = ChoiceItem("application/pdf", label=_(".pdf"))
