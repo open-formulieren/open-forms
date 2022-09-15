@@ -5,7 +5,7 @@ from django.utils.translation import gettext as _
 
 from openforms.forms.models import FormLogic
 from openforms.forms.tests.factories import FormLogicFactory
-from openforms.logging import logevent
+from openforms.logging import logevent, logic
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.logic.rules import EvaluatedRule
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -70,7 +70,7 @@ class EventTests(TestCase):
         )
         rule_2 = cast(FormLogic, rule_2)
 
-        logevent.submission_logic_evaluated(
+        logic.log_logic_evaluation(
             submission,
             [
                 EvaluatedRule(rule=rule, triggered=True),

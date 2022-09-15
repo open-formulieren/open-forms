@@ -38,7 +38,6 @@ from glom import Path, PathAccessError, glom
 from zgw_consumers.concurrent import parallel
 
 from openforms.formio.utils import format_date_value, iter_components
-from openforms.logging import logevent
 from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.typing import JSONObject
 
@@ -52,6 +51,10 @@ logger = logging.getLogger(__name__)
 def _fetch_prefill_values(
     grouped_fields: Dict[str, list], submission: "Submission", register
 ) -> Dict[str, Dict[str, Any]]:
+    from openforms.logging import (  # local import to prevent AppRegistryNotReady
+        logevent,
+    )
+
     @elasticapm.capture_span(span_type="app.prefill")
     def invoke_plugin(item: Tuple[str, List[str]]) -> Tuple[str, Dict[str, Any]]:
         plugin_id, fields = item

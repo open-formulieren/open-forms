@@ -16,7 +16,7 @@ from openforms.accounts.tests.factories import (
 )
 from openforms.forms.models import FormLogic, FormVariable
 from openforms.forms.tests.factories import FormLogicFactory
-from openforms.logging import logevent
+from openforms.logging import logevent, logic
 from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.logic.rules import EvaluatedRule
@@ -280,7 +280,7 @@ class LogicLogsAdminTests(WebTest):
         )
         merged_data = self.submission.get_merged_data()
 
-        logevent.submission_logic_evaluated(
+        logic.log_logic_evaluation(
             self.submission,
             [EvaluatedRule(rule=cast(FormLogic, rule), triggered=False)],
             merged_data,

@@ -1,4 +1,4 @@
-from django.test import tag
+from django.test import override_settings, tag
 
 from freezegun import freeze_time
 from rest_framework import status
@@ -595,6 +595,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             )
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
     def test_evaluate_logic_with_default_values(self):
         form = FormFactory.create(

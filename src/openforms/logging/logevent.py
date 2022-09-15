@@ -2,18 +2,20 @@ import logging
 from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from django.db.models import Model
+from django.utils import timezone
 
+from openforms.accounts.models import User
+from openforms.analytics_tools.models import AnalyticsToolsConfiguration
+from openforms.appointments.models import AppointmentInfo
+from openforms.forms.models import Form
 from openforms.logging.constants import TimelineLogTags
 from openforms.payments.constants import PaymentStatus
+from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.typing import JSONObject
-from openforms.utils.json_logic import ComponentMeta, introspect_json_logic
+
+from .tasks import log_logic_evaluation
 
 if TYPE_CHECKING:  # pragma: nocover
-    from openforms.accounts.models import User
-    from openforms.analytics_tools.models import AnalyticsToolsConfiguration
-    from openforms.appointments.models import AppointmentInfo
-    from openforms.forms.models import Form
-    from openforms.plugins.plugin import AbstractBasePlugin
     from openforms.submissions.logic.rules import EvaluatedRule, FormLogic
     from openforms.submissions.models import (
         Submission,
@@ -21,6 +23,8 @@ if TYPE_CHECKING:  # pragma: nocover
         SubmissionStep,
     )
     from stuf.models import StufService
+
+    from .models import TimelineLogProxy
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +37,7 @@ def _create_log(
     error: Optional[Exception] = None,
     tags: Optional[list] = None,
     user: Optional["User"] = None,
-):
+) -> "TimelineLogProxy":
     # import locally or we'll get "AppRegistryNotReady: Apps aren't loaded yet."
     from openforms.logging.models import TimelineLogProxy
 
@@ -57,13 +61,14 @@ def _create_log(
         #   save it on the TimelineLogProxy model
         user = None
 
-    TimelineLogProxy.objects.create(
+    log_entry = TimelineLogProxy.objects.create(
         content_object=object,
         template=f"logging/events/{event}.txt",
         extra_data=extra_data,
         user=user,
     )
     # logger.debug('Logged event in %s %s %s', event, object._meta.object_name, object.pk)
+    return log_entry
 
 
 def enabling_analytics_tool(
@@ -468,81 +473,27 @@ def submission_export_list(form: "Form", user: "User"):
 def submission_logic_evaluated(
     submission: "Submission",
     evaluated_rules: List["EvaluatedRule"],
-    initial_data: dict,
-    resolved_data: dict,
+    initial_data: JSONObject,
+    resolved_data: JSONObject,
 ):
-    from openforms.submissions.logic.log_utils import get_targeted_components
-
-    if not evaluated_rules:
-        return
-    evaluated_rules_list = []
-
-    submission_state = submission.load_execution_state()
-    form_steps = submission_state.form_steps
-
-    # Keep a mapping for each component's key for each component in the entire form.
-    # The key of the mapping is the component key, the value is a dataclass composed of
-    # form_step and component definition
-    components_map = {}
-    for form_step in form_steps:
-        for component in form_step.form_definition.iter_components():
-            components_map[component["key"]] = ComponentMeta(form_step, component)
-
-    input_data = []
-    all_variables = submission.form.formvariable_set.distinct("key").in_bulk(
-        field_name="key"
-    )
-    for evaluated_rule in evaluated_rules:
-        rule = evaluated_rule.rule
-
-        trigger = rule.json_logic_trigger
-        if not isinstance(trigger, (dict, list)):
-            # The trigger was a primitive, no need to introspect
-            evaluated_rule_data = {
-                "raw_logic_expression": trigger,
-                "readable_rule": str(trigger),
-                "targeted_components": get_targeted_components(
-                    rule,
-                    components_map,
-                    all_variables,
-                    initial_data,
-                ),
-                "trigger": evaluated_rule.triggered,
-            }
-
-            evaluated_rules_list.append(evaluated_rule_data)
-            continue
-
-        rule_introspection = introspect_json_logic(
-            trigger, components_map, initial_data
-        )
-
-        # Gathering all the input component of each evaluated rule
-        input_data.extend(rule_introspection.get_input_components())
-
-        targeted_components = get_targeted_components(
-            rule, components_map, all_variables, initial_data
-        )
-        evaluated_rule_data = {
-            "raw_logic_expression": rule_introspection.expression,
-            "readable_rule": rule_introspection.as_string(),
-            "targeted_components": targeted_components,
-            "trigger": evaluated_rule.triggered,
+    """
+    Convert into JSON-serializable data types and schedule the celery task.
+    """
+    timestamp = timezone.now().isoformat()
+    _evaluated_rules = [
+        {
+            "rule_id": evaluated_rule.rule.id,
+            "triggered": evaluated_rule.triggered,
         }
+        for evaluated_rule in evaluated_rules
+    ]
 
-        evaluated_rules_list.append(evaluated_rule_data)
-
-    # de-duplication of input data
-    deduplicated_input_data = {node["key"]: node for node in input_data}
-
-    _create_log(
-        submission,
-        "submission_logic_evaluated",
-        extra_data={
-            "evaluated_rules": evaluated_rules_list,
-            "input_data": deduplicated_input_data,
-            "resolved_data": resolved_data,
-        },
+    log_logic_evaluation.delay(
+        submission_id=submission.id,
+        timestamp=timestamp,
+        evaluated_rules=_evaluated_rules,
+        initial_data=initial_data,
+        resolved_data=resolved_data,
     )
 
 
