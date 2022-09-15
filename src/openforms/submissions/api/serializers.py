@@ -8,6 +8,7 @@ from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+import elasticapm
 from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.reverse import reverse
@@ -209,6 +210,7 @@ class ContextAwareFormStepSerializer(serializers.ModelSerializer):
             "index": {"source": "order"},
         }
 
+    @elasticapm.capture_span(span_type="app.api.serialization")
     def get_configuration(self, instance) -> dict:
         submission = self.root.instance.submission
         serializer = FormDefinitionSerializer(
@@ -261,6 +263,7 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             },
         }
 
+    @elasticapm.capture_span(span_type="app.api.serialization")
     def to_representation(self, instance):
         # invoke the configured form logic to dynamically update the Formio.js configuration
         new_configuration = evaluate_form_logic(
