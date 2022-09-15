@@ -37,7 +37,10 @@ class FormDefinitionAdmin(FormioConfigMixin, admin.ModelAdmin):
     list_display = ("anno_name", "used_in_forms", "is_reusable", "_num_components")
     actions = ["overridden_delete_selected", "make_copies"]
     list_filter = ["is_reusable"]
-    search_fields = ("name",)
+    search_fields = (
+        "name",
+        "internal_name",
+    )
 
     def get_queryset(self, request):
         qs = super().get_queryset(request=request)
