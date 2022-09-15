@@ -38,6 +38,8 @@ class FormDefinitionAdmin(FormioConfigMixin, admin.ModelAdmin):
     actions = ["overridden_delete_selected", "make_copies"]
     list_filter = ["is_reusable"]
     search_fields = (
+        "uuid",
+        "slug",
         "name",
         "internal_name",
     )

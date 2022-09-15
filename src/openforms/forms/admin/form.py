@@ -126,7 +126,7 @@ class FormAdmin(
         "maintenance_mode",
         FormDeletedListFilter,
     )
-    search_fields = ("name", "internal_name")
+    search_fields = ("uuid", "name", "internal_name", "slug")
 
     change_list_template = "admin/forms/form/change_list.html"
 
