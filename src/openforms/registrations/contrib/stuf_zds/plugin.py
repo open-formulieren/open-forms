@@ -139,21 +139,51 @@ def _point_coordinate(value):
     return {"lat": value[0], "lng": value[1]}
 
 
+def _gender_choices(value):
+    """
+    Convert value to uppercase, take only the first character and see if it's
+    valid for StUF 'geslachtsaanduiding'.
+    """
+    value = str(value).upper()[:1]
+    if value not in ["M", "V", "O"]:
+        return SKIP
+    return value
+
+
 @register("stuf-zds-create-zaak")
 class StufZDSRegistration(BasePlugin):
     verbose_name = _("StUF-ZDS")
     configuration_options = ZaakOptionsSerializer
 
     zaak_mapping = {
+        # Initiator
+        # Natuurlijk Persoon
+        "initiator.voorletters": RegistrationAttribute.initiator_voorletters,
         "initiator.voornamen": RegistrationAttribute.initiator_voornamen,
-        "initiator.geslachtsnaam": RegistrationAttribute.initiator_geslachtsnaam,
         "initiator.voorvoegselGeslachtsnaam": RegistrationAttribute.initiator_tussenvoegsel,
+        "initiator.geslachtsnaam": RegistrationAttribute.initiator_geslachtsnaam,
+        "initiator.geslachtsaanduiding": FieldConf(
+            RegistrationAttribute.initiator_geslachtsaanduiding,
+            transform=_gender_choices,
+        ),
         "initiator.geboortedatum": FieldConf(
             RegistrationAttribute.initiator_geboortedatum, transform=PartialDate.parse
         ),
         # "initiator.aanschrijfwijze": FieldConf(RegistrationAttribute.initiator_aanschrijfwijze),
+        # Verblijfsadres for both Natuurlijk Persoon and Vestiging
+        "initiator.verblijfsadres.woonplaatsNaam": RegistrationAttribute.initiator_woonplaats,
+        "initiator.verblijfsadres.postcode": RegistrationAttribute.initiator_postcode,
+        "initiator.verblijfsadres.straatnaam": RegistrationAttribute.initiator_straat,
+        "initiator.verblijfsadres.huisnummer": RegistrationAttribute.initiator_huisnummer,
+        "initiator.verblijfsadres.huisletter": RegistrationAttribute.initiator_huisletter,
+        "initiator.verblijfsadres.huisnummertoevoeging": RegistrationAttribute.initiator_huisnummer_toevoeging,
+        # Vestiging
+        "initiator.vestigingsNummer": RegistrationAttribute.initiator_vestigingsnummer,
+        "initiator.handelsnaam": RegistrationAttribute.initiator_handelsnaam,
+        # Identifiers
         "initiator.bsn": FieldConf(submission_auth_info_attribute="bsn"),
         "initiator.kvk": FieldConf(submission_auth_info_attribute="kvk"),
+        # Location
         "locatie": FieldConf(
             RegistrationAttribute.locatie_coordinaat, transform=_point_coordinate
         ),
