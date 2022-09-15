@@ -2,6 +2,7 @@ import logging
 from datetime import date, datetime
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
+import elasticapm
 from glom import glom
 
 from openforms.variables.constants import FormVariableDataTypes
@@ -13,6 +14,7 @@ from .typing import Component
 logger = logging.getLogger(__name__)
 
 
+@elasticapm.capture_span(span_type="app.formio.configuration")
 def iter_components(
     configuration: JSONObject, recursive=True, _is_root=True, _mark_root=False
 ) -> Iterator[Component]:
@@ -35,12 +37,14 @@ def iter_components(
                 )
 
 
+@elasticapm.capture_span(span_type="app.formio.configuration")
 def get_component(configuration: JSONObject, key: str) -> Optional[Component]:
     for component in iter_components(configuration=configuration, recursive=True):
         if component["key"] == key:
             return component
 
 
+@elasticapm.capture_span(span_type="app.formio.configuration")
 def flatten_by_path(configuration: JSONObject) -> Dict[str, Component]:
     """
     Flatten the formio configuration.

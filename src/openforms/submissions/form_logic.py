@@ -96,10 +96,13 @@ def evaluate_form_logic(
     # 5.1 - if the action type is to set a variable, update the variable state. This
     # happens inside of iter_evaluate_rules. This is the ONLY operation that is allowed
     # to execute while we're looping through the rules.
-    for operation in iter_evaluate_rules(
-        rules, data_container, on_rule_check=evaluated_rules.append
+    with elasticapm.capture_span(
+        name="collect_logic_operations", span_type="app.submissions.logic"
     ):
-        mutation_operations.append(operation)
+        for operation in iter_evaluate_rules(
+            rules, data_container, on_rule_check=evaluated_rules.append
+        ):
+            mutation_operations.append(operation)
 
     # 6. The variable state is now completely resolved - we can start processing the
     # dynamic configuration and side effects.
