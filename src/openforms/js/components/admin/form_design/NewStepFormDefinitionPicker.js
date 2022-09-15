@@ -22,7 +22,8 @@ const NewStepFormDefinitionPicker = ({onReplace}) => {
 
   const formDefinitionChoices = formDefinitions
     .filter(fd => fd.isReusable)
-    .map(fd => [fd.url, fd.internalName || fd.name]);
+    .map(fd => [fd.url, fd.internalName || fd.name])
+    .sort((a, b) => a[1].localeCompare(b[1]));
 
   const closeModal = () => {
     setIsModalOpen(false);
