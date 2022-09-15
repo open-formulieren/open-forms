@@ -218,7 +218,7 @@ face==20.1.1
     # via glom
 faker==7.0.1
     # via zgw-consumers
-flower==1.0.0
+flower==1.2.0
     # via -r requirements/base.in
 furl==2.1.2
     # via

@@ -398,7 +398,7 @@ faker==7.0.1
     #   zgw-consumers
 flake8==3.9.2
     # via -r requirements/test-tools.in
-flower==1.0.0
+flower==1.2.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

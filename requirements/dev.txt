@@ -449,7 +449,7 @@ flake8==3.9.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-flower==1.0.0
+flower==1.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1143,7 +1143,7 @@ zgw-consumers==0.21.0
     #   -r requirements/ci.txt
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==21.2.4
+pip==22.2.2
     # via pip-tools
 setuptools==59.6.0
     # via
