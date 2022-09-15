@@ -181,17 +181,30 @@ def import_form_data(
             if resource == "forms" and not existing_form_instance:
                 entry["active"] = False
 
+            serializer_kwargs = {
+                "data": entry,
+                "context": {"request": request, "form": created_form},
+            }
+
             if resource == "forms" and existing_form_instance:
-                deserialized = serializer(
-                    data=entry,
-                    context={"request": request, "form": created_form},
-                    instance=existing_form_instance,
+                serializer_kwargs["instance"] = existing_form_instance
+
+            if resource == "formVariables":
+                # by now, the form resource has been created (or it was an existing one)
+                _form = existing_form_instance or created_form
+                serializer_kwargs["context"].update(
+                    {
+                        "forms": {str(_form.uuid): _form},
+                        "form_definitions": {
+                            str(fd.uuid): fd
+                            for fd in FormDefinition.objects.filter(
+                                formstep__form=_form
+                            )
+                        },
+                    }
                 )
-            else:
-                deserialized = serializer(
-                    data=entry,
-                    context={"request": request, "form": created_form},
-                )
+
+            deserialized = serializer(**serializer_kwargs)
 
             if resource == "formLogic" and "order" not in entry:
                 entry["order"] = 0

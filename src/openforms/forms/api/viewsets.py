@@ -338,6 +338,11 @@ class FormViewSet(viewsets.ModelViewSet):
             # So that the admin can display deleted forms, but the list endpoint doesn't return them
             queryset = queryset.filter(_is_deleted=False)
 
+        # ⚡️ - the prefetches are not required for the variables bulk (update/read)
+        # endpoints, so we clear prefetches and select_related calls.
+        if self.action in ("variables_bulk_update", "variables_list"):
+            queryset = queryset.select_related(None).prefetch_related(None)
+
         return queryset
 
     def get_serializer(self, *args, **kwargs):
@@ -491,7 +496,20 @@ class FormViewSet(viewsets.ModelViewSet):
         form_variables.delete()
 
         serializer = FormVariableSerializer(
-            data=request.data, many=True, context={"request": request, "form": form}
+            data=request.data,
+            many=True,
+            context={
+                "request": request,
+                "form": form,
+                # context for :class:`openforms.api.fields.RelatedFieldFromContext` lookups
+                "forms": {str(form.uuid): form},
+                "form_definitions": {
+                    str(fd.uuid): fd
+                    for fd in FormDefinition.objects.filter(
+                        formstep__form=form
+                    ).distinct()
+                },
+            },
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -525,7 +543,8 @@ class FormViewSet(viewsets.ModelViewSet):
     def variables_list(self, request, *args, **kwargs):
         form = self.get_object()
         filterset = FormVariableFilter(
-            request.GET, queryset=form.formvariable_set.all()
+            request.GET,
+            queryset=form.formvariable_set.select_related("form", "form_definition"),
         )
 
         serializer = FormVariableSerializer(

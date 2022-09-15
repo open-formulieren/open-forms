@@ -13,7 +13,6 @@ from openforms.accounts.tests.factories import (
 )
 from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import (
-    FormDefinitionFactory,
     FormFactory,
     FormStepFactory,
     FormVariableFactory,
@@ -53,7 +52,8 @@ class FormVariableViewsetTest(APITestCase):
     def test_bulk_create_and_update(self):
         user = StaffUserFactory.create(user_permissions=["change_form"])
         form = FormFactory.create()
-        form_definition = FormDefinitionFactory.create()
+        form_step = FormStepFactory.create(form=form)
+        form_definition = form_step.form_definition
 
         form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_url = f"http://testserver.com{form_path}"
@@ -120,7 +120,8 @@ class FormVariableViewsetTest(APITestCase):
     def test_unique_together_key_form(self):
         user = SuperUserFactory.create()
         form = FormFactory.create()
-        form_definition = FormDefinitionFactory.create()
+        form_step = FormStepFactory.create(form=form)
+        form_definition = form_step.form_definition
 
         form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_url = f"http://testserver.com{form_path}"
@@ -278,7 +279,8 @@ class FormVariableViewsetTest(APITestCase):
     def test_dotted_variable_keys(self):
         user = SuperUserFactory.create()
         form = FormFactory.create()
-        form_definition = FormDefinitionFactory.create()
+        form_step = FormStepFactory.create(form=form)
+        form_definition = form_step.form_definition
 
         form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_url = f"http://testserver.com{form_path}"
@@ -369,7 +371,8 @@ class FormVariableViewsetTest(APITestCase):
     def test_key_clash_with_static_data(self):
         user = SuperUserFactory.create()
         form = FormFactory.create()
-        form_definition = FormDefinitionFactory.create()
+        form_step = FormStepFactory.create(form=form)
+        form_definition = form_step.form_definition
 
         form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         form_url = f"http://testserver.com{form_path}"
