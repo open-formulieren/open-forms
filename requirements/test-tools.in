@@ -8,6 +8,7 @@ factory-boy
 freezegun
 pyquery  # integrates with webtest
 requests-mock
+selenium
 tblib
 testfixtures
 pep8
