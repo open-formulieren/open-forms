@@ -45,18 +45,9 @@ class RegistrationAttribute(DjangoChoices):
         "initiator_woonplaats", _("Initiator > Woonplaats")
     )
 
-    # Contactpersoon
-    initiator_telefoonnummer = ChoiceItem(
-        "initiator_telefoonnummer", _("Initiator > Telefoonnummer")
-    )
-    initiator_emailadres = ChoiceItem("initiator_emailadres", _("Initiator > E-mail"))
-
     # Vestiging
     initiator_handelsnaam = ChoiceItem(
         "initiator_handelsnaam", _("Initiator > Handelsnaam")
-    )
-    initiator_kvk_nummer = ChoiceItem(
-        "initiator_kvk_nummer", _("Initiator > KvK-nummer")
     )
     initiator_vestigingsnummer = ChoiceItem(
         "initiator_vestigingsnummer", _("Initiator > Vestigingsnummer")

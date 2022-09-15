@@ -117,6 +117,7 @@ class ZGWRegistration(BasePlugin):
         "betrokkeneIdentificatie.inpBsn": FieldConf(
             submission_auth_info_attribute="bsn"
         ),
+        # This field is not part of the StUF-ZDS standard.
         "betrokkeneIdentificatie._kvk": FieldConf(submission_auth_info_attribute="kvk"),
     }
 
@@ -183,10 +184,6 @@ class ZGWRegistration(BasePlugin):
 
         if kvk:
             rol_data["betrokkeneType"] = "vestiging"
-            # Fall back on KvK-number if no vestigingsnumber.
-            betrokkene_identificatie["vestigingsNummer"] = betrokkene_identificatie.get(
-                "vestigingsNummer", kvk
-            )
         else:
             rol_data["betrokkeneType"] = "natuurlijk_persoon"
 

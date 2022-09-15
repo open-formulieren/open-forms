@@ -85,7 +85,7 @@
                     {% elif initiator.kvk %}
                         <ZKN:vestiging StUF:entiteittype="VES" StUF:verwerkingssoort="T">
                             {# Fall back on KvK-number if no vestigingsnumber. #}
-                            <BG:vestigingsNummer>{% if initiator.vestigingsNummer %}{{ initiator.vestigingsNummer }}{% else %}{{ initiator.kvk }}{% endif %}</BG:vestigingsNummer>
+                            {% if initiator.vestigingsNummer %}<BG:vestigingsNummer>{{ initiator.vestigingsNummer }}</BG:vestigingsNummer>{% endif %}
                             <BG:authentiek>N</BG:authentiek>
                             {% if initiator.handelsnaam %}<BG:handelsnaam>{{ initiator.handelsnaam }}</BG:handelsnaam>{% endif %}
 
@@ -96,16 +96,6 @@
                     {% endif %}
                 </ZKN:gerelateerde>
                 <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
-
-                {% if initiator.telefoonnummer or initiator.emailadres %}
-                    <ZKN:heeftAlsAanspreekpunt StUF:entiteittype="ZAKBTRINICTP" StUF:verwerkingssoort="T">
-                        <ZKN:gerelateerde StUF:entiteittype="CTP" StUF:verwerkingssoort="T">
-                            {% if initiator.telefoonnummer %}<ZKN:telefoonnummer>{{ initiator.telefoonnummer }}</ZKN:telefoonnummer>{% endif %}
-                            {% if initiator.emailadres %}<ZKN:emailadres>{{ initiator.emailadres }}</ZKN:emailadres>{% endif %}
-                        </ZKN:gerelateerde>
-                    </ZKN:heeftAlsAanspreekpunt>
-                {% endif %}
-
             </ZKN:heeftAlsInitiator>
         {% elif not global_config.allow_empty_initiator %}
             <ZKN:heeftAlsInitiator StUF:verwerkingssoort="T" StUF:entiteittype="ZAKBTRINI">

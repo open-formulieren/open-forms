@@ -671,7 +671,6 @@ class ZGWBackendTests(TestCase):
             create_rol_body["betrokkeneIdentificatie"],
             {
                 "handelsnaam": "ACME",
-                "vestigingsNummer": "12345678",
                 "verblijfsadres": {"postcode": "1000 AA"},
             },
         )
