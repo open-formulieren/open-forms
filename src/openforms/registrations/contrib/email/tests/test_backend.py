@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
+from freezegun import freeze_time
 from furl import furl
 
 from openforms.config.models import GlobalConfiguration
@@ -738,6 +739,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
                 self.assertEqual(file2[1], "content")  # this is text now
                 self.assertEqual(file2[2], "text/bar")
 
+    @freeze_time("2021-01-01T12:00:00+01:00")
     def test_user_defined_variables_included(self):
         submission = SubmissionFactory.from_components(
             completed=True,
@@ -760,7 +762,10 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             value="test2",
         )
 
-        email_form_options = dict(to_emails=["foo@bar.nl", "bar@foo.nl"])
+        email_form_options = dict(
+            to_emails=["foo@bar.nl", "bar@foo.nl"],
+            email_subject="{{ vars.now|date:'Y' }} - {{ vars.user_defined_var2 }}",
+        )
         email_submission = EmailRegistration("email")
 
         email_submission.register_submission(submission, email_form_options)
@@ -769,7 +774,13 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertEqual(len(mail.outbox), 1)
 
         message = mail.outbox[0]
-        message_text = message.body
 
-        self.assertIn("User defined var 1: test1", message_text)
-        self.assertIn("User defined var 2: test2", message_text)
+        # Github issue #1579 support variables in message subject
+        with self.subTest("Message subject"):
+            self.assertEqual(message.subject, "2021 - test2")
+
+        # Github issue #1579 support variables in message body
+        with self.subTest("Message body"):
+            message_text = message.body
+            self.assertIn("User defined var 1: test1", message_text)
+            self.assertIn("User defined var 2: test2", message_text)

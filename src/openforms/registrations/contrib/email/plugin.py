@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 from openforms.emails.utils import send_mail_html, strip_tags_plus
+from openforms.submissions.datastructures import DataContainer
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
 from openforms.submissions.rendering.constants import RenderModes
@@ -47,6 +48,9 @@ class EmailRegistration(BasePlugin):
         # explicitly get a reference before registering
         set_submission_reference(submission)
 
+        variables_state = submission.load_submission_value_variables_state()
+        data_container = DataContainer(variables_state)
+
         subject_template = options.get("email_subject") or ugettext(
             "[Open Forms] {{ form_name }} - submission {{ submission_reference }}"
         )
@@ -55,6 +59,7 @@ class EmailRegistration(BasePlugin):
             {
                 "form_name": submission.form.admin_name,
                 "submission_reference": submission.public_registration_reference,
+                "vars": data_container.data,
             },
         )
 

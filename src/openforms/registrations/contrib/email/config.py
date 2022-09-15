@@ -40,9 +40,11 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     email_subject = serializers.CharField(
         label=_("Email subject"),
         help_text=_(
-            "Subject of the email sent to the registration backend. You can use the expressions "
-            "'{{ form_name }}' and '{{ submission_reference }}' to include the form name and the reference "
-            "number to the submission in the subject."
+            "Subject of the email sent to the registration backend. You can use "
+            "the expressions '{{ form_name }}' and '{{ submission_reference }}' "
+            "to include the form name and the reference number to the submission "
+            "in the subject. Additionally, all the form variables are available with "
+            "the 'vars' prefix, e.g.: '{{ vars.environment }}'."
         ),
         required=False,
         validators=[DjangoTemplateValidator()],
