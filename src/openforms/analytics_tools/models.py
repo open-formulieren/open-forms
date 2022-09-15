@@ -7,8 +7,6 @@ from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
 
-from openforms.logging import logevent
-
 from .constants import AnalyticsTools
 from .utils import (
     get_cookies,
@@ -288,6 +286,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
         is_activated: bool,
         string_replacements_list: List[tuple],
     ):
+        from openforms.logging import logevent
 
         if is_activated:
             logevent.enabling_analytics_tool(self, analytics_tool)
