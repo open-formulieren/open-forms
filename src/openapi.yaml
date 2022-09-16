@@ -6684,12 +6684,6 @@ components:
           title: Submission steps
           description: Details of every form step of this submission's form, tracking
             the progress and other meta-data of each particular step.
-        nextStep:
-          type: string
-          format: uri
-          readOnly: true
-          nullable: true
-          deprecated: true
         submissionAllowed:
           allOf:
           - $ref: '#/components/schemas/SubmissionAllowedEnum'
@@ -6715,7 +6709,6 @@ components:
       - formUrl
       - id
       - isAuthenticated
-      - nextStep
       - payment
       - steps
       - submissionAllowed

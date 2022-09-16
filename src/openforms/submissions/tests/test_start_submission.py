@@ -65,16 +65,11 @@ class SubmissionStartTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         submission = Submission.objects.get()
-        submission_step_url = reverse(
-            "api:submission-steps-detail",
-            kwargs={"submission_uuid": submission.uuid, "step_uuid": self.step.uuid},
-        )
 
         response_json = response.json()
         expected = {
             "id": str(submission.uuid),
             "form": f"http://testserver.com{self.form_url}",
-            "nextStep": f"http://testserver.com{submission_step_url}",
         }
         for key, value in expected.items():
             with self.subTest(key=key, value=value):

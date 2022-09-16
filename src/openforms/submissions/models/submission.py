@@ -1,6 +1,5 @@
 import logging
 import uuid
-import warnings
 from collections import OrderedDict
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Union
@@ -70,30 +69,6 @@ class SubmissionState:
             else self.submission_steps.index(completed_steps[-1])
         )
         return offset
-
-    def get_next_step(self) -> Optional["SubmissionStep"]:
-        """
-        Determine the next logical step to fill out.
-
-        The next step is the step:
-        - after the last submitted step
-        - that is applicable
-
-        It does not consider "skipped" steps.
-
-        If there are no more steps, the result is None.
-        """
-        warnings.warn(
-            "'SubmissionState.get_next_step' is deprecated and scheduled for removal.",
-            DeprecationWarning,
-        )
-        offset = self._get_step_offset()
-        candidates = (
-            step
-            for step in self.submission_steps[offset:]
-            if not step.completed and step.is_applicable
-        )
-        return next(candidates, None)
 
     def get_last_completed_step(self) -> Optional["SubmissionStep"]:
         """
@@ -443,17 +418,6 @@ class Submission(models.Model):
         # fetch the existing DB records for submitted form steps
         submission_state = self.load_execution_state()
         return submission_state.submission_steps
-
-    def get_next_step(self) -> Optional["SubmissionStep"]:
-        """
-        Determine which is the next step for the current submission.
-        """
-        warnings.warn(
-            "'Submission.get_next_step' is deprecated and scheduled for removal.",
-            DeprecationWarning,
-        )
-        submission_state = self.load_execution_state()
-        return submission_state.get_next_step()
 
     def get_last_completed_step(self) -> Optional["SubmissionStep"]:
         """

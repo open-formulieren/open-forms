@@ -9,7 +9,6 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
-from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
@@ -112,7 +111,6 @@ class NestedSubmissionPaymentDetailSerializer(serializers.ModelSerializer):
         )
 
 
-@extend_schema_serializer(deprecate_fields=["next_step"])
 class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
     steps = NestedSubmissionStepSerializer(
         label=_("Submission steps"),
@@ -122,17 +120,6 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "Details of every form step of this submission's form, tracking the "
             "progress and other meta-data of each particular step."
         ),
-    )
-    next_step = NestedRelatedField(
-        view_name="api:submission-steps-detail",
-        lookup_field="form_step__uuid",
-        lookup_url_kwarg="step_uuid",
-        source="get_next_step",
-        read_only=True,
-        allow_null=True,
-        parent_lookup_kwargs={
-            "submission_uuid": "submission__uuid",
-        },
     )
     submission_allowed = serializers.ChoiceField(
         choices=SubmissionAllowedChoices,
@@ -166,7 +153,6 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "url",
             "form",
             "steps",
-            "next_step",
             "submission_allowed",
             "is_authenticated",
             "payment",

@@ -90,7 +90,6 @@ class SubmissionListTests(SubmissionsMixin, APITestCase):
                     "canSubmit": True,
                 }
             ],
-            "nextStep": f"http://testserver{submission_step_path}",
             "submissionAllowed": SubmissionAllowedChoices.yes,
             "payment": {
                 "isRequired": False,
