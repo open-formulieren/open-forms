@@ -2435,220 +2435,6 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/logic-rules:
-    get:
-      operationId: logic_rules_list
-      description: This endpoint is deprecated, instead use the form logic bulk endpoint.
-      summary: List logic rules
-      parameters:
-      - in: query
-        name: form
-        schema:
-          type: string
-          format: uuid
-        description: De UUID van het formulier gekoppeld aan deze logicaregels.
-      tags:
-      - logic-rules
-      security:
-      - tokenAuth: []
-      - cookieAuth: []
-      deprecated: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/FormLogic'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-    post:
-      operationId: logic_rules_create
-      description: This endpoint is deprecated, instead use the form logic bulk endpoint.
-      summary: Create a logic rule
-      tags:
-      - logic-rules
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FormLogic'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/FormLogic'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/FormLogic'
-        required: true
-      security:
-      - tokenAuth: []
-      - cookieAuth: []
-      deprecated: true
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FormLogic'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/logic-rules/{uuid}:
-    get:
-      operationId: logic_rules_retrieve
-      description: This endpoint is deprecated, instead use the form logic bulk endpoint.
-      summary: Retrieve logic rule details
-      parameters:
-      - in: path
-        name: uuid
-        schema:
-          type: string
-          format: uuid
-        required: true
-      tags:
-      - logic-rules
-      security:
-      - tokenAuth: []
-      - cookieAuth: []
-      deprecated: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FormLogic'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-    put:
-      operationId: logic_rules_update
-      description: This endpoint is deprecated, instead use the form logic bulk endpoint.
-      summary: Update all details of a logic rule
-      parameters:
-      - in: path
-        name: uuid
-        schema:
-          type: string
-          format: uuid
-        required: true
-      tags:
-      - logic-rules
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FormLogic'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/FormLogic'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/FormLogic'
-        required: true
-      security:
-      - tokenAuth: []
-      - cookieAuth: []
-      deprecated: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FormLogic'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-    patch:
-      operationId: logic_rules_partial_update
-      description: This endpoint is deprecated, instead use the form logic bulk endpoint.
-      summary: Update some details of a logic rule
-      parameters:
-      - in: path
-        name: uuid
-        schema:
-          type: string
-          format: uuid
-        required: true
-      tags:
-      - logic-rules
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedFormLogic'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedFormLogic'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedFormLogic'
-      security:
-      - tokenAuth: []
-      - cookieAuth: []
-      deprecated: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FormLogic'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-    delete:
-      operationId: logic_rules_destroy
-      description: This endpoint is deprecated, instead use the form logic bulk endpoint.
-      summary: Delete a logic rule
-      parameters:
-      - in: path
-        name: uuid
-        schema:
-          type: string
-          format: uuid
-        required: true
-      tags:
-      - logic-rules
-      security:
-      - tokenAuth: []
-      - cookieAuth: []
-      deprecated: true
-      responses:
-        '204':
-          description: No response body
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
   /api/v1/payment/plugins:
     get:
       operationId: payment_plugins_list
@@ -6134,9 +5920,6 @@ components:
         completed:
           type: boolean
           readOnly: true
-        optional:
-          type: boolean
-          readOnly: true
         canSubmit:
           type: boolean
           readOnly: true
@@ -6147,7 +5930,6 @@ components:
       - id
       - isApplicable
       - name
-      - optional
       - url
     PaginatedFormDefinitionList:
       type: object
@@ -6352,50 +6134,6 @@ components:
         isReusable:
           type: boolean
           description: Allow this definition to be re-used in multiple forms
-    PatchedFormLogic:
-      type: object
-      properties:
-        uuid:
-          type: string
-          format: uuid
-          readOnly: true
-        url:
-          type: string
-          format: uri
-          readOnly: true
-        form:
-          type: string
-          format: uri
-          description: Form to which the JSON logic applies.
-        jsonLogicTrigger:
-          type: object
-          additionalProperties: {}
-          title: JSON logic
-          description: The trigger expression to determine if the actions should execute
-            or not. Note that this must be a valid JsonLogic expression, and the first
-            operand must be a reference to a variable in the form.
-        order:
-          type: integer
-          description: Order of the rule relative to the form it belongs to. Logic
-            rules are evaluated in this order. Note that specifying a value for the
-            order here will cause the rules before/after this rule to be re-calculated.
-        triggerFromStep:
-          type: string
-          format: uri
-          nullable: true
-          description: When set, the trigger will only be checked once the specified
-            step is reached. This means the rule will never trigger for steps before
-            the specified trigger step. If unset, the trigger will always be checked.
-        actions:
-          type: array
-          items:
-            $ref: '#/components/schemas/LogicComponentAction'
-          description: Actions triggered when the trigger expression evaluates to
-            'truthy'.
-        isAdvanced:
-          type: boolean
-          description: Is this an advanced rule (the admin user manually wrote the
-            trigger as JSON)?
     PatchedFormPriceLogic:
       type: object
       properties:
@@ -6839,9 +6577,6 @@ components:
         completed:
           type: boolean
           readOnly: true
-        optional:
-          type: boolean
-          readOnly: true
         canSubmit:
           type: boolean
           readOnly: true
@@ -6851,7 +6586,6 @@ components:
       - formStep
       - id
       - isApplicable
-      - optional
       - slug
     SubmissionSuspension:
       type: object

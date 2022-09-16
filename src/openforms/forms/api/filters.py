@@ -2,7 +2,7 @@ from django.utils.translation import gettext as _
 
 from django_filters import rest_framework as filters
 
-from ..models import FormLogic, FormPriceLogic, FormVariable
+from ..models import FormPriceLogic, FormVariable
 
 
 class FormLogicBaseFilter(filters.FilterSet):
@@ -13,11 +13,6 @@ class FormLogicBaseFilter(filters.FilterSet):
 
     class Meta:
         fields = ["form"]
-
-
-class FormLogicFilter(FormLogicBaseFilter):
-    class Meta(FormLogicBaseFilter.Meta):
-        model = FormLogic
 
 
 class FormPriceLogicFilter(FormLogicBaseFilter):
