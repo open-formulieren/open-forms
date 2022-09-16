@@ -1,7 +1,10 @@
+from unittest import skip
+
 from openforms.utils.tests.test_migrations import TestMigrations
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 
+@skip("Squashed migrations are used in test suite, breaking these tests")
 class AddFormVariablesTests(TestMigrations):
     migrate_from = "0032_alter_formvariable_managers"
     migrate_to = "0033_formvariable_datamigration"
@@ -93,6 +96,7 @@ class AddFormVariablesTests(TestMigrations):
         self.assertEqual("boolean", new_form_component_vars.get(key="var4").data_type)
 
 
+@skip("Squashed migrations are used in test suite, breaking these tests")
 class FixInitialValuesTest(TestMigrations):
     migrate_from = "0043_explanation_template_data_migration"
     migrate_to = "0044_fix_user_defined_vars_initial_value"
