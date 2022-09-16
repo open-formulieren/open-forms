@@ -147,8 +147,12 @@ class ZGWRegistration(BasePlugin):
 
         if kvk:
             rol_data["betrokkeneType"] = "vestiging"
+            if "inpBsn" in betrokkene_identificatie:
+                del betrokkene_identificatie["inpBsn"]
         else:
             rol_data["betrokkeneType"] = "natuurlijk_persoon"
+            if "vestigingsNummer" in betrokkene_identificatie:
+                del betrokkene_identificatie["vestigingsNummer"]
 
         rol = create_rol(zaak, rol_data, options)
 
