@@ -321,5 +321,6 @@
   "Uploading file...": "Bezig met uploaden...",
   "Please wait for the file(s) upload to finish before continuing.": "Wacht tot het uploaden van de bestanden is voltooid voordat u verdergaat.",
   "array_nonempty": "Dit veld moet minstens één waarde hebben.",
-  "Display in summaries and confirmations": "Weergave in overzichten en bevestigingen"
+  "Display in summaries and confirmations": "Weergave in overzichten en bevestigingen",
+  "Too many files added. The maximum allowed number of files is {{ maxNumber }}": "Te veel bestanden toegevoegd. Het mogen er maximaal {{ maxNumber }} zijn"
 }
