@@ -7,7 +7,6 @@ from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 
-from django_filters import rest_framework as filters
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import parsers, permissions, response, status, views, viewsets
@@ -23,17 +22,10 @@ from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSet
 from openforms.variables.constants import FormVariableSources
 
 from ..messages import add_success_message
-from ..models import (
-    Category,
-    Form,
-    FormDefinition,
-    FormPriceLogic,
-    FormStep,
-    FormVersion,
-)
+from ..models import Category, Form, FormDefinition, FormStep, FormVersion
 from ..tasks import recouple_submission_variables_to_form_variables
 from ..utils import export_form, import_form
-from .filters import FormPriceLogicFilter, FormVariableFilter
+from .filters import FormVariableFilter
 from .parsers import (
     FormCamelCaseJSONParser,
     IgnoreConfigurationFieldCamelCaseJSONParser,
@@ -90,30 +82,6 @@ class FormStepViewSet(
         context = super().get_serializer_context()
         context["form"] = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
         return context
-
-
-@extend_schema(
-    tags=["logic-rules"],
-    description="This endpoint is deprecated, instead use the form price logic bulk endpoint.",
-    deprecated=True,
-)
-@extend_schema_view(
-    list=extend_schema(summary=_("List pricing logic rules")),
-    retrieve=extend_schema(summary=_("Retrieve pricing logic rule details")),
-    create=extend_schema(summary=_("Create a pricing logic rule")),
-    update=extend_schema(summary=_("Update all details of a pricing logic rule")),
-    partial_update=extend_schema(
-        summary=_("Update some details of a pricing logic rule")
-    ),
-    destroy=extend_schema(summary=_("Delete a pricing logic rule")),
-)
-class FormPriceLogicViewSet(viewsets.ModelViewSet):
-    serializer_class = FormPriceLogicSerializer
-    queryset = FormPriceLogic.objects.all()
-    permission_classes = [FormAPIPermissions]
-    filter_backends = (filters.DjangoFilterBackend,)
-    filterset_class = FormPriceLogicFilter
-    lookup_field = "uuid"
 
 
 @extend_schema_view(
