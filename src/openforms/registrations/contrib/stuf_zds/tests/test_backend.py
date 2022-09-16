@@ -653,24 +653,6 @@ class StufZDSPluginTests(StufTestBase):
             6,
         )
 
-        # even on success, the intermediate results must be recorded:
-        submission.refresh_from_db()
-        self.assertEqual(
-            submission.registration_result["intermediate"],
-            {
-                "zaaknummer": "foo-zaak",
-                "zaak_created": True,
-                "document_nummers": {
-                    "pdf-report": "bar-document",
-                    str(attachment.id): "bar-document",
-                },
-                "documents_created": {
-                    "pdf-report": True,
-                    str(attachment.id): True,
-                },
-            },
-        )
-
     @patch("celery.app.task.Task.request")
     def test_plugin_vestiging_initiator(self, m, mock_task):
         submission = SubmissionFactory.from_components(
@@ -865,24 +847,6 @@ class StufZDSPluginTests(StufTestBase):
             6,
         )
 
-        # even on success, the intermediate results must be recorded:
-        submission.refresh_from_db()
-        self.assertEqual(
-            submission.registration_result["intermediate"],
-            {
-                "zaaknummer": "foo-zaak",
-                "zaak_created": True,
-                "document_nummers": {
-                    "pdf-report": "bar-document",
-                    str(attachment.id): "bar-document",
-                },
-                "documents_created": {
-                    "pdf-report": True,
-                    str(attachment.id): True,
-                },
-            },
-        )
-
     @patch("celery.app.task.Task.request")
     def test_plugin_vestiging_initiator_kvk_only(self, m, mock_task):
         submission = SubmissionFactory.from_components(
@@ -1066,24 +1030,6 @@ class StufZDSPluginTests(StufTestBase):
                 template="logging/events/stuf_zds_success_response.txt"
             ).count(),
             6,
-        )
-
-        # even on success, the intermediate results must be recorded:
-        submission.refresh_from_db()
-        self.assertEqual(
-            submission.registration_result["intermediate"],
-            {
-                "zaaknummer": "foo-zaak",
-                "zaak_created": True,
-                "document_nummers": {
-                    "pdf-report": "bar-document",
-                    str(attachment.id): "bar-document",
-                },
-                "documents_created": {
-                    "pdf-report": True,
-                    str(attachment.id): True,
-                },
-            },
         )
 
     @patch("celery.app.task.Task.request")
