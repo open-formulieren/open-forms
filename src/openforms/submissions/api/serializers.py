@@ -59,11 +59,6 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         },
     )
 
-    optional = serializers.BooleanField(
-        source="form_step.optional",
-        read_only=True,
-    )
-
     class Meta:
         model = SubmissionStep
         fields = (
@@ -73,7 +68,6 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "form_step",
             "is_applicable",
             "completed",
-            "optional",
             "can_submit",
         )
 
@@ -212,11 +206,6 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         source="form_step.form_definition.slug",
         read_only=True,
     )
-
-    optional = serializers.BooleanField(
-        source="form_step.optional",
-        read_only=True,
-    )
     data = serializers.JSONField(
         label=_("data"),
         required=False,
@@ -237,7 +226,6 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "data",
             "is_applicable",
             "completed",
-            "optional",
             "can_submit",
         )
 

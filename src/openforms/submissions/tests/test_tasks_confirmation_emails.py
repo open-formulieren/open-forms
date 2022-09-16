@@ -69,7 +69,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         )
         # add a second step
         form_step = FormStepFactory.create(
-            optional=False,
             form=submission.form,
             form_definition__configuration={
                 "components": [
@@ -542,7 +541,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         SubmissionStepFactory.create(
             submission=submission,
             form_step__form=submission.form,
-            form_step__optional=False,
             data={"foo": "bar"},
         )
         ConfirmationEmailTemplateFactory.create(

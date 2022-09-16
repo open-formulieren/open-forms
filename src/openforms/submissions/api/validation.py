@@ -60,10 +60,9 @@ class CompletionValidationSerializer(serializers.Serializer):
 
 
 def is_step_unexpectedly_incomplete(submission_step: "SubmissionStep") -> bool:
-    if submission_step.form_step.optional:
-        return False
     if not submission_step.completed and submission_step.is_applicable:
         return True
+    return False
 
 
 def validate_submission_completion(

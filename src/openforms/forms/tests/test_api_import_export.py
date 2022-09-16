@@ -214,7 +214,6 @@ class ImportExportAPITests(APITestCase):
         self.assertEqual(
             imported_form_step.form_definition.pk, imported_form_definition.pk
         )
-        self.assertEqual(imported_form_step.optional, form_step1.optional)
         self.assertEqual(imported_form_step.order, form_step1.order)
 
     @patch(

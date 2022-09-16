@@ -44,8 +44,8 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
     @freeze_time("2020-12-11T10:53:19+01:00")
     def test_suspended_submission(self):
         form = FormFactory.create()
-        FormStepFactory.create(form=form, optional=False)
-        step2 = FormStepFactory.create(form=form, optional=True)  # noqa
+        FormStepFactory.create(form=form)
+        step2 = FormStepFactory.create(form=form)
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission, form_step=step2, data={"foo": "bar"}
@@ -69,8 +69,8 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
     )
     def test_missing_email(self, _mock):
         form = FormFactory.create()
-        FormStepFactory.create(form=form, optional=False)
-        step2 = FormStepFactory.create(form=form, optional=True)  # noqa
+        FormStepFactory.create(form=form)
+        step2 = FormStepFactory.create(form=form)
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission, form_step=step2, data={"foo": "bar"}
@@ -175,8 +175,8 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
     @freeze_time("2020-11-15T12:00:00+01:00")
     def test_resume_url_does_not_work_after_submission_has_been_completed(self):
         form = FormFactory.create()
-        FormStepFactory.create(form=form, optional=False)
-        step2 = FormStepFactory.create(form=form, optional=True)  # noqa
+        FormStepFactory.create(form=form)
+        step2 = FormStepFactory.create(form=form)
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission, form_step=step2, data={"foo": "bar"}

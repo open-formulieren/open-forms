@@ -85,7 +85,6 @@ class SubmissionListTests(SubmissionsMixin, APITestCase):
                     "formStep": f"http://testserver{form_step_path}",
                     "isApplicable": True,
                     "completed": False,
-                    "optional": False,
                     "name": "Select product",
                     "canSubmit": True,
                 }
