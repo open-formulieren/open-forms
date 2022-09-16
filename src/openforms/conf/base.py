@@ -108,6 +108,10 @@ CACHES = {
             "IGNORE_EXCEPTIONS": False,
         },
     },
+    "solo": {
+        "BACKEND": "openforms.utils.cache.RequestProxyCache",
+        "LOCATION": "default",
+    },
 }
 
 #
@@ -849,7 +853,7 @@ ZGW_CONSUMERS_TEST_SCHEMA_DIRS = [
 #
 # Django Solo
 #
-SOLO_CACHE = "default"
+SOLO_CACHE = "solo"
 SOLO_CACHE_TIMEOUT = 60 * 5  # 5 minutes
 
 #

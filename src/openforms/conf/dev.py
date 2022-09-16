@@ -96,9 +96,7 @@ ELASTIC_APM["DEBUG"] = config("DISABLE_APM_IN_DEV", default=True)
 
 # Django debug toolbar
 INSTALLED_APPS += ["debug_toolbar", "ddt_api_calls"]
-MIDDLEWARE += [
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
-]
+MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
 INTERNAL_IPS = ("127.0.0.1",)
 DEBUG_TOOLBAR_CONFIG = {"INTERCEPT_REDIRECTS": False}
 DEBUG_TOOLBAR_PANELS = [

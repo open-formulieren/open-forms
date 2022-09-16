@@ -10,6 +10,7 @@ class UtilsConfig(AppConfig):
     name = "openforms.utils"
 
     def ready(self):
+        from . import cache  # noqa
         from . import checks  # noqa
 
         # register custom converters
