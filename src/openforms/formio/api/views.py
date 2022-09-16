@@ -13,10 +13,11 @@ from rest_framework.response import Response
 from openforms.api.parsers import MaxFilesizeMultiPartParser
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 from openforms.submissions.api.renderers import PlainTextErrorRenderer
-from openforms.submissions.api.serializers import TemporaryFileUploadSerializer
 from openforms.submissions.attachments import clean_mime_type
 from openforms.submissions.models import TemporaryFileUpload
 from openforms.submissions.utils import add_upload_to_session
+
+from .serializers import TemporaryFileUploadSerializer
 
 
 @extend_schema(

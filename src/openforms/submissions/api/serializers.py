@@ -26,7 +26,7 @@ from ...utils.urls import build_absolute_uri
 from ..attachments import validate_uploads
 from ..constants import ProcessingResults, ProcessingStatuses
 from ..form_logic import check_submission_logic, evaluate_form_logic
-from ..models import Submission, SubmissionStep, TemporaryFileUpload
+from ..models import Submission, SubmissionStep
 from ..tokens import submission_resume_token_generator
 from .fields import NestedRelatedField
 from .validators import FormMaintenanceModeValidator, ValidatePrefillData
@@ -355,46 +355,6 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
             render_email_template(config.save_form_email_content, context),
             settings.DEFAULT_FROM_EMAIL,
             [email],
-        )
-
-
-class TemporaryFileUploadSerializer(serializers.Serializer):
-    """
-    https://help.form.io/integrations/filestorage/#url
-
-    {
-        url: 'http://link.to/file',
-        name: 'The_Name_Of_The_File.doc',
-        size: 1000
-    }
-    """
-
-    file = serializers.FileField(write_only=True, required=True, use_url=False)
-
-    url = serializers.SerializerMethodField(
-        label=_("URL"), source="get_url", read_only=True
-    )
-    name = serializers.CharField(
-        label=_("File name"), source="file_name", read_only=True
-    )
-    size = serializers.IntegerField(
-        label=_("File size"), source="content.size", read_only=True
-    )
-
-    class Meta:
-        model = TemporaryFileUpload
-        fields = (
-            "url",
-            "name",
-            "size",
-        )
-
-    def get_url(self, instance) -> str:
-        request = self.context["request"]
-        return reverse(
-            "api:submissions:temporary-file",
-            kwargs={"uuid": instance.uuid},
-            request=request,
         )
 
 
