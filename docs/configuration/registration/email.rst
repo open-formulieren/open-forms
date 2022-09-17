@@ -34,5 +34,5 @@ sizes. This depends largely on the mail/SMTP service you are using, see also
 
 .. note::
 
-    Email attachments are typicall restricted in size, making it impossible to actually
+    Email attachments are typically restricted in size, making it impossible to actually
     deliver the emails for further processing.
