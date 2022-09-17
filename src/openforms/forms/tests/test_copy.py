@@ -83,7 +83,6 @@ class CopyFormAPITests(APITestCase):
         self.assertNotEqual(copied_form_step.pk, form_step.pk)
         self.assertNotEqual(copied_form_step.uuid, str(form_step.uuid))
         self.assertEqual(copied_form_step.form.pk, copied_form.pk)
-        self.assertEqual(copied_form_step.optional, form_step.optional)
         self.assertEqual(copied_form_step.order, form_step.order)
 
     @override_settings(CACHES=NOOP_CACHES)

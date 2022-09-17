@@ -194,7 +194,6 @@ class ImportExportTests(TestCase):
         self.assertNotEqual(fs2.uuid, str(form_step.uuid))
         self.assertEqual(fs2.form.pk, forms.last().pk)
         self.assertEqual(fs2.form_definition.pk, fd2.pk)
-        self.assertEqual(fs2.optional, form_step.optional)
         self.assertEqual(fs2.order, form_step.order)
 
         user_defined_vars = FormVariable.objects.filter(
@@ -304,7 +303,6 @@ class ImportExportTests(TestCase):
         self.assertNotEqual(fs2.uuid, form_step.uuid)
         self.assertEqual(fs2.form.pk, forms.last().pk)
         self.assertEqual(fs2.form_definition.pk, fd2.pk)
-        self.assertEqual(fs2.optional, form_step.optional)
         self.assertEqual(fs2.order, form_step.order)
 
         form_logics = FormLogic.objects.all()
@@ -370,7 +368,6 @@ class ImportExportTests(TestCase):
         self.assertNotEqual(fs2.uuid, form_step.uuid)
         self.assertEqual(fs2.form.pk, forms.last().pk)
         self.assertEqual(fs2.form_definition.pk, fd2.pk)
-        self.assertEqual(fs2.optional, form_step.optional)
         self.assertEqual(fs2.order, form_step.order)
 
         form_logics = FormLogic.objects.all()

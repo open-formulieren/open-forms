@@ -20,17 +20,6 @@ class FormStep(OrderedModel):
         "forms.FormDefinition", on_delete=models.PROTECT
     )
 
-    # step properties/flow control
-    optional = models.BooleanField(
-        _("optional"),
-        default=False,
-        help_text=_(
-            "Designates whether this step is an optional step in the form. "
-            "Currently used for form-rendering purposes, this is not (yet) used for "
-            "validation purposes."
-        ),
-    )
-
     previous_text = models.CharField(
         _("step previous text"),
         max_length=50,

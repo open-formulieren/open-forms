@@ -87,12 +87,10 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
                         "formStep": f"http://testserver{form_step_path}",
                         "isApplicable": True,
                         "completed": False,
-                        "optional": False,
                         "name": "Select product",
                         "canSubmit": True,
                     }
                 ],
-                "nextStep": f"http://testserver{submission_step_path}",
                 "submissionAllowed": SubmissionAllowedChoices.yes,
                 "payment": {
                     "isRequired": False,
@@ -102,23 +100,6 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
                 "isAuthenticated": False,
             },
         )
-        self.assertEqual(
-            TimelineLogProxy.objects.filter(
-                template="logging/events/submission_details_view_api.txt"
-            ).count(),
-            1,
-        )
-
-    def test_retrieve_submission_optional_steps(self):
-        self._add_submission_to_session(self.submission)
-        self.step.optional = True
-        self.step.save()
-
-        response = self.client.get(self.endpoint)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        step = response.json()["steps"][0]
-        self.assertTrue(step["optional"])
         self.assertEqual(
             TimelineLogProxy.objects.filter(
                 template="logging/events/submission_details_view_api.txt"
@@ -149,7 +130,6 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
         submission = SubmissionFactory.create(
             completed=True,
             form__generate_minimal_setup=True,
-            form__formstep__optional=True,
             form__product=None,
             form__payment_backend="demo",
         )
@@ -175,7 +155,6 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
         submission = SubmissionFactory.create(
             completed=True,
             form__generate_minimal_setup=True,
-            form__formstep__optional=True,
             form__product__price=Decimal("123.45"),
             form__payment_backend="demo",
         )
@@ -200,7 +179,6 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
     def test_submission_payment_information_uses_logic_rules(self):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
-            form__formstep__optional=True,
             form__product__price=Decimal("123.45"),
             form__payment_backend="demo",
         )

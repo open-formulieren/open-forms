@@ -32,7 +32,6 @@ class FormStepInline(OrderedTabularInline):
         "order",
         "move_up_down_links",
         "form_definition",
-        "optional",
         "previous_text",
         "save_text",
         "next_text",

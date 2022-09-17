@@ -34,7 +34,6 @@ class SubmissionResumeViewTests(TestCase):
         SubmissionStepFactory.create(
             submission=submission,
             form_step__form=submission.form,
-            form_step__optional=False,
             data={"foo": "bar"},
         )
         submission.load_execution_state(refresh=True)
@@ -140,7 +139,6 @@ class SubmissionResumeViewTests(TestCase):
         SubmissionStepFactory.create(
             submission=submission,
             form_step__form=submission.form,
-            form_step__optional=False,
             data={"foo": "bar"},
         )
 

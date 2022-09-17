@@ -9,7 +9,6 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
-from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
@@ -26,7 +25,7 @@ from ...utils.urls import build_absolute_uri
 from ..attachments import validate_uploads
 from ..constants import ProcessingResults, ProcessingStatuses
 from ..form_logic import check_submission_logic, evaluate_form_logic
-from ..models import Submission, SubmissionStep, TemporaryFileUpload
+from ..models import Submission, SubmissionStep
 from ..tokens import submission_resume_token_generator
 from .fields import NestedRelatedField
 from .validators import FormMaintenanceModeValidator, ValidatePrefillData
@@ -60,11 +59,6 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         },
     )
 
-    optional = serializers.BooleanField(
-        source="form_step.optional",
-        read_only=True,
-    )
-
     class Meta:
         model = SubmissionStep
         fields = (
@@ -74,7 +68,6 @@ class NestedSubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "form_step",
             "is_applicable",
             "completed",
-            "optional",
             "can_submit",
         )
 
@@ -112,7 +105,6 @@ class NestedSubmissionPaymentDetailSerializer(serializers.ModelSerializer):
         )
 
 
-@extend_schema_serializer(deprecate_fields=["next_step"])
 class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
     steps = NestedSubmissionStepSerializer(
         label=_("Submission steps"),
@@ -122,17 +114,6 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "Details of every form step of this submission's form, tracking the "
             "progress and other meta-data of each particular step."
         ),
-    )
-    next_step = NestedRelatedField(
-        view_name="api:submission-steps-detail",
-        lookup_field="form_step__uuid",
-        lookup_url_kwarg="step_uuid",
-        source="get_next_step",
-        read_only=True,
-        allow_null=True,
-        parent_lookup_kwargs={
-            "submission_uuid": "submission__uuid",
-        },
     )
     submission_allowed = serializers.ChoiceField(
         choices=SubmissionAllowedChoices,
@@ -166,7 +147,6 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "url",
             "form",
             "steps",
-            "next_step",
             "submission_allowed",
             "is_authenticated",
             "payment",
@@ -226,11 +206,6 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
         source="form_step.form_definition.slug",
         read_only=True,
     )
-
-    optional = serializers.BooleanField(
-        source="form_step.optional",
-        read_only=True,
-    )
     data = serializers.JSONField(
         label=_("data"),
         required=False,
@@ -251,7 +226,6 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             "data",
             "is_applicable",
             "completed",
-            "optional",
             "can_submit",
         )
 
@@ -355,46 +329,6 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
             render_email_template(config.save_form_email_content, context),
             settings.DEFAULT_FROM_EMAIL,
             [email],
-        )
-
-
-class TemporaryFileUploadSerializer(serializers.Serializer):
-    """
-    https://help.form.io/integrations/filestorage/#url
-
-    {
-        url: 'http://link.to/file',
-        name: 'The_Name_Of_The_File.doc',
-        size: 1000
-    }
-    """
-
-    file = serializers.FileField(write_only=True, required=True, use_url=False)
-
-    url = serializers.SerializerMethodField(
-        label=_("URL"), source="get_url", read_only=True
-    )
-    name = serializers.CharField(
-        label=_("File name"), source="file_name", read_only=True
-    )
-    size = serializers.IntegerField(
-        label=_("File size"), source="content.size", read_only=True
-    )
-
-    class Meta:
-        model = TemporaryFileUpload
-        fields = (
-            "url",
-            "name",
-            "size",
-        )
-
-    def get_url(self, instance) -> str:
-        request = self.context["request"]
-        return reverse(
-            "api:submissions:temporary-file",
-            kwargs={"uuid": instance.uuid},
-            request=request,
         )
 
 

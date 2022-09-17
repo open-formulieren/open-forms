@@ -1,7 +1,4 @@
-import os
-
 from django.conf import settings
-from django.template.defaultfilters import filesizeformat
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -9,21 +6,16 @@ from django_sendfile import sendfile
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.generics import DestroyAPIView, GenericAPIView
-from rest_framework.response import Response
 
-from openforms.api.parsers import MaxFilesizeMultiPartParser
 from openforms.api.serializers import ExceptionSerializer
 
-from ..attachments import clean_mime_type
 from ..models import SubmissionReport, TemporaryFileUpload
-from ..utils import add_upload_to_session, remove_upload_from_session
+from ..utils import remove_upload_from_session
 from .permissions import (
-    AnyActiveSubmissionPermission,
     DownloadSubmissionReportPermission,
     OwnsTemporaryUploadPermission,
 )
 from .renderers import FileRenderer, PDFRenderer
-from .serializers import TemporaryFileUploadSerializer
 
 
 @extend_schema(
@@ -59,53 +51,6 @@ class DownloadSubmissionReportView(GenericAPIView):
         filename = submission_report.content.path
         sendfile_options = self.get_sendfile_opts()
         return sendfile(request, filename, **sendfile_options)
-
-
-@extend_schema(
-    summary=_("Create temporary file upload"),
-    description=_(
-        'File upload handler for the Form.io file upload "url" storage type.\n\n'
-        "The uploads are stored temporarily and have to be claimed by the form submission "
-        "using the returned JSON data. \n\n"
-        "Access to this view requires an active form submission. "
-        "Unclaimed temporary files automatically expire after {expire_days} day(s). \n\n"
-        "The maximum upload size for this instance is `{max_upload_size}`. Note that "
-        "this includes the multipart metadata and boundaries, so the actual maximum "
-        "file upload size is slightly smaller."
-    ).format(
-        expire_days=settings.TEMPORARY_UPLOADS_REMOVED_AFTER_DAYS,
-        max_upload_size=filesizeformat(settings.MAX_FILE_UPLOAD_SIZE),
-    ),
-    deprecated=True,
-)
-class TemporaryFileUploadView(GenericAPIView):
-    parser_classes = [MaxFilesizeMultiPartParser]
-    serializer_class = TemporaryFileUploadSerializer
-    authentication_classes = []
-    permission_classes = [AnyActiveSubmissionPermission]
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(
-            data=request.data,
-        )
-        serializer.is_valid(raise_exception=True)
-        file = serializer.validated_data["file"]
-
-        # trim name part if necessary but keep the extension
-        name, ext = os.path.splitext(file.name)
-        name = name[: 255 - len(ext)] + ext
-
-        upload = TemporaryFileUpload.objects.create(
-            content=file,
-            file_name=name,
-            content_type=clean_mime_type(file.content_type),
-            file_size=file.size,
-        )
-        add_upload_to_session(upload, self.request.session)
-
-        return Response(
-            self.serializer_class(instance=upload, context={"request": request}).data
-        )
 
 
 @extend_schema(
