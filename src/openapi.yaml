@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Open Forms API
-  version: 1.2.0-alpha
+  version: 2.0.0-beta.0
   description: |2
 
     Open Forms provides an API to manage multi-page or multi-step forms.
