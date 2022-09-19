@@ -608,7 +608,7 @@ o365==2.0.16
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-oauthlib==3.1.1
+oauthlib==3.2.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

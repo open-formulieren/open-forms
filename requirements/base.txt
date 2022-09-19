@@ -275,7 +275,7 @@ mozilla-django-oidc-db==0.11.0
     # via -r requirements/base.in
 o365==2.0.16
     # via -r requirements/base.in
-oauthlib==3.1.1
+oauthlib==3.2.1
     # via requests-oauthlib
 openpyxl==3.0.7
     # via tablib
