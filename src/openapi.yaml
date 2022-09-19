@@ -285,28 +285,6 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/authentication/session:
-    delete:
-      operationId: authentication_session_destroy
-      description: 'Calling this endpoint will clear the current user session and
-        delete the session cookie. This endpoint is deprecated, instead use the submission-specific
-        endpoint. '
-      summary: Delete session
-      tags:
-      - authentication
-      security:
-      - {}
-      deprecated: true
-      responses:
-        '204':
-          description: No response body
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
   /api/v1/categories:
     get:
       operationId: categories_list
