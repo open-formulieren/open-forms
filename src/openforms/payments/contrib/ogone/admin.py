@@ -1,5 +1,7 @@
 from django.contrib import admin
 
+from openforms.forms.utils import _get_mock_request
+
 from ...registry import register
 from .models import OgoneMerchant
 
@@ -27,13 +29,7 @@ class OgoneMerchantAdmin(admin.ModelAdmin):
         "endpoint",
     )
 
-    def get_queryset(self, request):
-        # NOTE it is generally bad practice to store the request since admins aren't thread safe,
-        #  but we only need it for the .get_host()
-        self.request = request
-        return super().get_queryset(request)
-
     def feedback_url(self, obj=None):
         if not obj:
             return ""
-        return register["ogone-legacy"].get_webhook_url(self.request)
+        return register["ogone-legacy"].get_webhook_url(_get_mock_request())
