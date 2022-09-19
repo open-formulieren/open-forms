@@ -1,4 +1,3 @@
-from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
 
 from ordered_model.serializers import OrderedModelSerializer
@@ -6,7 +5,6 @@ from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
 from openforms.api.serializers import ListWithChildSerializer
-from openforms.api.utils import get_from_serializer_data_or_instance
 
 from ....models import FormLogic, FormStep
 from ...validators import (
@@ -99,34 +97,6 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
         validators = FormLogicBaseSerializer.Meta.validators + [
             FormLogicTriggerFromStepFormValidator()
         ]
-
-    # TODO Remove once the FormLogicViewSet endpoint is removed
-    def save(self, **kwargs):
-        """
-        Manage row-level locks while performing updates.
-
-        Updating the order through the API is sensitive to race conditions, as
-        specifying the order for a logic rule causes the _other rules_ to be updated
-        as well. Parallel requests affect each other and can lead to unexpected
-        calculated order values.
-
-        To guard against this, we wrap the save operation in an atomic transaction,
-        but this in turn leads to deadlocks because multiple parallel requests are
-        waiting for each other. To mitigate THAT, we lock all the form logic rules for
-        the involved form.
-        """
-        # taken from drf BaseSerializer.save
-        validated_data = {**self.validated_data, **kwargs}
-        form = get_from_serializer_data_or_instance("form", validated_data, self)
-        logic_rules = form.formlogic_set.all()
-
-        with transaction.atomic():
-            # evaluate queryset to force row-level locks
-            list(logic_rules.select_for_update())
-            if self.instance:
-                # ensure that we are not looking at stale date if we were waiting for a lock
-                self.instance.refresh_from_db()
-            return super().save(**kwargs)
 
 
 class FormLogicListSerializer(ListWithChildSerializer):

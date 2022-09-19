@@ -9,10 +9,7 @@ from rest_framework.views import APIView
 
 from openforms.submissions.api.permissions import ActiveSubmissionPermission
 from openforms.submissions.models import Submission
-from openforms.submissions.utils import (
-    get_submissions_from_session,
-    remove_submission_from_session,
-)
+from openforms.submissions.utils import remove_submission_from_session
 from openforms.utils.api.views import ListMixin
 
 from ..constants import FORM_AUTH_SESSION_KEY
@@ -39,38 +36,6 @@ class PluginListView(ListMixin, APIView):
 
     def get_objects(self):
         return list(register.iter_enabled_plugins())
-
-
-class AuthenticationLogoutView(APIView):
-    authentication_classes = ()
-    permission_classes = (permissions.AllowAny,)
-    serializer_class = (
-        serializers.Serializer
-    )  # just to shut up some warnings in drf-spectacular
-
-    @extend_schema(
-        summary=_("Delete session"),
-        description=_(
-            "Calling this endpoint will clear the current user session and delete the session cookie. "
-            "This endpoint is deprecated, instead use the submission-specific endpoint. "
-        ),
-        deprecated=True,  # replaced with the submission specific SubmissionLogoutView
-    )
-    @transaction.atomic()
-    def delete(self, request, *args, **kwargs):
-        # first, hash all the submissions identifying parameters before flushing
-        # the session. These submissions become effectively unreachable (unless there
-        # is still a resume link somewhere).
-        submissions = get_submissions_from_session(request.session)
-        for submission in submissions:
-            if submission.is_authenticated:
-                submission.auth_info.hash_identifying_attributes()
-
-        for plugin in register.iter_enabled_plugins():
-            plugin.logout(request)
-
-        request.session.flush()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SubmissionLogoutView(GenericAPIView):

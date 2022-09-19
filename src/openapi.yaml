@@ -285,28 +285,6 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/authentication/session:
-    delete:
-      operationId: authentication_session_destroy
-      description: 'Calling this endpoint will clear the current user session and
-        delete the session cookie. This endpoint is deprecated, instead use the submission-specific
-        endpoint. '
-      summary: Delete session
-      tags:
-      - authentication
-      security:
-      - {}
-      deprecated: true
-      responses:
-        '204':
-          description: No response body
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
   /api/v1/categories:
     get:
       operationId: categories_list
@@ -5468,7 +5446,6 @@ components:
         mapping:
           disable-next: '#/components/schemas/LogicActionPolymorphicGenericObject'
           property: '#/components/schemas/LogicActionPolymorphicLogicPropertyAction'
-          value: '#/components/schemas/LogicActionPolymorphicLogicValueAction'
           step-not-applicable: '#/components/schemas/LogicActionPolymorphicGenericObject'
           variable: '#/components/schemas/LogicActionPolymorphicLogicValueAction'
     LogicActionPolymorphicGenericObject:
@@ -5507,8 +5484,7 @@ components:
         type:
           allOf:
           - $ref: '#/components/schemas/LogicActionPolymorphicSharedTypeEnum'
-          description: "Action type for this particular action. \n\nNote that the\
-            \ type `value` is **DEPRECATED** - use `variable` instead."
+          description: Action type for this particular action.
       required:
       - type
     LogicActionPolymorphicSharedTypeEnum:
@@ -5516,7 +5492,6 @@ components:
       - step-not-applicable
       - disable-next
       - property
-      - value
       - variable
       type: string
     LogicComponentAction:
@@ -5526,8 +5501,7 @@ components:
           type: string
           title: Form.io component
           description: Key of the Form.io component that the action applies to. This
-            field is required for the action types `property`, `value` - otherwise
-            it's optional.
+            field is required for the action types `property` - otherwise it's optional.
         variable:
           type: string
           title: Key of the target variable

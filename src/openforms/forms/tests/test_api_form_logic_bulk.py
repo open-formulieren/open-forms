@@ -415,11 +415,10 @@ class FormLogicAPITests(APITestCase):
                 "actions": [
                     {
                         "formStep": "",
-                        "component": "surname",
+                        "variable": "surname",
                         "action": {
-                            "type": "value",
-                            "property": {},
-                            "value": {"var": "name"},
+                            "type": "variable",
+                            "value": "foo",
                         },
                     }
                 ],
@@ -752,151 +751,6 @@ class FormLogicAPITests(APITestCase):
             "0.jsonLogicTrigger", response.json()["invalidParams"][0]["name"]
         )
 
-    def test_can_refer_to_literal_in_value_action(self):
-        user = SuperUserFactory.create()
-        self.client.force_authenticate(user=user)
-        form = FormFactory.create(
-            generate_minimal_setup=True,
-            formstep__form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "text1",
-                    },
-                    {
-                        "type": "textfield",
-                        "key": "text2",
-                    },
-                ]
-            },
-        )
-
-        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        form_logic_data = [
-            {
-                "form": f"http://testserver{form_url}",
-                "order": 0,
-                "json_logic_trigger": {"==": [{"var": "text1"}, {"var": "text2"}]},
-                "actions": [
-                    {
-                        "formStep": "",
-                        "component": "text1",
-                        "action": {
-                            "type": "value",
-                            "property": {"value": "", "type": ""},
-                            "value": "A test value",  # A literal value
-                            "state": "",
-                        },
-                    }
-                ],
-                "is_advanced": False,
-            }
-        ]
-        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
-
-        response = self.client.put(url, data=form_logic_data)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_cant_have_empty_component_value_in_value_action(self):
-        user = SuperUserFactory.create()
-        self.client.force_authenticate(user=user)
-        form = FormFactory.create(
-            generate_minimal_setup=True,
-            formstep__form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "text1",
-                    },
-                    {
-                        "type": "textfield",
-                        "key": "text2",
-                    },
-                ]
-            },
-        )
-
-        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        form_logic_data = [
-            {
-                "form": f"http://testserver{form_url}",
-                "order": 0,
-                "json_logic_trigger": {"==": [{"var": "text1"}, {"var": "text2"}]},
-                "actions": [
-                    {
-                        "formStep": "",
-                        "component": "text1",
-                        "action": {
-                            "type": "value",
-                            "property": {"value": "", "type": ""},
-                            "value": {"var": ""},  # Empty Component!
-                            "state": "",
-                        },
-                    }
-                ],
-                "is_advanced": False,
-            }
-        ]
-        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
-
-        response = self.client.put(url, data=form_logic_data)
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(
-            "0.actions.0.action.value", response.json()["invalidParams"][0]["name"]
-        )
-
-    def test_cant_have_empty_component_in_value_action(self):
-        user = SuperUserFactory.create()
-        self.client.force_authenticate(user=user)
-        form = FormFactory.create(
-            generate_minimal_setup=True,
-            formstep__form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "text1",
-                    },
-                    {
-                        "type": "textfield",
-                        "key": "text2",
-                    },
-                ]
-            },
-        )
-
-        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        form_logic_data = [
-            {
-                "form": f"http://testserver{form_url}",
-                "order": 0,
-                "json_logic_trigger": {"==": [{"var": "text1"}, {"var": "text2"}]},
-                "actions": [
-                    {
-                        "formStep": "",
-                        "component": "",  # Empty Component!
-                        "action": {
-                            "type": "value",
-                            "property": {"value": "", "type": ""},
-                            "value": {"var": "text1"},
-                            "state": "",
-                        },
-                    }
-                ],
-                "is_advanced": False,
-            }
-        ]
-        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
-
-        response = self.client.put(url, data=form_logic_data)
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(
-            "0.actions.0.component", response.json()["invalidParams"][0]["name"]
-        )
-        self.assertEqual("blank", response.json()["invalidParams"][0]["code"])
-
     def test_cant_have_empty_component_in_property_action(self):
         user = SuperUserFactory.create()
         self.client.force_authenticate(user=user)
@@ -1011,60 +865,6 @@ class FormLogicAPITests(APITestCase):
         )
         self.assertEqual("blank", response.json()["invalidParams"][0]["code"])
 
-    def test_deprecation_value_action(self):
-        """
-        Assert that type=value is automatically converted into type=variable.
-        """
-        user = SuperUserFactory.create()
-        self.client.force_authenticate(user=user)
-        form = FormFactory.create(
-            generate_minimal_setup=True,
-            formstep__form_definition__configuration={
-                "components": [
-                    {
-                        "type": "textfield",
-                        "key": "text1",
-                    },
-                    {
-                        "type": "textfield",
-                        "key": "text2",
-                    },
-                ]
-            },
-        )
-
-        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        form_logic_data = [
-            {
-                "form": f"http://testserver{form_url}",
-                "order": 0,
-                "json_logic_trigger": {"==": [{"var": "text1"}, {"var": "text2"}]},
-                "actions": [
-                    {
-                        "formStep": "",
-                        "component": "text1",
-                        "action": {
-                            "type": "value",
-                            "property": {"value": "", "type": ""},
-                            "value": "A test value",  # A literal value
-                            "state": "",
-                        },
-                    }
-                ],
-                "is_advanced": False,
-            }
-        ]
-        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
-
-        response = self.client.put(url, data=form_logic_data)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        rule = form.formlogic_set.get()
-        action = rule.actions[0]
-        self.assertEqual(action["component"], "")
-        self.assertEqual(action["variable"], "text1")
-        self.assertEqual(action["action"]["type"], "variable")
-
     def test_cant_have_empty_state_in_property_action(self):
         user = SuperUserFactory.create()
         self.client.force_authenticate(user=user)
@@ -1114,7 +914,7 @@ class FormLogicAPITests(APITestCase):
         )
         self.assertEqual("blank", response.json()["invalidParams"][0]["code"])
 
-    def test_cant_have_empty_component_in_mark_step_as_not_applicable(self):
+    def test_cant_have_empty_form_step_in_mark_step_as_not_applicable(self):
         user = SuperUserFactory.create()
         self.client.force_authenticate(user=user)
         form = FormFactory.create(

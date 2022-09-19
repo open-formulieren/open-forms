@@ -1,5 +1,3 @@
-import warnings
-
 from django.utils.translation import ugettext_lazy as _
 
 from drf_polymorphic.serializers import PolymorphicSerializer
@@ -59,17 +57,13 @@ class LogicActionPolymorphicSerializer(PolymorphicSerializer):
     type = serializers.ChoiceField(
         choices=LogicActionTypes,
         label=_("Type"),
-        help_text=_(
-            "Action type for this particular action. \n\nNote that the type `value` is "
-            "**DEPRECATED** - use `variable` instead."
-        ),
+        help_text=_("Action type for this particular action."),
     )
 
     discriminator_field = "type"
     serializer_mapping = {
         LogicActionTypes.disable_next: serializers.Serializer,
         LogicActionTypes.property: LogicPropertyActionSerializer,
-        LogicActionTypes.value: LogicValueActionSerializer,  # TODO remove once only variables are used
         LogicActionTypes.step_not_applicable: serializers.Serializer,
         LogicActionTypes.variable: LogicValueActionSerializer,
     }
@@ -163,18 +157,5 @@ class LogicComponentActionSerializer(serializers.Serializer):
                 {"form_step": self.fields["form_step"].error_messages["null"]},
                 code="blank",
             )
-
-        # handle deprecated type 'value' and convert to equivalent 'variable'
-        if action_type == LogicActionTypes.value:
-            warnings.warn(
-                "Logic action type 'value' is deprecated, please use the equivalent "
-                "type 'variable' instead.",
-                DeprecationWarning,
-            )
-            # convert to variable action type
-            variable = component
-            data["variable"] = variable
-            data["component"] = ""
-            data["action"]["type"] = LogicActionTypes.variable
 
         return data
