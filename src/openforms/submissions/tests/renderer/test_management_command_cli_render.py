@@ -4,7 +4,7 @@ Integration test for a full render management command.
 from io import StringIO
 
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from openforms.variables.constants import FormVariableSources
 
@@ -64,6 +64,7 @@ FORMIO_CONFIGURATION_COMPONENTS = [
 ]
 
 
+@override_settings(LANGUAGE_CODE="nl")
 class CLIRendererIntegrationTests(TestCase):
     maxDiff = None
 
@@ -123,7 +124,7 @@ Submission {submission.id} - public name
         Input 4                            fourth input
         WYSIWYG Content                    WYSIWYG with markup
         ---------------------------------  -------------------
-    Variables
+    Variabelen
         ------------------  -----------
         User defined var 1  Some data 1
         User defined var 2  Some data 2
@@ -187,7 +188,7 @@ Submission {submission.id} - public name
         Input 4                            fourth input
         WYSIWYG Content                    <p>WYSIWYG with <strong>markup</strong></p>
         ---------------------------------  -------------------------------------------
-    Variables
+    Variabelen
         ------------------  -----------
         User defined var 1  Some data 1
         User defined var 2  Some data 2
