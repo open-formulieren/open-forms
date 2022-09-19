@@ -36,7 +36,7 @@ celery==5.2.3
     #   flower
 celery-once==3.0.1
     # via -r requirements/base.in
-certifi==2021.10.8
+certifi==2022.9.14
     # via
     #   elastic-apm
     #   requests
@@ -330,7 +330,7 @@ python-magic==0.4.27
     # via -r requirements/base.in
 python3_saml @ git+https://github.com/maykinmedia/python3-saml.git@f587f77b78be79d51139f29a957b406072e2b537
     # via -r requirements/base.in
-pytz==2021.3
+pytz==2022.2.1
     # via
     #   -r requirements/base.in
     #   celery
