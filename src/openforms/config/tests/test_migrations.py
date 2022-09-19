@@ -6,7 +6,7 @@ from openforms.utils.tests.test_migrations import TestMigrations
 @override_settings(SOLO_CACHE=None)
 class DesignTokenMigrationTests(TestMigrations):
     app = "config"
-    migrate_from = "0028_auto_20220601_1422"
+    migrate_from = "0002_make_react_ui_default_squashed_0028_auto_20220601_1422"
     migrate_to = "0029_rename_design_tokens"
 
     def setUpBeforeMigration(self, apps):
@@ -30,7 +30,7 @@ class DesignTokenMigrationTests(TestMigrations):
 @override_settings(SOLO_CACHE=None)
 class EmptyDesignTokenMigrationTests(TestMigrations):
     app = "config"
-    migrate_from = "0028_auto_20220601_1422"
+    migrate_from = "0002_make_react_ui_default_squashed_0028_auto_20220601_1422"
     migrate_to = "0029_rename_design_tokens"
 
     def setUpBeforeMigration(self, apps):

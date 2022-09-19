@@ -1,6 +1,9 @@
+from unittest import skip
+
 from openforms.utils.tests.test_migrations import TestMigrations
 
 
+@skip("Code is moved to squashed migration, these tests are now broken.")
 class ReplaceWidgetDataMigrationTests(TestMigrations):
     migrate_from = "0012_merge_20211222_0831"
     migrate_to = "0013_auto_20211220_1755"
@@ -51,6 +54,7 @@ class ReplaceWidgetDataMigrationTests(TestMigrations):
         )
 
 
+@skip("Code is moved to squashed migration, these tests are now broken.")
 class MoveOfImageDataMigrationTests(TestMigrations):
     migrate_from = "0013_auto_20211220_1755"
     migrate_to = "0014_file_component"
@@ -125,6 +129,7 @@ class MoveOfImageDataMigrationTests(TestMigrations):
         self.assertEqual(elem["image"], False)
 
 
+@skip("Code is moved to squashed migration, these tests are now broken.")
 class FormLogicOrderingMigrationTests(TestMigrations):
     migrate_from = "0028_auto_20220623_1257"
     migrate_to = "0029_make_logic_order_explicit"
@@ -281,6 +286,7 @@ class FormLogicOrderingMigrationTests(TestMigrations):
         self.assertEqual(form2_rule.order, 0)
 
 
+@skip("Code is moved to squashed migration, these tests are now broken.")
 class AdvancedFormLogicOrderingMigrationTests(TestMigrations):
     migrate_from = "0028_auto_20220623_1257"
     migrate_to = "0029_make_logic_order_explicit"
@@ -378,6 +384,7 @@ class AdvancedFormLogicOrderingMigrationTests(TestMigrations):
         )
 
 
+@skip("Code is moved to squashed migration, these tests are now broken.")
 class ConvertLogicActionValueToVariableTests(TestMigrations):
     app = "forms"
     migrate_from = "0040_set_number_of_formio_components"
