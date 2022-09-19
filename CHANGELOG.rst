@@ -2,14 +2,20 @@
 Changelog
 =========
 
-2.0.0 "Règâh" (2022-??-??) - in development
-===========================================
+2.0.0 "Règâh" (2022-??-??) - in testing
+=======================================
 
-*The symbol of The Hague is the stork, a majestic bird, which is somewhat disrespectfully called a Règâh, or heron, by the residents of The Hague.*
+*The symbol of The Hague is the stork, a majestic bird, which is somewhat
+disrespectfully called a Règâh, or heron, by the residents of The Hague.*
 
 BEFORE upgrading to 2.0.0, please read the release notes carefully.
 
-**Upgrade procedure**
+Upgrade procedure
+-----------------
+
+Open Forms 2.0.0 contains a number of breaking changes. While we aim to make the upgrade
+process as smooth as possible, you will have to perform some manual actions to ensure
+this process works correctly.
 
 .. warning::
 
@@ -18,11 +24,7 @@ BEFORE upgrading to 2.0.0, please read the release notes carefully.
     This ensures that all the relevant database changes are applied before the changes
     for 2.0 are applied. Failing to do so may result in data loss.
 
-**Changes**
-
-TODO
-
-* ...
+    See the manual interventions below for steps to perform on 1.1.x before upgrading.
 
 .. warning:: Manual intervention required
 
@@ -31,8 +33,8 @@ TODO
    an error and will prevent the upgrade from succeeding.
 
    If you are upgrading from an older version, you should check for duplicate component
-   keys on the old version before upgrading to 1.2.0. You can do this by running the
-   appropriate management command in the container:
+   keys on the old version before upgrading to 2.0.0. You can do this by running the
+   management command in the container:
 
    .. code-block:: bash
 
@@ -46,6 +48,216 @@ TODO
    Note that you must be at least on 1.1.4 or 1.0.12 (unreleased) for this management
    command to be available. If you are on an older version, please update to the latest
    patch version first.
+
+Changes
+-------
+
+**Breaking changes**
+
+We always try to minimize the impact of breaking changes, especially with automated
+upgrade processes. However, we cannot predict all edge cases, so we advise you to
+double check with the list of breaking changes in mind.
+
+* Introduced form variables in the engine core. Existing forms are automatically
+  migrated and should continue to work.
+* The logic action type ``value`` has been replaced with setting the value of a
+  variable. There is an automatic migration to update existing forms.
+* Removed the ``Submission.bsn``, ``Submission.kvk`` and ``Submission.pseudo`` fields.
+  These have been replaced with the ``authentication.AuthInfo`` model.
+* The logic rules (form logic, price logic) endpoints have been removed in favour of
+  the new bulk endpoints
+* The logic action type 'value' has been replaced with action type 'variable'. There is
+  an automatic migration to update existing forms.
+* The Design tokens to theme Open Forms have been renamed. There is an automatic
+  migration to update your configuration.
+* Before 1.2.0, the SDK would display a hardcoded message to start the form depending on
+  the authentication options. This is removed and you need to use the form explanation
+  WYSIWYG field to add the text for end-users.
+* The ``DELETE /api/v1/authentication/session`` endpoint was removed, instead use the
+  submission specific endpoint.
+
+**New features/improvements**
+
+*Core*
+
+* [#1325] Introduced the concept of "form variables", enabling a greater flexibility
+  for form designers
+
+    * Every form field is automatically a form variable
+    * Defined a number of always-available static variables (such as the current
+      timestamp, form name and ID, environment, authentication details...)
+    * Form designers can define their own "user-defined variables" to use in logic and
+      calculations
+    * Added API endpoints to read/set form variables in bulk
+    * Added API endpoint to list the static variables
+    * The static variables interface is extensible
+
+* [#1546] Reworked form logic rules
+
+    * Rules now have explicit ordering, which you can modify in the UI
+    * You can now specify that a rule should only be evaluated from a particular form
+      step onwards (instead of 'always')
+    * Form rules are now explicitely listed in the admin for debugging purposes
+    * Improved display of JSON-logic expressions in the form designer
+    * When adding a logic rule, you can now pick between simple or advanced - more types
+      will be added in the future, such as DMN.
+    * You can now use all form variables in logic rules
+
+* [#1708] Reworked the logic evaluation for a submission
+
+    * Implemented isolated/sandboxed template environment
+    * Form components now support template expressions using the form variables
+    * The evaluation flow is now more deterministic: first all rules are evaluated that
+      updated values of variables, then all other logic actions are evaluated using
+      those variable values
+
+* [#1661] Submission authentication is now tracked differently
+
+    * Removed the authentication identifier fields on the ``Submission`` model
+    * Added a new, generic model to track authentication information:
+      ``authentication.AuthInfo``
+    * Exposed the submission authentication details as static form variables - you now
+      no longer need to add hidden form fields to access this information.
+
+* [#1967] Reworked form publishing tools
+
+    * Deactivated forms are deactivated for everyone
+    * Forms in maintenance mode are not available, unless you're a staff member
+    * The API endpoints now return HTTP 422 or HTTP 503 errors when a form is deactivated
+      or in maintenance mode
+    * [#2014] Documented the recommended workflows
+
+* [#1682] Logic rules evaluation is now logged with the available context. This should
+  help in debugging your form logic.
+* [#1616] Define extra CSP directives in the admin
+* [#1680] Laid the groundwork for DMN engine support. Note that this is not exposed
+  anywhere yet, but this will come in the future.
+* [#1687] There is now an explicit validate endpoint for submisisons and possible error
+  responses are documented in the API spec.
+* [#1739] (API) endpoints now emit headers to prevent browser caching
+* [#1719] Submission reports can now be downloaded for a limited time instead of only once
+* [#1835] Added bulk endpoints for form and price logic rules
+* [#1944] API responses now include more headers to expose staff-only functionality to
+  the SDK, and permissions are now checked to block/allow navigating between form
+  steps without the previous steps being completed.
+* [#1922] First passes at profiling and optimizing the API endpoints performance
+
+*Form designer*
+
+* [#1642] Forms can now be assigned to categories in a folder structure
+* [#1710] Added "repeating group" functionality/component
+* [#1878] Added more validation options for date components
+
+    * Specify a fixed min or max date; or
+    * Specify a minimum date in the future; or
+    * Specify a maximum date in the past; or
+    * Specify a min/max date relative to a form variable
+
+* [#1921] You can now specify a global default for allowed file types
+* [#1621] The save/save-and-continue buttons are now always visible on the page in
+  large forms
+* [#1651] Added 'Show Form' button on form admin page
+* [#1643] There is now a default maximum amount of characters (1000) for text areas
+* [#1325] Added management command to check number of forms with duplicate component keys
+* [#1611] Improved the UX when saving a form which still has validation errors somewhere.
+* [#1771] When a form step is deleted and the form definition is not reusable, the form
+  definition is now deleted as well
+* [#1702] Added validation for re-usable form definitions - you can no longer mark a
+  form definition as not-reusable if it's used in multiple forms
+* [#1708] We now keep track of the number of formio components used in a form step for
+  statistical/performance analysis
+* [#1806] Ensure that logic variable references are updated
+* [#1933] Replaced hardcoded SDK start (login) message with text in form explanation
+  template.
+
+*Registrations*
+
+* [#1007] you can now specify the document type for every upload component (applies to
+  Objects API and ZGW registration)
+* [#1723] StUF-ZDS: Most of the configuration options are now optional
+* [#1745] StUF: file content is now sent with the ``contenttype`` attribute
+* [#1769] StUF-ZDS: you can now specify the ``vertrouwelijkheidaanduiding``
+* [#1183] Intermediate registration results are now properly tracked and re-used,
+  preventing the same objects being created over and over again if registration is being
+  retried. This especially affects StUF-ZDS and ZGW API's registration backends.
+* [#1877] Registration e-mail subject is now configurable
+* [#1867] StUF-ZDS & ZGW: Added more registration fields
+
+*Prefill*
+
+* [#1693] Added normalization of the postcode format according to the specified
+  comonent mask
+* The prefill machinery is updated to work with variables. A bunch of (private API) code
+  in the ``openforms.prefill`` module was deleted.
+* Removed the ``Submission.prefill_data`` field. This data is now stored in
+  form/submission variables.
+
+*Other*
+
+* [#1620] Text colors in content component can now be configured with your own presets
+* [#1659] Added configuration options for theme class name and external stylesheet to load
+* Renamed design tokens to align with NL Design System style design tokens
+* [#1716] Added support for Piwik Pro analytics provider
+* [#1803] Form versions and exports now record the Open Forms version they were created
+  with, showing warnings when restoring a form from another Open Forms version.
+* [#1672] Improved error feedback on OIDC login failures
+* [#1320] Reworked the configuration checks for plugins
+* You can now use separate DigiD/eHerkenning certificates
+* [#1294] Reworked analytics integration - enabling/disabling an analytics provider now
+  automatically updates the cookies and CSP configuration
+* [#1787] You can now configure the "form pause" e-mail template to use
+* [#1971] Added config option to disable search engine indexing
+* [#1895] Removed deprecated functionality
+
+**Bugfixes**
+
+* [#1657] Fixed content component configuration options
+* Fixed support for non-white background colors in PDFs with organization logos
+* [CVE-2022-31041] Perform proper upload file type validation
+* [CVE-2022-31040] Fixed open redirect in cookie-consent 'close' button
+* [#1670] Update error message for number validation
+* [#1681] Use a unique reference number every time for StUF-ZDS requests
+* [#1724] Content fields must not automatically be marked as required
+* [#1475] Fixed crash when setting an empty value in logic action editor
+* [#1715] Fixed logo sizing for PDFs (again)
+* [#1731] Fixed crash with non-latin1 characters in StUF-calls (such as StUF-ZDS)
+* [#1737] Fixed typo in email translations
+* [#1729] Applied workaround for ``defaultValue`` Formio bug
+* [#1730] Fixed CORS policy to allow CSP nonce header
+* [#1617] Fixed crash on StUF onvolledige datum
+* [GHSA-g936-w68m-87j8] Do additional permission checks for forms requiring login
+* [#1783] Upgraded formiojs to fix searching in dropdowns
+* Bumped Django and django-sendfile2 versions with fixes for CVE-2022-36359
+* [#1839] Fixed tooltip text not being displayed entirely
+* [#1880] Fixed some validation errors not being displayed properly
+* [#1842] Ensured prefill errors via StUF-BG are visible in logs
+* [#1832] Fixed address lookup problems because of rate-limiting
+* [#1871] Fixed respecting simple client-side visibility logic
+* [#1755] Fixed removing field data for fields that are made visible/hidden by logic
+* [#1957] Fixed submission retry for submissions that failed registration, but exceeded
+  the automatic retry limit
+
+**Project maintenance**
+
+* Upgraded icon fonts version
+* Upgraded CSS toolchain
+* Frontend code is now formatted using ``prettier``
+* [#1646] Tweaked django-axes configuration
+* Updated examples in the documentation
+* Made Docker build smaller/more efficient
+* Added the open-forms design-tokens package
+* Bumped a number of (dev) dependencies that had security releases
+* [#1615] documented the CORS policy requirement for font files
+* Added and improved the developer installation documentation
+* Added pretty formatting of ``flake8`` errors in CI
+* Configured webpack for 'absolute' imports
+* Replaced deprected ``defusedxml.lxml`` usage
+* [#1781] Implemented script to dump the instance configuration for import into another
+  environment
+* Added APM instrumentation for better insights in endpoint performance
+* Upgrade to zgw-consumers and django-simple-certmanager
+* Improved documentation on embedding the SDK
+* [#921] Added decision tree docs
 
 1.1.5 (2022-08-09)
 ==================
