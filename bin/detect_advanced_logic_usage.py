@@ -26,9 +26,24 @@ def main():
     report_advanced_logic_usage()
 
 
-def has_client_side_logic_usage(component: dict):
+def has_client_side_logic_usage_which_cant_be_converted(component: dict) -> bool:
+    from openforms.forms.utils import parse_trigger, parse_actions
+
     advanced_logic = glom(component, "logic", default=[])
-    return len(advanced_logic) > 0
+
+    if len(advanced_logic) == 0:
+        return False
+
+    for rule in advanced_logic:
+        parsed_trigger = parse_trigger(rule["trigger"])
+        if not parsed_trigger:
+            return True
+
+        parsed_actions = parse_actions(rule["actions"])
+        if len(parsed_actions) < len(rule["actions"]):
+            return True
+
+    return False
 
 
 def report_advanced_logic_usage():
@@ -41,12 +56,12 @@ def report_advanced_logic_usage():
     form_steps = FormStep.objects.select_related("form_definition", "form")
     for form_step in form_steps:
         for component in form_step.iter_components():
-            if has_client_side_logic_usage(component):
+            if has_client_side_logic_usage_which_cant_be_converted(component):
                 affected_forms.append(form_step)
                 break
 
     if not affected_forms:
-        print("Geen formulieren die logica in de 'geavanceerd' tab gebruiken.")
+        print("Geen formulieren met logica in de 'geavanceerd' tab die niet naar backend logica kunnen worden omgezet.")
         return
 
     def key_func(form_step):
