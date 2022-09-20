@@ -53,7 +53,7 @@ class BAGClient:
 
     @classmethod
     def check_config(cls):
-        check_house_number = "1000AA"
+        check_house_number = "1"
         check_postal = "1000AA"
 
         config = BAGConfig.get_solo()

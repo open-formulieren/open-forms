@@ -162,6 +162,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     date_hierarchy = "completed_on"
     list_display = (
         "form",
+        "public_registration_reference",
         "registration_status",
         "last_register_date",
         "successfully_processed",
@@ -175,8 +176,10 @@ class SubmissionAdmin(admin.ModelAdmin):
         "form",
     )
     search_fields = (
-        "form__name",
         "uuid",
+        "form__name",
+        "form__internal_name",
+        "form__slug",
         "form_url",
         "public_registration_reference",
     )
