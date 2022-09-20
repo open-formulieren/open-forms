@@ -24,7 +24,7 @@ Open Forms SDK
 --------------
 
 We aim to align the SDK major version with the API major version. This means that SDK
-``1.x`` requires API ``1.x`` and SDK ``2.x`` will require API ``2.x``.
+``1.x`` requires API ``1.x`` and SDK ``2.x`` will require API ``2.x`` or higher.
 
 It is possible an SDK minor version (e.g. ``1.1``) requires the same minimal minor
 version of the API, but this is not a guarantee.
@@ -45,8 +45,8 @@ experimental feature changes (see :ref:`developers_versioning_api`).
    1.0.x       1.0.y               n/a
    1.0.4       1.0                 n/a
    1.1.0       1.1.0               n/a
-   1.1.1       1.1.1               n/a
-   1.2.0-alpha 1.1.1               n/a
+   1.1.1       1.1.1               2.0.0
+   1.2.0-alpha 2.0.0-beta.0        n/a
    =========== =================== ===================
 
 .. _developers_versioning_api:
@@ -99,5 +99,6 @@ backend version.
    1.0.11          1.0.2
    1.1.x           1.1.y
    1.1.3           1.1.1
-   1.2.0-alpha     1.2.0-alpha
+   2.0.0           2.0.0
+   2.0.x           2.0.y
    =============== ===========

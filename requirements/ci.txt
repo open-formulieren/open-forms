@@ -77,7 +77,7 @@ celery-once==3.0.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-certifi==2021.10.8
+certifi==2022.9.14
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -657,7 +657,7 @@ python3_saml @ git+https://github.com/maykinmedia/python3-saml.git@f587f77b78be7
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-pytz==2021.3
+pytz==2022.2.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

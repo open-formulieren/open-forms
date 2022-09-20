@@ -94,7 +94,7 @@
   "2emuJW": [
     {
       "type": 0,
-      "value": "Cancel"
+      "value": "Annuleren"
     }
   ],
   "2uIYst": [
@@ -194,13 +194,13 @@
   "6k14SS": [
     {
       "type": 0,
-      "value": "Key"
+      "value": "Sleutel"
     }
   ],
   "7/Bhpw": [
     {
       "type": 0,
-      "value": "Please fill in the name of the previous variable before adding another"
+      "value": "Vul eerst de naam van de vorige variabele in voor u een nieuwe toevoegt"
     }
   ],
   "7/n6O+": [
@@ -306,7 +306,7 @@
   "8NbOpb": [
     {
       "type": 0,
-      "value": "Variables"
+      "value": "Variabelen"
     }
   ],
   "8VqmbG": [
@@ -358,13 +358,13 @@
   "91XY1Q": [
     {
       "type": 0,
-      "value": "Is not sensitive"
+      "value": "Niet privacy-gevoelig"
     }
   ],
   "9AQi2/": [
     {
       "type": 0,
-      "value": "Please select the logic type:"
+      "value": "Kies het soort logica:"
     }
   ],
   "9N67XB": [
@@ -524,13 +524,13 @@
   "BcuXrg": [
     {
       "type": 0,
-      "value": "Boolean"
+      "value": "Waar/vals (boolean)"
     }
   ],
   "Bl2NMf": [
     {
       "type": 0,
-      "value": "Static"
+      "value": "Vaste variabelen"
     }
   ],
   "BrGg65": [
@@ -608,7 +608,7 @@
   "DqG0YS": [
     {
       "type": 0,
-      "value": "Enable from step:"
+      "value": "Inschakelen vanaf stap:"
     }
   ],
   "DxGKNm": [
@@ -644,7 +644,7 @@
   "FH2sxf": [
     {
       "type": 0,
-      "value": "This form version was created in an application version different from the current version. There may be missing configuration after restoring."
+      "value": "Deze formulierversie was gebouwd in een applicatieversie die verschillend is van de huidige. Mogelijk ontbreekt er configuratie na het herstellen."
     }
   ],
   "FQswyM": [
@@ -656,7 +656,7 @@
   "FayNPY": [
     {
       "type": 0,
-      "value": "Simple"
+      "value": "Eenvoudig"
     }
   ],
   "FceidS": [
@@ -674,7 +674,7 @@
   "G1JHUM": [
     {
       "type": 0,
-      "value": "Cancel rule creation"
+      "value": "Annuleren"
     }
   ],
   "G2rpx2": [
@@ -722,7 +722,7 @@
   "GjQdpb": [
     {
       "type": 0,
-      "value": ", at location \""
+      "value": ", op locatie \""
     },
     {
       "type": 1,
@@ -784,7 +784,7 @@
   "HuAm1K": [
     {
       "type": 0,
-      "value": "and the step \""
+      "value": "en de stap \""
     },
     {
       "type": 1,
@@ -792,7 +792,7 @@
     },
     {
       "type": 0,
-      "value": "\" has been reached"
+      "value": "\" is bereikt"
     }
   ],
   "I0bgsg": [
@@ -828,7 +828,7 @@
   "ItH6EY": [
     {
       "type": 0,
-      "value": "Time"
+      "value": "Tijd (time)"
     }
   ],
   "Iv+lBL": [
@@ -902,7 +902,7 @@
   "KYTAJZ": [
     {
       "type": 0,
-      "value": "(checked for every step)"
+      "value": "(actief binnen elke stap)"
     }
   ],
   "KjDolH": [
@@ -968,13 +968,13 @@
   "Mv8yjC": [
     {
       "type": 0,
-      "value": "Form variables configuration"
+      "value": "Formuliervariabelenconfiguratie"
     }
   ],
   "MzMXRd": [
     {
       "type": 0,
-      "value": "Prefill attribute"
+      "value": "Prefill-attribuut"
     }
   ],
   "NE5h2q": [
@@ -1030,7 +1030,7 @@
   "OobRu3": [
     {
       "type": 0,
-      "value": "Advanced"
+      "value": "Geavanceerd"
     }
   ],
   "OvqnXR": [
@@ -1042,7 +1042,7 @@
   "P/njxS": [
     {
       "type": 0,
-      "value": "Datetime"
+      "value": "Datumtijd (datetime)"
     }
   ],
   "P3oGZG": [
@@ -1140,13 +1140,13 @@
   "Rk13i+": [
     {
       "type": 0,
-      "value": "Initial value"
+      "value": "Beginwaarde"
     }
   ],
   "RvJXSo": [
     {
       "type": 0,
-      "value": "change the value of a variable/component"
+      "value": "zet de waarde van een variabele/component"
     }
   ],
   "S6eF5o": [
@@ -1210,7 +1210,7 @@
   "TB/ku3": [
     {
       "type": 0,
-      "value": "Add variable"
+      "value": "Variabele toevoegen"
     }
   ],
   "TCQic2": [
@@ -1310,7 +1310,7 @@
   "Vsgunp": [
     {
       "type": 0,
-      "value": "Sensitive data"
+      "value": "Gevoelige gegevens"
     }
   ],
   "WHqkYA": [
@@ -1334,7 +1334,7 @@
   "WjDh7l": [
     {
       "type": 0,
-      "value": "Prefill plugin"
+      "value": "Prefill-plugin"
     }
   ],
   "Wz5QZo": [
@@ -1370,7 +1370,7 @@
   "YbnFnL": [
     {
       "type": 0,
-      "value": "The component \""
+      "value": "Er is een fout bij de component \""
     },
     {
       "type": 1,
@@ -1378,7 +1378,7 @@
     },
     {
       "type": 0,
-      "value": "\" (with key \""
+      "value": "\" (met sleutel \""
     },
     {
       "type": 1,
@@ -1394,7 +1394,7 @@
     },
     {
       "type": 0,
-      "value": ") has a problem in the field \""
+      "value": ") in het veld \""
     },
     {
       "type": 1,
@@ -1424,7 +1424,7 @@
   "ZB6mnn": [
     {
       "type": 0,
-      "value": "The variable key must be unique within a form"
+      "value": "De sleutel van een variabele moet uniek zijn binnen een formulier"
     }
   ],
   "ZICfus": [
@@ -1466,13 +1466,13 @@
   "b9D64D": [
     {
       "type": 0,
-      "value": "Is sensitive"
+      "value": "Privacy-gevoelig"
     }
   ],
   "bDjeSb": [
     {
       "type": 0,
-      "value": "Array"
+      "value": "Lijst (array)"
     }
   ],
   "bRe/yq": [
@@ -1490,7 +1490,7 @@
   "c0dfYJ": [
     {
       "type": 0,
-      "value": "Build a JsonLogic expression using raw JSON."
+      "value": "Geef een JSON-logic expressie op in JSON."
     }
   ],
   "c1XyJ4": [
@@ -1532,7 +1532,7 @@
   "cpJErE": [
     {
       "type": 0,
-      "value": "Integer"
+      "value": "Geheel getal (integer)"
     }
   ],
   "cpiYVw": [
@@ -1556,7 +1556,7 @@
   "dWNClE": [
     {
       "type": 0,
-      "value": "Optional category for internal organisation."
+      "value": "Optionele categorie om formulieren in te groeperen."
     }
   ],
   "ddDA6+": [
@@ -1580,7 +1580,7 @@
   "dgwRIk": [
     {
       "type": 0,
-      "value": "String"
+      "value": "Tekst (string)"
     }
   ],
   "eBk+W0": [
@@ -1598,7 +1598,7 @@
   "eLDxD5": [
     {
       "type": 0,
-      "value": "Advanced options"
+      "value": "Geavanceerde opties"
     }
   ],
   "evbysh": [
@@ -1622,7 +1622,7 @@
   "fLCWjk": [
     {
       "type": 0,
-      "value": "Name"
+      "value": "Naam"
     }
   ],
   "fLHOey": [
@@ -1634,7 +1634,7 @@
   "fWcg7I": [
     {
       "type": 0,
-      "value": "Object"
+      "value": "Sleutel-waarde paar (object)"
     }
   ],
   "ftzF/n": [
@@ -1658,7 +1658,7 @@
   "gr7edY": [
     {
       "type": 0,
-      "value": "App version"
+      "value": "Applicatieversie"
     }
   ],
   "gz32s2": [
@@ -1700,7 +1700,7 @@
   "hefA1X": [
     {
       "type": 0,
-      "value": "Are you sure you want to delete this variable?"
+      "value": "Bent u zeker dat u deze variabele wilt verwijderen?"
     }
   ],
   "huHjRm": [
@@ -1713,12 +1713,6 @@
     {
       "type": 0,
       "value": "Interne naam"
-    }
-  ],
-  "iR6Mt9": [
-    {
-      "type": 0,
-      "value": "Data format"
     }
   ],
   "iZESbd": [
@@ -1788,7 +1782,7 @@
   "k5JYxu": [
     {
       "type": 0,
-      "value": "Show form"
+      "value": "Toon formulier"
     }
   ],
   "k9CT3p": [
@@ -1812,7 +1806,7 @@
   "koVh3m": [
     {
       "type": 0,
-      "value": "Category"
+      "value": "Categorie"
     }
   ],
   "l1fi1t": [
@@ -1842,7 +1836,7 @@
   "mOgTIH": [
     {
       "type": 0,
-      "value": "the variable"
+      "value": "de variabele"
     }
   ],
   "mOjKcm": [
@@ -1878,7 +1872,7 @@
   "nHFMXn": [
     {
       "type": 0,
-      "value": "Trigger condition"
+      "value": "Triggervoorwaarde"
     }
   ],
   "naInSZ": [
@@ -1950,7 +1944,7 @@
   "pown36": [
     {
       "type": 0,
-      "value": "Form definition"
+      "value": "Formulierdefinitie"
     }
   ],
   "pyX2Tl": [
@@ -1992,13 +1986,13 @@
   "rF90xM": [
     {
       "type": 0,
-      "value": "Data type"
+      "value": "Datatype"
     }
   ],
   "rTafvA": [
     {
       "type": 0,
-      "value": "Float"
+      "value": "Kommagetal (float)"
     }
   ],
   "rZfe8Z": [
@@ -2022,7 +2016,7 @@
   "tRCXsR": [
     {
       "type": 0,
-      "value": "Select components and conditions using drop-downs to build a JsonLogic expression."
+      "value": "Bouw een logica-expressie door componenten en voorwaarden te selecteren in dropdowns."
     }
   ],
   "tjRtQk": [
@@ -2052,13 +2046,13 @@
   "uiliGe": [
     {
       "type": 0,
-      "value": "The logic rules you set up here are executed in the order that they are defined. Please consult the "
+      "value": "De logicaregels die u hier definieert worden uitgevoerd in de volgorde zoals hier weergegeven. U vindt meer informatie in de "
     },
     {
       "children": [
         {
           "type": 0,
-          "value": "manual"
+          "value": "handleiding"
         }
       ],
       "type": 8,
@@ -2066,7 +2060,7 @@
     },
     {
       "type": 0,
-      "value": " for more information."
+      "value": "."
     }
   ],
   "ukFB7B": [
@@ -2180,7 +2174,7 @@
   "zGMQ75": [
     {
       "type": 0,
-      "value": "User defined"
+      "value": "Gebruikersvariabelen"
     }
   ],
   "zLTTBw": [

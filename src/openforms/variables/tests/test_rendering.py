@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from openforms.submissions.exports import iter_submission_data_nodes
 from openforms.submissions.rendering import Renderer, RenderModes
@@ -10,6 +10,7 @@ from openforms.submissions.tests.factories import (
 from openforms.variables.constants import FormVariableSources
 
 
+@override_settings(LANGUAGE_CODE="nl")
 class VariablesNodeTests(TestCase):
     def test_user_defined_vars_in_export(self):
         config = {
@@ -112,7 +113,7 @@ class VariablesNodeTests(TestCase):
                     "Form rendering",
                     "Form step rendering",
                     "Some field: Some test data",
-                    "Variables",
+                    "Variabelen",
                     "User defined var 1: Some data 1",
                     "User defined var 2: Some data 2",
                 ],
@@ -132,7 +133,7 @@ class VariablesNodeTests(TestCase):
                     "Form rendering",
                     "Form step rendering",
                     "Some field: Some test data",
-                    "Variables",
+                    "Variabelen",
                     "User defined var 1: Some data 1",
                     "User defined var 2: Some data 2",
                 ],

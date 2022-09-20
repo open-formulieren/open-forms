@@ -70,7 +70,7 @@
     "originalDefault": "Registration backend options"
   },
   "2emuJW": {
-    "defaultMessage": "Cancel",
+    "defaultMessage": "Annuleren",
     "description": "Cancel link",
     "originalDefault": "Cancel"
   },
@@ -150,12 +150,12 @@
     "originalDefault": "Stay logged in"
   },
   "6k14SS": {
-    "defaultMessage": "Key",
+    "defaultMessage": "Sleutel",
     "description": "Variable table key title",
     "originalDefault": "Key"
   },
   "7/Bhpw": {
-    "defaultMessage": "Please fill in the name of the previous variable before adding another",
+    "defaultMessage": "Vul eerst de naam van de vorige variabele in voor u een nieuwe toevoegt",
     "description": "Warning to finish invalid user defined variable",
     "originalDefault": "Please fill in the name of the previous variable before adding another"
   },
@@ -210,7 +210,7 @@
     "originalDefault": "The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
   },
   "8NbOpb": {
-    "defaultMessage": "Variables",
+    "defaultMessage": "Variabelen",
     "description": "Variables tab title",
     "originalDefault": "Variables"
   },
@@ -230,12 +230,12 @@
     "originalDefault": "Edit variable {name}"
   },
   "91XY1Q": {
-    "defaultMessage": "Is not sensitive",
+    "defaultMessage": "Niet privacy-gevoelig",
     "description": "Is not sensitive icon title",
     "originalDefault": "Is not sensitive"
   },
   "9AQi2/": {
-    "defaultMessage": "Please select the logic type:",
+    "defaultMessage": "Kies het soort logica:",
     "description": "Logic type selection label",
     "originalDefault": "Please select the logic type:"
   },
@@ -315,12 +315,12 @@
     "originalDefault": "Form"
   },
   "BcuXrg": {
-    "defaultMessage": "Boolean",
+    "defaultMessage": "Waar/vals (boolean)",
     "description": "data type boolean",
     "originalDefault": "Boolean"
   },
   "Bl2NMf": {
-    "defaultMessage": "Static",
+    "defaultMessage": "Vaste variabelen",
     "description": "Static variables tab title",
     "originalDefault": "Static"
   },
@@ -385,7 +385,7 @@
     "originalDefault": "Session expired"
   },
   "DqG0YS": {
-    "defaultMessage": "Enable from step:",
+    "defaultMessage": "Inschakelen vanaf stap:",
     "description": "'Trigger from step' label",
     "originalDefault": "Enable from step:"
   },
@@ -415,7 +415,7 @@
     "originalDefault": "the array"
   },
   "FH2sxf": {
-    "defaultMessage": "This form version was created in an application version different from the current version. There may be missing configuration after restoring.",
+    "defaultMessage": "Deze formulierversie was gebouwd in een applicatieversie die verschillend is van de huidige. Mogelijk ontbreekt er configuratie na het herstellen.",
     "description": "FormVersion: Warning message different application versions",
     "originalDefault": "This form version was created in an application version different from the current version. There may be missing configuration after restoring."
   },
@@ -425,7 +425,7 @@
     "originalDefault": "Mode"
   },
   "FayNPY": {
-    "defaultMessage": "Simple",
+    "defaultMessage": "Eenvoudig",
     "description": "Simple logic type",
     "originalDefault": "Simple"
   },
@@ -440,7 +440,7 @@
     "originalDefault": "Text"
   },
   "G1JHUM": {
-    "defaultMessage": "Cancel rule creation",
+    "defaultMessage": "Annuleren",
     "description": "Cancel link help",
     "originalDefault": "Cancel rule creation"
   },
@@ -480,7 +480,7 @@
     "originalDefault": "Use linked product price"
   },
   "GjQdpb": {
-    "defaultMessage": ", at location \"{location}\"",
+    "defaultMessage": ", op locatie \"{location}\"",
     "description": "Formio configuration backend validation error location suffix",
     "originalDefault": ", at location \"{location}\""
   },
@@ -525,7 +525,7 @@
     "originalDefault": "Will send the email specified."
   },
   "HuAm1K": {
-    "defaultMessage": "and the step \"{step}\" has been reached",
+    "defaultMessage": "en de stap \"{step}\" is bereikt",
     "description": "Additional 'trigger from step' condition",
     "originalDefault": "and the step \"{step}\" has been reached"
   },
@@ -555,7 +555,7 @@
     "originalDefault": "Text with (embedded) form field(s)"
   },
   "ItH6EY": {
-    "defaultMessage": "Time",
+    "defaultMessage": "Tijd (time)",
     "description": "data type time",
     "originalDefault": "Time"
   },
@@ -610,7 +610,7 @@
     "originalDefault": "Content"
   },
   "KYTAJZ": {
-    "defaultMessage": "(checked for every step)",
+    "defaultMessage": "(actief binnen elke stap)",
     "description": "'Trigger from step' information for when unset",
     "originalDefault": "(checked for every step)"
   },
@@ -665,12 +665,12 @@
     "originalDefault": "Component"
   },
   "Mv8yjC": {
-    "defaultMessage": "Form variables configuration",
+    "defaultMessage": "Formuliervariabelenconfiguratie",
     "description": "Form variables configuration editor fieldset title",
     "originalDefault": "Form variables configuration"
   },
   "MzMXRd": {
-    "defaultMessage": "Prefill attribute",
+    "defaultMessage": "Prefill-attribuut",
     "description": "Variable table prefill attribute title",
     "originalDefault": "Prefill attribute"
   },
@@ -710,7 +710,7 @@
     "originalDefault": "Your session is about to expire {delta}. Extend your session if you wish to continue."
   },
   "OobRu3": {
-    "defaultMessage": "Advanced",
+    "defaultMessage": "Geavanceerd",
     "description": "Advanced logic type",
     "originalDefault": "Advanced"
   },
@@ -720,7 +720,7 @@
     "originalDefault": "Yes"
   },
   "P/njxS": {
-    "defaultMessage": "Datetime",
+    "defaultMessage": "Datumtijd (datetime)",
     "description": "data type datetime",
     "originalDefault": "Datetime"
   },
@@ -795,12 +795,12 @@
     "originalDefault": "Internal name/title of the form"
   },
   "Rk13i+": {
-    "defaultMessage": "Initial value",
+    "defaultMessage": "Beginwaarde",
     "description": "Variable table initial value title",
     "originalDefault": "Initial value"
   },
   "RvJXSo": {
-    "defaultMessage": "change the value of a variable/component",
+    "defaultMessage": "zet de waarde van een variabele/component",
     "description": "action type \"variable\" label",
     "originalDefault": "change the value of a variable/component"
   },
@@ -825,7 +825,7 @@
     "originalDefault": "Add key-value pair"
   },
   "TB/ku3": {
-    "defaultMessage": "Add variable",
+    "defaultMessage": "Variabele toevoegen",
     "description": "Add user defined variable button label",
     "originalDefault": "Add variable"
   },
@@ -895,7 +895,7 @@
     "originalDefault": "required"
   },
   "Vsgunp": {
-    "defaultMessage": "Sensitive data",
+    "defaultMessage": "Gevoelige gegevens",
     "description": "Variable table sensitive data title",
     "originalDefault": "Sensitive data"
   },
@@ -915,7 +915,7 @@
     "originalDefault": "Logic"
   },
   "WjDh7l": {
-    "defaultMessage": "Prefill plugin",
+    "defaultMessage": "Prefill-plugin",
     "description": "Variable table prefill plugin title",
     "originalDefault": "Prefill plugin"
   },
@@ -945,7 +945,7 @@
     "originalDefault": "Save"
   },
   "YbnFnL": {
-    "defaultMessage": "The component \"{label}\" (with key \"{key}\"{location}) has a problem in the field \"{field}\": {error}",
+    "defaultMessage": "Er is een fout bij de component \"{label}\" (met sleutel \"{key}\"{location}) in het veld \"{field}\": {error}",
     "description": "Formio configuration backend validation error for specific component property",
     "originalDefault": "The component \"{label}\" (with key \"{key}\"{location}) has a problem in the field \"{field}\": {error}"
   },
@@ -960,7 +960,7 @@
     "originalDefault": "Are you sure you want to delete this?"
   },
   "ZB6mnn": {
-    "defaultMessage": "The variable key must be unique within a form",
+    "defaultMessage": "De sleutel van een variabele moet uniek zijn binnen een formulier",
     "description": "Unique key error message",
     "originalDefault": "The variable key must be unique within a form"
   },
@@ -995,12 +995,12 @@
     "originalDefault": "Login required?"
   },
   "b9D64D": {
-    "defaultMessage": "Is sensitive",
+    "defaultMessage": "Privacy-gevoelig",
     "description": "Is sensitive icon title",
     "originalDefault": "Is sensitive"
   },
   "bDjeSb": {
-    "defaultMessage": "Array",
+    "defaultMessage": "Lijst (array)",
     "description": "data type array",
     "originalDefault": "Array"
   },
@@ -1015,7 +1015,7 @@
     "originalDefault": "Move up"
   },
   "c0dfYJ": {
-    "defaultMessage": "Build a JsonLogic expression using raw JSON.",
+    "defaultMessage": "Geef een JSON-logic expressie op in JSON.",
     "description": "Advanced logic type info text",
     "originalDefault": "Build a JsonLogic expression using raw JSON."
   },
@@ -1050,7 +1050,7 @@
     "originalDefault": "Content that will be shown on the start page of the form, below the title and above the log in text."
   },
   "cpJErE": {
-    "defaultMessage": "Integer",
+    "defaultMessage": "Geheel getal (integer)",
     "description": "data type int",
     "originalDefault": "Integer"
   },
@@ -1070,7 +1070,7 @@
     "originalDefault": "Export this form"
   },
   "dWNClE": {
-    "defaultMessage": "Optional category for internal organisation.",
+    "defaultMessage": "Optionele categorie om formulieren in te groeperen.",
     "description": "Form category field help text",
     "originalDefault": "Optional category for internal organisation."
   },
@@ -1090,7 +1090,7 @@
     "originalDefault": "Show progress indicator"
   },
   "dgwRIk": {
-    "defaultMessage": "String",
+    "defaultMessage": "Tekst (string)",
     "description": "data type string",
     "originalDefault": "String"
   },
@@ -1105,7 +1105,7 @@
     "originalDefault": "Are you sure you want to delete this rule?"
   },
   "eLDxD5": {
-    "defaultMessage": "Advanced options",
+    "defaultMessage": "Geavanceerde opties",
     "description": "Logic rule advanced options icon title",
     "originalDefault": "Advanced options"
   },
@@ -1125,7 +1125,7 @@
     "originalDefault": "Amount of days incomplete submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
   },
   "fLCWjk": {
-    "defaultMessage": "Name",
+    "defaultMessage": "Naam",
     "description": "Variable table name title",
     "originalDefault": "Name"
   },
@@ -1135,7 +1135,7 @@
     "originalDefault": "Pricing logic"
   },
   "fWcg7I": {
-    "defaultMessage": "Object",
+    "defaultMessage": "Sleutel-waarde paar (object)",
     "description": "data type object",
     "originalDefault": "Object"
   },
@@ -1155,7 +1155,7 @@
     "originalDefault": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
   },
   "gr7edY": {
-    "defaultMessage": "App version",
+    "defaultMessage": "Applicatieversie",
     "description": "App version column header",
     "originalDefault": "App version"
   },
@@ -1190,7 +1190,7 @@
     "originalDefault": "Enabled"
   },
   "hefA1X": {
-    "defaultMessage": "Are you sure you want to delete this variable?",
+    "defaultMessage": "Bent u zeker dat u deze variabele wilt verwijderen?",
     "description": "User defined variable deletion confirm message",
     "originalDefault": "Are you sure you want to delete this variable?"
   },
@@ -1203,11 +1203,6 @@
     "defaultMessage": "Interne naam",
     "description": "Form name field label",
     "originalDefault": "Internal name"
-  },
-  "iR6Mt9": {
-    "defaultMessage": "Data format",
-    "description": "Variable table data format title",
-    "originalDefault": "Data format"
   },
   "iZESbd": {
     "defaultMessage": "is kleiner dan",
@@ -1260,7 +1255,7 @@
     "originalDefault": "Name"
   },
   "k5JYxu": {
-    "defaultMessage": "Show form",
+    "defaultMessage": "Toon formulier",
     "description": "Show form button",
     "originalDefault": "Show form"
   },
@@ -1280,7 +1275,7 @@
     "originalDefault": "disabled"
   },
   "koVh3m": {
-    "defaultMessage": "Category",
+    "defaultMessage": "Categorie",
     "description": "Form category field label",
     "originalDefault": "Category"
   },
@@ -1305,7 +1300,7 @@
     "originalDefault": "today"
   },
   "mOgTIH": {
-    "defaultMessage": "the variable",
+    "defaultMessage": "de variabele",
     "description": "\"variable\" operand type",
     "originalDefault": "the variable"
   },
@@ -1335,7 +1330,7 @@
     "originalDefault": "Version"
   },
   "nHFMXn": {
-    "defaultMessage": "Trigger condition",
+    "defaultMessage": "Triggervoorwaarde",
     "description": "Logic trigger heading",
     "originalDefault": "Trigger condition"
   },
@@ -1395,7 +1390,7 @@
     "originalDefault": "Step name"
   },
   "pown36": {
-    "defaultMessage": "Form definition",
+    "defaultMessage": "Formulierdefinitie",
     "description": "Variable table form definition title",
     "originalDefault": "Form definition"
   },
@@ -1430,12 +1425,12 @@
     "originalDefault": "Manage complex process variables"
   },
   "rF90xM": {
-    "defaultMessage": "Data type",
+    "defaultMessage": "Datatype",
     "description": "Variable table data type title",
     "originalDefault": "Data type"
   },
   "rTafvA": {
-    "defaultMessage": "Float",
+    "defaultMessage": "Kommagetal (float)",
     "description": "data type float",
     "originalDefault": "Float"
   },
@@ -1455,7 +1450,7 @@
     "originalDefault": "Change form"
   },
   "tRCXsR": {
-    "defaultMessage": "Select components and conditions using drop-downs to build a JsonLogic expression.",
+    "defaultMessage": "Bouw een logica-expressie door componenten en voorwaarden te selecteren in dropdowns.",
     "description": "Simple logic type info text",
     "originalDefault": "Select components and conditions using drop-downs to build a JsonLogic expression."
   },
@@ -1480,7 +1475,7 @@
     "originalDefault": "Amount of days successful submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
   },
   "uiliGe": {
-    "defaultMessage": "The logic rules you set up here are executed in the order that they are defined. Please consult the <docs>manual</docs> for more information.",
+    "defaultMessage": "De logicaregels die u hier definieert worden uitgevoerd in de volgorde zoals hier weergegeven. U vindt meer informatie in de <docs>handleiding</docs>.",
     "description": "Logic rules introduction/explanation",
     "originalDefault": "The logic rules you set up here are executed in the order that they are defined. Please consult the <docs>manual</docs> for more information."
   },
@@ -1575,7 +1570,7 @@
     "originalDefault": "Action"
   },
   "zGMQ75": {
-    "defaultMessage": "User defined",
+    "defaultMessage": "Gebruikersvariabelen",
     "description": "User defined variables tab title",
     "originalDefault": "User defined"
   },

@@ -1204,11 +1204,6 @@
     "description": "Form name field label",
     "originalDefault": "Internal name"
   },
-  "iR6Mt9": {
-    "defaultMessage": "Data format",
-    "description": "Variable table data format title",
-    "originalDefault": "Data format"
-  },
   "iZESbd": {
     "defaultMessage": "is less than",
     "description": "\"<\" operator description",
