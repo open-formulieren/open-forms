@@ -14,7 +14,7 @@ from django.conf import settings
 from django.db import migrations, models
 from django.db.models import Prefetch, Q
 from django.utils.html import format_html
-from django.utils.translation import gettext as _
+from django.utils.translation import activate, deactivate_all, gettext as _
 
 import privates.fields
 import privates.storages
@@ -376,6 +376,8 @@ def convert_action_type_variable_into_value(apps, _):
 
 
 def append_explanation_template_message(apps, schema_editor):
+    activate(settings.LANGUAGE_CODE)
+
     Form = apps.get_model("forms", "Form")
     FormStep = apps.get_model("forms", "FormStep")
 
@@ -404,6 +406,8 @@ def append_explanation_template_message(apps, schema_editor):
 
         form.explanation_template += format_html("<p>{}</p>", message)
         form.save()
+
+    deactivate_all()
 
 
 def check_user_defined_variables_initial_value(apps, schema_editor):
