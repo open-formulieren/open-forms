@@ -6,7 +6,11 @@ from django.utils.functional import empty
 import elasticapm
 
 from openforms.formio.service import get_dynamic_configuration, inject_variables
-from openforms.formio.utils import is_visible_in_frontend, iter_components
+from openforms.formio.utils import (
+    get_component_empty_value,
+    is_visible_in_frontend,
+    iter_components,
+)
 from openforms.logging import logevent
 
 from .logic.actions import PropertyAction
@@ -166,7 +170,7 @@ def evaluate_form_logic(
                     and not is_visible_in_frontend(component, data_container.data)
                     and component.get("clearOnHide")
                 ):
-                    data_diff[key] = ""
+                    data_diff[key] = get_component_empty_value(component)
                     continue
 
             if new_value is empty or new_value == original_value:

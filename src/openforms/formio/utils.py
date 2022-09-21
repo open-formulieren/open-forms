@@ -5,7 +5,7 @@ from typing import Any, Dict, Iterator, List, Optional, Tuple
 import elasticapm
 from glom import glom
 
-from openforms.variables.constants import FormVariableDataTypes
+from openforms.variables.constants import DEFAULT_INITIAL_VALUE, FormVariableDataTypes
 
 from ..typing import DataMapping, JSONObject
 from .constants import COMPONENT_DATATYPES
@@ -131,6 +131,12 @@ def get_component_datatype(component):
     if component.get("multiple"):
         return FormVariableDataTypes.array
     return COMPONENT_DATATYPES.get(component_type, FormVariableDataTypes.string)
+
+
+def get_component_empty_value(component):
+    data_type = get_component_datatype(component)
+
+    return DEFAULT_INITIAL_VALUE.get(data_type, "")
 
 
 def get_component_default_value(component) -> Optional[Any]:
