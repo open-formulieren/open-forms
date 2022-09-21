@@ -3,7 +3,7 @@ import random
 import string
 import zipfile
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict, List, Optional
 from uuid import uuid4
 
 from django.conf import settings
@@ -13,6 +13,8 @@ from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
+from openforms.formio.utils import iter_components
+from openforms.typing import JSONObject
 from openforms.variables.constants import FormVariableSources
 
 from .api.serializers import (
@@ -300,3 +302,109 @@ def get_duplicates_keys_for_form(form: Form) -> Dict[str, List]:
         key: formdefs for key, formdefs in seen.items() if len(formdefs) > 1
     }
     return duplicate_keys
+
+
+def parse_trigger(trigger_info: JSONObject) -> Optional[JSONObject]:
+    trigger_type = trigger_info["type"]
+    trigger = trigger_info[trigger_type]
+
+    if trigger_type not in ["json", "simple"]:
+        return
+
+    if trigger_type == "simple":
+        trigger_component_key = trigger.get("when")
+        compare_value = trigger.get("eq")
+        return {"==": [{"var": trigger_component_key}, compare_value]}
+
+    if trigger_type == "json":
+        return trigger
+
+
+def parse_actions(actions: List[JSONObject]) -> List[JSONObject]:
+    """Parse Formio logic actions and convert them to backend actions.
+
+    We only support the "property" action among the ones offered by Formio advanced logic.
+    We also only support the properties hidden, disabled and required.
+
+    The 'required' property is special, in Formio it's:
+
+    .. code-block:: json
+
+        {
+            "property": {
+               "value": "validate.required",
+               "type": "boolean"
+             },
+             "state": true
+        }
+
+    While we use:
+
+    .. code-block:: json
+
+        {
+            "property": {
+               "value": "validate",
+               "type": "json"
+             },
+             "state": {"required": True}
+        }
+
+    """
+    parsed_actions = []
+    for action in actions:
+        if action["type"] != "property":
+            continue
+
+        if action["property"]["value"] not in [
+            "hidden",
+            "disabled",
+            "validate.required",
+        ]:
+            continue
+
+        if action["property"]["value"] == "validate.required":
+            action.update(
+                {
+                    "property": {"value": "validate", "type": "json"},
+                    "state": {"required": action["state"]},
+                }
+            )
+
+        parsed_actions.append(action)
+
+    return parsed_actions
+
+
+def advanced_formio_logic_to_backend_logic(form_definition: "FormDefinition") -> None:
+    form_steps = FormStep.objects.filter(form_definition__pk=form_definition.pk)
+    forms = Form.objects.filter(pk__in=form_steps.values_list("form", flat=True))
+
+    logic_rules_to_create = []
+    for component in iter_components(form_definition.configuration):
+        if "logic" not in component or not len(component["logic"]):
+            continue
+
+        for component_logic_rule in component["logic"]:
+            parsed_trigger = parse_trigger(component_logic_rule["trigger"])
+            if not parsed_trigger:
+                continue
+
+            parsed_actions = parse_actions(component_logic_rule["actions"])
+            if not parsed_actions:
+                continue
+
+            for form in forms:
+                logic_rules_to_create.append(
+                    FormLogic(
+                        form=form,
+                        json_logic_trigger=parsed_trigger,
+                        actions=parsed_actions,
+                    )
+                )
+
+        component["logic"] = []
+
+    if logic_rules_to_create:
+        form_definition.save()
+        FormLogic.objects.bulk_create(logic_rules_to_create)

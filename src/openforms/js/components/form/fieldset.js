@@ -1,5 +1,7 @@
 import {Formio} from 'formiojs';
 
+import {ADVANCED} from './edit/tabs';
+
 const FormioFieldSet = Formio.Components.components.fieldset;
 
 const FIELDSET_BASIC = {
@@ -46,7 +48,7 @@ class FieldSet extends FormioFieldSet {
       // The 'API' tab is removed, since the only useful attribute it contained was the 'key', but we
       // have this field in the FIELDSET_BASIC tab.
       // The Conditions and Layout tabs have also been removed since they are not used
-      parentEditForm.components[0].components[3], // Logic tab
+      ADVANCED,
     ];
     return parentEditForm;
   }
