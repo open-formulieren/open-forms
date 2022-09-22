@@ -32,6 +32,14 @@ a related ``FormVariable``. The result of this situation is that any data input 
 
    Use the management command ``check_duplicate_component_keys`` to check for duplicate keys on an environment.
 
+.. note::
+
+   When updating to Open Forms 2.0, all form components should have keys containing only alphanumeric characters,
+   underscores, dots and dashes and should not be ended by dash or dot (and should not contain spaces).
+
+   The management command ``check_invalid_field_keys`` can be used to check for form definitions with invalid keys
+   on an environment.
+
 
 Static variables
 ----------------

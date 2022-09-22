@@ -25,6 +25,17 @@ if TYPE_CHECKING:  # pragma: nocover
     from .form import Form
     from .form_step import FormStep
 
+# Regex and message adapted from
+# https://github.com/formio/formio.js/blob/4.13.x/src/components/_classes/component/editForm/Component.edit.api.js#L10
+variable_key_validator = RegexValidator(
+    regex=_lazy_re_compile(r"^\w[\w.\-]*\w$"),
+    message=_(
+        "Invalid variable key. "
+        "It must only contain alphanumeric characters, underscores, "
+        "dots and dashes and should not be ended by dash or dot."
+    ),
+)
+
 
 class FormVariableManager(models.Manager):
     use_in_migrations = True
@@ -114,18 +125,7 @@ class FormVariable(models.Model):
     key = models.TextField(
         verbose_name=_("key"),
         help_text=_("Key of the variable, should be unique with the form."),
-        validators=[
-            # Regex and message adapted from
-            # https://github.com/formio/formio.js/blob/4.13.x/src/components/_classes/component/editForm/Component.edit.api.js#L10
-            RegexValidator(
-                regex=_lazy_re_compile(r"^\w[\w.\-]*\w$"),
-                message=_(
-                    "Invalid variable key. "
-                    "It must only contain alphanumeric characters, underscores, "
-                    "dots and dashes and should not be ended by dash or dot."
-                ),
-            )
-        ],
+        validators=[variable_key_validator],
     )
     source = models.CharField(
         verbose_name=_("source"),

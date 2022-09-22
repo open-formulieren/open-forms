@@ -49,6 +49,15 @@ this process works correctly.
    command to be available. If you are on an older version, please update to the latest
    patch version first.
 
+   In addition, all form components should have keys containing only alphanumeric characters,
+   underscores, dots and dashes and should not be ended by dash or dot (and should not contain spaces).
+   Any form with invalid component keys should also manually be fixed before upgrading. You can run the check
+   with the following command:
+
+   .. code-block:: bash
+
+       python src/manage.py check_invalid_field_keys
+
 Changes
 -------
 
