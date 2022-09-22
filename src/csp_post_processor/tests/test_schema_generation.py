@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.contrib import admin
 from django.test import override_settings
 from django.urls import path
@@ -71,7 +73,10 @@ urlpatterns = [
 @override_settings(ROOT_URLCONF=__name__, CSP_REPORT_URI="/blah")
 class SchemaGenerationExtensionTests(APITestCase):
     def test_expected_schema_generation(self):
-        response = self.client.get("")
+        # can't use override_settings because drf-spectacular doesn't seem to
+        # listen to settings_changed to clear internal caches
+        with patch("drf_spectacular.drainage.GENERATOR_STATS.silent", new=True):
+            response = self.client.get("")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         schema = response.json()
