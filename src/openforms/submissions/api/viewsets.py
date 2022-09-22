@@ -359,6 +359,19 @@ class SubmissionViewSet(
         logevent.submission_details_view_api(self.get_object(), request.user)
         return super().retrieve(request, *args, **kwargs)
 
+    @extend_schema(
+        summary=_("Summary page data"),
+        description=_("Get the data to display in the summary page"),
+        responses={
+            200: SubmissionSuspensionSerializer,
+        },
+    )
+    @action(detail=True, methods=["get"], url_name="summary")
+    def summary(self, request, *args, **kwargs):
+        submission = self.get_object()
+        summary_data = submission.render_summary_page()
+        return Response(summary_data)
+
 
 @extend_schema(
     parameters=[
