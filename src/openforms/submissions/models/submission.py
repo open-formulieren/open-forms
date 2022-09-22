@@ -18,6 +18,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.formio.formatters.service import filter_printable
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
+from openforms.typing import JSONObject
 from openforms.utils.validators import AllowedRedirectValidator, SerializerValidator
 
 from ..constants import RegistrationStatuses, SubmissionValueVariableSources
@@ -412,6 +413,44 @@ class Submission(models.Model):
 
         rendered_content = Template(template).render(Context(context_data))
         return rendered_content
+
+    def render_summary_page(self) -> List[JSONObject]:
+        """Use the renderer logic to decide what to display in the summary page.
+
+        The values of the component are returned raw, because the frontend decides how to display them.
+        """
+        from openforms.formio.rendering.nodes import ComponentNode
+
+        from ..rendering import Renderer, RenderModes
+        from ..rendering.nodes import SubmissionStepNode
+
+        renderer = Renderer(submission=self, mode=RenderModes.pdf, as_html=False)
+
+        summary_data = []
+        current_step = {}
+        for node in renderer:
+            if isinstance(node, SubmissionStepNode):
+                if current_step != {}:
+                    summary_data.append(current_step)
+                current_step = {
+                    "slug": node.step.form_step.form_definition.slug,
+                    "name": node.render(),
+                    "data": [],
+                }
+                continue
+
+            if isinstance(node, ComponentNode):
+                current_field = {
+                    "name": node.label,
+                    "value": node.value,
+                    "component": node.component,
+                }
+                current_step["data"].append(current_field)
+
+        if current_step != {}:
+            summary_data.append(current_step)
+
+        return summary_data
 
     @property
     def steps(self) -> List["SubmissionStep"]:
