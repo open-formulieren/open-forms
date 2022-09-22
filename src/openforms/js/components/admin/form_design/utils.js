@@ -136,8 +136,9 @@ function* _componentWithPathGenerator(components, prefix = 'components') {
     const hasComps = component.components && Array.isArray(component.components);
 
     if (hasColumns) {
-      for (let colIndex = 0; j < component.columns.length; colIndex++) {
+      for (let colIndex = 0; colIndex < component.columns.length; colIndex++) {
         const nestedPrefix = `${fullPath}.columns.${colIndex}.components`;
+        const column = component.columns[colIndex];
         yield* _componentWithPathGenerator(column.components, nestedPrefix);
       }
     } else if (hasComps) {
