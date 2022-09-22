@@ -682,6 +682,48 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
         self.assertEqual([], data["step"]["data"]["file"])
 
+    @tag("gh-2054")
+    def test_hidden_components_dont_get_cleared_if_they_are_already_empty(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "radio",
+                        "type": "radio",
+                        "values": [
+                            {"label": "yes", "value": "yes"},
+                            {"label": "no", "value": "no"},
+                        ],
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "testHidden",
+                        "hidden": True,
+                        "clearOnHide": True,
+                        "defaultValue": "",
+                    },
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=form)
+
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
+            },
+        )
+        response = self.client.post(logic_check_endpoint, {"data": {"radio": ""}})
+
+        data = response.json()
+
+        self.assertEqual({}, data["step"]["data"])
+
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
