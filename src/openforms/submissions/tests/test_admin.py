@@ -201,6 +201,36 @@ class TestSubmissionAdmin(WebTest):
         # avg log not visible
         self.assertNotContains(response, avg_log.get_message())
 
+    def test_change_view_doesnt_display_logic_log(self):
+        rule = FormLogicFactory(
+            form=self.submission_1.form,
+            json_logic_trigger={"==": [{"var": "voornaam"}, "test"]},
+            actions=[],
+        )
+        merged_data = self.submission_1.get_merged_data()
+
+        logic.log_logic_evaluation(
+            self.submission_1,
+            [EvaluatedRule(rule=cast(FormLogic, rule), triggered=False)],
+            merged_data,
+            merged_data,
+        )
+
+        response = self.app.get(
+            reverse(
+                "admin:submissions_submission_change", args=(self.submission_1.pk,)
+            ),
+            user=self.user,
+        )
+
+        logic_logs = TimelineLogProxy.objects.filter(
+            template="logging/events/submission_logic_evaluated.txt"
+        )
+
+        self.assertEqual(1, len(logic_logs))
+
+        self.assertNotContains(response, logic_logs[0].get_message())
+
     def test_search(self):
         list_url = furl(reverse("admin:submissions_submission_changelist"))
         list_url.args["q"] = "some value"

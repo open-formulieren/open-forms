@@ -3,6 +3,7 @@ from typing import Optional
 from django import forms
 from django.contrib import admin, messages
 from django.contrib.contenttypes.admin import GenericTabularInline
+from django.db.models import Q
 from django.template.defaultfilters import filesizeformat
 from django.urls import path
 from django.utils.translation import gettext_lazy as _, ngettext
@@ -125,6 +126,7 @@ class SubmissionLogInline(GenericTabularInline):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.exclude_tag(TimelineLogTags.AVG)
+        qs = qs.filter(~Q(template="logging/events/submission_logic_evaluated.txt"))
         return qs.prefetch_related(
             "content_object", "content_object__form"
         ).select_related("user")
