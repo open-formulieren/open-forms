@@ -166,6 +166,14 @@ class EditGridNode(ContainerMixin, ComponentNode):
     layout_modifier: str = "editgrid"
     display_value: str = ""
 
+    @property
+    def value(self):
+        return None
+
+    @property
+    def _value(self):
+        return super().value
+
     def get_children(self) -> Iterator["ComponentNode"]:
         """
         Return children as many times as they are repeated in the data
@@ -198,7 +206,7 @@ class EditGridNode(ContainerMixin, ComponentNode):
         So we need to repeat the child nodes of the configuration and associate them with the data
         provided by the user.
         """
-        repeats = len(self.value) if self.value else 0
+        repeats = len(self._value) if self._value else 0
 
         for node_index in range(repeats):
             path = Path(self.component["key"])
