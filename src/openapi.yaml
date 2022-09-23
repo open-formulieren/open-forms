@@ -3584,6 +3584,38 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+  /api/v1/submissions/{uuid}/summary:
+    get:
+      operationId: submissions_summary_list
+      description: Retrieve the data to display in the submission summary page.
+      summary: Summary page data
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - submissions
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubmissionStepSummarySerialzier'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
   /api/v1/submissions/files/{uuid}:
     get:
       operationId: submissions_files_retrieve
@@ -6216,6 +6248,24 @@ components:
             one day.
       required:
       - statusUrl
+    SubmissionComponentSummary:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Display name of the component.
+        value:
+          type: object
+          additionalProperties: {}
+          description: Raw value of the component.
+        component:
+          type: object
+          additionalProperties: {}
+          description: Configuration of the component.
+      required:
+      - component
+      - name
+      - value
     SubmissionProcessingStatus:
       type: object
       properties:
@@ -6315,6 +6365,24 @@ components:
       - formStep
       - id
       - isApplicable
+      - slug
+    SubmissionStepSummarySerialzier:
+      type: object
+      properties:
+        slug:
+          type: string
+          description: Slug of the form definition used in the form step.
+          pattern: ^[-a-zA-Z0-9_]+$
+        name:
+          type: string
+          description: Name of the form definition used in the form step.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubmissionComponentSummary'
+      required:
+      - data
+      - name
       - slug
     SubmissionSuspension:
       type: object
