@@ -1,4 +1,5 @@
 import os
+import sys
 from base64 import b64decode
 from typing import Optional
 from unittest.mock import patch
@@ -16,6 +17,7 @@ from lxml import etree
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
+from openforms.tests.utils import surpress_output
 
 from ....constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ....contrib.tests.saml_utils import (
@@ -230,7 +232,8 @@ class AuthenticationStep5Tests(TestCase):
             }
         )
 
-        response = self.client.get(url, follow=True)
+        with surpress_output(sys.stderr, os.devnull):
+            response = self.client.get(url, follow=True)
 
         self.assertRedirects(
             response, f"https://testserver{form_path}", status_code=302
@@ -383,7 +386,9 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
             }
         )
 
-        response = self.client.get(url)
+        with surpress_output(sys.stderr, os.devnull):
+            response = self.client.get(url)
+
         self.assertRedirects(
             response, str(auth_return_url), fetch_redirect_response=False
         )

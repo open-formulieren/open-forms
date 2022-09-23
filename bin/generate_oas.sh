@@ -8,14 +8,16 @@
 #
 # 'outfile' defaults to `src/openapi.yml``
 #
-set -eux -o pipefail
+set -eu -o pipefail
 
 CI=${CI:-}
 
 outfile=${1:-src/openapi.yaml}
 
 if [[ -z "${CI}" ]]; then
+    echo "Dumping local configuration..."
     CURRENT_CONFIG_FIXTURE=$(src/manage.py dumpdata config.GlobalConfiguration)
+    echo "Disabling demo plugins..."
     src/manage.py disable_demo_plugins
 fi
 
@@ -27,5 +29,8 @@ src/manage.py spectacular \
 
 # restore global config
 if [[ -z "${CI}" ]]; then
+    echo "Restoring local configuration..."
     echo $CURRENT_CONFIG_FIXTURE | src/manage.py loaddata --format=json -
 fi
+
+echo "Schema generated!"
