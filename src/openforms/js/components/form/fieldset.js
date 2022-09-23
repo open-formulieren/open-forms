@@ -1,6 +1,7 @@
 import {Formio} from 'formiojs';
 
-import {ADVANCED} from './edit/tabs';
+import {ADVANCED} from 'components/form/edit/tabs';
+import {LABEL, KEY, HIDDEN, CLEAR_ON_HIDE} from 'components/form/edit/options';
 
 const FormioFieldSet = Formio.Components.components.fieldset;
 
@@ -8,28 +9,10 @@ const FIELDSET_BASIC = {
   key: 'display',
   label: 'Display',
   components: [
-    {
-      type: 'textfield',
-      key: 'label',
-      label: 'Label',
-    },
-    {
-      type: 'textfield',
-      key: 'key',
-      label: 'Property Name',
-    },
-    {
-      type: 'checkbox',
-      key: 'hidden',
-      label: 'Hidden',
-      tooltip: 'A hidden field is still a part of the form, but is hidden from view.',
-    },
-    {
-      type: 'checkbox',
-      key: 'clearOnHide',
-      label: 'Clear on hide',
-      tooltip: 'Remove the value of this field from the submission if it is hidden',
-    },
+    LABEL,
+    KEY,
+    HIDDEN,
+    CLEAR_ON_HIDE,
     {
       type: 'checkbox',
       key: 'hideHeader',
