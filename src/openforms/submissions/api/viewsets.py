@@ -61,6 +61,7 @@ from .serializers import (
     SubmissionStateLogic,
     SubmissionStateLogicSerializer,
     SubmissionStepSerializer,
+    SubmissionStepSummarySerialzier,
     SubmissionSuspensionSerializer,
 )
 from .validation import CompletionValidationSerializer, validate_submission_completion
@@ -361,12 +362,12 @@ class SubmissionViewSet(
 
     @extend_schema(
         summary=_("Summary page data"),
-        description=_("Get the data to display in the summary page"),
+        description=_("Retrieve the data to display in the submission summary page."),
         responses={
-            200: SubmissionSuspensionSerializer,
+            200: SubmissionStepSummarySerialzier(many=True),
         },
     )
-    @action(detail=True, methods=["get"], url_name="summary")
+    @action(detail=True, methods=["get"], url_name="summary", pagination_class=None)
     def summary(self, request, *args, **kwargs):
         submission = self.get_object()
         summary_data = submission.render_summary_page()

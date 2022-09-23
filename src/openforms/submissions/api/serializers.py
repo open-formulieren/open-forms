@@ -451,3 +451,30 @@ class SubmissionCoSignStatusSerializer(serializers.ModelSerializer):
 
     def get_representation(self, submission: Submission) -> str:
         return submission.co_sign_data.get("representation", "")
+
+
+class SubmissionComponentSummarySerializer(serializers.Serializer):
+    name = serializers.CharField(
+        help_text=_("Display name of the component."),
+        required=True,
+    )
+    value = serializers.JSONField(
+        help_text=_("Raw value of the component."),
+        required=True,
+    )
+    component = serializers.JSONField(
+        help_text=_("Configuration of the component."),
+        required=True,
+    )
+
+
+class SubmissionStepSummarySerialzier(serializers.Serializer):
+    slug = serializers.SlugField(
+        help_text=_("Slug of the form definition used in the form step."),
+        required=True,
+    )
+    name = serializers.CharField(
+        help_text=_("Name of the form definition used in the form step."),
+        required=True,
+    )
+    data = SubmissionComponentSummarySerializer(many=True)
