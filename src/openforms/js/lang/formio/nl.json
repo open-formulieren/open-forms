@@ -295,5 +295,6 @@
   "Read only": "Alleen-lezen",
   "Make this component read only": "Maak dit component alleen-lezen",
   "array_nonempty": "Dit veld moet minstens één waarde hebben.",
-  "Too many files added. The maximum allowed number of files is {{ maxNumber }}": "Te veel bestanden toegevoegd. Het mogen er maximaal {{ maxNumber }} zijn"
+  "Too many files added. The maximum allowed number of files is {{ maxNumber }}": "Te veel bestanden toegevoegd. Het mogen er maximaal {{ maxNumber }} zijn",
+  "The property name must only contain alphanumeric characters, underscores, dots and dashes and should not be ended by dash or dot.": "De eigenschapsnaam mag alleen alfanumerieke tekens, onderstrepingstekens, punten en streepjes bevatten en mag niet worden afgesloten met een streepje of punt."
 }
