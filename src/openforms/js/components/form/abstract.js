@@ -1,5 +1,3 @@
-import {BuilderUtils, Utils} from 'formiojs';
-
 import DEFAULT_TABS, {BASIC, ADVANCED, VALIDATION, REGISTRATION} from './edit/tabs';
 
 export const defineEditFormTabs = (ComponentClass, tabs) => {
