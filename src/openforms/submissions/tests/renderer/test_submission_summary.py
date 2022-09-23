@@ -146,6 +146,62 @@ class SubmissionSummaryRendererTests(TestCase):
         with self.assertNumQueries(6):
             self.submission.render_summary_page()
 
+    def test_editgrid_summary(self):
+        form_step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "repeatingGroup",
+                        "type": "editgrid",
+                        "label": "Repeating Group",
+                        "components": [
+                            {
+                                "key": "someText",
+                                "type": "textfield",
+                                "label": "Some text",
+                            },
+                            {
+                                "key": "someNumber",
+                                "type": "number",
+                                "label": "Some number",
+                            },
+                        ],
+                    }
+                ]
+            },
+            form_definition__slug="fd-0",
+            form_definition__name="Form Definition 0",
+        )
+
+        submission = SubmissionFactory.create(form=form_step.form)
+
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={
+                "repeatingGroup": [
+                    {"someText": "One", "someNumber": 1},
+                    {"someText": "Two", "someNumber": 2},
+                ],
+            },
+        )
+
+        data = submission.render_summary_page()
+        step_data = data[0]["data"]
+
+        # 1 Header for the whole repeating group + (1 Header for the single group + 2 nodes for the data)x2
+        self.assertEqual(7, len(step_data))
+
+        # Test that the nodes for the header of the whole group and
+        # the headers of each repeated item don't have a value
+        whole_group = step_data[0]
+        first_item = step_data[1]
+        second_item = step_data[4]
+
+        self.assertIsNone(whole_group["value"])
+        self.assertIsNone(first_item["value"])
+        self.assertIsNone(second_item["value"])
+
 
 class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
     def test_summary_page_endpoint(self):
