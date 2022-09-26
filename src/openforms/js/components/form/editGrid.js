@@ -5,7 +5,7 @@ import {
   HIDDEN,
   IS_SENSITIVE_DATA,
   KEY,
-  LABEL,
+  LABEL_REQUIRED,
   REQUIRED,
 } from './edit/options';
 
@@ -32,7 +32,7 @@ const EDIT_FORM_TABS = [
         key: 'basic',
         label: 'Basic',
         components: [
-          LABEL,
+          LABEL_REQUIRED,
           KEY,
           GROUP_LABEL,
           DESCRIPTION,

@@ -1,7 +1,7 @@
 import {Formio} from 'react-formio';
 
 import {getFullyQualifiedUrl} from 'utils/urls';
-import {DESCRIPTION, LABEL} from 'components/form/edit/options';
+import {DESCRIPTION, LABEL_REQUIRED} from 'components/form/edit/options';
 
 const FieldComponent = Formio.Components.components.field;
 
@@ -15,7 +15,7 @@ const EDIT_FORM_TABS = [
         key: 'basic',
         label: 'Basic',
         components: [
-          LABEL,
+          LABEL_REQUIRED,
           DESCRIPTION,
           {
             type: 'select',
