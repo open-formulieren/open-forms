@@ -4,6 +4,15 @@ const LABEL = {
   label: 'Label',
 };
 
+const LABEL_REQUIRED = {
+  type: 'textfield',
+  key: 'label',
+  label: 'Label',
+  validate: {
+    required: true,
+  },
+};
+
 const KEY = {
   type: 'textfield',
   key: 'key',
@@ -119,6 +128,7 @@ const REQUIRED = {
 };
 
 export {
+  LABEL_REQUIRED,
   LABEL,
   KEY,
   DESCRIPTION,

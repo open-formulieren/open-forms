@@ -2,6 +2,7 @@ import {Utils} from 'formiojs';
 
 import {getFullyQualifiedUrl} from '../../../utils/urls';
 import {
+  LABEL_REQUIRED,
   LABEL,
   KEY,
   DESCRIPTION,
@@ -24,7 +25,7 @@ const BASIC = {
   key: 'basic',
   label: 'Basic',
   components: [
-    LABEL,
+    LABEL_REQUIRED,
     KEY,
     DESCRIPTION,
     PRESENTATION,
