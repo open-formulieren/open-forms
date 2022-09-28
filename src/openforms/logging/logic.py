@@ -1,7 +1,7 @@
 """
 Process the logic evaluation logging information.
 
-This relies on the datastructures used in :module:`openforms.submissions.form_logic`.
+This relies on the datastructures used in :mod:`openforms.submissions.form_logic`.
 """
 from typing import List
 

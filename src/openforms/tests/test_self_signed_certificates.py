@@ -4,7 +4,7 @@
 """
 Test support for self-signed certificates.
 
-This works by manipulating :module:`requests` CA_BUNDLE parameters, appending any
+This works by manipulating :mod:`requests` CA_BUNDLE parameters, appending any
 specified (root) certificates to the existing requests bundle. None of this is
 Django specific.
 

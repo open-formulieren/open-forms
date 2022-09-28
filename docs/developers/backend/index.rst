@@ -18,5 +18,6 @@ following the outlined :ref:`developers_architecture`.
    modules/index
    dev-rendering
    profiling
+   upgrade-checks
 
 .. _Django: https://www.djangoproject.com/
