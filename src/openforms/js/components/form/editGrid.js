@@ -96,7 +96,16 @@ const EDIT_FORM_TABS = [
       {
         key: 'validation',
         label: 'Validation',
-        components: [REQUIRED],
+        components: [
+          REQUIRED,
+          {
+            key: 'validate.maxLength',
+            label: 'Maximum Length',
+            type: 'number',
+            tooltip: 'The maximum length requirement this field must meet.',
+            input: true,
+          },
+        ],
       },
     ],
   },
