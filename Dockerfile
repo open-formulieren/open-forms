@@ -94,8 +94,7 @@ COPY ./bin/celery_worker.sh /celery_worker.sh
 COPY ./bin/celery_beat.sh /celery_beat.sh
 COPY ./bin/celery_flower.sh /celery_flower.sh
 COPY ./bin/dump_configuration.sh /dump_configuration.sh
-RUN mkdir /app/log
-RUN mkdir /app/media
+RUN mkdir /app/log /app/media /app/bin
 
 # copy backend build deps
 COPY --from=backend-build /usr/local/lib/python3.8 /usr/local/lib/python3.8
@@ -112,6 +111,7 @@ COPY --from=frontend-build /app/node_modules/@fortawesome/fontawesome-free/webfo
 COPY --from=sdk-image /sdk /app/src/openforms/static/sdk
 
 # copy source code
+COPY ./bin/detect_advanced_logic_usage.py /app/bin/detect_advanced_logic_usage.py
 COPY ./src /app/src
 COPY ./.sdk-release /app/.sdk-release
 
