@@ -61,6 +61,7 @@ from .serializers import (
     SubmissionStateLogic,
     SubmissionStateLogicSerializer,
     SubmissionStepSerializer,
+    SubmissionStepSummarySerialzier,
     SubmissionSuspensionSerializer,
 )
 from .validation import CompletionValidationSerializer, validate_submission_completion
@@ -358,6 +359,19 @@ class SubmissionViewSet(
     def retrieve(self, request, *args, **kwargs):
         logevent.submission_details_view_api(self.get_object(), request.user)
         return super().retrieve(request, *args, **kwargs)
+
+    @extend_schema(
+        summary=_("Summary page data"),
+        description=_("Retrieve the data to display in the submission summary page."),
+        responses={
+            200: SubmissionStepSummarySerialzier(many=True),
+        },
+    )
+    @action(detail=True, methods=["get"], url_name="summary", pagination_class=None)
+    def summary(self, request, *args, **kwargs):
+        submission = self.get_object()
+        summary_data = submission.render_summary_page()
+        return Response(summary_data)
 
 
 @extend_schema(
