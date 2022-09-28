@@ -879,6 +879,10 @@ self-certifi==1.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+semantic-version==2.10.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 sentry-sdk==0.17.3
     # via
     #   -c requirements/ci.txt

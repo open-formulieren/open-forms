@@ -377,6 +377,8 @@ rfc3987==1.3.8
     # via drf-jsonschema
 self-certifi==1.0.0
     # via -r requirements/base.in
+semantic-version==2.10.0
+    # via -r requirements/base.in
 sentry-sdk==0.17.3
     # via -r requirements/base.in
 simplejson==3.17.6
