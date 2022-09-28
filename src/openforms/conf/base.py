@@ -224,6 +224,7 @@ INSTALLED_APPS = [
     "openforms.validations.apps.ValidationsConfig",
     "openforms.data_removal",
     "openforms.utils",
+    "openforms.upgrades",
     "openforms.plugins",
     "openforms.custom_field_types",
     # Apps registering static variables

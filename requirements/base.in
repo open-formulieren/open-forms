@@ -19,6 +19,7 @@ python-magic
 tablib[xlsx]
 xmltodict
 self-certifi
+semantic-version
 tabulate
 weasyprint
 zeep

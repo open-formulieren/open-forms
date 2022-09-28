@@ -17,17 +17,18 @@ SRC_DIR = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(SRC_DIR.resolve()))
 
 
-def main():
-    from openforms.setup import setup_env
+def main(skip_setup=False):
+    if not skip_setup:
+        from openforms.setup import setup_env
 
-    setup_env()
-    django.setup()
+        setup_env()
+        django.setup()
 
     report_advanced_logic_usage()
 
 
 def has_client_side_logic_usage_which_cant_be_converted(component: dict) -> bool:
-    from openforms.forms.utils import parse_trigger, parse_actions
+    from openforms.forms.utils import parse_actions, parse_trigger
 
     advanced_logic = glom(component, "logic", default=[])
 
@@ -61,7 +62,9 @@ def report_advanced_logic_usage():
                 break
 
     if not affected_forms:
-        print("Geen formulieren met logica in de 'geavanceerd' tab die niet naar backend logica kunnen worden omgezet.")
+        print(
+            "Geen formulieren met logica in de 'geavanceerd' tab die niet naar backend logica kunnen worden omgezet."
+        )
         return
 
     def key_func(form_step):

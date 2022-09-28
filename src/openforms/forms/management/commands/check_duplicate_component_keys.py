@@ -1,19 +1,19 @@
 from typing import List
 
-from django.core.management import BaseCommand
+from django.core.management import BaseCommand, CommandError
 
 from tabulate import tabulate
 
 from openforms.formio.utils import iter_components
 
-from ...models.form import Form
+from ...models import Form
 
 
 class Command(BaseCommand):
     help = "Check if there are forms with components with duplicate keys."
 
     def handle(self, *args, **options):
-        forms = Form.objects.all()
+        forms = Form.objects.only("id", "name")
 
         duplicates = []
         for form in forms:
@@ -35,8 +35,12 @@ class Command(BaseCommand):
         for line in table.splitlines():
             self.stdout.write(line)
 
-    def get_duplicate_keys(self, form: "Form") -> List[List[str]]:
-        form_steps = form.formstep_set.select_related("form_definition")
+        raise CommandError("Please fix the duplicate keys")
+
+    def get_duplicate_keys(self, form: Form) -> List[List[str]]:
+        form_steps = form.formstep_set.select_related("form_definition").only(
+            "form_definition__configuration", "form_definition__name"
+        )
 
         duplicates = []
 
