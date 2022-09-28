@@ -5,5 +5,5 @@ class UpgradesConfig(AppConfig):
     name = "openforms.upgrades"
 
     def ready(self):
-        # from . import checks  # noqa
+        from . import checks  # noqa
         from . import signals  # noqa
