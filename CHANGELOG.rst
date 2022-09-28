@@ -2,7 +2,7 @@
 Changelog
 =========
 
-2.0.0 "Règâh" (2022-??-??) - in testing
+2.0.0 "Règâh" (2022-10-??) - in testing
 =======================================
 
 *The symbol of The Hague is the stork, a majestic bird, which is somewhat
@@ -267,6 +267,57 @@ double check with the list of breaking changes in mind.
 * Upgrade to zgw-consumers and django-simple-certmanager
 * Improved documentation on embedding the SDK
 * [#921] Added decision tree docs
+
+1.1.6 (2022-09-29)
+==================
+
+Bugfix release + preparation for 2.0.0 upgrade
+
+* [#1856] Fixed crash on logic rule saving in the admin
+* [#1842] Fixed crash on various types of empty StUF-BG response
+* [#1832] Prevent and handle location service rate limit errors
+* [#1960] Ensure design tokens override default style
+* [#1957] Fixed not being able to manually retry errored submission registrations having
+  exceeded the retry limit
+* [#1867] Added more StUF-ZDS/ZGW registration fields.
+* Added missing translation for max files
+* [#2011] Worked around thread-safety issue when configuring Ogone merchants in the admin
+* [#2066] Re-added key validation in form builder
+
+**Upgrade preprations**
+
+The following additions are required to prepare upgrading to 2.0.0. Please see the
+release notes of 2.0.0 on how to use them.
+
+* [#2055] Added management command to check for invalid keys
+* [#1979] Added model to track currently deployed version
+
+1.0.14 (2022-09-29)
+===================
+
+Final bugfix release in the ``1.0.x`` series.
+
+* [#1856] Fixed crash on logic rule saving in the admin
+* [#1842] Fixed crash on various types of empty StUF-BG response
+* [#1832] Prevent and handle location service rate limit errors
+* [#1960] Ensure design tokens override default style
+* [#1957] Fixed not being able to manually retry errored submission registrations having
+  exceeded the retry limit
+* [#1867] Added more StUF-ZDS/ZGW registration fields.
+* Added missing translation for max files
+* [#2011] Worked around thread-safety issue when configuring Ogone merchants in the admin
+* [#2066] Re-added key validation in form builder
+
+**Upgrade preprations**
+
+The following additions are required to prepare upgrading to 2.0.0. Please see the
+release notes of 2.0.0 on how to use them.
+
+* [#2055] Added management command to check for invalid keys
+* [#1979] Added model to track currently deployed version
+
+.. note:: This is the FINAL 1.0.x release - support for this version has now ended. We
+   recommend upgrading to 2.0.x.
 
 1.1.5 (2022-08-09)
 ==================
