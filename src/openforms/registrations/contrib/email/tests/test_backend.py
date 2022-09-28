@@ -414,7 +414,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
 
         csv_export, xlsx_export = message.attachments
 
-        qs = Submission.objects.filter(pk=submission.pk)
+        qs = Submission.objects.filter(pk=submission.pk).order_by("-pk")
         self.assertEqual(
             csv_export[0], f"{submission.form.admin_name} - submission.csv"
         )

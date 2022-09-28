@@ -177,6 +177,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         "needs_on_completion_retry",
         "form",
     )
+    ordering = ("-pk",)
     search_fields = (
         "uuid",
         "form__name",
