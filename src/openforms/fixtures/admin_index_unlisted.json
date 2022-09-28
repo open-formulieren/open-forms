@@ -17,5 +17,6 @@
     "forms.FormsExport",
     "config.RichTextColor",
     "forms.FormLogic",
-    "of_authentication.AuthInfo"
+    "of_authentication.AuthInfo",
+    "upgrades.VersionInfo"
 ]
