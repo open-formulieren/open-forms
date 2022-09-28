@@ -78,8 +78,9 @@ class UpgradeConstraint:
 UPGRADE_PATHS = {
     "2.0": UpgradeConstraint(
         valid_ranges={
-            VersionRange(minimum="1.0.16", maximum="1.1.5"),
-            VersionRange(minimum="1.1.6"),
+            VersionRange(minimum="1.0.14", maximum="1.1.5"),
+            VersionRange(minimum="1.1.6", maximum="1.2.0"),
+            VersionRange(minimum="2.0.0-beta.0"),
         },
         management_commands=[
             "check_duplicate_component_keys",
