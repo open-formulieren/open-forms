@@ -10,3 +10,4 @@ Common issues
    form_auth
    admin_auth
    http
+   upgrade

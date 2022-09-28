@@ -64,7 +64,7 @@ class AuthInfo(models.Model):
         preventing sensitive data to be available in plain text if the database were
         to leak.
 
-        We use :module:`django.contrib.auth.hashers` for the actual salting and hashing,
+        We use :mod:`django.contrib.auth.hashers` for the actual salting and hashing,
         relying on the global Django ``PASSWORD_HASHERS`` setting.
         """
         if delay:
