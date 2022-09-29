@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+from ..api.serializers.logic.action_serializers import LogicComponentActionSerializer
 from ..utils import advanced_formio_logic_to_backend_logic
 from .factories import FormDefinitionFactory, FormStepFactory
 
@@ -127,6 +128,8 @@ class ConvertAdvancedFrontendLogicTest(TestCase):
 
         advanced_formio_logic_to_backend_logic(form_definition)
 
+        form_definition.refresh_from_db()
+
         rules_1 = form_step1.form.formlogic_set.all()
         rules_2 = form_step2.form.formlogic_set.all()
 
@@ -137,6 +140,8 @@ class ConvertAdvancedFrontendLogicTest(TestCase):
             {"==": [{"var": "test1"}, "trigger value"]},
             rules_1[0].json_logic_trigger,
         )
+        serializer = LogicComponentActionSerializer(data=rules_1[0].actions, many=True)
+        self.assertTrue(serializer.is_valid())
         self.assertEqual(1, len(rules_1[0].actions))
         self.assertEqual(
             {
@@ -145,18 +150,21 @@ class ConvertAdvancedFrontendLogicTest(TestCase):
                 "property": {
                     "label": "Hidden",
                     "value": "hidden",
-                    "type": "boolean",
+                    "type": "bool",
                 },
                 "state": False,
             },
-            rules_1[0].actions[0],
+            rules_1[0].actions[0]["action"],
         )
+        self.assertEqual("test2", rules_1[0].actions[0]["component"])
         self.assertEqual(
             {"==": [{"var": "test1"}, "test"]},
             rules_1[1].json_logic_trigger,
         )
 
+        serializer = LogicComponentActionSerializer(data=rules_1[1].actions, many=True)
         self.assertEqual(2, len(rules_1[1].actions))
+        self.assertTrue(serializer.is_valid())
         self.assertEqual(
             {
                 "name": "Rule 3 Action 1",
@@ -167,8 +175,9 @@ class ConvertAdvancedFrontendLogicTest(TestCase):
                 },
                 "state": {"required": True},
             },
-            rules_1[1].actions[0],
+            rules_1[1].actions[0]["action"],
         )
+        self.assertEqual("test2", rules_1[1].actions[0]["component"])
         self.assertEqual(
             {
                 "name": "Rule 3 Action 2",
@@ -176,11 +185,12 @@ class ConvertAdvancedFrontendLogicTest(TestCase):
                 "property": {
                     "label": "Disabled",
                     "value": "disabled",
-                    "type": "boolean",
+                    "type": "bool",
                 },
                 "state": True,
             },
-            rules_1[1].actions[1],
+            rules_1[1].actions[1]["action"],
         )
+        self.assertEqual("test2", rules_1[1].actions[1]["component"])
 
         self.assertEqual([], form_definition.configuration["components"][1]["logic"])
