@@ -61,8 +61,7 @@
 
 {% block footer %}
     <div id="footer">
-        {% url 'admin:login' as admin_login_url %}
-        {% if request.path != admin_login_url %}
+        {% if user.is_authenticated and user.is_staff %}
             <div class="version" title="Git SHA: {{ settings.GIT_SHA|default:'' }}">
                 {% blocktrans with version=settings.RELEASE %}version {{version}}{% endblocktrans %}
             </div>
