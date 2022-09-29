@@ -332,6 +332,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             xml_doc,
             {
                 "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "my-attachment.doc",
+                "//zkn:object/zkn:inhoud/@xmime:contentType": "application/msword",
                 "//zkn:object/zkn:formaat": "application/msword",
             },
         )
