@@ -320,7 +320,7 @@ def parse_trigger(trigger_info: JSONObject) -> Optional[JSONObject]:
         return trigger
 
 
-def parse_actions(actions: List[JSONObject]) -> List[JSONObject]:
+def parse_actions(actions: List[JSONObject], component_key: str = None) -> List[JSONObject]:
     """Parse Formio logic actions and convert them to backend actions.
 
     We only support the "property" action among the ones offered by Formio advanced logic.
@@ -370,8 +370,11 @@ def parse_actions(actions: List[JSONObject]) -> List[JSONObject]:
                     "state": {"required": action["state"]},
                 }
             )
+        else:
+            # Formio uses "boolean"
+            action["property"]["type"] = "bool"
 
-        parsed_actions.append(action)
+        parsed_actions.append({"action": action, "component": component_key})
 
     return parsed_actions
 
@@ -385,12 +388,15 @@ def advanced_formio_logic_to_backend_logic(form_definition: "FormDefinition") ->
         if "logic" not in component or not len(component["logic"]):
             continue
 
+        component_key = component["key"]
         for component_logic_rule in component["logic"]:
             parsed_trigger = parse_trigger(component_logic_rule["trigger"])
             if not parsed_trigger:
                 continue
 
-            parsed_actions = parse_actions(component_logic_rule["actions"])
+            parsed_actions = parse_actions(
+                component_logic_rule["actions"], component_key
+            )
             if not parsed_actions:
                 continue
 
