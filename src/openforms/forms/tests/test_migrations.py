@@ -1,6 +1,7 @@
 from openforms.utils.tests.test_migrations import TestMigrations
 
-from ..models import Form, FormDefinition, FormStep
+from ..api.serializers.logic.action_serializers import LogicComponentActionSerializer
+from ..models import Form, FormDefinition, FormLogic, FormStep
 
 CONFIGURATION = {
     "components": [
@@ -125,3 +126,75 @@ class ConvertFrontendAdvancedLogicTests(TestMigrations):
         self.assertEqual(
             [], self.form_definition.configuration["components"][1]["logic"]
         )
+
+
+class FixBrokenConvertedLogicTests(TestMigrations):
+    migrate_from = "0046_convert_advanced_logic"
+    migrate_to = "0047_fix_broken_converted_rules"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        form = Form.objects.create(name="Form", slug="form")
+        rule1 = FormLogic.objects.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "test1"}, "trigger value"]},
+            actions=[
+                # Invalid rule
+                {
+                    "name": "Rule 1 Action 1",
+                    "type": "property",
+                    "state": False,
+                    "property": {
+                        "type": "boolean",
+                        "label": "Hidden",
+                        "value": "hidden",
+                    },
+                },
+                # Valid rule
+                {
+                    "action": {
+                        "name": "Rule 1 Action 1",
+                        "type": "property",
+                        "state": False,
+                        "property": {
+                            "type": "bool",
+                            "label": "Hidden",
+                            "value": "hidden",
+                        },
+                    },
+                    "component": "test2",
+                },
+            ],
+        )
+        rule2 = FormLogic.objects.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "test1"}, "test"]},
+            actions=[
+                # Invalid rule
+                {
+                    "name": "Rule 2 Action 1",
+                    "type": "property",
+                    "property": {
+                        "value": "validate",
+                        "type": "json",
+                    },
+                    "state": {"required": True},
+                }
+            ],
+        )
+
+        self.form = form
+        self.rule1 = rule1
+        self.rule2 = rule2
+
+    def test_migrate_logic(self):
+        self.assertEqual(2, self.form.formlogic_set.count())
+
+        self.rule1.refresh_from_db()
+        self.rule2.refresh_from_db()
+
+        serializer1 = LogicComponentActionSerializer(data=self.rule1.actions, many=True)
+        self.assertTrue(serializer1.is_valid())
+
+        serializer2 = LogicComponentActionSerializer(data=self.rule2.actions, many=True)
+        self.assertTrue(serializer2.is_valid())

@@ -1,7 +1,14 @@
 from django.test import TestCase
 
-from ..utils import advanced_formio_logic_to_backend_logic
-from .factories import FormDefinitionFactory, FormStepFactory
+from ..api.serializers.logic.action_serializers import LogicComponentActionSerializer
+from ..models import FormLogic
+from ..utils import advanced_formio_logic_to_backend_logic, fix_broken_rules
+from .factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormLogicFactory,
+    FormStepFactory,
+)
 
 CONFIGURATION = {
     "components": [
@@ -127,6 +134,8 @@ class ConvertAdvancedFrontendLogicTest(TestCase):
 
         advanced_formio_logic_to_backend_logic(form_definition)
 
+        form_definition.refresh_from_db()
+
         rules_1 = form_step1.form.formlogic_set.all()
         rules_2 = form_step2.form.formlogic_set.all()
 
@@ -137,6 +146,8 @@ class ConvertAdvancedFrontendLogicTest(TestCase):
             {"==": [{"var": "test1"}, "trigger value"]},
             rules_1[0].json_logic_trigger,
         )
+        serializer = LogicComponentActionSerializer(data=rules_1[0].actions, many=True)
+        self.assertTrue(serializer.is_valid())
         self.assertEqual(1, len(rules_1[0].actions))
         self.assertEqual(
             {
@@ -145,18 +156,21 @@ class ConvertAdvancedFrontendLogicTest(TestCase):
                 "property": {
                     "label": "Hidden",
                     "value": "hidden",
-                    "type": "boolean",
+                    "type": "bool",
                 },
                 "state": False,
             },
-            rules_1[0].actions[0],
+            rules_1[0].actions[0]["action"],
         )
+        self.assertEqual("test2", rules_1[0].actions[0]["component"])
         self.assertEqual(
             {"==": [{"var": "test1"}, "test"]},
             rules_1[1].json_logic_trigger,
         )
 
+        serializer = LogicComponentActionSerializer(data=rules_1[1].actions, many=True)
         self.assertEqual(2, len(rules_1[1].actions))
+        self.assertTrue(serializer.is_valid())
         self.assertEqual(
             {
                 "name": "Rule 3 Action 1",
@@ -167,8 +181,9 @@ class ConvertAdvancedFrontendLogicTest(TestCase):
                 },
                 "state": {"required": True},
             },
-            rules_1[1].actions[0],
+            rules_1[1].actions[0]["action"],
         )
+        self.assertEqual("test2", rules_1[1].actions[0]["component"])
         self.assertEqual(
             {
                 "name": "Rule 3 Action 2",
@@ -176,11 +191,121 @@ class ConvertAdvancedFrontendLogicTest(TestCase):
                 "property": {
                     "label": "Disabled",
                     "value": "disabled",
-                    "type": "boolean",
+                    "type": "bool",
                 },
                 "state": True,
             },
-            rules_1[1].actions[1],
+            rules_1[1].actions[1]["action"],
         )
+        self.assertEqual("test2", rules_1[1].actions[1]["component"])
 
         self.assertEqual([], form_definition.configuration["components"][1]["logic"])
+
+
+class FixBrokenConvertedLogicTest(TestCase):
+    def test_convert_broken_rules(self):
+        form = FormFactory.create()
+        rule1 = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "test1"}, "trigger value"]},
+            actions=[
+                # Invalid rule
+                {
+                    "name": "Rule 1 Action 1",
+                    "type": "property",
+                    "state": False,
+                    "property": {
+                        "type": "boolean",
+                        "label": "Hidden",
+                        "value": "hidden",
+                    },
+                },
+                # Valid rule
+                {
+                    "action": {
+                        "name": "Rule 1 Action 1",
+                        "type": "property",
+                        "state": False,
+                        "property": {
+                            "type": "bool",
+                            "label": "Hidden",
+                            "value": "hidden",
+                        },
+                    },
+                    "component": "test2",
+                },
+            ],
+        )
+        rule2 = FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "test1"}, "test"]},
+            actions=[
+                # Invalid rule
+                {
+                    "name": "Rule 2 Action 1",
+                    "type": "property",
+                    "property": {
+                        "value": "validate",
+                        "type": "json",
+                    },
+                    "state": {"required": True},
+                },
+                # Invalid rule, but for other reasons than the action property missing
+                {
+                    "action": {
+                        "name": "Rule 2 Action 2",
+                        "type": "property",
+                        "stateWRONG": False,
+                        "property": {
+                            "type": "bool",
+                            "label": "Hidden",
+                            "value": "hidden",
+                        },
+                    },
+                    "component": "test2",
+                },
+            ],
+        )
+
+        rules = FormLogic.objects.all()
+
+        fix_broken_rules(rules)
+
+        rule1.refresh_from_db()
+        rule2.refresh_from_db()
+
+        self.assertEqual(2, len(rule1.actions))
+        self.assertEqual(2, len(rule2.actions))
+
+        serializer1 = LogicComponentActionSerializer(data=rule1.actions, many=True)
+        self.assertTrue(serializer1.is_valid())
+        self.assertEqual(
+            {
+                "name": "Rule 1 Action 1",
+                "type": "property",
+                "state": False,
+                "property": {
+                    "type": "bool",
+                    "label": "Hidden",
+                    "value": "hidden",
+                },
+            },
+            rule1.actions[0]["action"],
+        )
+        self.assertEqual("UNKNOWN", rule1.actions[0]["component"])
+
+        serializer2 = LogicComponentActionSerializer(data=rule2.actions, many=True)
+        self.assertFalse(serializer2.is_valid())
+        self.assertEqual(
+            {
+                "name": "Rule 2 Action 1",
+                "type": "property",
+                "property": {
+                    "value": "validate",
+                    "type": "json",
+                },
+                "state": {"required": True},
+            },
+            rule2.actions[0]["action"],
+        )
+        self.assertEqual("UNKNOWN", rule2.actions[0]["component"])
