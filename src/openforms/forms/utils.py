@@ -7,7 +7,7 @@ from typing import Dict, List, Optional
 from uuid import uuid4
 
 from django.conf import settings
-from django.db import transaction
+from django.db import models, transaction
 from django.utils import timezone
 
 from rest_framework.exceptions import ValidationError
@@ -25,6 +25,7 @@ from .api.serializers import (
     FormStepSerializer,
     FormVariableSerializer,
 )
+from .api.serializers.logic.action_serializers import LogicComponentActionSerializer
 from .constants import EXPORT_META_KEY
 from .models import Form, FormDefinition, FormLogic, FormStep, FormVariable
 
@@ -320,7 +321,9 @@ def parse_trigger(trigger_info: JSONObject) -> Optional[JSONObject]:
         return trigger
 
 
-def parse_actions(actions: List[JSONObject], component_key: str = None) -> List[JSONObject]:
+def parse_actions(
+    actions: List[JSONObject], component_key: str = None
+) -> List[JSONObject]:
     """Parse Formio logic actions and convert them to backend actions.
 
     We only support the "property" action among the ones offered by Formio advanced logic.
@@ -414,3 +417,33 @@ def advanced_formio_logic_to_backend_logic(form_definition: "FormDefinition") ->
     if logic_rules_to_create:
         form_definition.save()
         FormLogic.objects.bulk_create(logic_rules_to_create)
+
+
+def fix_broken_rules(rules: models.QuerySet) -> None:
+    fixed_rules = []
+    for rule in rules:
+        serializer = LogicComponentActionSerializer(data=rule.actions, many=True)
+        is_valid = serializer.is_valid()
+        if not is_valid:
+            fixed_actions = []
+            for index, action in enumerate(rule.actions):
+                if (
+                    "action" not in serializer.errors[index]
+                    or "property" not in action
+                    or "state" not in action
+                ):
+                    fixed_actions.append(action)
+                    continue
+
+                if action["property"].get("type") == "boolean":
+                    action["property"]["type"] = "bool"
+
+                # The serializer does not accept an empty component value, this will be flagged as an unknown component
+                # next time the user tries to save the form in the form Editor.
+                fixed_actions.append({"action": action, "component": "UNKNOWN"})
+
+            rule.actions = fixed_actions
+            fixed_rules.append(rule)
+
+    if fixed_rules:
+        FormLogic.objects.bulk_update(fixed_rules, fields=["actions"])
