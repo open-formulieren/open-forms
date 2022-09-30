@@ -16,7 +16,7 @@ const EDIT_FORM_TABS = [
                 label: 'Basic',
                 components: [
                     LABEL,
-                    description,
+                    DESCRIPTION,
                     {
                         type: 'select',
                         key: 'authPlugin',
