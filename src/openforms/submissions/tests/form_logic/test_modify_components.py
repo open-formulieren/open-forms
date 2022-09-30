@@ -1482,3 +1482,43 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 "hidden": True,
             },
         )
+
+    def test_component_visible_in_frontend(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "radio",
+                        "type": "radio",
+                        "values": [
+                            {"label": "yes", "value": "yes"},
+                            {"label": "no", "value": "no"},
+                        ],
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textField",
+                        "hidden": True,
+                        "conditional": {"eq": "yes", "show": True, "when": "radio"},
+                        "clearOnHide": True,
+                    },
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={"radio": "yes", "textField": "Some data that must not be cleared!"},
+        )
+
+        evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
+
+        # The step data is set to the difference between the data before/after the logic check
+        self.assertEqual({}, submission_step.data)
+        self.assertEqual(
+            "Some data that must not be cleared!", submission.data["textField"]
+        )
