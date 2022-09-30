@@ -8,10 +8,9 @@ from furl import furl
 
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
 from openforms.submissions.rendering.constants import RenderModes
-from openforms.submissions.rendering.renderer import Renderer
 from openforms.utils.urls import build_absolute_uri
 
-from ..utils import iter_components
+from ..utils import is_visible_in_frontend, iter_components
 from .conf import RENDER_CONFIGURATION
 from .nodes import ComponentNode
 from .registry import register
@@ -27,7 +26,8 @@ class ContainerMixin:
         if self.mode == RenderModes.export:
             return True
 
-        if self.component.get("hidden") is True:
+        # We only pass the step data, since frontend logic only has access to the current step data.
+        if not is_visible_in_frontend(self.component, self.step.data):
             return False
 
         render_configuration = RENDER_CONFIGURATION[self.mode]
