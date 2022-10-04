@@ -46,7 +46,8 @@ experimental feature changes (see :ref:`developers_versioning_api`).
    1.0.4       1.0                 n/a
    1.1.0       1.1.0               n/a
    1.1.1       1.1.1               2.0.0
-   1.2.0-alpha 2.0.0-beta.0        n/a
+   1.2.0       2.0.0-beta.0        n/a
+   1.2.1       2.0.0               n/a
    =========== =================== ===================
 
 .. _developers_versioning_api:
