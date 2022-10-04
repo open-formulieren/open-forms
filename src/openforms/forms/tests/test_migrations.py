@@ -198,3 +198,33 @@ class FixBrokenConvertedLogicTests(TestMigrations):
 
         serializer2 = LogicComponentActionSerializer(data=self.rule2.actions, many=True)
         self.assertTrue(serializer2.is_valid())
+
+
+class TestChangeInlineEditSetting(TestMigrations):
+    migrate_from = "0047_fix_broken_converted_rules"
+    migrate_to = "0048_update_formio_default_setting"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        self.form_definition = FormDefinition.objects.create(
+            name="Definition with repeating group",
+            slug="definition-with-repeating-group",
+            configuration={
+                "components": [
+                    {
+                        "key": "repeatingGroup",
+                        "type": "editgrid",
+                        "label": "Repeating Group",
+                        "inlineEdit": False,
+                        "components": [],
+                    }
+                ]
+            },
+        )
+
+    def test_inline_edit_is_true(self):
+        self.form_definition.refresh_from_db()
+
+        self.assertTrue(
+            self.form_definition.configuration["components"][0]["inlineEdit"]
+        )
