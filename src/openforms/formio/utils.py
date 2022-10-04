@@ -1,5 +1,8 @@
 from typing import Any, Dict, Iterator, List
 
+from glom import glom
+
+from ..typing import DataMapping, JSONObject
 from .typing import Component
 
 
@@ -152,3 +155,34 @@ def conform_to_mask(value: str, mask: str) -> str:
             )
 
     return "".join(result)
+
+
+def is_visible_in_frontend(component: JSONObject, data: DataMapping) -> bool:
+    """Check if the component is visible because of frontend logic
+
+    The rules in formio are expressed as:
+
+    .. code-block:: json
+
+        {
+            "show": true/false,
+            "when": <key of trigger component>,
+            "eq": <compare value>
+        }
+
+    """
+    hidden = component.get("hidden")
+    conditional = component.get("conditional")
+
+    if not conditional or (conditional_show := conditional.get("show")) is None:
+        return not hidden
+
+    trigger_component_key = conditional.get("when")
+    trigger_component_value = glom(data, trigger_component_key, default=None)
+    compare_value = conditional.get("eq")
+
+    return (
+        conditional_show
+        if trigger_component_value == compare_value
+        else not conditional_show
+    )

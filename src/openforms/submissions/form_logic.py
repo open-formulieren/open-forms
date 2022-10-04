@@ -4,7 +4,11 @@ import elasticapm
 from json_logic import jsonLogic
 
 from openforms.formio.service import get_dynamic_configuration
-from openforms.formio.utils import get_default_values, iter_components
+from openforms.formio.utils import (
+    get_default_values,
+    is_visible_in_frontend,
+    iter_components,
+)
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic
 from openforms.prefill import JSONObject
@@ -128,7 +132,7 @@ def evaluate_form_logic(
                 component = get_component(configuration, key)
                 if (
                     component
-                    and component.get("hidden")
+                    and not is_visible_in_frontend(component, step.data)
                     and component.get("clearOnHide")
                 ):
                     data_diff[key] = defaults.get(key, "")
