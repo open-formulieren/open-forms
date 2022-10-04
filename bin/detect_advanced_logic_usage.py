@@ -54,7 +54,9 @@ def report_advanced_logic_usage():
 
     affected_forms: List[FormStep] = []
 
-    form_steps = FormStep.objects.select_related("form_definition", "form")
+    form_steps = FormStep.objects.select_related("form_definition", "form").defer(
+        "form__category", "form_definition___num_components"
+    )
     for form_step in form_steps:
         for component in form_step.iter_components():
             if has_client_side_logic_usage_which_cant_be_converted(component):

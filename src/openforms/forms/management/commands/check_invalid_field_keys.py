@@ -17,7 +17,7 @@ class Command(BaseCommand):
     help = "Check if there are form definitions with invalid component keys."
 
     def handle(self, *args, **options):
-        forms_definitions = FormDefinition.objects.all()
+        forms_definitions = FormDefinition.objects.only("pk", "name", "configuration")
 
         table_rows = []
         for form_definition in forms_definitions:
