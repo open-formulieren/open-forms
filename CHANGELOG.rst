@@ -2,7 +2,7 @@
 Changelog
 =========
 
-2.0.0 "Règâh" (2022-??-??) - in testing
+2.0.0 "Règâh" (2022-10-??) - in testing
 =======================================
 
 *The symbol of The Hague is the stork, a majestic bird, which is somewhat
@@ -17,46 +17,39 @@ Open Forms 2.0.0 contains a number of breaking changes. While we aim to make the
 process as smooth as possible, you will have to perform some manual actions to ensure
 this process works correctly.
 
-.. warning::
+1. You must first upgrade to (at least) version 1.1.6
 
-    You must first upgrade to the latest 1.1.x version before upgrading to 2.0.
+   .. warning::
+      This ensures that all the relevant database changes are applied before
+      the changes for 2.0 are applied. Failing to do so may result in data loss.
 
-    This ensures that all the relevant database changes are applied before the changes
-    for 2.0 are applied. Failing to do so may result in data loss.
+2. Ensure that there are no duplicate component keys in your forms.
 
-    See the manual interventions below for steps to perform on 1.1.x before upgrading.
-
-.. warning:: Manual intervention required
-
-   With the introduction of variables, it is no longer allowed to have duplicate keys
-   within a single form. The UI already warned about this, this warning has now become
-   an error and will prevent the upgrade from succeeding.
-
-   If you are upgrading from an older version, you should check for duplicate component
-   keys on the old version before upgrading to 2.0.0. You can do this by running the
-   management command in the container:
+   After upgrading to 1.1.6, run the ``check_duplicate_component_keys`` management
+   command, which will report the forms that have non-unique component keys:
 
    .. code-block:: bash
 
+       # in the container via ``docker exec`` or ``kubectl exec``:
        python src/manage.py check_duplicate_component_keys
 
-   This command scans all your forms for duplicate keys and will report which forms
-   have which duplicate keys. You must manually resolve this before upgrading.
+   If there are duplicate component keys, you must edit the forms via the admin
+   interface to rename them.
 
-   If there are no duplicate keys found (anymore), you can proceed.
-
-   Note that you must be at least on 1.1.4 or 1.0.12 (unreleased) for this management
-   command to be available. If you are on an older version, please update to the latest
-   patch version first.
-
-   In addition, all form components should have keys containing only alphanumeric characters,
-   underscores, dots and dashes and should not be ended by dash or dot (and should not contain spaces).
-   Any form with invalid component keys should also manually be fixed before upgrading. You can run the check
-   with the following command:
+3. Next, you must ensure that all component keys are *valid* keys - keys may only
+   contains letters, numbers, underscores, hyphens and periods. Additionally, keys may not
+   end with a period or hyphen.
 
    .. code-block:: bash
 
+       # in the container via ``docker exec`` or ``kubectl exec``:
        python src/manage.py check_invalid_field_keys
+
+   Any invalid keys will be reported, and you must edit the forms via the admin
+   interface to change them.
+
+4. After resolving any problems reported from the commands/scripts above, you can
+   proceed to upgrade to version 2.0.0
 
 Changes
 -------
@@ -69,6 +62,8 @@ double check with the list of breaking changes in mind.
 
 * Introduced form variables in the engine core. Existing forms are automatically
   migrated and should continue to work.
+* Component keys must be unique within a single form. This used to be a warning, it is
+  now an error.
 * The logic action type ``value`` has been replaced with setting the value of a
   variable. There is an automatic migration to update existing forms.
 * Removed the ``Submission.bsn``, ``Submission.kvk`` and ``Submission.pseudo`` fields.
@@ -84,6 +79,8 @@ double check with the list of breaking changes in mind.
   WYSIWYG field to add the text for end-users.
 * The ``DELETE /api/v1/authentication/session`` endpoint was removed, instead use the
   submission specific endpoint.
+* Advanced logic in certain components (like fieldsets) has been removed - conditional
+  hide/display other than JSON-logic/simple logic is no longer supported.
 
 **New features/improvements**
 
@@ -267,6 +264,53 @@ double check with the list of breaking changes in mind.
 * Upgrade to zgw-consumers and django-simple-certmanager
 * Improved documentation on embedding the SDK
 * [#921] Added decision tree docs
+
+1.1.7 (2022-10-04)
+==================
+
+1.1.6 was broken due to a bad merge conflict resolution.
+
+* [#2095] Fixed accidentally removing the OF layer on top of Formio
+* [#1871] Ensure that fields hidden in frontend don't end up in registration e-mails
+
+1.1.6 (2022-09-29)
+==================
+
+Bugfix release + preparation for 2.0.0 upgrade
+
+* [#1856] Fixed crash on logic rule saving in the admin
+* [#1842] Fixed crash on various types of empty StUF-BG response
+* [#1832] Prevent and handle location service rate limit errors
+* [#1960] Ensure design tokens override default style
+* [#1957] Fixed not being able to manually retry errored submission registrations having
+  exceeded the retry limit
+* [#1867] Added more StUF-ZDS/ZGW registration fields.
+* Added missing translation for max files
+* [#2011] Worked around thread-safety issue when configuring Ogone merchants in the admin
+* [#2066] Re-added key validation in form builder
+* [#2055] Added management command to check for invalid keys
+* [#1979] Added model to track currently deployed version
+
+1.0.14 (2022-09-29)
+===================
+
+Final bugfix release in the ``1.0.x`` series.
+
+* [#1856] Fixed crash on logic rule saving in the admin
+* [#1842] Fixed crash on various types of empty StUF-BG response
+* [#1832] Prevent and handle location service rate limit errors
+* [#1960] Ensure design tokens override default style
+* [#1957] Fixed not being able to manually retry errored submission registrations having
+  exceeded the retry limit
+* [#1867] Added more StUF-ZDS/ZGW registration fields.
+* Added missing translation for max files
+* [#2011] Worked around thread-safety issue when configuring Ogone merchants in the admin
+* [#2066] Re-added key validation in form builder
+* [#2055] Added management command to check for invalid keys
+* [#1979] Added model to track currently deployed version
+
+.. note:: This is the FINAL 1.0.x release - support for this version has now ended. We
+   recommend upgrading to the latest major version.
 
 1.1.5 (2022-08-09)
 ==================
