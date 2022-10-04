@@ -265,6 +265,14 @@ double check with the list of breaking changes in mind.
 * Improved documentation on embedding the SDK
 * [#921] Added decision tree docs
 
+1.1.7 (2022-10-04)
+==================
+
+1.1.6 was broken due to a bad merge conflict resolution.
+
+* [#2095] Fixed accidentally removing the OF layer on top of Formio
+* [#1871] Ensure that fields hidden in frontend don't end up in registration e-mails
+
 1.1.6 (2022-09-29)
 ==================
 
