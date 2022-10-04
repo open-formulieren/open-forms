@@ -45,18 +45,20 @@ const EDIT_FORM_TABS = [
         key: 'display',
         label: 'Display',
         components: [
-          {
-            type: 'checkbox',
-            label: 'Open First Row when Empty',
-            key: 'openWhenEmpty',
-            tooltip:
-              'Check this if you would like to open up the first row when the EditGrid is empty',
-            weight: 1000,
-            input: true,
-            conditional: {
-              json: {'!==': [{var: 'data.modal'}, true]},
-            },
-          },
+          // this is broken in the frontend in current versions of Formio, see
+          // https://github.com/formio/formio.js/issues/4620 and #2081
+          // {
+          //   type: 'checkbox',
+          //   label: 'Open First Row when Empty',
+          //   key: 'openWhenEmpty',
+          //   tooltip:
+          //     'Check this if you would like to open up the first row when the EditGrid is empty',
+          //   weight: 1000,
+          //   input: true,
+          //   conditional: {
+          //     json: {'!==': [{var: 'data.modal'}, true]},
+          //   },
+          // },
           {
             type: 'checkbox',
             label: 'Disable Adding / Removing Rows',
