@@ -323,5 +323,17 @@
   "array_nonempty": "Dit veld moet minstens één waarde hebben.",
   "Display in summaries and confirmations": "Weergave in overzichten en bevestigingen",
   "Too many files added. The maximum allowed number of files is {{ maxNumber }}": "Te veel bestanden toegevoegd. Het mogen er maximaal {{ maxNumber }} zijn",
-  "The property name must only contain alphanumeric characters, underscores, dots and dashes and should not be ended by dash or dot.": "De eigenschapsnaam mag alleen alfanumerieke tekens, onderstrepingstekens, punten en streepjes bevatten en mag niet worden afgesloten met een streepje of punt."
+  "The property name must only contain alphanumeric characters, underscores, dots and dashes and should not be ended by dash or dot.": "De eigenschapsnaam mag alleen alfanumerieke tekens, onderstrepingstekens, punten en streepjes bevatten en mag niet worden afgesloten met een streepje of punt.",
+  "Repeating Group": "Herhalende groep",
+  "Group label": "Groepslabel",
+  "The label that will be shown above each repeating group in the summary page, the submission report and the confirmation email. The index of the item will be added next to it, i.e. if you enter 'Item' it will be displayed as 'Item 1', 'Item 2', ...": "Het label dat boven elke herhaalde groep weergegeven wordt in de overzichtspagina, inzendings-PDF en bevestigingsmail. De index van de groep wordt hieraan toegevoegd, bijvoorbeeld als je 'Item' opgeeft, dan wordt dit weergegeven als 'Item 1', 'Item 2', ...",
+  "Disable Adding / Removing Rows": "Blokkeer het toevoegen/verwijderen van groepen",
+  "Check if you want to hide Add Another button and Remove Row button": "Vink dit aan om de 'Groep toevoegen'- en 'Groep verwijderen'-knoppen te verbergen",
+  "Add Another Text": "'Groep toevoegen'-tekst",
+  "Set the text of the Add Another button.": "Geef de knoptekst om een groep toe te voegen op.",
+  "Save Row Text": "'Groep bewaren'-tekst",
+  "Set the text of the Save Row button.": "Geef de knoptekst om een groep te bewaren op.",
+  "Remove Row Text": "'Groep verwijderen'-tekst",
+  "Set the text of the remove Row button.": "Geef de knoptekst om een groep te verwijderen op.",
+  "": ""
 }
