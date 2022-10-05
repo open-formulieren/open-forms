@@ -72,6 +72,8 @@ Email settings
 * ``DEFAULT_FROM_EMAIL``: The email address to use a default sender. Defaults
   to ``openforms@example.com``.
 
+.. _installation_config_cors:
+
 Cross-Origin Resource Sharing (CORS) settings
 ---------------------------------------------
 
@@ -90,6 +92,11 @@ See: https://github.com/adamchainz/django-cors-headers
 * ``CORS_EXTRA_ALLOW_HEADERS``: The list of non-standard HTTP headers that can
   be used when making the actual request. These headers are added to the
   internal setting ``CORS_ALLOW_HEADERS``. Defaults to ``[]``.
+
+* ``CSRF_TRUSTED_ORIGINS``: the list of trusted CSRF origins, e.g. ``cms.example.com``.
+  When embedding forms on third party sites, these third party domains need to be added
+  to the allowlist. The default value is taken from the ``CORS_ALLOWED_ORIGINS`` setting.
+  See also `the Django documentation <https://docs.djangoproject.com/en/3.2/ref/settings/#csrf-trusted-origins>`_.
 
 Content Security Policy (CSP) settings
 --------------------------------------

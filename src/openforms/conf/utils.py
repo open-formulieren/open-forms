@@ -1,5 +1,6 @@
 import re
 from typing import Any
+from urllib.parse import urlparse
 
 from decouple import Csv, config as _config, undefined
 from sentry_sdk.integrations import DidNotEnable, django, redis
@@ -85,7 +86,7 @@ def config(option: str, default: Any = undefined, *args, **kwargs):
     if "split" in kwargs:
         kwargs.pop("split")
         kwargs["cast"] = Csv()
-        if default == []:
+        if isinstance(default, list):
             default = ""
 
     if default is not undefined and default is not None:
@@ -111,3 +112,8 @@ def get_sentry_integrations() -> list:
         extra.append(celery.CeleryIntegration())
 
     return [*default, *extra]
+
+
+def strip_protocol_from_origin(origin: str) -> str:
+    parsed = urlparse(origin)
+    return parsed.netloc
