@@ -9,8 +9,8 @@ from django.utils.translation import gettext_lazy as _
 
 from glom import Assign, PathAccessError, glom
 
-from openforms.formio.utils import format_date_value, get_all_component_keys
 from openforms.forms.models.form_variable import FormVariable
+from openforms.utils.date import format_date_value
 from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.service import get_static_variables
 

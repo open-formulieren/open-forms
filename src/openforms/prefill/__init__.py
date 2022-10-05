@@ -37,11 +37,10 @@ import elasticapm
 from glom import Path, PathAccessError, glom
 from zgw_consumers.concurrent import parallel
 
-from openforms.formio.utils import iter_components
 from openforms.plugins.exceptions import PluginNotEnabled
-from openforms.typing import JSONObject
 
 if TYPE_CHECKING:  # pragma: nocover
+    from openforms.formio.service import FormioConfigurationWrapper
     from openforms.submissions.models import Submission
 
 logger = logging.getLogger(__name__)
@@ -80,25 +79,27 @@ def _fetch_prefill_values(
     return dict(results)
 
 
-def _set_default_values(
-    configuration: JSONObject, prefilled_values: Dict[str, Any]
+def inject_prefill(
+    configuration_wrapper: "FormioConfigurationWrapper", submission: "Submission"
 ) -> None:
     """
     Mutates each component found in configuration according to the prefilled values.
 
-    :param configuration: The Formiojs JSON schema describing an entire form or an
-      individual component within the form.
-    :param prefilled_values: A dict keyed by component key, with values the value fetched
-    from the prefill calls (from :func:`prefill_variables`).
+    :param configuration_wrapper: The Formiojs JSON schema wrapper describing an entire
+      form or an individual component within the form.
+    :param submission: The :class:`openforms.submissions.models.Submission` instance
+      that holds the values of the prefill data. The prefill data was fetched earlier,
+      see :func:`prefill_variables`.
 
-    Each component is inspected for prefill configuration, after which the value is
-    looked up in ``prefilled_values``.
+    The prefill values are looped over by key: value, and for each value the matching
+    component is looked up to normalize it in the context of the component.
     """
     from openforms.formio.service import normalize_value_for_component
 
-    for component in iter_components(configuration, recursive=True):
-        if not (component_key := component.get("key")):
-            continue
+    prefilled_data = submission.get_prefilled_data()
+    for key, prefill_value in prefilled_data.items():
+        component = configuration_wrapper[key]
+
         if not (prefill := component.get("prefill")):
             continue
         if not prefill.get("plugin"):
@@ -107,12 +108,6 @@ def _set_default_values(
             continue
 
         default_value = component.get("defaultValue")
-        prefill_value = prefilled_values.get(component_key)
-
-        if prefill_value is None:
-            logger.debug("Prefill value for component %r is None, skipping.", component)
-            continue
-
         # 1693: we need to normalize values according to the format expected by the
         # component. For example, (some) prefill plugins return postal codes without
         # space between the digits and the letters.
@@ -123,12 +118,7 @@ def _set_default_values(
                 "Overwriting non-null default value for component %r",
                 component,
             )
-
         component["defaultValue"] = prefill_value
-
-
-def inject_prefill(configuration: dict, submission: "Submission") -> None:
-    _set_default_values(configuration, submission.get_prefilled_data())
 
 
 @elasticapm.capture_span(span_type="app.prefill")

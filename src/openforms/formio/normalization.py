@@ -4,9 +4,10 @@ from typing import Any
 
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
+from openforms.utils.date import format_date_value
 
 from .typing import Component
-from .utils import conform_to_mask, format_date_value
+from .utils import conform_to_mask
 
 __all__ = ["normalize_value_for_component", "register", "Normalizer"]
 
