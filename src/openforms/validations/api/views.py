@@ -6,6 +6,7 @@ from rest_framework import authentication, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.utils.api.views import ListMixin
 from openforms.validations.api.serializers import (
     ValidationInputSerializer,
@@ -36,7 +37,7 @@ class ValidationView(APIView):
     Validate a value using given validator
     """
 
-    authentication_classes = ()
+    authentication_classes = (AnonCSRFSessionAuthentication,)
 
     @extend_schema(
         operation_id="validation_run",
