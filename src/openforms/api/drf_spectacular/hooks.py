@@ -77,10 +77,28 @@ CSRF_TOKEN_PARAMETER = build_parameter_type(
 )
 
 
+def _contains_only_session_auth(security: dict, security_schemes: dict) -> bool:
+    contains_cookie_auth = False
+
+    for item in security:
+        for item_name in item.keys():
+            security_scheme = security_schemes[item_name]
+            if (
+                security_scheme.get("type") == "apiKey"
+                and security_scheme.get("in") == "cookie"
+            ):
+                contains_cookie_auth = True
+                break
+
+    return contains_cookie_auth and len(security) == 1
+
+
 def add_unsafe_methods_parameter(result, generator, request, public):
     """
-    Schema generator hook to add parameters to endpoint with unsafe methods.
+    Schema generator hook to add parameters to endpoint with unsafe methods that have SessionAuthentication.
     """
+    security_schemes = result.get("components", {}).get("securitySchemes")
+
     for path in result["paths"].values():
         for operation_method, operation in path.items():
             if operation_method not in ["post", "put", "patch", "delete"]:
@@ -89,14 +107,10 @@ def add_unsafe_methods_parameter(result, generator, request, public):
             if "security" not in operation:
                 continue
 
-            for item in operation["security"]:
-                if "cookieAuth" in item:
-                    break
-            else:
+            if not _contains_only_session_auth(operation["security"], security_schemes):
                 continue
 
-            if "parameters" not in operation:
-                operation["parameters"] = []
+            operation.setdefault("parameters", [])
             operation["parameters"].append(CSRF_TOKEN_PARAMETER)
 
     return result

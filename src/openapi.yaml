@@ -660,12 +660,6 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-      parameters:
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
   /api/v1/form-definitions/{uuid}:
     get:
       operationId: form_definitions_retrieve
@@ -707,11 +701,6 @@ paths:
           type: string
           format: uuid
         required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       tags:
       - forms
       - form-definitions
@@ -748,11 +737,6 @@ paths:
           type: string
           format: uuid
         required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       tags:
       - forms
       - form-definitions
@@ -787,11 +771,6 @@ paths:
         schema:
           type: string
           format: uuid
-        required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
         required: true
       tags:
       - forms
@@ -989,11 +968,6 @@ paths:
           embedding page emits a `style-src` policy containing `unsafe-inline`, then
           you can omit this header without losing functionality. We recommend favouring
           the nonce mechanism though.
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       tags:
       - forms
       requestBody:
@@ -1092,11 +1066,6 @@ paths:
           type: string
         description: Either a UUID4 or a slug identifiying the form.
         required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       tags:
       - forms
       requestBody:
@@ -1180,11 +1149,6 @@ paths:
           type: string
           format: uuid
         required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       tags:
       - forms
       requestBody:
@@ -1232,11 +1196,6 @@ paths:
           type: string
           format: uuid
         required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       tags:
       - forms
       requestBody:
@@ -1282,11 +1241,6 @@ paths:
         schema:
           type: string
           format: uuid
-        required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
         required: true
       tags:
       - forms
@@ -1346,11 +1300,6 @@ paths:
           type: string
         description: Either a UUID4 or a slug identifying the form.
         required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       tags:
       - forms
       requestBody:
@@ -1398,11 +1347,6 @@ paths:
         schema:
           type: string
         description: The UUID of the form version
-        required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
         required: true
       tags:
       - forms
@@ -1542,11 +1486,6 @@ paths:
           type: string
         description: Either a UUID4 or a slug identifiying the form.
         required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       tags:
       - forms
       requestBody:
@@ -1618,11 +1557,6 @@ paths:
           type: string
         description: Either a UUID4 or a slug identifiying the form.
         required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       tags:
       - forms
       requestBody:
@@ -1669,11 +1603,6 @@ paths:
           type: string
         description: Either a UUID4 or a slug identifiying the form.
         required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       tags:
       - forms
       security:
@@ -1718,11 +1647,6 @@ paths:
         schema:
           type: string
         description: Either a UUID4 or a slug identifiying the form.
-        required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
         required: true
       tags:
       - admin
@@ -1950,11 +1874,6 @@ paths:
           type: integer
         description: A unique integer value identifying this form.
         required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       tags:
       - logic-rules
       requestBody:
@@ -2155,11 +2074,6 @@ paths:
         schema:
           type: integer
         description: A unique integer value identifying this form.
-        required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
         required: true
       tags:
       - logic-rules
@@ -2369,11 +2283,6 @@ paths:
         schema:
           type: integer
         description: A unique integer value identifying this form.
-        required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
         required: true
       tags:
       - forms
@@ -4066,11 +3975,6 @@ paths:
         schema:
           type: string
         description: Slug identifiying the form.
-        required: true
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
         required: true
       tags:
       - auth
