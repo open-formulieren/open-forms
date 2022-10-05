@@ -182,7 +182,8 @@ Cross Origin Resource Sharing (CORS)
 ------------------------------------
 
 Note that the backend must be configured to allow cross origin requests from the domains
-that embed the SDK.
+that embed the SDK. See the :ref:`CORS configuration reference <installation_config_cors>`
+for details.
 
 Additionally, you need to configure your infrastructure to allow CORS requests for the
 font-files. An example nginx rule looks like this:

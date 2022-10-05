@@ -11,7 +11,7 @@ from corsheaders.defaults import default_headers as default_cors_headers
 
 from csp_post_processor.constants import NONCE_HTTP_HEADER
 
-from .utils import Filesize, config, get_sentry_integrations
+from .utils import Filesize, config, get_sentry_integrations, strip_protocol_from_origin
 
 # Build paths inside the project, so further paths can be defined relative to
 # the code root.
@@ -698,6 +698,16 @@ CORS_EXPOSE_HEADERS = [
 ]
 CORS_ALLOW_CREDENTIALS = True  # required to send cross domain cookies
 
+# we can't easily derive this from django-cors-headers, see also
+# https://pypi.org/project/django-cors-headers/#csrf-integration
+#
+# So we do a best effort attempt at re-using configuration parameters, with an escape
+# hatch to override it.
+CSRF_TRUSTED_ORIGINS = config(
+    "CSRF_TRUSTED_ORIGINS",
+    split=True,
+    default=[strip_protocol_from_origin(origin) for origin in CORS_ALLOWED_ORIGINS],
+)
 #
 # SENTRY - error monitoring
 #
