@@ -285,7 +285,3 @@ def is_visible_in_frontend(component: JSONObject, data: DataMapping) -> bool:
         if trigger_component_value == compare_value
         else not conditional_show
     )
-
-
-def get_all_component_keys(configuration: JSONObject) -> List[str]:
-    return [component["key"] for component in iter_components(configuration)]
