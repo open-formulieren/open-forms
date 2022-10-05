@@ -12,7 +12,7 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.variables.service import get_static_variables
 
 from ...dynamic_config.date import FormioDateComponent
-from ...service import get_dynamic_configuration
+from ...service import FormioConfigurationWrapper, get_dynamic_configuration
 from ...typing import Component
 
 request_factory = APIRequestFactory()
@@ -23,14 +23,15 @@ class DynamicDateConfigurationTests(SimpleTestCase):
     def _get_dynamic_config(
         component: Component, variables: Dict[str, Any]
     ) -> FormioDateComponent:
-        configuration = {"components": [component]}
+        config_wrapper = FormioConfigurationWrapper({"components": [component]})
         request = request_factory.get("/irrelevant")
         submission = SubmissionFactory.build()
         static_vars = get_static_variables(submission=None)  # don't do queries
         variables.update({var.key: var.initial_value for var in static_vars})
-        new_configuration = get_dynamic_configuration(
-            configuration, request=request, submission=submission, data=variables
+        config_wrapper = get_dynamic_configuration(
+            config_wrapper, request=request, submission=submission, data=variables
         )
+        new_configuration = config_wrapper.configuration
         return new_configuration["components"][0]
 
     def test_legacy_configuration_still_works(self):

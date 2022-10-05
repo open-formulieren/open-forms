@@ -3,22 +3,22 @@ Public API for dynamic configuration.
 """
 from typing import Optional
 
-from openforms.typing import DataMapping, JSONObject
+from openforms.typing import DataMapping
 
+from ..datastructures import FormioConfigurationWrapper
 from .registry import register
 
 __all__ = ["apply_dynamic_configuration"]
 
 
 def apply_dynamic_configuration(
-    configuration: JSONObject, data: Optional[DataMapping] = None
-) -> JSONObject:
+    configuration_wrapper: FormioConfigurationWrapper,
+    data: Optional[DataMapping] = None,
+) -> FormioConfigurationWrapper:
     """
     Loop over the formio configuration and mutate components in place.
     """
-    from ..service import iter_components
-
     data = data or {}  # normalize
-    for component in iter_components(configuration, recursive=True):
+    for component in configuration_wrapper:
         register.update_config(component, data=data)
-    return configuration
+    return configuration_wrapper

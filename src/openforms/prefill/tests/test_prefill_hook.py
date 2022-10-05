@@ -6,6 +6,7 @@ from django.test import TransactionTestCase
 from django.utils.crypto import get_random_string
 
 from openforms.config.models import GlobalConfiguration
+from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.models import Submission
@@ -107,7 +108,7 @@ def apply_prefill(configuration: dict, submission: "Submission", register=None) 
     configuration = deepcopy(configuration)
     _submission = Submission.objects.get(pk=submission.pk)
     prefill_variables(_submission, register=register)
-    inject_prefill(configuration, _submission)
+    inject_prefill(FormioConfigurationWrapper(configuration), _submission)
     return configuration
 
 
