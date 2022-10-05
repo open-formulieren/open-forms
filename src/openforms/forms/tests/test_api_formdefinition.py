@@ -130,7 +130,9 @@ class FormDefinitionsAPITests(APITestCase):
             login_required=False,
             configuration={
                 "display": "form",
-                "components": [{"label": "Existing field"}],
+                "components": [
+                    {"key": "somekey", "type": "textfield", "label": "Existing field"}
+                ],
             },
         )
 
@@ -142,7 +144,14 @@ class FormDefinitionsAPITests(APITestCase):
                 "slug": "updated-slug",
                 "configuration": {
                     "display": "form",
-                    "components": [{"label": "Existing field"}, {"label": "New field"}],
+                    "components": [
+                        {
+                            "key": "somekey",
+                            "type": "textfield",
+                            "label": "Existing field",
+                        },
+                        {"key": "somekey2", "type": "textfield", "label": "New field"},
+                    ],
                 },
                 "login_required": True,
             },
@@ -155,7 +164,10 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual("Updated name", definition.name)
         self.assertEqual("updated-slug", definition.slug)
         self.assertEqual(True, definition.login_required)
-        self.assertIn({"label": "New field"}, definition.configuration["components"])
+        self.assertIn(
+            {"key": "somekey2", "type": "textfield", "label": "New field"},
+            definition.configuration["components"],
+        )
 
     def test_update_is_reusable_unsuccessful_with_multiple_forms(self):
         user = SuperUserFactory.create()
@@ -195,7 +207,13 @@ class FormDefinitionsAPITests(APITestCase):
                 "slug": "a-slug",
                 "configuration": {
                     "display": "form",
-                    "components": [{"label": "New field"}],
+                    "components": [
+                        {
+                            "label": "New field",
+                            "key": "newField",
+                            "type": "textfield",
+                        }
+                    ],
                 },
             },
         )
@@ -207,7 +225,14 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual("Name", definition.name)
         self.assertEqual("a-slug", definition.slug)
         self.assertEqual(
-            [{"label": "New field"}], definition.configuration["components"]
+            [
+                {
+                    "label": "New field",
+                    "key": "newField",
+                    "type": "textfield",
+                }
+            ],
+            definition.configuration["components"],
         )
 
     def test_create_no_camelcase_snakecase_conversion(self):
@@ -222,6 +247,8 @@ class FormDefinitionsAPITests(APITestCase):
                 "slug": "a-slug",
                 "configuration": {
                     "someCamelCase": "field",
+                    "key": "somekey",
+                    "type": "textfield",
                 },
             },
         )
@@ -240,7 +267,13 @@ class FormDefinitionsAPITests(APITestCase):
             slug="test-form-definition",
             configuration={
                 "display": "form",
-                "components": [{"widget": {"time_24hr": True}}],
+                "components": [
+                    {
+                        "key": "somekey",
+                        "type": "textfield",
+                        "widget": {"time_24hr": True},
+                    }
+                ],
             },
         )
 
@@ -340,6 +373,7 @@ class FormDefinitionsAPITests(APITestCase):
                             },
                             {
                                 "type": "content",
+                                "key": "content",
                                 "html": "<p>{{ missingVariable }} hello</p>",
                                 # syntax errors in non-supported properties should be accepted
                                 "unvalidated": "{{ foo ",
@@ -421,6 +455,7 @@ class FormioCoSignComponentValidationTests(APITestCase):
             "components": [
                 {
                     "type": "coSign",
+                    "key": "coSign",
                     "label": "Co-sign test",
                 }
             ]
@@ -447,6 +482,7 @@ class FormioCoSignComponentValidationTests(APITestCase):
             "components": [
                 {
                     "type": "coSign",
+                    "key": "coSign",
                     "label": "Co-sign test",
                     "authPlugin": "digid",
                 }
@@ -479,6 +515,7 @@ class FormioCoSignComponentValidationTests(APITestCase):
             "components": [
                 {
                     "type": "coSign",
+                    "key": "coSign",
                     "label": "Co-sign test",
                     "authPlugin": "digid",
                 }
