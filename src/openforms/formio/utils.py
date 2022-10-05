@@ -1,4 +1,5 @@
 import logging
+import warnings
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 import elasticapm
@@ -38,6 +39,11 @@ def iter_components(
 
 @elasticapm.capture_span(span_type="app.formio.configuration")
 def get_component(configuration: JSONObject, key: str) -> Optional[Component]:
+    warnings.warn(
+        "`openforms.formio.utils.get_component` is not efficient, use "
+        "`openforms.formio.utils.FormioConfigurationWrapper` instead.",
+        DeprecationWarning,
+    )
     for component in iter_components(configuration=configuration, recursive=True):
         if component["key"] == key:
             return component
