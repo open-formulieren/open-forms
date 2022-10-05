@@ -1,6 +1,8 @@
 from django.utils.translation import gettext_lazy as _
 
+from drf_spectacular.plumbing import build_parameter_type
 from drf_spectacular.settings import spectacular_settings
+from drf_spectacular.utils import OpenApiParameter
 
 from openforms.middleware import (
     CSRF_TOKEN_HEADER_NAME,
@@ -63,5 +65,38 @@ def add_middleware_headers(result, generator, request, public):
     result["components"] = generator.registry.build(
         spectacular_settings.APPEND_COMPONENTS
     )
+
+    return result
+
+
+CSRF_TOKEN_PARAMETER = build_parameter_type(
+    name=CSRF_TOKEN_HEADER_NAME,
+    schema={"type": "string"},
+    location=OpenApiParameter.HEADER,
+    required=True,
+)
+
+
+def add_unsafe_methods_parameter(result, generator, request, public):
+    """
+    Schema generator hook to add parameters to endpoint with unsafe methods.
+    """
+    for path in result["paths"].values():
+        for operation_method, operation in path.items():
+            if operation_method not in ["post", "put", "patch", "delete"]:
+                continue
+
+            if "security" not in operation:
+                continue
+
+            for item in operation["security"]:
+                if "cookieAuth" in item:
+                    break
+            else:
+                continue
+
+            if "parameters" not in operation:
+                operation["parameters"] = []
+            operation["parameters"].append(CSRF_TOKEN_PARAMETER)
 
     return result
