@@ -1,15 +1,10 @@
-from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from django.utils.functional import empty
 
 import elasticapm
 
-from openforms.formio.service import (
-    FormioConfigurationWrapper,
-    get_dynamic_configuration,
-    inject_variables,
-)
+from openforms.formio.service import get_dynamic_configuration, inject_variables
 from openforms.formio.utils import get_component_empty_value, is_visible_in_frontend
 from openforms.logging import logevent
 
@@ -68,7 +63,7 @@ def evaluate_form_logic(
 
     """
     # grab the configuration that will be mutated
-    configuration = step.form_step.form_definition.configuration
+    config_wrapper = step.form_step.form_definition.configuration_wrapper
 
     # 1. we have `submission` and `step` available and ...
     # 2. the prefilled variables are already recorded in the variables state
@@ -82,7 +77,7 @@ def evaluate_form_logic(
     # ensure this function is idempotent
     _evaluated = getattr(step, "_form_logic_evaluated", False)
     if _evaluated:
-        return configuration
+        return config_wrapper.configuration
 
     # 3. Load the (variables) state
     submission_variables_state = submission.load_submission_value_variables_state()
@@ -120,7 +115,6 @@ def evaluate_form_logic(
     # we need to apply the context-specific configurations before we can apply
     # mutations based on logic, which is then in turn passed to the serializer(s)
     # TODO: refactor this to rely on variables state
-    config_wrapper = FormioConfigurationWrapper(deepcopy(configuration))
     config_wrapper = get_dynamic_configuration(
         config_wrapper,
         # context is expected to contain request, as is the default behaviour with DRF
