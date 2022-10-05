@@ -198,3 +198,10 @@ font-files. An example nginx rule looks like this:
 
 Failing to configure this will result in the font files not being loaded and the UI
 looking weird. Icons may also be broken.
+
+The domain embedding the forms must also expose the ``Referer`` header to the API, via
+the `Referrer Policy`_ response headers. The strictest possible
+value is ``strict-origin-when-cross-origin``.
+
+
+.. _Referrer Policy: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
