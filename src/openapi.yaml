@@ -2762,12 +2762,6 @@ paths:
       description: Start a submission for a particular form. The submission is added
         to the user session.
       summary: Start a submission
-      parameters:
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       tags:
       - submissions
       requestBody:
@@ -2850,6 +2844,12 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        required: true
   /api/v1/submissions/{report_id}/{token}/download:
     get:
       operationId: submissions_download_retrieve
@@ -2893,11 +2893,6 @@ paths:
         be `null`. Set the step data by making a `PUT` request.
       summary: Retrieve step details
       parameters:
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       - in: path
         name: step_uuid
         schema:
@@ -2953,11 +2948,6 @@ paths:
         at the time being.
       summary: Store submission step data
       parameters:
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       - in: path
         name: step_uuid
         schema:
@@ -2969,6 +2959,11 @@ paths:
         schema:
           type: string
           format: uuid
+        required: true
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
         required: true
       tags:
       - submissions
@@ -3064,11 +3059,6 @@ paths:
       description: Apply/check the logic rules specified on the form step.
       summary: Apply/check form logic
       parameters:
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       - in: path
         name: step_uuid
         schema:
@@ -3080,6 +3070,11 @@ paths:
         schema:
           type: string
           format: uuid
+        required: true
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
         required: true
       tags:
       - submissions
@@ -3153,11 +3148,6 @@ paths:
         data. For invalid data, you will get an HTTP 400 response with error details.
       summary: Store submission step data
       parameters:
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       - in: path
         name: step_uuid
         schema:
@@ -3169,6 +3159,11 @@ paths:
         schema:
           type: string
           format: uuid
+        required: true
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
         required: true
       tags:
       - submissions
@@ -3370,16 +3365,16 @@ paths:
         ---
       summary: Complete a submission
       parameters:
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       - in: path
         name: uuid
         schema:
           type: string
           format: uuid
+        required: true
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
         required: true
       tags:
       - submissions
@@ -3448,16 +3443,16 @@ paths:
         resume the submission (possibly from another device).
       summary: Suspend a submission
       parameters:
-      - in: header
-        name: X-CSRFToken
-        schema:
-          type: string
-        required: true
       - in: path
         name: uuid
         schema:
           type: string
           format: uuid
+        required: true
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
         required: true
       tags:
       - submissions
