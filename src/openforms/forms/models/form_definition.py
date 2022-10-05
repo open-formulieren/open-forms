@@ -3,7 +3,7 @@ import json
 import uuid
 from copy import deepcopy
 from functools import partial
-from typing import List, Tuple
+from typing import TYPE_CHECKING, List, Tuple
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -19,6 +19,9 @@ from openforms.formio.utils import iter_components
 from ..models import Form
 from ..tasks import detect_formiojs_configuration_snake_case
 from ..validators import validate_template_expressions
+
+if TYPE_CHECKING:
+    from openforms.formio.service import FormioConfigurationWrapper
 
 
 def _get_number_of_components(form_definition: "FormDefinition") -> int:
@@ -139,6 +142,12 @@ class FormDefinition(models.Model):
             )
 
         return super().delete(using=using, keep_parents=keep_parents)
+
+    @cached_property
+    def configuration_wrapper(self) -> "FormioConfigurationWrapper":
+        from openforms.formio.service import FormioConfigurationWrapper
+
+        return FormioConfigurationWrapper(self.configuration)
 
     def iter_components(self, configuration=None, recursive=True, **kwargs):
         if configuration is None:

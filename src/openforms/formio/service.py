@@ -60,7 +60,9 @@ def get_dynamic_configuration(
     return config_wrapper
 
 
-def update_configuration_for_request(configuration: dict, request: Request) -> None:
+def update_configuration_for_request(
+    config_wrapper: FormioConfigurationWrapper, request: Request
+) -> None:
     """
     Given a static Formio configuration, apply dynamic changes we always must do, like setting absolute urls.
 
@@ -70,7 +72,7 @@ def update_configuration_for_request(configuration: dict, request: Request) -> N
         update_urls_in_place,
         update_default_file_types,
     )
-    for component in iter_components(configuration):
+    for component in config_wrapper:
         for function in pipeline:
             function(component, request=request)
 

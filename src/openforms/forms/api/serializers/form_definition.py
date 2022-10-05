@@ -50,12 +50,12 @@ class UsedInFormSerializer(serializers.HyperlinkedModelSerializer):
 class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance=instance)
-        configuration = representation["configuration"]
-
         # set upload urls etc
         # TODO: move this to openforms.formio.dynamic_config
-        update_configuration_for_request(configuration, request=self.context["request"])
-
+        update_configuration_for_request(
+            instance.configuration_wrapper, request=self.context["request"]
+        )
+        representation["configuration"] = instance.configuration_wrapper.configuration
         return representation
 
     class Meta:
