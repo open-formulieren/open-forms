@@ -23,7 +23,6 @@ from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.forms.models import FormStep
 from openforms.logging import logevent
-from openforms.middleware import CSRF_TOKEN_HEADER_NAME
 from openforms.prefill import prefill_variables
 from openforms.utils.api.throttle_classes import PollingRateThrottle
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
@@ -101,14 +100,6 @@ def cleanup_deactivated_form_session(request: Request, submission: Submission):
             "Start a submission for a particular form. The submission is added to the "
             "user session."
         ),
-        parameters=[
-            OpenApiParameter(
-                CSRF_TOKEN_HEADER_NAME,
-                OpenApiTypes.STR,
-                location=OpenApiParameter.HEADER,
-                required=True,
-            )
-        ],
         responses={
             201: SubmissionSerializer,
             400: ValidationErrorSerializer,
@@ -198,14 +189,6 @@ class SubmissionViewSet(
             FormDeactivated.status_code: ExceptionSerializer,
             FormMaintenance.status_code: ExceptionSerializer,
         },
-        parameters=[
-            OpenApiParameter(
-                CSRF_TOKEN_HEADER_NAME,
-                OpenApiTypes.STR,
-                location=OpenApiParameter.HEADER,
-                required=True,
-            )
-        ],
     )
     @transaction.atomic()
     @action(detail=True, methods=["post"], url_name="complete")
@@ -328,14 +311,6 @@ class SubmissionViewSet(
             FormDeactivated.status_code: ExceptionSerializer,
             FormMaintenance.status_code: ExceptionSerializer,
         },
-        parameters=[
-            OpenApiParameter(
-                CSRF_TOKEN_HEADER_NAME,
-                OpenApiTypes.STR,
-                location=OpenApiParameter.HEADER,
-                required=True,
-            )
-        ],
     )
     @transaction.atomic()
     @action(detail=True, methods=["post"], url_name="suspend")
@@ -392,14 +367,6 @@ class SubmissionViewSet(
             "form step configuration. If there is no data yet for the step, the ID "
             "will be `null`. Set the step data by making a `PUT` request."
         ),
-        parameters=[
-            OpenApiParameter(
-                CSRF_TOKEN_HEADER_NAME,
-                OpenApiTypes.STR,
-                location=OpenApiParameter.HEADER,
-                required=True,
-            )
-        ],
         responses={
             200: SubmissionStepSerializer,
             403: ExceptionSerializer,
@@ -485,14 +452,6 @@ class SubmissionStepViewSet(
             FormDeactivated.status_code: ExceptionSerializer,
             FormMaintenance.status_code: ExceptionSerializer,
         },
-        parameters=[
-            OpenApiParameter(
-                CSRF_TOKEN_HEADER_NAME,
-                OpenApiTypes.STR,
-                location=OpenApiParameter.HEADER,
-                required=True,
-            )
-        ],
     )
     @transaction.atomic()
     def update(self, request, *args, **kwargs):
@@ -551,14 +510,6 @@ class SubmissionStepViewSet(
             FormDeactivated.status_code: ExceptionSerializer,
             FormMaintenance.status_code: ExceptionSerializer,
         },
-        parameters=[
-            OpenApiParameter(
-                CSRF_TOKEN_HEADER_NAME,
-                OpenApiTypes.STR,
-                location=OpenApiParameter.HEADER,
-                required=True,
-            )
-        ],
     )
     @action(detail=True, methods=["post"])
     def validate(self, request, *args, **kwargs):
@@ -593,14 +544,6 @@ class SubmissionStepViewSet(
             FormDeactivated.status_code: ExceptionSerializer,
             FormMaintenance.status_code: ExceptionSerializer,
         },
-        parameters=[
-            OpenApiParameter(
-                CSRF_TOKEN_HEADER_NAME,
-                OpenApiTypes.STR,
-                location=OpenApiParameter.HEADER,
-                required=True,
-            )
-        ],
     )
     @action(
         detail=True,
