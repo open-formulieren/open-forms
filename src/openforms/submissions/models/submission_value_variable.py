@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 
 from glom import Assign, PathAccessError, glom
 
-from openforms.formio.utils import get_all_component_keys
+from openforms.formio.service import FormioConfigurationWrapper
 from openforms.forms.models.form_variable import FormVariable
 from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.service import get_static_variables
@@ -28,6 +28,9 @@ class SubmissionValueVariablesState:
         init=False, default=None
     )
     _static_data: Optional[Dict[str, Any]] = field(init=False, default=None)
+    _configuration_wrapper_cache: Dict[int, FormioConfigurationWrapper] = field(
+        init=False, default_factory=dict
+    )
 
     @property
     def variables(self) -> Dict[str, "SubmissionValueVariable"]:
@@ -45,6 +48,19 @@ class SubmissionValueVariablesState:
 
     def get_variable(self, key: str) -> "SubmissionValueVariable":
         return self.variables[key]
+
+    def _get_step_configuration_wrapper(
+        self, step: "SubmissionStep"
+    ) -> FormioConfigurationWrapper:
+        # TODO: check if we can cache this on the SubmissionStep instance even to further
+        # optimize calls
+        form_definition = step.form_step.form_definition
+        cache_key = form_definition.id
+        if cache_key not in self._configuration_wrapper_cache:
+            self._configuration_wrapper_cache[cache_key] = FormioConfigurationWrapper(
+                form_definition.configuration
+            )
+        return self._configuration_wrapper_cache[cache_key]
 
     def get_data(
         self,
@@ -76,8 +92,8 @@ class SubmissionValueVariablesState:
         submission_step: "SubmissionStep",
         include_unsaved=True,
     ) -> Dict[str, "SubmissionValueVariable"]:
-        configuration = submission_step.form_step.form_definition.configuration
-        keys_in_step = get_all_component_keys(configuration)
+        configuration_wrapper = self._get_step_configuration_wrapper(submission_step)
+        keys_in_step = list(configuration_wrapper.component_map.keys())
 
         variables = self.variables
         if not include_unsaved:
