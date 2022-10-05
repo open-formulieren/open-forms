@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, time
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
@@ -24,11 +24,10 @@ if TYPE_CHECKING:  # pragma: nocover
 @dataclass
 class SubmissionValueVariablesState:
     submission: "Submission"
-    _variables: Optional[Dict[str, "SubmissionValueVariable"]] = None
-    _static_data: Optional[Dict[str, Any]] = None
-
-    def __init__(self, submission: "Submission"):
-        self.submission = submission
+    _variables: Optional[Dict[str, "SubmissionValueVariable"]] = field(
+        init=False, default=None
+    )
+    _static_data: Optional[Dict[str, Any]] = field(init=False, default=None)
 
     @property
     def variables(self) -> Dict[str, "SubmissionValueVariable"]:
