@@ -47,7 +47,7 @@ def get_dynamic_configuration(
     config_wrapper.configuration = handle_custom_types(
         config_wrapper.configuration, request=request, submission=submission
     )
-    assert config_wrapper._cached_component_map is None
+    # assert config_wrapper._cached_component_map is None
 
     apply_dynamic_configuration(config_wrapper, data=data)
     # prefill is still 'special' even though it uses variables, as we specifically
