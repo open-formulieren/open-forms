@@ -7,6 +7,7 @@ from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.generics import DestroyAPIView, GenericAPIView
 
+from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.serializers import ExceptionSerializer
 
 from ..models import SubmissionReport, TemporaryFileUpload
@@ -85,7 +86,7 @@ class DownloadSubmissionReportView(GenericAPIView):
     ),
 )
 class TemporaryFileView(DestroyAPIView):
-    authentication_classes = []
+    authentication_classes = (AnonCSRFSessionAuthentication,)
     permission_classes = [OwnsTemporaryUploadPermission]
     renderer_classes = [FileRenderer, CamelCaseJSONRenderer]
 

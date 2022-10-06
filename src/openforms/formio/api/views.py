@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
+from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.parsers import MaxFilesizeMultiPartParser
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 from openforms.submissions.api.renderers import PlainTextErrorRenderer
@@ -43,7 +44,7 @@ from .serializers import TemporaryFileUploadSerializer
 class TemporaryFileUploadView(GenericAPIView):
     parser_classes = [MaxFilesizeMultiPartParser]
     serializer_class = TemporaryFileUploadSerializer
-    authentication_classes = []
+    authentication_classes = (AnonCSRFSessionAuthentication,)
     permission_classes = [AnyActiveSubmissionPermission]
     renderer_classes = [CamelCaseJSONRenderer]
 

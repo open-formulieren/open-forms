@@ -19,6 +19,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from openforms.api import pagination
+from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.forms.models import FormStep
@@ -120,7 +121,7 @@ class SubmissionViewSet(
         .order_by("created_on")
     )
     serializer_class = SubmissionSerializer
-    authentication_classes = (authentication.SessionAuthentication,)
+    authentication_classes = (AnonCSRFSessionAuthentication,)
     permission_classes = [ActiveSubmissionPermission]
     lookup_field = "uuid"
     pagination_class = pagination.PageNumberPagination
@@ -382,7 +383,7 @@ class SubmissionStepViewSet(
 
     queryset = SubmissionStep.objects.all()
     serializer_class = SubmissionStepSerializer
-    authentication_classes = (authentication.SessionAuthentication,)
+    authentication_classes = (AnonCSRFSessionAuthentication,)
     permission_classes = [
         ActiveSubmissionPermission,
         FormAuthenticationPermission,

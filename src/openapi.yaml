@@ -48,6 +48,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CancelAppointmentInput'
         required: true
+      security:
+      - cookieAuth: []
       responses:
         '204':
           description: No response body
@@ -845,6 +847,8 @@ paths:
             schema:
               $ref: '#/components/schemas/TemporaryFileUpload'
         required: true
+      security:
+      - cookieAuth: []
       responses:
         '200':
           content:
@@ -3630,6 +3634,8 @@ paths:
         required: true
       tags:
       - submissions
+      security:
+      - cookieAuth: []
       responses:
         '200':
           content:
@@ -3661,6 +3667,8 @@ paths:
         required: true
       tags:
       - submissions
+      security:
+      - cookieAuth: []
       responses:
         '204':
           description: No response body
@@ -3775,6 +3783,7 @@ paths:
               $ref: '#/components/schemas/ValidationInput'
         required: true
       security:
+      - cookieAuth: []
       - {}
       responses:
         '200':
