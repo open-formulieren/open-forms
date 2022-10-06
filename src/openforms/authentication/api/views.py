@@ -39,7 +39,7 @@ class PluginListView(ListMixin, APIView):
 
 
 class SubmissionLogoutView(GenericAPIView):
-    authentication_classes = ()
+    authentication_classes = (authentication.SessionAuthentication,)
     permission_classes = (ActiveSubmissionPermission,)
     serializer_class = (
         serializers.Serializer
@@ -62,13 +62,14 @@ class SubmissionLogoutView(GenericAPIView):
 
         remove_submission_from_session(submission, request.session)
 
+        if submission.is_authenticated:
+            plugin = register[submission.auth_info.plugin]
+            plugin.logout(request)
+
+            if not submission.auth_info.attribute_hashed:
+                submission.auth_info.hash_identifying_attributes()
+
         if FORM_AUTH_SESSION_KEY in request.session:
             del request.session[FORM_AUTH_SESSION_KEY]
-
-        if submission.is_authenticated and not submission.auth_info.attribute_hashed:
-            submission.auth_info.hash_identifying_attributes()
-
-        for plugin in register.iter_enabled_plugins():
-            plugin.logout(request)
 
         return Response(status=status.HTTP_204_NO_CONTENT)

@@ -73,6 +73,7 @@ urlpatterns = [
         include("openforms.submissions.urls", namespace="submissions"),
     ),
     path("oidc/", include("mozilla_django_oidc.urls")),
+    path("org-oidc/", include("openforms.authentication.contrib.org_oidc.urls")),
     path(
         "digid-oidc/",
         include(
