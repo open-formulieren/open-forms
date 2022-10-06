@@ -34,6 +34,11 @@ paths:
           type: string
           format: uuid
         required: true
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        required: true
       tags:
       - appointments
       requestBody:
@@ -876,6 +881,12 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+      parameters:
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        required: true
   /api/v1/forms:
     get:
       operationId: forms_list
@@ -3664,6 +3675,11 @@ paths:
         schema:
           type: string
           format: uuid
+        required: true
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
         required: true
       tags:
       - submissions
