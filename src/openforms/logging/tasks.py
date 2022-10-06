@@ -44,6 +44,9 @@ def log_logic_evaluation(
         submission, _evaluated_rules, initial_data, resolved_data
     )
 
+    if not log_entry:
+        return
+
     # overwrite the timestamp, since celery tasks run later than 'now'. This makes the
     # timestamp more accurate & matching with server time that ran the evaluation.
     _timestamp = datetime.fromisoformat(timestamp)

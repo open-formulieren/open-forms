@@ -3,7 +3,7 @@ Process the logic evaluation logging information.
 
 This relies on the datastructures used in :mod:`openforms.submissions.form_logic`.
 """
-from typing import List
+from typing import TYPE_CHECKING, List, Optional
 
 from openforms.submissions.logic.log_utils import get_targeted_components
 from openforms.submissions.logic.rules import EvaluatedRule
@@ -13,13 +13,16 @@ from openforms.utils.json_logic import ComponentMeta, introspect_json_logic
 
 from .logevent import _create_log
 
+if TYPE_CHECKING:  # pragma: nocover
+    from .models import TimelineLogProxy
+
 
 def log_logic_evaluation(
     submission: Submission,
     evaluated_rules: List["EvaluatedRule"],
     initial_data: JSONObject,
     resolved_data: JSONObject,
-):
+) -> Optional["TimelineLogProxy"]:
     if not evaluated_rules:
         return
     evaluated_rules_list = []
