@@ -29,7 +29,9 @@
   }
 
   &__edit-area {
-    width: 100%;
+    flex-grow: 1;
+    min-width: 0;
+    width: 75%;
 
     // override default django styles
     h2 {
