@@ -102,6 +102,14 @@ div.flatpickr-calendar.open {
   top: 100px;
 }
 
+.formio.builder,
+.component-preview {
+  .col-form-label {
+    @include ellipsis;
+    max-width: 100%;
+  }
+}
+
 // bootstrap competing with django admin form styling...
 .react-form-create {
   :not([ref='editForm']) {

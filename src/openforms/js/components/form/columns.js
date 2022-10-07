@@ -49,6 +49,22 @@ const COLUM_EDIT_TABS = {
               {label: '9/12 (75%)', value: '9'},
               {label: '10/12 (83.33%)', value: '10'},
               {label: '11/12 (91.67%)', value: '11'},
+              {label: '12/12 (100%)', value: '12'},
+            ],
+          },
+        },
+        {
+          type: 'select',
+          key: 'sizeMobile',
+          label: 'Size (mobile)',
+          tooltip: 'Width of the column on mobile viewports',
+          defaultValue: '4',
+          data: {
+            values: [
+              {label: '1/4 (25%)', value: '1'},
+              {label: '2/4 (50%)', value: '2'},
+              {label: '3/4 (75%)', value: '3'},
+              {label: '4/4 (100%)', value: '4'},
             ],
           },
         },
