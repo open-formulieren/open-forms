@@ -512,7 +512,14 @@ class FormViewSet(viewsets.ModelViewSet):
         logic_rules.delete()
 
         serializer = FormLogicSerializer(
-            data=request.data, many=True, context={"request": request, "form": form}
+            data=request.data,
+            many=True,
+            context={
+                "request": request,
+                "form": form,
+                # context for :class:`openforms.api.fields.RelatedFieldFromContext` lookups
+                "forms": {str(form.uuid): form},
+            },
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -559,7 +566,14 @@ class FormViewSet(viewsets.ModelViewSet):
         price_logic_rules.delete()
 
         serializer = FormPriceLogicSerializer(
-            data=request.data, many=True, context={"request": request, "form": form}
+            data=request.data,
+            many=True,
+            context={
+                "request": request,
+                "form": form,
+                # context for :class:`openforms.api.fields.RelatedFieldFromContext` lookups
+                "forms": {str(form.uuid): form},
+            },
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
