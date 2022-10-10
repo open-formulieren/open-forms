@@ -12,4 +12,5 @@ Authentication plugins
    oidc_digid
    oidc_machtigen
    oidc_eherkenning
+   oidc_org
    other
