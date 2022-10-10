@@ -126,7 +126,11 @@ def check_upgrade_path(from_version: str, to_version: str) -> bool:
         return True
 
     # find the most appropriate constraint
-    _to_version = Version.coerce(to_version).truncate()
+    try:
+        _to_version = Version.coerce(to_version).truncate()
+    except ValueError as exc:
+        raise VersionParseError(to_version) from exc
+
     for target_version, upgrade_constraint in UPGRADE_PATHS.items():
         # 1. start by trying an exact match, which always wins
         if target_version == to_version:
