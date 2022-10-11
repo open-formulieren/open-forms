@@ -5,11 +5,16 @@ from django.utils import timezone
 
 from freezegun import freeze_time
 
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.variables.constants import FormVariableSources
 
 from ..exports import create_submission_export
 from ..models import Submission
-from .factories import SubmissionFactory, SubmissionValueVariableFactory
+from .factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+    SubmissionValueVariableFactory,
+)
 
 
 class ExportTests(TestCase):
@@ -165,5 +170,114 @@ class ExportTests(TestCase):
                 datetime(2022, 5, 9, 15, 0, 0),
                 "Input 1",
                 "Some value",
+            ),
+        )
+
+    @freeze_time("2022-05-09T13:00:00Z")
+    def test_submission_export_with_mixed_fields_and_forms(self):
+        # Github issue #2117
+        form = FormFactory.create(name="Export form 1")
+        form_step_1 = FormStepFactory(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "input1",
+                    }
+                ]
+            },
+        )
+        form_step_2 = FormStepFactory(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "input2",
+                    }
+                ]
+            },
+        )
+        # first submission with two steps
+        submission_1 = SubmissionFactory.create(
+            form=form, completed=True, completed_on=timezone.now()
+        )
+        SubmissionStepFactory.create(
+            submission=submission_1,
+            form_step=form_step_1,
+            data={"input1": "sub1.input1"},
+        )
+        SubmissionStepFactory.create(
+            submission=submission_1,
+            form_step=form_step_2,
+            data={"input2": "sub1.input2"},
+        )
+
+        # second submission with one step
+        submission_2 = SubmissionFactory.create(
+            form=form, completed=True, completed_on=timezone.now()
+        )
+        SubmissionStepFactory.create(
+            submission=submission_2,
+            form_step=form_step_1,
+            data={"input1": "sub2.input1"},
+        )
+
+        # third whole different form with different fields
+        SubmissionFactory.from_components(
+            [
+                {
+                    "type": "textfield",
+                    "key": "different1",
+                }
+            ],
+            submitted_data={"different1": "sub3.different1"},
+            form__name="Export form 2",
+            completed=True,
+            completed_on=timezone.now(),
+        )
+
+        dataset = create_submission_export(Submission.objects.all())
+
+        self.assertEqual(
+            dataset.headers,
+            [
+                "Formuliernaam",
+                "Inzendingdatum",
+                "input1",
+                "input2",
+                "different1",
+            ],
+        )
+
+        self.assertEqual(
+            dataset[0],
+            (
+                "Export form 1",
+                datetime(2022, 5, 9, 15, 0, 0),
+                "sub1.input1",
+                "sub1.input2",
+                "",
+            ),
+        )
+        self.assertEqual(
+            dataset[1],
+            (
+                "Export form 1",
+                datetime(2022, 5, 9, 15, 0, 0),
+                "sub2.input1",
+                "",
+                "",
+            ),
+        )
+        self.assertEqual(
+            dataset[2],
+            (
+                "Export form 2",
+                datetime(2022, 5, 9, 15, 0, 0),
+                "",
+                "",
+                "sub3.different1",
             ),
         )

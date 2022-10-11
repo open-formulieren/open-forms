@@ -2,6 +2,7 @@ import dataclasses
 from typing import Iterator
 
 from django.http import HttpResponse
+from django.utils.datastructures import OrderedSet
 from django.utils.timezone import make_naive
 
 import tablib
@@ -43,32 +44,54 @@ def create_submission_export(queryset: SubmissionQuerySet) -> tablib.Dataset:
     """
     Turn a submissions queryset into a tablib dataset for export.
 
-    .. note:: the queryset of submissions must all be of the same form!
+    Note each submission can potentially have different fields and variables,
+      so we'll have to do some work to get a dataset in the right shape.
+
+    .. note:: the queryset of submissions technically doesn't have to be from the same Form (anymore)
     """
     # queryset *could* be empty
-    if not queryset:
+    if not queryset.exists():
         return tablib.Dataset()
 
-    first_submission = queryset[0]
-    headers = ["Formuliernaam", "Inzendingdatum"]
-    for data_node in iter_submission_data_nodes(first_submission):
-        if hasattr(data_node, "component"):
-            headers.append(data_node.component["key"])
-        elif hasattr(data_node, "variable"):
-            headers.append(data_node.variable.key)
+    fixed_headers = ["Formuliernaam", "Inzendingdatum"]
 
+    # let's collect unique headers and rows with actual values from all our submissions
+    seen_keys = OrderedSet()
+    rows = list()
+
+    for submission in queryset.order_by("form", "completed_on", "id"):
+        row = dict()
+        for data_node in iter_submission_data_nodes(submission):
+            key = None
+
+            # TODO move key grab to a property on the Node types?
+            if hasattr(data_node, "component"):
+                key = data_node.component["key"]
+            elif hasattr(data_node, "variable"):
+                key = data_node.variable.key
+
+            if key:
+                seen_keys.add(key)
+                row[key] = data_node.value
+
+        rows.append((submission, row))
+
+    # output table of everything we have
+    headers = fixed_headers + list(seen_keys)
     data = tablib.Dataset(headers=headers)
 
-    for submission in queryset:
+    for submission, row in rows:
         inzending_datum = (
             make_naive(submission.completed_on) if submission.completed_on else None
         )
         submission_data = [
             submission.form.admin_name,
             inzending_datum,
-            *[data_node.value for data_node in iter_submission_data_nodes(submission)],
+            # use blank for missing values
+            *(row.get(key, "") for key in seen_keys),
         ]
         data.append(submission_data)
+
     return data
 
 
