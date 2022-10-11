@@ -17,6 +17,7 @@ from openforms.formio.utils import iter_components
 from openforms.typing import JSONObject
 from openforms.variables.constants import FormVariableSources
 
+from .api.datastructures import FormVariableWrapper
 from .api.serializers import (
     FormDefinitionSerializer,
     FormExportSerializer,
@@ -204,6 +205,15 @@ def import_form_data(
                                 formstep__form=_form
                             )
                         },
+                    }
+                )
+
+            if resource == "formLogic":
+                # by now, the form resource has been created (or it was an existing one)
+                _form = existing_form_instance or created_form
+                serializer_kwargs["context"].update(
+                    {
+                        "form_variables": FormVariableWrapper(_form),
                     }
                 )
 

@@ -1,3 +1,4 @@
+from django.test import override_settings
 from django.urls import reverse
 
 from rest_framework import status
@@ -6,7 +7,12 @@ from rest_framework.test import APITestCase
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
 
 from ..models import FormLogic
-from .factories import FormFactory, FormLogicFactory, FormStepFactory
+from .factories import (
+    FormFactory,
+    FormLogicFactory,
+    FormStepFactory,
+    FormVariableFactory,
+)
 
 
 class FormLogicAPITests(APITestCase):
@@ -1077,3 +1083,67 @@ class FormLogicAPITests(APITestCase):
             "0.jsonLogicTrigger", response.json()["invalidParams"][0]["name"]
         )
         self.assertEqual("invalid", response.json()["invalidParams"][0]["code"])
+
+    @override_settings(MIDDLEWARE=[])  # cut out some irrelevant queries
+    def test_performance_validation_bulk_create_data(self):
+        """
+        Assert that a constant number of queries are performed on logic bulk create.
+
+        Instead of individually re-validating the same data over and over again, or
+        querying every individual form variable, caches must be used so that the form
+        data is only retrieved once. This enables scaling the amount of data inside
+        the bulk create without running into O(n) or worse complexity.
+        """
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {"type": "textfield", "key": "variable1"},
+                    {"type": "textfield", "key": "variable2"},
+                    {"type": "textfield", "key": "variable3"},
+                ]
+            },
+        )
+        FormVariableFactory.create(form=form, key="variable4", user_defined=True)
+        FormVariableFactory.create(form=form, key="variable5", user_defined=True)
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+        form_logic_data = [
+            {
+                "form": f"http://testserver{form_path}",
+                "order": 0,
+                "json_logic_trigger": {
+                    "and": [
+                        {"var": "variable1"},
+                        {"var": "variable2"},
+                        {"var": "variable3"},
+                    ]
+                },
+                "actions": [],
+            },
+            {
+                "form": f"http://testserver{form_path}",
+                "order": 1,
+                "json_logic_trigger": {
+                    "and": [
+                        {"var": "variable4"},
+                        {"var": "variable5"},
+                    ]
+                },
+                "actions": [],
+            },
+        ]
+
+        # 1. Start transaction
+        # 2. Fetch the form (from UUID param in endpoint)
+        # 3. Delete all the existing logic rules (to be replaced)
+        # 4. Look up all the form variables for the form (once)
+        # 5-9. OrderedModelSerializer.create moves the rule to the specified order,
+        #    which triggers 2 queries per rule to be inserted.
+        with self.assertNumQueries(9):
+            response = self.client.put(url, data=form_logic_data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(FormLogic.objects.count(), 2)
