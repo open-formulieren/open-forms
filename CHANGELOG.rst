@@ -262,6 +262,7 @@ double check with the list of breaking changes in mind.
 * Only display application version for authenticated staff users, some pages still
   leaked this information
 * Fixed styling of the password reset pages
+* [#2154] Fixed coloured links e-mail rendering crash
 
 **Project maintenance**
 
