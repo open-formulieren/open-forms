@@ -190,7 +190,13 @@ def unwrap_anchors(html_str: str) -> str:
         url = link.attrib.get("href", None)
         if not url:
             continue
-        link.text += f" ({url})"
+
+        span_child = link.find(".//span")
+        if not link.text and span_child is not None:
+            # Issue #2154 Case in which the link has a special colour, so it's wrapped in a span.
+            span_child.text += f" ({url})"
+        else:
+            link.text += f" ({url})"
 
     return tostring(root, encoding="utf8").decode("utf8")
 
