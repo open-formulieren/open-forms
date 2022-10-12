@@ -1136,13 +1136,14 @@ class FormLogicAPITests(APITestCase):
             },
         ]
 
-        # 1. Start transaction
+        # 1. transaction SAVEPOINT
         # 2. Fetch the form (from UUID param in endpoint)
         # 3. Delete all the existing logic rules (to be replaced)
         # 4. Look up all the form variables for the form (once)
-        # 5-9. OrderedModelSerializer.create moves the rule to the specified order,
-        #    which triggers 2 queries per rule to be inserted.
-        with self.assertNumQueries(9):
+        # 5. Get max order within form (from ordered_model.models.OrderedModelQuerySet.bulk_create)
+        # 6. Bulk insert logic rules
+        # 7. transaction RELEASE SAVEPOINT
+        with self.assertNumQueries(7):
             response = self.client.put(url, data=form_logic_data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)

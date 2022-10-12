@@ -58,6 +58,12 @@ class FormLogicBaseSerializer(serializers.HyperlinkedModelSerializer):
         self.fields["form"].label = related_field.verbose_name
 
 
+class FormLogicListSerializer(ListWithChildSerializer):
+    child_serializer_class = (
+        "openforms.forms.api.serializers.logic.form_logic.FormLogicSerializer"
+    )
+
+
 class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
     trigger_from_step = NestedHyperlinkedRelatedField(
         required=False,
@@ -83,6 +89,7 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
 
     class Meta(FormLogicBaseSerializer.Meta):
         model = FormLogic
+        list_serializer_class = FormLogicListSerializer
         fields = FormLogicBaseSerializer.Meta.fields + (
             "order",
             "trigger_from_step",
@@ -109,7 +116,3 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
         validators = FormLogicBaseSerializer.Meta.validators + [
             FormLogicTriggerFromStepFormValidator()
         ]
-
-
-class FormLogicListSerializer(ListWithChildSerializer):
-    child_serializer_class = FormLogicSerializer
