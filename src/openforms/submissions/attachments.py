@@ -176,12 +176,20 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
 
     result = list()
 
+    variable_state = submission_step.submission.load_submission_value_variables_state()
+    step_variables = variable_state.get_variables_in_submission_step(submission_step)
+
     for upload_context in iter_step_uploads(submission_step):
         upload, component, key = (
             upload_context.upload,
             upload_context.component,
             upload_context.form_key,
         )
+
+        # TODO decide what it means if this fails
+        assert key in step_variables
+
+        submission_variable = step_variables[key]
 
         # grab resize settings
         resize_apply = glom(component, "of.image.resize.apply", default=False)
@@ -214,8 +222,11 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
             upload_context.num_uploads,
         )
 
-        attachment, created = SubmissionFileAttachment.objects.create_from_upload(
-            submission_step, key, upload, file_name=file_name
+        (
+            attachment,
+            created,
+        ) = SubmissionFileAttachment.objects.get_or_create_from_upload(
+            submission_step, submission_variable, upload, file_name=file_name
         )
         result.append((attachment, created))
 

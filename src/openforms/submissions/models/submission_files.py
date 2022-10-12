@@ -4,7 +4,7 @@ import os.path
 import uuid
 from collections import defaultdict
 from datetime import date, timedelta
-from typing import List, Mapping, Optional, Tuple
+from typing import TYPE_CHECKING, List, Mapping, Optional, Tuple
 
 from django.core.files.base import File
 from django.db import models
@@ -18,6 +18,9 @@ from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySet
 
 from .submission import Submission
 from .submission_step import SubmissionStep
+
+if TYPE_CHECKING:  # pragma: nocover
+    from .submission_value_variable import SubmissionValueVariable
 
 logger = logging.getLogger(__name__)
 
@@ -78,10 +81,10 @@ class SubmissionFileAttachmentQuerySet(DeleteFilesQuerySetMixin, models.QuerySet
 
 
 class SubmissionFileAttachmentManager(models.Manager):
-    def create_from_upload(
+    def get_or_create_from_upload(
         self,
         submission_step: SubmissionStep,
-        form_key: str,
+        submission_variable: "SubmissionValueVariable",
         upload: TemporaryFileUpload,
         file_name: Optional[str] = None,
     ) -> Tuple["SubmissionFileAttachment", bool]:
@@ -90,7 +93,7 @@ class SubmissionFileAttachmentManager(models.Manager):
                 self.get(
                     submission_step=submission_step,
                     temporary_file=upload,
-                    form_key=form_key,
+                    submission_variable=submission_variable,
                 ),
                 False,
             )
@@ -99,7 +102,7 @@ class SubmissionFileAttachmentManager(models.Manager):
                 instance = self.create(
                     submission_step=submission_step,
                     temporary_file=upload,
-                    form_key=form_key,
+                    submission_variable=submission_variable,
                     # wrap in File() so it will be physically copied
                     content=File(content, name=upload.file_name),
                     content_type=upload.content_type,
@@ -127,9 +130,6 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         help_text=_("Temporary upload this file is sourced to."),
         related_name="attachments",
     )
-
-    # TODO remove form_key when using variables
-    form_key = models.CharField(_("form component key"), max_length=255)
     submission_variable = models.ForeignKey(
         verbose_name=_("submission variable"),
         help_text=_("submission value variable for the form component"),
@@ -166,6 +166,8 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
     def get_display_name(self):
         return self.file_name or self.original_name
 
+    get_display_name.short_description = _("File name")
+
     def get_format(self):
         return os.path.splitext(self.get_display_name())[1].lstrip(".")
 
@@ -196,3 +198,11 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
                     component, "registration.informatieobjecttype", default=""
                 ):
                     return iotype
+
+    @property
+    def form_key(self):
+        if self.submission_variable:
+            return self.submission_variable.key
+        raise Exception("tried to access an attachment without .submission_variable")
+
+    form_key.fget.short_description = _("form component key")

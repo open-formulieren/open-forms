@@ -419,7 +419,7 @@ class SubmissionFileAttachmentMediaView(PrivateMediaView):
 class SubmissionFileAttachmentAdmin(PrivateMediaMixin, admin.ModelAdmin):
     list_display = (
         "uuid",
-        "file_name",
+        "get_display_name",
         "content_type",
         "created_on",
         "file_size",
@@ -427,18 +427,25 @@ class SubmissionFileAttachmentAdmin(PrivateMediaMixin, admin.ModelAdmin):
     fields = (
         "uuid",
         "submission_step",
-        "form_key",
+        "submission_variable",
+        "form_key_display",
         "created_on",
         "original_name",
+        "get_display_name",
         "content_type",
         "file_size",
         "content",
     )
-    raw_id_fields = ("submission_step",)
+    raw_id_fields = (
+        "submission_step",
+        "submission_variable",
+    )
     readonly_fields = (
         "uuid",
+        "get_display_name",
         "created_on",
         "file_size",
+        "form_key_display",
     )
     date_hierarchy = "created_on"
 
@@ -449,6 +456,15 @@ class SubmissionFileAttachmentAdmin(PrivateMediaMixin, admin.ModelAdmin):
         return filesizeformat(obj.content.size)
 
     file_size.short_description = _("File size")
+
+    def form_key_display(self, obj):
+        if obj.submission_variable:
+            return obj.submission_variable.key
+        else:
+            # this shouldn't happen but the field is nullable
+            return "<legacy>"
+
+    form_key_display.short_description = _("Form key")
 
     def has_add_permission(self, request, obj=None):
         return False

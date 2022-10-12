@@ -123,6 +123,8 @@ class SubmissionAttachmentTest(TestCase):
         self.assertEqual(attachment.content.read(), b"content")
         self.assertEqual(attachment.content_type, upload.content_type)
         self.assertEqual(attachment.temporary_file, upload)
+        self.assertIsNotNone(attachment.submission_variable)
+        self.assertEqual(attachment.submission_variable.key, "my_file")
 
         # test attaching again is idempotent
         result = attach_uploads_to_submission_step(submission_step)
@@ -218,6 +220,18 @@ class SubmissionAttachmentTest(TestCase):
         self.assertSetEqual(
             {attachment_1.original_name, attachment_2.original_name},
             {"my-image-1.jpg", "my-image-2.jpg"},
+        )
+
+        # test linking variables
+        self.assertIsNotNone(attachment_1.submission_variable)
+        self.assertEqual(attachment_1.submission_variable.key, "my_file")
+
+        self.assertIsNotNone(attachment_2.submission_variable)
+        self.assertEqual(attachment_2.submission_variable.key, "my_file")
+
+        # expect we linked the same variable because we're testing a multiple=True field
+        self.assertEqual(
+            attachment_1.submission_variable.id, attachment_2.submission_variable.id
         )
 
         # test attaching again is idempotent
