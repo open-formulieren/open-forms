@@ -6,7 +6,7 @@ StUF-BG
 
 `StUF-BG`_ (StUF Basis Gegegevens) is a message standard that allows retrieving
 of personal information through a SOAP service from municipalities and
-government organisations. Open Forms can be configured to use this service to
+government organizations. Open Forms can be configured to use this service to
 prefill personal data of the person filling out the form.
 
 .. _`StUF-BG`: https://www.gemmaonline.nl/index.php/Sectormodel_Basisgegevens:_StUF-BG

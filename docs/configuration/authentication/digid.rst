@@ -60,7 +60,7 @@ Step by step overview
 
    * **Zekerheidsniveau**: ``Midden``
    * **DigiD eenmalig inloggen**: ``Nee``
-   * **URL aansluiting**: *The Open Forms domain, for example: https://forms.organisation.com*
+   * **URL aansluiting**: *The Open Forms domain, for example: https://forms.organization.com*
    * **Webdienstnaam**: *The same desired service name as given in step 3*
    * **Metadata**: *The XML-file provided to you by your Open Forms supplier*
    * **Publieke deel PKIO-certificaat**: *The public certificate obtained in step 2*

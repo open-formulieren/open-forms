@@ -4,7 +4,7 @@
 KvK Basisprofiel
 ================
 
-The `KvK`_ (Kamer van Koophandel) is a government organisation that contains
+The `KvK`_ (Kamer van Koophandel) is a government organization that contains
 information about businesses operating in the Netherlands. The KvK provides an
 API to retrieve information about businesses. Open Forms can be configured to
 access this API in order to prefill business information within a form.

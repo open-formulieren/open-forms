@@ -22,7 +22,7 @@ Creating an external plugin
 ===========================
 
 An extension must be implemented as a Django package, which is a stricter form of a
-regular Python package. They can be developed independently from the open-formulieren Github organisation.
+regular Python package. They can be developed independently from the open-formulieren Github organization.
 
 The extensions can be loaded at deployment time through the environment variable ``OPEN_FORMS_EXTENSIONS`` which
 specifies the Python name of the extensions to load. Open Forms will extract this configuration value and
