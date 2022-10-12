@@ -18,7 +18,7 @@ class OIDCAuthentication(BasePlugin):
     Authentication plugin using the global mozilla-django-oidc-db (as used for the admin)
     """
 
-    verbose_name = _("Organisation via OpenID Connect")
+    verbose_name = _("Organization via OpenID Connect")
     provides_auth = AuthAttribute.employee_id
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str):
