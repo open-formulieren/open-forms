@@ -1,4 +1,3 @@
-from dataclasses import dataclass, field
 from typing import Dict, Iterator, Optional
 
 from openforms.typing import JSONObject
@@ -9,7 +8,6 @@ from .utils import iter_components
 # TODO: mechanism to wrap/mark root components?
 
 
-@dataclass
 class FormioConfigurationWrapper:
     """
     Wrap around the Formio configuration dictionary for further processing.
@@ -18,11 +16,12 @@ class FormioConfigurationWrapper:
     formio configuration.
     """
 
-    configuration: JSONObject
+    _configuration: JSONObject
     # depth-first ordered of all components in the formio configuration tree
-    _cached_component_map: Optional[Dict[str, Component]] = field(
-        init=False, default=None
-    )
+    _cached_component_map: Optional[Dict[str, Component]] = None
+
+    def __init__(self, configuration: JSONObject):
+        self._configuration = configuration
 
     @property
     def component_map(self) -> Dict[str, Component]:
@@ -42,3 +41,18 @@ class FormioConfigurationWrapper:
 
     def __getitem__(self, key: str) -> Component:
         return self.component_map[key]
+
+    @property
+    def configuration(self) -> JSONObject:
+        return self._configuration
+
+    @configuration.setter
+    def configuration(self, new: JSONObject) -> None:
+        # if there are no changes in the configuration, do not invalidate the cache
+        if self._configuration == new:
+            return
+
+        # invalidate cache on configuration mutations
+        if self._cached_component_map is not None:
+            self._cached_component_map = None
+        self._configuration = new
