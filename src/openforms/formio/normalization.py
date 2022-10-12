@@ -1,5 +1,6 @@
 import logging
 from abc import abstractmethod
+from datetime import date, datetime
 from typing import Any
 
 from openforms.plugins.plugin import AbstractBasePlugin
@@ -63,3 +64,21 @@ class PostalCodeNormalizer(Normalizer):
                 "Could not conform value '%s' to input mask '%s', returning original value."
             )
             return value
+
+
+@register("date")
+class DateNormalizer(Normalizer):
+    def normalize(self, component: Component, value: str) -> str:
+        try:
+            parsed_date = date.fromisoformat(value)
+        except ValueError:
+            try:
+                parsed_date = datetime.strptime(value, "%Y%m%d").date()
+            except ValueError:
+                logger.info(
+                    "Tried to normalize invalid date %s. Using empty value.",
+                    value,
+                )
+                return ""
+
+        return parsed_date.isoformat()
