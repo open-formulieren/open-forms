@@ -50,7 +50,7 @@ class Renderer:
         Return the submission steps in the correct order.
         """
         execution_state = self.submission.load_execution_state()
-        return [step for step in execution_state.submission_steps if step.pk]
+        return execution_state.submission_steps
 
     @property
     def has_children(self) -> bool:
