@@ -112,6 +112,19 @@ class UpgradeCheckTests(TestCase):
                 self.assertEqual(errors_and_warnings, [])
                 mock_check.assert_called_once_with("older", "newer")
 
+    @override_settings(RELEASE="some-experimental-tag", DEBUG=False)
+    def test_non_numeric_release_tag(self):
+        with mock_version_info(return_value=VersionInfo(current="2.0.0")):
+            errors_and_warnings = check_upgrade_possible(None)
+
+            warning = Warning(
+                "Could not parse 'some-experimental-tag' as a version number which "
+                "prevents us from checking your upgrade path. Proceed at your own risk.",
+                hint="We recommend only upgrading from and to tagged releases.",
+                id="upgrades.W002",
+            )
+            self.assertEqual(errors_and_warnings, [warning])
+
     @override_settings(RELEASE="newer")
     def test_upgrade_path_not_allowed(self):
         with mock_version_info(return_value=VersionInfo(current="older")):
