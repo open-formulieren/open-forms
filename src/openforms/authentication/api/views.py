@@ -7,12 +7,12 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.submissions.api.permissions import ActiveSubmissionPermission
 from openforms.submissions.models import Submission
 from openforms.submissions.utils import remove_submission_from_session
 from openforms.utils.api.views import ListMixin
 
-from openforms.api.authentication import AnonCSRFSessionAuthentication
 from ..constants import FORM_AUTH_SESSION_KEY
 from ..registry import register
 from .serializers import AuthPluginSerializer
