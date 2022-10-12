@@ -13,7 +13,7 @@ In this flow:
 2. The member gets redirected to the login flow of the OpenID Connect provider where the member logs in.
 3. After completion of the OpenID Connect provider login the member is redirected back to the form in Open Forms.
 4. The member is now logged into Open Forms and can proceed to complete the form.
-5. Open Forms optionally stores a configurable "Employee ID" claim from the OIDC user-info on both the submission as the created user.
+5. Open Forms optionally stores the employee ID (from the OIDC claims) on the user record _and_ the form submission.
 
 .. _configuration_authentication_oidc_org_appgroup:
 
@@ -26,11 +26,11 @@ The OpenID Connect configuration is shared with :ref:`the configuration of the m
 
 - It is not recommended to use the *Default groups* configuration option when using OpenID Connect for organisation members to authenticate on forms.
 
-- To store user information from OpenID and track an "Employee ID" it is required to configure the `claim mapping`. This is JSON object where the claims from the OIDC user-info gets mapped to attributes on the user in Open Forms. For more info and options on configuring the mapping see `mozilla-django-oidc-db <https://github.com/maykinmedia/mozilla-django-oidc-db#user-content-user-profile>`_ and the documentation of your OpenID Connect provider for the structure of the returned user-info.
+- To store user information from OpenID and track an "Employee ID" it is required to configure the ``claim mapping``. This is JSON object where the claims from the OIDC user-info gets mapped to attributes on the user in Open Forms. For more info and options on configuring the mapping see `mozilla-django-oidc-db <https://github.com/maykinmedia/mozilla-django-oidc-db#user-content-user-profile>`_ and the documentation of your OpenID Connect provider for the structure of the returned user-info.
 
   Example:
 
-  .. code-block:: javascript
+  .. code-block:: json
 
     {
         "email": "email",
@@ -43,6 +43,4 @@ The OpenID Connect configuration is shared with :ref:`the configuration of the m
 
 
 After completing these steps a form can be created with the authentication backend ``Organisation via OpenID Connect``, see :ref:`manual_forms_basics`.
-
-
 

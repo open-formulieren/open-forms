@@ -12,7 +12,7 @@ from openforms.submissions.models import Submission
 from openforms.submissions.utils import remove_submission_from_session
 from openforms.utils.api.views import ListMixin
 
-from ...api.authentication import AnonCSRFSessionAuthentication
+from openforms.api.authentication import AnonCSRFSessionAuthentication
 from ..constants import FORM_AUTH_SESSION_KEY
 from ..registry import register
 from .serializers import AuthPluginSerializer

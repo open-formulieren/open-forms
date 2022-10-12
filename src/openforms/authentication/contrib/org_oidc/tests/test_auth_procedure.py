@@ -33,7 +33,7 @@ default_config = dict(
 class OrgOIDCTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        super()
+        super().setUpTestData()
         cls.form = FormFactory.create(
             generate_minimal_setup=True, authentication_backends=["org-oidc"]
         )
