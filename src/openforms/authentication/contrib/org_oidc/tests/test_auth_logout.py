@@ -6,8 +6,9 @@ from django.test import RequestFactory, TestCase
 from mozilla_django_oidc_db.models import OpenIDConnectConfig
 
 from openforms.accounts.tests.factories import StaffUserFactory
-from openforms.authentication.contrib.org_oidc.backends import OIDCAuthenticationBackend
-from openforms.authentication.contrib.org_oidc.plugin import OIDCAuthentication
+
+from ..backends import OIDCAuthenticationBackend
+from ..plugin import OIDCAuthentication
 
 
 class PluginLogoutTest(TestCase):
@@ -46,7 +47,6 @@ class PluginLogoutTest(TestCase):
         session["oidc_id_token"] = "xyz"
         session["oidc_login_next"] = "xyz"
         session["oidc_states"] = "xyz"
-        session[plugin.session_key] = "xyz"
         session.save()
 
         request = RequestFactory().post("/dummy")

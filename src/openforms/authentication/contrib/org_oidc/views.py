@@ -14,8 +14,8 @@ from mozilla_django_oidc.views import (
 from openforms.authentication.contrib.digid_eherkenning_oidc.views import (
     OIDCAuthenticationCallbackView as _OIDCAuthenticationCallbackView,
 )
-from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 
+from ...views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from .backends import OIDCAuthenticationBackend
 from .mixins import SoloConfigMixin
 
@@ -55,16 +55,6 @@ class OIDCAuthenticationCallbackView(SoloConfigMixin, _OIDCAuthenticationCallbac
     # TODO figure out how we want to reuse the patched OIDCAuthenticationCallbackView from digid_eherkenning (and digid_eherkenning_generics)
     #  or possibly move it to mozilla_oidc_db
     auth_backend_class = OIDCAuthenticationBackend
-
-    @property
-    def failure_url(self):
-        """
-        On failure, redirect to the form with an appropriate error message
-        """
-        f = furl(self.success_url)
-        f = furl(f.args["next"])
-        f.args[BACKEND_OUTAGE_RESPONSE_PARAMETER] = self.plugin_identifier
-        return f.url
 
     def login_success(self):
         # override again because our base class removed the .login()

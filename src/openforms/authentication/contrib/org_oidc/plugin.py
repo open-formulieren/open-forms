@@ -8,7 +8,6 @@ from rest_framework.reverse import reverse
 
 from openforms.authentication.base import BasePlugin
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
-from openforms.authentication.contrib.org_oidc.constants import OIDC_AUTH_SESSION_KEY
 from openforms.authentication.registry import register
 from openforms.forms.models import Form
 
@@ -21,11 +20,9 @@ class OIDCAuthentication(BasePlugin):
 
     verbose_name = _("Organisation via OpenID Connect")
     provides_auth = AuthAttribute.employee_id
-    init_url = "org-oidc:init"
-    session_key = OIDC_AUTH_SESSION_KEY
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str):
-        login_url = reverse(self.init_url, request=request)
+        login_url = reverse("org-oidc:init", request=request)
 
         auth_return_url = reverse(
             "authentication:return",
@@ -50,28 +47,22 @@ class OIDCAuthentication(BasePlugin):
         if not form_url:
             return HttpResponseBadRequest("missing 'next' parameter")
 
-        claim = request.session.get(self.session_key)
-        if claim:
-            request.session[FORM_AUTH_SESSION_KEY] = {
-                "plugin": self.identifier,
-                "attribute": self.provides_auth,
-                "value": claim,
-            }
+        request.session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": self.identifier,
+            "attribute": self.provides_auth,
+            "value": request.user.username,
+        }
 
         return HttpResponseRedirect(form_url)
 
     def logout(self, request: HttpRequest):
-        if "oidc_id_token" in request.session:
-            del request.session["oidc_id_token"]
-
-        if "oidc_login_next" in request.session:
-            del request.session["oidc_login_next"]
-
-        if "oidc_states" in request.session:
-            del request.session["oidc_states"]
-
-        if self.session_key in request.session:
-            del request.session[self.session_key]
+        for key in (
+            "oidc_id_token",
+            "oidc_login_next",
+            "oidc_states",
+        ):
+            if key in request.session:
+                del request.session[key]
 
         if request.user.is_authenticated:
             auth.logout(request)
