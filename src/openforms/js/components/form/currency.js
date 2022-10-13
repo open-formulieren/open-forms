@@ -10,6 +10,19 @@ const FormioCurrency = Formio.Components.components.currency;
 CurrencyEditData[0].defaultValue = 'EUR';
 
 class CurrencyField extends FormioCurrency {
+  static schema(...extend) {
+    return FormioCurrency.schema(
+      {
+        allowNegative: false,
+      },
+      ...extend
+    );
+  }
+
+  get defaultSchema() {
+    return CurrencyField.schema();
+  }
+
   get defaultValue() {
     let defaultValue = super.defaultValue;
 
