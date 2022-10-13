@@ -3,26 +3,13 @@ import _ from 'lodash';
 
 import CurrencyEditData from 'formiojs/components/currency/editForm/Currency.edit.data';
 import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION} from './edit/tabs';
-import {DECIMAL_PLACES} from './edit/components';
+import {ALLOW_NEGATIVE, DECIMAL_PLACES} from './edit/components';
 
 const FormioCurrency = Formio.Components.components.currency;
 
 CurrencyEditData[0].defaultValue = 'EUR';
 
 class CurrencyField extends FormioCurrency {
-  static schema(...extend) {
-    return FormioCurrency.schema(
-      {
-        allowNegative: false,
-      },
-      ...extend
-    );
-  }
-
-  get defaultSchema() {
-    return CurrencyField.schema();
-  }
-
   get defaultValue() {
     let defaultValue = super.defaultValue;
 
@@ -37,7 +24,7 @@ class CurrencyField extends FormioCurrency {
   static editForm() {
     const BASIC_TAB = {
       ...BASIC,
-      components: [...BASIC.components, ...CurrencyEditData, ...[DECIMAL_PLACES]],
+      components: [...BASIC.components, ...CurrencyEditData, ...[DECIMAL_PLACES, ALLOW_NEGATIVE]],
     };
     const TABS = {
       ...DEFAULT_TABS,
