@@ -1,22 +1,29 @@
-import {Formio} from 'formiojs';
-import _ from 'lodash';
+import { Formio } from "formiojs";
+import _ from "lodash";
 
-import CurrencyEditData from 'formiojs/components/currency/editForm/Currency.edit.data';
-import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION} from './edit/tabs';
-import {DECIMAL_PLACES} from './edit/components';
+import CurrencyEditData from "formiojs/components/currency/editForm/Currency.edit.data";
+import DEFAULT_TABS, {
+    ADVANCED,
+    BASIC,
+    REGISTRATION,
+    VALIDATION,
+} from "./edit/tabs";
+import { ALLOW_NEGATIVE, DECIMAL_PLACES } from "./edit/components";
 
 const FormioCurrency = Formio.Components.components.currency;
 
-CurrencyEditData[0].defaultValue = 'EUR';
+CurrencyEditData[0].defaultValue = "EUR";
 
 class CurrencyField extends FormioCurrency {
-
     get defaultValue() {
         let defaultValue = super.defaultValue;
 
         // Issue #1550: this fix is present in FormIO from v4.14 so can be removed once we upgrade
         if (!this.component.multiple && _.isArray(defaultValue)) {
-          defaultValue = !defaultValue[0] &&  defaultValue[0] !== 0 ? null :  defaultValue[0];
+            defaultValue =
+                !defaultValue[0] && defaultValue[0] !== 0
+                    ? null
+                    : defaultValue[0];
         }
 
         return defaultValue;
@@ -28,19 +35,14 @@ class CurrencyField extends FormioCurrency {
             components: [
                 ...BASIC.components,
                 ...CurrencyEditData,
-                ...[DECIMAL_PLACES],
-            ]
+                ...[DECIMAL_PLACES, ALLOW_NEGATIVE],
+            ],
         };
         const TABS = {
             ...DEFAULT_TABS,
-            components: [
-                BASIC_TAB,
-                ADVANCED,
-                VALIDATION,
-                REGISTRATION,
-            ]
+            components: [BASIC_TAB, ADVANCED, VALIDATION, REGISTRATION],
         };
-        return {components: [TABS]};
+        return { components: [TABS] };
     }
 }
 
