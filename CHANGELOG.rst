@@ -186,6 +186,7 @@ double check with the list of breaking changes in mind.
 * [#2124] Added message to file-upload component informing the user of the maximum
   allowed file upload size.
 * [#2113] added option to control column size on mobile viewports
+* [#1351] Allow negative currency and number components
 
 *Registrations*
 
@@ -266,6 +267,8 @@ double check with the list of breaking changes in mind.
 * [#2154] Fixed coloured links e-mail rendering crash
 * [#2117] Fixed submission export for submissions with filled out subset of
   available fields
+* [#1899] Fixed validation problem on certain types of prefilled fields during
+  anti-tampering check due to insufficient data normalization
 
 **Project maintenance**
 
