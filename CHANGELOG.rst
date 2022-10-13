@@ -81,6 +81,11 @@ double check with the list of breaking changes in mind.
   submission specific endpoint.
 * Advanced logic in certain components (like fieldsets) has been removed - conditional
   hide/display other than JSON-logic/simple logic is no longer supported.
+* Enabled Cross-Site-Request-Forgery protections for *anonymous* users (read: non-staff
+  users filling out forms). Ensure that your Open Forms Client sends the CSRF Token
+  value received from the backend. Additionally, for embedded forms you must ensure
+  that the ``Referer`` request header is sent in cross-origin requests. You will likely
+  have to tweak the ``Referrer-Policy`` response header.
 
 **New features/improvements**
 
@@ -89,49 +94,49 @@ double check with the list of breaking changes in mind.
 * [#1325] Introduced the concept of "form variables", enabling a greater flexibility
   for form designers
 
-    * Every form field is automatically a form variable
-    * Defined a number of always-available static variables (such as the current
-      timestamp, form name and ID, environment, authentication details...)
-    * Form designers can define their own "user-defined variables" to use in logic and
-      calculations
-    * Added API endpoints to read/set form variables in bulk
-    * Added API endpoint to list the static variables
-    * The static variables interface is extensible
+  * Every form field is automatically a form variable
+  * Defined a number of always-available static variables (such as the current
+    timestamp, form name and ID, environment, authentication details...)
+  * Form designers can define their own "user-defined variables" to use in logic and
+    calculations
+  * Added API endpoints to read/set form variables in bulk
+  * Added API endpoint to list the static variables
+  * The static variables interface is extensible
 
 * [#1546] Reworked form logic rules
 
-    * Rules now have explicit ordering, which you can modify in the UI
-    * You can now specify that a rule should only be evaluated from a particular form
-      step onwards (instead of 'always')
-    * Form rules are now explicitely listed in the admin for debugging purposes
-    * Improved display of JSON-logic expressions in the form designer
-    * When adding a logic rule, you can now pick between simple or advanced - more types
-      will be added in the future, such as DMN.
-    * You can now use all form variables in logic rules
+  * Rules now have explicit ordering, which you can modify in the UI
+  * You can now specify that a rule should only be evaluated from a particular form
+    step onwards (instead of 'always')
+  * Form rules are now explicitely listed in the admin for debugging purposes
+  * Improved display of JSON-logic expressions in the form designer
+  * When adding a logic rule, you can now pick between simple or advanced - more types
+    will be added in the future, such as DMN.
+  * You can now use all form variables in logic rules
 
 * [#1708] Reworked the logic evaluation for a submission
 
-    * Implemented isolated/sandboxed template environment
-    * Form components now support template expressions using the form variables
-    * The evaluation flow is now more deterministic: first all rules are evaluated that
-      updated values of variables, then all other logic actions are evaluated using
-      those variable values
+  * Implemented isolated/sandboxed template environment
+  * Form components now support template expressions using the form variables
+  * The evaluation flow is now more deterministic: first all rules are evaluated that
+    updated values of variables, then all other logic actions are evaluated using
+    those variable values
 
 * [#1661] Submission authentication is now tracked differently
 
-    * Removed the authentication identifier fields on the ``Submission`` model
-    * Added a new, generic model to track authentication information:
-      ``authentication.AuthInfo``
-    * Exposed the submission authentication details as static form variables - you now
-      no longer need to add hidden form fields to access this information.
+  * Removed the authentication identifier fields on the ``Submission`` model
+  * Added a new, generic model to track authentication information:
+    ``authentication.AuthInfo``
+  * Exposed the submission authentication details as static form variables - you now
+    no longer need to add hidden form fields to access this information.
 
 * [#1967] Reworked form publishing tools
 
-    * Deactivated forms are deactivated for everyone
-    * Forms in maintenance mode are not available, unless you're a staff member
-    * The API endpoints now return HTTP 422 or HTTP 503 errors when a form is deactivated
-      or in maintenance mode
-    * [#2014] Documented the recommended workflows
+  * Deactivated forms are deactivated for everyone
+  * Forms in maintenance mode are not available, unless you're a staff member
+  * The API endpoints now return HTTP 422 or HTTP 503 errors when a form is deactivated
+    or in maintenance mode
+  * [#2014] Documented the recommended workflows
 
 * [#1682] Logic rules evaluation is now logged with the available context. This should
   help in debugging your form logic.
@@ -147,6 +152,8 @@ double check with the list of breaking changes in mind.
   the SDK, and permissions are now checked to block/allow navigating between form
   steps without the previous steps being completed.
 * [#1922] First passes at profiling and optimizing the API endpoints performance
+* Enabled Cross-Site-Request-Forgery protections for *anonymous* users
+* [#2042] Various performance improvements
 
 *Form designer*
 
@@ -154,10 +161,10 @@ double check with the list of breaking changes in mind.
 * [#1710] Added "repeating group" functionality/component
 * [#1878] Added more validation options for date components
 
-    * Specify a fixed min or max date; or
-    * Specify a minimum date in the future; or
-    * Specify a maximum date in the past; or
-    * Specify a min/max date relative to a form variable
+  * Specify a fixed min or max date; or
+  * Specify a minimum date in the future; or
+  * Specify a maximum date in the past; or
+  * Specify a min/max date relative to a form variable
 
 * [#1921] You can now specify a global default for allowed file types
 * [#1621] The save/save-and-continue buttons are now always visible on the page in
@@ -175,6 +182,10 @@ double check with the list of breaking changes in mind.
 * [#1806] Ensure that logic variable references are updated
 * [#1933] Replaced hardcoded SDK start (login) message with text in form explanation
   template.
+* [#2078] field labels are now compulsory (a11y)
+* [#2124] Added message to file-upload component informing the user of the maximum
+  allowed file upload size.
+* [#2113] added option to control column size on mobile viewports
 
 *Registrations*
 
@@ -214,6 +225,9 @@ double check with the list of breaking changes in mind.
 * [#1787] You can now configure the "form pause" e-mail template to use
 * [#1971] Added config option to disable search engine indexing
 * [#1895] Removed deprecated functionality
+* Improved search fields in Form/Form Definition admin pages
+* [#2055] Added management command to check for invalid keys
+* [#2058] Added endpoint to collect submission summary data
 
 **Bugfixes**
 
@@ -242,6 +256,16 @@ double check with the list of breaking changes in mind.
 * [#1755] Fixed removing field data for fields that are made visible/hidden by logic
 * [#1957] Fixed submission retry for submissions that failed registration, but exceeded
   the automatic retry limit
+* [#1984] Normalize the show/hide logic for components and only expose simple variants.
+  The complex logic was not intended to be exposed.
+* [#2066] Re-add key validation in form builder
+* Fixed some translation mistakes
+* Only display application version for authenticated staff users, some pages still
+  leaked this information
+* Fixed styling of the password reset pages
+* [#2154] Fixed coloured links e-mail rendering crash
+* [#2117] Fixed submission export for submissions with filled out subset of
+  available fields
 
 **Project maintenance**
 
@@ -264,6 +288,10 @@ double check with the list of breaking changes in mind.
 * Upgrade to zgw-consumers and django-simple-certmanager
 * Improved documentation on embedding the SDK
 * [#921] Added decision tree docs
+* Removed noise from test output in CI
+* [#1979] documented the upgrade process and added checks to verify consistency/state
+  BEFORE migrating the database when upgrading versions
+* [#2004] Add post-processing hook to add CSRF token parameter
 
 1.1.7 (2022-10-04)
 ==================
