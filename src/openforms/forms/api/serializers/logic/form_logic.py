@@ -4,9 +4,10 @@ from ordered_model.serializers import OrderedModelSerializer
 from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
+from openforms.api.fields import RelatedFieldFromContext
 from openforms.api.serializers import ListWithChildSerializer
 
-from ....models import FormLogic, FormStep
+from ....models import Form, FormLogic, FormStep
 from ...validators import (
     FormLogicTriggerFromStepFormValidator,
     JsonLogicTriggerValidator,
@@ -16,6 +17,15 @@ from .action_serializers import LogicComponentActionSerializer
 
 
 class FormLogicBaseSerializer(serializers.HyperlinkedModelSerializer):
+    form = RelatedFieldFromContext(
+        queryset=Form.objects.all(),
+        view_name="api:form-detail",
+        lookup_field="uuid",
+        lookup_url_kwarg="uuid_or_slug",
+        required=True,
+        context_name="forms",
+    )
+
     class Meta:
         fields = (
             "uuid",
@@ -26,11 +36,6 @@ class FormLogicBaseSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {
             "uuid": {
                 "read_only": True,
-            },
-            "form": {
-                "view_name": "api:form-detail",
-                "lookup_field": "uuid",
-                "lookup_url_kwarg": "uuid_or_slug",
             },
             "json_logic_trigger": {
                 "help_text": _(
@@ -44,6 +49,19 @@ class FormLogicBaseSerializer(serializers.HyperlinkedModelSerializer):
         validators = [
             JsonLogicTriggerValidator("json_logic_trigger"),
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        related_field = self.Meta.model._meta.get_field("form")
+        self.fields["form"].help_text = related_field.help_text
+        self.fields["form"].label = related_field.verbose_name
+
+
+class FormLogicListSerializer(ListWithChildSerializer):
+    child_serializer_class = (
+        "openforms.forms.api.serializers.logic.form_logic.FormLogicSerializer"
+    )
 
 
 class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
@@ -71,6 +89,7 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
 
     class Meta(FormLogicBaseSerializer.Meta):
         model = FormLogic
+        list_serializer_class = FormLogicListSerializer
         fields = FormLogicBaseSerializer.Meta.fields + (
             "order",
             "trigger_from_step",
@@ -97,7 +116,3 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
         validators = FormLogicBaseSerializer.Meta.validators + [
             FormLogicTriggerFromStepFormValidator()
         ]
-
-
-class FormLogicListSerializer(ListWithChildSerializer):
-    child_serializer_class = FormLogicSerializer

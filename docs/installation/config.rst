@@ -167,7 +167,7 @@ DigiD/EHerkenning/eIDAS settings
 * ``EHERKENNING_SSL_KEY_PATH``: Path to the EHerkenning TLS/SSL key on the server.
 * ``EHERKENNING_ENTITY_ID``: It has the format ``urn:etoegang:DV:<OIN>:entities:<index>``. More information can be found `here <https://afsprakenstelsel.etoegang.nl/display/as/EntityID>`__.
 * ``EHERKENNING_LOA``: LOA stands for 'Level Of Assurance'. The possible values can be found `here <https://afsprakenstelsel.etoegang.nl/display/as/Level+of+assurance>`__. Defaults to ``"urn:etoegang:core:assurance-class:loa3"``.
-* ``EHERKENNING_OIN``: The OIN for the organisation. There is a OIN `catalogue <https://portaal.digikoppeling.nl/registers/>`_ that can be used to search for OINs.
+* ``EHERKENNING_OIN``: The OIN for the organization. There is a OIN `catalogue <https://portaal.digikoppeling.nl/registers/>`_ that can be used to search for OINs.
 * ``EHERKENNING_WANT_ASSERTIONS_SIGNED``: Whether the assertions in the responses should be signed. Defaults to ``True``.
 * ``EHERKENNING_WANT_ASSERTIONS_ENCRYPTED``: Whether the assertions should be encrypted. Defaults to ``False``.
 * ``EHERKENNING_SIGNATURE_ALGORITHM``: Which algorithm to use for the signatures. Defaults to rsa-sha256.

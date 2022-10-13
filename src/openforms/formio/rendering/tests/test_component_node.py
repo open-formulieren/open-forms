@@ -403,3 +403,24 @@ class FormNodeTests(TestCase):
             "Input 6",
         ]
         self.assertEqual(labels, expected_labels)
+
+
+class ContentNodeTest(TestCase):
+    def test_content_node_value_doesnt_error(self):
+        components = [
+            {
+                "key": "content",
+                "html": '<p><a href="http://bla.com"><span style="color:#4c4ce6;">link</span></a></p>',
+                "type": "content",
+                "label": "Content",
+                "customClass": "info",
+            }
+        ]
+
+        submission = SubmissionFactory.from_components(
+            components_list=components, submitted_data={}
+        )
+
+        summary_data = submission.render_summary_page()
+
+        self.assertEqual("link (http://bla.com)", summary_data[0]["data"][0]["value"])

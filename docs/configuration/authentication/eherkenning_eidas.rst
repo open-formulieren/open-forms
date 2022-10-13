@@ -63,7 +63,7 @@ Step by step overview
    * The desired consuming service indexes (or Service IDs)
    * Desired service name(s) in Dutch and English (for example: "Digitaal Loket")
    * Privacy policy URL of your main website
-   * The `OIN`_ of your organisation.
+   * The `OIN`_ of your organization.
 
    Your Open Forms supplier will install the certificates in Open Forms,
    generate some XML metadata files and sends these back to you, or your

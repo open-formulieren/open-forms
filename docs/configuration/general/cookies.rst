@@ -32,7 +32,7 @@ form (see below).
 
 If you created a form that asks for personal data, it's a good idea to enable
 this option to make the user aware they are sending personal data to your 
-organisation. When enabled, a checkbox is shown on the summary page that users
+organization. When enabled, a checkbox is shown on the summary page that users
 need to check before they can submit the form. The message next to the checkbox
 is configurable and can optionally contain the link to the configured privacy 
 policy by using ``{% privacy_policy %}`` in the label.

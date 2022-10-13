@@ -3,9 +3,14 @@ from openforms.forms.api.serializers.logic.form_logic import FormLogicBaseSerial
 from openforms.forms.models import FormPriceLogic
 
 
+class FormPriceLogicListSerializer(ListWithChildSerializer):
+    child_serializer_class = "openforms.forms.api.serializers.logic.form_logic_price.FormPriceLogicSerializer"
+
+
 class FormPriceLogicSerializer(FormLogicBaseSerializer):
     class Meta(FormLogicBaseSerializer.Meta):
         model = FormPriceLogic
+        list_serializer_class = FormPriceLogicListSerializer
         fields = FormLogicBaseSerializer.Meta.fields + ("price",)
         extra_kwargs = {
             **FormLogicBaseSerializer.Meta.extra_kwargs,
@@ -15,7 +20,3 @@ class FormPriceLogicSerializer(FormLogicBaseSerializer):
                 "lookup_url_kwarg": "uuid_or_slug",
             },
         }
-
-
-class FormPriceLogicListSerializer(ListWithChildSerializer):
-    child_serializer_class = FormPriceLogicSerializer

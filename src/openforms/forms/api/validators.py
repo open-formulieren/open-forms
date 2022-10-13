@@ -153,14 +153,12 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
                 if needle_bits[0] == variable.key:
                     return
 
-            variable_related_to_form = form.formvariable_set.filter(key=needle)
-            if not variable_related_to_form:
-                # selectboxes case
-                variable_related_to_form = form.formvariable_set.filter(
-                    key=".".join(needle_bits[:-1])
-                )
+            form_variables = serializer.context["form_variables"]
+            if variable_related_to_form := form_variables.get(needle) is None:
+                alternative_needle = ".".join(needle_bits[:-1])
+                variable_related_to_form = form_variables.get(alternative_needle)
 
-            if not variable_related_to_form:
+            if variable_related_to_form is None:
                 raise serializers.ValidationError(
                     {
                         self.trigger_field: ErrorDetail(

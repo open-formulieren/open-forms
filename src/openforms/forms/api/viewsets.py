@@ -25,6 +25,7 @@ from ..messages import add_success_message
 from ..models import Category, Form, FormDefinition, FormStep, FormVersion
 from ..tasks import recouple_submission_variables_to_form_variables
 from ..utils import export_form, import_form
+from .datastructures import FormVariableWrapper
 from .filters import FormVariableFilter
 from .parsers import (
     FormCamelCaseJSONParser,
@@ -281,9 +282,16 @@ class FormViewSet(viewsets.ModelViewSet):
             # So that the admin can display deleted forms, but the list endpoint doesn't return them
             queryset = queryset.filter(_is_deleted=False)
 
-        # ⚡️ - the prefetches are not required for the variables bulk (update/read)
+        # ⚡️ - the prefetches are not required for the variables/logic bulk (update/read)
         # endpoints, so we clear prefetches and select_related calls.
-        if self.action in ("variables_bulk_update", "variables_list"):
+        if self.action in (
+            "variables_bulk_update",
+            "variables_list",
+            "logic_rules_bulk_update",
+            "logic_rules_list",
+            "price_logic_rules_bulk_update",
+            "price_logic_rules_list",
+        ):
             queryset = queryset.select_related(None).prefetch_related(None)
 
         return queryset
@@ -512,7 +520,15 @@ class FormViewSet(viewsets.ModelViewSet):
         logic_rules.delete()
 
         serializer = FormLogicSerializer(
-            data=request.data, many=True, context={"request": request, "form": form}
+            data=request.data,
+            many=True,
+            context={
+                "request": request,
+                "form": form,
+                # context for :class:`openforms.api.fields.RelatedFieldFromContext` lookups
+                "forms": {str(form.uuid): form},
+                "form_variables": FormVariableWrapper(form),
+            },
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -559,7 +575,15 @@ class FormViewSet(viewsets.ModelViewSet):
         price_logic_rules.delete()
 
         serializer = FormPriceLogicSerializer(
-            data=request.data, many=True, context={"request": request, "form": form}
+            data=request.data,
+            many=True,
+            context={
+                "request": request,
+                "form": form,
+                # context for :class:`openforms.api.fields.RelatedFieldFromContext` lookups
+                "forms": {str(form.uuid): form},
+                "form_variables": FormVariableWrapper(form),
+            },
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
