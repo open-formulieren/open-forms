@@ -153,6 +153,7 @@ double check with the list of breaking changes in mind.
   steps without the previous steps being completed.
 * [#1922] First passes at profiling and optimizing the API endpoints performance
 * Enabled Cross-Site-Request-Forgery protections for *anonymous* users
+* [#2042] Various performance improvements
 
 *Form designer*
 
@@ -263,6 +264,8 @@ double check with the list of breaking changes in mind.
   leaked this information
 * Fixed styling of the password reset pages
 * [#2154] Fixed coloured links e-mail rendering crash
+* [#2117] Fixed submission export for submissions with filled out subset of
+  available fields
 
 **Project maintenance**
 
