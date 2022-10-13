@@ -37,7 +37,7 @@ import elasticapm
 from glom import Path, PathAccessError, glom
 from zgw_consumers.concurrent import parallel
 
-from openforms.formio.utils import format_date_value, iter_components
+from openforms.formio.utils import iter_components
 from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.typing import JSONObject
 
@@ -125,8 +125,6 @@ def _set_default_values(
             )
 
         component["defaultValue"] = prefill_value
-        if component["type"] == "date":
-            component["defaultValue"] = format_date_value(prefill_value)
 
 
 def inject_prefill(configuration: dict, submission: "Submission") -> None:

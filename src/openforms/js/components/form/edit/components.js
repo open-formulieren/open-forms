@@ -27,4 +27,12 @@ const MAX_VALUE = {
   weight: 160,
 };
 
-export {DECIMAL_PLACES, MIN_VALUE, MAX_VALUE};
+const ALLOW_NEGATIVE = {
+  type: 'checkbox',
+  input: true,
+  label: 'Allow negative values',
+  tooltip: 'Allow negative values.',
+  key: 'allowNegative',
+};
+
+export {DECIMAL_PLACES, MIN_VALUE, MAX_VALUE, ALLOW_NEGATIVE};
