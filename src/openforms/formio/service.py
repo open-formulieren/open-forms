@@ -13,14 +13,13 @@ from openforms.typing import DataMapping, JSONObject
 from .dynamic_config.service import apply_dynamic_configuration
 from .normalization import normalize_value_for_component
 from .typing import Component
-from .utils import format_date_value, iter_components, mimetype_allowed
+from .utils import iter_components, mimetype_allowed
 from .variables import inject_variables
 
 __all__ = [
     "get_dynamic_configuration",
     "update_configuration_for_request",
     "normalize_value_for_component",
-    "format_date_value",
     "iter_components",
     "mimetype_allowed",
     "inject_variables",

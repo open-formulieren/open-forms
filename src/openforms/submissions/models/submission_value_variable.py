@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 
 from glom import Assign, PathAccessError, glom
 
-from openforms.formio.utils import get_all_component_keys
+from openforms.formio.utils import format_date_value, get_all_component_keys
 from openforms.forms.models.form_variable import FormVariable
 from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.service import get_static_variables
@@ -340,7 +340,8 @@ class SubmissionValueVariable(models.Model):
             return self.value
 
         if self.value and data_type == FormVariableDataTypes.datetime:
-            naive_date = parse_date(self.value)
+            date = format_date_value(self.value)
+            naive_date = parse_date(date)
             if naive_date is not None:
                 aware_date = timezone.make_aware(datetime.combine(naive_date, time.min))
                 return aware_date

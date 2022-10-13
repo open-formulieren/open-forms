@@ -6,7 +6,7 @@ from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
 
 from .typing import Component
-from .utils import conform_to_mask
+from .utils import conform_to_mask, format_date_value
 
 __all__ = ["normalize_value_for_component", "register", "Normalizer"]
 
@@ -63,3 +63,9 @@ class PostalCodeNormalizer(Normalizer):
                 "Could not conform value '%s' to input mask '%s', returning original value."
             )
             return value
+
+
+@register("date")
+class DateNormalizer(Normalizer):
+    def normalize(self, component: Component, value: str) -> str:
+        return format_date_value(value)
