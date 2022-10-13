@@ -11,6 +11,7 @@ from rest_framework import serializers
 from rest_framework.request import Request
 
 from openforms.api.utils import mark_experimental
+from openforms.formio.normalization import normalize_value_for_component
 from openforms.forms.constants import SubmissionAllowedChoices
 
 from ..form_logic import check_submission_logic
@@ -106,15 +107,14 @@ def get_invalid_prefilled_fields(
         plugin_name = component["prefill"]["plugin"]
         attribute_name = component["prefill"]["attribute"]
 
-        if submission.prefill_data[plugin_name][attribute_name] is None:
+        original_prefill_value = submission.prefill_data[plugin_name][attribute_name]
+        if original_prefill_value is None:
             # the value will be `None` if there is no actual prefill data available, so there is nothing to compare to. This
             # especially applies to test-environments without real prefill-connections.
             continue
 
-        if (
-            submission_step.data[component["key"]]
-            != submission.prefill_data[plugin_name][attribute_name]
-        ):
+        prefill_value = normalize_value_for_component(component, original_prefill_value)
+        if submission_step.data[component["key"]] != prefill_value:
             invalid_prefilled_fields.append(component["label"])
 
     return invalid_prefilled_fields

@@ -369,6 +369,52 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
+    def test_prefilled_data_normalised(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "postcode",
+                        "type": "postcode",
+                        "prefill": {"plugin": "test-prefill", "attribute": "postcode"},
+                        "defaultValue": "4505 XY",
+                        "disabled": True,
+                        "label": "Postcode",
+                        "inputMask": "9999 AA",
+                    },
+                    {
+                        "key": "birthdate",
+                        "type": "date",
+                        "prefill": {"plugin": "test-prefill", "attribute": "birthdate"},
+                        "defaultValue": "1999-01-01",
+                        "disabled": True,
+                        "label": "Birthdate",
+                    },
+                ],
+            },
+        )
+        submission = SubmissionFactory.create(
+            form=form,
+            prefill_data={
+                "test-prefill": {"postcode": "4505XY", "birthdate": "19990101"}
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+            data={"postcode": "4505 XY", "birthdate": "1999-01-01"},
+        )
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
 
 @temp_private_root()
 class CSRFSubmissionCompletionTests(SubmissionsMixin, APITestCase):
