@@ -9,6 +9,7 @@ from rest_framework.test import APITestCase
 
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 
+from ..models import SubmissionValueVariable
 from .factories import SubmissionFactory, TemporaryFileUploadFactory
 from .mixins import SubmissionsMixin
 
@@ -189,3 +190,54 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         response = self.client.post(endpoint, {"data": {"surname": ""}})
 
         self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+
+    def test_prefilled_data_normalised(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "postcode",
+                        "type": "postcode",
+                        "prefill": {"plugin": "test-prefill", "attribute": "postcode"},
+                        "disabled": True,
+                        "label": "Postcode",
+                        "inputMask": "9999 AA",
+                    },
+                    {
+                        "key": "birthdate",
+                        "type": "date",
+                        "prefill": {"plugin": "test-prefill", "attribute": "birthdate"},
+                        "disabled": True,
+                        "label": "Birthdate",
+                    },
+                ],
+            },
+        )
+
+        submission = SubmissionFactory.create(
+            form=form,
+            prefill_data={"postcode": "4505XY", "birthdate": "19990101"},
+        )
+
+        self._add_submission_to_session(submission)
+        response = self.client.put(
+            reverse(
+                "api:submission-steps-detail",
+                kwargs={
+                    "submission_uuid": submission.uuid,
+                    "step_uuid": step.uuid,
+                },
+            ),
+            {"data": {"postcode": "4505 XY", "birthdate": "1999-01-01"}},
+        )
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(
+            SubmissionValueVariable.objects.get(key="postcode").value, "4505 XY"
+        )
+        self.assertEqual(
+            SubmissionValueVariable.objects.get(key="birthdate").value, "1999-01-01"
+        )
