@@ -6,10 +6,11 @@ from django.utils.translation import gettext_lazy as _
 from furl import furl
 from rest_framework.reverse import reverse
 
-from openforms.authentication.base import BasePlugin
-from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
-from openforms.authentication.registry import register
 from openforms.forms.models import Form
+
+from ...base import BasePlugin
+from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from ...registry import register
 
 
 @register("org-oidc")

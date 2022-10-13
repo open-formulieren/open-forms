@@ -10,9 +10,10 @@ from mozilla_django_oidc_db.models import OpenIDConnectConfig
 from rest_framework import status
 
 from openforms.accounts.models import User
-from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
-from openforms.authentication.views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 from openforms.forms.tests.factories import FormFactory
+
+from ....constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from ....views import BACKEND_OUTAGE_RESPONSE_PARAMETER
 
 default_config = dict(
     enabled=True,
