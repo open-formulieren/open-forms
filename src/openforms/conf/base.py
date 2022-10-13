@@ -218,6 +218,7 @@ INSTALLED_APPS = [
     "openforms.authentication.contrib.digid.apps.DigidApp",
     "openforms.authentication.contrib.eherkenning.apps.EHerkenningApp",
     "openforms.authentication.contrib.digid_eherkenning_oidc.apps.DigiDEHerkenningOIDCApp",
+    "openforms.authentication.contrib.org_oidc.apps.OrgOIDCApp",
     "openforms.payments.apps.PaymentsConfig",
     "openforms.payments.contrib.demo.apps.DemoApp",
     "openforms.payments.contrib.ogone.apps.OgoneApp",
@@ -465,6 +466,7 @@ AUTHENTICATION_BACKENDS = [
     "openforms.accounts.backends.UserModelEmailBackend",
     "django.contrib.auth.backends.ModelBackend",
     "mozilla_django_oidc_db.backends.OIDCAuthenticationBackend",
+    "openforms.authentication.contrib.org_oidc.backends.OIDCAuthenticationBackend",
 ]
 
 SESSION_COOKIE_NAME = "openforms_sessionid"

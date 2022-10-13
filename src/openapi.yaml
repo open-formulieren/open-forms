@@ -249,8 +249,15 @@ paths:
           type: string
           format: uuid
         required: true
+      - in: header
+        name: X-CSRFToken
+        schema:
+          type: string
+        required: true
       tags:
       - authentication
+      security:
+      - cookieAuth: []
       responses:
         '204':
           description: No response body
@@ -4676,6 +4683,7 @@ components:
       - eherkenning_oidc
       - digid_machtigen_oidc
       - eherkenning_bewindvoering_oidc
+      - org-oidc
       type: string
     BlankEnum:
       enum:

@@ -12,6 +12,7 @@ class FormAuth(TypedDict):
         AuthAttribute.bsn,
         AuthAttribute.kvk,
         AuthAttribute.pseudo,
+        AuthAttribute.employee_id,
     ]
     value: str
     machtigen: Optional[dict]
