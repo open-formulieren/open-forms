@@ -1,10 +1,9 @@
-SECRET_KEY="{{ secret_key }}"
-DB_NAME="{{ project_name|lower }}"
-DB_USER="{{ project_name|lower }}"
+SECRET_KEY="@r0w-0(&apjfde5fl6h23!vn)r1ldkp1c_d2#!$did4z5hun4a"
+DB_NAME=open-forms
+DB_USER=open-forms
 #
 # For peer authentication via unix domain socket
 # these should be kept empty.
 #
 DB_PASSWORD=""
 DB_HOST=""
-DB_PORT=""
