@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, TypedDict
 
-from openforms.formio.utils import get_component
+from openforms.formio.service import FormioConfigurationWrapper
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormVariable
 from openforms.typing import JSONObject
@@ -36,7 +36,9 @@ class ActionOperation:
         cls = ACTION_TYPE_MAPPING[action_type]
         return cls.from_action(action)
 
-    def apply(self, step: SubmissionStep, configuration: JSONObject) -> None:
+    def apply(
+        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
+    ) -> None:
         """
         Implements the side effects of the action operation.
         """
@@ -66,10 +68,12 @@ class PropertyAction(ActionOperation):
             value=action["action"]["state"],
         )
 
-    def apply(self, step: SubmissionStep, configuration: JSONObject) -> None:
-        component = get_component(configuration, key=self.component)
-        if component is None:
-            return
+    def apply(
+        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
+    ) -> None:
+        if self.component not in configuration:
+            return None
+        component = configuration[self.component]
         component[self.property] = self.value
 
     def get_action_log_data(
@@ -105,7 +109,9 @@ class DisableNextAction(ActionOperation):
     def from_action(cls, action: ActionDict) -> "DisableNextAction":
         return cls()
 
-    def apply(self, step: SubmissionStep, configuration: JSONObject) -> None:
+    def apply(
+        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
+    ) -> None:
         step._can_submit = False
 
     def get_action_log_data(
@@ -132,7 +138,9 @@ class StepNotApplicableAction(ActionOperation):
             form_step_identifier=action["form_step"],
         )
 
-    def apply(self, step: SubmissionStep, configuration: JSONObject) -> None:
+    def apply(
+        self, step: SubmissionStep, configuration: FormioConfigurationWrapper
+    ) -> None:
         execution_state = (
             step.submission.load_execution_state()
         )  # typically cached already

@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from freezegun import freeze_time
 
+from ..datastructures import FormioConfigurationWrapper
 from ..variables import inject_variables, render
 
 VARIABLES = {
@@ -85,7 +86,7 @@ class VariableInjectionTests(SimpleTestCase):
     def test_variable_interpolation(self):
         configuration = deepcopy(CONFIGURATION)
 
-        inject_variables(configuration, VARIABLES)
+        inject_variables(FormioConfigurationWrapper(configuration), VARIABLES)
 
         lookup_table = {comp["key"]: comp for comp in configuration["components"]}
 
@@ -148,7 +149,7 @@ class VariableInjectionTests(SimpleTestCase):
             ]
         }
 
-        inject_variables(configuration, {})
+        inject_variables(FormioConfigurationWrapper(configuration), {})
 
         self.assertEqual(
             configuration["components"][0]["label"],
@@ -166,7 +167,7 @@ class VariableInjectionTests(SimpleTestCase):
             ]
         }
 
-        inject_variables(configuration, {})
+        inject_variables(FormioConfigurationWrapper(configuration), {})
 
         self.assertEqual(
             configuration["components"][0]["label"],

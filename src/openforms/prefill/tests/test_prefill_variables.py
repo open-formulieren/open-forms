@@ -5,7 +5,10 @@ from django.test import RequestFactory, TestCase
 import requests_mock
 
 from openforms.authentication.constants import AuthAttribute
-from openforms.formio.service import get_dynamic_configuration
+from openforms.formio.service import (
+    FormioConfigurationWrapper,
+    get_dynamic_configuration,
+)
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
@@ -107,13 +110,16 @@ class PrefillVariablesTests(TestCase):
         prefill_variables(submission=submission_step.submission)
 
         request = RequestFactory().get("/foo")
-        configuration = get_dynamic_configuration(
-            submission_step.form_step.form_definition.configuration,
+        config_wrapper = FormioConfigurationWrapper(
+            submission_step.form_step.form_definition.configuration
+        )
+        config_wrapper = get_dynamic_configuration(
+            config_wrapper,
             request=request,
             submission=submission_step.submission,
         )
 
-        component = configuration["components"][0]
+        component = config_wrapper.configuration["components"][0]
         self.assertEqual(component["type"], "postcode")
         self.assertEqual(component["defaultValue"], "1015 CJ")
 

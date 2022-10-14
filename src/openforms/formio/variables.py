@@ -6,8 +6,9 @@ from django.template import TemplateSyntaxError
 from openforms.template import parse, render_from_string
 from openforms.typing import DataMapping, JSONObject, JSONValue
 
+from .datastructures import FormioConfigurationWrapper
 from .typing import Component
-from .utils import flatten_by_path, iter_components
+from .utils import flatten_by_path
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +91,9 @@ def validate_configuration(configuration: JSONObject) -> Dict[str, str]:
     return errored_components
 
 
-def inject_variables(configuration: JSONObject, values: DataMapping) -> None:
+def inject_variables(
+    configuration: FormioConfigurationWrapper, values: DataMapping
+) -> None:
     """
     Inject the variable values into the Formio configuration.
 
@@ -107,7 +110,7 @@ def inject_variables(configuration: JSONObject, values: DataMapping) -> None:
     .. todo:: Support getting non-string based configuration from variables, such as
        `validate.required` etc.
     """
-    for component in iter_components(configuration=configuration, recursive=True):
+    for component in configuration:
         for property_name, property_value in iter_template_properties(component):
             if not property_value:
                 continue

@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from django.utils.functional import empty
@@ -6,11 +5,7 @@ from django.utils.functional import empty
 import elasticapm
 
 from openforms.formio.service import get_dynamic_configuration, inject_variables
-from openforms.formio.utils import (
-    get_component_empty_value,
-    is_visible_in_frontend,
-    iter_components,
-)
+from openforms.formio.utils import get_component_empty_value, is_visible_in_frontend
 from openforms.logging import logevent
 
 from .logic.actions import PropertyAction
@@ -68,7 +63,7 @@ def evaluate_form_logic(
 
     """
     # grab the configuration that will be mutated
-    configuration = step.form_step.form_definition.configuration
+    config_wrapper = step.form_step.form_definition.configuration_wrapper
 
     # 1. we have `submission` and `step` available and ...
     # 2. the prefilled variables are already recorded in the variables state
@@ -82,7 +77,7 @@ def evaluate_form_logic(
     # ensure this function is idempotent
     _evaluated = getattr(step, "_form_logic_evaluated", False)
     if _evaluated:
-        return configuration
+        return config_wrapper.configuration
 
     # 3. Load the (variables) state
     submission_variables_state = submission.load_submission_value_variables_state()
@@ -119,10 +114,9 @@ def evaluate_form_logic(
 
     # we need to apply the context-specific configurations before we can apply
     # mutations based on logic, which is then in turn passed to the serializer(s)
-    # TODO: refactor this to rely on variables state, which will move this down to
-    configuration = deepcopy(configuration)
-    configuration = get_dynamic_configuration(
-        configuration,
+    # TODO: refactor this to rely on variables state
+    config_wrapper = get_dynamic_configuration(
+        config_wrapper,
         # context is expected to contain request, as is the default behaviour with DRF
         # view(set)s and serializers. Note that :func:`get_dynamic_configuration` is
         # planned for refactor as part of #1068, which should drop the ``request``
@@ -135,10 +129,10 @@ def evaluate_form_logic(
 
     # 7.1 Apply the component mutation operations
     for mutation in mutation_operations:
-        mutation.apply(step, configuration)
+        mutation.apply(step, config_wrapper)
 
     # 7.2 Interpolate the component configuration with the variables.
-    inject_variables(configuration, data_container.data)
+    inject_variables(config_wrapper, data_container.data)
 
     # 7.3 Handle custom formio types - TODO: this needs to be lifted out of
     # :func:`get_dynamic_configuration` so that it can use variables.
@@ -159,7 +153,7 @@ def evaluate_form_logic(
         data_diff = {}
 
         # Iterate over all components instead of `step.data`, to take hidden fields into account (See: #1755)
-        for component in iter_components(configuration):
+        for component in config_wrapper:
             key = component["key"]
             new_value = updated_step_data.get(key, empty)
             original_value = initial_data.get(key, empty)
@@ -183,7 +177,7 @@ def evaluate_form_logic(
 
     step._form_logic_evaluated = True
 
-    return configuration
+    return config_wrapper.configuration
 
 
 def check_submission_logic(

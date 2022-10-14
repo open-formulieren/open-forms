@@ -1,5 +1,5 @@
 import logging
-from datetime import date, datetime
+import warnings
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 import elasticapm
@@ -39,6 +39,11 @@ def iter_components(
 
 @elasticapm.capture_span(span_type="app.formio.configuration")
 def get_component(configuration: JSONObject, key: str) -> Optional[Component]:
+    warnings.warn(
+        "`openforms.formio.utils.get_component` is not efficient, use "
+        "`openforms.formio.utils.FormioConfigurationWrapper` instead.",
+        DeprecationWarning,
+    )
     for component in iter_components(configuration=configuration, recursive=True):
         if component["key"] == key:
             return component
@@ -108,22 +113,6 @@ def component_in_editgrid(configuration: dict, component: dict) -> bool:
                 return True
 
     return False
-
-
-def format_date_value(date_value: str) -> str:
-    try:
-        parsed_date = date.fromisoformat(date_value)
-    except ValueError:
-        try:
-            parsed_date = datetime.strptime(date_value, "%Y%m%d").date()
-        except ValueError:
-            logger.info(
-                "Invalid date %s for prefill of date field. Using empty value.",
-                date_value,
-            )
-            return ""
-
-    return parsed_date.isoformat()
 
 
 def get_component_datatype(component):
@@ -296,7 +285,3 @@ def is_visible_in_frontend(component: JSONObject, data: DataMapping) -> bool:
         if trigger_component_value == compare_value
         else not conditional_show
     )
-
-
-def get_all_component_keys(configuration: JSONObject) -> List[str]:
-    return [component["key"] for component in iter_components(configuration)]

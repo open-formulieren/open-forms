@@ -412,3 +412,83 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(date2["datePicker"]["minDate"], "2022-09-20T00:00:00+02:00")
         self.assertEqual(date2["datePicker"]["maxDate"], "2022-12-31T00:00:00+01:00")
+
+    def test_custom_components_and_form_logic(self):
+
+        # set up custom field type for test only
+        self.addCleanup(lambda: unregister("testCustomType"))
+
+        @register("testCustomType")
+        def custom_type(component, request, submission):
+            return {
+                "type": "textfield",
+                "key": component["key"],
+                "defaultValue": "testCustomType",
+                "hidden": False,
+            }
+
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "someInput",
+                    },
+                    {
+                        "type": "testCustomType",
+                        "key": "testCustomType",
+                    },
+                ]
+            },
+        )
+        step = form.formstep_set.get()
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "someInput"}, "hide-custom-field"]},
+            actions=[
+                {
+                    "component": "testCustomType",
+                    "action": {
+                        "type": "property",
+                        "property": {
+                            "value": "hidden",
+                            "type": "bool",
+                        },
+                        "state": True,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            form_step=step,
+            submission=submission,
+            data={"someInput": "hide-custom-field"},
+        )
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        components = response.data["form_step"]["configuration"]["components"]
+        expected = [
+            {
+                "type": "textfield",
+                "key": "someInput",
+            },
+            {
+                "type": "textfield",
+                "key": "testCustomType",
+                "defaultValue": "testCustomType",
+                "hidden": True,
+            },
+        ]
+        self.assertEqual(components, expected)

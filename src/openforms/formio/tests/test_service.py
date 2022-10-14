@@ -1,7 +1,10 @@
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
-from openforms.formio.service import update_configuration_for_request
+from openforms.formio.service import (
+    FormioConfigurationWrapper,
+    update_configuration_for_request,
+)
 
 
 class ServiceTestCase(TestCase):
@@ -19,7 +22,9 @@ class ServiceTestCase(TestCase):
                 },
             ],
         }
-        update_configuration_for_request(configuration, request)
+        update_configuration_for_request(
+            FormioConfigurationWrapper(configuration), request
+        )
 
         url = request.build_absolute_uri(reverse("api:formio:temporary-file-upload"))
         self.assertEqual(configuration["components"][0]["url"], url)
