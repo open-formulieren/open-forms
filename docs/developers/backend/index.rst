@@ -19,5 +19,6 @@ following the outlined :ref:`developers_architecture`.
    dev-rendering
    profiling
    upgrade-checks
+   file-uploads
 
 .. _Django: https://www.djangoproject.com/
