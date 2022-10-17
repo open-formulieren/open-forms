@@ -71,31 +71,31 @@ development machine.
        $ npm ci --legacy-peer-deps
        $ npm run build
 
-5. Activate your virtual environment and create the statics and database:
+5. Create a ``.env`` file with database settings. See dotenv.example for an example.
+
+   .. code-block:: bash
+
+        $ cp dotenv.example .env
+
+6. Activate your virtual environment and create the statics and database:
 
    .. code-block:: bash
 
        $ python src/manage.py collectstatic --link
        $ python src/manage.py migrate
 
-6. Create a superuser to access the management interface:
+7. Create a superuser to access the management interface:
 
    .. code-block:: bash
 
        $ python src/manage.py createsuperuser
 
-7. You can now run your installation and point your browser to the address
+8. You can now run your installation and point your browser to the address
    given by this command:
 
    .. code-block:: bash
 
        $ python src/manage.py runserver
-
-8. Create a ``.env`` file with database settings. See dotenv.example for an example.
-
-   .. code-block:: bash
-
-        $ cp dotenv.example .env
 
 
 **Note:** If you are making local, machine specific, changes, add them to
