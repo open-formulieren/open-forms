@@ -12,6 +12,7 @@ Templates.current = customTemplates;
 const getBuilderOptions = () => {
   const maxFileUploadSize = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE');
   const formFieldsRequiredDefault = jsonScriptToVar('config-REQUIRED_DEFAULT');
+  const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
   return {
     builder: {
@@ -122,6 +123,8 @@ const getBuilderOptions = () => {
           fontColor: {
             colors: jsonScriptToVar('config-RICH_TEXT_COLORS'),
           },
+          skin: useDarkMode ? 'oxide-dark' : 'oxide',
+          content_css: useDarkMode ? 'dark' : 'default',
         },
       },
     },
