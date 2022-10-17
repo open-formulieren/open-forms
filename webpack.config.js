@@ -24,6 +24,7 @@ module.exports = {
     [`core-css`]: `${__dirname}/${paths.sourcesRoot}scss/screen.scss`,
     [`core-js`]: `${__dirname}/${paths.sourcesRoot}js/index.js`,
     'pdf-css': `${__dirname}/${paths.pdfScssEntry}`,
+    'public': `${__dirname}/${paths.sourcesRoot}js/public.js`
   },
 
   // (Output) bundle locations.
