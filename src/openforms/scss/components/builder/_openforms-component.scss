@@ -1,3 +1,5 @@
+@import '~microscope-sass/lib/typography';
+
 @import '../../../ui/static/ui/scss/settings';
 @import '../../vars';
 
@@ -13,6 +15,10 @@
       $color-tooltip-background 10px,
       $color-tooltip-background 20px
     );
+
+    legend {
+      @include h2(auto);
+    }
 
     label {
       color: $color_dark;
