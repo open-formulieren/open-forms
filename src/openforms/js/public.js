@@ -1,3 +1,5 @@
+import {onLoaded} from './utils/dom';
+
 const init = () => {
   // connect the "Print this page" link element to a handler
   document.querySelectorAll('.a11y-toolbar__window-print-action').forEach(elem => {
@@ -7,8 +9,4 @@ const init = () => {
   });
 };
 
-if (document.readyState !== 'loading') {
-  init();
-} else {
-  document.addEventListener('DOMContentLoaded', init);
-}
+onLoaded(init);
