@@ -1,6 +1,6 @@
 import copy
 from datetime import timedelta
-from typing import List
+from typing import List, Optional
 
 from django.utils import timezone
 
@@ -245,7 +245,6 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
     submission_step = factory.SubFactory(SubmissionStepFactory)
     temporary_file = factory.SubFactory(TemporaryFileUploadFactory)
     content = factory.django.FileField(filename="attachment.pdf", data=b"content")
-    form_key = factory.Faker("bs")
     file_name = factory.Faker("file_name")
     original_name = factory.Faker("file_name")
     content_type = factory.Faker("mime_type")
@@ -256,29 +255,32 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
     @classmethod
     def create(
         cls,
+        form_key: Optional[str] = None,
         **kwargs,
     ) -> SubmissionFileAttachment:
         file_attachment = super().create(**kwargs)
 
+        # this is no longer a field on the model, but we still want to use the form/sub-variable generating machinery below
+        if form_key is None:
+            form_key = factory.Faker("slug").generate()
+
         submission = file_attachment.submission_step.submission
-        form_variable = submission.form.formvariable_set.filter(
-            key=file_attachment.form_key
-        ).first()
+        form_variable = submission.form.formvariable_set.filter(key=form_key).first()
 
         if not form_variable:
             form_variable = FormVariableFactory.create(
                 form=submission.form,
                 form_definition=file_attachment.submission_step.form_step.form_definition,
-                key=file_attachment.form_key,
+                key=form_key,
             )
 
         submission_variable = submission.submissionvaluevariable_set.filter(
-            key=file_attachment.form_key
+            key=form_key
         ).first()
         if not submission_variable:
             submission_variable = SubmissionValueVariableFactory.create(
                 submission=submission,
-                key=file_attachment.form_key,
+                key=form_key,
                 form_variable=form_variable,
             )
 
