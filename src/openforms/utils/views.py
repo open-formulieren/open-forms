@@ -1,15 +1,19 @@
 from django import http
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import BadRequest
 from django.http import Http404, HttpResponse
 from django.template import TemplateDoesNotExist, loader
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import requires_csrf_token
 from django.views.defaults import ERROR_500_TEMPLATE_NAME
-from django.views.generic import TemplateView
+from django.views.generic import RedirectView, TemplateView
 
 from rest_framework import exceptions as drf_exceptions
 
 from openforms.emails.context import get_wrapper_context
+from openforms.forms.context_processors import sdk_urls
 
 from ..api import exceptions
 
@@ -60,6 +64,18 @@ class ErrorDetailView(TemplateView):
             }
         )
         return context
+
+
+@method_decorator(never_cache, name="dispatch")
+class SDKRedirectView(RedirectView):
+    permanent = False
+
+    def get_redirect_url(self, ext: str):
+        urls = sdk_urls(self.request)
+        key = f"sdk_{ext}_url"
+        if key not in urls:
+            raise BadRequest(f"Invalid extension '{ext}'")
+        return urls[key]
 
 
 class DevViewMixin(LoginRequiredMixin, UserPassesTestMixin):
