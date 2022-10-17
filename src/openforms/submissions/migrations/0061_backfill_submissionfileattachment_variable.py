@@ -11,7 +11,7 @@ def backfill_attachment_submission_variables_from_form_key(apps, schema_editor):
     qs = SubmissionStep.objects.annotate(Count("attachments")).filter(
         attachments__count__gt=0
     )
-    qs = qs.only("id").prefetch_related("attachments")
+    qs = qs.only("id", "submission_id")
 
     for submission_step in qs.iterator():
         vars_qs = SubmissionValueVariable.objects.filter(

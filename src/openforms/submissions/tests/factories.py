@@ -1,6 +1,6 @@
 import copy
 from datetime import timedelta
-from typing import List
+from typing import List, Optional
 
 from django.utils import timezone
 
@@ -255,7 +255,7 @@ class SubmissionFileAttachmentFactory(factory.django.DjangoModelFactory):
     @classmethod
     def create(
         cls,
-        form_key: str = None,
+        form_key: Optional[str] = None,
         **kwargs,
     ) -> SubmissionFileAttachment:
         file_attachment = super().create(**kwargs)
