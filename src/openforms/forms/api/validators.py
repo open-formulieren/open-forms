@@ -32,7 +32,7 @@ class JsonLogicActionValueValidator(JsonLogicValidator):
     message = _("This field needs to refer to a form component")
 
     def __call__(self, value: Union[dict, str]) -> None:
-        if isinstance(value, str):
+        if isinstance(value, (str, int, bool)):
             return
 
         # ensure that the expression itself is valid
