@@ -4,5 +4,8 @@
 // fixes of styling broken by django admin styling
 @import 'formio-component-checkbox';
 
+// Fix for dark theme
+@import 'formio-component-file';
+
 @import 'columns';
 @import 'openforms-component';
