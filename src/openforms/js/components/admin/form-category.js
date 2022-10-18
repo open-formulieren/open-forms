@@ -1,3 +1,4 @@
+import {onLoaded} from 'utils/dom';
 import jsonScriptToVar from 'utils/json-script';
 import {apiCall} from 'utils/fetch';
 
@@ -85,8 +86,4 @@ const loadFormsForCategory = async (node, GETParams) => {
   node.after(fragment);
 };
 
-if (document.readyState !== 'loading') {
-  init();
-} else {
-  document.addEventListener('DOMContentLoaded', init);
-}
+onLoaded(init);

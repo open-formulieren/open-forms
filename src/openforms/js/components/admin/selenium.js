@@ -1,3 +1,5 @@
+import {onLoaded} from 'utils/dom';
+
 const ID = 'selenium-test-id';
 
 const setSeleniumMarker = () => {
@@ -7,11 +9,7 @@ const setSeleniumMarker = () => {
 };
 
 const init = () => {
-  if (document.readyState !== 'loading') {
-    setSeleniumMarker();
-  } else {
-    document.addEventListener('DOMContentLoaded', setSeleniumMarker);
-  }
+  onLoaded(setSeleniumMarker);
 };
 
 export default init;

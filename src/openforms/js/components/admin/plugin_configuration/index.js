@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {IntlProvider} from 'react-intl';
 
+import {onLoaded} from 'utils/dom';
 import jsonScriptToVar from 'utils/json-script';
 import {getIntlProviderProps} from 'components/admin/i18n';
 
@@ -9,7 +10,7 @@ import PluginConfiguration from './PluginConfiguration';
 
 const CLASSNAME = '.plugin-config-react';
 
-document.addEventListener('DOMContentLoaded', async () => {
+const init = async () => {
   const nodes = document.querySelectorAll(CLASSNAME);
   if (!nodes.length) return;
 
@@ -42,4 +43,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       mountNode
     );
   }
-});
+};
+
+onLoaded(init);
