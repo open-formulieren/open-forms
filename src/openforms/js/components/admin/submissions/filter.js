@@ -1,3 +1,5 @@
+import {onLoaded} from 'utils/dom';
+
 function init() {
   // Retrieve the filter link that displays only triggered rules
   const triggeredLink = document.querySelector('.logic-rules-filter > .selected > a');
@@ -45,8 +47,4 @@ function init() {
   triggeredLink.click();
 }
 
-if (document.readyState !== 'loading') {
-  init();
-} else {
-  document.addEventListener('DOMContentLoaded', init);
-}
+onLoaded(init);
