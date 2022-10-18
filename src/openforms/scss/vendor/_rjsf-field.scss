@@ -25,6 +25,11 @@
     input[type='email'] {
       width: $input-field-size; // override from admin/rjsf default
     }
+
+    select {
+      background-color: var(--form-input-bg) !important;
+      border-color: var(--border-color) !important;
+    }
   }
 
   &__errors {
