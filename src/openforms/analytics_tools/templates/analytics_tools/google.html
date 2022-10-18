@@ -23,6 +23,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', '{{ analytics_tools_config.ga_code|escapejs }}');
+  gtag('config', '{{ analytics_tools_config.ga_code|escapejs }}', {send_page_view: false});
 </script>
 {% endif %}
