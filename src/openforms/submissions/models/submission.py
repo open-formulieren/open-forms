@@ -306,6 +306,13 @@ class Submission(models.Model):
         return hasattr(self, "auth_info")
 
     @property
+    def registrator(self):
+        if hasattr(self, "_registrator") and self._registrator:
+            return self._registrator
+        else:
+            return self.auth_info
+
+    @property
     def is_completed(self):
         return bool(self.completed_on)
 

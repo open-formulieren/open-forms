@@ -18,5 +18,6 @@
     "config.RichTextColor",
     "forms.FormLogic",
     "of_authentication.AuthInfo",
+    "of_authentication.RegistratorInfo",
     "upgrades.VersionInfo"
 ]

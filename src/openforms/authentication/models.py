@@ -9,8 +9,7 @@ from .constants import AuthAttribute
 from .tasks import hash_identifying_attributes as hash_identifying_attributes_task
 
 
-# TODO: what about co-sign data?
-class AuthInfo(models.Model):
+class BaseAuthInfo(models.Model):
     plugin = models.CharField(
         verbose_name=_("plugin"),
         help_text=_("Identifier of the authentication plugin."),
@@ -27,28 +26,14 @@ class AuthInfo(models.Model):
         help_text=_("Value of the attribute returned by the authentication plugin."),
         max_length=250,
     )
-    machtigen = models.JSONField(
-        verbose_name=_("machtigen"),
-        help_text=_(
-            "Data related to any 'machtiging' (authorising someone else to perform actions on your behalf)."
-        ),
-        blank=True,
-        null=True,
-    )
     attribute_hashed = models.BooleanField(
         verbose_name=_("identifying attributes hashed"),
         help_text=_("Are the auth/identifying attributes hashed?"),
         default=False,
     )
-    submission = models.OneToOneField(
-        to="submissions.Submission",
-        verbose_name=_("Submission"),
-        on_delete=models.CASCADE,
-        help_text=_("Submission related to this authentication information"),
-        related_name="auth_info",
-    )
 
     class Meta:
+        abstract = True
         verbose_name = _("Authentication details")
         verbose_name_plural = _("Authentication details")
 
@@ -80,3 +65,40 @@ class AuthInfo(models.Model):
             validate_bsn(self.value)
         elif self.attribute == AuthAttribute.kvk:
             validate_kvk(self.value)
+
+
+# TODO: what about co-sign data?
+class AuthInfo(BaseAuthInfo):
+    submission = models.OneToOneField(
+        to="submissions.Submission",
+        verbose_name=_("Submission"),
+        on_delete=models.CASCADE,
+        help_text=_("Submission related to this authentication information"),
+        related_name="auth_info",
+    )
+    machtigen = models.JSONField(
+        verbose_name=_("machtigen"),
+        help_text=_(
+            "Data related to any 'machtiging' (authorising someone else to perform actions on your behalf)."
+        ),
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = _("Authentication details")
+        verbose_name_plural = _("Authentication details")
+
+
+class RegistratorInfo(BaseAuthInfo):
+    submission = models.OneToOneField(
+        to="submissions.Submission",
+        verbose_name=_("Submission"),
+        on_delete=models.CASCADE,
+        help_text=_("Submission related to this authentication information"),
+        related_name="_registrator",
+    )
+
+    class Meta:
+        verbose_name = _("Registrator authentication details")
+        verbose_name_plural = _("Registrator authentication details")
