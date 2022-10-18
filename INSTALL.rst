@@ -20,6 +20,8 @@ You need the following libraries and/or programs:
 * `Node.js`_ (LTS version, see ``.nvmrc`` for version information)
 * `npm`_
 * `yarn`_
+* `gettext`_
+* `chromedriver`_
 
 You will also need the following operating-system libraries:
 
@@ -39,6 +41,8 @@ You will also need the following operating-system libraries:
 .. _npm: https://www.npmjs.com/
 .. _yarn: https://yarnpkg.com/
 .. _Redis: https://redis.io/
+.. _gettext: https://www.gnu.org/software/gettext/
+.. _chromedriver: https://chromedriver.chromium.org/downloads
 
 
 Getting started
@@ -82,6 +86,7 @@ development machine.
    .. code-block:: bash
 
        $ python src/manage.py collectstatic --link
+       $ python src/manage.py compilemessages
        $ python src/manage.py migrate
 
 7. Create a superuser to access the management interface:
