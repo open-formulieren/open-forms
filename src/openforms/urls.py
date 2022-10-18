@@ -16,7 +16,7 @@ from mozilla_django_oidc_db.views import AdminLoginFailure
 from openforms.emails.admin import EmailTestAdminView
 from openforms.emails.views import EmailWrapperTestView
 from openforms.submissions.dev_views import SubmissionPDFTestView
-from openforms.utils.views import ErrorDetailView
+from openforms.utils.views import ErrorDetailView, SDKRedirectView
 
 handler500 = "openforms.utils.views.server_error"
 admin.site.site_header = "openforms admin"
@@ -104,6 +104,11 @@ urlpatterns = [
     path("eherkenning/", include("openforms.authentication.contrib.eherkenning.urls")),
     path("digid/idp/", include("digid_eherkenning.mock.idp.digid_urls")),
     path("fouten/<exception_class>/", ErrorDetailView.as_view(), name="error-detail"),
+    # stable SDK urls
+    path(
+        f"{settings.STATIC_URL.lstrip('/')}sdk/open-forms-sdk.<ext>",
+        SDKRedirectView.as_view(),
+    ),
 ]
 
 # NOTE: The staticfiles_urlpatterns also discovers static files (ie. no need to run collectstatic). Both the static
