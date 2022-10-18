@@ -1084,6 +1084,47 @@ class FormLogicAPITests(APITestCase):
         )
         self.assertEqual("invalid", response.json()["invalidParams"][0]["code"])
 
+    def test_create_form_logic_with_primitive_in_action(self):
+        user = SuperUserFactory.create(username="test", password="test")
+        form = FormFactory.create()
+        FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "number",
+                        "key": "testNumber",
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(form=form)
+
+        form_logic_data = [
+            {
+                "form": f"http://testserver{reverse('api:form-detail', kwargs={'uuid_or_slug': form.uuid})}",
+                "order": 0,
+                "is_advanced": True,
+                "json_logic_trigger": {"!!": [True]},
+                "actions": [
+                    {
+                        "formStep": "",
+                        "variable": "testNumber",
+                        "action": {
+                            "type": "variable",
+                            "value": 3,
+                        },
+                    }
+                ],
+            }
+        ]
+
+        self.client.force_authenticate(user=user)
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.put(url, data=form_logic_data)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
     @override_settings(MIDDLEWARE=[])  # cut out some irrelevant queries
     def test_performance_validation_bulk_create_data(self):
         """
