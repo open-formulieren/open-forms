@@ -149,7 +149,7 @@ defusedxml==0.6.0
     #   django-camunda
     #   django-digid-eherkenning
     #   python3-saml
-django==3.2.15
+django==3.2.16
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -586,7 +586,7 @@ psycopg2==2.8.6
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-py==1.10.0
+py==1.11.0
     # via pytest
 pycodestyle==2.7.0
     # via flake8
