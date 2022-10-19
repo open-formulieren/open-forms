@@ -5,7 +5,7 @@
     Google Tag Manager / Analytics code.
 {% endcomment %}
 
-{% if analytics_tools_config.gtm_code %}
+{% if analytics_tools_config.enable_google_analytics and analytics_tools_config.gtm_code %}
 <!-- Google Tag Manager -->
 <script nonce="{{ request.csp_nonce }}">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -15,7 +15,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- End Google Tag Manager -->
 {% endif %}
 
-{% if analytics_tools_config.ga_code %}
+{% if analytics_tools_config.enable_google_analytics and analytics_tools_config.ga_code %}
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ analytics_tools_config.ga_code|escapejs }}"></script>
 <script nonce="{{ request.csp_nonce }}">
