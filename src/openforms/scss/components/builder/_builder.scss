@@ -77,8 +77,13 @@ div.flatpickr-calendar.open {
   }
 
   .choices__input {
-    background-color: var(--form-input-bg) !important;
-    border-color: var(--border-color) !important;
+    background-color: var(--form-input-bg);
+    border-color: var(--border-color);
+  }
+
+  .choices__input.choices__input--cloned {
+    background-color: var(--form-input-bg);
+    border-color: var(--border-color);
   }
 
   .choices__item--selectable.is-highlighted {
@@ -223,5 +228,9 @@ div.flatpickr-calendar.open {
         border-color: var(--hairline-color) var(--hairline-color) var(--body-bg);
       }
     }
+  }
+
+  .formio-button-add-another {
+    color: var(--body-fg) !important;
   }
 }

@@ -1,5 +1,4 @@
 @import '~microscope-sass/lib/color';
-@import '~microscope-sass/lib/typography';
 
 @import '../../vars';
 
@@ -35,8 +34,4 @@ div#content h1 {
   @include color-danger;
   color: $color-danger;
   font-weight: bold;
-}
-
-.formio-button-add-another:not(:hover) {
-  color: var(--body-fg) !important;
 }
