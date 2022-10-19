@@ -95,6 +95,12 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
     background-color: var(--form-input-bg);
   }
 
+  input[type='checkbox'],
+  input[type='radio'] {
+    color-scheme: dark;
+  }
+
+
   body #toolbar {
     background: var(--body-bg);
   }
