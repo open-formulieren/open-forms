@@ -263,7 +263,7 @@ class OrgOIDCTests(TestCase):
         "openforms.authentication.contrib.org_oidc.backends.OIDCAuthenticationBackend.get_token"
     )
     @patch("mozilla_django_oidc_db.models.OpenIDConnectConfig.get_solo")
-    def test_callback_url_creates_logged_in_djang_ouser(
+    def test_callback_url_creates_logged_in_django_user(
         self,
         mock_get_solo,
         mock_get_token,
@@ -332,6 +332,7 @@ class OrgOIDCTests(TestCase):
         )
         self.assertEqual(status.HTTP_302_FOUND, callback_response.status_code)
 
+        # we got our user
         user = User.objects.get()
         self.assertTrue(user.is_staff)
         self.assertTrue(user.username, "some_username")
@@ -341,11 +342,23 @@ class OrgOIDCTests(TestCase):
         self.assertTrue(user.employee_id, "my_id_value")
 
         # check plugins handle_return() response
-        return_response = self.client.get(callback_response["Location"])
+        return_response = self.client.get(handle_return_url)
 
-        self.assertRedirects(return_response, form_url, fetch_redirect_response=False)
+        f = furl(
+            reverse(
+                "authentication:registrator-subject",
+                kwargs={"slug": self.form.slug},
+            )
+        )
+        f.args["next"] = form_url
+        subject_url = f"http://testserver{f.url}"
+
+        self.assertRedirects(
+            return_response, subject_url, fetch_redirect_response=False
+        )
         self.assertEqual(status.HTTP_302_FOUND, return_response.status_code)
 
+        # check our session data
         self.assertIn(FORM_AUTH_SESSION_KEY, self.client.session)
         s = self.client.session[FORM_AUTH_SESSION_KEY]
         self.assertEqual(s["plugin"], "org-oidc")
@@ -354,3 +367,7 @@ class OrgOIDCTests(TestCase):
 
         # django user logged in
         self.assertTrue(auth.get_user(self.client).is_authenticated)
+
+        # check the registrator subject response
+        subject_response = self.client.get(subject_url)
+        self.assertEqual(status.HTTP_200_OK, subject_response.status_code)

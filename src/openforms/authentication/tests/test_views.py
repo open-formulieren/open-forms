@@ -2,8 +2,11 @@ from unittest.mock import patch
 
 from django.test import override_settings
 from django.test.client import RequestFactory
+from django.utils.translation import gettext as _
 
+from django_webtest import WebTest
 from furl import furl
+from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
@@ -13,7 +16,11 @@ from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
-from ..constants import CO_SIGN_PARAMETER
+from ..constants import (
+    CO_SIGN_PARAMETER,
+    REGISTRATOR_SUBJECT_SESSION_KEY,
+    AuthAttribute,
+)
 from ..registry import Registry
 from ..views import (
     BACKEND_OUTAGE_RESPONSE_PARAMETER,
@@ -384,3 +391,167 @@ class CoSignAuthenticationFlowTests(SubmissionsMixin, APITestCase):
 
         self.submission.refresh_from_db()
         self.assertEqual(self.submission.co_sign_data, {})
+
+
+@override_settings(
+    CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://testserver"]
+)
+class RegistratorSubjectInfoViewTests(WebTest):
+    def setUp(self):
+        super().setUp()
+
+        self.form = FormStepFactory(
+            form__slug="myform",
+            form__authentication_backends=["plugin1"],
+            form_definition__login_required=True,
+        ).form
+
+        form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
+        self.form_url = f"http://testserver{form_path}"
+
+        f = furl(
+            reverse(
+                "authentication:registrator-subject",
+                kwargs={"slug": self.form.slug},
+            )
+        )
+        self.subject_url_missing_next = f.url
+
+        f.args["next"] = "http://not-in-whitelist.net/foo"
+        self.subject_url_not_allowed_next = f.url
+
+        f.args["next"] = self.form_url
+        self.subject_url = f.url
+
+        self.user = UserFactory()
+
+    def test_view_requires_logged_in_user(self):
+        with self.subTest("403 without user"):
+            self.app.get(self.subject_url, status=status.HTTP_403_FORBIDDEN)
+        with self.subTest("200 with user"):
+            self.app.get(self.subject_url, status=200, user=self.user)
+
+    def test_view_displays_user(self):
+        response = self.app.get(self.subject_url, status=200, user=self.user)
+        self.assertContains(response, self.user.get_employee_name())
+
+    def test_view_requires_redirect_target(self):
+        with self.subTest("get"):
+            self.app.get(
+                self.subject_url_missing_next,
+                status=status.HTTP_403_FORBIDDEN,
+                user=self.user,
+            )
+        with self.subTest("post"):
+            self.app.post(
+                self.subject_url_missing_next,
+                status=status.HTTP_403_FORBIDDEN,
+                user=self.user,
+            )
+
+    def test_view_blocks_bad_redirect_target(self):
+        with self.subTest("get"):
+            self.app.get(
+                self.subject_url_not_allowed_next,
+                status=status.HTTP_403_FORBIDDEN,
+                user=self.user,
+            )
+        with self.subTest("post"):
+            self.app.post(
+                self.subject_url_not_allowed_next,
+                status=status.HTTP_403_FORBIDDEN,
+                user=self.user,
+            )
+
+    def test_form_validates_input(self):
+        with self.subTest("invalid empty form"):
+            response = self.app.get(self.subject_url, status=200, user=self.user)
+            form = response.forms["registrator-subject"]
+            response = form.submit(status=200)
+            self.assertContains(response, _("Use either BSN or KvK"), html=True)
+
+        with self.subTest("invalid bsn"):
+            response = self.app.get(self.subject_url, status=200, user=self.user)
+            form = response.forms["registrator-subject"]
+            form["bsn"] = "123"
+            response = form.submit(status=200)
+            message = _("BSN should have %(size)i characters.") % {
+                "size": 9,
+            }
+            self.assertContains(response, message, html=True)
+
+        with self.subTest("invalid kvk"):
+            response = self.app.get(self.subject_url, status=200, user=self.user)
+            form = response.forms["registrator-subject"]
+            form["kvk"] = "123"
+            response = form.submit(status=200)
+            message = _("%(type)s should have %(size)i characters.") % {
+                "type": _("KvK number"),
+                "size": 8,
+            }
+            self.assertContains(response, message, html=True)
+
+        with self.subTest("invalid with both bsn and kvk"):
+            response = self.app.get(self.subject_url, status=200, user=self.user)
+            form = response.forms["registrator-subject"]
+            form["bsn"] = "115736499"
+            form["kvk"] = "12345678"
+            response = form.submit(status=200)
+            self.assertContains(response, _("Use either BSN or KvK"), html=True)
+
+        with self.subTest("valid bsn"):
+            response = self.app.get(self.subject_url, status=200, user=self.user)
+            form = response.forms["registrator-subject"]
+            form["bsn"] = "115736499"
+            response = form.submit(status=302)
+            self.assertRedirects(response, self.form_url)
+
+        with self.subTest("valid bsn"):
+            response = self.app.get(self.subject_url, status=200, user=self.user)
+            form = response.forms["registrator-subject"]
+            form["kvk"] = "12345678"
+            response = form.submit(status=302)
+            self.assertRedirects(response, self.form_url)
+
+        with self.subTest("valid click skip_subject"):
+            response = self.app.get(self.subject_url, status=200, user=self.user)
+            form = response.forms["registrator-subject"]
+            response = form.submit("skip_subject", status=302)
+            self.assertRedirects(response, self.form_url)
+
+    def test_view_sets_registrator_subject_session_data(self):
+        with self.subTest("bsn"):
+            response = self.app.get(self.subject_url, status=200, user=self.user)
+            form = response.forms["registrator-subject"]
+            form["bsn"] = "115736499"
+            response = form.submit(status=302)
+            self.assertRedirects(response, self.form_url)
+
+            self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
+            data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
+            self.assertEqual(
+                data, {"attribute": AuthAttribute.bsn, "value": "115736499"}
+            )
+
+        with self.subTest("kvk"):
+            response = self.app.get(self.subject_url, status=200, user=self.user)
+            form = response.forms["registrator-subject"]
+            form["kvk"] = "12345678"
+            response = form.submit(status=302)
+            self.assertRedirects(response, self.form_url)
+
+            self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
+            data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
+            self.assertEqual(
+                data, {"attribute": AuthAttribute.kvk, "value": "12345678"}
+            )
+
+        with self.subTest("skip_subject"):
+            response = self.app.get(self.subject_url, status=200, user=self.user)
+            form = response.forms["registrator-subject"]
+            response = form.submit("skip_subject", status=302)
+            self.assertRedirects(response, self.form_url)
+
+            self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
+            data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
+            self.assertEqual(data, {"skipped_subject_info": True})

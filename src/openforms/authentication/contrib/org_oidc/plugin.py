@@ -54,7 +54,10 @@ class OIDCAuthentication(BasePlugin):
             "value": request.user.username,
         }
 
-        return HttpResponseRedirect(form_url)
+        # we could render here but let's redirect
+        return HttpResponseRedirect(
+            self.get_registrator_subject_url(request, form, form_url)
+        )
 
     def logout(self, request: HttpRequest):
         for key in (

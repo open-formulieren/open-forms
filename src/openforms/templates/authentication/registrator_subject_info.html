@@ -1,0 +1,40 @@
+{% extends 'master.html' %}
+
+{% load i18n static %}
+
+{% block menu %}{% endblock %}
+
+{% block content %}
+    <h2>
+        {% blocktranslate with name=user.get_employee_name trimmed %}
+           Logged in as employee {{ name }}.
+        {% endblocktranslate %}
+    </h2>
+    <p>
+        {% blocktranslate trimmed %}
+           When filling out a form for a client or company please enter additional information
+        {% endblocktranslate %}
+    </p>
+    <form id="registrator-subject" method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="fieldWrapper">
+            {{ form.bsn.errors }}
+            <label for="{{ form.bsn.id_for_label }}">{{ form.bsn.label }}:</label>
+            {{ form.bsn }}
+        </div>
+        <p>{% trans "or" %}</p>
+        <div class="fieldWrapper">
+            {{ form.kvk.errors }}
+            <label for="{{ form.kvk.id_for_label }}">{{ form.kvk.label }}:</label>
+            {{ form.kvk }}
+        </div>
+        <div class="fieldWrapper">
+            <input type="submit" value="{% trans "Continue" %}">
+        </div>
+        <div class="fieldWrapper">
+            {{ form.skip_subject.errors }}
+            <button name="skip_subject" type="submit" value="on">{{ form.skip_subject.label }}</button>
+        </div>
+    </form>
+{% endblock %}

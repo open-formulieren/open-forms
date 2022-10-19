@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional
 
 from django.http import HttpRequest, HttpResponse
 
+from furl import furl
 from rest_framework.reverse import reverse
 
 from openforms.forms.models import Form
@@ -64,6 +65,19 @@ class BasePlugin(AbstractBasePlugin):
             kwargs={"slug": form.slug, "plugin_id": self.identifier},
             request=request,
         )
+
+    def get_registrator_subject_url(
+        self, request: HttpRequest, form: Form, form_url: str
+    ) -> str:
+        f = furl(
+            reverse(
+                "authentication:registrator-subject",
+                kwargs={"slug": form.slug},
+                request=request,
+            )
+        )
+        f.args["next"] = form_url
+        return f.url
 
     def logout(self, request: HttpRequest):
         """
