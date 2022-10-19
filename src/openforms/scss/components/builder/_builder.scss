@@ -69,33 +69,31 @@ div.flatpickr-calendar.open {
   padding-top: 10px;
 }
 
-[ref='editForm'] {
-  .choices__list {
-    &--dropdown {
-      background-color: var(--body-bg);
-      color: var(--body-fg);
-      border-color: var(--border-color);
-    }
-
-    .choices__input {
-      background-color: var(--form-input-bg);
-      border-color: var(--border-color);
-    }
-
-    .choices__item--selectable.is-highlighted {
-      background-color: var(--formio-dropdown-highlighted-bg);
-    }
+.choices__list {
+  &--dropdown {
+    background-color: var(--body-bg);
+    color: var(--body-fg);
+    border-color: var(--border-color);
   }
 
-  .choices__list + .choices__input {
-    border: none;
-    border-radius: unset;
-    padding: 4px 0 4px 2px;
+  .choices__input {
+    background-color: var(--form-input-bg) !important;
+    border-color: var(--border-color) !important;
   }
 
-  .choices__list:not(:empty) + .choices__input {
-    width: 1ch;
+  .choices__item--selectable.is-highlighted {
+    background-color: var(--formio-dropdown-highlighted-bg);
   }
+}
+
+.choices__list + .choices__input {
+  border: none;
+  border-radius: unset;
+  padding: 4px 0 4px 2px;
+}
+
+.choices__list:not(:empty) + .choices__input {
+  width: 1ch;
 }
 
 .builder-sidebar_scroll {
