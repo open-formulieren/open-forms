@@ -1,5 +1,5 @@
 import {Formio} from 'react-formio';
-
+import './initTinymce';
 import './components';
 import OpenForms from './formio_module';
 
