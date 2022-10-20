@@ -135,6 +135,7 @@ class SubmissionValueVariablesState:
                 form_variable=form_variable,
                 key=variable_key,
                 value=form_variable.get_initial_value(),
+                is_initially_prefilled=(form_variable.prefill_plugin != ""),
             )
             all_submission_variables[variable_key] = unsaved_submission_var
 
@@ -156,8 +157,7 @@ class SubmissionValueVariablesState:
     def get_prefill_variables(self) -> List["SubmissionValueVariable"]:
         prefill_vars = []
         for variable in self.variables.values():
-            prefill_plugin = variable.form_variable.prefill_plugin
-            if prefill_plugin == "":
+            if not variable.is_initially_prefilled:
                 continue
             prefill_vars.append(variable)
         return prefill_vars
@@ -294,6 +294,13 @@ class SubmissionValueVariable(models.Model):
         null=True,
         blank=True,
         auto_now=True,
+    )
+    is_initially_prefilled = models.BooleanField(
+        verbose_name=_("is initially prefilled"),
+        help_text=_("Can this variable be prefilled at the beginning of a submission?"),
+        default=False,
+        null=True,
+        blank=True,
     )
 
     objects = SubmissionValueVariableManager()
