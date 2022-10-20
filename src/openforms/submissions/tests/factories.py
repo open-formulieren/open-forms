@@ -297,6 +297,13 @@ class SubmissionValueVariableFactory(factory.django.DjangoModelFactory):
     )
     key = factory.Faker("word")
     source = SubmissionValueVariableSources.user_input
+    is_initially_prefilled = factory.LazyAttribute(
+        lambda submission_value_var: (
+            submission_value_var.form_variable.prefill_plugin != ""
+            if submission_value_var.form_variable
+            else False
+        )
+    )
 
     class Meta:
         model = SubmissionValueVariable
