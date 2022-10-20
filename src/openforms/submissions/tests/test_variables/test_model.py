@@ -4,7 +4,7 @@ from django.db import IntegrityError
 from django.test import TestCase
 from django.utils import timezone
 
-from openforms.forms.tests.factories import FormFactory
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.variables.constants import FormVariableDataTypes
 
 from ...logic.datastructures import DataContainer
@@ -209,3 +209,45 @@ class SubmissionValueVariableModelTests(TestCase):
             # django does not seem to be able to make a time object tz-aware 🤔
             # we'll see if that causes any issues
             self.assertEqual(time_value, time(11, 15))
+
+    def test_is_initially_prefilled_is_set(self):
+        config = {
+            "display": "form",
+            "components": [
+                {
+                    "key": "testPrefilled",
+                    "type": "textfield",
+                    "label": "Test prefilled",
+                    "prefill": {
+                        "plugin": "demo",
+                        "attribute": "random_string",
+                    },
+                    "multiple": False,
+                },
+                {
+                    "key": "testNotPrefilled",
+                    "type": "textfield",
+                    "label": "Test not prefilled",
+                    "prefill": {
+                        "plugin": "",
+                        "attribute": "",
+                    },
+                    "multiple": False,
+                },
+            ],
+        }
+
+        form_step = FormStepFactory.create(form_definition__configuration=config)
+        submission_step = SubmissionStepFactory.create(
+            submission__form=form_step.form,
+            form_step=form_step,
+        )
+
+        submission_value_variables_state = (
+            submission_step.submission.load_submission_value_variables_state()
+        )
+        variables = submission_value_variables_state.variables
+
+        self.assertEqual(2, len(variables))
+        self.assertTrue(variables["testPrefilled"].is_initially_prefilled)
+        self.assertFalse(variables["testNotPrefilled"].is_initially_prefilled)
