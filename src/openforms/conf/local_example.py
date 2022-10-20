@@ -17,4 +17,9 @@ DATABASES = {
 CORS_ALLOW_ALL_ORIGINS = True
 
 # run celery tasks so submissions get processed in dev server
-CELERY_TASK_ALWAYS_EAGER = True
+# Ceveat emptor: this breaks test isolation and breaks a few tests in the suite
+# CELERY_TASK_ALWAYS_EAGER = True
+
+# don't force tokens in dev server
+TWO_FACTOR_PATCH_ADMIN = False
+TWO_FACTOR_FORCE_OTP_ADMIN = False
