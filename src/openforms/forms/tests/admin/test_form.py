@@ -1,6 +1,5 @@
 import json
 from io import BytesIO
-from unittest import skip
 from unittest.mock import patch
 from zipfile import ZipFile
 
@@ -820,95 +819,6 @@ class FormChangeTests(WebTest):
         )
         patcher.start()
         self.addCleanup(patcher.stop)
-
-    @skip("With form variables, it is not possible to have duplicate keys")
-    def test_form_change_duplicate_keys_warning_message(self):
-        """
-        Assert that a warning message is displayed when a form has duplicate
-        keys in multiple form definitions
-        """
-        formdef1 = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {
-                        "key": "duplicate-field1",
-                        "label": "Location",
-                        "type": "textfield",
-                    },
-                    {
-                        "key": "non-duplicate-field1",
-                        "label": "Product",
-                        "type": "textfield",
-                    },
-                ],
-            }
-        )
-        formdef2 = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {
-                        "key": "duplicate-field1",
-                        "label": "Location",
-                        "type": "textfield",
-                    },
-                    {
-                        "key": "duplicate-field2",
-                        "label": "Foo",
-                        "type": "textfield",
-                    },
-                ],
-            }
-        )
-        formdef3 = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {
-                        "key": "duplicate-field2",
-                        "label": "Foo",
-                        "type": "textfield",
-                    },
-                    {
-                        "key": "non-duplicate-field2",
-                        "label": "Bar",
-                        "type": "textfield",
-                    },
-                ],
-            }
-        )
-        FormStepFactory.create(form=self.form, form_definition=formdef1)
-        FormStepFactory.create(form=self.form, form_definition=formdef2)
-        FormStepFactory.create(form=self.form, form_definition=formdef3)
-        response = self.app.get(
-            reverse("admin:forms_form_change", args=(self.form.pk,)),
-            user=self.admin_user,
-        )
-
-        self.assertEqual(response.status_code, 200)
-
-        messagelist = response.pyquery(".messagelist")
-        warning_message = messagelist.find(".warning").text()
-
-        self.assertEqual(
-            warning_message,
-            _("The following form definitions contain fields with duplicate keys: %s")
-            % (
-                "; ".join(
-                    [
-                        _("{} occurs in both {}").format(
-                            "duplicate-field1",
-                            ", ".join([formdef1.name, formdef2.name]),
-                        ),
-                        _("{} occurs in both {}").format(
-                            "duplicate-field2",
-                            ", ".join([formdef2.name, formdef3.name]),
-                        ),
-                    ]
-                )
-            ),
-        )
 
 
 @disable_2fa
