@@ -24,10 +24,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("forms", "0015_merge_20210514_1410"),
-        ("forms", "0025_formvariable_valid_prefill_configuration"),
-        ("forms", "0005_form_product"),
-        ("forms", "0002_delete_formsubmission"),
+        ("forms", "0002_auto_20210917_1114_squashed_0045_remove_formstep_optional"),
         ("config", "0008_globalconfiguration_default_test_kvk"),
     ]
 
