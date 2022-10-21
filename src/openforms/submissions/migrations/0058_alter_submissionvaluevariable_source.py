@@ -12,7 +12,7 @@ def remove_static_submission_variables(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("submissions", "0057_alter_submissionvaluevariable_key"),
+        ("submissions", "0001_initial_squashed_0057_alter_submissionvaluevariable_key"),
     ]
 
     operations = [
