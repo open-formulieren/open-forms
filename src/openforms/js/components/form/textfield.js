@@ -1,5 +1,4 @@
 import {Formio} from 'react-formio';
-
 import {DEFAULT_TEXT_TABS} from './edit/tabs';
 
 class TextField extends Formio.Components.components.textfield {
