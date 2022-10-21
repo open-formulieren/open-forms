@@ -1,6 +1,6 @@
 import logging
 import warnings
-from typing import Any, Dict, Iterator, List, Optional, Tuple
+from typing import Any, Container, Dict, Iterator, List, Optional, Tuple
 
 import elasticapm
 from glom import glom
@@ -140,7 +140,7 @@ def get_component_default_value(component) -> Optional[Any]:
     return default_value
 
 
-def mimetype_allowed(mime_type: str, allowed_mime_types: List[str]) -> bool:
+def mimetype_allowed(mime_type: str, allowed_mime_types: Container[str]) -> bool:
     """
     Test if the file mime type passes the allowed_mime_types Formio configuration.
     """
