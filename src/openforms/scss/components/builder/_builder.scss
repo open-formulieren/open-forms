@@ -232,3 +232,9 @@ div.flatpickr-calendar.open {
     color: var(--body-fg) !important;
   }
 }
+
+.form-row {
+  .form-builder__container {
+    color: var(--body-fg);
+  }
+}
