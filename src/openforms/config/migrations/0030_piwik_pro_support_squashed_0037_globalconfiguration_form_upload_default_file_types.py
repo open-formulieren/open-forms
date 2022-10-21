@@ -159,19 +159,6 @@ def move_analytics_config(apps, _):
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("config", "0030_piwik_pro_support"),
-        ("config", "0031_move_analytics_tools_data"),
-        ("config", "0032_auto_20220810_1526"),
-        ("config", "0031_remove_globalconfiguration_enable_form_variables"),
-        ("config", "0033_merge_20220812_1019"),
-        ("config", "0031_custom_email_save_form"),
-        ("config", "0034_merge_20220816_1227"),
-        ("config", "0035_globalconfiguration_theme_stylesheet_file"),
-        ("config", "0036_globalconfiguration_allow_indexing_form_detail"),
-        ("config", "0037_globalconfiguration_form_upload_default_file_types"),
-    ]
-
     dependencies = [
         ("analytics_tools", "0001_initial"),
         ("config", "0029_rename_design_tokens"),
