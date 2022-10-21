@@ -6,7 +6,10 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("submissions", "0062_remove_submissionfileattachment_form_key"),
+        # XXX: on master, this migration has a different dependency.
+        # Users on stable/2.0.x upgrading to a newer version might have issues, see
+        # https://github.com/open-formulieren/open-forms/issues/2224
+        ("submissions", "0060_auto_20220812_1439"),
     ]
 
     operations = [
