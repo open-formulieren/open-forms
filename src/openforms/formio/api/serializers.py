@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
+from openforms.api.validators import mime_type_validator
 from openforms.submissions.models import TemporaryFileUpload
 
 
@@ -17,7 +18,9 @@ class TemporaryFileUploadSerializer(serializers.Serializer):
     }
     """
 
-    file = serializers.FileField(write_only=True, required=True, use_url=False)
+    file = serializers.FileField(
+        write_only=True, required=True, use_url=False, validators=[mime_type_validator]
+    )
 
     url = serializers.SerializerMethodField(
         label=_("URL"), source="get_url", read_only=True

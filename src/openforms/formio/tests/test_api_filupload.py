@@ -24,7 +24,9 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
     def test_upload_view_requires_active_submission(self):
         url = reverse("api:formio:temporary-file-upload")
-        file = SimpleUploadedFile("my-file.txt", b"my content", content_type="text/bar")
+        file = SimpleUploadedFile(
+            "my-file.txt", b"my content", content_type="text/plain"
+        )
 
         response = self.client.post(url, {"file": file}, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -40,7 +42,9 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(self.submission)
 
         url = reverse("api:formio:temporary-file-upload")
-        file = SimpleUploadedFile("my-file.txt", b"my content", content_type="text/bar")
+        file = SimpleUploadedFile(
+            "my-file.txt", b"my content", content_type="text/plain"
+        )
 
         response = self.client.post(url, {"file": file}, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -60,7 +64,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         # use the convenient helper to check the model instance
         upload = temporary_upload_from_url(body["url"])
         self.assertEqual(upload.file_name, "my-file.txt")
-        self.assertEqual(upload.content_type, "text/bar")
+        self.assertEqual(upload.content_type, "text/plain")
         self.assertEqual(upload.content.read(), b"my content")
         self.assertEqual(upload.file_size, 10)
 
@@ -86,6 +90,52 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
             response.content.decode("utf8"), _("The submitted file is empty.")
         )
         self.assertEqual(response.content_type, "text/plain")
+
+    def test_content_inconsistent_with_mime_type(self):
+        self._add_submission_to_session(self.submission)
+
+        url = reverse("api:formio:temporary-file-upload")
+        file = SimpleUploadedFile(
+            "pixel.png",
+            b"GIF89a\x01\x00\x01\x00\x81\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x08\x04\x00\x01\x04\x04\x00;",
+            content_type="image/png",
+        )
+        response = self.client.post(url, {"file": file}, format="multipart")
+
+        self.assertContains(
+            response,
+            _("The file %(filename)s is not a %(file_type)s.")
+            % {"file_type": "image/png", "filename": "pixel.png"},
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+    def test_fallback_to_extension(self):
+        self._add_submission_to_session(self.submission)
+        url = reverse("api:formio:temporary-file-upload")
+        file = SimpleUploadedFile(
+            "pixel.jpg",
+            b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc```\x00\x00\x00\x04\x00\x01\xf6\x178U\x00\x00\x00\x00IEND\xaeB`\x82",
+            content_type="application/octet-stream",  # Maybe client doesn't know
+        )
+        response = self.client.post(url, {"file": file}, format="multipart")
+
+        self.assertContains(
+            response,
+            _("The file %(filename)s is not a %(file_type)s.")
+            % {"file_type": ".jpg", "filename": "pixel.jpg"},
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+    def test_accepts_unknown_extensions(self):
+        self._add_submission_to_session(self.submission)
+        url = reverse("api:formio:temporary-file-upload")
+        file = SimpleUploadedFile(
+            "pixel.gif",
+            b"GIF89a\x01\x00\x01\x00\x81\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x08\x04\x00\x01\x04\x04\x00;",
+            content_type="application/octet-stream",
+        )
+        response = self.client.post(url, {"file": file}, format="multipart")
+        self.assertEqual(response.status_code, 200)
 
     @override_settings(MAX_FILE_UPLOAD_SIZE=10)  # only allow 10 bytes upload size
     def test_upload_too_large(self):
