@@ -16,7 +16,7 @@ def convert_frontend_advanced_logic(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("forms", "0045_remove_formstep_optional"),
+        ("forms", "0002_auto_20210917_1114_squashed_0045_remove_formstep_optional"),
     ]
 
     operations = [
