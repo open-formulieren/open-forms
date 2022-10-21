@@ -69,7 +69,8 @@ div.flatpickr-calendar.open {
   padding-top: 10px;
 }
 
-[ref='editForm'] {
+[ref='editForm'],
+[ref='component'] {
   .choices__list {
     &--dropdown {
       background-color: var(--body-bg);
@@ -225,5 +226,9 @@ div.flatpickr-calendar.open {
         border-color: var(--hairline-color) var(--hairline-color) var(--body-bg);
       }
     }
+  }
+
+  .formio-button-add-another {
+    color: var(--body-fg) !important;
   }
 }

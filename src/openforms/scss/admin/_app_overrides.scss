@@ -211,16 +211,16 @@ $djai-border-width: 8px;
     }
 
     // re-apply django admin styles
-    background-color: buttonface;
-    border: 1px solid #ccc;
+    background-color: var(--form-input-bg);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     padding: 5px 6px;
     margin-top: 0;
 
     &:focus {
       color: inherit;
-      background-color: buttonface;
-      border-color: #999;
+      background-color: var(--form-input-bg);
+      border-color: var(--border-color);
       box-shadow: none;
       outline: initial;
     }
