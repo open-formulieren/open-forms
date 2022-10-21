@@ -9,6 +9,7 @@ from openforms.formio.service import (
     FormioConfigurationWrapper,
     get_dynamic_configuration,
 )
+from openforms.forms.models import FormVariable
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
@@ -172,3 +173,21 @@ class PrefillVariablesTests(TestCase):
 
         for log in logs:
             self.assertNotEqual(log.event, "prefill_retrieve_success")
+
+    def test_prefill_variables_are_retrieved_when_form_variables_deleted(self):
+        form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
+        submission_step = SubmissionStepFactory.create(
+            submission__form=form_step.form,
+            form_step=form_step,
+            data={"voornamen": "", "age": None},
+        )
+
+        submission_value_variables_state = (
+            submission_step.submission.load_submission_value_variables_state()
+        )
+        submission_value_variables_state.variables
+
+        FormVariable.objects.all().delete()
+
+        prefill_variables = submission_value_variables_state.get_prefill_variables()
+        self.assertEqual(2, len(prefill_variables))
