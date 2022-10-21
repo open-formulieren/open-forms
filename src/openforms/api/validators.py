@@ -66,13 +66,15 @@ def mime_type_validator(arg):
                 pass  # magic db doesn't know extensions; decide later on mime-type
             elif ext not in extensions:
                 raise serializers.ValidationError(
-                    _("The file %(filename)s is not a %(file_type)s.")
-                    % {"filename": value.name, "file_type": ext}
+                    _("The file '{filename}' is not a {file_type}.").format(
+                        filename=value.name, file_type=ext
+                    )
                 )
         elif mime_type != value.content_type:
             raise serializers.ValidationError(
-                _("The file %(filename)s is not a %(file_type)s.")
-                % {"filename": value.name, "file_type": value.content_type}
+                _("The file '{filename}' is not a {file_type}.").format(
+                    filename=value.name, file_type=value.content_type
+                )
             )
         if allowed is None or mimetype_allowed(mime_type, allowed):
             return value
