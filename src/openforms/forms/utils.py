@@ -2,8 +2,7 @@ import json
 import random
 import string
 import zipfile
-from collections import defaultdict
-from typing import Dict, List, Optional
+from typing import List, Optional
 from uuid import uuid4
 
 from django.conf import settings
@@ -301,18 +300,6 @@ def remove_key_from_dict(dictionary, key):
             for value in dictionary[dict_key]:
                 if isinstance(value, dict):
                     remove_key_from_dict(value, key)
-
-
-def get_duplicates_keys_for_form(form: Form) -> Dict[str, List]:
-    seen = defaultdict(list)
-    for formstep in form.formstep_set.select_related("form_definition").order_by("pk"):
-        for key in formstep.form_definition.get_all_keys():
-            seen[key].append(formstep.form_definition.name)
-
-    duplicate_keys = {
-        key: formdefs for key, formdefs in seen.items() if len(formdefs) > 1
-    }
-    return duplicate_keys
 
 
 def parse_trigger(trigger_info: JSONObject) -> Optional[JSONObject]:
