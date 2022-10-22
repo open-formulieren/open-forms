@@ -776,7 +776,7 @@ class FormEditTests(WebTest):
         # delete defaults from migrations, if present
         RichTextColor.objects.all().delete()
         forward_migration = import_string(
-            "openforms.config.migrations.0025_richtextcolordefaults.add_colors"
+            "openforms.config.migrations.0002_make_react_ui_default_squashed_0028_auto_20220601_1422.add_colors"
         )
         forward_migration(apps, schema_editor=None)
         change_page = self.app.get(

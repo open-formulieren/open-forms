@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("forms", "0002_auto_20210917_1114_squashed_0045_remove_formstep_optional"),
-        ("config", "0008_globalconfiguration_default_test_kvk"),
+        ("config", "0001_initial_squashed_0022_merge_20210903_1228"),
     ]
 
     operations = [

@@ -23,35 +23,7 @@ def load_cookiegroups(*args):
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("config", "0001_initial"),
-        ("config", "0002_auto_20210514_1034"),
-        ("config", "0003_auto_20210514_1453"),
-        ("config", "0004_auto_20210521_1352"),
-        ("config", "0005_globalconfiguration_default_test_bsn"),
-        ("config", "0006_auto_20210603_1524"),
-        ("config", "0007_globalconfiguration_display_sdk_information"),
-        ("config", "0005_globalconfiguration_enable_react_form"),
-        ("config", "0008_merge_20210607_1043"),
-        ("config", "0008_globalconfiguration_default_test_kvk"),
-        ("config", "0009_merge_20210621_1635"),
-        ("config", "0009_globalconfiguration_submission_confirmation_template"),
-        ("config", "0010_merge_20210621_1740"),
-        ("config", "0011_auto_20210624_1007"),
-        ("config", "0012_globalconfiguration_allow_empty_initiator"),
-        ("config", "0013_auto_20210715_1615"),
-        ("config", "0014_auto_20210716_1046"),
-        ("config", "0015_globalconfiguration_analytics_cookie_consent_group"),
-        ("config", "0016_load_default_cookiegroups"),
-        ("config", "0017_auto_20210726_0948"),
-        ("config", "0017_auto_20210724_0801"),
-        ("config", "0018_merge_20210726_1031"),
-        ("config", "0019_auto_20210730_1446"),
-        ("config", "0020_auto_20210730_1610"),
-        ("config", "0021_globalconfiguration_enable_demo_plugins"),
-        ("config", "0021_auto_20210823_0909"),
-        ("config", "0022_merge_20210903_1228"),
-    ]
+    initial = True
 
     dependencies = [
         ("cookie_consent", "0002_auto__add_logitem"),
