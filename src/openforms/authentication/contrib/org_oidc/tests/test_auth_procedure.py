@@ -193,7 +193,8 @@ class OrgOIDCTests(TestCase):
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     @override_settings(
-        CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://example.com"]
+        CORS_ALLOW_ALL_ORIGINS=False,
+        CORS_ALLOWED_ORIGINS=["http://example.com", "http://testserver"],
     )
     @patch(
         "mozilla_django_oidc_db.models.OpenIDConnectConfig.get_solo",
