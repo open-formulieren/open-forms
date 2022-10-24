@@ -228,7 +228,7 @@ const REGISTRATION = {
         // if the url starts with '/', then formio will prefix it with the formio
         // base URL, which is of course wrong. We there explicitly use the detected
         // host.
-        url: getFullyQualifiedUrl('/api/v1/registration/attributes'),
+        url: getFullyQualifiedUrl('/api/v2/registration/attributes'),
       },
       valueProperty: 'id',
       template: '<span>{{ item.label }}</span>',
@@ -258,7 +258,7 @@ const VALIDATION = {
         // if the url starts with '/', then formio will prefix it with the formio
         // base URL, which is of course wrong. We there explicitly use the detected
         // host.
-        url: getFullyQualifiedUrl('/api/v1/validation/plugins'),
+        url: getFullyQualifiedUrl('/api/v2/validation/plugins'),
       },
       valueProperty: 'id',
       template: '<span>{{ item.label }}</span>',
@@ -299,7 +299,7 @@ const PREFILL = {
         // if the url starts with '/', then formio will prefix it with the formio
         // base URL, which is of course wrong. We there explicitly use the detected
         // host.
-        url: getFullyQualifiedUrl('/api/v1/prefill/plugins'),
+        url: getFullyQualifiedUrl('/api/v2/prefill/plugins'),
       },
       valueProperty: 'id',
       template: '<span>{{ item.label }}</span>',
@@ -311,7 +311,7 @@ const PREFILL = {
       description: 'Specify the attribute holding the pre-fill data.',
       dataSrc: 'url',
       data: {
-        url: getFullyQualifiedUrl('/api/v1/prefill/plugins/{{ row.prefill.plugin }}/attributes'),
+        url: getFullyQualifiedUrl('/api/v2/prefill/plugins/{{ row.prefill.plugin }}/attributes'),
       },
       valueProperty: 'id',
       template: '<span>{{ item.label }}</span>',

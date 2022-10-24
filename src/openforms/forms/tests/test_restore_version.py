@@ -302,8 +302,8 @@ class RestoreVersionTest(TestCase):
 
 FORM_STEP = [
     {
-        "form": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
-        "form_definition": "http://testserver/api/v1/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+        "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+        "form_definition": "http://testserver/api/v2/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
         "index": 0,
         "slug": "icecream-form-step",
         "uuid": "3ca01601-cd20-4746-bce5-baab47636823",
@@ -322,7 +322,7 @@ FORM = [
         "product": None,
         "show_progress_indicator": True,
         "slug": "icecream-questionnaire",
-        "url": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+        "url": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
         "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
     }
 ]
@@ -335,14 +335,14 @@ FORM_DEFINITION = [
         "name": "Icecream questions",
         "internal_name": "Icecream questions",
         "slug": "icecream-questions",
-        "url": "http://testserver/api/v1/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+        "url": "http://testserver/api/v2/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
         "uuid": "f0dad93b-333b-49af-868b-a6bcb94fa1b8",
     }
 ]
 
 FORM_VARIABLES = [
     {
-        "form": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+        "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
         "name": "CO2 footprint",
         "key": "co2-footprint",
         "source": FormVariableSources.user_defined,

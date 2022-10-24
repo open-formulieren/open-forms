@@ -133,7 +133,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
     // Load the possible prefill attributes
     if (!variable.prefillPlugin) return;
 
-    const url = `/api/v1/prefill/plugins/${variable.prefillPlugin}/attributes`;
+    const url = `/api/v2/prefill/plugins/${variable.prefillPlugin}/attributes`;
     const response = await get(url);
     if (!response.ok) {
       console.error(response.data);

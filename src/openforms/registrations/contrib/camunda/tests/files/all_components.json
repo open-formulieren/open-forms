@@ -859,7 +859,7 @@
         {
             "id": "euv8wmd",
             "key": "file",
-            "url": "http://localhost:8000/api/v1/submissions/files/upload",
+            "url": "http://localhost:8000/api/v2/submissions/files/upload",
             "file": {
                 "name": "",
                 "type": []
