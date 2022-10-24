@@ -1,18 +1,18 @@
-{% extends 'master.html' %}
-
+{% extends 'ui/views/abstract/detail.html' %}
 {% load i18n static %}
 
-{% block menu %}{% endblock %}
 
-{% block content %}
-    <h2>
+{% block card %}
+    <div class="card" style="max-width: 700px;">
+    <h1 class="title">
         {% blocktranslate with name=user.get_employee_name trimmed %}
-           Logged in as employee {{ name }}.
+           Logged in as employee {{ name }}
         {% endblocktranslate %}
-    </h2>
+    </h1>
+    <div class="card__body">
     <p>
         {% blocktranslate trimmed %}
-           When filling out a form for a client or company please enter additional information
+           When filling out a form for a client or company please enter additional information:
         {% endblocktranslate %}
     </p>
     <form id="registrator-subject" method="post">
@@ -23,18 +23,19 @@
             <label for="{{ form.bsn.id_for_label }}">{{ form.bsn.label }}:</label>
             {{ form.bsn }}
         </div>
-        <p>{% trans "or" %}</p>
+        <p style="text-align: center;">{% trans "or" %}</p>
         <div class="fieldWrapper">
             {{ form.kvk.errors }}
             <label for="{{ form.kvk.id_for_label }}">{{ form.kvk.label }}:</label>
             {{ form.kvk }}
         </div>
         <div class="fieldWrapper">
-            <input type="submit" value="{% trans "Continue" %}">
-        </div>
-        <div class="fieldWrapper">
+            <br>
+            <input type="submit" value="{% trans "Continue" %}" class="button button--primary">
             {{ form.skip_subject.errors }}
-            <button name="skip_subject" type="submit" value="on">{{ form.skip_subject.label }}</button>
+            <button name="skip_subject" type="submit" value="on" class="button button--primary">{{ form.skip_subject.label }}</button>
         </div>
     </form>
+    </div>
+    </div>
 {% endblock %}
