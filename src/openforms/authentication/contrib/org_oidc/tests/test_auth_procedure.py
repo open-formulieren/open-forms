@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from django.contrib import auth
+from django.contrib.auth import get_user
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
@@ -10,7 +11,7 @@ from mozilla_django_oidc_db.models import OpenIDConnectConfig
 from rest_framework import status
 
 from openforms.accounts.models import User
-from openforms.accounts.tests.factories import GroupFactory
+from openforms.accounts.tests.factories import GroupFactory, UserFactory
 from openforms.forms.tests.factories import FormFactory
 
 from ....constants import FORM_AUTH_SESSION_KEY, AuthAttribute
@@ -250,6 +251,30 @@ class OrgOIDCTests(TestCase):
             query_params["redirect_uri"],
             f"http://testserver{reverse('org-oidc:oidc_authentication_callback')}",
         )
+
+    @override_settings(
+        CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://example.com"]
+    )
+    @patch(
+        "mozilla_django_oidc_db.models.OpenIDConnectConfig.get_solo",
+        return_value=OpenIDConnectConfig(**default_config),
+    )
+    def test_start_view_logs_out_current_user_if_any(self, *m):
+        other_user = UserFactory()
+        self.client.force_login(other_user)
+
+        login_url = reverse(
+            "authentication:start",
+            kwargs={"slug": self.form.slug, "plugin_id": "org-oidc"},
+        )
+
+        start_url = furl(login_url).set({"next": "http://example.com"})
+        response = self.client.get(start_url)
+        self.assertEqual(response.status_code, 302)
+
+        user = get_user(self.client)
+        self.assertFalse(user.is_authenticated)
+        self.assertTrue(user.is_anonymous)
 
     @patch(
         "openforms.authentication.contrib.org_oidc.backends.OIDCAuthenticationBackend.get_userinfo"

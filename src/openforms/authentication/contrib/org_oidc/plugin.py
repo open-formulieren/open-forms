@@ -13,6 +13,24 @@ from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...registry import register
 
 
+def _reverse_plus(name, *, args=None, kwargs=None, request=None, query=None):
+    """
+    reverse with absolute URL and GET query params
+    """
+    rev = reverse(
+        name,
+        args=args,
+        kwargs=kwargs,
+        request=request,
+    )
+    if not query:
+        return rev
+    f = furl(rev)
+    for k, v in query.items():
+        f.args[k] = v
+    return f.url
+
+
 @register("org-oidc")
 class OIDCAuthentication(BasePlugin):
     """
@@ -23,20 +41,25 @@ class OIDCAuthentication(BasePlugin):
     provides_auth = AuthAttribute.employee_id
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str):
-        login_url = reverse("org-oidc:init", request=request)
-
-        auth_return_url = reverse(
+        auth_return_url = _reverse_plus(
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": self.identifier},
-        )
-        return_url = furl(auth_return_url).set(
-            {
+            request=request,
+            query={
                 "next": form_url,
-            }
+            },
         )
-
-        redirect_url = furl(login_url).set({"next": str(return_url)})
-        return HttpResponseRedirect(str(redirect_url))
+        redirect_url = _reverse_plus(
+            "org-oidc:init",
+            request=request,
+            query={
+                "next": auth_return_url,
+            },
+        )
+        if request.user.is_authenticated:
+            # logout user if logged in with other account
+            auth.logout(request)
+        return HttpResponseRedirect(redirect_url)
 
     def handle_return(self, request, form):
         """
