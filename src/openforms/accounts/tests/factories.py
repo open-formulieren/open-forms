@@ -2,7 +2,6 @@ from django.conf import settings
 from django.contrib.auth.models import Group, Permission
 
 import factory
-import faker
 
 
 class UserFactory(factory.django.DjangoModelFactory):
