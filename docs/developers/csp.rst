@@ -84,6 +84,11 @@ do not rely on external CDNs (such as the Formio CDN, Google Fonts...).
 
 * The ``img-src`` requires ``data:``, otherwise map and signature components break.
 
+* If Google Tag manager is enabled, the ``img-src`` requires ``www.googletagmanager.com`` to allow the execution of the
+  Tag Manager container code. More information can be found `here`_.
+
+.. _here: https://developers.google.com/tag-platform/tag-manager/web/csp#enable_the_container_tag_to_use_csp
+
 **CSP and WYSIWYG**
 
 Some form design relies on WYSIWYG editors, which results in HTML blobs in API endpoint
