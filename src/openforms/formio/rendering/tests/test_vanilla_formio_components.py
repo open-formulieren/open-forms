@@ -389,19 +389,19 @@ class FormNodeTests(TestCase):
                 "file": [
                     {
                         "data": {
-                            "baseUrl": "http://localhost:8000/api/v1/",
+                            "baseUrl": "http://localhost:8000/api/v2/",
                             "form": "",
                             "name": "blank.doc",
                             "project": "",
                             "size": 1048576,
-                            "url": "http://localhost:8000/api/v1/submissions/files/35527900-8248-4e75-a553-c2d1039a002b",
+                            "url": "http://localhost:8000/api/v2/submissions/files/35527900-8248-4e75-a553-c2d1039a002b",
                         },
                         "name": "blank-65faf10b-afaf-48af-a749-ff5780abf75b.doc",
                         "originalName": "blank.doc",
                         "size": 1048576,
                         "storage": "url",
                         "type": "application/msword",
-                        "url": "http://localhost:8000/api/v1/submissions/files/35527900-8248-4e75-a553-c2d1039a002b",
+                        "url": "http://localhost:8000/api/v2/submissions/files/35527900-8248-4e75-a553-c2d1039a002b",
                     }
                 ]
             },

@@ -100,10 +100,10 @@ NESTED_COMPONENT_CONF = {
 
 class FixedCancelAndChangeLinkPlugin(TestPlugin):
     def get_cancel_link(self, submission) -> str:
-        return "http://fake.nl/api/v1/submission-uuid/token/verify/"
+        return "http://fake.nl/api/v2/submission-uuid/token/verify/"
 
     def get_change_link(self, submission) -> str:
-        return "http://fake.nl/api/v1/submission-uuid/token/change/"
+        return "http://fake.nl/api/v2/submission-uuid/token/change/"
 
 
 @override_settings(CACHES=NOOP_CACHES)
@@ -207,9 +207,9 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                 "email": "test@example.com",
                 "file": [
                     {
-                        "url": "http://server/api/v1/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
+                        "url": "http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
                         "data": {
-                            "url": "http://server/api/v1/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
+                            "url": "http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
                             "form": "",
                             "name": "my-image.jpg",
                             "size": 46114,
@@ -265,14 +265,14 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         self.assertIn("&lt;h1&gt;Data&lt;/h1&gt;", rendered_content)
 
         self.assertInHTML(
-            '<a href="http://fake.nl/api/v1/submission-uuid/token/verify/" rel="nofollow">'
+            '<a href="http://fake.nl/api/v2/submission-uuid/token/verify/" rel="nofollow">'
             + _("Cancel appointment")
             + "</a>",
             rendered_content,
         )
 
         self.assertInHTML(
-            '<a href="http://fake.nl/api/v1/submission-uuid/token/change/" rel="nofollow">'
+            '<a href="http://fake.nl/api/v2/submission-uuid/token/change/" rel="nofollow">'
             + _("Change appointment")
             + "</a>",
             rendered_content,
@@ -472,9 +472,9 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
                 "email": "foo@bar.baz",
                 "file": [
                     {
-                        "url": "http://server/api/v1/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
+                        "url": "http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
                         "data": {
-                            "url": "http://server/api/v1/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
+                            "url": "http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
                             "form": "",
                             "name": "my-image.jpg",
                             "size": 46114,

@@ -55,7 +55,7 @@ urlpatterns = [
     path("docs/", RedirectView.as_view(pattern_name="api:api-docs")),
     # API documentation
     path(
-        "v1/",
+        "v2/",
         include(
             [
                 path(
@@ -74,7 +74,7 @@ urlpatterns = [
     ),
     # actual API endpoints
     path(
-        "v1/",
+        "v2/",
         decorator_include(
             never_cache,
             [

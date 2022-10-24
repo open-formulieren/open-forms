@@ -58,9 +58,9 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
             "test-key": "foo",
             "my_file": [
                 {
-                    "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                    "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                     "data": {
-                        "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                        "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                         "form": "",
                         "name": "my-pdf.pdf",
                         "size": 585,
