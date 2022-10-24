@@ -77,3 +77,55 @@ class I18NAPITests(APISimpleTestCase):
         )
         current = response.json()["current"]
         self.assertEqual(current, "nl")
+
+    @override_settings(
+        USE_I18N=True,
+        LANGUAGE_CODE="en",
+        LANGUAGES=[
+            ("en", _("English")),
+            ("nl", _("Dutch")),
+        ],
+        LANGUAGE_COOKIE_NAME="openforms-language",
+        MIDDLEWARE=[
+            "django.contrib.sessions.middleware.SessionMiddleware",
+            "django.middleware.locale.LocaleMiddleware",
+            "django.middleware.common.CommonMiddleware",
+        ],
+    )
+    def test_put_overrides_negotiated_current(self):
+        SELECT = "en"
+        url = reverse("api:i18n:language")
+        response = self.client.put(
+            url,
+            data={"code": SELECT},
+            HTTP_ACCEPT_LANGUAGE="nl-BE, nl;q=0.9, en;q=0.8",
+        )
+        self.assertEqual(response.status_code, 204)
+
+        url = reverse("api:i18n:info")
+        response = self.client.get(
+            url,
+            HTTP_ACCEPT_LANGUAGE="nl-BE, nl;q=0.9, en;q=0.8",
+        )
+        current = response.json()["current"]
+        self.assertEqual(current, SELECT)
+
+    @override_settings(
+        USE_I18N=True,
+        LANGUAGE_CODE="en",
+        LANGUAGES=[
+            ("en", _("English")),
+            ("nl", _("Dutch")),
+        ],
+        LANGUAGE_COOKIE_NAME="openforms-language",
+        MIDDLEWARE=[
+            "django.contrib.sessions.middleware.SessionMiddleware",
+            "django.middleware.locale.LocaleMiddleware",
+            "django.middleware.common.CommonMiddleware",
+        ],
+    )
+    def test_put_language_checks_for_availability(self):
+        url = reverse("api:i18n:language")
+        # ትግርኛ is not available
+        response = self.client.put(url, data={"code": "ti"})
+        self.assertEqual(response.status_code, 400)
