@@ -26,10 +26,10 @@ from openforms.submissions.serializers import CoSignDataSerializer
 from openforms.utils.redirect import allow_redirect_url
 
 from .base import BasePlugin
-from .constants import CO_SIGN_PARAMETER
+from .constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY
 from .exceptions import InvalidCoSignData
 from .registry import register
-from .signals import co_sign_authentication_success
+from .signals import authentication_success, co_sign_authentication_success
 
 logger = logging.getLogger(__name__)
 
@@ -319,6 +319,9 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
                     {"plugin_id": plugin_id, "location": location},
                 )
                 return HttpResponseBadRequest("redirect not allowed")
+
+        if hasattr(request, "session") and FORM_AUTH_SESSION_KEY in request.session:
+            authentication_success.send(sender=self.__class__, request=request)
 
         return response
 
