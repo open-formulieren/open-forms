@@ -11,8 +11,13 @@ from openforms.accounts.tests.factories import StaffUserFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
-from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from ...constants import (
+    FORM_AUTH_SESSION_KEY,
+    REGISTRATOR_SUBJECT_SESSION_KEY,
+    AuthAttribute,
+)
 from ...registry import Registry
+from ...tests.factories import RegistratorInfoFactory
 from ...tests.test_registry import Plugin
 
 
@@ -97,3 +102,47 @@ class SubmissionLogoutTest(SubmissionsMixin, APITestCase):
 
         # admin user still authenticated
         self.assertIn(SESSION_KEY, session)
+
+    def test_logout_non_existing_plugin(self):
+        register = Registry()
+
+        submission = SubmissionFactory.create(
+            completed=False,
+            auth_info__value="000000000",
+            auth_info__plugin="non_existing_plugin",
+        )
+        RegistratorInfoFactory(submission=submission, plugin="non_existing_plugin")
+
+        self._add_submission_to_session(submission)
+
+        self.assertTrue(submission.is_authenticated)
+
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "test",
+            "attribute": AuthAttribute.bsn,
+            "value": "000000000",
+        }
+        session[REGISTRATOR_SUBJECT_SESSION_KEY] = {
+            "attribute": AuthAttribute.bsn,
+            "value": "000000000",
+        }
+        session.save()
+
+        # call the endpoint
+        url = reverse("api:submission-logout", kwargs={"uuid": submission.uuid})
+        with patch("openforms.authentication.api.views.register", register):
+            response = self.client.delete(url)
+
+        # no error
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+
+        # reload data
+        submission.refresh_from_db()
+        session = self.client.session
+
+        self.assertTrue(submission.auth_info.attribute_hashed)
+        self.assertTrue(submission.registrator.attribute_hashed)
+
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, session)
+        self.assertNotIn(REGISTRATOR_SUBJECT_SESSION_KEY, session)
