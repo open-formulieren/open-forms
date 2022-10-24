@@ -10,6 +10,7 @@ from mozilla_django_oidc_db.models import OpenIDConnectConfig
 from rest_framework import status
 
 from openforms.accounts.models import User
+from openforms.accounts.tests.factories import GroupFactory
 from openforms.forms.tests.factories import FormFactory
 
 from ....constants import FORM_AUTH_SESSION_KEY, AuthAttribute
@@ -285,6 +286,7 @@ class OrgOIDCTests(TestCase):
                         "first_name": "given_name",
                         "employee_id": "arbitrary_employee_id_claim",
                     },
+                    "groups_claim": "arbitrary_groups",
                 },
             }
         )
@@ -298,11 +300,22 @@ class OrgOIDCTests(TestCase):
             "given_name": "John",
             "family_name": "Doe",
             "arbitrary_employee_id_claim": "my_id_value",
+            "arbitrary_groups": ["registrators"],
         }
         mock_verify_token.return_value = user_claims
         mock_get_userinfo.return_value = user_claims
         mock_store_tokens.return_value = {"whatever": 1}
 
+        # setup user group
+        solo = OpenIDConnectConfig.get_solo()
+        group = GroupFactory(
+            name="registrators",
+            permissions=["of_authentication.can_register_client_submission"],
+        )
+        solo.save()
+        solo.default_groups.add(group)
+
+        # setup our form and urls
         form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
         form_url = f"http://testserver{form_path}"
 
@@ -315,6 +328,7 @@ class OrgOIDCTests(TestCase):
         f.args["next"] = form_url
         handle_return_url = f.url
 
+        # go through mock OIDC
         callback_url = reverse("org-oidc:oidc_authentication_callback")
 
         session = self.client.session
@@ -345,6 +359,7 @@ class OrgOIDCTests(TestCase):
         self.assertTrue(user.first_name, "John")
         self.assertTrue(user.last_name, "Doe")
         self.assertTrue(user.employee_id, "my_id_value")
+        self.assertEqual(list(user.groups.all()), [group])
 
         # check plugins handle_return() response
         return_response = self.client.get(handle_return_url)
