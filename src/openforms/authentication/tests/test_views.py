@@ -504,20 +504,20 @@ class RegistratorSubjectInfoViewTests(WebTest):
             form = response.forms["registrator-subject"]
             form["bsn"] = "115736499"
             response = form.submit(status=302)
-            self.assertRedirects(response, self.form_url)
+            self.assertRedirects(response, self.form_url, fetch_redirect_response=False)
 
         with self.subTest("valid bsn"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
             form["kvk"] = "12345678"
             response = form.submit(status=302)
-            self.assertRedirects(response, self.form_url)
+            self.assertRedirects(response, self.form_url, fetch_redirect_response=False)
 
         with self.subTest("valid click skip_subject"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
             response = form.submit("skip_subject", status=302)
-            self.assertRedirects(response, self.form_url)
+            self.assertRedirects(response, self.form_url, fetch_redirect_response=False)
 
     def test_view_sets_registrator_subject_session_data(self):
         with self.subTest("bsn"):
@@ -525,7 +525,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
             form = response.forms["registrator-subject"]
             form["bsn"] = "115736499"
             response = form.submit(status=302)
-            self.assertRedirects(response, self.form_url)
+            self.assertRedirects(response, self.form_url, fetch_redirect_response=False)
 
             self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
             data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
@@ -538,7 +538,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
             form = response.forms["registrator-subject"]
             form["kvk"] = "12345678"
             response = form.submit(status=302)
-            self.assertRedirects(response, self.form_url)
+            self.assertRedirects(response, self.form_url, fetch_redirect_response=False)
 
             self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
             data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
@@ -550,7 +550,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
             response = form.submit("skip_subject", status=302)
-            self.assertRedirects(response, self.form_url)
+            self.assertRedirects(response, self.form_url, fetch_redirect_response=False)
 
             self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
             data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]

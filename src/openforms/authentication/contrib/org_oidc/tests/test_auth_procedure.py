@@ -332,6 +332,11 @@ class OrgOIDCTests(TestCase):
         )
         self.assertEqual(status.HTTP_302_FOUND, callback_response.status_code)
 
+        mock_get_token.assert_called_once()
+        mock_verify_token.assert_called_once()
+        mock_store_tokens.assert_called_once()
+        mock_get_userinfo.assert_called_once()
+
         # we got our user
         user = User.objects.get()
         self.assertTrue(user.is_staff)
