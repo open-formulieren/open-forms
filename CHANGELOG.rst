@@ -2,8 +2,8 @@
 Changelog
 =========
 
-2.0.0 "Règâh" (2022-10-??) - in testing
-=======================================
+2.0.0 "Règâh" (2022-10-26)
+==========================
 
 *The symbol of The Hague is the stork, a majestic bird, which is somewhat
 disrespectfully called a Règâh, or heron, by the residents of The Hague.*
@@ -68,6 +68,9 @@ double check with the list of breaking changes in mind.
   variable. There is an automatic migration to update existing forms.
 * Removed the ``Submission.bsn``, ``Submission.kvk`` and ``Submission.pseudo`` fields.
   These have been replaced with the ``authentication.AuthInfo`` model.
+* The major API version is now ``/api/v2`` and the ``/api/v1`` endpoints have been
+  replaced. For non-deprecated endpoints, you can simply replace ``v1`` with ``v2`` in
+  your own configuration.
 * The logic rules (form logic, price logic) endpoints have been removed in favour of
   the new bulk endpoints
 * The logic action type 'value' has been replaced with action type 'variable'. There is
@@ -229,6 +232,8 @@ double check with the list of breaking changes in mind.
 * Improved search fields in Form/Form Definition admin pages
 * [#2055] Added management command to check for invalid keys
 * [#2058] Added endpoint to collect submission summary data
+* [#2141] Set up stable SDK asset URLs
+* [#2209] Improved validation errors for min/max values in number components
 
 **Bugfixes**
 
@@ -269,6 +274,7 @@ double check with the list of breaking changes in mind.
   available fields
 * [#1899] Fixed validation problem on certain types of prefilled fields during
   anti-tampering check due to insufficient data normalization
+* [#2062] Fixed "print this page" CSP violation
 
 **Project maintenance**
 
@@ -295,6 +301,7 @@ double check with the list of breaking changes in mind.
 * [#1979] documented the upgrade process and added checks to verify consistency/state
   BEFORE migrating the database when upgrading versions
 * [#2004] Add post-processing hook to add CSRF token parameter
+* [#2221] Remove code for duplicated component key warnings
 
 1.1.7 (2022-10-04)
 ==================
