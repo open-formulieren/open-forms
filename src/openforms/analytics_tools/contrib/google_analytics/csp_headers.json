@@ -6,5 +6,9 @@
     {
         "directive" : "script-src",
         "value": "https://www.googletagmanager.com"
+    },
+    {
+        "directive": "img-src",
+        "value": "https://www.googletagmanager.com"
     }
 ]

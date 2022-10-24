@@ -32,7 +32,7 @@
     {% if enable_analytics and analytics_tools_config.enable_google_analytics and analytics_tools_config.gtm_code %}
         {# Load the second part of the Google tag manager snippet #}
         <!-- Google Tag Manager (noscript) -->
-        <noscript><iframe class="google-tag-manager__noscript" src="https://www.googletagmanager.com/ns.html?id={{ analytics_tools_config.gtm_code }}"
+        <noscript><iframe class="gtm-frame" src="https://www.googletagmanager.com/ns.html?id={{ analytics_tools_config.gtm_code }}"
         height="0" width="0"></iframe></noscript>
         <!-- End Google Tag Manager (noscript) -->
     {% endif %}
