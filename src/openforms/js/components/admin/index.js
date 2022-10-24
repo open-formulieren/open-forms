@@ -8,7 +8,6 @@ import jsonScriptToVar from 'utils/json-script';
 import {FormCreationForm} from './form_design/form-creation-form';
 import {TinyMceContext, FeatureFlagsContext} from './form_design/Context';
 import FormVersionsTable from './form_versions/FormVersionsTable';
-import './sdk-snippet';
 import './plugin_configuration';
 import './form-category';
 import './submissions/filter';
