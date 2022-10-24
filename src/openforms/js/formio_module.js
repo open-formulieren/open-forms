@@ -1,3 +1,4 @@
+import Component from './components/form/component';
 import TextArea from './components/form/textarea';
 import TextField from './components/form/textfield';
 import IbanField from './components/form/iban';
@@ -29,6 +30,7 @@ import EditGrid from './components/form/editGrid';
 
 const FormIOModule = {
   components: {
+    component: Component,
     textarea: TextArea,
     textfield: TextField,
     checkbox: CheckboxField,
