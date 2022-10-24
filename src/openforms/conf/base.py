@@ -46,6 +46,12 @@ LANGUAGES = [
     ("en", _("English")),
     ("nl", _("Dutch")),
 ]
+LANGUAGE_COOKIE_HTTPONLY = True
+LANGUAGE_COOKIE_NAME = "openforms_language"
+LANGUAGE_COOKIE_SAMESITE = config(
+    "LANGUAGE_COOKIE_SAMESITE", default="None" if IS_HTTPS else "Lax"
+)
+LANGUAGE_COOKIE_SECURE = IS_HTTPS
 
 TIME_ZONE = "Europe/Amsterdam"  # note: this *may* affect the output of DRF datetimes
 
@@ -236,7 +242,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    # 'django.middleware.locale.LocaleMiddleware',
+    "django.middleware.locale.LocaleMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
