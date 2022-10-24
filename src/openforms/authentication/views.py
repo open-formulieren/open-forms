@@ -1,7 +1,7 @@
 import logging
 from typing import Optional
 
-from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import (
     HttpResponseBadRequest,
@@ -378,6 +378,49 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
         return response
 
 
+@extend_schema(
+    summary=_("Return from external login flow"),
+    description=_(
+        "Authentication plugins for internal employee usage call this endpoint after "
+        "the return step of the authentication flow. The employee has the choice to "
+        "either authenticate the form for themselves, or supply authentication info for "
+        "a client."
+        "\n\nVarious validations are performed:"
+        "\n* the employee must have appropriate user-permission"
+        "\n* the redirect target must match the CORS policy"
+    ),
+    parameters=[
+        OpenApiParameter(
+            name="slug",
+            location=OpenApiParameter.PATH,
+            type=OpenApiTypes.STR,
+            description=_("Slug identifiying the form."),
+        ),
+        OpenApiParameter(
+            name="next",
+            location=OpenApiParameter.QUERY,
+            type=OpenApiTypes.URI,
+            description=_(
+                "URL of the form to redirect back to. This URL is validated "
+                "against the CORS configuration."
+            ),
+            required=True,
+        ),
+    ],
+    responses={
+        (200, "text/html"): OpenApiResponse(
+            response=str,
+            description=_("OK. A form page is rendered."),
+        ),
+        302: None,
+        (400, "text/html"): OpenApiResponse(
+            response=str, description=_("Bad request. Invalid parameters were passed.")
+        ),
+        (403, "text/html"): OpenApiResponse(
+            response=str, description=_("Forbidden. Invalid authentication.")
+        ),
+    },
+)
 class RegistratorSubjectInfoView(PermissionRequiredMixin, FormView):
     form_class = RegistratorSubjectInfoForm
     template_name = "authentication/registrator_subject_info.html"
