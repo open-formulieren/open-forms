@@ -7,11 +7,17 @@ from .models import ConfirmationEmailTemplate
 
 
 class ConfirmationEmailTemplateForm(forms.ModelForm):
-    content = forms.CharField(widget=TinyMCE(attrs={"cols": 80, "rows": 30}))
-
     class Meta:
         model = ConfirmationEmailTemplate
         fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field_name, field in self.fields.items():
+            # Set the widget for all language variants of `content`
+            if field_name.startswith("content_"):
+                field.widget = TinyMCE(attrs={"cols": 80, "rows": 30})
 
 
 class EmailTestForm(forms.Form):

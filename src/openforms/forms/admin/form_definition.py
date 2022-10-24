@@ -5,6 +5,8 @@ from django.urls import reverse
 from django.utils.html import format_html, format_html_join
 from django.utils.translation import ugettext_lazy as _
 
+from modeltranslation.admin import TranslationAdmin
+
 from ...utils.expressions import FirstNotBlank
 from ..forms import FormDefinitionForm
 from ..models import FormDefinition, FormStep
@@ -31,7 +33,7 @@ delete_selected.short_description = _("Delete selected %(verbose_name_plural)s")
 
 
 @admin.register(FormDefinition)
-class FormDefinitionAdmin(FormioConfigMixin, admin.ModelAdmin):
+class FormDefinitionAdmin(FormioConfigMixin, TranslationAdmin):
     form = FormDefinitionForm
     prepopulated_fields = {"slug": ("name",)}
     list_display = ("anno_name", "used_in_forms", "is_reusable", "_num_components")
@@ -50,7 +52,7 @@ class FormDefinitionAdmin(FormioConfigMixin, admin.ModelAdmin):
         used_in_forms = Prefetch(
             "formstep_set",
             queryset=form_steps.select_related("form")
-            .order_by()
+            .order_by("form", "form_definition")
             .distinct("form", "form_definition"),
             to_attr="used_in_steps",
         )
