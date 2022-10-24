@@ -2,9 +2,6 @@
 
 import re
 import uuid
-from collections import defaultdict
-from itertools import chain
-from typing import Set
 
 import django.contrib.postgres.fields.jsonb
 import django.core.validators
@@ -12,14 +9,11 @@ import django.db.migrations.operations.special
 import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
-from django.db.models import Prefetch, Q
-from django.utils.html import format_html
-from django.utils.translation import activate, deactivate_all, gettext as _
+from django.utils.translation import gettext as _
 
 import privates.fields
 import privates.storages
 import tinymce.models
-from glom import glom
 
 import csp_post_processor.fields
 import openforms.forms.models.form_variable
@@ -27,459 +21,9 @@ import openforms.forms.models.form_version
 import openforms.forms.validators
 import openforms.utils.files
 import openforms.utils.validators
-from openforms.authentication.registry import register as auth_register
-from openforms.formio.rendering.constants import RenderConfigurationOptions
-from openforms.formio.utils import iter_components
-from openforms.forms.constants import SubmissionAllowedChoices
-from openforms.forms.models.form_definition import _get_number_of_components
-from openforms.utils.json_logic import JsonLogicTest
-from openforms.variables.constants import FormVariableSources
-from openforms.variables.utils import check_initial_value
-
-# openforms.forms.migrations.0044_fix_user_defined_vars_initial_value
-
-
-def transfer_can_submit_forwards_func(apps, schema_editor):
-    Form = apps.get_model("forms", "Form")
-    forms = Form.objects.all()
-
-    for form in forms:
-        if form.can_submit:
-            form.submission_allowed = SubmissionAllowedChoices.yes
-        else:
-            form.submission_allowed = SubmissionAllowedChoices.no_with_overview
-    Form.objects.bulk_update(forms, ["submission_allowed"])
-
-
-def transfer_can_submit_backwards_func(apps, schema_editor):
-    Form = apps.get_model("forms", "Form")
-    forms = Form.objects.all()
-
-    for form in forms:
-        if form.submission_allowed != SubmissionAllowedChoices.yes:
-            form.can_submit = False
-        else:
-            form.can_submit = True
-    Form.objects.bulk_update(forms, ["can_submit"])
-
-
-def remove_html5_widget_from_forms(apps, schema_editor):
-    FormDefinition = apps.get_model("forms", "FormDefinition")
-
-    form_definitions = FormDefinition.objects.all()
-    for form_definition in form_definitions:
-        for component in iter_components(form_definition.configuration):
-            if component["type"] == "select" and component["widget"] == "html5":
-                component["widget"] = "choicesjs"
-
-    FormDefinition.objects.bulk_update(form_definitions, ["configuration"])
-
-
-def file_component_forwards_func(apps, schema_editor):
-    FormDefinition = apps.get_model("forms", "FormDefinition")
-    for form_definition in FormDefinition.objects.all():
-        changed = False
-        for component in iter_components(form_definition.configuration):
-            if component["type"] == "file":
-                image = component.get("image")
-                of_ns = component.get("of")
-                if not of_ns and isinstance(image, dict):
-                    # we move the 'image' dict a level deeper into 'of' prefix
-                    component["of"] = {"image": image}
-                    # set the original 'image' property
-                    component["image"] = False
-                    changed = True
-
-        if changed:
-            form_definition.save()
-
-
-def migrate_kvk_prefill_from_hoofdvestiging_to_basisprofiel(apps, _):
-    FormDefinition = apps.get_model("forms", "FormDefinition")
-
-    # add the `embedded.hoofdVestiging` prefix for KVK prefills
-    for form_definition in FormDefinition.objects.all():
-        for component in iter_components(form_definition.configuration, recursive=True):
-            plugin_id = glom(component, "prefill.plugin", default=None)
-            attribute = glom(component, "prefill.attribute", default=None)
-            if plugin_id != "kvk-kvknumber":
-                continue
-
-            if not attribute:
-                continue
-
-            # these are lifted from the API schema in a custom fashion and don't need the
-            # prefix, see the plugin code
-            if attribute.startswith("bezoekadres.") or attribute.startswith(
-                "correspondentieadres."
-            ):
-                continue
-
-            new_attribute = f"_embedded.hoofdvestiging.{attribute}"
-            component["prefill"]["attribute"] = new_attribute
-        form_definition.save(update_fields=["configuration"])
-
-
-def migrate_kvk_prefill_from_basisprofiel_to_hoofdvestiging(apps, _):
-    FormDefinition = apps.get_model("forms", "FormDefinition")
-
-    # remove the `embedded.hoofdVestiging` prefix for KVK prefills
-    for form_definition in FormDefinition.objects.all():
-        for component in iter_components(form_definition.configuration, recursive=True):
-            plugin_id = glom(component, "prefill.plugin", default=None)
-            attribute = glom(component, "prefill.attribute", default=None)
-            if plugin_id != "kvk-kvknumber":
-                continue
-
-            if not attribute:
-                continue
-
-            new_attribute = attribute.replace("_embedded.hoofdvestiging.", "", 1)
-            component["prefill"]["attribute"] = new_attribute
-        form_definition.save(update_fields=["configuration"])
-
-
-defaults = {
-    RenderConfigurationOptions.show_in_summary: True,
-    RenderConfigurationOptions.show_in_pdf: True,
-}
-
-
-def update_configuration(component: dict) -> bool:
-    key = RenderConfigurationOptions.show_in_confirmation_email
-    if key not in component:
-        return False
-
-    modified = False
-    for option, default_value in defaults.items():
-        # skip if it's defined already
-        if option in component:
-            continue
-
-        component[option] = default_value
-        modified = True
-
-    return modified
-
-
-def add_missing_show_in_FOO_options(apps, _):
-    FormDefinition = apps.get_model("forms", "FormDefinition")
-    for form_def in FormDefinition.objects.all():
-        if not form_def.configuration:
-            continue
-
-        is_modified = False
-        for component in iter_components(form_def.configuration, recursive=True):
-            is_modified = update_configuration(component)
-
-        if is_modified:
-            form_def.save(update_fields=["configuration"])
-
-
-def find_component_keys(test: JsonLogicTest, candidates: list) -> Set[str]:
-    keys_used = set()
-
-    for value in test.values:
-        if isinstance(value, JsonLogicTest) and value.operator == "var":
-            candidate = value.values[0]
-            if candidate in candidates:
-                keys_used.add(candidate)
-        elif isinstance(value, JsonLogicTest) and value.operator == "date":
-            keys_used |= find_component_keys(value, candidates=candidates)
-
-        elif isinstance(value, JsonLogicTest):
-            keys_used |= find_component_keys(value, candidates=candidates)
-
-    return keys_used
-
-
-def make_logic_order_explicit(apps, schema_editor):
-    """
-    Set an explicit order value for logic rules, per form.
-
-    Since there was no explicit ordering beforehand, we apply the following logic:
-
-    1. Simple rules: introspect the trigger and check which key it is for
-        1. Look up the key in the form components
-        2. Derive which form step the key belongs to
-        3. Order based on form step order
-        4. Within a form step, order on component hierarchy, depth first (i.e. we fetch
-           child components before stepping to siblings.
-        5. If still ambiguous, order by PK
-    2. Simple rules that failed introspection
-    3. Advanced rules: order by PK
-    """
-    Form = apps.get_model("forms", "Form")
-    FormLogic = apps.get_model("forms", "FormLogic")
-
-    objects = []
-    for form in Form.objects.prefetch_related("formlogic_set"):
-        logic_without_vars = []
-        logic_with_vars = []
-
-        # track which key belongs to which form step
-        key_to_step_map = {}
-        # list of keys in depth-first order for every form step
-        depth_first_ordered_keys = defaultdict(list)
-
-        for form_step in form.formstep_set.select_related("form_definition"):
-            _keys = []
-
-            for component in iter_components(
-                form_step.form_definition.configuration, recursive=True
-            ):
-                if not (key := component.get("key")):
-                    continue
-                _keys.append(key)
-                key_to_step_map[key] = form_step
-
-            depth_first_ordered_keys[form_step] = _keys
-
-        # introspect the logic
-        for form_logic in form.formlogic_set.all():
-            logic_test = JsonLogicTest.from_expression(form_logic.json_logic_trigger)
-            component_keys = find_component_keys(
-                logic_test, candidates=list(key_to_step_map)
-            )
-
-            if not component_keys:
-                logic_without_vars.append(form_logic)
-                continue
-
-            steps_used = sorted(
-                {key_to_step_map[key] for key in component_keys},
-                key=lambda step: step.order,
-            )
-            logic_with_vars.append((steps_used, component_keys, form_logic))
-
-        def logic_with_vars_sort_key(logic_tuple):
-            steps_used, component_keys, form_logic = logic_tuple
-            key_indices_by_step = defaultdict(set)
-
-            for key in component_keys:
-                step = key_to_step_map[key]
-                key_indices_by_step[step].add(depth_first_ordered_keys[step].index(key))
-
-            steps_and_keys = []
-            for step in steps_used:
-                key_indices = sorted(key_indices_by_step[step])
-                steps_and_keys.append((step.order, tuple(key_indices)))
-
-            return (tuple(steps_and_keys), form_logic.id)
-
-        # process the ordering of simple logics
-        sorted_logic_with_vars = [
-            form_logic
-            for (_, _, form_logic) in sorted(
-                logic_with_vars, key=logic_with_vars_sort_key
-            )
-        ]
-        # process ambiguous_simple_logics
-        sorted_logic_without_vars = sorted(
-            logic_without_vars, key=lambda logic: logic.id
-        )
-
-        for order, form_logic in enumerate(
-            chain(
-                sorted_logic_without_vars,
-                sorted_logic_with_vars,
-            )
-        ):
-            # only update what needs to be changed
-            if order == form_logic.order:
-                continue
-            form_logic.order = order
-            objects.append(form_logic)
-
-    FormLogic.objects.bulk_update(objects, fields=["order"])
-
-
-def create_form_variables_for_form(apps, schema_editor):
-    Form = apps.get_model("forms", "Form")
-    FormVariable = apps.get_model("forms", "FormVariable")
-
-    # Get the ids of the forms already related to form variables
-    forms_with_form_variables_id = (
-        FormVariable.objects.all().values_list("form__id", flat=True).distinct()
-    )
-
-    forms_without_form_variables = Form.objects.filter(
-        ~Q(id__in=forms_with_form_variables_id)
-    )
-
-    for form in forms_without_form_variables:
-        FormVariable.objects.create_for_form(form)
-
-
-def remove_static_form_variables(apps, schema_editor):
-    FormVariable = apps.get_model("forms", "FormVariable")
-
-    FormVariable.objects.filter(source="static").delete()
-
-
-def remove_component_variables_without_definition(apps, schema_editor):
-    FormVariable = apps.get_model("forms", "FormVariable")
-
-    FormVariable.objects.filter(
-        form_definition__isnull=True, source=FormVariableSources.component
-    ).delete()
-
-
-def set_number_of_components(apps, _):
-    FormDefinition = apps.get_model("forms", "FormDefinition")
-    for fd in FormDefinition.objects.exclude(configuration=None).filter(
-        _num_components=0
-    ):
-        fd._num_components = _get_number_of_components(fd)
-        fd.save(update_fields=["_num_components"])
-
-
-def convert_action_type_value_into_variable(apps, _):
-    FormLogic = apps.get_model("forms", "FormLogic")
-    for rule in FormLogic.objects.iterator():
-        has_changes = False
-        for action in rule.actions:
-            if action["action"]["type"] != "value":
-                continue
-
-            has_changes = True
-            # both are component keys, so we can simply map them
-            action["variable"] = action["component"]
-            action["component"] = ""
-            action["action"]["type"] = "variable"
-
-        if has_changes:
-            rule.save(update_fields=["actions"])
-
-
-def convert_action_type_variable_into_value(apps, _):
-    FormLogic = apps.get_model("forms", "FormLogic")
-    for rule in FormLogic.objects.iterator():
-        component_keys = rule.form.formvariable_set.filter(
-            source="component"
-        ).values_list("key", flat=True)
-        has_changes = False
-        for action in rule.actions:
-            if action["action"]["type"] != "variable":
-                continue
-
-            if (variable_key := action["variable"]) not in component_keys:
-                continue
-
-            has_changes = True
-            action["component"] = variable_key
-            action["variable"] = ""
-            action["action"]["type"] = "value"
-
-        if has_changes:
-            rule.save(update_fields=["actions"])
-
-
-def append_explanation_template_message(apps, schema_editor):
-    activate(settings.LANGUAGE_CODE)
-
-    Form = apps.get_model("forms", "Form")
-    FormStep = apps.get_model("forms", "FormStep")
-
-    for form in Form.objects.prefetch_related(
-        Prefetch(
-            "formstep_set",
-            queryset=FormStep.objects.select_related("form_definition"),
-        )
-    ):
-        plugins = form.authentication_backends
-        login_options_count = len(
-            [plugin_id for plugin_id in plugins if plugin_id in auth_register]
-        )
-        can_login = login_options_count > 0
-        form_login_required = any(
-            form_step.form_definition.login_required
-            for form_step in form.formstep_set.all()
-        )
-
-        if form_login_required:
-            message = _("Please authenticate to start the form.")
-        elif can_login:
-            message = _("Please authenticate or start the form anonymously.")
-        else:
-            message = _("Please click the button below to start the form.")
-
-        form.explanation_template += format_html("<p>{}</p>", message)
-        form.save()
-
-    deactivate_all()
-
-
-def check_user_defined_variables_initial_value(apps, schema_editor):
-    FormVariable = apps.get_model("forms", "FormVariable")
-
-    user_defined_vars = FormVariable.objects.filter(
-        source=FormVariableSources.user_defined
-    )
-
-    variables_to_update = []
-    for variable in user_defined_vars:
-        initial_value = check_initial_value(variable.initial_value, variable.data_type)
-        if initial_value != variable.initial_value:
-            variable.initial_value = initial_value
-            variables_to_update.append(variable)
-
-    FormVariable.objects.bulk_update(variables_to_update, fields=["initial_value"])
 
 
 class Migration(migrations.Migration):
-
-    replaces = [
-        ("forms", "0002_auto_20210917_1114"),
-        ("forms", "0003_auto_20210930_1156"),
-        ("forms", "0004_auto_20211111_1614"),
-        ("forms", "0005_form_confirmation_email_option"),
-        ("forms", "0006_formpricelogic"),
-        ("forms", "0007_form_explanation_template"),
-        ("forms", "0008_form_submission_allowed"),
-        ("forms", "0009_transfer_can_submit"),
-        ("forms", "0010_remove_form_can_submit"),
-        ("forms", "0011_formlogic_is_advanced"),
-        ("forms", "0008_auto_20211216_1639"),
-        ("forms", "0012_merge_20211222_0831"),
-        ("forms", "0013_auto_20211220_1755"),
-        ("forms", "0014_file_component"),
-        ("forms", "0015_auto_20220114_1006"),
-        ("forms", "0016_auto_20220201_1213"),
-        ("forms", "0017_auto_20220215_1715"),
-        ("forms", "0018_auto_20220221_1405"),
-        ("forms", "0006_form_display_main_website_link"),
-        ("forms", "0019_merge_20220228_1207"),
-        ("forms", "0020_migrate_kvk_prefill"),
-        ("forms", "0021_form_auto_login_authentication_backend"),
-        ("forms", "0022_formsexport"),
-        ("forms", "0023_add_show_in_FOO_defaults"),
-        ("forms", "0024_formvariable"),
-        ("forms", "0025_formvariable_valid_prefill_configuration"),
-        ("forms", "0025_auto_20220524_1022"),
-        ("forms", "0026_merge_20220610_1302"),
-        ("forms", "0027_alter_formvariable_key"),
-        ("forms", "0028_auto_20220623_1257"),
-        ("forms", "0029_make_logic_order_explicit"),
-        ("forms", "0030_alter_formlogic_options"),
-        ("forms", "0028_auto_20220628_0923"),
-        ("forms", "0031_merge_20220629_0955"),
-        ("forms", "0032_alter_formvariable_managers"),
-        ("forms", "0033_formvariable_datamigration"),
-        ("forms", "0032_formlogic_trigger_from_step"),
-        ("forms", "0034_merge_20220708_1038"),
-        ("forms", "0035_auto_20220725_0918"),
-        ("forms", "0036_alter_formvariable_source"),
-        ("forms", "0037_remove_invalid_component_vars"),
-        ("forms", "0038_formvariable_form_definition_not_null_for_component_vars"),
-        ("forms", "0039_formdefinition__num_components"),
-        ("forms", "0040_set_number_of_formio_components"),
-        ("forms", "0041_convert_logic_action_type_value_to_variable"),
-        ("forms", "0042_alter_formdefinition_configuration"),
-        ("forms", "0043_explanation_template_data_migration"),
-        ("forms", "0044_fix_user_defined_vars_initial_value"),
-        ("forms", "0045_remove_formstep_optional"),
-    ]
 
     dependencies = [
         ("forms", "0001_initial_squashed_0037_merge_20210903_1213"),
@@ -623,10 +167,6 @@ class Migration(migrations.Migration):
                 verbose_name="submission allowed",
             ),
         ),
-        migrations.RunPython(
-            code=transfer_can_submit_forwards_func,
-            reverse_code=transfer_can_submit_backwards_func,
-        ),
         migrations.RemoveField(
             model_name="form",
             name="can_submit",
@@ -649,13 +189,6 @@ class Migration(migrations.Migration):
                 validators=[openforms.utils.validators.DjangoTemplateValidator()],
                 verbose_name="submission confirmation template",
             ),
-        ),
-        migrations.RunPython(
-            code=remove_html5_widget_from_forms,
-            reverse_code=migrations.RunPython.noop,
-        ),
-        migrations.RunPython(
-            code=file_component_forwards_func, reverse_code=migrations.RunPython.noop
         ),
         migrations.AlterModelOptions(
             name="formstep",
@@ -767,10 +300,6 @@ class Migration(migrations.Migration):
                 verbose_name="display main website link",
             ),
         ),
-        migrations.RunPython(
-            code=migrate_kvk_prefill_from_hoofdvestiging_to_basisprofiel,
-            reverse_code=migrate_kvk_prefill_from_basisprofiel_to_hoofdvestiging,
-        ),
         migrations.AddField(
             model_name="form",
             name="auto_login_authentication_backend",
@@ -828,10 +357,6 @@ class Migration(migrations.Migration):
                 "verbose_name_plural": "forms exports",
             },
             bases=(openforms.utils.files.DeleteFileFieldFilesMixin, models.Model),
-        ),
-        migrations.RunPython(
-            code=add_missing_show_in_FOO_options,
-            reverse_code=migrations.RunPython.noop,
         ),
         migrations.CreateModel(
             name="FormVariable",
@@ -1051,9 +576,6 @@ class Migration(migrations.Migration):
             ),
             preserve_default=False,
         ),
-        migrations.RunPython(
-            code=make_logic_order_explicit, reverse_code=migrations.RunPython.noop
-        ),
         migrations.AlterModelOptions(
             name="formlogic",
             options={
@@ -1088,10 +610,6 @@ class Migration(migrations.Migration):
             managers=[
                 ("objects", openforms.forms.models.form_variable.FormVariableManager()),
             ],
-        ),
-        migrations.RunPython(
-            code=create_form_variables_for_form,
-            reverse_code=migrations.RunPython.noop,
         ),
         migrations.AddField(
             model_name="formlogic",
@@ -1129,10 +647,6 @@ class Migration(migrations.Migration):
                 verbose_name="application version",
             ),
         ),
-        migrations.RunPython(
-            code=remove_static_form_variables,
-            reverse_code=migrations.RunPython.noop,
-        ),
         migrations.AlterField(
             model_name="formvariable",
             name="source",
@@ -1142,10 +656,6 @@ class Migration(migrations.Migration):
                 max_length=50,
                 verbose_name="source",
             ),
-        ),
-        migrations.RunPython(
-            code=remove_component_variables_without_definition,
-            reverse_code=migrations.RunPython.noop,
         ),
         migrations.AddConstraint(
             model_name="formvariable",
@@ -1172,14 +682,6 @@ class Migration(migrations.Migration):
                 verbose_name="number of Formio components",
             ),
         ),
-        migrations.RunPython(
-            code=set_number_of_components,
-            reverse_code=migrations.RunPython.noop,
-        ),
-        migrations.RunPython(
-            code=convert_action_type_value_into_variable,
-            reverse_code=convert_action_type_variable_into_value,
-        ),
         migrations.AlterField(
             model_name="formdefinition",
             name="configuration",
@@ -1188,14 +690,6 @@ class Migration(migrations.Migration):
                 validators=[openforms.forms.validators.validate_template_expressions],
                 verbose_name="Form.io configuration",
             ),
-        ),
-        migrations.RunPython(
-            code=append_explanation_template_message,
-            reverse_code=migrations.RunPython.noop,
-        ),
-        migrations.RunPython(
-            code=check_user_defined_variables_initial_value,
-            reverse_code=migrations.RunPython.noop,
         ),
         migrations.RemoveField(
             model_name="formstep",

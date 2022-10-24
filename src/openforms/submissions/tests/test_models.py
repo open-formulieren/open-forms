@@ -1,7 +1,5 @@
 import logging
 import os
-from collections import OrderedDict
-from unittest import skip
 from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
@@ -29,115 +27,6 @@ from .factories import (
 @temp_private_root()
 class SubmissionTests(TestCase):
     maxDiff = None
-
-    @skip("Can't have duplicate keys with FormVariables")
-    def test_get_merged_data(self):
-        submission = SubmissionFactory.create()
-        SubmissionStepFactory.create(
-            submission=submission,
-            data={"key1": "value1", "key2": "value2"},
-            form_step=FormStepFactory.create(),
-        )
-        SubmissionStepFactory.create(
-            submission=submission,
-            data={"key2": "value-a", "key3": "value-b"},
-            form_step=FormStepFactory.create(),
-        )
-        SubmissionStepFactory.create(
-            submission=submission, form_step=FormStepFactory.create()
-        )
-
-        self.assertEqual(
-            submission.get_merged_data(),
-            {"key1": "value1", "key2": "value-a", "key3": "value-b"},
-        )
-
-    @skip("Can't have duplicate keys with FormVariables")
-    def test_get_ordered_data_with_component_type_formio_formatters(self):
-        form_definition = FormDefinitionFactory.create(
-            configuration={
-                "display": "form",
-                "components": [
-                    {"key": "key", "type": "textfield", "label": "Label"},
-                    {"key": "key2", "type": "textarea", "label": "Label2"},
-                    {"key": "key3", "type": "checkbox", "label": "Label3"},
-                    {
-                        "key": "key4",
-                        "type": "fieldset",
-                        "components": [{"key": "key5", "type": "textfield"}],
-                    },
-                ],
-            }
-        )
-        submission = SubmissionFactory.create()
-        SubmissionStepFactory.create(
-            submission=submission,
-            data={"key3": True, "key2": "this is text in a text area"},
-            form_step__form_definition=form_definition,
-        )
-        SubmissionStepFactory.create(
-            submission=submission,
-            data={
-                "key5": "this is some inner text",
-                "key": "this is some text",
-                "key2": "this is other text in a text area",
-            },
-            form_step__form_definition=form_definition,
-        )
-        SubmissionStepFactory.create(
-            submission=submission,
-            form_step__form_definition=form_definition,
-        )
-        actual = submission.get_ordered_data_with_component_type()
-        expected = OrderedDict(
-            [
-                (
-                    "key",
-                    (
-                        {
-                            "key": "key",
-                            "type": "textfield",
-                            "label": "Label",
-                        },
-                        "this is some text",
-                    ),
-                ),
-                (
-                    "key2",
-                    (
-                        {
-                            "key": "key2",
-                            "type": "textarea",
-                            "label": "Label2",
-                        },
-                        "this is other text in a text area",
-                    ),
-                ),
-                (
-                    "key3",
-                    (
-                        {
-                            "key": "key3",
-                            "type": "checkbox",
-                            "label": "Label3",
-                        },
-                        True,
-                    ),
-                ),
-                (
-                    "key5",
-                    (
-                        {
-                            "key": "key5",
-                            "type": "textfield",
-                            "label": "key5",
-                        },
-                        "this is some inner text",
-                    ),
-                ),
-            ]
-        )
-        self.assertEqual(actual, expected)
 
     def test_submission_data_with_selectboxes_formio_formatters(self):
         form_definition = FormDefinitionFactory.create(

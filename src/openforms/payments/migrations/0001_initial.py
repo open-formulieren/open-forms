@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("submissions", "0026_auto_20210809_1526"),
+        ("submissions", "0001_initial_squashed_0057_alter_submissionvaluevariable_key"),
     ]
 
     operations = [

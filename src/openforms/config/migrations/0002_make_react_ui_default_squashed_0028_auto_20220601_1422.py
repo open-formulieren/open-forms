@@ -17,19 +17,6 @@ import openforms.payments.validators
 import openforms.utils.translations
 import openforms.utils.validators
 
-
-def limit_timout(apps, _):
-    GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
-    # a new system might not have the singleton
-    config = GlobalConfiguration.objects.first()
-    if not config:
-        return
-
-    if config.form_session_timeout > 15:
-        config.form_session_timeout = 15
-        config.save()
-
-
 # default colors from CKEditor source code (in CSS HSL format)
 # via https://github.com/ckeditor/ckeditor5/blob/master/packages/ckeditor5-font/src/fontcolor/fontcolorediting.js
 default_cke_values = [
@@ -88,38 +75,6 @@ def remove_colors(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
-    replaces = [
-        ("config", "0002_make_react_ui_default"),
-        ("config", "0003_auto_20210907_0956"),
-        ("config", "0004_globalconfiguration_cancel_appointment_page"),
-        ("config", "0004_auto_20210909_1739"),
-        ("config", "0005_merge_20210916_1629"),
-        ("config", "0006_globalconfiguration_payment_order_id_prefix"),
-        ("config", "0007_auto_20211027_1743"),
-        ("config", "0008_remove_globalconfiguration_cancel_appointment_page"),
-        ("config", "0009_auto_20211117_1349"),
-        ("config", "0010_auto_20211117_1730"),
-        ("config", "0011_auto_20211122_1628"),
-        ("config", "0012_datamigrate_formsessiontimeout_15mins"),
-        ("config", "0013_modify_form_session_timeout"),
-        ("config", "0014_globalconfiguration_plugin_configuration"),
-        ("config", "0015_auto_20220106_1239"),
-        ("config", "0016_globalconfiguration_enable_formio_formatters"),
-        ("config", "0017_auto_20220215_1715"),
-        ("config", "0018_remove_globalconfiguration_enable_formio_formatters"),
-        ("config", "0019_auto_20220308_1310"),
-        ("config", "0020_auto_20220311_1115"),
-        ("config", "0019_remove_globalconfiguration_enable_react_form"),
-        ("config", "0021_merge_20220311_1133"),
-        ("config", "0022_globalconfiguration_registration_attempt_limit"),
-        ("config", "0023_globalconfiguration_enable_form_variables"),
-        ("config", "0024_richtextcolor"),
-        ("config", "0025_richtextcolordefaults"),
-        ("config", "0026_cspsetting"),
-        ("config", "0027_alter_cspsetting_directive"),
-        ("config", "0028_auto_20220601_1422"),
-    ]
 
     dependencies = [
         ("config", "0001_initial_squashed_0022_merge_20210903_1228"),
@@ -209,9 +164,6 @@ class Migration(migrations.Migration):
                 help_text="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data.",
                 verbose_name="submission confirmation template",
             ),
-        ),
-        migrations.RunPython(
-            code=limit_timout, reverse_code=migrations.operations.RunPython.noop
         ),
         migrations.AlterField(
             model_name="globalconfiguration",

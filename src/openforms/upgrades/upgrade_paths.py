@@ -76,6 +76,11 @@ class UpgradeConstraint:
 # If your current version falls outside of a supported range, you need to do another
 # upgrade path (first) or there is no upgrade path at all.
 UPGRADE_PATHS = {
+    "2.1": UpgradeConstraint(
+        valid_ranges={
+            VersionRange(minimum="2.0.0"),
+        }
+    ),
     "2.0": UpgradeConstraint(
         valid_ranges={
             VersionRange(minimum="1.0.14", maximum="1.1.5"),

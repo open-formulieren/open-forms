@@ -77,7 +77,7 @@ def get_operation(mapping: dict):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("config", "0028_auto_20220601_1422"),
+        ("config", "0002_make_react_ui_default_squashed_0028_auto_20220601_1422"),
     ]
 
     operations = [
