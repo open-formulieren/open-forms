@@ -10,6 +10,7 @@ from mozilla_django_oidc_db.models import OpenIDConnectConfig
 from rest_framework import status
 
 from openforms.accounts.models import User
+from openforms.accounts.tests.factories import GroupFactory
 from openforms.authentication.constants import (
     FORM_AUTH_SESSION_KEY,
     REGISTRATOR_SUBJECT_SESSION_KEY,
@@ -112,6 +113,7 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
                         "first_name": "given_name",
                         "employee_id": "arbitrary_employee_id_claim",
                     },
+                    "groups_claim": "arbitrary_groups",
                 },
             }
         )
@@ -125,10 +127,20 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
             "given_name": "John",
             "family_name": "Doe",
             "arbitrary_employee_id_claim": "my_id_value",
+            "arbitrary_groups": ["registrators"],
         }
         mock_verify_token.return_value = user_claims
         mock_get_userinfo.return_value = user_claims
         mock_store_tokens.return_value = {"whatever": 1}
+
+        # setup user group
+        solo = OpenIDConnectConfig.get_solo()
+        group = GroupFactory(
+            name="registrators",
+            permissions=["of_authentication.can_register_client_submission"],
+        )
+        solo.save()
+        solo.default_groups.add(group)
 
         form_step = FormStepFactory.create(
             form_definition__configuration=CONFIGURATION,
