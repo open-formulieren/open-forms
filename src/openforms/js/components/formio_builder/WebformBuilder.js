@@ -195,6 +195,20 @@ class WebformBuilder extends WebformBuilderFormio {
     this.highlightInvalidComponents();
     return Promise.resolve();
   }
+
+  // Taken from https://github.com/formio/formio.js/blob/v4.13.13/src/WebformBuilder.js#L1450
+  // Modified so that copied components have the right defaultValue
+  copyComponent(component) {
+    if (!window.sessionStorage) {
+      return console.warn('Session storage is not supported in this browser.');
+    }
+    this.addClass(this.refs.form, 'builder-paste-mode');
+    // #2213 - Copied textField components had null defaultValue instead of the right empty value
+    window.sessionStorage.setItem(
+      'formio.clipboard',
+      JSON.stringify({defaultValue: component.emptyValue, ...component.schema})
+    );
+  }
 }
 
 export default WebformBuilder;
