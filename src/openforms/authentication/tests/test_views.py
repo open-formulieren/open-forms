@@ -397,6 +397,8 @@ class CoSignAuthenticationFlowTests(SubmissionsMixin, APITestCase):
     CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://testserver"]
 )
 class RegistratorSubjectInfoViewTests(WebTest):
+    csrf_checks = False
+
     def setUp(self):
         super().setUp()
 
@@ -423,13 +425,23 @@ class RegistratorSubjectInfoViewTests(WebTest):
         f.args["next"] = self.form_url
         self.subject_url = f.url
 
-        self.user = UserFactory()
+        self.user = UserFactory(
+            user_permissions=["of_authentication.can_register_client_submission"]
+        )
 
     def test_view_requires_logged_in_user(self):
         with self.subTest("403 without user"):
             self.app.get(self.subject_url, status=status.HTTP_403_FORBIDDEN)
         with self.subTest("200 with user"):
             self.app.get(self.subject_url, status=200, user=self.user)
+
+    def test_view_requires_permissions(self):
+        with self.subTest("200 with user and permission"):
+            self.app.get(self.subject_url, status=200, user=self.user)
+        with self.subTest("403 with new user and no permission"):
+            self.app.get(
+                self.subject_url, status=status.HTTP_403_FORBIDDEN, user=UserFactory()
+            )
 
     def test_view_displays_user(self):
         response = self.app.get(self.subject_url, status=200, user=self.user)
@@ -439,13 +451,13 @@ class RegistratorSubjectInfoViewTests(WebTest):
         with self.subTest("get"):
             self.app.get(
                 self.subject_url_missing_next,
-                status=status.HTTP_403_FORBIDDEN,
+                status=status.HTTP_400_BAD_REQUEST,
                 user=self.user,
             )
         with self.subTest("post"):
             self.app.post(
                 self.subject_url_missing_next,
-                status=status.HTTP_403_FORBIDDEN,
+                status=status.HTTP_400_BAD_REQUEST,
                 user=self.user,
             )
 
@@ -453,13 +465,13 @@ class RegistratorSubjectInfoViewTests(WebTest):
         with self.subTest("get"):
             self.app.get(
                 self.subject_url_not_allowed_next,
-                status=status.HTTP_403_FORBIDDEN,
+                status=status.HTTP_400_BAD_REQUEST,
                 user=self.user,
             )
         with self.subTest("post"):
             self.app.post(
                 self.subject_url_not_allowed_next,
-                status=status.HTTP_403_FORBIDDEN,
+                status=status.HTTP_400_BAD_REQUEST,
                 user=self.user,
             )
 

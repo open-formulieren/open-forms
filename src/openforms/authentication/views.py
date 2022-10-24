@@ -1,7 +1,7 @@
 import logging
 from typing import Optional
 
-from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.http import (
     HttpResponseBadRequest,
@@ -378,27 +378,24 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
         return response
 
 
-class RegistratorSubjectInfoView(UserPassesTestMixin, FormView):
-    # TODO toevoegen mode permission string, permission required mixin
+class RegistratorSubjectInfoView(PermissionRequiredMixin, FormView):
     form_class = RegistratorSubjectInfoForm
     template_name = "authentication/registrator_subject_info.html"
-    # block the UserPassesTestMixin login redirection
+    permission_required = ["of_authentication.can_register_client_submission"]
+
+    # block the AccessMixin login redirection
     raise_exception = True
 
     cleaned_next_url = None
 
-    def test_func(self):
-        # TODO swap with permission required
-        if self.request.user.is_authenticated and self.request.user.is_active:
-            next_url = self.request.GET.get("next")
-            if next_url:
-                if not allow_redirect_url(next_url):
-                    return False
-                else:
-                    self.cleaned_next_url = next_url
-                    return True
+    def dispatch(self, request, *args, **kwargs):
+        next_url = self.request.GET.get("next")
+        if not next_url or not allow_redirect_url(next_url):
+            return HttpResponseBadRequest("missing or bad redirect")
 
-        return False
+        # save this
+        self.cleaned_next_url = next_url
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         skip_subject = form.cleaned_data.get("skip_subject", False)
