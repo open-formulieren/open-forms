@@ -230,7 +230,6 @@ INSTALLED_APPS = [
     # Apps registering static variables
     "openforms.variables.static_variables.apps.StaticVariables",
     "openforms.authentication.static_variables.apps.AuthStaticVariables",
-    "openforms.pre_requests",
 ]
 
 MIDDLEWARE = [
