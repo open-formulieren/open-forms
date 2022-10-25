@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 #
 # Custom signals
 #
+authentication_success = Signal()
 co_sign_authentication_success = Signal()
 """
 Signal a succesful co-sign authentication.
