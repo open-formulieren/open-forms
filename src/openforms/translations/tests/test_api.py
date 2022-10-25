@@ -102,3 +102,5 @@ class I18NAPITests(APITestCase):
         self.assertEqual(response.status_code, 400)
         error = response.json()
         self.assertEqual(error["code"], "invalid")
+        self.assertEqual(error["invalidParams"][0]["code"], "invalid_choice")
+        self.assertEqual(error["invalidParams"][0]["name"], "code")
