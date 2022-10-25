@@ -32,31 +32,6 @@
 
 {% endblock %}
 
-{% block after_field_sets %}
-<fieldset class="module aligned">
-    <h2>{% trans "Snippets" %}</h2>
-
-    <div class="form-row">
-        {% blocktrans asvar help trimmed %}
-            Embed this snippet where you want to display the form in your (CMS) page.
-            This snippet will load and render the form.
-        {% endblocktrans %}
-        {% include "admin/forms/form/_snippet.html" with label=_('SDK Javascript') snippet_template='forms/sdk_snippet.html' form=original html_id='_snippet-sdk-js' %}
-    </div>
-
-    <div class="form-row">
-        {% blocktrans asvar help trimmed %}
-            Include this snippet close to where other styles (CSS) are loaded.
-            This snippet provides the default form styling. If you have own styles
-            overriding the default styles, ensure this snippet is included BEFORE
-            your custom styles.
-        {% endblocktrans %}
-        {% include "admin/forms/form/_snippet.html" with label=_('SDK default styles') snippet_template='forms/sdk_css_snippet.html' html_id='_snippet-sdk-css' %}
-    </div>
-
-</fieldset>
-{% endblock %}
-
 {% block submit_buttons_bottom %}
 
 {% endblock %}
