@@ -5,6 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.test import override_settings
 from django.test.client import RequestFactory
 
+from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory, APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
@@ -90,7 +91,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         form = step.form
 
         # we need an arbitrary request
-        factory = RequestFactory()
+        factory = APIRequestFactory()
         init_request = factory.get("/foo")
         url = plugin.get_return_url(init_request, form)
         next_url = "http://foo.bar"
@@ -113,7 +114,12 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
             response = return_view(request, slug=form.slug, plugin_id=plugin.identifier)
 
             self.assertEqual(response.status_code, 302)
-            m_send.assert_called()
+            m_send.assert_called_once()
+            call_args = m_send.call_args.kwargs
+            self.assertIn("sender", call_args)
+            self.assertIn("request", call_args)
+            self.assertEqual(AuthenticationReturnView, call_args["sender"])
+            self.assertTrue(isinstance(call_args["request"], Request))
 
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://foo.bar"]
