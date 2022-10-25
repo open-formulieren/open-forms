@@ -247,13 +247,13 @@ class FormAdminImportExportTests(WebTest):
                                 "login_required": False,
                                 "product": None,
                                 "slug": "testform_old",
-                                "url": "http://testserver/api/v1/forms/2a231070-89c9-45dc-9ff8-ffd80ef15343",
+                                "url": "http://testserver/api/v2/forms/2a231070-89c9-45dc-9ff8-ffd80ef15343",
                                 "steps": [
                                     {
                                         "uuid": "a44c90c5-d0ba-4783-8201-0094a0e44885",
                                         "form_definition": "testform",
                                         "index": 0,
-                                        "url": "http://testserver/api/v1/forms/2a231070-89c9-45dc-9ff8-ffd80ef15343/steps/a44c90c5-d0ba-4783-8201-0094a0e44885",
+                                        "url": "http://testserver/api/v2/forms/2a231070-89c9-45dc-9ff8-ffd80ef15343/steps/a44c90c5-d0ba-4783-8201-0094a0e44885",
                                     }
                                 ],
                             }
@@ -266,7 +266,7 @@ class FormAdminImportExportTests(WebTest):
                     json.dumps(
                         [
                             {
-                                "url": "http://testserver/api/v1/form-definitions/78a18366-f9c0-47f2-8fd6-a6c31920440e",
+                                "url": "http://testserver/api/v2/form-definitions/78a18366-f9c0-47f2-8fd6-a6c31920440e",
                                 "uuid": "78a18366-f9c0-47f2-8fd6-a6c31920440e",
                                 "name": "testform",
                                 "internal_name": "test internal",
@@ -300,7 +300,7 @@ class FormAdminImportExportTests(WebTest):
                                         }
                                     ]
                                 },
-                                "form_definition": "http://testserver/api/v1/form-definitions/78a18366-f9c0-47f2-8fd6-a6c31920440e",
+                                "form_definition": "http://testserver/api/v2/form-definitions/78a18366-f9c0-47f2-8fd6-a6c31920440e",
                             }
                         ]
                     ).encode("utf-8")

@@ -2993,7 +2993,7 @@
         {
             "id": "e9wzd2",
             "key": "file",
-            "url": "http://testserver/api/v1/submissions/files/upload",
+            "url": "http://testserver/api/v2/submissions/files/upload",
             "file": {
                 "name": "",
                 "type": []
@@ -3074,7 +3074,7 @@
         {
             "id": "e19omw",
             "key": "fileUploadEmpty",
-            "url": "http://testserver/api/v1/submissions/files/upload",
+            "url": "http://testserver/api/v2/submissions/files/upload",
             "file": {
                 "name": "",
                 "type": []
@@ -3156,7 +3156,7 @@
         {
             "id": "e19omzz",
             "key": "fileUploadHidden",
-            "url": "http://testserver/api/v1/submissions/files/upload",
+            "url": "http://testserver/api/v2/submissions/files/upload",
             "file": {
                 "name": "",
                 "type": []
@@ -3237,7 +3237,7 @@
         {
             "id": "e1y3c3i",
             "key": "fileUploadMulti",
-            "url": "http://testserver/api/v1/submissions/files/upload",
+            "url": "http://testserver/api/v2/submissions/files/upload",
             "file": {
                 "name": "",
                 "type": []
@@ -3318,7 +3318,7 @@
         {
             "id": "eev2ezp",
             "key": "fileUploadMultiEmpty",
-            "url": "http://testserver/api/v1/submissions/files/upload",
+            "url": "http://testserver/api/v2/submissions/files/upload",
             "file": {
                 "name": "",
                 "type": []

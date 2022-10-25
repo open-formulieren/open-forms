@@ -255,7 +255,7 @@ const SessionStatus = () => {
           })}
           onClick={async event => {
             event.preventDefault();
-            await apiCall('/api/v1/ping');
+            await apiCall('/api/v2/ping');
           }}
         />
       </>

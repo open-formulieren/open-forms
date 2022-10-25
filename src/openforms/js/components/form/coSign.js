@@ -28,7 +28,7 @@ const EDIT_FORM_TABS = [
               // if the url starts with '/', then formio will prefix it with the formio
               // base URL, which is of course wrong. We there explicitly use the detected
               // host.
-              url: getFullyQualifiedUrl('/api/v1/authentication/plugins'),
+              url: getFullyQualifiedUrl('/api/v2/authentication/plugins'),
             },
             valueProperty: 'id',
             template: `<span>{{ item.label }}, provides: {{ item.providesAuth.join(', ') }}</span>`,

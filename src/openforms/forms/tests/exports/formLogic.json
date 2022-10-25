@@ -10,7 +10,7 @@
                 "component": "test"
             }
         ],
-        "form": "http://testserver/api/v1/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+        "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
         "json_logic_trigger":
         {
             "==":

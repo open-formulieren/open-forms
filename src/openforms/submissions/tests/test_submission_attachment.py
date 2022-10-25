@@ -49,9 +49,9 @@ class SubmissionAttachmentTest(TestCase):
             "my_normal_key": "foo",
             "my_file": [
                 {
-                    "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                    "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                     "data": {
-                        "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                        "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                         "form": "",
                         "name": "my-image.jpg",
                         "size": 46114,
@@ -80,9 +80,9 @@ class SubmissionAttachmentTest(TestCase):
             "my_normal_key": "foo",
             "my_file": [
                 {
-                    "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                    "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                     "data": {
-                        "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                        "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                         "form": "",
                         "name": "my-image.jpg",
                         "size": 46114,
@@ -149,9 +149,9 @@ class SubmissionAttachmentTest(TestCase):
             "my_normal_key": "foo",
             "my_file": [
                 {
-                    "url": f"http://server/api/v1/submissions/files/{upload_1.uuid}",
+                    "url": f"http://server/api/v2/submissions/files/{upload_1.uuid}",
                     "data": {
-                        "url": f"http://server/api/v1/submissions/files/{upload_1.uuid}",
+                        "url": f"http://server/api/v2/submissions/files/{upload_1.uuid}",
                         "form": "",
                         "name": "my-image-1.jpg",
                         "size": 46114,
@@ -165,9 +165,9 @@ class SubmissionAttachmentTest(TestCase):
                     "originalName": "my-image-1.jpg",
                 },
                 {
-                    "url": f"http://server/api/v1/submissions/files/{upload_2.uuid}",
+                    "url": f"http://server/api/v2/submissions/files/{upload_2.uuid}",
                     "data": {
-                        "url": f"http://server/api/v1/submissions/files/{upload_2.uuid}",
+                        "url": f"http://server/api/v2/submissions/files/{upload_2.uuid}",
                         "form": "",
                         "name": "my-image-2.jpg",
                         "size": 46114,
@@ -252,9 +252,9 @@ class SubmissionAttachmentTest(TestCase):
             "my_normal_key": "foo",
             "my_file": [
                 {
-                    "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                    "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                     "data": {
-                        "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                        "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                         "form": "",
                         "name": "my-image.png",
                         "size": 46114,
@@ -322,9 +322,9 @@ class SubmissionAttachmentTest(TestCase):
         data = {
             "my_file": [
                 {
-                    "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                    "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                     "data": {
-                        "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                        "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                         "form": "",
                         "name": "aaa.txt",
                         "size": 20,
@@ -374,9 +374,9 @@ class SubmissionAttachmentTest(TestCase):
         data = {
             "my_file": [
                 {
-                    "url": f"http://server/api/v1/submissions/files/{upload1.uuid}",
+                    "url": f"http://server/api/v2/submissions/files/{upload1.uuid}",
                     "data": {
-                        "url": f"http://server/api/v1/submissions/files/{upload1.uuid}",
+                        "url": f"http://server/api/v2/submissions/files/{upload1.uuid}",
                         "form": "",
                         "name": "my-pdf.pdf",
                         "size": 585,
@@ -390,9 +390,9 @@ class SubmissionAttachmentTest(TestCase):
                     "originalName": "my-pdf.pdf",
                 },
                 {
-                    "url": f"http://server/api/v1/submissions/files/{upload2.uuid}",
+                    "url": f"http://server/api/v2/submissions/files/{upload2.uuid}",
                     "data": {
-                        "url": f"http://server/api/v1/submissions/files/{upload2.uuid}",
+                        "url": f"http://server/api/v2/submissions/files/{upload2.uuid}",
                         "form": "",
                         "name": "my-pdf2.pdf",
                         "size": 585,
@@ -454,9 +454,9 @@ class SubmissionAttachmentTest(TestCase):
         data = {
             "my_file": [
                 {
-                    "url": f"http://server/api/v1/submissions/files/{upload1.uuid}",
+                    "url": f"http://server/api/v2/submissions/files/{upload1.uuid}",
                     "data": {
-                        "url": f"http://server/api/v1/submissions/files/{upload1.uuid}",
+                        "url": f"http://server/api/v2/submissions/files/{upload1.uuid}",
                         "form": "",
                         "name": "my-img.png",
                         "size": 585,
@@ -470,9 +470,9 @@ class SubmissionAttachmentTest(TestCase):
                     "originalName": "my-img.png",
                 },
                 {
-                    "url": f"http://server/api/v1/submissions/files/{upload2.uuid}",
+                    "url": f"http://server/api/v2/submissions/files/{upload2.uuid}",
                     "data": {
-                        "url": f"http://server/api/v1/submissions/files/{upload2.uuid}",
+                        "url": f"http://server/api/v2/submissions/files/{upload2.uuid}",
                         "form": "",
                         "name": "my-img2.png",
                         "size": 585,
@@ -521,9 +521,9 @@ class SubmissionAttachmentTest(TestCase):
         data = {
             "my_file": [
                 {
-                    "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                    "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                     "data": {
-                        "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                        "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                         "form": "",
                         "name": "my-img.png",
                         "size": 585,
@@ -579,9 +579,9 @@ class SubmissionAttachmentTest(TestCase):
         data = {
             "my_file": [
                 {
-                    "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                    "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                     "data": {
-                        "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                        "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                         "form": "",
                         "name": "my-img.png",
                         "size": 585,
@@ -638,9 +638,9 @@ class SubmissionAttachmentTest(TestCase):
         data = {
             "my_file": [
                 {
-                    "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                    "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                     "data": {
-                        "url": f"http://server/api/v1/submissions/files/{upload.uuid}",
+                        "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
                         "form": "",
                         "name": "my-img.png",
                         "size": 585,

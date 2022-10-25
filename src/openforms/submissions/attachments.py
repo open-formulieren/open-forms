@@ -269,9 +269,9 @@ def resolve_uploads_from_data(components: Iterable[dict], data: dict) -> dict:
     """
     "my_file": [
         {
-            "url": "http://server/api/v1/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
+            "url": "http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
             "data": {
-                "url": "http://server/api/v1/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
+                "url": "http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
                 "form": "",
                 "name": "my-image.jpg",
                 "size": 46114,

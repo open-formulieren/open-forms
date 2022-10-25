@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Open Forms API
-  version: 2.0.0-beta.0
+  version: 2.0.0
   description: |2
 
     Open Forms provides an API to manage multi-page or multi-step forms.
@@ -23,7 +23,7 @@ info:
   license:
     name: UNLICENSED
 paths:
-  /api/v1/appointments/{submission_uuid}/cancel:
+  /api/v2/appointments/{submission_uuid}/cancel:
     post:
       operationId: appointments_cancel_create
       summary: Cancel an appointment
@@ -91,7 +91,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/appointments/dates:
+  /api/v2/appointments/dates:
     get:
       operationId: appointments_dates_list
       description: |-
@@ -131,7 +131,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/appointments/locations:
+  /api/v2/appointments/locations:
     get:
       operationId: appointments_locations_list
       description: |-
@@ -165,7 +165,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/appointments/products:
+  /api/v2/appointments/products:
     get:
       operationId: appointments_products_list
       description: List all products a user can choose when making an appointment.
@@ -188,7 +188,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/appointments/times:
+  /api/v2/appointments/times:
     get:
       operationId: appointments_times_list
       description: |-
@@ -235,7 +235,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/authentication/{uuid}/session:
+  /api/v2/authentication/{uuid}/session:
     delete:
       operationId: submission_session_destroy
       description: 'Calling this endpoint will clear the current form and submission
@@ -268,7 +268,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/authentication/plugins:
+  /api/v2/authentication/plugins:
     get:
       operationId: authentication_plugins_list
       description: |-
@@ -299,7 +299,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/categories:
+  /api/v2/categories:
     get:
       operationId: categories_list
       tags:
@@ -323,7 +323,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/categories/{uuid}:
+  /api/v2/categories/{uuid}:
     get:
       operationId: categories_retrieve
       parameters:
@@ -352,7 +352,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/config/privacy_policy_info:
+  /api/v2/config/privacy_policy_info:
     get:
       operationId: config_privacy_policy_info_retrieve
       summary: Privacybeleid informatie
@@ -375,7 +375,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/dmn/decision-definitions:
+  /api/v2/dmn/decision-definitions:
     get:
       operationId: dmn_decision_definitions_list
       description: List the available decision definitions for a given plugin.
@@ -436,7 +436,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/dmn/decision-definitions/versions:
+  /api/v2/dmn/decision-definitions/versions:
     get:
       operationId: dmn_decision_definitions_versions_list
       description: |-
@@ -508,7 +508,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/dmn/decision-definitions/xml:
+  /api/v2/dmn/decision-definitions/xml:
     get:
       operationId: dmn_decision_definitions_xml_retrieve
       summary: Retrieve the decision definition XML
@@ -576,7 +576,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/dmn/plugins:
+  /api/v2/dmn/plugins:
     get:
       operationId: dmn_plugins_list
       description: List all decision plugins that have been registered.
@@ -614,7 +614,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/form-definitions:
+  /api/v2/form-definitions:
     get:
       operationId: form_definitions_list
       summary: List form step definitions
@@ -674,7 +674,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/form-definitions/{uuid}:
+  /api/v2/form-definitions/{uuid}:
     get:
       operationId: form_definitions_retrieve
       summary: Retrieve form step definition details
@@ -802,7 +802,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/form-definitions/{uuid}/configuration:
+  /api/v2/form-definitions/{uuid}/configuration:
     get:
       operationId: form_definitions_configuration_retrieve
       description: |-
@@ -839,7 +839,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/formio/fileupload:
+  /api/v2/formio/fileupload:
     post:
       operationId: formio_fileupload_create
       description: |-
@@ -894,7 +894,7 @@ paths:
         schema:
           type: string
         required: true
-  /api/v1/forms:
+  /api/v2/forms:
     get:
       operationId: forms_list
       description: |-
@@ -1015,7 +1015,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/forms-import:
+  /api/v2/forms-import:
     post:
       operationId: forms_import_create
       description: |-
@@ -1046,7 +1046,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/forms/{form_uuid_or_slug}/steps:
+  /api/v2/forms/{form_uuid_or_slug}/steps:
     get:
       operationId: forms_steps_list
       summary: List form steps
@@ -1119,7 +1119,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/forms/{form_uuid_or_slug}/steps/{uuid}:
+  /api/v2/forms/{form_uuid_or_slug}/steps/{uuid}:
     get:
       operationId: forms_steps_retrieve
       summary: Retrieve form step details
@@ -1279,7 +1279,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/forms/{form_uuid_or_slug}/versions:
+  /api/v2/forms/{form_uuid_or_slug}/versions:
     get:
       operationId: forms_versions_list
       summary: List form versions
@@ -1352,7 +1352,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/forms/{form_uuid_or_slug}/versions/{uuid}/restore:
+  /api/v2/forms/{form_uuid_or_slug}/versions/{uuid}/restore:
     post:
       operationId: forms_versions_restore_create
       description: Restore a previously saved version of a form.
@@ -1396,7 +1396,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/forms/{uuid_or_slug}:
+  /api/v2/forms/{uuid_or_slug}:
     get:
       operationId: forms_retrieve
       description: |-
@@ -1640,7 +1640,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/forms/{uuid_or_slug}/admin-message:
+  /api/v2/forms/{uuid_or_slug}/admin-message:
     post:
       operationId: forms_admin_message_create
       description: |-
@@ -1695,7 +1695,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/forms/{uuid_or_slug}/copy:
+  /api/v2/forms/{uuid_or_slug}/copy:
     post:
       operationId: forms_copy_create
       description: |-
@@ -1745,7 +1745,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Form'
           description: ''
-  /api/v1/forms/{uuid_or_slug}/export:
+  /api/v2/forms/{uuid_or_slug}/export:
     post:
       operationId: forms_export_create
       description: |-
@@ -1789,7 +1789,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/forms/{uuid_or_slug}/logic-rules:
+  /api/v2/forms/{uuid_or_slug}/logic-rules:
     get:
       operationId: forms_logic_rules_list
       description: List all logic rules defined for a form.
@@ -1990,7 +1990,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/forms/{uuid_or_slug}/price-logic-rules:
+  /api/v2/forms/{uuid_or_slug}/price-logic-rules:
     get:
       operationId: forms_price_logic_rules_list
       description: List all price logic rules defined for a form.
@@ -2191,7 +2191,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/forms/{uuid_or_slug}/variables:
+  /api/v2/forms/{uuid_or_slug}/variables:
     get:
       operationId: forms_variables_list
       description: List all variables defined for a form.
@@ -2400,7 +2400,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/location/get-street-name-and-city:
+  /api/v2/location/get-street-name-and-city:
     get:
       operationId: get_street_name_and_city_list
       description: Get the street name and city for a given postal code and house
@@ -2435,7 +2435,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/payment/plugins:
+  /api/v2/payment/plugins:
     get:
       operationId: payment_plugins_list
       description: |-
@@ -2465,7 +2465,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/ping:
+  /api/v2/ping:
     get:
       operationId: ping_retrieve
       description: Pinging the API extends the user session. Note that you must be
@@ -2498,7 +2498,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/prefill/plugins:
+  /api/v2/prefill/plugins:
     get:
       operationId: prefill_plugins_list
       description: List all prefill plugins that have been registered.
@@ -2523,7 +2523,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/prefill/plugins/{plugin}/attributes:
+  /api/v2/prefill/plugins/{plugin}/attributes:
     get:
       operationId: prefill_plugins_attributes_list
       description: List the available prefill attributes for a given plugin.
@@ -2554,7 +2554,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/products:
+  /api/v2/products:
     get:
       operationId: products_list
       description: |-
@@ -2596,7 +2596,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/products/{uuid}:
+  /api/v2/products/{uuid}:
     get:
       operationId: products_retrieve
       description: |-
@@ -2643,7 +2643,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/registration/attributes:
+  /api/v2/registration/attributes:
     get:
       operationId: registration_attributes_list
       description: List the available registration attributes.
@@ -2668,7 +2668,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/registration/plugins:
+  /api/v2/registration/plugins:
     get:
       operationId: registration_plugins_list
       description: |-
@@ -2697,7 +2697,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/registration/plugins/camunda/process-definitions:
+  /api/v2/registration/plugins/camunda/process-definitions:
     get:
       operationId: registration_plugins_camunda_process_definitions_list
       description: List the available process definitions & their versions.
@@ -2722,7 +2722,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/registration/plugins/zgw/informatieobjecttypen:
+  /api/v2/registration/plugins/zgw/informatieobjecttypen:
     get:
       operationId: registration_plugins_zgw_informatieobjecttypen_list
       description: List the available InformatieObjectTypen.
@@ -2747,7 +2747,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/submissions:
+  /api/v2/submissions:
     get:
       operationId: submissions_list
       description: Active submissions are submissions whose ID is in the user session.
@@ -2872,7 +2872,7 @@ paths:
         schema:
           type: string
         required: true
-  /api/v1/submissions/{report_id}/{token}/download:
+  /api/v2/submissions/{report_id}/{token}/download:
     get:
       operationId: submissions_download_retrieve
       description: Download het document met de ingezonden gegevens, in PDF vorm.
@@ -2907,7 +2907,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/submissions/{submission_uuid}/steps/{step_uuid}:
+  /api/v2/submissions/{submission_uuid}/steps/{step_uuid}:
     get:
       operationId: submissions_steps_retrieve
       description: The details of a particular submission step always return the related
@@ -3075,7 +3075,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/submissions/{submission_uuid}/steps/{step_uuid}/_check_logic:
+  /api/v2/submissions/{submission_uuid}/steps/{step_uuid}/_check_logic:
     post:
       operationId: submissions_steps__check_logic_create
       description: Apply/check the logic rules specified on the form step.
@@ -3160,7 +3160,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/submissions/{submission_uuid}/steps/{step_uuid}/validate:
+  /api/v2/submissions/{submission_uuid}/steps/{step_uuid}/validate:
     post:
       operationId: submissions_steps_validate_create
       description: |-
@@ -3258,7 +3258,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/submissions/{uuid}:
+  /api/v2/submissions/{uuid}:
     get:
       operationId: submissions_retrieve
       description: Get the state of a single submission in the user session.
@@ -3288,7 +3288,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/submissions/{uuid}/{token}/status:
+  /api/v2/submissions/{uuid}/{token}/status:
     get:
       operationId: submissions_status_retrieve
       description: |-
@@ -3354,7 +3354,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/submissions/{uuid}/_complete:
+  /api/v2/submissions/{uuid}/_complete:
     post:
       operationId: submissions__complete_create
       description: |-
@@ -3455,7 +3455,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/submissions/{uuid}/_suspend:
+  /api/v2/submissions/{uuid}/_suspend:
     post:
       operationId: submissions__suspend_create
       description: |-
@@ -3532,7 +3532,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/submissions/{uuid}/co-sign:
+  /api/v2/submissions/{uuid}/co-sign:
     get:
       operationId: submissions_co_sign_retrieve
       description: Retrieve co-sign state.
@@ -3601,7 +3601,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/submissions/{uuid}/summary:
+  /api/v2/submissions/{uuid}/summary:
     get:
       operationId: submissions_summary_list
       description: Retrieve the data to display in the submission summary page.
@@ -3633,7 +3633,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/submissions/files/{uuid}:
+  /api/v2/submissions/files/{uuid}:
     get:
       operationId: submissions_files_retrieve
       description: |-
@@ -3728,7 +3728,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/translations/formio:
+  /api/v2/translations/formio:
     get:
       operationId: translations_formio_retrieve
       description: Retrieve the translations for the strings used by FormIO
@@ -3747,7 +3747,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/validation/plugins:
+  /api/v2/validation/plugins:
     get:
       operationId: validation_plugins_list
       description: List all prefill plugins that have been registered.
@@ -3772,7 +3772,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/validation/plugins/{validator}:
+  /api/v2/validation/plugins/{validator}:
     post:
       operationId: validation_run
       description: Validate a value using given validator
@@ -3822,7 +3822,7 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v1/variables/static:
+  /api/v2/variables/static:
     get:
       operationId: variables_static_list
       description: List the static data that will be associated with every form

@@ -824,10 +824,10 @@ Open Forms fits in the [Common Ground](https://commonground.nl) vision and archi
 and it plays nice with other available components.
 """
 
-API_VERSION = "2.0.0-beta.0"
+API_VERSION = "2.0.0"
 
 SPECTACULAR_SETTINGS = {
-    "SCHEMA_PATH_PREFIX": "/api/v1",
+    "SCHEMA_PATH_PREFIX": "/api/v2",
     "TITLE": "Open Forms API",
     "DESCRIPTION": _DESCRIPTION,
     "POSTPROCESSING_HOOKS": [

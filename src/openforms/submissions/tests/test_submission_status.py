@@ -68,7 +68,7 @@ class SubmissionStatusPermissionTests(APITestCase):
     def test_wrongly_formatted_token(self):
         submission = SubmissionFactory.create(completed=True, on_completion_task_ids=[])
         # can't reverse because bad format lol
-        check_status_url = f"/api/v1/submissions/{submission.uuid}/badformat/status"
+        check_status_url = f"/api/v2/submissions/{submission.uuid}/badformat/status"
 
         response = self.client.get(check_status_url)
 
@@ -77,7 +77,7 @@ class SubmissionStatusPermissionTests(APITestCase):
     def test_invalid_token_timestamp(self):
         submission = SubmissionFactory.create(completed=True, on_completion_task_ids=[])
         # can't reverse because bad format lol
-        check_status_url = f"/api/v1/submissions/{submission.uuid}/$$$-{'a'*20}/status"
+        check_status_url = f"/api/v2/submissions/{submission.uuid}/$$$-{'a'*20}/status"
 
         response = self.client.get(check_status_url)
 
