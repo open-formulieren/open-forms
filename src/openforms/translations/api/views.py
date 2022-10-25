@@ -1,8 +1,7 @@
 from django.conf import settings
-from django.http import HttpRequest
 from django.utils.translation import get_language, get_language_info, gettext_lazy as _
 
-from drf_spectacular.utils import OpenApiExample, OpenApiParameter, extend_schema
+from drf_spectacular.utils import OpenApiExample, extend_schema
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
