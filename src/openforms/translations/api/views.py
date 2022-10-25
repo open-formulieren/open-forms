@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from openforms.api.serializers import FieldValidationErrorSerializer
 
-from .serializers import LanguageInfoSerializer, LanguageCodeSerializer
+from .serializers import LanguageCodeSerializer, LanguageInfoSerializer
 
 
 @extend_schema(
