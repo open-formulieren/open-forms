@@ -2400,6 +2400,83 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+  /api/v2/i18n/info:
+    get:
+      operationId: i18n_info_retrieve
+      summary: List available languages and the currently active one.
+      tags:
+      - i18n
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LanguageInfo'
+              examples:
+                SelectedDutch:
+                  value:
+                    languages:
+                    - code: en
+                      name: English
+                    - code: nl
+                      name: Nederlands
+                    - code: fy
+                      name: frysk
+                    current: nl
+                  summary: Selected Dutch
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+  /api/v2/i18n/language:
+    put:
+      operationId: i18n_language_update
+      summary: Set the desired language
+      tags:
+      - i18n
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LanguageCode'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LanguageCode'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LanguageCode'
+        required: true
+      security:
+      - {}
+      responses:
+        '204':
+          description: No response body
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
   /api/v2/location/get-street-name-and-city:
     get:
       operationId: get_street_name_and_city_list
@@ -4685,6 +4762,11 @@ components:
       - eherkenning_bewindvoering_oidc
       - org-oidc
       type: string
+    AvailableLanguagesEnum:
+      enum:
+      - en
+      - nl
+      type: string
     BlankEnum:
       enum:
       - ''
@@ -5484,6 +5566,45 @@ components:
       required:
       - catalogus
       - informatieobjecttype
+    Language:
+      type: object
+      properties:
+        code:
+          allOf:
+          - $ref: '#/components/schemas/AvailableLanguagesEnum'
+          description: RFC5646 language tag, e.g. 'en' or 'en-us'
+        name:
+          type: string
+          description: Language name in its local representation. e.g. "fy" = "frysk",
+            "nl" = "Nederlands"
+      required:
+      - code
+      - name
+    LanguageCode:
+      type: object
+      properties:
+        code:
+          allOf:
+          - $ref: '#/components/schemas/AvailableLanguagesEnum'
+          description: RFC5646 language tag, e.g. 'en' or 'en-us'
+      required:
+      - code
+    LanguageInfo:
+      type: object
+      properties:
+        languages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Language'
+          readOnly: true
+          description: Available languages
+        current:
+          allOf:
+          - $ref: '#/components/schemas/AvailableLanguagesEnum'
+          description: RFC5646 language tag, e.g. 'en' or 'en-us'
+      required:
+      - current
+      - languages
     Location:
       type: object
       properties:
