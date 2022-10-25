@@ -18,8 +18,8 @@ class PreRequestHooksTest(TestCase):
         @register("test-hook")
         class PreRequestHook(PreRequestHookBase):
             def __call__(self, url, method, **kwargs):
-                headers = kwargs.get("headers", {})
-                headers.update({"test": "test"})
+                kwargs.setdefault("headers", {})
+                kwargs["headers"].update({"test": "test"})
 
         some_service = ServiceFactory(
             api_root="https://personen/api/",
