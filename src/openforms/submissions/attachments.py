@@ -19,7 +19,7 @@ from PIL import Image
 from rest_framework.exceptions import ValidationError
 
 from openforms.api.exceptions import RequestEntityTooLarge
-from openforms.api.validators import mime_type_validator
+from openforms.api.validators import MimeTypeValidator
 from openforms.conf.utils import Filesize
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.typing import Component
@@ -141,7 +141,7 @@ def validate_uploads(submission_step: SubmissionStep, data: Optional[dict]) -> N
         else:
             allowed_mime_types = glom(component, "file.type", default=[])
 
-        validate_file = mime_type_validator(allowed_mime_types)
+        validate_file = MimeTypeValidator(allowed_mime_types)
 
         # perform content type validation
         with upload.content.open("rb") as infile:

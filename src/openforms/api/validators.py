@@ -1,5 +1,5 @@
 from pathlib import PurePath
-from typing import Callable, Container, overload
+from typing import Callable, Container, Optional
 
 from django.core.files.uploadedfile import UploadedFile
 from django.utils.translation import gettext_lazy as _
@@ -8,8 +8,6 @@ import magic
 from rest_framework import serializers
 
 from openforms.formio.service import mimetype_allowed
-
-AllowedMimeType = str
 
 
 class AllOrNoneRequiredFieldsValidator:
@@ -33,37 +31,28 @@ class AllOrNoneRequiredFieldsValidator:
             raise serializers.ValidationError(err, code=self.code)
 
 
-@overload
-def mime_type_validator(arg: UploadedFile) -> UploadedFile:
-    """
-    Validate whether value has the mime-type it says it has.
-    """
-    ...
+class MimeTypeValidator:
+    def __init__(self, allowed_mime_types: Optional[Container[str]] = None):
+        self._allowed = allowed_mime_types
 
-
-@overload
-def mime_type_validator(
-    arg: Container[AllowedMimeType],
-) -> Callable[[UploadedFile], UploadedFile]:
-    """
-    Validate whether value has the mime-type it says it has
-    and if that mime-type is allowed.
-    """
-    ...
-
-
-def mime_type_validator(arg):
-    allowed = None if isinstance(arg, UploadedFile) else arg
-
-    def validate_file(value: UploadedFile) -> UploadedFile:
+    def __call__(self, value: UploadedFile) -> None:
         head = value.read(2048)
+        ext = PurePath(value.name).suffix
         mime_type = magic.from_buffer(head, mime=True)
+        if not (self._allowed is None or mimetype_allowed(mime_type, self._allowed)):
+            raise serializers.ValidationError(
+                _("The file '{filename}' is not a valid file type.").format(
+                    filename=value.name
+                ),
+            )
+
+        # Contents is allowed. Do extension or submitted content_type agree?
+
         if value.content_type == "application/octet-stream":
-            ext = PurePath(value.name).suffix
             m = magic.Magic(extension=True)
             extensions = m.from_buffer(head).split("/")
             if extensions == ["???"]:
-                pass  # magic db doesn't know extensions; decide later on mime-type
+                pass  # magic db doesn't know correct extensions
             elif ext not in extensions:
                 raise serializers.ValidationError(
                     _("The file '{filename}' is not a {file_type}.").format(
@@ -73,17 +62,6 @@ def mime_type_validator(arg):
         elif mime_type != value.content_type:
             raise serializers.ValidationError(
                 _("The file '{filename}' is not a {file_type}.").format(
-                    filename=value.name, file_type=value.content_type
+                    filename=value.name, file_type=ext
                 )
             )
-        if allowed is None or mimetype_allowed(mime_type, allowed):
-            return value
-        raise serializers.ValidationError(
-            _("The file '{filename}' is not a valid file type.").format(
-                filename=value.name
-            ),
-        )
-
-    if allowed is None:
-        return validate_file(arg)
-    return validate_file

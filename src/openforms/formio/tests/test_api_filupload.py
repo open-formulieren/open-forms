@@ -101,7 +101,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         self.assertContains(
             response,
             _("The file '{filename}' is not a {file_type}.").format(
-                **{"file_type": "image/png", "filename": "pixel.png"}
+                **{"file_type": ".png", "filename": "pixel.png"}
             ),
             status_code=status.HTTP_400_BAD_REQUEST,
         )
