@@ -1,30 +1,32 @@
 from django.conf import settings
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
-LANGUAGE_CODE_FIELD = serializers.ChoiceField(
-    choices=settings.LANGUAGES,
-    help_text=_("ISO 639-1 language code"),
-)
+
+class LanguageCodeField(serializers.ChoiceField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("choices", settings.LANGUAGES)
+        kwargs.setdefault("help_text", _("RFC5646 language tag, e.g. 'en' or 'en-us'"))
+        super().__init__(*args, **kwargs)
 
 
 class LanguageCodeSerializer(serializers.Serializer):
-    code = LANGUAGE_CODE_FIELD
+    code = LanguageCodeField()
 
 
 class LanguageSerializer(LanguageCodeSerializer):
     name = serializers.CharField(
-        required=False,
         help_text=_(
-            'Language name in its local representation. e.g. "en" = "English", "nl" = "Nederlands"'
+            'Language name in its local representation. e.g. "fy" = "frysk", "nl" = "Nederlands"'
         ),
     )
 
 
 class LanguageInfoSerializer(serializers.Serializer):
-    languages = serializers.ListField(
-        child=LanguageSerializer(),
+    languages = LanguageSerializer(
+        many=True,
+        read_only=True,
         help_text=_("Available languages"),
     )
-    current = LANGUAGE_CODE_FIELD
+    current = LanguageCodeField()

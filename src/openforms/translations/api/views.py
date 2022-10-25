@@ -4,71 +4,78 @@ from django.utils.translation import get_language, get_language_info, gettext_la
 
 from drf_spectacular.utils import OpenApiExample, OpenApiParameter, extend_schema
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from openforms.api.serializers import FieldValidationErrorSerializer
+from openforms.api.serializers import ValidationErrorSerializer
 
 from .serializers import LanguageCodeSerializer, LanguageInfoSerializer
 
 
-@extend_schema(
-    summary=_("Available languages and the currently selected one."),
-    examples=[
-        OpenApiExample(
-            "Selected Dutch",
-            value={
-                "languages": [
-                    {"code": "en", "name": "English"},
-                    {"code": "nl", "name": "Nederlands"},
-                ],
-                "current": "nl",
-            },
-        )
-    ],
-    responses=LanguageInfoSerializer,
-)
-@api_view(["GET"])
-def info(request: HttpRequest) -> Response:
-    codes = (lang[0] for lang in settings.LANGUAGES)
-    languages = [
-        {"code": code, "name": get_language_info(code)["name_local"]} for code in codes
-    ]
-    current = get_language()
-    return Response({"langauges": languages, "current": current})
+class LanguageInfoView(APIView):
+    authentication_classes = ()
 
-
-@extend_schema(
-    summary=_("Set the current langauge"),
-    request=LanguageCodeSerializer,
-    responses={
-        "204": None,
-        "400": FieldValidationErrorSerializer,
-    },
-)
-@api_view(["PUT"])
-def current_language(request: HttpRequest) -> Response:
-    lang = LanguageCodeSerializer(data=request.data)
-    if lang.is_valid():
-        code = lang.data["code"]
-        # no need to django.utils.translation.activate; no content to return
-        response = Response(status=status.HTTP_204_NO_CONTENT)
-        response.set_cookie(
-            key=settings.LANGUAGE_COOKIE_NAME,
-            value=code,
-            expires=settings.LANGUAGE_COOKIE_AGE,
-            domain=settings.LANGUAGE_COOKIE_DOMAIN,
-            httponly=settings.LANGUAGE_COOKIE_HTTPONLY,
-            path=settings.LANGUAGE_COOKIE_PATH,
-            secure=settings.LANGUAGE_COOKIE_SECURE,
+    def get_serializer(self, *args, **kwargs):
+        return LanguageInfoSerializer(
+            *args,
+            context={"request": self.request, "view": self},
+            **kwargs,
         )
-        return response
-    error = FieldValidationErrorSerializer(
-        data={
-            "name": "code",
-            "code": lang.errors["code"][0].code,
-            "reason": str(lang.errors["code"][0]),
-        }
+
+    @extend_schema(
+        summary=_("List available languages and the currently active one."),
+        examples=[
+            OpenApiExample(
+                "Selected Dutch",
+                value={
+                    "languages": [
+                        {"code": "en", "name": "English"},
+                        {"code": "nl", "name": "Nederlands"},
+                        {"code": "fy", "name": "frysk"},
+                    ],
+                    "current": "nl",
+                },
+            ),
+        ],
     )
-    error.is_valid()
-    return Response(error.data, status=status.HTTP_400_BAD_REQUEST)
+    def get(self, request: Request) -> Response:
+        codes = (lang[0] for lang in settings.LANGUAGES)
+        languages = [
+            {"code": code, "name": get_language_info(code)["name_local"]}
+            for code in codes
+        ]
+        current = get_language()
+        serializer = self.get_serializer(
+            instance={"languages": languages, "current": current}
+        )
+        return Response(serializer.data)
+
+
+class SetLanguageView(APIView):
+    authentication_classes = ()
+
+    @extend_schema(
+        summary=_("Set the desired language"),
+        request=LanguageCodeSerializer,
+        responses={
+            "204": None,
+            "400": ValidationErrorSerializer,
+        },
+    )
+    def put(self, request: Request) -> Response:
+        lang = LanguageCodeSerializer(data=request.data)
+        if lang.is_valid(raise_exception=True):
+            # no need to django.utils.translation.activate; no content to return
+            response = Response(status=status.HTTP_204_NO_CONTENT)
+            response.set_cookie(
+                key=settings.LANGUAGE_COOKIE_NAME,
+                value=lang.data["code"],
+                max_age=settings.LANGUAGE_COOKIE_AGE,
+                domain=settings.LANGUAGE_COOKIE_DOMAIN,
+                httponly=settings.LANGUAGE_COOKIE_HTTPONLY,
+                path=settings.LANGUAGE_COOKIE_PATH,
+                samesite=settings.LANGUAGE_COOKIE_SAMESITE,
+                secure=settings.LANGUAGE_COOKIE_SECURE,
+            )
+            return response
