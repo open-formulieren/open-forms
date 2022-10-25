@@ -71,7 +71,8 @@ services:
       - TZ=Europe/Amsterdam
       - CSP_REPORT_ONLY=yes
     volumes:
-      - private_media:/app/private-media
+      - media:/app/media
+      - private_media:/app/private_media
     ports:
       - 8000:8000
     depends_on:
@@ -87,7 +88,7 @@ services:
       - ./docker-nginx-default.conf:/etc/nginx/conf.d/default.conf
       - private_media:/private-media
     ports:
-      - "9000:80"
+      - '9000:80'
     depends_on:
       - web
     networks:
@@ -130,6 +131,7 @@ services:
 
 volumes:
   db:
+  media:
   private_media:
 
 networks:
