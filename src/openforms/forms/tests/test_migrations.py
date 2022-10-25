@@ -1,7 +1,6 @@
 from openforms.utils.tests.test_migrations import TestMigrations
 
 from ..api.serializers.logic.action_serializers import LogicComponentActionSerializer
-from ..models import Form, FormDefinition, FormLogic, FormStep
 
 CONFIGURATION = {
     "components": [
@@ -104,6 +103,10 @@ class ConvertFrontendAdvancedLogicTests(TestMigrations):
     app = "forms"
 
     def setUpBeforeMigration(self, apps):
+        Form = apps.get_model("forms", "Form")
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        FormStep = apps.get_model("forms", "FormStep")
+
         form_definition = FormDefinition.objects.create(
             name="Definition1",
             slug="definition1",
@@ -134,9 +137,13 @@ class FixBrokenConvertedLogicTests(TestMigrations):
     app = "forms"
 
     def setUpBeforeMigration(self, apps):
+        Form = apps.get_model("forms", "Form")
+        FormLogic = apps.get_model("forms", "FormLogic")
+
         form = Form.objects.create(name="Form", slug="form")
         rule1 = FormLogic.objects.create(
             form=form,
+            order=1,
             json_logic_trigger={"==": [{"var": "test1"}, "trigger value"]},
             actions=[
                 # Invalid rule
@@ -168,6 +175,7 @@ class FixBrokenConvertedLogicTests(TestMigrations):
         )
         rule2 = FormLogic.objects.create(
             form=form,
+            order=2,
             json_logic_trigger={"==": [{"var": "test1"}, "test"]},
             actions=[
                 # Invalid rule
@@ -206,6 +214,7 @@ class TestChangeInlineEditSetting(TestMigrations):
     app = "forms"
 
     def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
         self.form_definition = FormDefinition.objects.create(
             name="Definition with repeating group",
             slug="definition-with-repeating-group",

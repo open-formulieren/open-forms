@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.test import TestCase
 
 from ..api.serializers.logic.action_serializers import LogicComponentActionSerializer
@@ -132,7 +133,7 @@ class ConvertAdvancedFrontendLogicTest(TestCase):
         self.assertEqual(0, form_step1.form.formlogic_set.count())
         self.assertEqual(0, form_step2.form.formlogic_set.count())
 
-        advanced_formio_logic_to_backend_logic(form_definition)
+        advanced_formio_logic_to_backend_logic(form_definition, apps)
 
         form_definition.refresh_from_db()
 

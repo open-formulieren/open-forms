@@ -149,8 +149,8 @@ class AdminTests(WebTest):
 
         change_page = self.app.get(url)
 
-        change_page.form["save_form_email_subject"] = "Subject {{form_name}}"
-        change_page.form["save_form_email_content"] = "Content {{form_name}}"
+        change_page.form["save_form_email_subject_nl"] = "Subject {{form_name}}"
+        change_page.form["save_form_email_content_nl"] = "Content {{form_name}}"
         change_page.form.submit()
 
         config.refresh_from_db()

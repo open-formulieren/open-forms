@@ -379,7 +379,13 @@ def parse_actions(
     return parsed_actions
 
 
-def advanced_formio_logic_to_backend_logic(form_definition: "FormDefinition") -> None:
+def advanced_formio_logic_to_backend_logic(
+    form_definition: "FormDefinition", apps
+) -> None:
+    FormStep = apps.get_model("forms", "FormStep")
+    Form = apps.get_model("forms", "Form")
+    FormLogic = apps.get_model("forms", "FormLogic")
+
     form_steps = FormStep.objects.filter(form_definition__pk=form_definition.pk)
     forms = Form.objects.filter(pk__in=form_steps.values_list("form", flat=True))
 
@@ -401,11 +407,18 @@ def advanced_formio_logic_to_backend_logic(form_definition: "FormDefinition") ->
                 continue
 
             for form in forms:
+                order = (
+                    getattr(
+                        form.formlogic_set.all().order_by("order").last(), "order", 0
+                    )
+                    + 1
+                )
                 logic_rules_to_create.append(
                     FormLogic(
                         form=form,
                         json_logic_trigger=parsed_trigger,
                         actions=parsed_actions,
+                        order=order,
                     )
                 )
 
