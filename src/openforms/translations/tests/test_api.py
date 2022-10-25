@@ -1,12 +1,8 @@
-from collections import namedtuple
-
 from django.test import override_settings
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.test import APITestCase
-
-Language = namedtuple("Language", "conf local")
 
 
 class I18NAPITests(APITestCase):
