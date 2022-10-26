@@ -3,8 +3,9 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from openforms.api.validators import MimeTypeValidator
 from openforms.submissions.models import TemporaryFileUpload
+
+from .validators import MimeTypeValidator
 
 
 class TemporaryFileUploadSerializer(serializers.Serializer):

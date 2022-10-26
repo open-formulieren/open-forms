@@ -19,9 +19,9 @@ from PIL import Image
 from rest_framework.exceptions import ValidationError
 
 from openforms.api.exceptions import RequestEntityTooLarge
-from openforms.api.validators import MimeTypeValidator
 from openforms.conf.utils import Filesize
 from openforms.config.models import GlobalConfiguration
+from openforms.formio.api.validators import MimeTypeValidator
 from openforms.formio.typing import Component
 from openforms.submissions.models import (
     Submission,
