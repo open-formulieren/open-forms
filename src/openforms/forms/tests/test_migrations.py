@@ -237,3 +237,33 @@ class TestChangeInlineEditSetting(TestMigrations):
         self.assertTrue(
             self.form_definition.configuration["components"][0]["inlineEdit"]
         )
+
+
+class TestUpdateTranslationFields(TestMigrations):
+    migrate_from = "0050_auto_20221024_1252"
+    migrate_to = "0051_update_translation_fields"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        self.form_definition = FormDefinition.objects.create(
+            name="Vertaalbare naam",
+            configuration={
+                "components": [
+                    {
+                        "key": "repeatingGroup",
+                        "type": "editgrid",
+                        "label": "Repeating Group",
+                        "inlineEdit": False,
+                        "components": [],
+                    }
+                ]
+            },
+        )
+
+    def test_update_translation_fields(self):
+        self.form_definition.refresh_from_db()
+
+        self.assertEqual(self.form_definition.name, "Vertaalbare naam")
+        self.assertEqual(self.form_definition.name_nl, "Vertaalbare naam")
+        self.assertEqual(self.form_definition.name_en, None)
