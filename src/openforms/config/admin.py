@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
+from modeltranslation.admin import TranslationAdmin
 from solo.admin import SingletonModelAdmin
 
 from .forms import GlobalConfigurationAdminForm
@@ -9,7 +10,9 @@ from .models import CSPSetting, GlobalConfiguration, RichTextColor
 
 
 @admin.register(GlobalConfiguration)
-class GlobalConfigurationAdmin(DynamicArrayMixin, SingletonModelAdmin):
+class GlobalConfigurationAdmin(
+    DynamicArrayMixin, TranslationAdmin, SingletonModelAdmin
+):
     form = GlobalConfigurationAdminForm
     fieldsets = (
         (

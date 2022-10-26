@@ -43,8 +43,11 @@ IS_HTTPS = config("IS_HTTPS", default=not DEBUG)
 
 LANGUAGE_CODE = "nl"
 LANGUAGES = [
+    (
+        "nl",
+        _("Dutch"),
+    ),  # Ensure the Dutch version of the model fields is shown first in the admin
     ("en", _("English")),
-    ("nl", _("Dutch")),
 ]
 LANGUAGE_COOKIE_HTTPONLY = True
 LANGUAGE_COOKIE_NAME = "openforms_language"
@@ -143,6 +146,7 @@ INSTALLED_APPS = [
     # Optional applications.
     "ordered_model",
     "django_admin_index",
+    "modeltranslation",  # Must be placed before django.contrib.admin for admin integration
     "django.contrib.admin",
     # 'django.contrib.admindocs',
     # 'django.contrib.humanize',
@@ -1102,6 +1106,11 @@ with open(os.path.join(os.path.dirname(__file__), "tinymce_config.json")) as f:
 HIJACK_INSERT_BEFORE = (
     '<div class="content">'  # note that this only applies to the admin
 )
+
+#
+# Django Modeltranslation
+#
+MODELTRANSLATION_DEFAULT_LANGUAGE = "nl"
 
 #
 # Open Forms extensions

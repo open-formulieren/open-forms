@@ -198,6 +198,7 @@ django==3.2.16
     #   django-formtools
     #   django-hijack
     #   django-jenkins
+    #   django-modeltranslation
     #   django-otp
     #   django-phonenumber-field
     #   django-privates
@@ -312,6 +313,10 @@ django-ipware==3.0.1
     #   -r requirements/ci.txt
     #   django-axes
 django-jenkins==0.110.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+django-modeltranslation==0.18.5
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

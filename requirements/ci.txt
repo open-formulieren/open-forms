@@ -169,6 +169,7 @@ django==3.2.16
     #   django-formtools
     #   django-hijack
     #   django-jenkins
+    #   django-modeltranslation
     #   django-otp
     #   django-phonenumber-field
     #   django-privates
@@ -276,6 +277,10 @@ django-ipware==3.0.1
     #   django-axes
 django-jenkins==0.110.0
     # via -r requirements/test-tools.in
+django-modeltranslation==0.18.5
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django-ordered-model==3.6
     # via
     #   -c requirements/base.txt

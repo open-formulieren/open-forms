@@ -10,7 +10,7 @@ def convert_frontend_advanced_logic(apps, schema_editor):
 
     form_definitions = FormDefinition.objects.all()
     for form_definition in form_definitions:
-        advanced_formio_logic_to_backend_logic(form_definition)
+        advanced_formio_logic_to_backend_logic(form_definition, apps)
 
 
 class Migration(migrations.Migration):

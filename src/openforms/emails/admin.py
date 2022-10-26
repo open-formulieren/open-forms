@@ -13,6 +13,7 @@ from django_yubin.models import (
     Message as YubinMessage,
     QueuedMessage as YubinQueuedMessage,
 )
+from modeltranslation.admin import TranslationAdmin
 
 from ..utils.admin import ReadOnlyAdminMixin
 from ..utils.mixins import UserIsStaffMixin
@@ -22,7 +23,7 @@ from .models import ConfirmationEmailTemplate
 
 
 @admin.register(ConfirmationEmailTemplate)
-class ConfirmationEmailTemplateAdmin(admin.ModelAdmin):
+class ConfirmationEmailTemplateAdmin(TranslationAdmin):
     form = ConfirmationEmailTemplateForm
 
 
