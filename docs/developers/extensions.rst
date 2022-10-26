@@ -8,9 +8,10 @@ Keycloak token exchange extension
 =================================
 
 The municipality of Den Haag started a proof of concept for the addition of Attribute Based Access Control (ABAC) to the
-ZGW APIs. This means that an authenticated user should only be able to retrieve data from the ZGW APIs which they are
-entitled to see. In the proof of concept, the Keycloak preview feature called "`token exchange`_" is leveraged to get a
-OAUTH2 access token that is then sent to the downstream APIs to determine what the user is allowed to retrieve.
+ZGW APIs. This means that an authenticated user should only be able to retrieve data from external services (such as
+Haal Centraal BRP bevragen or retrieving case data from the ZGW APIs) which they are entitled to see.
+In the proof of concept, the Keycloak preview feature called "`token exchange`_" is leveraged to get a
+(OAUTH2) access token that is then sent to the downstream APIs to determine what the user is allowed to retrieve.
 
 Open Forms makes requests to APIs like, for example, Haal Centraal when retrieving user data for the prefill at the
 start of a submission. To work with Den Haag's proof of concept, we need to obtain the access token from Keycloak
@@ -23,11 +24,12 @@ The flow works as follows:
    connect). Keycloak returns a token in the payload along with the BSN/KvK/Pseudo ID.
 
    * The authentication plugins in Open Forms extract the user information from the payload and add it to the session
-     under the :class:`openforms.authentication.constants.FORM_AUTH_SESSION_KEY` key.
+     under the :const:`openforms.authentication.constants.FORM_AUTH_SESSION_KEY` key.
    * The :class:`AuthenticationReturnView` of the authentication plugins fires a signal to notify that the authentication
-     was successful if the :class:`openforms.authentication.constants.FORM_AUTH_SESSION_KEY` key is present in the session.
+     was successful if the :const:`openforms.authentication.constants.FORM_AUTH_SESSION_KEY` key is present in the session.
    * The ``open-forms-ext-token-exchange`` extension receives the signal and extracts the Keycloak token from the request.
-     This token is saved in thread local memory.
+     This token is kept in application memory for later access (and never persisted to disk to avoid leaking credentials
+     _if_ the application were to be compromised).
 
 #. The submission is started and Open Forms requests prefill data from Haal Centraal:
 
@@ -36,8 +38,8 @@ The flow works as follows:
      that any pre-request hooks registered in Open Forms are run before performing the request.
    * The ``open-forms-ext-token-exchange`` extension registers a pre-request hook which adds a
      `custom authentication class`_ to the request.
-   * The custom authentication class :class:`token_exchange.auth.TokenAccessAuth` checks if the URL to which the
-     request is being made has a service with an associated :class:`token_exchange.models.TokenExchangeConfiguration`.
+   * The custom authentication class ``token_exchange.auth.TokenAccessAuth`` checks if the URL to which the
+     request is being made has a service with an associated ``token_exchange.models.TokenExchangeConfiguration``.
      If it's NOT the case, it doesn't do anything. If it's the case, it makes the token exchange request to Keycloak
      and adds the obtained access token to the headers of the request to the downstream API.
 
