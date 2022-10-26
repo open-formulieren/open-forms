@@ -111,11 +111,10 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         # check the property doesn't alias both
         self.assertNotEqual(instance.auth_info, instance.registrator)
 
-        # check the clients info is stored as .registrator
+        # check the clients info is stored as .auth_info
         self.assertEqual(instance.auth_info.attribute, AuthAttribute.bsn)
         self.assertEqual(instance.auth_info.value, "123")
-        # TODO check what we want from this
-        # self.assertEqual(instance.auth_info.plugin, "registrator")
+        self.assertEqual(instance.auth_info.plugin, "registrator")
 
         # check the employee's info is stored as .registrator
         self.assertEqual(instance.registrator.plugin, "organization_plugin")

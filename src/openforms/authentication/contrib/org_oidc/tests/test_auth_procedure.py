@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from django.contrib import auth
 from django.contrib.auth import get_user
+from django.contrib.auth.models import Group
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
@@ -326,20 +327,14 @@ class OrgOIDCTests(TestCase):
             "given_name": "John",
             "family_name": "Doe",
             "arbitrary_employee_id_claim": "my_id_value",
-            "arbitrary_groups": ["registrators"],
+            "arbitrary_groups": ["Registreerders"],
         }
         mock_verify_token.return_value = user_claims
         mock_get_userinfo.return_value = user_claims
         mock_store_tokens.return_value = {"whatever": 1}
 
         # setup user group
-        solo = OpenIDConnectConfig.get_solo()
-        group = GroupFactory(
-            name="registrators",
-            permissions=["of_authentication.can_register_client_submission"],
-        )
-        solo.save()
-        solo.default_groups.add(group)
+        group = Group.objects.get(name__iexact="Registreerders")
 
         # setup our form and urls
         form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
@@ -385,7 +380,8 @@ class OrgOIDCTests(TestCase):
         self.assertTrue(user.first_name, "John")
         self.assertTrue(user.last_name, "Doe")
         self.assertTrue(user.employee_id, "my_id_value")
-        self.assertEqual(list(user.groups.all()), [group])
+        # note: assertQuerysetEqual doesn't check primary keys, so can't detect duplicate objects
+        self.assertEqual(user.groups.get().pk, group.pk)
 
         # check plugins handle_return() response
         return_response = self.client.get(handle_return_url)

@@ -5,14 +5,17 @@ from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import UserFactory
 
+from ...tests.utils import disable_2fa
 from ..constants import AuthAttribute
 from .factories import AuthInfoFactory, RegistratorInfoFactory
 
 
+@disable_2fa
 class AuthInfoAdminValidationTest(WebTest):
-    def setUp(self):
-        super().setUp()
-        self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.user = UserFactory.create(is_superuser=True, is_staff=True)
 
     @override_settings(LANGUAGE_CODE="en")
     def test_validate_invalid_bsn(self):
@@ -53,10 +56,12 @@ class AuthInfoAdminValidationTest(WebTest):
         )
 
 
+@disable_2fa
 class RegistratorInfoAdminValidationTest(WebTest):
-    def setUp(self):
-        super().setUp()
-        self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.user = UserFactory.create(is_superuser=True, is_staff=True)
 
     @override_settings(LANGUAGE_CODE="en")
     def test_validate_invalid_bsn(self):

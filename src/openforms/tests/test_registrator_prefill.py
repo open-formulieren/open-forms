@@ -137,7 +137,7 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
         solo = OpenIDConnectConfig.get_solo()
         group = GroupFactory(
             name="registrators",
-            permissions=["of_authentication.can_register_client_submission"],
+            permissions=["of_authentication.can_register_customer_submission"],
         )
         solo.save()
         solo.default_groups.add(group)

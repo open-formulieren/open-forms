@@ -15,8 +15,8 @@ class Migration(migrations.Migration):
             options={
                 "permissions": [
                     (
-                        "can_register_client_submission",
-                        "Can register submission for clients",
+                        "can_register_customer_submission",
+                        "Can register submission for customers",
                     )
                 ],
                 "verbose_name": "Registrator authentication details",

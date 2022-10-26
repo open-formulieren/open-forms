@@ -399,34 +399,35 @@ class CoSignAuthenticationFlowTests(SubmissionsMixin, APITestCase):
 class RegistratorSubjectInfoViewTests(WebTest):
     csrf_checks = False
 
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
-        self.form = FormStepFactory(
+        cls.form = FormStepFactory(
             form__slug="myform",
             form__authentication_backends=["plugin1"],
             form_definition__login_required=True,
         ).form
 
-        form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
-        self.form_url = f"http://testserver{form_path}"
+        form_path = reverse("core:form-detail", kwargs={"slug": cls.form.slug})
+        cls.form_url = f"http://testserver{form_path}"
 
         f = furl(
             reverse(
                 "authentication:registrator-subject",
-                kwargs={"slug": self.form.slug},
+                kwargs={"slug": cls.form.slug},
             )
         )
-        self.subject_url_missing_next = f.url
+        cls.subject_url_missing_next = f.url
 
         f.args["next"] = "http://not-in-whitelist.net/foo"
-        self.subject_url_not_allowed_next = f.url
+        cls.subject_url_not_allowed_next = f.url
 
-        f.args["next"] = self.form_url
-        self.subject_url = f.url
+        f.args["next"] = cls.form_url
+        cls.subject_url = f.url
 
-        self.user = UserFactory(
-            user_permissions=["of_authentication.can_register_client_submission"]
+        cls.user = UserFactory(
+            user_permissions=["of_authentication.can_register_customer_submission"]
         )
 
     def test_view_requires_logged_in_user(self):
@@ -518,7 +519,7 @@ class RegistratorSubjectInfoViewTests(WebTest):
             response = form.submit(status=302)
             self.assertRedirects(response, self.form_url, fetch_redirect_response=False)
 
-        with self.subTest("valid bsn"):
+        with self.subTest("valid kvk"):
             response = self.app.get(self.subject_url, status=200, user=self.user)
             form = response.forms["registrator-subject"]
             form["kvk"] = "12345678"

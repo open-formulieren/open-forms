@@ -58,6 +58,9 @@ class OIDCAuthentication(BasePlugin):
         )
         if request.user.is_authenticated:
             # logout user if logged in with other account
+            # this is relevant when staff users are already logged in, the OIDC state/redirects get confused,
+            #   and could send the user back to the admin instead of the form.
+            # this is likely because it picks a .success_url instead of session data
             auth.logout(request)
         return HttpResponseRedirect(redirect_url)
 

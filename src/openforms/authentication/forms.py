@@ -22,7 +22,6 @@ class RegistratorSubjectInfoForm(forms.Form):
         label=_("Continue without additional information"),
         required=False,
         initial=False,
-        # TODO make a widget instead of hacking a <button> in the form template
     )
 
     def clean(self):
