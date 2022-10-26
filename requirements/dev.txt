@@ -4,6 +4,8 @@
 #
 #    ./bin/compile_dependencies.sh
 #
+--no-binary lxml
+
 alabaster==0.7.12
     # via
     #   -c requirements/ci.txt

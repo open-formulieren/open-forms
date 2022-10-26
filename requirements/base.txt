@@ -4,6 +4,8 @@
 #
 #    ./bin/compile_dependencies.sh
 #
+--no-binary lxml
+
 amqp==5.0.9
     # via kombu
 asgiref==3.5.0
