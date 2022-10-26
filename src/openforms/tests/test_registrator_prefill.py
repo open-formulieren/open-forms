@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
+from django.contrib.auth.models import Group
 from django.test import override_settings
-from django.urls import reverse
 
 import requests_mock
 from django_webtest import WebTest
@@ -10,7 +10,6 @@ from mozilla_django_oidc_db.models import OpenIDConnectConfig
 from rest_framework import status
 
 from openforms.accounts.models import User
-from openforms.accounts.tests.factories import GroupFactory
 from openforms.authentication.constants import (
     FORM_AUTH_SESSION_KEY,
     REGISTRATOR_SUBJECT_SESSION_KEY,
@@ -25,6 +24,7 @@ from openforms.prefill.contrib.haalcentraal.tests.utils import (
 )
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.models import Submission
+from openforms.utils.urls import reverse_plus
 
 CONFIGURATION = {
     "display": "form",
@@ -59,7 +59,9 @@ default_config = dict(
 
 @override_settings(
     CORS_ALLOW_ALL_ORIGINS=False,
-    CORS_ALLOWED_ORIGINS=["http://testserver", "http://testserver.com"],
+    CORS_ALLOWED_ORIGINS=["http://example.com"],
+    BASE_URL="http://example.com",
+    ALLOWED_HOSTS=["example.com", "testserver"],
 )
 class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
     """
@@ -127,21 +129,16 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
             "given_name": "John",
             "family_name": "Doe",
             "arbitrary_employee_id_claim": "my_id_value",
-            "arbitrary_groups": ["registrators"],
+            "arbitrary_groups": ["Registreerders"],
         }
         mock_verify_token.return_value = user_claims
         mock_get_userinfo.return_value = user_claims
         mock_store_tokens.return_value = {"whatever": 1}
 
-        # setup user group
-        solo = OpenIDConnectConfig.get_solo()
-        group = GroupFactory(
-            name="registrators",
-            permissions=["of_authentication.can_register_customer_submission"],
-        )
-        solo.save()
-        solo.default_groups.add(group)
+        # grab user group (from default_groups fixture)
+        group = Group.objects.get(name__iexact="Registreerders")
 
+        # setup our form and urls
         form_step = FormStepFactory.create(
             form_definition__configuration=CONFIGURATION,
             form_definition__login_required=True,
@@ -150,11 +147,10 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
             form__slug="my-form",
         )
         form = form_step.form
-        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
-        form_url = f"http://testserver{form_path}"
+        form_url = reverse_plus("core:form-detail", kwargs={"slug": form.slug})
 
         # start of flow begins by browsing the authentication:start view
-        auth_start_url = reverse(
+        auth_start_url = reverse_plus(
             "authentication:start",
             kwargs={"slug": form.slug, "plugin_id": "org-oidc"},
         )
@@ -166,19 +162,13 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
         auth_start_response.follow(status=302)
 
         # at this point the user would redirect to the OIDC provider and return to our callback
-        handle_return_url = (
-            furl(
-                reverse(
-                    "authentication:return",
-                    kwargs={"slug": form.slug, "plugin_id": "org-oidc"},
-                )
-            )
-            .set({"next": form_url})
-            .url
+        handle_return_url = reverse_plus(
+            "authentication:return",
+            kwargs={"slug": form.slug, "plugin_id": "org-oidc"},
+            query={"next": form_url},
         )
 
-        oidc_callback_url = reverse("org-oidc:oidc_authentication_callback")
-        # oidc_callback_url = f"http://testserver{oidc_callback_url}"
+        oidc_callback_url = reverse_plus("org-oidc:oidc_authentication_callback")
 
         session = self.app.session
         session["oidc_states"] = {"mock": {"nonce": "nonce"}}
@@ -199,6 +189,8 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
         # a user was created
         user = User.objects.get()
         self.assertTrue(user.employee_id, "my_id_value")
+        # note: assertQuerysetEqual doesn't check primary keys, so can't detect duplicate objects
+        self.assertEqual(user.groups.get().pk, group.pk)
 
         # redirects from oidc callback, via the plugin return view, to the registrator_subject form
         return_response = oidc_callback_response.follow(status=302)
@@ -213,7 +205,8 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
         form_response = registrator_subject_form.submit(status=302).follow(status=200)
 
         # back at the form
-        self.assertEqual(form_response.request.url, form_url)
+        # TODO webtest doesn't redirect/forward the hostname as expected, so just check path
+        self.assertEqual(furl(form_response.request.url).path, furl(form_url).path)
 
         # check our session data
         self.assertIn(FORM_AUTH_SESSION_KEY, self.app.session)
@@ -228,14 +221,13 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
         self.assertEqual(s["value"], "999990676")
 
         # fake a submit
-        form_api_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        form_api_url = f"http://testserver{form_api_path}"
+        form_api_url = reverse_plus(
+            "api:form-detail", kwargs={"uuid_or_slug": form.uuid}
+        )
 
         body = {
-            # we need to change the urls because http://testserver/my-form doesn't pass URLValidator...
-            # ideally everything would use a http host and cleanly propagate but WebTest doesn't agree
-            "form": form_api_url.replace("testserver", "testserver.com"),
-            "formUrl": form_url.replace("testserver", "testserver.com"),
+            "form": form_api_url,
+            "formUrl": form_url,
         }
 
         with requests_mock.Mocker(real_http=False) as m:
@@ -251,9 +243,7 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
             )
 
             response = self.app.post_json(
-                reverse(
-                    "api:submission-list",
-                ),
+                reverse_plus("api:submission-list"),
                 body,
                 status=201,
             )

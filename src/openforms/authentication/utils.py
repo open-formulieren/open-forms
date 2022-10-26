@@ -1,4 +1,4 @@
-from typing import Literal, Optional, TypedDict, Union
+from typing import Literal, Optional, TypedDict
 
 from openforms.submissions.models import Submission
 

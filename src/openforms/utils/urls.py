@@ -1,10 +1,12 @@
-from typing import Optional, Union
+from typing import Any, Dict, Optional, Union
 from urllib.parse import urljoin, urlsplit
 
 from django.conf import settings
 from django.http import HttpRequest
+from django.urls import reverse
 from django.utils.encoding import iri_to_uri
 
+from furl import furl
 from rest_framework.request import Request
 
 RequestType = Union[HttpRequest, Request]
@@ -53,3 +55,45 @@ def build_absolute_uri(location: str, request: Optional[RequestType] = None):
             # base path.
             location = urljoin(current_scheme_host, location)
     return iri_to_uri(location)
+
+
+def reverse_plus(
+    name: str,
+    *,
+    args=None,
+    kwargs=None,
+    request: Optional[RequestType] = None,
+    query: Optional[Dict[str, Any]] = None,
+    make_absolute: bool = True,
+):
+    """
+    Reverse a named URL with GET query params, absolute URL with internal build_absolute_uri()
+
+    This is both more readable *and* formatter friendly than a local reverse/furl/build_absolute_uri
+
+    If `make_absolute` is True and no `request` argument is provided, the fully qualified URI is constructed via
+    :attr:`settings.BASE_URL`.
+
+    :arg name: the URL name to reverse.
+    :arg args: optionally - arg-argument to reverse().
+    :arg kwargs: optionally - kwargs-argument to reverse().
+    :arg request: optionally - the current request object. If provided,
+      :meth:`request.build_absolute_uri` is called.
+    :arg query: optionally - add key/values as URL GET parameter
+    :arg make_absolute: optionally - disable absolute URL
+    """
+    location = reverse(
+        name,
+        args=args,
+        kwargs=kwargs,
+        # additional reverse() arguments could be added when needed
+    )
+    if make_absolute:
+        # use the custom build_absolute_uri()
+        location = build_absolute_uri(location, request=request)
+    if query:
+        f = furl(location)
+        f.set(query=query)
+        return f.url
+    else:
+        return location

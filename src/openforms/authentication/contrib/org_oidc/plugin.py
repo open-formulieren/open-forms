@@ -3,32 +3,12 @@ from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirec
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
-from furl import furl
-from rest_framework.reverse import reverse
-
 from openforms.forms.models import Form
+from openforms.utils.urls import reverse_plus
 
 from ...base import BasePlugin
 from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...registry import register
-
-
-def _reverse_plus(name, *, args=None, kwargs=None, request=None, query=None):
-    """
-    reverse with absolute URL and GET query params
-    """
-    rev = reverse(
-        name,
-        args=args,
-        kwargs=kwargs,
-        request=request,
-    )
-    if not query:
-        return rev
-    f = furl(rev)
-    for k, v in query.items():
-        f.args[k] = v
-    return f.url
 
 
 @register("org-oidc")
@@ -41,7 +21,7 @@ class OIDCAuthentication(BasePlugin):
     provides_auth = AuthAttribute.employee_id
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str):
-        auth_return_url = _reverse_plus(
+        auth_return_url = reverse_plus(
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": self.identifier},
             request=request,
@@ -49,7 +29,7 @@ class OIDCAuthentication(BasePlugin):
                 "next": form_url,
             },
         )
-        redirect_url = _reverse_plus(
+        redirect_url = reverse_plus(
             "org-oidc:init",
             request=request,
             query={

@@ -12,8 +12,9 @@ from mozilla_django_oidc_db.models import OpenIDConnectConfig
 from rest_framework import status
 
 from openforms.accounts.models import User
-from openforms.accounts.tests.factories import GroupFactory, UserFactory
+from openforms.accounts.tests.factories import UserFactory
 from openforms.forms.tests.factories import FormFactory
+from openforms.utils.urls import reverse_plus
 
 from ....constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from ....views import BACKEND_OUTAGE_RESPONSE_PARAMETER
@@ -183,12 +184,11 @@ class OrgOIDCTests(TestCase):
         return_value=OpenIDConnectConfig(**default_config),
     )
     def test_redirect_to_disallowed_domain(self, *m):
-        login_url = reverse(
-            "org-oidc:oidc_authentication_init",
-        )
-
         form_url = "http://example.com"
-        start_url = furl(login_url).set({"next": form_url})
+        start_url = reverse_plus(
+            "org-oidc:oidc_authentication_init",
+            query={"next": form_url},
+        )
         response = self.client.get(start_url)
 
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
@@ -265,12 +265,11 @@ class OrgOIDCTests(TestCase):
         other_user = UserFactory()
         self.client.force_login(other_user)
 
-        login_url = reverse(
+        start_url = reverse_plus(
             "authentication:start",
             kwargs={"slug": self.form.slug, "plugin_id": "org-oidc"},
+            query={"next": "http://example.com"},
         )
-
-        start_url = furl(login_url).set({"next": "http://example.com"})
         response = self.client.get(start_url)
         self.assertEqual(response.status_code, 302)
 
@@ -291,6 +290,7 @@ class OrgOIDCTests(TestCase):
         "openforms.authentication.contrib.org_oidc.backends.OIDCAuthenticationBackend.get_token"
     )
     @patch("mozilla_django_oidc_db.models.OpenIDConnectConfig.get_solo")
+    @override_settings(BASE_URL="http://testserver")
     def test_callback_url_creates_logged_in_django_user(
         self,
         mock_get_solo,
@@ -333,24 +333,20 @@ class OrgOIDCTests(TestCase):
         mock_get_userinfo.return_value = user_claims
         mock_store_tokens.return_value = {"whatever": 1}
 
-        # setup user group
+        # grab user group (from default_groups fixture)
         group = Group.objects.get(name__iexact="Registreerders")
 
         # setup our form and urls
-        form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
-        form_url = f"http://testserver{form_path}"
+        form_url = reverse_plus("core:form-detail", kwargs={"slug": self.form.slug})
 
-        f = furl(
-            reverse(
-                "authentication:return",
-                kwargs={"slug": self.form.slug, "plugin_id": "org-oidc"},
-            )
+        handle_return_url = reverse_plus(
+            "authentication:return",
+            kwargs={"slug": self.form.slug, "plugin_id": "org-oidc"},
+            query={"next": form_url},
         )
-        f.args["next"] = form_url
-        handle_return_url = f.url
 
         # go through mock OIDC
-        callback_url = reverse("org-oidc:oidc_authentication_callback")
+        callback_url = reverse_plus("org-oidc:oidc_authentication_callback")
 
         session = self.client.session
         session["oidc_states"] = {"mock": {"nonce": "nonce"}}
@@ -386,14 +382,11 @@ class OrgOIDCTests(TestCase):
         # check plugins handle_return() response
         return_response = self.client.get(handle_return_url)
 
-        f = furl(
-            reverse(
-                "authentication:registrator-subject",
-                kwargs={"slug": self.form.slug},
-            )
+        subject_url = reverse_plus(
+            "authentication:registrator-subject",
+            kwargs={"slug": self.form.slug},
+            query={"next": form_url},
         )
-        f.args["next"] = form_url
-        subject_url = f"http://testserver{f.url}"
 
         self.assertRedirects(
             return_response, subject_url, fetch_redirect_response=False
