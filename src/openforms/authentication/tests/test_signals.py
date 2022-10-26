@@ -19,8 +19,8 @@ from ..constants import (
 )
 from ..registry import Registry
 from ..signals import set_auth_attribute_on_session
-from .mocks import Plugin, RequiresAdminPlugin, mock_register
 from ..views import AuthenticationReturnView
+from .mocks import Plugin, RequiresAdminPlugin, mock_register
 
 factory = APIRequestFactory()
 

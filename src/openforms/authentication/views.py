@@ -28,7 +28,12 @@ from openforms.submissions.serializers import CoSignDataSerializer
 from openforms.utils.redirect import allow_redirect_url
 
 from .base import BasePlugin
-from .constants import CO_SIGN_PARAMETER, REGISTRATOR_SUBJECT_SESSION_KEY, AuthAttribute, FORM_AUTH_SESSION_KEY
+from .constants import (
+    CO_SIGN_PARAMETER,
+    FORM_AUTH_SESSION_KEY,
+    REGISTRATOR_SUBJECT_SESSION_KEY,
+    AuthAttribute,
+)
 from .exceptions import InvalidCoSignData
 from .forms import RegistratorSubjectInfoForm
 from .registry import register
