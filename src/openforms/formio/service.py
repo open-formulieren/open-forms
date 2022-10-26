@@ -14,7 +14,7 @@ from .datastructures import FormioConfigurationWrapper
 from .dynamic_config.service import apply_dynamic_configuration
 from .normalization import normalize_value_for_component
 from .typing import Component
-from .utils import iter_components, mimetype_allowed
+from .utils import iter_components
 from .variables import inject_variables
 
 __all__ = [
@@ -22,7 +22,6 @@ __all__ = [
     "update_configuration_for_request",
     "normalize_value_for_component",
     "iter_components",
-    "mimetype_allowed",
     "inject_variables",
 ]
 

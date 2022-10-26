@@ -1,6 +1,6 @@
 import logging
 import warnings
-from typing import Any, Container, Dict, Iterator, List, Optional, Tuple
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 import elasticapm
 from glom import glom
@@ -138,21 +138,6 @@ def get_component_default_value(component) -> Optional[Any]:
     if component.get("multiple") and default_value is None:
         return []
     return default_value
-
-
-def mimetype_allowed(mime_type: str, allowed_mime_types: Container[str]) -> bool:
-    """
-    Test if the file mime type passes the allowed_mime_types Formio configuration.
-    """
-    #  no allowlist specified -> everything is allowed
-    if not allowed_mime_types:
-        return True
-
-    # wildcard specified -> everything is allowed
-    if "*" in allowed_mime_types:
-        return True
-
-    return mime_type in allowed_mime_types
 
 
 # See https://help.form.io/userguide/forms/form-components#input-mask for the
