@@ -21,9 +21,6 @@ class _UserAdmin(UserAdmin):
         "get_groups",
     )
     search_fields = UserAdmin.search_fields + ("employee_id",)
-    fieldsets = _append_field_to_fieldsets(
-        UserAdmin.fieldsets, _("Personal info"), "employee_id"
-    )
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -33,3 +30,6 @@ class _UserAdmin(UserAdmin):
         return list(obj.groups.all())
 
     get_groups.short_description = _("Groups")
+
+
+_append_field_to_fieldsets(_UserAdmin.fieldsets, _("Personal info"), "employee_id")
