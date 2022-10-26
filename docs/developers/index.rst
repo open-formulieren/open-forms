@@ -27,6 +27,7 @@ familiarize yourself with the design principles.
    sdk/index
    plugins/index
    extending
+   extensions
    checklists
    manual_testing
    i18n
