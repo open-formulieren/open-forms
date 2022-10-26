@@ -13,7 +13,6 @@ tblib
 testfixtures
 pep8
 pytest  # documentation tests
-django-capture-on-commit-callbacks
 
 # Code formatting
 black

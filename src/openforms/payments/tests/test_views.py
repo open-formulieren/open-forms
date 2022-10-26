@@ -5,8 +5,6 @@ from django.http import HttpResponseRedirect
 from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 
-from django_capture_on_commit_callbacks import capture_on_commit_callbacks
-
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
 
@@ -88,7 +86,7 @@ class ViewsTests(TestCase):
         with self.subTest("return ok"):
             update_payments_mock.reset_mock()
 
-            with capture_on_commit_callbacks(execute=True):
+            with self.captureOnCommitCallbacks(execute=True):
                 response = self.client.get(url)
 
             self.assertEqual(response.content, b"")
@@ -99,7 +97,7 @@ class ViewsTests(TestCase):
         with self.subTest("return bad method"):
             update_payments_mock.reset_mock()
 
-            with capture_on_commit_callbacks(execute=True):
+            with self.captureOnCommitCallbacks(execute=True):
                 response = self.client.post(url)
 
             self.assertEqual(response.status_code, 405)
@@ -111,7 +109,7 @@ class ViewsTests(TestCase):
             bad_payment = SubmissionPaymentFactory.for_backend("bad_plugin")
             bad_url = bad_plugin.get_return_url(base_request, bad_payment)
 
-            with capture_on_commit_callbacks(execute=True):
+            with self.captureOnCommitCallbacks(execute=True):
                 response = self.client.get(bad_url)
 
             self.assertEqual(response.data["detail"], "unknown plugin")
@@ -125,7 +123,7 @@ class ViewsTests(TestCase):
             )
             bad_url = bad_plugin.get_return_url(base_request, bad_payment)
 
-            with capture_on_commit_callbacks(execute=True):
+            with self.captureOnCommitCallbacks(execute=True):
                 response = self.client.get(bad_url)
 
             self.assertEqual(response.data["detail"], "redirect not allowed")
@@ -141,7 +139,7 @@ class ViewsTests(TestCase):
         ):
             update_payments_mock.reset_mock()
 
-            with capture_on_commit_callbacks(execute=True):
+            with self.captureOnCommitCallbacks(execute=True):
                 response = self.client.post(url)
 
             self.assertEqual(response.content, b"")
@@ -152,7 +150,7 @@ class ViewsTests(TestCase):
         with self.subTest("webhook bad method"):
             update_payments_mock.reset_mock()
 
-            with capture_on_commit_callbacks(execute=True):
+            with self.captureOnCommitCallbacks(execute=True):
                 response = self.client.get(url)
 
             self.assertEqual(response.status_code, 405)
@@ -163,7 +161,7 @@ class ViewsTests(TestCase):
             update_payments_mock.reset_mock()
             bad_url = bad_plugin.get_webhook_url(base_request)
 
-            with capture_on_commit_callbacks(execute=True):
+            with self.captureOnCommitCallbacks(execute=True):
                 response = self.client.get(bad_url)
 
             self.assertEqual(response.data["detail"], "unknown plugin")
