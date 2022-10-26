@@ -1,5 +1,5 @@
 from pathlib import PurePath
-from typing import Callable, Container, Optional
+from typing import Container, Optional
 
 from django.core.files.uploadedfile import UploadedFile
 from django.utils.translation import gettext_lazy as _
