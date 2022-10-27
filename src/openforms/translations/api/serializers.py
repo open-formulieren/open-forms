@@ -7,7 +7,7 @@ from rest_framework import serializers
 class LanguageCodeField(serializers.ChoiceField):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("choices", settings.LANGUAGES)
-        kwargs.setdefault("help_text", _("RFC5646 language tag, e.g. 'en' or 'en-us'"))
+        kwargs.setdefault("help_text", _("RFC5646 language tag, e.g. `en` or `en-us`"))
         super().__init__(*args, **kwargs)
 
 

@@ -7,13 +7,14 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from openforms.api.serializers import ValidationErrorSerializer
+from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 
 from .serializers import LanguageCodeSerializer, LanguageInfoSerializer
 
 
 class LanguageInfoView(APIView):
     authentication_classes = ()
+    permission_classes = ()
 
     def get_serializer(self, *args, **kwargs):
         return LanguageInfoSerializer(
@@ -24,6 +25,7 @@ class LanguageInfoView(APIView):
 
     @extend_schema(
         summary=_("List available languages and the currently active one."),
+        tags=["translations"],
         examples=[
             OpenApiExample(
                 "Selected Dutch",
@@ -31,7 +33,9 @@ class LanguageInfoView(APIView):
                     "languages": [
                         {"code": "en", "name": "English"},
                         {"code": "nl", "name": "Nederlands"},
-                        {"code": "fy", "name": "frysk"},
+                        # FIXME: code is validated against the enum list, and at the
+                        # moment we only support en/nl
+                        # {"code": "fy", "name": "frysk"},
                     ],
                     "current": "nl",
                 },
@@ -53,28 +57,35 @@ class LanguageInfoView(APIView):
 
 class SetLanguageView(APIView):
     authentication_classes = ()
+    permission_classes = ()
+
+    def get_serializer(self, *args, **kwargs):
+        return LanguageCodeSerializer(
+            *args, context={"request": self.request, "view": self}, **kwargs
+        )
 
     @extend_schema(
         summary=_("Set the desired language"),
-        request=LanguageCodeSerializer,
+        tags=["translations"],
         responses={
             "204": None,
             "400": ValidationErrorSerializer,
+            "5XX": ExceptionSerializer,
         },
     )
     def put(self, request: Request) -> Response:
-        lang = LanguageCodeSerializer(data=request.data)
-        if lang.is_valid(raise_exception=True):
-            # no need to django.utils.translation.activate; no content to return
-            response = Response(status=status.HTTP_204_NO_CONTENT)
-            response.set_cookie(
-                key=settings.LANGUAGE_COOKIE_NAME,
-                value=lang.data["code"],
-                max_age=settings.LANGUAGE_COOKIE_AGE,
-                domain=settings.LANGUAGE_COOKIE_DOMAIN,
-                httponly=settings.LANGUAGE_COOKIE_HTTPONLY,
-                path=settings.LANGUAGE_COOKIE_PATH,
-                samesite=settings.LANGUAGE_COOKIE_SAMESITE,
-                secure=settings.LANGUAGE_COOKIE_SECURE,
-            )
-            return response
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        response = Response(status=status.HTTP_204_NO_CONTENT)
+        response.set_cookie(
+            key=settings.LANGUAGE_COOKIE_NAME,
+            value=serializer.data["code"],
+            max_age=settings.LANGUAGE_COOKIE_AGE,
+            domain=settings.LANGUAGE_COOKIE_DOMAIN,
+            httponly=settings.LANGUAGE_COOKIE_HTTPONLY,
+            path=settings.LANGUAGE_COOKIE_PATH,
+            samesite=settings.LANGUAGE_COOKIE_SAMESITE,
+            secure=settings.LANGUAGE_COOKIE_SECURE,
+        )
+        return response

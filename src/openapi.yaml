@@ -2405,9 +2405,7 @@ paths:
       operationId: i18n_info_retrieve
       summary: List available languages and the currently active one.
       tags:
-      - i18n
-      security:
-      - {}
+      - translations
       responses:
         '200':
           content:
@@ -2422,8 +2420,6 @@ paths:
                       name: English
                     - code: nl
                       name: Nederlands
-                    - code: fy
-                      name: frysk
                     current: nl
                   summary: Selected Dutch
           description: ''
@@ -2439,7 +2435,7 @@ paths:
       operationId: i18n_language_update
       summary: Set the desired language
       tags:
-      - i18n
+      - translations
       requestBody:
         content:
           application/json:
@@ -2452,8 +2448,6 @@ paths:
             schema:
               $ref: '#/components/schemas/LanguageCode'
         required: true
-      security:
-      - {}
       responses:
         '204':
           description: No response body
@@ -2469,6 +2463,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+        5XX:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -4764,8 +4771,8 @@ components:
       type: string
     AvailableLanguagesEnum:
       enum:
-      - en
       - nl
+      - en
       type: string
     BlankEnum:
       enum:
@@ -5572,7 +5579,7 @@ components:
         code:
           allOf:
           - $ref: '#/components/schemas/AvailableLanguagesEnum'
-          description: RFC5646 language tag, e.g. 'en' or 'en-us'
+          description: RFC5646 language tag, e.g. `en` or `en-us`
         name:
           type: string
           description: Language name in its local representation. e.g. "fy" = "frysk",
@@ -5586,7 +5593,7 @@ components:
         code:
           allOf:
           - $ref: '#/components/schemas/AvailableLanguagesEnum'
-          description: RFC5646 language tag, e.g. 'en' or 'en-us'
+          description: RFC5646 language tag, e.g. `en` or `en-us`
       required:
       - code
     LanguageInfo:
@@ -5601,7 +5608,7 @@ components:
         current:
           allOf:
           - $ref: '#/components/schemas/AvailableLanguagesEnum'
-          description: RFC5646 language tag, e.g. 'en' or 'en-us'
+          description: RFC5646 language tag, e.g. `en` or `en-us`
       required:
       - current
       - languages
