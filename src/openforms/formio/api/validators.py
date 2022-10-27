@@ -1,4 +1,3 @@
-from pathlib import PurePath
 from typing import Container, Optional
 
 from django.core.files.uploadedfile import UploadedFile
@@ -29,7 +28,7 @@ class MimeTypeValidator:
 
     def __call__(self, value: UploadedFile) -> None:
         head = value.read(2048)
-        ext = PurePath(value.name).suffix
+        ext = value.name.split(".")[-1]
         mime_type = magic.from_buffer(head, mime=True)
         if not (self._allowed is None or mimetype_allowed(mime_type, self._allowed)):
             raise serializers.ValidationError(
@@ -43,17 +42,27 @@ class MimeTypeValidator:
         if value.content_type == "application/octet-stream":
             m = magic.Magic(extension=True)
             extensions = m.from_buffer(head).split("/")
+            # magic db doesn't know any more specific extension(s), so accept the
+            # file
             if extensions == ["???"]:
-                pass  # magic db doesn't know correct extensions
-            elif ext not in extensions and ext[1:] not in extensions:
-                raise serializers.ValidationError(
-                    _("The file '{filename}' is not a {file_type}.").format(
-                        filename=value.name, file_type=ext
-                    )
+                return
+
+            # we did find actual potential extensions, so we can validate the filename
+            # by extension.
+
+            # accept the file if the file extension is present in the extensions detected
+            # by libmagic - this means the extension (likely) has not been tampered with
+            if ext in extensions:
+                return
+
+            raise serializers.ValidationError(
+                _("The file '{filename}' is not a {file_type}.").format(
+                    filename=value.name, file_type=f".{ext}"
                 )
+            )
         elif mime_type != value.content_type:
             raise serializers.ValidationError(
                 _("The file '{filename}' is not a {file_type}.").format(
-                    filename=value.name, file_type=ext
+                    filename=value.name, file_type=f".{ext}"
                 )
             )

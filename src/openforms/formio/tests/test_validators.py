@@ -48,8 +48,22 @@ class MimeTypeValidatorTests(SimpleTestCase):
             validator(file)
 
     def test_accepts_unknown_extensions(self):
+        # null-byte to force application/octet-stream mime detection and "???" extension
         file = SimpleUploadedFile(
             "pixel.gif", b"\x00asjdkfl", content_type="application/octet-stream"
+        )
+        validator = validators.MimeTypeValidator()
+
+        try:
+            validator(file)
+        except ValidationError as e:
+            self.fail(f"Valid file failed validation: {e}")
+
+    def test_mime_type_inferred_from_magic(self):
+        # gif works on Arch Linux, but not on Debian based systems, while PNG does work
+        # on both
+        file = SimpleUploadedFile(
+            "pixel.png", PIXEL_PNG, content_type="application/octet-stream"
         )
         validator = validators.MimeTypeValidator()
 
