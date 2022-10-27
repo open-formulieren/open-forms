@@ -1,7 +1,6 @@
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 
-from django_capture_on_commit_callbacks import capture_on_commit_callbacks
 from freezegun import freeze_time
 from privates.test import temp_private_root
 
@@ -33,7 +32,7 @@ class DeleteFormExportFilesTest(TestCase):
         storage = forms_export.export_content.storage
 
         with freeze_time("2022-01-09T00:00:00Z"):
-            with capture_on_commit_callbacks(execute=True):
+            with self.captureOnCommitCallbacks(execute=True):
                 call_command("delete_export_files")
 
         self.assertFalse(FormsExport.objects.filter(pk=forms_export.pk).exists())

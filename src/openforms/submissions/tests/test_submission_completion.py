@@ -12,7 +12,6 @@ from unittest.mock import patch
 from django.test import override_settings
 from django.utils import timezone
 
-from django_capture_on_commit_callbacks import capture_on_commit_callbacks
 from freezegun import freeze_time
 from privates.test import temp_private_root
 from rest_framework import status
@@ -89,7 +88,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        with capture_on_commit_callbacks(execute=True):
+        with self.captureOnCommitCallbacks(execute=True):
             response = self.client.post(endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -220,7 +219,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         # The auth details are cleaned by the signal handler
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
-            with capture_on_commit_callbacks(execute=True):
+            with self.captureOnCommitCallbacks(execute=True):
                 self.client.post(endpoint)
 
         cleaned_session = self.client.session

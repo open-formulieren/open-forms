@@ -17,7 +17,6 @@ from django.test import override_settings
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from django_capture_on_commit_callbacks import capture_on_commit_callbacks
 from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -114,7 +113,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-suspend", kwargs={"uuid": submission.uuid})
 
-        with capture_on_commit_callbacks(execute=True) as callbacks:
+        with self.captureOnCommitCallbacks(execute=True) as callbacks:
             response = self.client.post(endpoint, {"email": "hello@open-forms.nl"})
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -158,7 +157,7 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-suspend", kwargs={"uuid": submission.uuid})
 
-        with capture_on_commit_callbacks(execute=True) as callbacks:
+        with self.captureOnCommitCallbacks(execute=True) as callbacks:
             response = self.client.post(endpoint, {"email": "hello@open-forms.nl"})
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
