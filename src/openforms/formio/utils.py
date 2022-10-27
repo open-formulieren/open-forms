@@ -140,21 +140,6 @@ def get_component_default_value(component) -> Optional[Any]:
     return default_value
 
 
-def mimetype_allowed(mime_type: str, allowed_mime_types: List[str]) -> bool:
-    """
-    Test if the file mime type passes the allowed_mime_types Formio configuration.
-    """
-    #  no allowlist specified -> everything is allowed
-    if not allowed_mime_types:
-        return True
-
-    # wildcard specified -> everything is allowed
-    if "*" in allowed_mime_types:
-        return True
-
-    return mime_type in allowed_mime_types
-
-
 # See https://help.form.io/userguide/forms/form-components#input-mask for the
 # semantics, and FormioUtils.getInputMask for the implementation.
 def conform_to_mask(value: str, mask: str) -> str:

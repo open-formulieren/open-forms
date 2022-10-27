@@ -5,6 +5,8 @@ from rest_framework.reverse import reverse
 
 from openforms.submissions.models import TemporaryFileUpload
 
+from .validators import MimeTypeValidator
+
 
 class TemporaryFileUploadSerializer(serializers.Serializer):
     """
@@ -17,7 +19,9 @@ class TemporaryFileUploadSerializer(serializers.Serializer):
     }
     """
 
-    file = serializers.FileField(write_only=True, required=True, use_url=False)
+    file = serializers.FileField(
+        write_only=True, required=True, use_url=False, validators=[MimeTypeValidator()]
+    )
 
     url = serializers.SerializerMethodField(
         label=_("URL"), source="get_url", read_only=True

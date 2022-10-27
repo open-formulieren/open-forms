@@ -9,19 +9,19 @@ from urllib.parse import urlparse
 
 from django.conf import settings
 from django.core.files.temp import NamedTemporaryFile
+from django.core.files.uploadedfile import UploadedFile
 from django.urls import Resolver404, resolve
 from django.utils.translation import gettext as _
 
-import magic
 import PIL
 from glom import glom
 from PIL import Image
-from rest_framework.exceptions import ErrorDetail, ValidationError
+from rest_framework.exceptions import ValidationError
 
 from openforms.api.exceptions import RequestEntityTooLarge
 from openforms.conf.utils import Filesize
 from openforms.config.models import GlobalConfiguration
-from openforms.formio.service import mimetype_allowed
+from openforms.formio.api.validators import MimeTypeValidator
 from openforms.formio.typing import Component
 from openforms.submissions.models import (
     Submission,
@@ -141,30 +141,22 @@ def validate_uploads(submission_step: SubmissionStep, data: Optional[dict]) -> N
         else:
             allowed_mime_types = glom(component, "file.type", default=[])
 
+        validate_file = MimeTypeValidator(allowed_mime_types)
+
         # perform content type validation
         with upload.content.open("rb") as infile:
-            # 2048 bytes per recommendation of python-magic
-            file_mime_type = magic.from_buffer(infile.read(2048), mime=True)
-
-        invalid_file_type_error = ErrorDetail(
-            _("The file '{filename}' is not a valid file type.").format(
-                filename=upload.file_name
-            ),
-            code="invalid",
-        )
-
-        if upload.content_type != file_mime_type:
-            validation_errors[key].append(invalid_file_type_error)
-            continue
-
-        # validate that the mime type passes the allowlist
-        if not mimetype_allowed(file_mime_type, allowed_mime_types):
-            logger.warning(
-                "Blocking submission upload %d because of invalid mime type check",
-                upload.id,
+            # wrap in UploadedFile just to reuse DRF validator
+            uploaded_file = UploadedFile(
+                file=infile, name=upload.file_name, content_type=upload.content_type
             )
-            validation_errors[key].append(invalid_file_type_error)
-            continue
+            try:
+                validate_file(uploaded_file)
+            except ValidationError as e:
+                logger.warning(
+                    "Blocking submission upload %d because of invalid mime type check",
+                    upload.id,
+                )
+                validation_errors[key].append(e.detail)
 
     if validation_errors:
         raise ValidationError(validation_errors)
