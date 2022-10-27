@@ -49,7 +49,7 @@ class MimeTypeValidatorTests(SimpleTestCase):
 
     def test_accepts_unknown_extensions(self):
         file = SimpleUploadedFile(
-            "pixel.gif", PIXEL_GIF, content_type="application/octet-stream"
+            "pixel.gif", b"\x00asjdkfl", content_type="application/octet-stream"
         )
         validator = validators.MimeTypeValidator()
 

@@ -45,7 +45,7 @@ class MimeTypeValidator:
             extensions = m.from_buffer(head).split("/")
             if extensions == ["???"]:
                 pass  # magic db doesn't know correct extensions
-            elif ext not in extensions:
+            elif ext not in extensions and ext[1:] not in extensions:
                 raise serializers.ValidationError(
                     _("The file '{filename}' is not a {file_type}.").format(
                         filename=value.name, file_type=ext
