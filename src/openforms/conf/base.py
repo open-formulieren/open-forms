@@ -1020,6 +1020,9 @@ MOZILLA_DJANGO_OIDC_DB_CACHE_TIMEOUT = 5 * 60
 # ID token is required to enable OIDC logout
 OIDC_STORE_ID_TOKEN = True
 
+# Access token required for performing the Token exchange
+OIDC_STORE_ACCESS_TOKEN = True
+
 #
 # Email / payment
 #
