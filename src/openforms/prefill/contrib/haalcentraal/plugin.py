@@ -32,13 +32,14 @@ class HaalCentraalPrefill(BasePlugin):
         return Attributes.choices
 
     @classmethod
-    def _get_values_for_bsn(cls, bsn: str, attributes: Iterable[str]) -> Dict[str, Any]:
+    def _get_values_for_bsn(cls, submission: Submission, bsn: str, attributes: Iterable[str]) -> Dict[str, Any]:
         config = HaalCentraalConfig.get_solo()
         if not config.service:
             logger.warning("no service defined for Haal Centraal prefill")
             return {}
 
         client = config.service.build_client()
+        client._submission = submission
 
         # manually build the URL, since HaalCentraal API spec & Open Personen have
         # mismatching operation IDs
@@ -79,7 +80,7 @@ class HaalCentraalPrefill(BasePlugin):
             #  If there is no bsn we can't prefill any values so just return
             logger.info("No BSN associated with submission, cannot prefill.")
             return {}
-        return cls._get_values_for_bsn(submission.auth_info.value, attributes)
+        return cls._get_values_for_bsn(submission, submission.auth_info.value, attributes)
 
     @classmethod
     def get_co_sign_values(cls, identifier: str) -> Tuple[Dict[str, Any], str]:
