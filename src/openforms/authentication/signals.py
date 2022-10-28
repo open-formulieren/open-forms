@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework.request import Request
 
+from openforms.logging import logevent
 from openforms.submissions.models import Submission
 from openforms.submissions.signals import submission_complete, submission_start
 
@@ -63,12 +64,24 @@ def set_auth_attribute_on_session(
         )
         raise PermissionDenied(_("Demo plugins require an active admin session."))
 
-    # TODO check this log is accurate
+    user = request.user if request.user.is_authenticated else None
     logger.debug(
         "Persisting form auth to submission %s. Plugin: '%s' (setting attribute '%s')",
         instance.uuid,
         plugin,
         attribute,
+        extra={
+            "user_id": user.id if user else None,
+            "submission_uuid": instance.uuid,
+            "plugin": plugin,
+            "attribute": attribute,
+        },
+    )
+    logevent.submission_auth(
+        instance,
+        delegated=registrator_subject
+        and registrator_subject.get("skipped_subject_info") is None,
+        user=user,
     )
 
     if registrator_subject:

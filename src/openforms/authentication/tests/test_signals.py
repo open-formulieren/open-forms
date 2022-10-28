@@ -10,6 +10,7 @@ from rest_framework.test import APIRequestFactory, APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.forms.tests.factories import FormStepFactory
+from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..constants import (
@@ -66,7 +67,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         register("plugin1")(RequiresAdminPlugin)
         instance = SubmissionFactory.create()
         request = factory.get("/foo")
-        request.user = StaffUserFactory.build()
+        request.user = StaffUserFactory.create()
         request.session = {
             FORM_AUTH_SESSION_KEY: {
                 "plugin": "plugin1",
@@ -88,7 +89,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         register("organization_plugin")(ProvidesEmployeePlugin)
         instance = SubmissionFactory.create()
         request = factory.get("/foo")
-        request.user = StaffUserFactory.build()
+        request.user = StaffUserFactory.create(username="Joe")
         request.session = {
             FORM_AUTH_SESSION_KEY: {
                 "plugin": "organization_plugin",
@@ -121,12 +122,22 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         self.assertEqual(instance.registrator.attribute, AuthAttribute.employee_id)
         self.assertEqual(instance.registrator.value, "my-employee-id")
 
+        with override_settings(LANGUAGE_CODE="en"), self.subTest("audit trail"):
+            log_entry = TimelineLogProxy.objects.last()
+            message = log_entry.get_message()
+
+            self.assertEqual(
+                message.strip().replace("&quot;", '"'),
+                f"{log_entry.fmt_lead}: Staff user Joe authenticated for form "
+                f"{log_entry.fmt_form} on behalf of the customer",
+            )
+
     def test_attributes_set_with_registrator_when_skipped(self):
         register = Registry()
         register("organization_plugin")(ProvidesEmployeePlugin)
         instance = SubmissionFactory.create()
         request = factory.get("/foo")
-        request.user = StaffUserFactory.build()
+        request.user = StaffUserFactory.create()
         request.session = {
             FORM_AUTH_SESSION_KEY: {
                 "plugin": "organization_plugin",
