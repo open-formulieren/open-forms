@@ -12,6 +12,7 @@ from rest_framework.test import APIRequestFactory, APITestCase
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
+from openforms.translations.utils import make_fully_translated
 
 from ..api.serializers import FormSerializer
 from ..constants import ConfirmationEmailOptions
@@ -1065,3 +1066,66 @@ class FormsAPITests(APITestCase):
                 response = getattr(self.client, verb)(url, data=data)
 
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class FormsAPITranslationTests(APITestCase):
+    def setUp(self):
+        super().setUp()
+        self.user = UserFactory.create(is_staff=False)
+        self.user.user_permissions.add(Permission.objects.get(codename="view_form"))
+        # self.user.save()
+        self.client.force_authenticate(user=self.user)
+
+        TranslatedFormFactory = make_fully_translated(FormFactory)
+        TranslatedFormFactory.create(
+            begin_text="start",
+            previous_text="vorige",
+            change_text="wijzig",
+            confirm_text="bevestig",
+        )
+
+    def test_list_shows_translated_name_based_on_request_header(self):
+
+        url = reverse("api:form-list")
+        response = self.client.get(url, format="json", HTTP_ACCEPT_LANGUAGE="en")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Language"], "en")
+        form = response.json()[0]
+
+        self.assertTrue(form["name"].startswith("en_"))
+        literals = [
+            (name, literal["value"])
+            for name, literal in form["literals"].items()
+            if literal["value"]
+        ]
+        for name, value in literals:
+            self.assertTrue(
+                value.startswith("en_"),
+                f"Literal of {name} field should have translated value",
+            )
+
+    def test_list_shows_translated_name_based_on_cookie(self):
+        # request a different language cookie
+        lang_url = reverse("api:i18n:language")
+        response = self.client.put(
+            lang_url, data={"code": "nl"}, HTTP_ACCEPT_LANGUAGE="en"
+        )
+
+        url = reverse("api:form-list")
+        response = self.client.get(url, format="json", HTTP_ACCEPT_LANGUAGE="en")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Language"], "nl")
+        form = response.json()[0]
+        self.assertTrue(form["name"].startswith("nl_"))
+        literals = [
+            (name, literal["value"])
+            for name, literal in form["literals"].items()
+            if literal["value"]
+        ]
+        for name, value in literals:
+            self.assertTrue(
+                value.startswith("nl_"),
+                f"Literal of {name} field should have translated value",
+            )
