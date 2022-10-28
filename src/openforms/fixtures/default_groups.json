@@ -1658,5 +1658,18 @@
             ]
         ]
     }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "Registreerders",
+        "permissions": [
+            [
+                "can_register_customer_submission",
+                "of_authentication",
+                "registratorinfo"
+            ]
+        ]
+    }
 }
 ]

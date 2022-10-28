@@ -3,10 +3,8 @@ from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirec
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
-from furl import furl
-from rest_framework.reverse import reverse
-
 from openforms.forms.models import Form
+from openforms.utils.urls import reverse_plus
 
 from ...base import BasePlugin
 from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute
@@ -23,20 +21,28 @@ class OIDCAuthentication(BasePlugin):
     provides_auth = AuthAttribute.employee_id
 
     def start_login(self, request: HttpRequest, form: Form, form_url: str):
-        login_url = reverse("org-oidc:init", request=request)
-
-        auth_return_url = reverse(
+        auth_return_url = reverse_plus(
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": self.identifier},
-        )
-        return_url = furl(auth_return_url).set(
-            {
+            request=request,
+            query={
                 "next": form_url,
-            }
+            },
         )
-
-        redirect_url = furl(login_url).set({"next": str(return_url)})
-        return HttpResponseRedirect(str(redirect_url))
+        redirect_url = reverse_plus(
+            "org-oidc:init",
+            request=request,
+            query={
+                "next": auth_return_url,
+            },
+        )
+        if request.user.is_authenticated:
+            # logout user if logged in with other account
+            # this is relevant when staff users are already logged in, the OIDC state/redirects get confused,
+            #   and could send the user back to the admin instead of the form.
+            # this is likely because it picks a .success_url instead of session data
+            auth.logout(request)
+        return HttpResponseRedirect(redirect_url)
 
     def handle_return(self, request, form):
         """
@@ -54,7 +60,10 @@ class OIDCAuthentication(BasePlugin):
             "value": request.user.username,
         }
 
-        return HttpResponseRedirect(form_url)
+        # we could render here but let's redirect
+        return HttpResponseRedirect(
+            self.get_registrator_subject_url(request, form, form_url)
+        )
 
     def logout(self, request: HttpRequest):
         for key in (

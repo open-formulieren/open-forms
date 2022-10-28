@@ -1,6 +1,8 @@
 from unittest.mock import patch
 
 from django.contrib import auth
+from django.contrib.auth import get_user
+from django.contrib.auth.models import Group
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
@@ -10,7 +12,9 @@ from mozilla_django_oidc_db.models import OpenIDConnectConfig
 from rest_framework import status
 
 from openforms.accounts.models import User
+from openforms.accounts.tests.factories import UserFactory
 from openforms.forms.tests.factories import FormFactory
+from openforms.utils.urls import reverse_plus
 
 from ....constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from ....views import BACKEND_OUTAGE_RESPONSE_PARAMETER
@@ -180,18 +184,18 @@ class OrgOIDCTests(TestCase):
         return_value=OpenIDConnectConfig(**default_config),
     )
     def test_redirect_to_disallowed_domain(self, *m):
-        login_url = reverse(
-            "org-oidc:oidc_authentication_init",
-        )
-
         form_url = "http://example.com"
-        start_url = furl(login_url).set({"next": form_url})
+        start_url = reverse_plus(
+            "org-oidc:oidc_authentication_init",
+            query={"next": form_url},
+        )
         response = self.client.get(start_url)
 
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
     @override_settings(
-        CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://example.com"]
+        CORS_ALLOW_ALL_ORIGINS=False,
+        CORS_ALLOWED_ORIGINS=["http://example.com", "http://testserver"],
     )
     @patch(
         "mozilla_django_oidc_db.models.OpenIDConnectConfig.get_solo",
@@ -250,6 +254,29 @@ class OrgOIDCTests(TestCase):
             f"http://testserver{reverse('org-oidc:oidc_authentication_callback')}",
         )
 
+    @override_settings(
+        CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://example.com"]
+    )
+    @patch(
+        "mozilla_django_oidc_db.models.OpenIDConnectConfig.get_solo",
+        return_value=OpenIDConnectConfig(**default_config),
+    )
+    def test_start_view_logs_out_current_user_if_any(self, *m):
+        other_user = UserFactory()
+        self.client.force_login(other_user)
+
+        start_url = reverse_plus(
+            "authentication:start",
+            kwargs={"slug": self.form.slug, "plugin_id": "org-oidc"},
+            query={"next": "http://example.com"},
+        )
+        response = self.client.get(start_url)
+        self.assertEqual(response.status_code, 302)
+
+        user = get_user(self.client)
+        self.assertFalse(user.is_authenticated)
+        self.assertTrue(user.is_anonymous)
+
     @patch(
         "openforms.authentication.contrib.org_oidc.backends.OIDCAuthenticationBackend.get_userinfo"
     )
@@ -263,7 +290,8 @@ class OrgOIDCTests(TestCase):
         "openforms.authentication.contrib.org_oidc.backends.OIDCAuthenticationBackend.get_token"
     )
     @patch("mozilla_django_oidc_db.models.OpenIDConnectConfig.get_solo")
-    def test_callback_url_creates_logged_in_djang_ouser(
+    @override_settings(BASE_URL="http://testserver")
+    def test_callback_url_creates_logged_in_django_user(
         self,
         mock_get_solo,
         mock_get_token,
@@ -285,6 +313,7 @@ class OrgOIDCTests(TestCase):
                         "first_name": "given_name",
                         "employee_id": "arbitrary_employee_id_claim",
                     },
+                    "groups_claim": "arbitrary_groups",
                 },
             }
         )
@@ -298,24 +327,26 @@ class OrgOIDCTests(TestCase):
             "given_name": "John",
             "family_name": "Doe",
             "arbitrary_employee_id_claim": "my_id_value",
+            "arbitrary_groups": ["Registreerders"],
         }
         mock_verify_token.return_value = user_claims
         mock_get_userinfo.return_value = user_claims
         mock_store_tokens.return_value = {"whatever": 1}
 
-        form_path = reverse("core:form-detail", kwargs={"slug": self.form.slug})
-        form_url = f"http://testserver{form_path}"
+        # grab user group (from default_groups fixture)
+        group = Group.objects.get(name__iexact="Registreerders")
 
-        f = furl(
-            reverse(
-                "authentication:return",
-                kwargs={"slug": self.form.slug, "plugin_id": "org-oidc"},
-            )
+        # setup our form and urls
+        form_url = reverse_plus("core:form-detail", kwargs={"slug": self.form.slug})
+
+        handle_return_url = reverse_plus(
+            "authentication:return",
+            kwargs={"slug": self.form.slug, "plugin_id": "org-oidc"},
+            query={"next": form_url},
         )
-        f.args["next"] = form_url
-        handle_return_url = f.url
 
-        callback_url = reverse("org-oidc:oidc_authentication_callback")
+        # go through mock OIDC
+        callback_url = reverse_plus("org-oidc:oidc_authentication_callback")
 
         session = self.client.session
         session["oidc_states"] = {"mock": {"nonce": "nonce"}}
@@ -332,6 +363,12 @@ class OrgOIDCTests(TestCase):
         )
         self.assertEqual(status.HTTP_302_FOUND, callback_response.status_code)
 
+        mock_get_token.assert_called_once()
+        mock_verify_token.assert_called_once()
+        mock_store_tokens.assert_called_once()
+        mock_get_userinfo.assert_called_once()
+
+        # we got our user
         user = User.objects.get()
         self.assertTrue(user.is_staff)
         self.assertTrue(user.username, "some_username")
@@ -339,13 +376,24 @@ class OrgOIDCTests(TestCase):
         self.assertTrue(user.first_name, "John")
         self.assertTrue(user.last_name, "Doe")
         self.assertTrue(user.employee_id, "my_id_value")
+        # note: assertQuerysetEqual doesn't check primary keys, so can't detect duplicate objects
+        self.assertEqual(user.groups.get().pk, group.pk)
 
         # check plugins handle_return() response
-        return_response = self.client.get(callback_response["Location"])
+        return_response = self.client.get(handle_return_url)
 
-        self.assertRedirects(return_response, form_url, fetch_redirect_response=False)
+        subject_url = reverse_plus(
+            "authentication:registrator-subject",
+            kwargs={"slug": self.form.slug},
+            query={"next": form_url},
+        )
+
+        self.assertRedirects(
+            return_response, subject_url, fetch_redirect_response=False
+        )
         self.assertEqual(status.HTTP_302_FOUND, return_response.status_code)
 
+        # check our session data
         self.assertIn(FORM_AUTH_SESSION_KEY, self.client.session)
         s = self.client.session[FORM_AUTH_SESSION_KEY]
         self.assertEqual(s["plugin"], "org-oidc")
@@ -354,3 +402,7 @@ class OrgOIDCTests(TestCase):
 
         # django user logged in
         self.assertTrue(auth.get_user(self.client).is_authenticated)
+
+        # check the registrator subject response
+        subject_response = self.client.get(subject_url)
+        self.assertEqual(status.HTTP_200_OK, subject_response.status_code)

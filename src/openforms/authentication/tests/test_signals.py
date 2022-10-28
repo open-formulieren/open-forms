@@ -10,15 +10,24 @@ from rest_framework.test import APIRequestFactory, APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.forms.tests.factories import FormStepFactory
+from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ..constants import FORM_AUTH_SESSION_KEY
+from ..constants import (
+    FORM_AUTH_SESSION_KEY,
+    REGISTRATOR_SUBJECT_SESSION_KEY,
+    AuthAttribute,
+)
 from ..registry import Registry
 from ..signals import set_auth_attribute_on_session
 from ..views import AuthenticationReturnView
 from .mocks import Plugin, RequiresAdminPlugin, mock_register
 
 factory = APIRequestFactory()
+
+
+class ProvidesEmployeePlugin(Plugin):
+    provides_auth = AuthAttribute.employee_id
 
 
 class SetSubmissionIdentifyingAttributesTests(APITestCase):
@@ -58,7 +67,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         register("plugin1")(RequiresAdminPlugin)
         instance = SubmissionFactory.create()
         request = factory.get("/foo")
-        request.user = StaffUserFactory.build()
+        request.user = StaffUserFactory.create()
         request.session = {
             FORM_AUTH_SESSION_KEY: {
                 "plugin": "plugin1",
@@ -74,6 +83,86 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
 
         instance.refresh_from_db()
         self.assertEqual(instance.auth_info.value, "123")
+
+    def test_attributes_set_with_registrator_subject_info(self):
+        register = Registry()
+        register("organization_plugin")(ProvidesEmployeePlugin)
+        instance = SubmissionFactory.create()
+        request = factory.get("/foo")
+        request.user = StaffUserFactory.create(username="Joe")
+        request.session = {
+            FORM_AUTH_SESSION_KEY: {
+                "plugin": "organization_plugin",
+                "attribute": AuthAttribute.employee_id,
+                "value": "my-employee-id",
+            },
+            REGISTRATOR_SUBJECT_SESSION_KEY: {
+                "attribute": AuthAttribute.bsn,
+                "value": "123",
+            },
+        }
+
+        with mock_register(register):
+            set_auth_attribute_on_session(
+                sender=None, instance=instance, request=request
+            )
+
+        instance.refresh_from_db()
+
+        # check the property doesn't alias both
+        self.assertNotEqual(instance.auth_info, instance.registrator)
+
+        # check the clients info is stored as .auth_info
+        self.assertEqual(instance.auth_info.attribute, AuthAttribute.bsn)
+        self.assertEqual(instance.auth_info.value, "123")
+        self.assertEqual(instance.auth_info.plugin, "registrator")
+
+        # check the employee's info is stored as .registrator
+        self.assertEqual(instance.registrator.plugin, "organization_plugin")
+        self.assertEqual(instance.registrator.attribute, AuthAttribute.employee_id)
+        self.assertEqual(instance.registrator.value, "my-employee-id")
+
+        with override_settings(LANGUAGE_CODE="en"), self.subTest("audit trail"):
+            log_entry = TimelineLogProxy.objects.last()
+            message = log_entry.get_message()
+
+            self.assertEqual(
+                message.strip().replace("&quot;", '"'),
+                f"{log_entry.fmt_lead}: Staff user Joe authenticated for form "
+                f"{log_entry.fmt_form} on behalf of the customer",
+            )
+
+    def test_attributes_set_with_registrator_when_skipped(self):
+        register = Registry()
+        register("organization_plugin")(ProvidesEmployeePlugin)
+        instance = SubmissionFactory.create()
+        request = factory.get("/foo")
+        request.user = StaffUserFactory.create()
+        request.session = {
+            FORM_AUTH_SESSION_KEY: {
+                "plugin": "organization_plugin",
+                "attribute": AuthAttribute.employee_id,
+                "value": "my-employee-id",
+            },
+            REGISTRATOR_SUBJECT_SESSION_KEY: {
+                "skipped_subject_info": True,
+            },
+        }
+
+        with mock_register(register):
+            set_auth_attribute_on_session(
+                sender=None, instance=instance, request=request
+            )
+
+        instance.refresh_from_db()
+
+        # check the property aliases both
+        self.assertEqual(instance.auth_info, instance.registrator)
+
+        # check the employee's info is stored as .auth_info
+        self.assertEqual(instance.auth_info.plugin, "organization_plugin")
+        self.assertEqual(instance.auth_info.attribute, AuthAttribute.employee_id)
+        self.assertEqual(instance.auth_info.value, "my-employee-id")
 
     @override_settings(
         CORS_ALLOW_ALL_ORIGINS=False, CORS_ALLOWED_ORIGINS=["http://foo.bar"]

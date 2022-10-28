@@ -6,12 +6,13 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework.request import Request
 
+from openforms.logging import logevent
 from openforms.submissions.models import Submission
 from openforms.submissions.signals import submission_complete, submission_start
 
-from .constants import FORM_AUTH_SESSION_KEY
+from .constants import FORM_AUTH_SESSION_KEY, REGISTRATOR_SUBJECT_SESSION_KEY
 from .registry import register
-from .utils import store_auth_details
+from .utils import store_auth_details, store_registrator_details
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +40,11 @@ Provides:
 def set_auth_attribute_on_session(
     sender, instance: Submission, request: Request, **kwargs
 ):
+    # form_auth has information from an authentication backend, so could be a client or employee
     form_auth = request.session.get(FORM_AUTH_SESSION_KEY)
+
+    # registrator_subject might have additional info about the client entered by an employee
+    registrator_subject = request.session.get(REGISTRATOR_SUBJECT_SESSION_KEY)
 
     if not form_auth:
         if instance.form.login_required:
@@ -59,19 +64,55 @@ def set_auth_attribute_on_session(
         )
         raise PermissionDenied(_("Demo plugins require an active admin session."))
 
+    user = request.user if request.user.is_authenticated else None
     logger.debug(
         "Persisting form auth to submission %s. Plugin: '%s' (setting attribute '%s')",
         instance.uuid,
         plugin,
         attribute,
+        extra={
+            "user_id": user.id if user else None,
+            "submission_uuid": instance.uuid,
+            "plugin": plugin,
+            "attribute": attribute,
+        },
+    )
+    logevent.submission_auth(
+        instance,
+        delegated=registrator_subject
+        and registrator_subject.get("skipped_subject_info") is None,
+        user=user,
     )
 
-    store_auth_details(instance, form_auth)
+    if registrator_subject:
+        # we got registrator_subject data so form_auth is an employee
+        if registrator_subject.get("skipped_subject_info"):
+            # If continued without extra details, store the employee details in AuthInfo
+            store_auth_details(instance, form_auth)
+        else:
+            # If KVK/BSN is given, store those details in the AuthInfo model and the employee details in the Registrator model.
+            auth_save = {
+                "value": registrator_subject["value"],
+                "attribute": registrator_subject["attribute"],
+                # TODO we don't have a plugin to define here? things break if this doesn't exist (like the logout view)
+                "plugin": registrator_subject.get("plugin", "registrator"),
+            }
+            registrator_save = {
+                "value": form_auth["value"],
+                "attribute": form_auth["attribute"],
+                "plugin": form_auth["plugin"],
+            }
+            # TODO the "machtigingen" key dispeared
+            store_auth_details(instance, auth_save)
+            store_registrator_details(instance, registrator_save)
+    else:
+        store_auth_details(instance, form_auth)
 
 
-@receiver(submission_complete, dispatch_uid="auth.clean_submission_form_auth")
-def clean_submission_form_auth(sender, request: Request, **kwargs):
-    if FORM_AUTH_SESSION_KEY not in request.session:
-        return
+@receiver(submission_complete, dispatch_uid="auth.clean_submission_auth")
+def clean_submission_auth(sender, request: Request, **kwargs):
+    if FORM_AUTH_SESSION_KEY in request.session:
+        del request.session[FORM_AUTH_SESSION_KEY]
 
-    del request.session[FORM_AUTH_SESSION_KEY]
+    if REGISTRATOR_SUBJECT_SESSION_KEY in request.session:
+        del request.session[REGISTRATOR_SUBJECT_SESSION_KEY]

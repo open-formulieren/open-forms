@@ -102,3 +102,10 @@ class RegistratorInfo(BaseAuthInfo):
     class Meta:
         verbose_name = _("Registrator authentication details")
         verbose_name_plural = _("Registrator authentication details")
+
+        permissions = [
+            (
+                "can_register_customer_submission",
+                _("Can register submission for customers"),
+            ),
+        ]

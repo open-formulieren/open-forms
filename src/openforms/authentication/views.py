@@ -1,6 +1,7 @@
 import logging
 from typing import Optional
 
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import (
     HttpResponseBadRequest,
@@ -9,6 +10,7 @@ from django.http import (
 )
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
+from django.views.generic.edit import FormView
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
@@ -26,8 +28,14 @@ from openforms.submissions.serializers import CoSignDataSerializer
 from openforms.utils.redirect import allow_redirect_url
 
 from .base import BasePlugin
-from .constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY
+from .constants import (
+    CO_SIGN_PARAMETER,
+    FORM_AUTH_SESSION_KEY,
+    REGISTRATOR_SUBJECT_SESSION_KEY,
+    AuthAttribute,
+)
 from .exceptions import InvalidCoSignData
+from .forms import RegistratorSubjectInfoForm
 from .registry import register
 from .signals import authentication_success, co_sign_authentication_success
 
@@ -373,3 +381,46 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
         if hasattr(self, "_plugin"):
             response["Allow"] = self._plugin.return_method
         return response
+
+
+class RegistratorSubjectInfoView(PermissionRequiredMixin, FormView):
+    form_class = RegistratorSubjectInfoForm
+    template_name = "authentication/registrator_subject_info.html"
+    permission_required = ["of_authentication.can_register_customer_submission"]
+
+    # block the AccessMixin login redirection
+    raise_exception = True
+
+    cleaned_next_url = None
+
+    def dispatch(self, request, *args, **kwargs):
+        next_url = self.request.GET.get("next")
+        if not next_url or not allow_redirect_url(next_url):
+            return HttpResponseBadRequest("missing or bad redirect")
+
+        # save this
+        self.cleaned_next_url = next_url
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        skip_subject = form.cleaned_data.get("skip_subject", False)
+        if skip_subject:
+            self.request.session[REGISTRATOR_SUBJECT_SESSION_KEY] = {
+                "skipped_subject_info": True,
+            }
+        else:
+            if form.cleaned_data["bsn"]:
+                self.request.session[REGISTRATOR_SUBJECT_SESSION_KEY] = {
+                    "value": form.cleaned_data["bsn"],
+                    "attribute": AuthAttribute.bsn,
+                }
+            elif form.cleaned_data["kvk"]:
+                self.request.session[REGISTRATOR_SUBJECT_SESSION_KEY] = {
+                    "value": form.cleaned_data["kvk"],
+                    "attribute": AuthAttribute.kvk,
+                }
+            elif REGISTRATOR_SUBJECT_SESSION_KEY in self.request.session:
+                del self.request.session[REGISTRATOR_SUBJECT_SESSION_KEY]
+
+        assert self.cleaned_next_url
+        return HttpResponseRedirect(self.cleaned_next_url)

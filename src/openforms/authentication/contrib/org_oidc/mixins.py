@@ -6,7 +6,10 @@ class SoloConfigMixin(_SoloConfigMixin):
     config_class = OpenIDConnectConfig
 
     plugin_identifier = "org-oidc"
+
+    # override some settings we don't want configurable
     oidc_authentication_callback_url = "org-oidc:callback"
+    oidc_redirect_field_name = "next"
 
     def get_settings(self, attr, *args):
         attr_lowercase = attr.lower()

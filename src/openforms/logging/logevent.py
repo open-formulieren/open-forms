@@ -98,6 +98,14 @@ def submission_start(submission: "Submission"):
     _create_log(submission, "submission_start")
 
 
+def submission_auth(
+    submission: "Submission", delegated: bool = False, user: Optional[User] = None
+):
+    _create_log(
+        submission, "submission_auth", user=user, extra_data={"delegated": delegated}
+    )
+
+
 def submission_step_fill(step: "SubmissionStep"):
     _create_log(
         step.submission,

@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.test.client import RequestFactory
 
+from furl import furl
 from rest_framework.reverse import reverse
 
 from ...forms.tests.factories import FormStepFactory
@@ -99,4 +100,20 @@ class RegistryTests(TestCase):
                 request=request,
                 kwargs={"slug": "myform", "plugin_id": "plugin1"},
             ),
+        )
+
+        # check the registrator url
+        url = plugin.get_registrator_subject_url(request, form, "http://foo.bar/form")
+        self.assertRegex(url, r"^http://")
+        self.assertEqual(
+            url,
+            furl(
+                reverse(
+                    "authentication:registrator-subject",
+                    request=request,
+                    kwargs={"slug": form.slug},
+                )
+            )
+            .set({"next": "http://foo.bar/form"})
+            .url,
         )
