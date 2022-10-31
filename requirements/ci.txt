@@ -413,7 +413,7 @@ furl==2.1.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-digid-eherkenning
-gemma-zds-client==1.0.1
+gemma-zds-client==2.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -605,7 +605,7 @@ pygments==2.9.0
     # via
     #   sphinx
     #   sphinx-tabs
-pyjwt==1.7.1
+pyjwt==2.6.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -934,7 +934,7 @@ zeep==4.1.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-zgw-consumers==0.21.0
+zgw-consumers==0.22.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
