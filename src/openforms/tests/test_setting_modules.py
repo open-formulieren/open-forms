@@ -5,7 +5,6 @@ from django.test import SimpleTestCase
 ENVS = [
     "dev",
     "ci",
-    "test",
     "staging",
     "production",
     "docker",
