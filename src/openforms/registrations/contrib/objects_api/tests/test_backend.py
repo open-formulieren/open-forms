@@ -27,7 +27,9 @@ class ObjectsAPIBackendTests(TestCase):
     def setUpTestData(cls):
         ObjectsAPIConfigFactory.create(
             objects_service__api_root="https://objecten.nl/api/v1/",
+            objects_service__oas="https://objecten.nl/api/v1/schema/openapi.yaml",
             drc_service__api_root="https://documenten.nl/api/v1/",
+            drc_service__oas="https://documenten.nl/api/v1/schema/openapi.yaml",
             objecttype="https://objecttypen.nl/api/v1/objecttypes/1",
             objecttype_version=1,
             productaanvraag_type="terugbelnotitie",

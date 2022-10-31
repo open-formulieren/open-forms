@@ -17,7 +17,7 @@ class PreRequestHooksTest(TestCase):
 
         @register("test-hook")
         class PreRequestHook(PreRequestHookBase):
-            def __call__(self, url, method, **kwargs):
+            def __call__(self, url, method, kwargs):
                 kwargs.setdefault("headers", {})
                 kwargs["headers"].update({"test": "test"})
 
