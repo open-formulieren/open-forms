@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import Optional
 
-if TYPE_CHECKING:
-    from openforms.submissions.models import Submission
+from .clients import PreRequestClientContext
 
 
 @dataclass
@@ -12,6 +11,10 @@ class PreRequestHookBase(ABC):
 
     @abstractmethod
     def __call__(
-        self, submission: "Submission", method: str, url: str, kwargs: dict
+        self,
+        method: str,
+        url: str,
+        kwargs: dict,
+        context: Optional[PreRequestClientContext] = None,
     ) -> None:
         raise NotImplementedError()  # pragma: nocover
