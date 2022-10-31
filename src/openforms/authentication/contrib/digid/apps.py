@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 class DigidApp(AppConfig):
     name = "openforms.authentication.contrib.digid"
-    label = "prefill_digid"
+    label = "authentication_digid"
     verbose_name = _("DigiD authentication plugin")
 
     def ready(self):
