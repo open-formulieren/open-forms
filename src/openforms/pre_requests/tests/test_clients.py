@@ -9,6 +9,7 @@ from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFact
 from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..base import PreRequestHookBase
+from ..clients import PreRequestClientContext
 from ..registry import Registry
 
 
@@ -18,7 +19,7 @@ class PreRequestHooksTest(TestCase):
 
         @register("test-hook")
         class PreRequestHook(PreRequestHookBase):
-            def __call__(self, submission, url, method, kwargs):
+            def __call__(self, url, method, kwargs, context):
                 kwargs.setdefault("headers", {})
                 kwargs["headers"].update({"test": "test"})
 
@@ -28,7 +29,7 @@ class PreRequestHooksTest(TestCase):
             oas="https://personen/api/schema/openapi.yaml",
         )
         client = some_service.build_client()
-        client.context = {"submission": submission}
+        client.context = PreRequestClientContext(submission=submission)
 
         with requests_mock.Mocker() as m:
             m.get(
