@@ -14,10 +14,13 @@ FROM python:3.8-slim-buster AS backend-build
 RUN apt-get update && apt-get install -y --no-install-recommends \
         pkg-config \
         build-essential \
+        python3-dev \
         git \
         libpq-dev \
         libxml2-dev \
+        libxslt-dev \
         libxmlsec1-dev \
+        zlib1g-dev \
         libxmlsec1-openssl \
         # weasyprint deps
         libcairo2 \
