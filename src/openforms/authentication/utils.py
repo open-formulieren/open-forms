@@ -19,7 +19,6 @@ class BaseAuth(TypedDict):
 
 class FormAuth(BaseAuth):
     machtigen: Optional[dict]
-    access_token: Optional[str]
 
 
 def store_auth_details(submission: Submission, form_auth: FormAuth) -> None:

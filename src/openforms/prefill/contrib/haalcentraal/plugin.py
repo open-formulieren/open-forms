@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, Iterable, List, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -32,14 +32,16 @@ class HaalCentraalPrefill(BasePlugin):
         return Attributes.choices
 
     @classmethod
-    def _get_values_for_bsn(cls, submission: Submission, bsn: str, attributes: Iterable[str]) -> Dict[str, Any]:
+    def _get_values_for_bsn(
+        cls, submission: Submission, bsn: str, attributes: Iterable[str]
+    ) -> Dict[str, Any]:
         config = HaalCentraalConfig.get_solo()
         if not config.service:
             logger.warning("no service defined for Haal Centraal prefill")
             return {}
 
         client = config.service.build_client()
-        client._submission = submission
+        client.context = {"submission": submission}
 
         # manually build the URL, since HaalCentraal API spec & Open Personen have
         # mismatching operation IDs
@@ -80,22 +82,27 @@ class HaalCentraalPrefill(BasePlugin):
             #  If there is no bsn we can't prefill any values so just return
             logger.info("No BSN associated with submission, cannot prefill.")
             return {}
-        return cls._get_values_for_bsn(submission, submission.auth_info.value, attributes)
+        return cls._get_values_for_bsn(
+            submission, submission.auth_info.value, attributes
+        )
 
     @classmethod
-    def get_co_sign_values(cls, identifier: str) -> Tuple[Dict[str, Any], str]:
+    def get_co_sign_values(
+        cls, identifier: str, submission: Optional["Submission"] = None
+    ) -> Tuple[Dict[str, Any], str]:
         """
         Given an identifier, fetch the co-sign specific values.
 
         The return value is a dict keyed by field name as specified in
         ``self.co_sign_fields``.
 
-        :param identfier: the unique co-signer identifier used to look up the details
-          in the pre-fill backend.
+        :param identifier: the unique co-signer identifier used to look up the details
+          in the prefill backend.
         :return: a key-value dictionary, where the key is the requested attribute and
           the value is the prefill value to use for that attribute.
         """
         values = cls._get_values_for_bsn(
+            submission,
             identifier,
             (
                 Attributes.naam_voornamen,

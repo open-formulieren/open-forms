@@ -1,4 +1,4 @@
-from typing import Any, Dict, Iterable, List, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.submissions.models import Submission
@@ -35,7 +35,9 @@ class BasePlugin(AbstractBasePlugin):
             "You must implement the 'get_prefill_values' method."
         )  # pragma: nocover
 
-    def get_co_sign_values(self, identifier: str) -> Tuple[Dict[str, Any], str]:
+    def get_co_sign_values(
+        self, identifier: str, submission: Optional["Submission"] = None
+    ) -> Tuple[Dict[str, Any], str]:
         """
         Given an identifier, fetch the co-sign specific values.
 
