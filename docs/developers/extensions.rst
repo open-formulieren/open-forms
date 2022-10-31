@@ -25,13 +25,18 @@ The flow works as follows:
 
    * The authentication plugins in Open Forms extract the user information from the payload and add it to the session
      under the :const:`openforms.authentication.constants.FORM_AUTH_SESSION_KEY` key.
+   * The `mozilla-django-oidc`_ saves the access token to the session, under the key ``oidc_access_token``.
    * The :class:`AuthenticationReturnView` of the authentication plugins fires a signal to notify that the authentication
      was successful if the :const:`openforms.authentication.constants.FORM_AUTH_SESSION_KEY` key is present in the session.
-   * The ``open-forms-ext-token-exchange`` extension receives the signal and extracts the Keycloak token from the request.
-     This token is kept in application memory for later access (and never persisted to disk to avoid leaking credentials
-     _if_ the application were to be compromised).
 
-#. The submission is started and Open Forms requests prefill data from Haal Centraal:
+#. The submission is started:
+
+   * The ``perform_create`` of the :class:`openforms.submissions.api.viewsets.SubmissionViewSet` fires the
+     ``submission_start`` signal.
+   * The ``open-forms-ext-token-exchange`` extension receives the signal and extracts the Keycloak token from the session.
+     This token is cached with key ``accesstoken:<submission uuid>``.
+
+#. Open Forms requests prefill data from Haal Centraal:
 
    * The client that makes the request to the ZGW API is :class:`openforms.pre_requests.clients.PreRequestZGWClient`.
      This client is a subclass of :class:`zgw_consumers.client.ZGWClient` which overrides the ``pre_request`` method so
@@ -43,9 +48,7 @@ The flow works as follows:
      If it's NOT the case, it doesn't do anything. If it's the case, it makes the token exchange request to Keycloak
      and adds the obtained access token to the headers of the request to the downstream API.
 
-#. The token exchange extension hooks into the ``request_finished`` Django signal. Once a request has been handled, the token
-   stored in the thread local memory is clear to prevent mixing up tokens between requests.
-
 .. _token exchange: https://www.keycloak.org/docs/latest/securing_apps/#_token-exchange
 .. _open-forms-ext-token-exchange: https://github.com/open-formulieren/open-forms-ext-token-exchange
 .. _custom authentication class: https://requests.readthedocs.io/en/latest/user/advanced/#custom-authentication
+.. _mozilla-django-oidc: https://github.com/mozilla/mozilla-django-oidc/blob/2.0.0/mozilla_django_oidc/auth.py#L300
