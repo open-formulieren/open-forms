@@ -5042,6 +5042,8 @@ components:
         loginRequired:
           type: boolean
           readOnly: true
+        translationEnabled:
+          type: boolean
         registrationBackend:
           type: string
           maxLength: 100
@@ -5940,6 +5942,8 @@ components:
         loginRequired:
           type: boolean
           readOnly: true
+        translationEnabled:
+          type: boolean
         registrationBackend:
           type: string
           maxLength: 100
