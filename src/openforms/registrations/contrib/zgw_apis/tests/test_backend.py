@@ -32,8 +32,11 @@ class ZGWBackendTests(TestCase):
     def setUpTestData(cls):
         ZgwConfigFactory.create(
             zrc_service__api_root="https://zaken.nl/api/v1/",
+            zrc_service__oas="https://zaken.nl/api/v1/schema/openapi.yaml",
             drc_service__api_root="https://documenten.nl/api/v1/",
+            drc_service__oas="https://documenten.nl/api/v1/schema/openapi.yaml",
             ztc_service__api_root="https://catalogus.nl/api/v1/",
+            ztc_service__oas="https://catalogus.nl/api/v1/schema/openapi.yaml",
         )
 
     def setUp(self):
@@ -909,8 +912,11 @@ class PartialRegistrationFailureTests(TestCase):
 
         ZgwConfigFactory.create(
             zrc_service__api_root="https://zaken.nl/api/v1/",
+            zrc_service__oas="https://zaken.nl/api/v1/schema/openapi.yaml",
             drc_service__api_root="https://documenten.nl/api/v1/",
+            drc_service__oas="https://documenten.nl/api/v1/schema/openapi.yaml",
             ztc_service__api_root="https://catalogus.nl/api/v1/",
+            ztc_service__oas="https://catalogus.nl/api/v1/schema/openapi.yaml",
         )
 
         # set up a simple form to track the partial result storing state

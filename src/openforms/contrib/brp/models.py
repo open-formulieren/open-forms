@@ -37,8 +37,7 @@ class BRPConfig(SingletonModel):
 
         default_client = self.brp_service.build_client()
         hal_client = HalClient(
-            service=default_client.service,
-            base_path=default_client.base_path,
+            api_root=default_client.api_root, schema_url=self.brp_service.oas
         )
         hal_client.auth_value = default_client.auth_header
         return hal_client
