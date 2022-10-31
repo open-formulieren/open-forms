@@ -10,6 +10,7 @@ from zds_client import ClientError
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.plugins.exceptions import InvalidPluginConfiguration
+from openforms.pre_requests.clients import PreRequestClientContext
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
@@ -41,7 +42,7 @@ class HaalCentraalPrefill(BasePlugin):
             return {}
 
         client = config.service.build_client()
-        client.context = {"submission": submission}
+        client.context = PreRequestClientContext(submission=submission)
 
         # manually build the URL, since HaalCentraal API spec & Open Personen have
         # mismatching operation IDs
