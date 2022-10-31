@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
+from openforms.utils.translations import set_language_cookie
 
 from .serializers import LanguageCodeSerializer, LanguageInfoSerializer
 
@@ -78,14 +79,5 @@ class SetLanguageView(APIView):
         serializer.is_valid(raise_exception=True)
 
         response = Response(status=status.HTTP_204_NO_CONTENT)
-        response.set_cookie(
-            key=settings.LANGUAGE_COOKIE_NAME,
-            value=serializer.data["code"],
-            max_age=settings.LANGUAGE_COOKIE_AGE,
-            domain=settings.LANGUAGE_COOKIE_DOMAIN,
-            httponly=settings.LANGUAGE_COOKIE_HTTPONLY,
-            path=settings.LANGUAGE_COOKIE_PATH,
-            samesite=settings.LANGUAGE_COOKIE_SAMESITE,
-            secure=settings.LANGUAGE_COOKIE_SECURE,
-        )
+        response = set_language_cookie(response, serializer.data["code"])
         return response
