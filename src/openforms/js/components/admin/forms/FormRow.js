@@ -34,7 +34,7 @@ const FormRow = ({fields = [], children}) => {
       .filter(err => err);
 
     // Avoid overwriting errors if they are added directly on the child
-    if (errors || childErrors.length > 0) {
+    if ((errors && errors.length > 0) || childErrors.length > 0) {
       hasErrors = true;
     }
     return React.cloneElement(child, {errors: errors || childErrors});
