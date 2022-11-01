@@ -2,8 +2,10 @@ import copy
 import uuid
 from unittest.mock import patch
 
+from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.urls import reverse
+from django.utils import translation
 from django.utils.translation import gettext as _
 
 from rest_framework import status
@@ -1120,3 +1122,49 @@ class FormsAPITranslationTests(APITestCase):
         self.assert_(
             all(literal["value"] == "" for literal in form["literals"].values())
         )
+
+    def test_set_default_language_translation_enabled_false(self):
+        """
+        Default language should be set, because translation is disabled (ignoring any language headers)
+        """
+        form = FormFactory.create(translation_enabled=False)
+
+        url = reverse(
+            "api:form-set-default-language", kwargs={"uuid_or_slug": form.uuid}
+        )
+        self.client.force_authenticate(user=None)
+        response = self.client.post(url, HTTP_ACCEPT_LANGUAGE="en")
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertIn(settings.LANGUAGE_COOKIE_NAME, response.cookies)
+
+        language_cookie = response.cookies[settings.LANGUAGE_COOKIE_NAME]
+
+        self.assertEqual(language_cookie.key, settings.LANGUAGE_COOKIE_NAME)
+        self.assertEqual(language_cookie.value, settings.LANGUAGE_CODE)
+        self.assertEqual(language_cookie["expires"], "")
+        self.assertEqual(language_cookie["path"], "/")
+        self.assertEqual(language_cookie["comment"], "")
+        self.assertEqual(language_cookie["domain"], "")
+        self.assertEqual(language_cookie["max-age"], "")
+        self.assertEqual(language_cookie["secure"], "")
+        self.assertEqual(language_cookie["httponly"], True)
+        self.assertEqual(language_cookie["version"], "")
+        self.assertEqual(language_cookie["samesite"], settings.LANGUAGE_COOKIE_SAMESITE)
+        self.assertEqual(translation.get_language(), settings.LANGUAGE_CODE)
+
+    def test_set_default_language_translation_enabled_true(self):
+        """
+        Endpoint should do nothing in this case, because translation is enabled
+        """
+        form = FormFactory.create(translation_enabled=True)
+
+        url = reverse(
+            "api:form-set-default-language", kwargs={"uuid_or_slug": form.uuid}
+        )
+        self.client.force_authenticate(user=None)
+        response = self.client.post(url, HTTP_ACCEPT_LANGUAGE="en")
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertNotIn(settings.LANGUAGE_COOKIE_NAME, response.cookies)
+        self.assertEqual(translation.get_language(), "en")
