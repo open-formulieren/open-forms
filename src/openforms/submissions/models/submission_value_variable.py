@@ -278,12 +278,6 @@ class SubmissionValueVariable(models.Model):
         choices=SubmissionValueVariableSources.choices,
         max_length=50,
     )
-    language = models.CharField(
-        verbose_name=_("language"),
-        help_text=_("If this value contains text, in which language is it?"),
-        max_length=50,
-        blank=True,
-    )
     created_at = models.DateTimeField(
         verbose_name=_("created at"),
         help_text=_("The date/time at which the value of this variable was created"),
