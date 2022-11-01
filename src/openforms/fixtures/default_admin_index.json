@@ -159,6 +159,14 @@
                 "familymemberstypeconfig"
             ],
             [
+                "digid_eherkenning",
+                "digidconfiguration"
+            ],
+            [
+                "digid_eherkenning",
+                "eherkenningconfiguration"
+            ],
+            [
                 "digid_eherkenning_oidc_generics",
                 "openidconnectdigidmachtigenconfig"
             ],
