@@ -15,7 +15,7 @@ version: '3.4'
 
 services:
   db:
-    image: postgres
+    image: postgres:${PG_VERSION:-14}
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
