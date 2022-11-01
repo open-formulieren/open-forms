@@ -6,10 +6,8 @@ from .registry import register as registry
 
 
 class PreRequestZGWClient(ZGWClient):
-    def pre_request(
-        self, method: str, url: str, kwargs: Optional[dict] = None, **old_kwargs
-    ) -> Any:
-        result = super().pre_request(method, url, kwargs, **old_kwargs)
+    def pre_request(self, method: str, url: str, kwargs: Optional[dict] = None) -> Any:
+        result = super().pre_request(method, url, kwargs)
 
         for pre_request in registry:
             pre_request(method, url, kwargs)
