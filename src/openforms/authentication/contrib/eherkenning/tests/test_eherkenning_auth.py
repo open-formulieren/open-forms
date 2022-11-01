@@ -25,18 +25,17 @@ from ....contrib.tests.saml_utils import (
     get_artifact_response,
     get_encrypted_attribute,
 )
-
-TEST_FILES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+from .utils import TEST_FILES
 
 EHERKENNING_SERVICE_INDEX = "8888"
 EHERKENNING = {
     "base_url": "https://test-sp.nl",
     "entity_id": "urn:etoegang:DV:00000001111111111000:entities:9000",
     "service_entity_id": "urn:etoegang:DV:00000001111111111000:entities:9000",
-    "metadata_file": os.path.join(TEST_FILES, "eherkenning-metadata.xml"),
+    "metadata_file": str(TEST_FILES / "eherkenning-metadata.xml"),
     # SSL/TLS key
-    "key_file": os.path.join(TEST_FILES, "test.key"),
-    "cert_file": os.path.join(TEST_FILES, "test.certificate"),
+    "key_file": str(TEST_FILES / "test.key"),
+    "cert_file": str(TEST_FILES / "test.certificate"),
     "services": [
         {
             "service_uuid": "75b40657-ec50-4ced-8e7a-e77d55b46040",

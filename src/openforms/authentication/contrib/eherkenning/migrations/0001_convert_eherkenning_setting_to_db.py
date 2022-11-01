@@ -47,11 +47,6 @@ def eherkenning_to_db_config(apps, _):
     config.service_language = "nl"  # hardcoded in settings
     config.loa = settings.EHERKENNING_LOA
 
-    if idp_md_file := setting["metadata_file"]:
-        idp_md_file = Path(idp_md_file)
-        with idp_md_file.open("rb") as md_file:
-            config.idp_metadata_file = File(md_file, idp_md_file.name)
-
     if len(setting["services"]) == 1:
         eherkenning, eidas = setting["services"][0], None
     else:
@@ -82,8 +77,16 @@ def eherkenning_to_db_config(apps, _):
 
     config.save()
 
+    if idp_md_file := setting["metadata_file"]:
+        idp_md_file = Path(idp_md_file)
+        with idp_md_file.open("rb") as md_file:
+            config.idp_metadata_file = File(md_file, idp_md_file.name)
+            config.save()
+
 
 class Migration(migrations.Migration):
+
+    initial = True
 
     dependencies = [
         ("digid_eherkenning", "0001_initial"),
