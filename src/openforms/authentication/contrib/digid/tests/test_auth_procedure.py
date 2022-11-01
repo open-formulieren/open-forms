@@ -2,15 +2,19 @@ from base64 import b64decode
 from typing import Optional
 from unittest.mock import patch
 
-from django.conf import settings
+from django.core.files import File
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
 import requests_mock
+from digid_eherkenning.models import DigidConfiguration
 from freezegun import freeze_time
 from furl import furl
 from lxml import etree
+from privates.test import temp_private_root
 from rest_framework import status
+from simple_certmanager.constants import CertificateTypes
+from simple_certmanager.models import Certificate
 
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
@@ -22,30 +26,12 @@ from openforms.submissions.tests.mixins import SubmissionsMixin
 
 from ....constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ....contrib.tests.saml_utils import create_test_artifact, get_artifact_response
-from .utils import TEST_FILES
-
-DIGID = {
-    "base_url": "https://test-sp.nl",
-    "entity_id": "https://test-sp.nl",
-    "metadata_file": str(TEST_FILES / "metadata.xml"),
-    # SSL/TLS key
-    "key_file": str(TEST_FILES / "test.key"),
-    "cert_file": str(TEST_FILES / "test.certificate"),
-    "authn_requests_signed": False,
-    "service_entity_id": "https://test-digid.nl",
-    "attribute_consuming_service_index": "1",
-    "service_name": {
-        "nl": "Test",
-        "en": "Test",
-    },
-    "requested_attributes": ["bsn"],
-}
+from .utils import TEST_FILES, clear_caches
 
 
-def _create_test_artifact(service_entity_id: str = "") -> str:
-    return create_test_artifact(
-        service_entity_id or settings.DIGID["service_entity_id"]
-    )
+def _create_test_artifact() -> str:
+    config = DigidConfiguration.get_solo()
+    return create_test_artifact(config.idp_service_entity_id)
 
 
 def _get_artifact_response(filename: str, context: Optional[dict] = None) -> bytes:
@@ -53,8 +39,54 @@ def _get_artifact_response(filename: str, context: Optional[dict] = None) -> byt
     return get_artifact_response(path, context=context)
 
 
-@override_settings(DIGID=DIGID, CORS_ALLOW_ALL_ORIGINS=True, IS_HTTPS=True)
-class AuthenticationStep2Tests(TestCase):
+class DigiDConfigMixin:
+    """
+    Configure DigiD for testing purposes.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        KEY = TEST_FILES / "test.key"
+        CERT = TEST_FILES / "test.certificate"
+        METADATA = TEST_FILES / "metadata.xml"
+
+        with KEY.open("rb") as key_file, CERT.open("rb") as cert_file:
+            cert = Certificate(
+                label="DigiD",
+                type=CertificateTypes.key_pair,
+                private_key=File(key_file, KEY.name),
+                public_certificate=File(cert_file, CERT.name),
+            )
+            cert.save()
+
+        config = DigidConfiguration.get_solo()
+        config.certificate = cert
+        config.base_url = "https://test-sp.nl"
+        config.entity_id = "https://test-sp.nl"
+        # config.authn_requests_signed =  False
+        config.idp_service_entity_id = "https://test-digid.nl"
+        config.attribute_consuming_service_index = "1"
+        config.service_name = "Test"
+        config.requested_attributes = ["bsn"]
+        config.want_assertions_signed = False
+        config.slo = False
+
+        with METADATA.open("rb") as md_file:
+            config.idp_metadata_file = File(md_file, METADATA.name)
+            config.save()
+
+    def setUp(self):
+        super().setUp()
+
+        clear_caches()
+        self.addCleanup(clear_caches)
+
+
+@temp_private_root()
+@override_settings(CORS_ALLOW_ALL_ORIGINS=True, IS_HTTPS=True)
+class AuthenticationStep2Tests(DigiDConfigMixin, TestCase):
     def test_redirect_to_digid(self):
         form = FormFactory.create(authentication_backends=["digid"])
         form_definition = FormDefinitionFactory.create(login_required=True)
@@ -120,9 +152,10 @@ class AuthenticationStep2Tests(TestCase):
         )
 
 
-@override_settings(DIGID=DIGID, CORS_ALLOW_ALL_ORIGINS=True)
+@temp_private_root()
+@override_settings(CORS_ALLOW_ALL_ORIGINS=True)
 @requests_mock.Mocker()
-class AuthenticationStep5Tests(TestCase):
+class AuthenticationStep5Tests(DigiDConfigMixin, TestCase):
     @patch(
         "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
     )
@@ -237,9 +270,10 @@ class AuthenticationStep5Tests(TestCase):
         )
 
 
-@override_settings(DIGID=DIGID, CORS_ALLOW_ALL_ORIGINS=True)
+@temp_private_root()
+@override_settings(CORS_ALLOW_ALL_ORIGINS=True)
 @requests_mock.Mocker()
-class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
+class CoSignLoginAuthenticationTests(SubmissionsMixin, DigiDConfigMixin, TestCase):
     @freeze_time("2020-04-09T08:31:46Z")
     @patch(
         "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",

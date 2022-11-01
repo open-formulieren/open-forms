@@ -4,7 +4,7 @@ from privates.test import temp_private_root
 
 from openforms.utils.tests.test_migrations import TestMigrations
 
-from .utils import TEST_FILES
+from .utils import TEST_FILES, clear_caches
 
 BASE_URL = "https://example.com"
 
@@ -29,6 +29,9 @@ class DigiDConfigMigrationBase(TestMigrations):
     def setUpBeforeMigration(self, apps):
         DigidConfiguration = apps.get_model("digid_eherkenning", "DigidConfiguration")
         DigidConfiguration.objects.all().delete()
+
+        clear_caches()
+        self.addCleanup(clear_caches)
 
 
 @temp_private_root()
