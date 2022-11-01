@@ -230,6 +230,20 @@ waar de JSON-logic op werkt).
     .. image:: _assets/jsonlogic.png
        :width: 100%
 
+.. note::
+
+    Open Forms gebruikt in de backend een `Python versie van JSON Logic`_. Een aantal JSON Logic operators zijn nog
+    niet ondersteund:
+
+    * filter
+    * map
+    * all
+    * none
+    * some
+    * substr
+
+.. _Python versie van JSON Logic: https://github.com/maykinmedia/json-logic-py
+
 
 **Voorbeeld formulier**
 
