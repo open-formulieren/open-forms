@@ -46,15 +46,18 @@ def digid_to_db_config(apps, _):
     config.requested_attributes = setting["requested_attributes"]
     config.want_assertions_signed = setting["want_assertions_signed"]
 
+    config.save()
+
     if idp_md_file := setting["metadata_file"]:
         idp_md_file = Path(idp_md_file)
         with idp_md_file.open("rb") as md_file:
             config.idp_metadata_file = File(md_file, idp_md_file.name)
-
-    config.save()
+            config.save()
 
 
 class Migration(migrations.Migration):
+
+    initial = True
 
     dependencies = [
         ("digid_eherkenning", "0001_initial"),

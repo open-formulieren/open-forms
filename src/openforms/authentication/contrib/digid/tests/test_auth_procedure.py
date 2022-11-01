@@ -1,4 +1,3 @@
-import os
 from base64 import b64decode
 from typing import Optional
 from unittest.mock import patch
@@ -23,16 +22,15 @@ from openforms.submissions.tests.mixins import SubmissionsMixin
 
 from ....constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ....contrib.tests.saml_utils import create_test_artifact, get_artifact_response
-
-TEST_FILES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+from .utils import TEST_FILES
 
 DIGID = {
     "base_url": "https://test-sp.nl",
     "entity_id": "https://test-sp.nl",
-    "metadata_file": os.path.join(TEST_FILES, "metadata.xml"),
+    "metadata_file": str(TEST_FILES / "metadata.xml"),
     # SSL/TLS key
-    "key_file": os.path.join(TEST_FILES, "test.key"),
-    "cert_file": os.path.join(TEST_FILES, "test.certificate"),
+    "key_file": str(TEST_FILES / "test.key"),
+    "cert_file": str(TEST_FILES / "test.certificate"),
     "authn_requests_signed": False,
     "service_entity_id": "https://test-digid.nl",
     "attribute_consuming_service_index": "1",
@@ -51,7 +49,8 @@ def _create_test_artifact(service_entity_id: str = "") -> str:
 
 
 def _get_artifact_response(filename: str, context: Optional[dict] = None) -> bytes:
-    return get_artifact_response(os.path.join(TEST_FILES, filename), context=context)
+    path = str(TEST_FILES / filename)
+    return get_artifact_response(path, context=context)
 
 
 @override_settings(DIGID=DIGID, CORS_ALLOW_ALL_ORIGINS=True, IS_HTTPS=True)
