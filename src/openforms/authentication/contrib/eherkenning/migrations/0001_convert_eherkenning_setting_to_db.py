@@ -47,6 +47,13 @@ def eherkenning_to_db_config(apps, _):
     config.service_language = "nl"  # hardcoded in settings
     config.loa = settings.EHERKENNING_LOA
 
+    # these can not be derived from settings, so we go with default values that need
+    # to be changed for metadata generation
+    config.service_name = "Open Formulieren"
+    config.service_description = "Open Formulieren"
+    config.makelaar_id = "0" * 20  # just a value to pass validation
+    config.privacy_policy = "https://example.com"
+
     if len(setting["services"]) == 1:
         eherkenning, eidas = setting["services"][0], None
     else:
