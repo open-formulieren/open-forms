@@ -233,6 +233,7 @@ INSTALLED_APPS = [
     "openforms.payments.contrib.demo.apps.DemoApp",
     "openforms.payments.contrib.ogone.apps.OgoneApp",
     "openforms.validations.apps.ValidationsConfig",
+    "openforms.translations",
     "openforms.data_removal",
     "openforms.utils",
     "openforms.upgrades",
