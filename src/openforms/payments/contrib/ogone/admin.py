@@ -1,7 +1,5 @@
 from django.contrib import admin
 
-from openforms.forms.utils import _get_mock_request
-
 from ...registry import register
 from .models import OgoneMerchant
 
@@ -32,4 +30,4 @@ class OgoneMerchantAdmin(admin.ModelAdmin):
     def feedback_url(self, obj=None):
         if not obj:
             return ""
-        return register["ogone-legacy"].get_webhook_url(_get_mock_request())
+        return register["ogone-legacy"].get_webhook_url(None)

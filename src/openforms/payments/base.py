@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING, Mapping
 from django.http import HttpRequest, HttpResponse
 
 from rest_framework import serializers
-from rest_framework.reverse import reverse
 
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.utils.mixins import JsonSchemaSerializerMixin
+from openforms.utils.urls import reverse_plus
 
 from .constants import PaymentRequestType
 
@@ -59,21 +59,21 @@ class BasePlugin(AbstractBasePlugin):
     # helpers
 
     def get_start_url(self, request: HttpRequest, submission: "Submission") -> str:
-        return reverse(
+        return reverse_plus(
             "payments:start",
             kwargs={"uuid": submission.uuid, "plugin_id": self.identifier},
             request=request,
         )
 
     def get_return_url(self, request: HttpRequest, payment: "SubmissionPayment") -> str:
-        return reverse(
+        return reverse_plus(
             "payments:return",
             kwargs={"uuid": payment.uuid},
             request=request,
         )
 
     def get_webhook_url(self, request: HttpRequest) -> str:
-        return reverse(
+        return reverse_plus(
             "payments:webhook",
             kwargs={"plugin_id": self.identifier},
             request=request,
