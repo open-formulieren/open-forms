@@ -82,10 +82,9 @@
                                 {% include "stuf_zds/soap/includes/verblijfsadres.xml" %}
                             {% endif %}
                         </ZKN:natuurlijkPersoon>
-                    {% elif initiator.kvk %}
+                    {% elif initiator.kvk and initiator.vestigingsNummer %}
                         <ZKN:vestiging StUF:entiteittype="VES" StUF:verwerkingssoort="T">
-                            {# Fall back on KvK-number if no vestigingsnumber. #}
-                            {% if initiator.vestigingsNummer %}<BG:vestigingsNummer>{{ initiator.vestigingsNummer }}</BG:vestigingsNummer>{% endif %}
+                            <BG:vestigingsNummer>{{ initiator.vestigingsNummer }}</BG:vestigingsNummer>
                             <BG:authentiek>N</BG:authentiek>
                             {% if initiator.handelsnaam %}<BG:handelsnaam>{{ initiator.handelsnaam }}</BG:handelsnaam>{% endif %}
 
@@ -93,6 +92,14 @@
                                 {% include "stuf_zds/soap/includes/verblijfsadres.xml" %}
                             {% endif %}
                         </ZKN:vestiging>
+                    {% elif  initiator.kvk %}
+                        <ZKN:nietNatuurlijkPersoon StUF:entiteittype="NNP" StUF:verwerkingssoort="T">
+                            <BG:inn.nnpId>{{ initiator.kvk }}</BG:inn.nnpId>
+                            <BG:authentiek>N</BG:authentiek>
+                            {% if initiator.verblijfsadres.postcode or initiator.verblijfsadres.woonplaatsNaam %}
+                                {% include "stuf_zds/soap/includes/bezoekadres.xml" %}
+                            {% endif %}
+                        </ZKN:nietNatuurlijkPersoon>
                     {% endif %}
                 </ZKN:gerelateerde>
                 <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
