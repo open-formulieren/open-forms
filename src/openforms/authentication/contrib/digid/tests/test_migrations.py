@@ -2,9 +2,10 @@ from django.urls import reverse
 
 from privates.test import temp_private_root
 
+from openforms.utils.tests.cache import clear_caches
 from openforms.utils.tests.test_migrations import TestMigrations
 
-from .utils import TEST_FILES, clear_caches
+from .utils import TEST_FILES
 
 BASE_URL = "https://example.com"
 

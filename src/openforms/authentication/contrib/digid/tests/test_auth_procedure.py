@@ -23,10 +23,11 @@ from openforms.forms.tests.factories import (
 )
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
+from openforms.utils.tests.cache import clear_caches
 
 from ....constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ....contrib.tests.saml_utils import create_test_artifact, get_artifact_response
-from .utils import TEST_FILES, clear_caches
+from .utils import TEST_FILES
 
 
 def _create_test_artifact() -> str:

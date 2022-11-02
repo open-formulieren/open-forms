@@ -4,20 +4,24 @@ from base64 import b64decode
 from typing import Optional
 from unittest.mock import patch
 
-from django.conf import settings
+from django.core.files import File
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 import requests_mock
+from digid_eherkenning.models import EherkenningConfiguration
 from freezegun import freeze_time
 from furl import furl
 from lxml import etree
+from simple_certmanager.constants import CertificateTypes
+from simple_certmanager.models import Certificate
 
 from openforms.forms.tests.factories import FormFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from openforms.tests.utils import surpress_output
+from openforms.utils.tests.cache import clear_caches
 
 from ....constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ....contrib.tests.saml_utils import (
@@ -25,71 +29,80 @@ from ....contrib.tests.saml_utils import (
     get_artifact_response,
     get_encrypted_attribute,
 )
-
-TEST_FILES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
-
-# The settings for the eIDAS service are within the eHerkenning settings
-EIDAS_SERVICE_INDEX = "9999"
-EHERKENNING = {
-    "base_url": "https://test-sp.nl",
-    "entity_id": "urn:etoegang:DV:00000001111111111000:entities:9000",
-    "service_entity_id": "urn:etoegang:DV:00000001111111111000:entities:9000",
-    "metadata_file": os.path.join(TEST_FILES, "eherkenning-metadata.xml"),
-    # SSL/TLS key
-    "key_file": os.path.join(TEST_FILES, "test.key"),
-    "cert_file": os.path.join(TEST_FILES, "test.certificate"),
-    "services": [
-        {
-            "service_uuid": "75b40657-ec50-4ced-8e7a-e77d55b46040",
-            "attribute_consuming_service_index": EIDAS_SERVICE_INDEX,
-            "service_name": {
-                "nl": "Test eIDAS",
-                "en": "Test eIDAS",
-            },
-            "service_description": {
-                "nl": "Test eIDAS",
-                "en": "Test eIDAS",
-            },
-            "service_instance_uuid": "ebd00992-3c8f-4c1c-b28f-d98074de1554",
-            "service_url": "https://test-sp.nl",
-            "service_loa": "urn:etoegang:core:assurance-class:loa3",
-            "entity_concerned_types_allowed": [],
-            "requested_attributes": [],
-            "privacy_policy_url": {
-                "nl": "https://test-sp.nl/privacy_policy",
-            },
-            "herkenningsmakelaars_id": "00000002222222222000",
-        }
-    ],
-    "oin": "00000001111111111000",
-    "organisation_name": {
-        "nl": "Test Organisation",
-        "en": "Test Organisation",
-    },
-}
+from .utils import TEST_FILES
 
 
-def _create_test_artifact(service_entity_id: str = "") -> str:
-    return create_test_artifact(
-        service_entity_id or settings.EHERKENNING["service_entity_id"]
-    )
+class EIDASConfigMixin:
+    """
+    Configure DigiD for testing purposes.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        KEY = TEST_FILES / "test.key"
+        CERT = TEST_FILES / "test.certificate"
+        METADATA = TEST_FILES / "eherkenning-metadata.xml"
+
+        with KEY.open("rb") as key_file, CERT.open("rb") as cert_file:
+            cert = Certificate(
+                label="eHerkenning",
+                type=CertificateTypes.key_pair,
+                private_key=File(key_file, KEY.name),
+                public_certificate=File(cert_file, CERT.name),
+            )
+            cert.save()
+
+        config = EherkenningConfiguration.get_solo()
+        config.certificate = cert
+        config.base_url = "https://test-sp.nl"
+        config.entity_id = "urn:etoegang:DV:00000001111111111000:entities:9000"
+        config.idp_service_entity_id = (
+            "urn:etoegang:DV:00000001111111111000:entities:9000"
+        )
+        config.service_name = "Test eIDAS"
+        config.service_description = "Test eIDAS"
+        config.want_assertions_signed = False
+        config.loa = "urn:etoegang:core:assurance-class:loa3"
+        config.privacy_policy = "https://test-sp.nl/privacy_policy"
+        config.makelaar_id = "00000002222222222000"
+        config.oin = "00000001111111111000"
+        config.organization_name = "Test Organisation"
+        config.no_eidas = False
+
+        config.eidas_attribute_consuming_service_index = "9999"
+        config.eidas_requested_attributes = []
+        config.eidas_service_uuid = "75b40657-ec50-4ced-8e7a-e77d55b46040"
+        config.eidas_service_instance_uuid = "ebd00992-3c8f-4c1c-b28f-d98074de1554"
+
+        with METADATA.open("rb") as md_file:
+            config.idp_metadata_file = File(md_file, METADATA.name)
+            config.save()
+
+    def setUp(self):
+        super().setUp()
+
+        clear_caches()
+        self.addCleanup(clear_caches)
+
+
+def _create_test_artifact() -> str:
+    config = EherkenningConfiguration.get_solo()
+    return create_test_artifact(config.idp_service_entity_id)
 
 
 def _get_artifact_response(filename: str, context: Optional[dict] = None) -> bytes:
-    return get_artifact_response(os.path.join(TEST_FILES, filename), context=context)
+    filepath = TEST_FILES / filename
+    return get_artifact_response(str(filepath), context=context)
 
 
 def _get_encrypted_attribute(pseudo_id: str):
     return get_encrypted_attribute("Pseudo", pseudo_id)
 
 
-@override_settings(
-    EHERKENNING=EHERKENNING,
-    EIDAS_SERVICE_INDEX=EIDAS_SERVICE_INDEX,
-    CORS_ALLOW_ALL_ORIGINS=True,
-    IS_HTTPS=True,
-)
-class AuthenticationStep2Tests(TestCase):
+@override_settings(CORS_ALLOW_ALL_ORIGINS=True, IS_HTTPS=True)
+class AuthenticationStep2Tests(EIDASConfigMixin, TestCase):
     def test_redirect_to_eIDAS_login(self):
         form = FormFactory.create(
             authentication_backends=["eidas"],
@@ -174,13 +187,9 @@ class AuthenticationStep2Tests(TestCase):
         )
 
 
-@override_settings(
-    EHERKENNING=EHERKENNING,
-    EIDAS_SERVICE_INDEX=EIDAS_SERVICE_INDEX,
-    CORS_ALLOW_ALL_ORIGINS=True,
-)
+@override_settings(CORS_ALLOW_ALL_ORIGINS=True)
 @requests_mock.Mocker()
-class AuthenticationStep5Tests(TestCase):
+class AuthenticationStep5Tests(EIDASConfigMixin, TestCase):
     @patch(
         "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
     )
@@ -296,9 +305,9 @@ class AuthenticationStep5Tests(TestCase):
         )
 
 
-@override_settings(EHERKENNING=EHERKENNING, CORS_ALLOW_ALL_ORIGINS=True)
+@override_settings(CORS_ALLOW_ALL_ORIGINS=True)
 @requests_mock.Mocker()
-class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
+class CoSignLoginAuthenticationTests(SubmissionsMixin, EIDASConfigMixin, TestCase):
     @freeze_time("2020-04-09T08:31:46Z")
     @patch(
         "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",

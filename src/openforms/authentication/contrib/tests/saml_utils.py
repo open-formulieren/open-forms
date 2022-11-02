@@ -2,9 +2,9 @@ from base64 import b64encode
 from hashlib import sha1
 from typing import Optional
 
-from django.conf import settings
 from django.template import Context, Template
 
+from digid_eherkenning.models import EherkenningConfiguration
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 
@@ -26,7 +26,8 @@ def get_artifact_response(filepath: str, context: Optional[dict] = None) -> byte
 
 
 def get_encrypted_attribute(attr: str, identifier: str):
-    with open(settings.EHERKENNING["cert_file"], "r") as cert_file:
+    config = EherkenningConfiguration.get_solo()
+    with config.certificate.public_certificate.open("r") as cert_file:
         cert = cert_file.read()
     return OneLogin_Saml2_Utils.generate_name_id(
         identifier,
