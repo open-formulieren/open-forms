@@ -27,20 +27,21 @@ class ServiceTestCase(TestCase):
                     "id": "e2a2cv9",
                     "key": "my_content",
                     "type": "content",
-                    "html": '<img style="width: 90%;">',
+                    "html": '<img style="width: 90%; border: 5000px solid red;">',
                 },
             ],
         }
         update_configuration_for_request(
             FormioConfigurationWrapper(configuration), request
         )
-        with self.subTest("temporary-file-upload"):
+        with self.subTest("temporary file upload url"):
             url = request.build_absolute_uri(
                 reverse("api:formio:temporary-file-upload")
             )
             self.assertEqual(configuration["components"][0]["url"], url)
 
-        with self.subTest("content html csp"):
+        with self.subTest("content html/css CSP"):
+            # note the CSS declarations are filtered
             expected = """
             <style nonce="dGVzdA==">
             #nonce-5fa62ae6176f3746142503a6ebe96cb3-1234 {

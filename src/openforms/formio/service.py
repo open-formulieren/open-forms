@@ -92,4 +92,13 @@ def update_default_file_types(component: Component, **kwargs) -> None:
 
 def update_content_inline_csp(component: Component, request: Request) -> None:
     if component.get("type") == "content":
-        component["html"] = post_process_html(component["html"], request)
+        """
+        NOTE: we apply a CSS declaration whitelist because content components are not purely "trusted" content from form-designers,
+        but can contain malicious user input if the form designer uses variables inside the HTML
+        (and the form submission data is passed as template context to those HTML blobs)
+
+        - width is used by the inline figure/image resize feature
+        """
+        component["html"] = post_process_html(
+            component["html"], request, allowed_css_declarations=["width"]
+        )
