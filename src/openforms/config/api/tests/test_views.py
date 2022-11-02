@@ -1,3 +1,4 @@
+from django.test import override_settings
 from django.urls import reverse
 
 from rest_framework import status
@@ -9,6 +10,7 @@ from openforms.submissions.tests.mixins import SubmissionsMixin
 from ...models import GlobalConfiguration
 
 
+@override_settings(LANGUAGE_CODE="en")
 class PrivacyInfoViewTests(SubmissionsMixin, APITestCase):
     def test_requires_active_submission(self):
         response = self.client.get(reverse("api:config:privacy-policy-info"))
