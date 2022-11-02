@@ -155,6 +155,8 @@ class StufZDSRegistration(BasePlugin):
 
     zaak_mapping = {
         # Initiator
+        # Medewerker
+        "initiator.medewerker_nummer": RegistrationAttribute.initiator_medewerker_nummer,
         # Natuurlijk Persoon
         "initiator.voorletters": RegistrationAttribute.initiator_voorletters,
         "initiator.voornamen": RegistrationAttribute.initiator_voornamen,

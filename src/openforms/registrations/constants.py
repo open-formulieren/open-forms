@@ -8,6 +8,10 @@ REGISTRATION_ATTRIBUTE = "registration.attribute"
 
 class RegistrationAttribute(DjangoChoices):
     # Initiator
+    # Medewerker
+    initiator_medewerker_nummer = ChoiceItem(
+        "medewerker_nummer", _("Employee > Employee number")
+    )
     # Natuurlijk Persoon
     initiator_voorletters = ChoiceItem(
         "initiator_voorletters", _("Initiator > Voorletters")
