@@ -150,7 +150,7 @@ defusedxml==0.6.0
     #   cairosvg
     #   django-camunda
     #   django-digid-eherkenning
-    #   python3-saml
+    #   maykin-python3-saml
 django==3.2.16
     # via
     #   -c requirements/base.txt
@@ -177,6 +177,7 @@ django==3.2.16
     #   django-redis
     #   django-relativedelta
     #   django-sendfile2
+    #   django-sessionprofile
     #   django-simple-certmanager
     #   django-solo
     #   django-timeline-logger
@@ -252,7 +253,7 @@ django-decorator-include==3.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-digid-eherkenning==0.3.1
+django-digid-eherkenning==0.5.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -314,16 +315,23 @@ django-sendfile2==0.7.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-privates
+django-sessionprofile==2.0.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   django-digid-eherkenning
 django-simple-certmanager==1.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   django-digid-eherkenning
     #   zgw-consumers
 django-solo==2.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-camunda
+    #   django-digid-eherkenning
     #   mozilla-django-oidc-db
     #   zgw-consumers
 django-timeline-logger==2.1.0
@@ -455,7 +463,7 @@ isodate==0.6.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   python3-saml
+    #   maykin-python3-saml
     #   zeep
 isort==5.7.0
     # via -r requirements/test-tools.in
@@ -487,8 +495,8 @@ lxml==4.6.5
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-digid-eherkenning
+    #   maykin-python3-saml
     #   pyquery
-    #   python3-saml
     #   xmlsec
     #   zeep
 mail-parser==3.15.0
@@ -510,6 +518,11 @@ maykin-json-logic-py @ git+https://github.com/maykinmedia/json-logic-py.git@f877
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+maykin-python3-saml==1.14.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   django-digid-eherkenning
 mccabe==0.6.1
     # via flake8
 mozilla-django-oidc==1.2.4
@@ -616,7 +629,7 @@ pyopenssl==19.1.0
     #   -r requirements/base.txt
     #   django-simple-certmanager
     #   josepy
-    #   python3-saml
+    #   maykin-python3-saml
     #   zgw-consumers
 pyparsing==2.4.7
     # via packaging
@@ -654,10 +667,6 @@ python-dotenv==0.14.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
 python-magic==0.4.27
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-python3_saml @ git+https://github.com/maykinmedia/python3-saml.git@f587f77b78be79d51139f29a957b406072e2b537
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -702,9 +711,9 @@ requests==2.26.0
     #   -r requirements/base.txt
     #   django-camunda
     #   gemma-zds-client
+    #   maykin-python3-saml
     #   mozilla-django-oidc
     #   o365
-    #   python3-saml
     #   requests-file
     #   requests-mock
     #   requests-oauthlib
@@ -925,7 +934,7 @@ xmlsec==1.3.10
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   python3-saml
+    #   maykin-python3-saml
 xmltodict==0.12.0
     # via
     #   -c requirements/base.txt

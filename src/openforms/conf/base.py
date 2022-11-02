@@ -899,6 +899,7 @@ COOKIE_CONSENT_NAME = "cookie_consent"
 #
 # DIGID
 #
+# TODO: remove these settings once 2.1 is released.
 
 DIGID_METADATA = config("DIGID_METADATA", "")
 DIGID_SSL_CERTIFICATE_PATH = config("DIGID_SSL_CERTIFICATE_PATH", "")
@@ -927,6 +928,7 @@ DIGID = {
 #
 # E-HERKENNING / eIDAS
 #
+# TODO: remove these settings once 2.1 is released.
 
 EHERKENNING_METADATA = config("EHERKENNING_METADATA", "")
 EHERKENNING_SSL_CERTIFICATE_PATH = config("EHERKENNING_SSL_CERTIFICATE_PATH", "")

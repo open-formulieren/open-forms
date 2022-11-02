@@ -1,8 +1,9 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from openforms.config.models import GlobalConfiguration
 
 
+@override_settings(LANGUAGE_CODE="en")
 class PrivacyPolicyTests(TestCase):
     def test_render_privacy_label(self):
         conf = GlobalConfiguration.get_solo()

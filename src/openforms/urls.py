@@ -104,6 +104,9 @@ urlpatterns = [
     path("eherkenning/", include("openforms.authentication.contrib.eherkenning.urls")),
     path("digid/idp/", include("digid_eherkenning.mock.idp.digid_urls")),
     path("fouten/<exception_class>/", ErrorDetailView.as_view(), name="error-detail"),
+    # we can't expose the digid/eherkenning metadata under .well-known as it requires
+    # registration (see RFC5785)
+    path("discovery/digid-eherkenning/", include("digid_eherkenning.metadata_urls")),
     # stable SDK urls
     path(
         f"{settings.STATIC_URL.lstrip('/')}sdk/open-forms-sdk.<ext>",
