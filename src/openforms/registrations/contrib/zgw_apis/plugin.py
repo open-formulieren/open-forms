@@ -181,9 +181,12 @@ class ZGWRegistration(BasePlugin):
 
         betrokkene_identificatie = rol_data.get("betrokkeneIdentificatie", {})
         kvk = betrokkene_identificatie.pop("_kvk", None)
+        vestigingsnummer = betrokkene_identificatie.get("vestigingsNummer")
 
-        if kvk:
+        if kvk and vestigingsnummer:
             rol_data["betrokkeneType"] = "vestiging"
+        elif kvk:
+            rol_data["betrokkeneType"] = "niet_natuurlijk_persoon"
         else:
             rol_data["betrokkeneType"] = "natuurlijk_persoon"
 
