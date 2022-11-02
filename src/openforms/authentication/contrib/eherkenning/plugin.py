@@ -1,10 +1,10 @@
 from typing import Any, Dict, Optional
 
-from django.conf import settings
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
+from digid_eherkenning.models import EherkenningConfiguration
 from furl import furl
 from rest_framework.reverse import reverse
 
@@ -22,9 +22,10 @@ class AuthenticationBasePlugin(BasePlugin):
     session_key = None
 
     def _get_attr_consuming_service_index(self) -> str:
+        config = EherkenningConfiguration.get_solo()
         indices = {
-            "eidas": settings.EIDAS_SERVICE_INDEX,
-            "eherkenning": settings.EHERKENNING_SERVICE_INDEX,
+            "eherkenning": config.eh_attribute_consuming_service_index,
+            "eidas": config.eidas_attribute_consuming_service_index,
         }
         return indices[self.identifier]
 
