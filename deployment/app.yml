@@ -45,6 +45,14 @@
         mount: "/app/private_media"
         mode: "rw"
         owner: 1000
+      - name: "{{ django_app_docker_name_prefix }}-log"
+        mount: "/app/log"
+        mode: "rw"
+        owner: 1000
+      - name: "{{ django_app_docker_name_prefix }}-certifi_ca_bundle"
+        mount: "/app/certifi_ca_bundle"
+        mode: "rw"
+        owner: 1000
 
     sdk_port: 14100
     sdk_image: docker.io/openformulieren/open-forms-sdk:latest
