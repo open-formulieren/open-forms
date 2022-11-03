@@ -73,6 +73,8 @@ services:
     volumes:
       - media:/app/media
       - private_media:/app/private_media
+      - log:/app/log
+      - certifi_ca_bundle:/app/certifi_ca_bundle
     ports:
       - 8000:8000
     depends_on:
@@ -133,6 +135,8 @@ volumes:
   db:
   media:
   private_media:
+  log:
+  certifi_ca_bundle:
 
 networks:
   open-forms-dev:
