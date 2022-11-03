@@ -325,6 +325,9 @@ class SubmissionAdmin(admin.ModelAdmin):
                 verbose_name_plural=queryset.model._meta.verbose_name_plural,
             ),
         )
+        # reset attempts when manually retrying
+        submissions.update(registration_attempts=0)
+
         for submission in submissions:
             on_completion_retry(submission.id).delay()
 
