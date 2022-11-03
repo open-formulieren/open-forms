@@ -8,6 +8,7 @@ from openforms.accounts.tests.factories import UserFactory
 from openforms.logging.logevent import submission_start
 from openforms.logging.models import TimelineLogProxy
 
+from ...config.models import GlobalConfiguration
 from ..constants import RegistrationStatuses
 from .factories import SubmissionFactory
 
@@ -159,6 +160,47 @@ class TestSubmissionAdmin(WebTest):
         on_completion_retry_mock.assert_any_call(failed.id)
         on_completion_retry_mock.assert_any_call(failed_needs_retry.id)
         self.assertEqual(on_completion_retry_mock.return_value.delay.call_count, 2)
+
+    @patch("openforms.submissions.admin.on_completion_retry")
+    @patch("openforms.registrations.tasks.GlobalConfiguration.get_solo")
+    def test_retry_processing_submissions_resets_submission_registration_attempts(
+        self, mock_get_solo, on_completion_retry_mock
+    ):
+        mock_get_solo.return_value = GlobalConfiguration(registration_attempt_limit=5)
+
+        failed_above_limit = SubmissionFactory.create(
+            completed=True,
+            registration_status=RegistrationStatuses.failed,
+            registration_attempts=10,
+        )
+        failed_below_limit = SubmissionFactory.create(
+            completed=True,
+            registration_status=RegistrationStatuses.failed,
+            registration_attempts=2,
+        )
+
+        response = self.app.get(
+            reverse("admin:submissions_submission_changelist"), user=self.user
+        )
+
+        form = response.forms["changelist-form"]
+        form["action"] = "retry_processing_submissions"
+        form["_selected_action"] = [
+            str(failed_above_limit.pk),
+            str(failed_below_limit.pk),
+        ]
+
+        form.submit()
+
+        on_completion_retry_mock.assert_any_call(failed_above_limit.id)
+        on_completion_retry_mock.assert_any_call(failed_below_limit.id)
+        self.assertEqual(on_completion_retry_mock.return_value.delay.call_count, 2)
+
+        failed_above_limit.refresh_from_db()
+        failed_below_limit.refresh_from_db()
+
+        self.assertEqual(failed_above_limit.registration_attempts, 0)
+        self.assertEqual(failed_below_limit.registration_attempts, 0)
 
     def test_change_view_displays_logs_if_not_avg(self):
         # add regular submission log
