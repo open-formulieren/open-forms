@@ -359,11 +359,15 @@ class Submission(models.Model):
         self.pseudo = ""
         self.prefill_data = dict()
 
-        steps_qs = self.submissionstep_set.select_related(
-            "form_step",
-            "form_step__form_definition",
-        )
-        for submission_step in steps_qs.select_for_update():
+        state = self.load_execution_state()
+
+        submission_steps = {step.id: step for step in state.submission_steps}
+        # lock rows with select_for_update
+        qs = self.submissionstep_set.filter(
+            pk__in=submission_steps.keys()
+        ).select_for_update()
+        for pk in qs.values_list("pk", flat=True):
+            submission_step = submission_steps[pk]
             fields = submission_step.form_step.form_definition.sensitive_fields
             removed_data = {key: "" for key in fields}
             submission_step.data.update(removed_data)
