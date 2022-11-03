@@ -383,14 +383,14 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         step = form.formstep_set.get()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
-            form_step=step, submission=submission, data={"date1": "2022-09-13"}
+            form_step=step, submission=submission, data={"date1": "2022-09-13T00:00:00+01:00"}
         )
         SubmissionValueVariableFactory.create(
             submission=submission,
             key="userDefinedDate",
             form_variable__user_defined=True,
             form_variable__data_type=FormVariableDataTypes.datetime,
-            value="2022-12-31",
+            value="2022-12-31T00:00:00+01:00",
         )
         endpoint = reverse(
             "api:submission-steps-detail",

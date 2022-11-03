@@ -712,6 +712,98 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
         self.assertEqual({}, data["step"]["data"])
 
+    def test_compare_now_with_literal_date(self):
+        form_step = FormStepFactory.create()
+        form = form_step.form
+        form_step_path = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": form.uuid, "uuid": form_step.uuid},
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                ">": [
+                    {"var": "now"},
+                    "2000-01-01T00:00:00.000000+00:00",
+                ]
+            },
+            actions=[
+                {
+                    "form_step": f"http://example.com{form_step_path}",
+                    "action": {
+                        "name": "Step is not applicable",
+                        "type": "step-not-applicable",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={},
+        )
+
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse(
+            "api:submission-detail",
+            kwargs={"uuid": submission.uuid},
+        )
+        response = self.client.get(endpoint)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        data = response.json()
+
+        self.assertFalse(data["steps"][0]["isApplicable"])
+
+    def test_compare_now_with_today_operator(self):
+        form_step = FormStepFactory.create()
+        form = form_step.form
+        form_step_path = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": form.uuid, "uuid": form_step.uuid},
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                ">": [
+                    {"var": "now"},
+                    {"-": [{"today": []}, {"rdelta": [18, 0, 0]}]}
+                ]
+            },
+            actions=[
+                {
+                    "form_step": f"http://example.com{form_step_path}",
+                    "action": {
+                        "name": "Step is not applicable",
+                        "type": "step-not-applicable",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={},
+        )
+
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse(
+            "api:submission-detail",
+            kwargs={"uuid": submission.uuid},
+        )
+        response = self.client.get(endpoint)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        data = response.json()
+
+        self.assertFalse(data["steps"][0]["isApplicable"])
+
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
