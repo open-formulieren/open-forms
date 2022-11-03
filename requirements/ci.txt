@@ -418,6 +418,10 @@ flower==1.2.0
     #   -r requirements/base.txt
 freezegun==0.3.15
     # via -r requirements/test-tools.in
+frozendict==2.3.4
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 furl==2.1.2
     # via
     #   -c requirements/base.txt
