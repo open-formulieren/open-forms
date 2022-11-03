@@ -99,6 +99,10 @@ COPY ./bin/celery_flower.sh /celery_flower.sh
 COPY ./bin/dump_configuration.sh /dump_configuration.sh
 RUN mkdir /app/log /app/media /app/bin
 
+# prevent writing to the container layer, which would degrade performance.
+# This also serves as a hint for the intended volumes.
+VOLUME ["/app/log", "/app/media", "/app/private-media"]
+
 # copy backend build deps
 COPY --from=backend-build /usr/local/lib/python3.8 /usr/local/lib/python3.8
 COPY --from=backend-build /usr/local/bin/uwsgi /usr/local/bin/uwsgi
