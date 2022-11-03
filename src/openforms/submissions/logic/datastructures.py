@@ -39,7 +39,7 @@ class DataContainer:
           (template context) evaluation.
         """
         dynamic_values = {
-            key: variable.to_python() for key, variable in self.state.variables.items()
+            key: variable.value for key, variable in self.state.variables.items()
         }
         static_values = self.state.static_data()
         # this construct may have dots in the key names, so we need to expand that

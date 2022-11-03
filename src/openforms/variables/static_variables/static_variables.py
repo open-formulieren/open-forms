@@ -16,8 +16,21 @@ class Now(BaseStaticVariable):
     name = _("Now")
     data_type = FormVariableDataTypes.datetime
 
-    def get_initial_value(self, submission: Optional[Submission] = None):
-        return timezone.now()
+    def get_initial_value(self, submission: Optional[Submission] = None) -> str:
+        return timezone.now().isoformat()
+
+
+@register_static_variable("today")
+class Today(BaseStaticVariable):
+    name = _("Today")
+    data_type = FormVariableDataTypes.datetime
+
+    def get_initial_value(self, submission: Optional[Submission] = None) -> str:
+        return (
+            timezone.now()
+            .replace(hour=0, minute=0, second=0, microsecond=0)
+            .isoformat()
+        )
 
 
 @register_static_variable("environment")
