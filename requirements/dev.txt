@@ -99,6 +99,7 @@ certifi==2022.9.14
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   django-simple-certmanager
     #   elastic-apm
     #   requests
     #   selenium
@@ -150,10 +151,11 @@ coverage==4.5.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-cryptography==3.4.7
+cryptography==38.0.3
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   django-simple-certmanager
     #   josepy
     #   mozilla-django-oidc
     #   pyopenssl
@@ -361,7 +363,7 @@ django-sessionprofile==2.0.0
     #   django-digid-eherkenning
 django-silk==5.0.1
     # via -r requirements/dev.in
-django-simple-certmanager==1.0.0
+django-simple-certmanager==1.1.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -738,7 +740,7 @@ pyjwt==2.6.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   gemma-zds-client
-pyopenssl==19.1.0
+pyopenssl==22.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -917,7 +919,6 @@ six==1.15.0
     #   mail-parser
     #   mozilla-django-oidc
     #   orderedmultidict
-    #   pyopenssl
     #   python-dateutil
     #   qrcode
     #   requests-file

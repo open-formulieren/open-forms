@@ -40,6 +40,7 @@ celery-once==3.0.1
     # via -r requirements/base.in
 certifi==2022.9.14
     # via
+    #   django-simple-certmanager
     #   elastic-apm
     #   requests
     #   self-certifi
@@ -63,8 +64,9 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.2.0
     # via celery
-cryptography==3.4.7
+cryptography==38.0.3
     # via
+    #   django-simple-certmanager
     #   josepy
     #   mozilla-django-oidc
     #   pyopenssl
@@ -185,7 +187,7 @@ django-sendfile2==0.7.0
     # via django-privates
 django-sessionprofile==2.0.0
     # via django-digid-eherkenning
-django-simple-certmanager==1.0.0
+django-simple-certmanager==1.1.1
     # via
     #   django-digid-eherkenning
     #   zgw-consumers
@@ -318,7 +320,7 @@ pycparser==2.20
     # via cffi
 pyjwt==2.6.0
     # via gemma-zds-client
-pyopenssl==19.1.0
+pyopenssl==22.1.0
     # via
     #   -r requirements/base.in
     #   django-simple-certmanager
@@ -405,7 +407,6 @@ six==1.15.0
     #   mail-parser
     #   mozilla-django-oidc
     #   orderedmultidict
-    #   pyopenssl
     #   python-dateutil
     #   qrcode
     #   requests-file
