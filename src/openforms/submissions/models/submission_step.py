@@ -1,4 +1,5 @@
 import uuid
+from copy import deepcopy
 
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
@@ -7,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 from frozendict import frozendict
 
-from openforms.forms.models import FormStep
+from openforms.forms.models import FormDefinition, FormStep
 
 
 def _make_frozen(obj):
@@ -118,8 +119,40 @@ class SubmissionStep(models.Model):
         verbose_name_plural = _("Submission steps")
         unique_together = (("submission", "form_step"),)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # load the form step from historical data if the FK has been broken (due to a
+        # deleted form step in the form designer/import functionality)
+        if not self.form_step_id:
+            self.form_step = self._load_form_step_from_history()
+
     def __str__(self):
         return f"SubmissionStep {self.pk}: Submission {self.submission_id} submitted on {self.created_on}"
+
+    def _load_form_step_from_history(self):
+        history = deepcopy(self.form_step_history)
+        if not history:
+            return None
+
+        # check if the form definition still exists
+        fd_exists = FormDefinition.objects.filter(
+            pk=history["form_definition"]["pk"]
+        ).exists()
+        if not fd_exists:
+            del history["form_step"]["fields"]["form_definition"]
+
+        form_step = next(
+            serializers.deserialize("python", [history["form_step"]])
+        ).object
+
+        if not fd_exists:
+            form_definition = next(
+                serializers.deserialize("python", [history["form_definition"]])
+            ).object
+            form_step.form_definition = form_definition
+
+        return form_step
 
     @property
     def completed(self) -> bool:

@@ -411,13 +411,22 @@ class Submission(models.Model):
         if hasattr(self, "_execution_state"):
             return self._execution_state
 
-        form_steps = self.form.formstep_set.select_related("form_definition").order_by(
-            "order"
+        form_steps = list(
+            self.form.formstep_set.select_related("form_definition").order_by("order")
         )
         _submission_steps = self.submissionstep_set.select_related(
             "form_step", "form_step__form_definition"
         )
-        submission_steps = {step.form_step: step for step in _submission_steps}
+        submission_steps = {}
+        for step in _submission_steps:
+            # handle deleted formstep FKs, and load them from history instead
+            if not step.form_step:
+                step.form_step = step._load_form_step_from_history()
+                form_steps.append(step.form_step)
+            submission_steps[step.form_step] = step
+
+        # sort the steps again in case steps from history were inserted
+        form_steps = sorted(form_steps, key=lambda s: s.order)
 
         # build the resulting list - some SubmissionStep instances will probably not exist
         # in the database yet - this is on purpose!
@@ -438,7 +447,7 @@ class Submission(models.Model):
             steps.append(step)
 
         state = SubmissionState(
-            form_steps=list(form_steps),
+            form_steps=form_steps,
             submission_steps=steps,
         )
         self._execution_state = state
