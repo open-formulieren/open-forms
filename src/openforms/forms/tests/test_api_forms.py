@@ -12,6 +12,7 @@ from rest_framework.test import APIRequestFactory, APITestCase
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
+from openforms.translations.utils import make_translated
 
 from ..api.serializers import FormSerializer
 from ..constants import ConfirmationEmailOptions
@@ -66,7 +67,7 @@ class FormsAPITests(APITestCase):
         FormFactory.create(deleted_=True)
 
         url = reverse("api:form-list")
-        response = self.client.get(url, format="json")
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -79,7 +80,7 @@ class FormsAPITests(APITestCase):
         self.user.save()
 
         url = reverse("api:form-list")
-        response = self.client.get(url, format="json")
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -93,7 +94,7 @@ class FormsAPITests(APITestCase):
         self.user.save()
 
         url = reverse("api:form-list")
-        response = self.client.get(url, format="json")
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # two forms are hidden
@@ -109,7 +110,7 @@ class FormsAPITests(APITestCase):
         self.user.save()
 
         url = reverse("api:form-list")
-        response = self.client.get(url, format="json")
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # show all forms excl deleted
@@ -137,7 +138,7 @@ class FormsAPITests(APITestCase):
         form = FormFactory.create()
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        response = self.client.get(url, format="json")
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["uuid"], str(form.uuid))
@@ -147,7 +148,7 @@ class FormsAPITests(APITestCase):
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.slug})
 
-        response = self.client.get(url, format="json")
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["slug"], form.slug)
@@ -157,7 +158,7 @@ class FormsAPITests(APITestCase):
         form = FormFactory.create(active=False)
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        response = self.client.get(url, format="json")
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -168,7 +169,7 @@ class FormsAPITests(APITestCase):
         self.user.save()
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        response = self.client.get(url, format="json")
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -177,7 +178,7 @@ class FormsAPITests(APITestCase):
         form = FormFactory.create(deleted_=True)
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        response = self.client.get(url, format="json")
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -185,7 +186,7 @@ class FormsAPITests(APITestCase):
         form = FormFactory.create(deleted_=True)
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        response = self.client.get(url, format="json")
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -195,7 +196,7 @@ class FormsAPITests(APITestCase):
         self.user.save()
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        response = self.client.get(url, format="json")
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -1065,3 +1066,57 @@ class FormsAPITests(APITestCase):
                 response = getattr(self.client, verb)(url, data=data)
 
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class FormsAPITranslationTests(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        TranslatedFormFactory = make_translated(FormFactory)
+        cls.en_form = TranslatedFormFactory.create(
+            _language="en",
+            begin_text="start",
+            previous_text="prev",
+            change_text="change",
+            confirm_text="confirm",
+        )
+
+    def test_detail_shows_translated_values_based_on_request_header(self):
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": self.en_form.uuid})
+        response = self.client.get(url, HTTP_ACCEPT_LANGUAGE="en")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Language"], "en")
+        form = response.json()
+
+        self.assertTrue(form["name"])  # it has a name from the factory
+
+        def literal_value(field):
+            return form["literals"][field]["value"]
+
+        self.assertEqual(literal_value("beginText"), "start")
+        self.assertEqual(literal_value("previousText"), "prev")
+        self.assertEqual(literal_value("changeText"), "change")
+        self.assertEqual(literal_value("confirmText"), "confirm")
+
+    def test_detail_shows_translated_values_based_on_cookie(self):
+        # request the api for Dutch, with a browser that negotiates English
+        lang_url = reverse("api:i18n:language")
+        response = self.client.put(
+            lang_url, data={"code": "nl"}, HTTP_ACCEPT_LANGUAGE="en"
+        )
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": self.en_form.uuid})
+        response = self.client.get(url, HTTP_ACCEPT_LANGUAGE="en")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Language"], "nl")
+        form = response.json()
+
+        # The form is only translated into English
+        # assert all values of this Dutch one are empty
+        self.assert_(
+            all(literal["value"] == "" for literal in form["literals"].values())
+        )
