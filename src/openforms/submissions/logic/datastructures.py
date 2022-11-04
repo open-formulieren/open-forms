@@ -3,7 +3,7 @@ from typing import Any, Tuple
 
 from glom import assign
 
-from openforms.typing import DataMapping
+from openforms.typing import DataMapping, JSONObject
 
 from ..models import SubmissionStep
 from ..models.submission_value_variable import SubmissionValueVariablesState
@@ -21,14 +21,33 @@ class DataContainer:
 
     def __post_init__(self):
         # ensure the initial data is immutable
-        self._initial_data = tuple(self.data.items())  # record for logging purposes
+        self._initial_data = tuple(
+            self.python_data.items()
+        )  # record for logging purposes
 
     @property
     def initial_data(self) -> DataMapping:
         return dict(self._initial_data)
 
     @property
-    def data(self) -> DataMapping:
+    def json_data(self) -> JSONObject:
+        dynamic_values = {
+            key: variable.value for key, variable in self.state.variables.items()
+        }
+        static_values = {
+            key: variable.initial_value
+            for key, variable in self.state.static_variables.items()
+        }
+        # this construct may have dots in the key names, so we need to expand that
+        # into nested objects
+        flattened_data = {**dynamic_values, **static_values}
+        nested_data = {}
+        for dotted_path, value in flattened_data.items():
+            assign(nested_data, dotted_path, value, missing=dict)
+        return nested_data
+
+    @property
+    def python_data(self) -> DataMapping:
         """
         Collect the total picture of data/variable values.
 
@@ -39,9 +58,12 @@ class DataContainer:
           (template context) evaluation.
         """
         dynamic_values = {
-            key: variable.value for key, variable in self.state.variables.items()
+            key: variable.to_python() for key, variable in self.state.variables.items()
         }
-        static_values = self.state.static_data()
+        static_values = {
+            key: variable.to_python()
+            for key, variable in self.state.static_variables.items()
+        }
         # this construct may have dots in the key names, so we need to expand that
         # into nested objects
         flattened_data = {**dynamic_values, **static_values}

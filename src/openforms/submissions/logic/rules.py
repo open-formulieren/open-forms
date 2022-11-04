@@ -145,7 +145,7 @@ def iter_evaluate_rules(
             triggered = False
             with log_errors(rule.json_logic_trigger, rule):
                 triggered = bool(
-                    jsonLogic(rule.json_logic_trigger, data_container.data)
+                    jsonLogic(rule.json_logic_trigger, data_container.json_data)
                 )
 
             if on_rule_check is not None:
@@ -164,7 +164,7 @@ def iter_evaluate_rules(
                     new_value = None
                     with log_errors(action_details["value"], rule):
                         new_value = jsonLogic(
-                            action_details["value"], data_container.data
+                            action_details["value"], data_container.json_data
                         )
                     data_container.update({action["variable"]: new_value})
                 else:

@@ -59,7 +59,7 @@ def variable_value_to_python(value: JSONValue, data_type: str) -> Any:
         return value
 
     # TODO what about an array of datetimes?
-    if data_type == FormVariableDataTypes.datetime:
+    if value and data_type == FormVariableDataTypes.datetime:
         date = format_date_value(value)
         naive_date = parse_date(date)
         if naive_date is not None:

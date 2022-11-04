@@ -124,7 +124,7 @@ def evaluate_form_logic(
         # already.
         request=context.get("request"),
         submission=submission,
-        data=data_container.data,
+        data=data_container.python_data,
     )
 
     # 7.1 Apply the component mutation operations
@@ -132,7 +132,7 @@ def evaluate_form_logic(
         mutation.apply(step, config_wrapper)
 
     # 7.2 Interpolate the component configuration with the variables.
-    inject_variables(config_wrapper, data_container.data)
+    inject_variables(config_wrapper, data_container.python_data)
 
     # 7.3 Handle custom formio types - TODO: this needs to be lifted out of
     # :func:`get_dynamic_configuration` so that it can use variables.
@@ -143,7 +143,7 @@ def evaluate_form_logic(
         submission,
         evaluated_rules,
         initial_data,
-        data_container.data,
+        data_container.json_data,
     )
 
     # process the output for logic checks with dirty data
@@ -162,7 +162,7 @@ def evaluate_form_logic(
             if original_value is not empty and original_value != component_empty_value:
                 if (
                     component
-                    and not is_visible_in_frontend(component, data_container.data)
+                    and not is_visible_in_frontend(component, data_container.json_data)
                     and component.get("clearOnHide")
                 ):
                     data_diff[key] = component_empty_value
