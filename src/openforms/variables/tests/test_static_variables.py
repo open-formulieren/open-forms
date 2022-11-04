@@ -1,7 +1,6 @@
 from uuid import UUID
 
 from django.test import TestCase, override_settings
-from django.utils import timezone
 
 from freezegun import freeze_time
 
@@ -21,12 +20,12 @@ class NowTests(TestCase):
 
         variable = _get_variable("now", submission=submission)
 
-        self.assertEqual(variable.initial_value, timezone.now())
+        self.assertEqual(variable.initial_value, "2022-08-29T15:10:00+00:00")
 
     def test_without_submission(self):
         variable = _get_variable("now")
 
-        self.assertEqual(variable.initial_value, timezone.now())
+        self.assertEqual(variable.initial_value, "2022-08-29T15:10:00+00:00")
 
 
 class EnvironmentTests(TestCase):

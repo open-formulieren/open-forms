@@ -768,10 +768,7 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={
-                ">": [
-                    {"var": "now"},
-                    {"-": [{"today": []}, {"rdelta": [18, 0, 0]}]}
-                ]
+                ">": [{"var": "now"}, {"-": [{"today": []}, {"rdelta": [18, 0, 0]}]}]
             },
             actions=[
                 {

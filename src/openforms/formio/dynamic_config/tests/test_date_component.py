@@ -27,7 +27,7 @@ class DynamicDateConfigurationTests(SimpleTestCase):
         request = request_factory.get("/irrelevant")
         submission = SubmissionFactory.build()
         static_vars = get_static_variables(submission=None)  # don't do queries
-        variables.update({var.key: var.initial_value for var in static_vars})
+        variables.update({var.key: var.to_python() for var in static_vars})
         config_wrapper = get_dynamic_configuration(
             config_wrapper, request=request, submission=submission, data=variables
         )

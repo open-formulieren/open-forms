@@ -383,7 +383,9 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         step = form.formstep_set.get()
         submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
-            form_step=step, submission=submission, data={"date1": "2022-09-13T00:00:00+01:00"}
+            form_step=step,
+            submission=submission,
+            data={"date1": "2022-09-13T00:00:00+01:00"},
         )
         SubmissionValueVariableFactory.create(
             submission=submission,
