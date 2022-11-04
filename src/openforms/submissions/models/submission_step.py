@@ -49,27 +49,29 @@ def _make_unfrozen(obj):
 # the FormStep in memory.
 def RECORD_HISTORICAL_FORM_STEP(collector, field, sub_objs, using):
     form_steps = list(collector.data[FormStep])
-    assert (
-        len(form_steps) == 1
-    ), "Only this specific case for SubmissionStep cascade delete is supported"
-    form_step = form_steps[0]
-    serialized_form_definition = serializers.serialize(
-        "python", [form_step.form_definition]
-    )[0]
-    serialized_form_step = serializers.serialize("python", [form_step])[0]
 
-    # update the history field
-    history_field = SubmissionStep._meta.get_field("form_step_history")
-    frozen_history = _make_frozen(
-        {
-            "form_step": serialized_form_step,
-            "form_definition": serialized_form_definition,
-        }
-    )
-    collector.add_field_update(history_field, frozen_history, sub_objs)
-
-    # our own reference can now become NULL
+    # our own reference can become NULL, since we're copying the data to our history
+    # field below
     collector.add_field_update(field, None, sub_objs)
+
+    history_field = SubmissionStep._meta.get_field("form_step_history")
+    for submission_step in sub_objs:
+        form_step = submission_step.form_step
+        assert form_step in form_steps
+
+        serialized_form_definition = serializers.serialize(
+            "python", [form_step.form_definition]
+        )[0]
+        serialized_form_step = serializers.serialize("python", [form_step])[0]
+
+        # update the history field
+        frozen_history = _make_frozen(
+            {
+                "form_step": serialized_form_step,
+                "form_definition": serialized_form_definition,
+            }
+        )
+        collector.add_field_update(history_field, frozen_history, [submission_step])
 
 
 class FrozenDjangoJSONEncoder(DjangoJSONEncoder):

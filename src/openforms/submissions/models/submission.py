@@ -377,7 +377,7 @@ class Submission(models.Model):
                 form_step = step._load_form_step_from_history()
                 step.form_step_id = form_step.id
                 form_steps.append(form_step)
-            submission_steps[step.form_step] = step
+            submission_steps[step.form_step_id] = step
 
         # sort the steps again in case steps from history were inserted
         form_steps = sorted(form_steps, key=lambda s: s.order)
