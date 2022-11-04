@@ -16,6 +16,7 @@ from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 
 from .constants import RegistrationStatuses
 from .models import Submission, SubmissionFileAttachment
+from .signals import submission_resumed
 from .tokens import submission_resume_token_generator
 from .utils import add_submmission_to_session
 
@@ -102,10 +103,15 @@ class ResumeFormMixin:
     ) -> str:
         submission = self.validate_url_and_get_submission(submission_uuid, token)
 
+        # TODO: remove code duplication
+
         # No login required, skip authentication
         if not submission.form.login_required:
             submission = self.custom_submission_modifications(submission)
             add_submmission_to_session(submission, self.request.session)
+            submission_resumed.send(
+                sender=self.__class__, instance=submission, request=self.request
+            )
             return self.get_form_resume_url(submission)
 
         # Login IS required. Check if the user has already logged in.
@@ -117,6 +123,9 @@ class ResumeFormMixin:
 
             submission = self.custom_submission_modifications(submission)
             add_submmission_to_session(submission, self.request.session)
+            submission_resumed.send(
+                sender=self.__class__, instance=submission, request=self.request
+            )
             return self.get_form_resume_url(submission)
 
         # The user has not logged in. Redirect them to the start of the authentication process

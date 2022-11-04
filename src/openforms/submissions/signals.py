@@ -22,6 +22,15 @@ Provides:
     :arg request: the HttpRequest instance (or DRF wrapper around it).
 """
 
+submission_resumed = Signal()
+"""
+Signal resumption of an existing :class:`openforms.models.Submission` instance.
+
+Provides:
+    :arg instance: The :class:`openforms.models.Submission` instance created.
+    :arg request: the HttpRequest instance (or DRF wrapper around it).
+"""
+
 
 submission_complete = Signal()
 """
