@@ -2,6 +2,24 @@
 Changelog
 =========
 
+1.1.8 (2022-11-07)
+==================
+
+Open Forms 1.1.8 fixes some bugs for which no workaround exists
+
+* [#1724] Fixed content fields showing as "required" field
+* [#2117] Fixed exporting submissions with conditionally filled form steps
+* [#1899] Fixed prefill-data tampering check rejecting data due to difference in
+  formatting logic between prefill plugin and form data
+* [#1351] Ensure that number and currency components can accept negative values
+* [#2135] Fixed submission steps being deleted when deleting form steps and/or restoring
+  old form versions. This did not affect data sent to registration backends.
+* [#1957] Fixed retrying submission registration in the admin when the maximum number
+  of attempts was already reached.
+* [#2301] Fixed identifying attributes still being hashed for paused-and-resumed
+  submissions. This caused the hashes to be sent to registration backends rather than
+  the actual BSN/KVK/Pseudo attribute.
+
 1.1.7 (2022-10-04)
 ==================
 
