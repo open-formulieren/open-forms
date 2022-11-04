@@ -8,7 +8,11 @@ from rest_framework.request import Request
 
 from openforms.logging import logevent
 from openforms.submissions.models import Submission
-from openforms.submissions.signals import submission_complete, submission_start
+from openforms.submissions.signals import (
+    submission_complete,
+    submission_resumed,
+    submission_start,
+)
 
 from .constants import FORM_AUTH_SESSION_KEY, REGISTRATOR_SUBJECT_SESSION_KEY
 from .registry import register
@@ -36,7 +40,9 @@ Provides:
 #
 
 
-@receiver(submission_start, dispatch_uid="auth.set_submission_form_auth")
+@receiver(
+    [submission_start, submission_resumed], dispatch_uid="auth.set_submission_form_auth"
+)
 def set_auth_attribute_on_session(
     sender, instance: Submission, request: Request, **kwargs
 ):

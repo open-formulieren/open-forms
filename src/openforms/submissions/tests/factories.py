@@ -40,6 +40,11 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             ),
             price=factory.PostGenerationMethodCall("calculate_price"),
         )
+        suspended = factory.Trait(
+            suspended_on=factory.Faker("date_time_this_month", tzinfo=timezone.utc),
+            completed_on=None,
+            auth_info__with_hashed_identifying_attributes=True,
+        )
         registration_failed = factory.Trait(
             completed=True,
             last_register_date=factory.LazyFunction(timezone.now),
