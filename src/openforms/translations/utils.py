@@ -1,61 +1,53 @@
-from typing import Any, Type
-
-from django.db.models import Model
+from typing import Type
 
 import factory
 from modeltranslation.translator import translator
 
 
-class FullyTranslatedMixin(factory.base.Factory):
+class TranslatedMixin(factory.base.Factory):
     """
-    A Factory Mixin that creates translation values for all configured languages.
-
-    Values will have the form "{language}_{orginal value}".
-
-    NB: When the create strategy is used, this results in extra writes to the
-    database, therefore don't use the mixin unless all uses of the factory
-    involve testing translation behaviour.
+    A Mixin that sets the factory values on the fields that correspond
+    to the requested `_language` argument passed to the factory function.
     """
 
-    @factory.post_generation
-    def populate_translations(
-        obj: Model, create: bool, extracted: Any, **kwargs
-    ) -> None:
-        options = translator.get_options_for_model(type(obj))
+    @classmethod
+    def _adjust_kwargs(cls, **kwargs):
+        if "_language" not in kwargs:
+            return kwargs
+        lang = kwargs.pop("_language")
+        options = translator.get_options_for_model(cls._meta.model)
         for field, i18n_fields in options.fields.items():
-            value = getattr(obj, field)
-            if isinstance(value, str):
-                for i18n in i18n_fields:
-                    lang = i18n.name[len(field) + 1 :]  # _suffix of base field
-                    setattr(obj, i18n.name, f"{lang}_{value}")
-
-            # TODO create valid values for all supported types
-            # https://django-modeltranslation.readthedocs.io/en/latest/registration.html#supported-fields-matrix
-        if create:
-            obj.save()
+            i18n_names = {f.name for f in i18n_fields}
+            i18n_field = f"{field}_{lang}"
+            if field not in kwargs or i18n_field not in i18n_names:
+                continue
+            value = kwargs.pop(field)
+            kwargs[i18n_field] = value
+        return kwargs
 
 
-def make_fully_translated(
+def make_translated(
     factory_class: Type[factory.django.DjangoModelFactory],
 ) -> Type[factory.django.DjangoModelFactory]:
     """
-    Make a Factory that creates fully translated instances.
+    Make a Factory that creates translated instances.
 
     >>> from openforms.forms.tests.factories import FormFactory
-    >>> TranslatedFormFactory = make_fully_translated(FormFactory)
+    >>> TranslatedFormFactory = make_translated(FormFactory)
     >>>
-    >>> translated_form = TranslatedFormFactory.create(begin_text="start")
+    >>> translated_form = TranslatedFormFactory.create(
+    ...     _language="en",  # note the _ to prevent name clashes
+    ...     begin_text="start")
     >>>
-    >>> assert translated_form.begin_text_nl == "nl_start"
-    >>> assert translated_form.begin_text_en == "en_start"
+    >>> assert translated_form.begin_text_en == "start"
+    >>> assert translated_form.name_en  # set from the Factory
     """
 
     i18n_models = translator.get_registered_models()
     if factory_class._meta.model not in i18n_models:
-        # Raise a warning?
         return factory_class
     return type(
         f"Translated{factory_class.__name__}",
-        (factory_class, FullyTranslatedMixin),
+        (factory_class, TranslatedMixin),
         dict(),
     )
