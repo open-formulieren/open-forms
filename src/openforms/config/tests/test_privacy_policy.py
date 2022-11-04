@@ -14,7 +14,8 @@ class PrivacyPolicyTests(TestCase):
         label = conf.render_privacy_policy_label()
 
         self.assertHTMLEqual(
-            'I read the <a href="http://test-privacy-policy.nl">privacy policy</a> and agree.',
+            'I read the <a href="http://test-privacy-policy.nl" target="_blank" '
+            'rel="noreferrer noopener">privacy policy</a> and agree.',
             label,
         )
 
