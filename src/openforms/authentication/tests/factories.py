@@ -16,6 +16,13 @@ class AuthInfoFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = AuthInfo
 
+    class Params:
+        with_hashed_identifying_attributes = factory.Trait(
+            _hashed_id_attrs=factory.PostGenerationMethodCall(
+                "hash_identifying_attributes"
+            ),
+        )
+
 
 class RegistratorInfoFactory(factory.django.DjangoModelFactory):
     plugin = "org-oidc"

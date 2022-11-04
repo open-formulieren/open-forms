@@ -1,7 +1,7 @@
 import uuid
 from datetime import timedelta
 
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.urls import reverse
 
 from freezegun import freeze_time
@@ -232,7 +232,48 @@ class SubmissionResumeViewTests(TestCase):
             str(submission.uuid), self.client.session[SUBMISSIONS_SESSION_KEY]
         )
 
-    def test_invalid_auth_info_plugin_raises_exception(self):
+    @tag("gh-2301")
+    def test_identifying_attribute_not_hashed_after_resume(self):
+        # create
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__login_required=True,
+            form_url="http://testserver/myform/",
+            auth_info__plugin="digid",
+            auth_info__value="123456782",
+            suspended=True,
+        )
+        form_step = submission.form.formstep_set.first()
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={"foo": "bar"},
+        )
+        # Add form_auth to session, as the authentication plugin would do it
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+        }
+        session.save()
+        endpoint = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": submission_resume_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        response = self.client.get(endpoint)
+
+        # resumed
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(SUBMISSIONS_SESSION_KEY, self.client.session)
+        submission.refresh_from_db()
+        self.assertEqual(submission.auth_info.value, "123456782")
+
+    def test_invalid_auth_plugin_raises_exception(self):
         submission = SubmissionFactory.create(
             form__generate_minimal_setup=True,
             form__formstep__form_definition__login_required=True,
