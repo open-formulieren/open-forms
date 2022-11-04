@@ -80,3 +80,27 @@ class PostProcessingTests(SimpleTestCase):
         converted = post_process_html(invalid_html, self.request)
 
         self.assertEqual(converted, "just plain text")
+
+    @patch("csp_post_processor.processor.get_html_id", return_value="1234")
+    def test_processing_with_css_whitelist(self, mock_get_html_id):
+        html = """
+            <div>
+                <div style="width: 10px; background-image: url('//:evil');">styled</div>
+            </div>
+            """
+
+        converted = post_process_html(
+            html, self.request, allowed_css_declarations=["width"]
+        )
+
+        expected = """
+            <style nonce="dGVzdA==">
+                #nonce-5fa62ae6176f3746142503a6ebe96cb3-1234 {
+                    width: 10px;
+                }
+            </style>
+            <div>
+                <div id="nonce-5fa62ae6176f3746142503a6ebe96cb3-1234">styled</div>
+            </div>
+            """
+        self.assertHTMLEqual(converted, expected)

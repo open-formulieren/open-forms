@@ -21,6 +21,7 @@ python-dotenv  # environment variables for secrets
 python-decouple  # processing of envvar configs
 python-magic
 tablib[xlsx]
+tinycss2
 xmltodict
 self-certifi
 semantic-version

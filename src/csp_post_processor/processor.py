@@ -1,12 +1,13 @@
 import hashlib
 import logging
 from collections import defaultdict
-from typing import Union
+from typing import List, Optional, Union
 
 from django.http import HttpRequest
 
 import html5lib
 import lxml.html
+import tinycss2
 from lxml import etree
 from rest_framework.request import Request
 
@@ -19,7 +20,12 @@ def get_html_id(node):
     return str(id(node))  # CPython: memory address, so should be unique enough
 
 
-def post_process_html(html: str, request: Union[HttpRequest, Request]) -> str:
+def post_process_html(
+    html: str,
+    request: Union[HttpRequest, Request],
+    *,
+    allowed_css_declarations: Optional[List[str]] = None,
+) -> str:
     """
     Replacing inline style attributes with an inline <style> element with nonce added.
 
@@ -31,6 +37,9 @@ def post_process_html(html: str, request: Union[HttpRequest, Request]) -> str:
 
     If an HTML id is generated, we prefix it with the nonce value to prevent collisions
     with possible other IDs.
+
+    The optional argument `allowed_css_declarations` specifies an allow-list of safe
+    CSS declarations (for example: ["width", "font-color"]).
     """
     if not (csp_nonce := request.headers.get(NONCE_HTTP_HEADER)):
         logger.info("No nonce available on the request, returning html unmodified.")
@@ -60,19 +69,25 @@ def post_process_html(html: str, request: Union[HttpRequest, Request]) -> str:
             # set the generated ID which is referenced in the inline styles
             node.attrib["id"] = html_id
 
-        inline_styles[html_id] = style.split(";")
+        inline_styles[html_id] = style
 
     style_element = etree.Element("style")
     style_element.attrib["nonce"] = csp_nonce
 
     # build the CSS from the inline styles
     all_styles = ""
-    for unique_id, styles in inline_styles.items():
-        append_trailing_semicolon = styles[-1] != ""
-        element_styles = ";\n    ".join(styles)
-        if append_trailing_semicolon:
-            element_styles += ";"
+    for unique_id, style in inline_styles.items():
+        parsed_styles = tinycss2.parse_declaration_list(style)
+        if allowed_css_declarations is not None:
+            parsed_styles = [
+                s
+                for s in parsed_styles
+                if getattr(s, "lower_name", None) in allowed_css_declarations
+            ]
+
+        element_styles = tinycss2.serialize(parsed_styles)
         all_styles += f"#{unique_id} {{\n    {element_styles}\n}}"
+
     style_element.text = f"\n{all_styles}\n"
 
     # convert back to a string
