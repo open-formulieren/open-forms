@@ -1,39 +1,9 @@
-import importlib
-from typing import Any, Iterator, Type
+from typing import Any, Type
 
-from django.conf import settings
 from django.db.models import Model
 
 import factory
 from modeltranslation.translator import translator
-from rest_framework import generics, views, viewsets
-
-from openforms.utils.checks import get_subclasses
-
-
-def get_translatable_drf_views() -> Iterator[views.APIView]:
-    i18n_models = translator.get_registered_models()
-    # force loading of used view classes
-    importlib.import_module(settings.ROOT_URLCONF)
-
-    def api_views():
-        yield from get_subclasses(viewsets.ModelViewSet)
-        yield from get_subclasses(generics.GenericAPIView)
-
-    def is_openforms(class_: type) -> bool:
-        return str(class_.__module__).startswith("openforms.")
-
-    def is_translatable(view: Type[views.APIView]) -> bool:
-        # sadly `get_queryset` assumes to be called in a request context
-        queryset = getattr(view, "queryset", None)
-        if queryset is None:
-            return False
-        else:
-            return queryset.model in i18n_models
-
-    yield from (
-        view for view in api_views() if is_openforms(view) and is_translatable(view)
-    )
 
 
 class FullyTranslatedMixin(factory.base.Factory):

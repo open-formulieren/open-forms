@@ -1,9 +1,9 @@
-from django.test import SimpleTestCase, TestCase, override_settings
+from django.test import TestCase, override_settings
 
 from openforms.accounts.tests.factories import UserFactory
 from openforms.forms.tests.factories import FormFactory
 
-from ..utils import get_translatable_drf_views, make_fully_translated
+from ..utils import make_fully_translated
 
 
 class MakeFullyTranslatedFactoryTests(TestCase):
@@ -37,19 +37,3 @@ class MakeFullyTranslatedFactoryTests(TestCase):
         TranslatedUserFactory = make_fully_translated(UserFactory)
 
         self.assertIs(TranslatedUserFactory, UserFactory)
-
-
-class TranslatabableDRFViewsTests(SimpleTestCase):
-    def test_forms_api_endpoint_is_translatable(self):
-        self.assertNotIn(
-            "openforms.forms.api.viewsets.FormViewSet",
-            dir(),
-            msg="The test shouldn't have imported the FormViewSet in the namespace",
-        )
-
-        translatable = get_translatable_drf_views()
-
-        names = {f"{view.__module__}.{view.__name__}" for view in translatable}
-
-        self.assertIn("openforms.forms.api.viewsets.FormViewSet", names)
-        self.assertIn("openforms.forms.api.viewsets.FormViewSet", names)
