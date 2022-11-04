@@ -7,9 +7,13 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.request import Request
 
 from openforms.submissions.models import Submission
-from openforms.submissions.signals import submission_complete, submission_start
+from openforms.submissions.signals import (
+    submission_complete,
+    submission_resumed,
+    submission_start,
+)
 
-from .constants import FORM_AUTH_SESSION_KEY
+from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from .registry import register
 from .utils import store_auth_details
 
@@ -34,7 +38,9 @@ Provides:
 #
 
 
-@receiver(submission_start, dispatch_uid="auth.set_submission_form_auth")
+@receiver(
+    [submission_start, submission_resumed], dispatch_uid="auth.set_submission_form_auth"
+)
 def set_auth_attribute_on_session(
     sender, instance: Submission, request: Request, **kwargs
 ):
@@ -64,6 +70,19 @@ def set_auth_attribute_on_session(
         plugin,
         attribute,
     )
+    # clear other fields if there's a value set (typically a hash of the empty string)
+    _update_fields = []
+    for attr in AuthAttribute.values:
+        if attr == attribute:
+            continue
+        # if there's a value, clear it
+        if getattr(instance, attr):
+            setattr(instance, attr, "")
+            _update_fields.append(attr)
+
+    if _update_fields:
+        instance.save(update_fields=_update_fields)
+
     store_auth_details(instance, form_auth)
 
 
