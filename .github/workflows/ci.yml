@@ -134,6 +134,9 @@ jobs:
   docker_build:
     name: Build Docker image
     runs-on: ubuntu-latest
+    env:
+      COMPOSE_DOCKER_CLI_BUILD: 1
+      DOCKER_BUILDKIT: 1
     steps:
       - uses: actions/checkout@v3
 
