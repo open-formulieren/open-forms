@@ -1,3 +1,4 @@
+from django.test import override_settings
 from django.urls import reverse
 
 from django_webtest import WebTest
@@ -7,6 +8,7 @@ from openforms.accounts.tests.factories import SuperUserFactory
 
 
 class OgoneMerchantAdminTest(WebTest):
+    @override_settings(BASE_URL="https://example.com/foo")
     def test_add_ogone_merchant(self):
         user = SuperUserFactory.create()
         url = reverse("admin:payments_ogone_ogonemerchant_add")
@@ -23,4 +25,4 @@ class OgoneMerchantAdminTest(WebTest):
 
         parsed_url = furl(feedback_url)
 
-        self.assertEqual(parsed_url.host, "testserver")
+        self.assertEqual(parsed_url.host, "example.com")
