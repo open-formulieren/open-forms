@@ -220,6 +220,8 @@ faker==7.0.1
     # via zgw-consumers
 flower==1.2.0
     # via -r requirements/base.in
+frozendict==2.3.4
+    # via -r requirements/base.in
 furl==2.1.2
     # via
     #   -r requirements/base.in
