@@ -387,9 +387,18 @@ class Submission(models.Model):
         # ⚡️ no select_related/prefetch ON PURPOSE - while processing the form steps,
         # we're doing this in python as we have the objects already from the query
         # above.
-        submission_steps = {
-            step.form_step_id: step for step in self.submissionstep_set.all()
-        }
+        _submission_steps = self.submissionstep_set.all()
+        submission_steps = {}
+        for step in _submission_steps:
+            # non-empty value implies that the form_step FK was (cascade) deleted
+            if step.form_step_history:
+                # deleted formstep FKs are loaded from history
+                if step.form_step not in form_steps:
+                    form_steps.append(step.form_step)
+            submission_steps[step.form_step_id] = step
+
+        # sort the steps again in case steps from history were inserted
+        form_steps = sorted(form_steps, key=lambda s: s.order)
 
         # build the resulting list - some SubmissionStep instances will probably not exist
         # in the database yet - this is on purpose!
