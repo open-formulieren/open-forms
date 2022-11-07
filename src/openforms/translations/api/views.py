@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
-from openforms.utils.translations import set_language_cookie
+from openforms.translations.utils import set_language_cookie
 
 from .serializers import LanguageCodeSerializer, LanguageInfoSerializer
 
