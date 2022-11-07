@@ -19,6 +19,7 @@ Open Forms 1.1.8 fixes some bugs for which no workaround exists
 * [#2301] Fixed identifying attributes still being hashed for paused-and-resumed
   submissions. This caused the hashes to be sent to registration backends rather than
   the actual BSN/KVK/Pseudo attribute.
+* [#2219] Fixed CSS units usage for logo design tokens in (confirmation) e-mails
 
 2.0.0 "Règâh" (2022-10-26)
 ==========================
