@@ -1,10 +1,12 @@
 import inspect
 from uuid import UUID
 
+from django.conf import settings
 from django.db import transaction
 from django.db.models import Prefetch
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
@@ -19,6 +21,7 @@ from rest_framework.response import Response
 from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
+from openforms.utils.translations import set_language_cookie
 from openforms.variables.constants import FormVariableSources
 
 from ..messages import add_success_message
@@ -35,6 +38,7 @@ from .parsers import (
 from .permissions import FormAPIPermissions
 from .renderers import FormCamelCaseJSONRenderer
 from .serializers import (
+    CurrentLanguageSerializer,
     FormAdminMessageSerializer,
     FormDefinitionDetailSerializer,
     FormDefinitionSerializer,
@@ -386,6 +390,40 @@ class FormViewSet(viewsets.ModelViewSet):
         export_form(instance.id, response=response)
 
         response["Content-Length"] = len(response.content)
+        return response
+
+    @extend_schema(
+        summary=_("Activate the default language for a Form"),
+        tags=["forms"],
+        request=None,
+        responses={status.HTTP_200_OK: CurrentLanguageSerializer},
+        parameters=[UUID_OR_SLUG_PARAMETER],
+    )
+    @transaction.atomic
+    @action(
+        detail=True,
+        methods=["post"],
+        authentication_classes=(),
+        permission_classes=(),
+    )
+    def activate_default_language(self, request, *args, **kwargs):
+        """
+        Activate the default language of a form.
+
+        In case translation is not enabled for the Form, the default language is set to
+        settings.LANGUAGE_CODE.
+        """
+        form = self.get_object()
+        response = Response(status=status.HTTP_200_OK)
+        current_language = translation.get_language()
+        if not form.translation_enabled:
+            translation.activate(settings.LANGUAGE_CODE)
+            current_language = translation.get_language()
+            set_language_cookie(response, current_language)
+
+        response.data = CurrentLanguageSerializer(
+            instance={"active_language": current_language}
+        ).data
         return response
 
     def perform_destroy(self, instance):

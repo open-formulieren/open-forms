@@ -107,6 +107,7 @@ class FormAdmin(
         "anno_name",
         "active",
         "maintenance_mode",
+        "translation_enabled",
         "get_authentication_backends_display",
         "get_payment_backend_display",
         "get_registration_backend_display",
@@ -123,6 +124,7 @@ class FormAdmin(
     list_filter = (
         "active",
         "maintenance_mode",
+        "translation_enabled",
         FormDeletedListFilter,
     )
     search_fields = ("uuid", "name", "internal_name", "slug")

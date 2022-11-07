@@ -64,6 +64,7 @@ class Form(models.Model):
     category = models.ForeignKey(
         "forms.Category", null=True, blank=True, on_delete=models.PROTECT
     )
+    translation_enabled = models.BooleanField(_("translation enabled"), default=False)
 
     # backend integration - which registration to use?
     registration_backend = RegistrationBackendChoiceField(

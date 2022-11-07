@@ -75,6 +75,7 @@ const FormMetaFields = ({
     category,
     isDeleted,
     maintenanceMode,
+    translationEnabled,
     submissionAllowed,
     explanationTemplate,
   } = form;
@@ -290,6 +291,25 @@ const FormMetaFields = ({
         />
       </FormRow>
       <FormRow>
+        <Checkbox
+          name="form.translationEnabled"
+          label={
+            <FormattedMessage
+              defaultMessage="Translation enabled"
+              description="Form translation enabled field label"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              defaultMessage="Indicates whether translations are enabled for this form."
+              description="Form translation enabled field help text"
+            />
+          }
+          checked={translationEnabled}
+          onChange={event => onCheckboxChange(event, translationEnabled)}
+        />
+      </FormRow>
+      <FormRow>
         <Field
           name="form.submissionAllowed"
           label={
@@ -349,6 +369,7 @@ FormMetaFields.propTypes = {
     active: PropTypes.bool.isRequired,
     isDeleted: PropTypes.bool.isRequired,
     maintenanceMode: PropTypes.bool.isRequired,
+    translationEnabled: PropTypes.bool.isRequired,
     submissionConfirmationTemplate: PropTypes.string.isRequired,
     registrationBackend: PropTypes.string.isRequired,
     registrationBackendOptions: PropTypes.object,
