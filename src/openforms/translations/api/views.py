@@ -79,5 +79,5 @@ class SetLanguageView(APIView):
         serializer.is_valid(raise_exception=True)
 
         response = Response(status=status.HTTP_204_NO_CONTENT)
-        response = set_language_cookie(response, serializer.data["code"])
+        set_language_cookie(response, serializer.data["code"])
         return response

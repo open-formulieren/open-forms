@@ -19,6 +19,7 @@ from openforms.payments.api.fields import PaymentOptionsReadOnlyField
 from openforms.payments.registry import register as payment_register
 from openforms.products.models import Product
 from openforms.registrations.registry import register as registration_register
+from openforms.translations.api.serializers import LanguageCodeField
 
 from ...constants import ConfirmationEmailOptions
 from ...models import Category, Form
@@ -359,3 +360,7 @@ class FormImportSerializer(serializers.Serializer):
     file = serializers.FileField(
         help_text=_("The file that contains the form, form definitions and form steps.")
     )
+
+
+class CurrentLanguageSerializer(serializers.Serializer):
+    active_language = LanguageCodeField()

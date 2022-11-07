@@ -38,6 +38,7 @@ from .parsers import (
 from .permissions import FormAPIPermissions
 from .renderers import FormCamelCaseJSONRenderer
 from .serializers import (
+    CurrentLanguageSerializer,
     FormAdminMessageSerializer,
     FormDefinitionDetailSerializer,
     FormDefinitionSerializer,
@@ -392,20 +393,11 @@ class FormViewSet(viewsets.ModelViewSet):
         return response
 
     @extend_schema(
-        summary=_("Set default language for form"),
+        summary=_("Activate the default language for a Form"),
         tags=["forms"],
         request=None,
-        responses={status.HTTP_201_CREATED: FormSerializer},
-        parameters=[
-            UUID_OR_SLUG_PARAMETER,
-            OpenApiParameter(
-                name="Location",
-                type=OpenApiTypes.URI,
-                location=OpenApiParameter.HEADER,
-                description="URL of the created resource",
-                response=[status.HTTP_201_CREATED],
-            ),
-        ],
+        responses={status.HTTP_200_OK: CurrentLanguageSerializer},
+        parameters=[UUID_OR_SLUG_PARAMETER],
     )
     @transaction.atomic
     @action(
@@ -414,20 +406,24 @@ class FormViewSet(viewsets.ModelViewSet):
         authentication_classes=(),
         permission_classes=(),
     )
-    def set_default_language(self, request, *args, **kwargs):
+    def activate_default_language(self, request, *args, **kwargs):
         """
-        Set the default language of a form.
+        Activate the default language of a form.
 
         In case translation is not enabled for the Form, the default language is set to
         settings.LANGUAGE_CODE.
         """
-        response = Response(status=status.HTTP_204_NO_CONTENT)
-        instance = self.get_object()
-
-        if not instance.translation_enabled:
+        form = self.get_object()
+        response = Response(status=status.HTTP_200_OK)
+        current_language = translation.get_language()
+        if not form.translation_enabled:
             translation.activate(settings.LANGUAGE_CODE)
-            response = set_language_cookie(response, settings.LANGUAGE_CODE)
+            current_language = translation.get_language()
+            set_language_cookie(response, current_language)
 
+        response.data = CurrentLanguageSerializer(
+            instance={"active_language": current_language}
+        ).data
         return response
 
     def perform_destroy(self, instance):

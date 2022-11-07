@@ -48,7 +48,7 @@ class ensure_default_language(translation.override):
         return super().__enter__()
 
 
-def set_language_cookie(response: Response, language_code: str):
+def set_language_cookie(response: Response, language_code: str) -> None:
     response.set_cookie(
         key=settings.LANGUAGE_COOKIE_NAME,
         value=language_code,
@@ -59,4 +59,3 @@ def set_language_cookie(response: Response, language_code: str):
         samesite=settings.LANGUAGE_COOKIE_SAMESITE,
         secure=settings.LANGUAGE_COOKIE_SECURE,
     )
-    return response
