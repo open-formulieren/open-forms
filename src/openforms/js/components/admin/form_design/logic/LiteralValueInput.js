@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {TextInput, NumberInput, DateInput} from 'components/admin/forms/Inputs';
+import {TextInput, NumberInput, DateTimeInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 import ArrayInput from 'components/admin/forms/ArrayInput';
 import JsonWidget from 'components/admin/forms/JsonWidget';
@@ -57,10 +57,37 @@ WrappedJsonWidget.propTypes = {
   onChange: PropTypes.func,
 };
 
+const WrappedDatetimeInput = ({name, value, onChange}) => {
+  const formatDatetime = selectedDatetime => {
+    // selectedDatetime is a JS Date where the time is 00:00. When converting to a ISOString, the timezone difference
+    // is removed from the time to convert it to a UTC+00 time (which can change the date). So we set the time so that
+    // when it is converted to UTC+00 it remains the same day.
+    const timezoneOffset = -selectedDatetime.getTimezoneOffset() / 60;
+    selectedDatetime.setHours(selectedDatetime.getHours() + timezoneOffset);
+    return selectedDatetime;
+  };
+
+  return (
+    <DateTimeInput
+      name={name}
+      value={value}
+      formatDatetime={formatDatetime}
+      onChange={onChange}
+      defaultDate={value || null}
+    />
+  );
+};
+
+WrappedDatetimeInput.propTypes = {
+  name: PropTypes.string,
+  value: PropTypes.object,
+  onChange: PropTypes.func,
+};
+
 const TYPE_TO_INPUT_TYPE = {
   float: NumberInput,
   string: TextInput,
-  datetime: DateInput,
+  datetime: WrappedDatetimeInput,
   boolean: CheckboxChoices,
   array: WrapperArrayInput,
   object: WrappedJsonWidget,

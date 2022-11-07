@@ -1,5 +1,6 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
+import flatpickr from 'flatpickr';
 
 import {PrefixContext} from './Context';
 
@@ -27,6 +28,40 @@ const TextArea = ({name, rows = 5, cols = 10, ...extraProps}) => {
 const NumberInput = props => <Input type="number" {...props} />;
 
 const DateInput = props => <Input type="date" {...props} />;
+
+const DateTimeInput = ({name, value, formatDatetime, onChange, ...extraProps}) => {
+  const datetimePickerRef = useRef();
+
+  const wrappedOnChange = (selectedDates, dateStr, instance) => {
+    let selectedDatetime = selectedDates[0];
+    if (formatDatetime) selectedDatetime = formatDatetime(selectedDatetime);
+
+    const fakeEvent = {
+      target: {name: name, value: selectedDatetime.toISOString()},
+    };
+    onChange(fakeEvent);
+  };
+
+  useEffect(() => {
+    flatpickr(datetimePickerRef.current, {
+      onChange: wrappedOnChange,
+      ...extraProps,
+    });
+  }, []);
+
+  return (
+    <div className="datetime-input">
+      <input ref={datetimePickerRef} />
+    </div>
+  );
+};
+
+DateTimeInput.propTypes = {
+  name: PropTypes.string,
+  value: PropTypes.string,
+  formatDatetime: PropTypes.func,
+  onChange: PropTypes.func,
+};
 
 const Checkbox = ({name, label, helpText, ...extraProps}) => {
   const prefix = useContext(PrefixContext);
@@ -68,4 +103,4 @@ Radio.propTypes = {
   helpText: PropTypes.node,
 };
 
-export {Input, TextInput, TextArea, NumberInput, DateInput, Checkbox, Radio};
+export {Input, TextInput, TextArea, NumberInput, DateInput, DateTimeInput, Checkbox, Radio};
