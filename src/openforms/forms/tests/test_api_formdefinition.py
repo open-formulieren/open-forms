@@ -12,7 +12,7 @@ from openforms.accounts.tests.factories import (
     UserFactory,
 )
 from openforms.prefill.models import PrefillConfig
-from openforms.translations.utils import make_translated
+from openforms.translations.tests.utils import make_translated
 
 from ..models import FormDefinition
 from .factories import FormDefinitionFactory, FormStepFactory
@@ -540,18 +540,19 @@ class FormDefinitionsAPITranslationTests(APITestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        TranslatedFormFactory = make_translated(FormDefinitionFactory)
-        cls.form_definition = TranslatedFormFactory.create(
+        TranslatedFormDefinitionFactory = make_translated(FormDefinitionFactory)
+        cls.form_definition = TranslatedFormDefinitionFactory.create(
             _language="en",
             name="FormDefinition 1",
         )
+
+        cls.user = StaffUserFactory.create(user_permissions=["change_form"])
 
     def test_detail_staff_show_translations(self):
         """
         Translations for all available languages should be returned for staff users,
         because they are relevant for the form design UI
         """
-        self.user = UserFactory.create(is_staff=True)
         self.client.force_authenticate(user=self.user)
 
         url = reverse(
@@ -584,3 +585,62 @@ class FormDefinitionsAPITranslationTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn("translations", response.data)
+
+    def test_create_with_translations(self):
+        self.client.force_authenticate(user=self.user)
+
+        url = reverse("api:formdefinition-list")
+        response = self.client.post(
+            url,
+            data={
+                "name": "Name",
+                "slug": "a-slug",
+                "configuration": {
+                    "display": "form",
+                    "components": [
+                        {
+                            "label": "New field",
+                            "key": "newField",
+                            "type": "textfield",
+                        }
+                    ],
+                },
+                "translations": {
+                    "en": {"name": "FormDefinition 1"},
+                    "nl": {"name": "Formulierdefinitie 1"},
+                },
+            },
+        )
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        definition = FormDefinition.objects.get(uuid=response.data["uuid"])
+
+        self.assertEqual(definition.name_en, "FormDefinition 1")
+        self.assertEqual(definition.name_nl, "Formulierdefinitie 1")
+
+    def test_update_with_translations(self):
+        self.client.force_authenticate(user=self.user)
+
+        definition = FormDefinitionFactory.create(
+            name_en="english name",
+            name_nl="nederlandse naam",
+        )
+
+        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
+        response = self.client.patch(
+            url,
+            data={
+                "translations": {
+                    "en": {"name": "FormDefinition 1"},
+                    "nl": {"name": "Formulierdefinitie 1"},
+                }
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        definition.refresh_from_db()
+
+        self.assertEqual(definition.name_en, "FormDefinition 1")
+        self.assertEqual(definition.name_nl, "Formulierdefinitie 1")

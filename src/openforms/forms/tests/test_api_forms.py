@@ -1112,6 +1112,8 @@ class FormsAPITranslationTests(APITestCase):
             save_text="Save",
         )
 
+        cls.user = StaffUserFactory.create(user_permissions=["change_form"])
+
     def test_detail_shows_translated_values_based_on_request_header(self):
         form = TranslatedFormFactory.create(
             _language="en",
@@ -1270,3 +1272,157 @@ class FormsAPITranslationTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn("translations", response.data)
         self.assertNotIn("translations", response.data["steps"][0]["literals"])
+
+    def test_create_with_translations(self):
+        self.client.force_authenticate(user=self.user)
+
+        url = reverse("api:form-list")
+        data = {
+            "name": "Test Post Form",
+            "slug": "test-post-form",
+            "authentication_backends": ["digid"],
+            "translations": {
+                "en": {
+                    "begin_text": "start",
+                    "change_text": "change",
+                    "confirm_text": "confirm",
+                    "explanation_template": None,
+                    "name": "Form 1",
+                    "previous_text": "prev",
+                    "submission_confirmation_template": None,
+                },
+                "nl": {
+                    "begin_text": "begin",
+                    "change_text": "pas aan",
+                    "confirm_text": "bevestig",
+                    "explanation_template": None,
+                    "name": "Formulier 1",
+                    "previous_text": "vorige",
+                    "submission_confirmation_template": None,
+                },
+            },
+            "confirmation_email_template": {
+                "subject": "foo",
+                "content": "{% appointment_information %} {% payment_information %}",
+                "translations": {
+                    "en": {
+                        "subject": "Subject",
+                        "content": "Content {% appointment_information %} {% payment_information %}",
+                    },
+                    "nl": {
+                        "subject": "Onderwerp",
+                        "content": "Inhoud {% appointment_information %} {% payment_information %}",
+                    },
+                },
+            },
+        }
+
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        form = Form.objects.get(uuid=response.data["uuid"])
+
+        self.assertEqual(form.begin_text_en, "start")
+        self.assertEqual(form.change_text_en, "change")
+        self.assertEqual(form.confirm_text_en, "confirm")
+        self.assertEqual(form.explanation_template_en, None)
+        self.assertEqual(form.name_en, "Form 1")
+        self.assertEqual(form.previous_text_en, "prev")
+        self.assertEqual(form.submission_confirmation_template_en, None)
+
+        self.assertEqual(form.begin_text_nl, "begin")
+        self.assertEqual(form.change_text_nl, "pas aan")
+        self.assertEqual(form.confirm_text_nl, "bevestig")
+        self.assertEqual(form.explanation_template_nl, None)
+        self.assertEqual(form.name_nl, "Formulier 1")
+        self.assertEqual(form.previous_text_nl, "vorige")
+        self.assertEqual(form.submission_confirmation_template_nl, None)
+
+        self.assertEqual(form.confirmation_email_template.subject_en, "Subject")
+        self.assertEqual(
+            form.confirmation_email_template.content_en,
+            "Content {% appointment_information %} {% payment_information %}",
+        )
+
+        self.assertEqual(form.confirmation_email_template.subject_nl, "Onderwerp")
+        self.assertEqual(
+            form.confirmation_email_template.content_nl,
+            "Inhoud {% appointment_information %} {% payment_information %}",
+        )
+
+    def test_update_with_translations(self):
+        self.client.force_authenticate(user=self.user)
+
+        form = FormFactory.create()
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        data = {
+            "translations": {
+                "en": {
+                    "begin_text": "start",
+                    "change_text": "change",
+                    "confirm_text": "confirm",
+                    "explanation_template": None,
+                    "name": "Form 1",
+                    "previous_text": "prev",
+                    "submission_confirmation_template": None,
+                },
+                "nl": {
+                    "begin_text": "begin",
+                    "change_text": "pas aan",
+                    "confirm_text": "bevestig",
+                    "explanation_template": None,
+                    "name": "Formulier 1",
+                    "previous_text": "vorige",
+                    "submission_confirmation_template": None,
+                },
+            },
+            "confirmation_email_template": {
+                "subject": "foo",
+                "content": "{% appointment_information %} {% payment_information %}",
+                "translations": {
+                    "en": {
+                        "subject": "Subject",
+                        "content": "Content {% appointment_information %} {% payment_information %}",
+                    },
+                    "nl": {
+                        "subject": "Onderwerp",
+                        "content": "Inhoud {% appointment_information %} {% payment_information %}",
+                    },
+                },
+            },
+        }
+        response = self.client.patch(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        form.refresh_from_db()
+
+        self.assertEqual(form.begin_text_en, "start")
+        self.assertEqual(form.change_text_en, "change")
+        self.assertEqual(form.confirm_text_en, "confirm")
+        self.assertEqual(form.explanation_template_en, None)
+        self.assertEqual(form.name_en, "Form 1")
+        self.assertEqual(form.previous_text_en, "prev")
+        self.assertEqual(form.submission_confirmation_template_en, None)
+
+        self.assertEqual(form.begin_text_nl, "begin")
+        self.assertEqual(form.change_text_nl, "pas aan")
+        self.assertEqual(form.confirm_text_nl, "bevestig")
+        self.assertEqual(form.explanation_template_nl, None)
+        self.assertEqual(form.name_nl, "Formulier 1")
+        self.assertEqual(form.previous_text_nl, "vorige")
+        self.assertEqual(form.submission_confirmation_template_nl, None)
+
+        self.assertEqual(form.confirmation_email_template.subject_en, "Subject")
+        self.assertEqual(
+            form.confirmation_email_template.content_en,
+            "Content {% appointment_information %} {% payment_information %}",
+        )
+
+        self.assertEqual(form.confirmation_email_template.subject_nl, "Onderwerp")
+        self.assertEqual(
+            form.confirmation_email_template.content_nl,
+            "Inhoud {% appointment_information %} {% payment_information %}",
+        )

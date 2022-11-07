@@ -8,8 +8,13 @@ from django.utils.translation import gettext as _
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import TokenFactory, UserFactory
+from openforms.accounts.tests.factories import (
+    StaffUserFactory,
+    TokenFactory,
+    UserFactory,
+)
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.translations.tests.utils import make_translated
 
 from ..models import FormStep
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
@@ -599,3 +604,159 @@ class FormsStepsAPITests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class FormStepsAPITranslationTests(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.form = FormFactory.create()
+
+        cls.form_definition = FormDefinitionFactory.create()
+
+        TranslatedFormStepFactory = make_translated(FormStepFactory)
+        cls.form_step = TranslatedFormStepFactory.create(
+            _language="en",
+            form=cls.form,
+            next_text="Next",
+            previous_text="Previous",
+            save_text="Save",
+        )
+
+        cls.user = StaffUserFactory.create(user_permissions=["change_form"])
+
+    def test_detail_staff_show_translations(self):
+        """
+        Translations for all available languages should be returned for staff users,
+        because they are relevant for the form design UI
+        """
+        self.client.force_authenticate(user=self.user)
+
+        url = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": self.form.uuid, "uuid": self.form_step.uuid},
+        )
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data["literals"]["translations"],
+            {
+                "en": {
+                    "next_text": "Next",
+                    "previous_text": "Previous",
+                    "save_text": "Save",
+                },
+                "nl": {
+                    "next_text": None,
+                    "previous_text": None,
+                    "save_text": None,
+                },
+            },
+        )
+
+    def test_detail_non_staff_no_translations(self):
+        """
+        Translations for different languages than the active language should not be
+        returned for non-staff users
+        """
+        url = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": self.form.uuid, "uuid": self.form_step.uuid},
+        )
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn("translations", response.data)
+
+    def test_create_with_translations(self):
+        self.client.force_authenticate(user=self.user)
+
+        url = reverse(
+            "api:form-steps-list", kwargs={"form_uuid_or_slug": self.form.uuid}
+        )
+        form_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": self.form_definition.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{form_detail_url}",
+            "index": 0,
+            "literals": {
+                "previousText": {"value": "Different Previous Text"},
+                "saveText": {"value": "Different Save Text"},
+                "nextText": {"value": "Different Next Text"},
+                "translations": {
+                    "en": {
+                        "next_text": "Next",
+                        "previous_text": "Previous",
+                        "save_text": "Save",
+                    },
+                    "nl": {
+                        "next_text": "Volgende",
+                        "previous_text": "Vorige",
+                        "save_text": "Opslaan",
+                    },
+                },
+            },
+        }
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            FormStep.objects.filter(form_definition=self.form_definition).count(),
+            1,
+        )
+
+        form_step = FormStep.objects.get(form_definition=self.form_definition)
+
+        self.assertEqual(form_step.previous_text_en, "Previous")
+        self.assertEqual(form_step.save_text_en, "Save")
+        self.assertEqual(form_step.next_text_en, "Next")
+
+        self.assertEqual(form_step.previous_text_nl, "Vorige")
+        self.assertEqual(form_step.save_text_nl, "Opslaan")
+        self.assertEqual(form_step.next_text_nl, "Volgende")
+
+    def test_update_with_translations(self):
+        self.client.force_authenticate(user=self.user)
+
+        url = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": self.form.uuid, "uuid": self.form_step.uuid},
+        )
+        response = self.client.patch(
+            url,
+            data={
+                "literals": {
+                    "previousText": {"value": "Different Previous Text"},
+                    "saveText": {"value": "Different Save Text"},
+                    "nextText": {"value": "Different Next Text"},
+                    "translations": {
+                        "en": {
+                            "next_text": "Next",
+                            "previous_text": "Previous",
+                            "save_text": "Save",
+                        },
+                        "nl": {
+                            "next_text": "Volgende",
+                            "previous_text": "Vorige",
+                            "save_text": "Opslaan",
+                        },
+                    },
+                },
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.form_step.refresh_from_db()
+
+        self.assertEqual(self.form_step.previous_text_en, "Previous")
+        self.assertEqual(self.form_step.save_text_en, "Save")
+        self.assertEqual(self.form_step.next_text_en, "Next")
+
+        self.assertEqual(self.form_step.previous_text_nl, "Vorige")
+        self.assertEqual(self.form_step.save_text_nl, "Opslaan")
+        self.assertEqual(self.form_step.next_text_nl, "Volgende")
