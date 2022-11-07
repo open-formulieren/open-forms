@@ -39,10 +39,17 @@ class ModelTranslationsSerializer(serializers.Serializer):
         super().__init__(*args, **kwargs)
 
     def get_fields(self):
-        return [code for code, label in settings.LANGUAGES]
+        return {code: serializers.Serializer() for code, label in settings.LANGUAGES}
 
     def to_internal_value(self, data):
-        raise NotImplementedError
+        """
+        Flatten the data, so it can be properly saved on the model
+        """
+        internal_values = {}
+        for language, fields in data.items():
+            for field_name, value in fields.items():
+                internal_values[f"{field_name}_{language}"] = value
+        return internal_values
 
     def to_representation(self, instance):
         language_codes = self.get_fields()
