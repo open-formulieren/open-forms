@@ -4,10 +4,11 @@ from collections import OrderedDict
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Union
 
+from django.conf import settings
 from django.db import models, transaction
 from django.template import Context, Template
 from django.urls import resolve
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _
 
 import elasticapm
 from django_better_admin_arrayfield.models.fields import ArrayField
@@ -239,6 +240,16 @@ class Submission(models.Model):
     # relation to earlier submission which is altered after processing
     previous_submission = models.ForeignKey(
         "submissions.Submission", on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    language_code = models.CharField(
+        _("language code"),
+        max_length=2,
+        default=get_language,
+        choices=settings.LANGUAGES,
+        help_text=_(
+            "The code (RFC5646 format) of the language used to fill in the Form."
+        ),
     )
 
     objects = SubmissionManager()
