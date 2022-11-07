@@ -20,8 +20,8 @@ from rest_framework.response import Response
 
 from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
+from openforms.translations.utils import set_language_cookie
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
-from openforms.utils.translations import set_language_cookie
 from openforms.variables.constants import FormVariableSources
 
 from ..messages import add_success_message

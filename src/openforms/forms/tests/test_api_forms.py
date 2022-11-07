@@ -14,7 +14,7 @@ from rest_framework.test import APIRequestFactory, APITestCase
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
-from openforms.translations.utils import make_translated
+from openforms.translations.tests.utils import make_translated
 
 from ..api.serializers import FormSerializer
 from ..constants import ConfirmationEmailOptions
