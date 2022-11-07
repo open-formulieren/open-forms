@@ -663,6 +663,13 @@ paths:
   /api/v2/form-definitions:
     get:
       operationId: form_definitions_list
+      description: |-
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used
+        for internal form configuration. These fields are:
+
+        - `translations`
       summary: List form step definitions
       parameters:
       - name: page
@@ -695,6 +702,13 @@ paths:
               $ref: '#/components/headers/Content-Language'
     post:
       operationId: form_definitions_create
+      description: |-
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used
+        for internal form configuration. These fields are:
+
+        - `translations`
       summary: Create a form definition
       tags:
       - forms
@@ -727,6 +741,13 @@ paths:
   /api/v2/form-definitions/{uuid}:
     get:
       operationId: form_definitions_retrieve
+      description: |-
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used
+        for internal form configuration. These fields are:
+
+        - `translations`
       summary: Retrieve form step definition details
       parameters:
       - in: path
@@ -759,6 +780,13 @@ paths:
               $ref: '#/components/headers/Content-Language'
     put:
       operationId: form_definitions_update
+      description: |-
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used
+        for internal form configuration. These fields are:
+
+        - `translations`
       summary: Update all details of a form definition
       parameters:
       - in: path
@@ -797,6 +825,13 @@ paths:
               $ref: '#/components/headers/Content-Language'
     patch:
       operationId: form_definitions_partial_update
+      description: |-
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used
+        for internal form configuration. These fields are:
+
+        - `translations`
       summary: Update some details of a form definition
       parameters:
       - in: path
@@ -834,6 +869,13 @@ paths:
               $ref: '#/components/headers/Content-Language'
     delete:
       operationId: form_definitions_destroy
+      description: |-
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used
+        for internal form configuration. These fields are:
+
+        - `translations`
       summary: Delete a form definition
       parameters:
       - in: path
@@ -981,6 +1023,7 @@ paths:
         - `confirmationEmailTemplate`
         - `confirmationEmailOption`
         - `displayMainWebsiteLink`
+        - `translations`
       summary: List forms
       parameters:
       - in: header
@@ -1044,6 +1087,7 @@ paths:
         - `confirmationEmailTemplate`
         - `confirmationEmailOption`
         - `displayMainWebsiteLink`
+        - `translations`
       summary: Create form
       parameters:
       - in: header
@@ -1119,6 +1163,13 @@ paths:
   /api/v2/forms/{form_uuid_or_slug}/steps:
     get:
       operationId: forms_steps_list
+      description: |-
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used
+        for internal form configuration. These fields are:
+
+        - `literals.translations`
       summary: List form steps
       parameters:
       - in: path
@@ -1152,6 +1203,13 @@ paths:
               $ref: '#/components/headers/Content-Language'
     post:
       operationId: forms_steps_create
+      description: |-
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used
+        for internal form configuration. These fields are:
+
+        - `literals.translations`
       summary: Create a form step
       parameters:
       - in: path
@@ -1196,6 +1254,13 @@ paths:
   /api/v2/forms/{form_uuid_or_slug}/steps/{uuid}:
     get:
       operationId: forms_steps_retrieve
+      description: |-
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used
+        for internal form configuration. These fields are:
+
+        - `literals.translations`
       summary: Retrieve form step details
       parameters:
       - in: path
@@ -1233,6 +1298,13 @@ paths:
               $ref: '#/components/headers/Content-Language'
     put:
       operationId: forms_steps_update
+      description: |-
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used
+        for internal form configuration. These fields are:
+
+        - `literals.translations`
       summary: Update all details of a form step
       parameters:
       - in: path
@@ -1282,6 +1354,13 @@ paths:
               $ref: '#/components/headers/Content-Language'
     patch:
       operationId: forms_steps_partial_update
+      description: |-
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used
+        for internal form configuration. These fields are:
+
+        - `literals.translations`
       summary: Update some details of a form step
       parameters:
       - in: path
@@ -1330,6 +1409,13 @@ paths:
               $ref: '#/components/headers/Content-Language'
     delete:
       operationId: forms_steps_destroy
+      description: |-
+        **Warning: the response data depends on user permissions**
+
+        Non-staff users receive a subset of the documented fields which are used
+        for internal form configuration. These fields are:
+
+        - `literals.translations`
       summary: Delete a form step
       parameters:
       - in: path
@@ -1498,9 +1584,9 @@ paths:
         - `paymentBackend`\n- `paymentBackendOptions`\n- `product`\n- `category`\n\
         - `isDeleted`\n- `submissionConfirmationTemplate`\n- `submissionsRemovalOptions`\n\
         - `confirmationEmailTemplate`\n- `confirmationEmailOption`\n- `displayMainWebsiteLink`\n\
-        \nIf the form doesn't have translations enabled, its default language is forced\
-        \ by setting a language cookie and reflected in the Content-Language response\
-        \ header. Normal HTTP Content Negotiation rules apply."
+        - `translations`\n\nIf the form doesn't have translations enabled, its default\
+        \ language is forced by setting a language cookie and reflected in the Content-Language\
+        \ response header. Normal HTTP Content Negotiation rules apply."
       summary: Retrieve form details
       parameters:
       - in: header
@@ -1568,6 +1654,7 @@ paths:
         - `confirmationEmailTemplate`
         - `confirmationEmailOption`
         - `displayMainWebsiteLink`
+        - `translations`
       summary: Update all details of a form
       parameters:
       - in: header
@@ -1641,6 +1728,7 @@ paths:
         - `confirmationEmailTemplate`
         - `confirmationEmailOption`
         - `displayMainWebsiteLink`
+        - `translations`
       summary: Update given details of a form
       parameters:
       - in: header
@@ -5445,7 +5533,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `translations`.
       properties:
         uuid:
           type: string
@@ -6354,7 +6442,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `translations`.
       properties:
         uuid:
           type: string
