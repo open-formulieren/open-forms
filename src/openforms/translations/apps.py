@@ -6,7 +6,3 @@ class TranslationsConfig(AppConfig):
     name = "openforms.translations"
     label = "of_translations"
     verbose_name = _("Translation module")
-
-    def ready(self):
-        # ensure signal receivers are registered
-        from . import signals  # noqa

@@ -28,6 +28,7 @@ from ..models import (
 
 class SubmissionFactory(factory.django.DjangoModelFactory):
     form = factory.SubFactory(FormFactory)
+    language_code = "nl"
 
     class Meta:
         model = Submission
