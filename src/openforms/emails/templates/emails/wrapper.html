@@ -10,10 +10,10 @@
                     <td align="left" style="padding: 20px; color: {{ style.header.color }}; background-color: {{ style.header.background }};">
                         {% if logo_url %}
                             <a style="text-decoration: none;" href="{{ main_website_url }}">
-                                <img
-                                    {% if style.logo.width %}width="{{ style.logo.width }}" {% endif %}
-                                    {% if style.logo.height %}height="{{ style.logo.height }}" {% endif %}
-                                    src="{{ logo_url }}" />
+                                <img style="{% spaceless %}
+                                    {% if style.logo.width %}width: {{ style.logo.width }}; {% endif %}
+                                    {% if style.logo.height %}height: {{ style.logo.height }}; {% endif %}
+                                {% endspaceless %}" src="{{ logo_url }}" />
                             </a>
                         {% endif %}
                     </td>

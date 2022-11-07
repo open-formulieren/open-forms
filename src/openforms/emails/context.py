@@ -35,7 +35,7 @@ def _get_design_token_values(tokens):
             # Setting height to a default of 50 obtaines the same result on the
             # website that uses flexbox shrink, to size the logo to it's minimum
             # size.
-            "height": glom(tokens, "logo-header.height.value", default="50"),
+            "height": glom(tokens, "logo-header.height.value", default="50px"),
             "width": glom(tokens, "logo-header.width.value", default="auto"),
         },
         "footer": {
