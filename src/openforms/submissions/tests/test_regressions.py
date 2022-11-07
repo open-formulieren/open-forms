@@ -1,6 +1,6 @@
 from django.test import TestCase, override_settings, tag
 
-from openforms.forms.models import FormVersion
+from openforms.forms.models import FormDefinition, FormVersion
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.submissions.models import Submission, SubmissionStep
 
@@ -130,7 +130,9 @@ class SubmissionStepDeletedRegressionTests(TestCase):
 
         # delete a form step
         step1.delete()
-        step1.form_definition.delete()
+        # assert that the form definition was deleted too, because it was not re-usable
+        self.assertIsNone(step1.form_definition.pk)
+        self.assertEqual(FormDefinition.objects.count(), 1)
 
         # reload submission as fresh data object so we don't have any cached states
         submission = Submission.objects.get(pk=submission.pk)

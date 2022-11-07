@@ -372,11 +372,11 @@ class Submission(models.Model):
         _submission_steps = self.submissionstep_set.all()
         submission_steps = {}
         for step in _submission_steps:
-            # handle deleted formstep FKs, and load them from history instead
-            if not step.form_step_id:
-                form_step = step._load_form_step_from_history()
-                step.form_step_id = form_step.id
-                form_steps.append(form_step)
+            # non-empty value implies that the form_step FK was (cascade) deleted
+            if step.form_step_history:
+                # deleted formstep FKs are loaded from history
+                if step.form_step not in form_steps:
+                    form_steps.append(step.form_step)
             submission_steps[step.form_step_id] = step
 
         # sort the steps again in case steps from history were inserted
