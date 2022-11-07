@@ -5389,6 +5389,8 @@ components:
           type: string
           description: The content of the email message can contain variables that
             will be templated from the submitted form data.
+        translations:
+          $ref: '#/components/schemas/ModelTranslations'
     ContextAwareFormStep:
       type: object
       properties:
@@ -5656,6 +5658,8 @@ components:
         requiredFieldsWithAsterisk:
           type: boolean
           readOnly: true
+        translations:
+          $ref: '#/components/schemas/ModelTranslations'
       required:
       - loginOptions
       - loginRequired
@@ -5731,6 +5735,8 @@ components:
         isReusable:
           type: boolean
           description: Allow this definition to be re-used in multiple forms
+        translations:
+          $ref: '#/components/schemas/ModelTranslations'
       required:
       - configuration
       - name
@@ -5768,6 +5774,8 @@ components:
         isReusable:
           type: boolean
           description: Allow this definition to be re-used in multiple forms
+        translations:
+          $ref: '#/components/schemas/ModelTranslations'
         usedIn:
           type: array
           items:
@@ -5942,6 +5950,8 @@ components:
           $ref: '#/components/schemas/ButtonText'
         nextText:
           $ref: '#/components/schemas/ButtonText'
+        translations:
+          $ref: '#/components/schemas/ModelTranslations'
     FormVariable:
       type: object
       properties:
@@ -6326,6 +6336,18 @@ components:
       - slug
       - url
       - uuid
+    ModelTranslations:
+      type: object
+      properties:
+        nl:
+          type: object
+          additionalProperties: {}
+        en:
+          type: object
+          additionalProperties: {}
+      required:
+      - en
+      - nl
     NestedSubmissionPaymentDetail:
       type: object
       properties:
@@ -6565,6 +6587,8 @@ components:
         requiredFieldsWithAsterisk:
           type: boolean
           readOnly: true
+        translations:
+          $ref: '#/components/schemas/ModelTranslations'
     PatchedFormDefinition:
       type: object
       properties:
@@ -6597,6 +6621,8 @@ components:
         isReusable:
           type: boolean
           description: Allow this definition to be re-used in multiple forms
+        translations:
+          $ref: '#/components/schemas/ModelTranslations'
     PatchedFormStep:
       type: object
       properties:

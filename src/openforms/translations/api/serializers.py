@@ -34,12 +34,15 @@ class LanguageInfoSerializer(serializers.Serializer):
 
 
 class ModelTranslationsSerializer(serializers.Serializer):
+    class Meta:
+        fields = [code for code, label in settings.LANGUAGES]
+
     def __init__(self, *args, **kwargs):
         kwargs["source"] = "*"
         super().__init__(*args, **kwargs)
 
     def get_fields(self):
-        return {code: serializers.Serializer() for code, label in settings.LANGUAGES}
+        return {code: serializers.JSONField() for code, label in settings.LANGUAGES}
 
     def to_internal_value(self, data):
         """
