@@ -3,7 +3,7 @@ from django.test import TestCase
 from openforms.accounts.tests.factories import UserFactory
 from openforms.forms.tests.factories import FormFactory
 
-from ..utils import make_translated
+from .utils import make_translated
 
 
 class MakeTranslatedFactoryTests(TestCase):
