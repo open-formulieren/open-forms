@@ -12,6 +12,7 @@ from openforms.accounts.tests.factories import (
     UserFactory,
 )
 from openforms.prefill.models import PrefillConfig
+from openforms.translations.utils import make_translated
 
 from ..models import FormDefinition
 from .factories import FormDefinitionFactory, FormStepFactory
@@ -532,3 +533,54 @@ class FormioCoSignComponentValidationTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+class FormDefinitionsAPITranslationTests(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        TranslatedFormFactory = make_translated(FormDefinitionFactory)
+        cls.form_definition = TranslatedFormFactory.create(
+            _language="en",
+            name="FormDefinition 1",
+        )
+
+    def test_detail_staff_show_translations(self):
+        """
+        Translations for all available languages should be returned for staff users,
+        because they are relevant for the form design UI
+        """
+        self.user = UserFactory.create(is_staff=True)
+        self.client.force_authenticate(user=self.user)
+
+        url = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": self.form_definition.uuid}
+        )
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data["translations"],
+            {
+                "en": {
+                    "name": "FormDefinition 1",
+                },
+                "nl": {
+                    "name": None,
+                },
+            },
+        )
+
+    def test_detail_non_staff_no_translations(self):
+        """
+        Translations for different languages than the active language should not be
+        returned for non-staff users
+        """
+        url = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": self.form_definition.uuid}
+        )
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn("translations", response.data)

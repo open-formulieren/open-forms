@@ -898,7 +898,14 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.json()["confirmationEmailTemplate"],
-            {"subject": "Initial subject", "content": "Initial content"},
+            {
+                "subject": "Initial subject",
+                "content": "Initial content",
+                "translations": {
+                    "en": {"content": None, "subject": None},
+                    "nl": {"content": "Initial content", "subject": "Initial subject"},
+                },
+            },
         )
 
     def test_configure_form_use_form_template_but_not_usable(self):
@@ -1079,10 +1086,30 @@ class FormsAPITranslationTests(APITestCase):
 
         cls.en_form = TranslatedFormFactory.create(
             _language="en",
+            name="Form 1",
             begin_text="start",
             previous_text="prev",
             change_text="change",
             confirm_text="confirm",
+        )
+
+        TranslatedConfirmationEmailTemplateFactory = make_translated(
+            ConfirmationEmailTemplateFactory
+        )
+        TranslatedConfirmationEmailTemplateFactory.create(
+            _language="en",
+            form=cls.en_form,
+            subject="Initial subject",
+            content="Initial content",
+        )
+
+        TranslatedFormStepFactory = make_translated(FormStepFactory)
+        TranslatedFormStepFactory.create(
+            _language="en",
+            form=cls.en_form,
+            next_text="Next",
+            previous_text="Previous",
+            save_text="Save",
         )
 
     def test_detail_shows_translated_values_based_on_request_header(self):
@@ -1173,3 +1200,73 @@ class FormsAPITranslationTests(APITestCase):
         self.assertEqual(response["Content-Language"], "en")
         self.assertNotIn(settings.LANGUAGE_COOKIE_NAME, response.cookies)
         self.assertEqual(translation.get_language(), "en")
+
+    def test_detail_staff_show_translations(self):
+        """
+        Translations for all available languages should be returned for staff users,
+        because they are relevant for the form design UI
+        """
+        self.user = UserFactory.create(is_staff=True)
+        self.client.force_authenticate(user=self.user)
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": self.en_form.uuid})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data["translations"],
+            {
+                "en": {
+                    "begin_text": "start",
+                    "change_text": "change",
+                    "confirm_text": "confirm",
+                    "explanation_template": None,
+                    "name": "Form 1",
+                    "previous_text": "prev",
+                    "submission_confirmation_template": None,
+                },
+                "nl": {
+                    "begin_text": None,
+                    "change_text": None,
+                    "confirm_text": None,
+                    "explanation_template": None,
+                    "name": None,
+                    "previous_text": None,
+                    "submission_confirmation_template": None,
+                },
+            },
+        )
+        self.assertEqual(
+            response.data["steps"][0]["literals"]["translations"],
+            {
+                "en": {
+                    "next_text": "Next",
+                    "previous_text": "Previous",
+                    "save_text": "Save",
+                },
+                "nl": {
+                    "next_text": None,
+                    "previous_text": None,
+                    "save_text": None,
+                },
+            },
+        )
+        self.assertEqual(
+            response.data["confirmation_email_template"]["translations"],
+            {
+                "en": {"subject": "Initial subject", "content": "Initial content"},
+                "nl": {"subject": None, "content": None},
+            },
+        )
+
+    def test_detail_non_staff_no_translations(self):
+        """
+        Translations for different languages than the active language should not be
+        returned for non-staff users
+        """
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": self.en_form.uuid})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn("translations", response.data)
+        self.assertNotIn("translations", response.data["steps"][0]["literals"])
