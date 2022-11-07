@@ -1,17 +1,32 @@
 from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
+from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 
 from ...models import FormStep
 from .button_text import ButtonTextSerializer
 
 
-class FormStepLiteralsSerializer(serializers.Serializer):
+class FormStepLiteralsSerializer(PublicFieldsSerializerMixin, serializers.Serializer):
     previous_text = ButtonTextSerializer(raw_field="previous_text", required=False)
     save_text = ButtonTextSerializer(raw_field="save_text", required=False)
     next_text = ButtonTextSerializer(raw_field="next_text", required=False)
     translations = ModelTranslationsSerializer(required=False)
+
+    class Meta:
+        fields = (
+            "previous_text",
+            "save_text",
+            "next_text",
+            "translations",
+        )
+        # allowlist for anonymous users
+        public_fields = (
+            "previous_text",
+            "save_text",
+            "next_text",
+        )
 
 
 class MinimalFormStepSerializer(serializers.ModelSerializer):

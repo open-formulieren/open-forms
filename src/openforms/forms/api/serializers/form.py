@@ -1,15 +1,11 @@
-from typing import List
-
 from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
-from openforms.api.utils import (
-    get_from_serializer_data_or_instance,
-    underscore_to_camel,
-)
+from openforms.api.serializers import PublicFieldsSerializerMixin
+from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
 from openforms.authentication.registry import register as auth_register
 from openforms.config.models import GlobalConfiguration
@@ -48,7 +44,7 @@ class FormLiteralsSerializer(serializers.Serializer):
     confirm_text = ButtonTextSerializer(raw_field="confirm_text", required=False)
 
 
-class FormSerializer(serializers.ModelSerializer):
+class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     """
     Represent a single `Form` definition.
 
@@ -186,15 +182,6 @@ class FormSerializer(serializers.ModelSerializer):
             },
         }
 
-    @classmethod
-    def _get_admin_field_names(cls, camelize=True) -> List[str]:
-        formatter = underscore_to_camel if camelize else lambda x: x
-        return [
-            formatter(name)
-            for name in cls.Meta.fields
-            if name not in cls.Meta.public_fields
-        ]
-
     @transaction.atomic()
     def create(self, validated_data):
         confirmation_email_template = validated_data.pop(
@@ -221,27 +208,10 @@ class FormSerializer(serializers.ModelSerializer):
         fields = super().get_fields()
         # lazy set choices
         fields["authentication_backends"].child.choices = auth_register.get_choices()
-        fields["payment_backend"].choices = [("", "")] + payment_register.get_choices()
-
-        request = self.context.get("request")
-        view = self.context.get("view")
-        is_api_schema_generation = (
-            getattr(view, "swagger_fake_view", False) if view else False
-        )
-        is_mock_request = request and getattr(
-            request, "is_mock_request", is_api_schema_generation
-        )
-
-        admin_only_fields = self._get_admin_field_names(camelize=False)
-
-        # filter public fields if not staff and not exporting or schema generating
-        # request.is_mock_request is set by the export serializers (possibly from management command etc)
-        # also this can be called from schema generator without request
-        if request and not is_mock_request:
-            if not request.user.is_staff:
-                for admin_field in admin_only_fields:
-                    del fields[admin_field]
-
+        if "payment_backend" in fields:
+            fields["payment_backend"].choices = [
+                ("", "")
+            ] + payment_register.get_choices()
         return fields
 
     def validate(self, attrs):

@@ -5,6 +5,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
+from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.formio.service import rewrite_formio_components_for_request
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 
@@ -48,7 +49,9 @@ class UsedInFormSerializer(serializers.HyperlinkedModelSerializer):
         return request.build_absolute_uri(admin_url)
 
 
-class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
+class FormDefinitionSerializer(
+    PublicFieldsSerializerMixin, serializers.HyperlinkedModelSerializer
+):
     translations = ModelTranslationsSerializer(required=False)
 
     def to_representation(self, instance):
@@ -78,6 +81,16 @@ class FormDefinitionSerializer(serializers.HyperlinkedModelSerializer):
             "login_required",
             "is_reusable",
             "translations",
+        )
+        public_fields = (
+            "url",
+            "uuid",
+            "name",
+            "internal_name",
+            "slug",
+            "configuration",
+            "login_required",
+            "is_reusable",
         )
         extra_kwargs = {
             "url": {
@@ -113,3 +126,4 @@ class FormDefinitionDetailSerializer(FormDefinitionSerializer):
 
     class Meta(FormDefinitionSerializer.Meta):
         fields = FormDefinitionSerializer.Meta.fields + ("used_in",)
+        public_fields = FormDefinitionSerializer.Meta.public_fields + ("used_in",)
