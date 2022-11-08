@@ -3,12 +3,13 @@ from typing import Iterator, Union
 
 from django.urls import reverse
 from django.utils.html import format_html_join
-from django.utils.safestring import SafeString, mark_safe
+from django.utils.safestring import SafeString
 from django.utils.translation import ugettext_lazy as _
 
 from furl import furl
 from glom import Path
 
+from csp_post_processor import bleach_wysiwyg_content, post_process_html
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
 from openforms.submissions.rendering.constants import RenderModes
 from openforms.utils.urls import build_absolute_uri
@@ -119,10 +120,20 @@ class WYSIWYGNode(ComponentNode):
         return super().is_visible
 
     @property
+    def as_html(self) -> bool:
+        # force html in summary
+        if self.mode == RenderModes.summary:
+            return True
+        return super().as_html
+
+    @property
     def value(self) -> Union[str, SafeString]:
         content = self.component["html"]
         if self.as_html:
-            return mark_safe(content)
+            if request := self.context.get("request"):
+                return post_process_html(content, request)
+            else:
+                return bleach_wysiwyg_content(content)
 
         content_without_tags = strip_tags_plus(content)
         return content_without_tags.rstrip()

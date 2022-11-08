@@ -5,8 +5,9 @@ The renderer is the public interface to rendering submissions in particular rend
 modes. It is aware of the intrinsic tree-like structure of a submission and associated
 printable data.
 """
+import dataclasses
 from dataclasses import dataclass
-from typing import Iterator, Union
+from typing import Any, Iterator, Mapping, Union
 
 from openforms.forms.models import Form
 from openforms.variables.rendering.nodes import VariablesNode
@@ -33,6 +34,7 @@ class Renderer:
     submission: Submission
     mode: str
     as_html: bool
+    context: Mapping[str, Any] = dataclasses.field(default_factory=dict)
 
     def __post_init__(self):
         self.dummy_request = get_request()

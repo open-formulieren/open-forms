@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING, Any, Iterator, Mapping
 
 if TYPE_CHECKING:
     from .renderer import Renderer  # pragma: nocover
@@ -24,6 +24,10 @@ class Node(ABC):
     @property
     def as_html(self) -> bool:
         return self.renderer.as_html
+
+    @property
+    def context(self) -> Mapping[str, Any]:
+        return self.renderer.context
 
     @property
     def is_visible(self) -> bool:  # pragma: nocover

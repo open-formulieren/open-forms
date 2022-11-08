@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Union
 
 from django.db import models, transaction
+from django.http import HttpRequest
 from django.template import Context, Template
 from django.urls import resolve
 from django.utils.translation import gettext_lazy as _
@@ -13,6 +14,7 @@ import elasticapm
 from django_better_admin_arrayfield.models.fields import ArrayField
 from furl import furl
 from glom import glom
+from rest_framework.request import Request
 
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.formatters.service import filter_printable
@@ -421,17 +423,26 @@ class Submission(models.Model):
         rendered_content = Template(template).render(Context(context_data))
         return rendered_content
 
-    def render_summary_page(self) -> List[JSONObject]:
+    def render_summary_page(
+        self, *, request: Optional[Union[HttpRequest, Request]] = None
+    ) -> List[JSONObject]:
         """Use the renderer logic to decide what to display in the summary page.
 
         The values of the component are returned raw, because the frontend decides how to display them.
+
+        the optional request parameters is needed for output as browser-compatible HTML (with CSP, bleach ect)
         """
         from openforms.formio.rendering.nodes import ComponentNode
 
         from ..rendering import Renderer, RenderModes
         from ..rendering.nodes import SubmissionStepNode
 
-        renderer = Renderer(submission=self, mode=RenderModes.pdf, as_html=False)
+        renderer = Renderer(
+            submission=self,
+            mode=RenderModes.summary,
+            as_html=False,
+            context={"request": request},
+        )
 
         summary_data = []
         current_step = {}

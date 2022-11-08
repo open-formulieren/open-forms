@@ -346,7 +346,7 @@ class SubmissionViewSet(
     @action(detail=True, methods=["get"], url_name="summary", pagination_class=None)
     def summary(self, request, *args, **kwargs):
         submission = self.get_object()
-        summary_data = submission.render_summary_page()
+        summary_data = submission.render_summary_page(request=request)
         return Response(summary_data)
 
 
