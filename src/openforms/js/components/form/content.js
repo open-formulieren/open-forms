@@ -1,5 +1,13 @@
 import {Formio} from 'formiojs';
-import {HIDDEN, KEY, LABEL, PRESENTATION, SHOW_IN_EMAIL, SHOW_IN_PDF} from './edit/options';
+import {
+  HIDDEN,
+  KEY,
+  LABEL,
+  PRESENTATION,
+  SHOW_IN_EMAIL,
+  SHOW_IN_PDF,
+  SHOW_IN_SUMMARY,
+} from './edit/options';
 import {ADVANCED} from './edit/tabs';
 
 const FormioContentField = Formio.Components.components.content;
@@ -22,7 +30,7 @@ const CUSTOM_CSS_CLASS = {
 
 const CONTENT_PRESENTATION = {
   ...PRESENTATION,
-  components: [SHOW_IN_EMAIL, SHOW_IN_PDF],
+  components: [SHOW_IN_EMAIL, SHOW_IN_PDF, SHOW_IN_SUMMARY],
 };
 
 const CONTENT_EDIT_TABS = {
