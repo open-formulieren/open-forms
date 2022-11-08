@@ -47,7 +47,7 @@ class TestSubmissionExportAdmin(WebTest):
             data={
                 "voornaam": "shea",
                 "familienaam": "meyers",
-                "geboortedatum": "1991-01-01",
+                "geboortedatum": "1991-01-01T00:00:00+01:00",
                 "multi_str": ["aaa", "bbb"],
                 "my_file": [
                     {

@@ -307,7 +307,7 @@ class PrefillHookTests(TransactionTestCase):
         field = new_configuration["components"][0]
         self.assertIsNotNone(field["defaultValue"])
         self.assertIsInstance(field["defaultValue"], str)
-        self.assertEqual("2020-12-12", field["defaultValue"])
+        self.assertEqual("2020-12-12T00:00:00+01:00", field["defaultValue"])
 
     @patch("openforms.prefill.tests.test_prefill_hook.DemoPrefill.get_prefill_values")
     def test_prefill_date_stufbg_format(self, m_get_prefill_value):
@@ -343,7 +343,7 @@ class PrefillHookTests(TransactionTestCase):
         field = new_configuration["components"][0]
         self.assertIsNotNone(field["defaultValue"])
         self.assertIsInstance(field["defaultValue"], str)
-        self.assertEqual("2020-12-12", field["defaultValue"])
+        self.assertEqual("2020-12-12T00:00:00+01:00", field["defaultValue"])
 
     @patch("openforms.prefill.tests.test_prefill_hook.DemoPrefill.get_prefill_values")
     def test_prefill_invalid_date(self, m_get_prefill_value):

@@ -156,7 +156,7 @@ class StepModificationTests(TestCase):
             json_logic_trigger={
                 "<": [
                     {"date": {"var": "dateOfBirth"}},
-                    {"date": "2021-01-01"},
+                    {"date": "2021-01-01T00:00:00+01:00"},
                 ]
             },
             actions=[
@@ -172,7 +172,7 @@ class StepModificationTests(TestCase):
         submission_step = SubmissionStepFactory.create(
             submission=submission,
             form_step=step,
-            data={"dateOfBirth": "2020-01-01"},
+            data={"dateOfBirth": "2020-01-01T00:00:00+01:00"},
         )
 
         self.assertTrue(submission_step.can_submit)
@@ -215,12 +215,12 @@ class StepModificationTests(TestCase):
         submission_step = SubmissionStepFactory.create(
             submission=submission,
             form_step=step,
-            data={"dateOfBirth": "2003-01-01"},
+            data={"dateOfBirth": "2003-01-01T00:00:00+01:00"},
         )
 
         self.assertTrue(submission_step.can_submit)
 
-        with freeze_time("2020-01-01"):
+        with freeze_time("2020-01-01T00:00:00+01:00"):
             evaluate_form_logic(submission, submission_step, submission.data)
 
         self.assertFalse(submission_step.can_submit)

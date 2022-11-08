@@ -141,7 +141,7 @@ class SubmissionValueVariableModelTests(TestCase):
             date_var1 = SubmissionValueVariableFactory.create(
                 form_variable__user_defined=True,
                 form_variable__data_type=FormVariableDataTypes.datetime,
-                value="2022-09-13",
+                value="2022-09-13T00:00:00+02:00",
             )
 
             date_value1 = date_var1.to_python()
@@ -158,14 +158,14 @@ class SubmissionValueVariableModelTests(TestCase):
             date_var2 = SubmissionValueVariableFactory.create(
                 form_variable=None,
                 key="dateVar2",
-                value="2022-09-13",
+                value="2022-09-13T00:00:00+02:00",
             )
 
             date_value2 = date_var2.to_python()
 
             # we can't infer any type info as the form-variable is disconnected
             # -> fall back to stored value
-            self.assertEqual(date_value2, "2022-09-13")
+            self.assertEqual(date_value2, "2022-09-13T00:00:00+02:00")
 
         with self.subTest("date 3"):
             date_var3 = SubmissionValueVariableFactory.create(
@@ -186,7 +186,7 @@ class SubmissionValueVariableModelTests(TestCase):
             date_var3 = SubmissionValueVariableFactory.create(
                 form_variable__user_defined=True,
                 form_variable__data_type=FormVariableDataTypes.datetime,
-                value="2022-09-13T11:10:45",
+                value="2022-09-13T11:10:45+02:00",
             )
 
             date_value3 = date_var3.to_python()
