@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Any, Dict, Iterable, List, Union
 
 from django.template.defaultfilters import date as fmt_date, time as fmt_time, yesno
-from django.utils.dateparse import parse_date, parse_time
+from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import force_str
 from django.utils.formats import number_format
 from django.utils.html import format_html, format_html_join
@@ -135,7 +135,7 @@ class EmailFormatter(FormioFormatter):
 @register("date")
 class DateFormatter(FormioFormatter):
     def format(self, component: Component, value: str) -> str:
-        return fmt_date(parse_date(value))
+        return fmt_date(parse_datetime(value))
 
 
 @register("time")

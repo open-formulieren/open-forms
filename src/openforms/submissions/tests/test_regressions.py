@@ -43,7 +43,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
         submission_step1 = SubmissionStepFactory.create(
             submission=submission,
             form_step=step1,
-            data={"step1": "stippenlift", "someDate": "2022-11-03"},
+            data={"step1": "stippenlift", "someDate": "2022-11-03T00:00:00+02:00"},
         )
         submission_step2 = SubmissionStepFactory.create(
             submission=submission,
@@ -56,7 +56,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
                 {
                     "step1": "stippenlift",
                     "step2": "ik ben een alien",
-                    "someDate": "2022-11-03",
+                    "someDate": "2022-11-03T00:00:00+02:00",
                 },
             )
             renderer = Renderer(
@@ -77,7 +77,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
             {
                 "step1": "stippenlift",
                 "step2": "ik ben een alien",
-                "someDate": "2022-11-03",
+                "someDate": "2022-11-03T00:00:00+02:00",
             },
         )
         self.assertTrue(SubmissionStep.objects.filter(pk=submission_step1.pk).exists())
@@ -120,7 +120,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
         submission_step1 = SubmissionStepFactory.create(
             submission=submission,
             form_step=step1,
-            data={"step1": "stippenlift", "someDate": "2022-11-03"},
+            data={"step1": "stippenlift", "someDate": "2022-11-03T00:00:00+02:00"},
         )
         submission_step2 = SubmissionStepFactory.create(
             submission=submission,
@@ -141,7 +141,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
             {
                 "step1": "stippenlift",
                 "step2": "ik ben een alien",
-                "someDate": "2022-11-03",
+                "someDate": "2022-11-03T00:00:00+02:00",
             },
         )
         self.assertTrue(SubmissionStep.objects.filter(pk=submission_step1.pk).exists())
@@ -186,7 +186,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
         submission_step1 = SubmissionStepFactory.create(
             submission=submission,
             form_step=step1,
-            data={"step1": "stippenlift", "someDate": "2022-11-03"},
+            data={"step1": "stippenlift", "someDate": "2022-11-03T00:00:00+02:00"},
         )
         submission_step2 = SubmissionStepFactory.create(
             submission=submission,
@@ -204,7 +204,7 @@ class SubmissionStepDeletedRegressionTests(TestCase):
             {
                 "step1": "stippenlift",
                 "step2": "ik ben een alien",
-                "someDate": "2022-11-03",
+                "someDate": "2022-11-03T00:00:00+02:00",
             },
         )
         self.assertTrue(SubmissionStep.objects.filter(pk=submission_step1.pk).exists())
