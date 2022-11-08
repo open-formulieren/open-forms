@@ -1,4 +1,5 @@
 from rest_framework.reverse import reverse
+from django.test import override_settings
 
 from openforms.utils.tests.test_migrations import TestMigrations
 
@@ -364,4 +365,92 @@ class TestChangeHideLabelSetting(TestMigrations):
         )
         self.assertTrue(
             self.form_definition.configuration["components"][1]["hideLabel"]
+        )
+
+
+@override_settings(TIME_ZONE="Europe/Amsterdam")
+class TestConvertDatesToDatetimes(TestMigrations):
+    migrate_from = "0051_update_translation_fields"
+    migrate_to = "0052_replace_date_datetimes"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        Form = apps.get_model("forms", "Form")
+        FormLogic = apps.get_model("forms", "FormLogic")
+
+        form = Form.objects.create(name="Form", slug="form")
+        self.rule1 = FormLogic.objects.create(
+            form=form,
+            order=1,
+            json_logic_trigger={"==": [{"var": "dateOfBirth"}, {"date": "2000-01-01"}]},
+            actions=[
+                {
+                    "action": {
+                        "type": "variable",
+                        "value": {"date": "2000-01-01"},
+                    },
+                    "variable": "dateOfBirth",
+                },
+            ],
+        )
+        self.rule2 = FormLogic.objects.create(
+            form=form,
+            order=2,
+            json_logic_trigger={
+                "==": [{"date": {"var": "test"}}, {"date": "2000-01-01"}]
+            },
+            actions=[
+                {
+                    "action": {
+                        "name": "Rule 1 Action 1",
+                        "type": "property",
+                        "state": False,
+                        "property": {
+                            "type": "bool",
+                            "label": "Hidden",
+                            "value": "hidden",
+                        },
+                    },
+                    "component": "test2",
+                },
+            ],
+        )
+
+    def test_convert_date_datetime(self):
+        self.rule1.refresh_from_db()
+        self.rule2.refresh_from_db()
+
+        self.assertEqual(
+            self.rule1.json_logic_trigger,
+            {"==": [{"var": "dateOfBirth"}, {"date": "2000-01-01T00:00:00+01:00"}]},
+        )
+        self.assertEqual(
+            self.rule1.actions[0],
+            {
+                "action": {
+                    "type": "variable",
+                    "value": {"date": "2000-01-01T00:00:00+01:00"},
+                },
+                "variable": "dateOfBirth",
+            },
+        )
+        self.assertEqual(
+            self.rule2.json_logic_trigger,
+            {"==": [{"date": {"var": "test"}}, {"date": "2000-01-01T00:00:00+01:00"}]},
+        )
+        self.assertEqual(
+            self.rule2.actions[0],
+            {
+                "action": {
+                    "name": "Rule 1 Action 1",
+                    "type": "property",
+                    "state": False,
+                    "property": {
+                        "type": "bool",
+                        "label": "Hidden",
+                        "value": "hidden",
+                    },
+                },
+                "component": "test2",
+            },
         )
