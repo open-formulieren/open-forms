@@ -568,7 +568,7 @@ lockfile==0.12.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django-yubin
-lxml==4.6.5
+lxml==4.9.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -601,7 +601,7 @@ maykin-json-logic-py @ git+https://github.com/maykinmedia/json-logic-py.git@f877
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-maykin-python3-saml==1.14.0
+maykin-python3-saml==1.14.0.post0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
