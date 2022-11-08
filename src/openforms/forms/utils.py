@@ -281,6 +281,8 @@ def import_form_data(
                         # TODO: this would still cause unique slug constraint errors, no?
                         entry.pop("url")
                         entry.pop("uuid")
+                        # TODO this should properly import translations
+                        entry.pop("translations", None)
                         new_fd = FormDefinition(**entry)
                         new_fd.save()
                         uuid_mapping[old_uuid] = str(new_fd.uuid)

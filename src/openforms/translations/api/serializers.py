@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Optional
+from typing import Dict, List, Optional, Union
 
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -58,6 +58,18 @@ class ModelTranslationsSerializer(serializers.Serializer):
             return serializer.fields[field_name]
         return self.parent.fields[field_name]
 
+    def ignore_blank_errors(self, error: Union[Dict, List]):
+        if isinstance(error, dict):
+            for key, errors in error.items():
+                modified_errors = self.ignore_blank_errors(errors)
+                if modified_errors:
+                    error[key] = modified_errors
+                else:
+                    error.pop(key)
+            return error
+        else:
+            return [err for err in error if err.code != "blank"]
+
     def run_validation(self, data):
         """
         Apply the original validation for the base fields to the translated fields
@@ -85,23 +97,34 @@ class ModelTranslationsSerializer(serializers.Serializer):
             errors_for_lang = OrderedDict()
             for field_name, value in fields.items():
                 parent_field = self.get_parent_field(field_name)
+                if value is None:
+                    if isinstance(parent_field, serializers.Serializer):
+                        value = parent_field.data
+                    else:
+                        value = ""
+
+                error = None
                 validate_method = getattr(parent_field, "validate_" + field_name, None)
                 try:
                     validated_value = parent_field.run_validation(value)
                     if validate_method is not None:
                         validated_value = validate_method(validated_value)
                 except serializers.ValidationError as exc:
-                    errors_for_lang[field_name] = exc.detail
+                    error = exc.detail
                 except DjangoValidationError as exc:
-                    errors_for_lang[field_name] = get_error_detail(exc)
+                    error = get_error_detail(exc)
                 except SkipField:
                     pass
                 else:
+                    # TODO instead allow string values via serializer?
                     if hasattr(parent_field, "get_translation_literal"):
                         validated_value = parent_field.get_translation_literal(
                             validated_value
                         )
                     ret[f"{field_name}_{language}"] = validated_value
+
+                if error and (error_detail := self.ignore_blank_errors(error)):
+                    errors_for_lang[field_name] = error_detail
 
             if errors_for_lang:
                 errors[language] = errors_for_lang
