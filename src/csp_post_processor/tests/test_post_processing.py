@@ -1,4 +1,3 @@
-import inspect
 import itertools
 from unittest.mock import patch
 
@@ -7,7 +6,7 @@ from django.test import RequestFactory, SimpleTestCase
 from csp_post_processor import post_process_html
 
 
-def get_counter(start=1):
+def get_counter_side_effect(start=1):
     c = itertools.count(start=start)
     return lambda n: next(c)
 
@@ -108,7 +107,7 @@ class PostProcessingTests(SimpleTestCase):
 
     @patch("csp_post_processor.processor.get_html_id")
     def test_processing_cleans_and_extracts_styles(self, mock_get_html_id):
-        mock_get_html_id.side_effect = get_counter()
+        mock_get_html_id.side_effect = get_counter_side_effect()
 
         html = """
         <div style="width: 10px; background-image: url('://evil');">text</div>

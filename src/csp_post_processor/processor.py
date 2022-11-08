@@ -1,6 +1,5 @@
 import hashlib
 import logging
-from collections import defaultdict
 from typing import Union
 
 from django.http import HttpRequest
