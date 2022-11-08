@@ -536,6 +536,8 @@ class FormioCoSignComponentValidationTests(APITestCase):
 
 
 class FormDefinitionsAPITranslationTests(APITestCase):
+    maxDiff = None
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -644,3 +646,55 @@ class FormDefinitionsAPITranslationTests(APITestCase):
 
         self.assertEqual(definition.name_en, "FormDefinition 1")
         self.assertEqual(definition.name_nl, "Formulierdefinitie 1")
+
+    @patch(
+        "openforms.api.exception_handling.uuid.uuid4",
+        return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
+    )
+    def test_update_with_translations_validate_name(self, _mock):
+        self.client.force_authenticate(user=self.user)
+
+        definition = FormDefinitionFactory.create(
+            name_en="english name",
+            name_nl="nederlandse naam",
+        )
+
+        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
+        response = self.client.patch(
+            url,
+            data={
+                "translations": {
+                    "en": {"name": "x" * 51},
+                    "nl": {"name": "x" * 51},
+                }
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.json(),
+            {
+                "type": "http://testserver/fouten/ValidationError/",
+                "code": "invalid",
+                "title": _("Invalid input."),
+                "status": 400,
+                "detail": "",
+                "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
+                "invalidParams": [
+                    {
+                        "name": "translations.en.name",
+                        "code": "max_length",
+                        "reason": _(
+                            "Ensure this field has no more than {max_length} characters."
+                        ).format(max_length=50),
+                    },
+                    {
+                        "name": "translations.nl.name",
+                        "code": "max_length",
+                        "reason": _(
+                            "Ensure this field has no more than {max_length} characters."
+                        ).format(max_length=50),
+                    },
+                ],
+            },
+        )

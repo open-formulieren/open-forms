@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from rest_framework import status
+from rest_framework.serializers import Serializer
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import (
@@ -607,6 +608,8 @@ class FormsStepsAPITests(APITestCase):
 
 
 class FormStepsAPITranslationTests(APITestCase):
+    maxDiff = None
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
@@ -689,14 +692,14 @@ class FormStepsAPITranslationTests(APITestCase):
                 "nextText": {"value": "Different Next Text"},
                 "translations": {
                     "en": {
-                        "next_text": "Next",
-                        "previous_text": "Previous",
-                        "save_text": "Save",
+                        "next_text": {"value": "Next"},
+                        "previous_text": {"value": "Previous"},
+                        "save_text": {"value": "Save"},
                     },
                     "nl": {
-                        "next_text": "Volgende",
-                        "previous_text": "Vorige",
-                        "save_text": "Opslaan",
+                        "next_text": {"value": "Volgende"},
+                        "previous_text": {"value": "Vorige"},
+                        "save_text": {"value": "Opslaan"},
                     },
                 },
             },
@@ -735,14 +738,14 @@ class FormStepsAPITranslationTests(APITestCase):
                     "nextText": {"value": "Different Next Text"},
                     "translations": {
                         "en": {
-                            "next_text": "Next",
-                            "previous_text": "Previous",
-                            "save_text": "Save",
+                            "next_text": {"value": "Next"},
+                            "previous_text": {"value": "Previous"},
+                            "save_text": {"value": "Save"},
                         },
                         "nl": {
-                            "next_text": "Volgende",
-                            "previous_text": "Vorige",
-                            "save_text": "Opslaan",
+                            "next_text": {"value": "Volgende"},
+                            "previous_text": {"value": "Vorige"},
+                            "save_text": {"value": "Opslaan"},
                         },
                     },
                 },
@@ -760,3 +763,94 @@ class FormStepsAPITranslationTests(APITestCase):
         self.assertEqual(self.form_step.previous_text_nl, "Vorige")
         self.assertEqual(self.form_step.save_text_nl, "Opslaan")
         self.assertEqual(self.form_step.next_text_nl, "Volgende")
+
+    @patch(
+        "openforms.api.exception_handling.uuid.uuid4",
+        return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
+    )
+    def test_update_with_translations_validate_literals(self, _mock):
+        self.client.force_authenticate(user=self.user)
+
+        url = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": self.form.uuid, "uuid": self.form_step.uuid},
+        )
+        response = self.client.patch(
+            url,
+            data={
+                "literals": {
+                    "previousText": {"value": "Different Previous Text"},
+                    "saveText": {"value": "Different Save Text"},
+                    "nextText": {"value": "Different Next Text"},
+                    "translations": {
+                        "en": {
+                            "next_text": "Next",
+                            "previous_text": "Previous",
+                            "save_text": "Save",
+                        },
+                        "nl": {
+                            "next_text": "Volgende",
+                            "previous_text": "Vorige",
+                            "save_text": "Opslaan",
+                        },
+                    },
+                },
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.json(),
+            {
+                "type": "http://testserver/fouten/ValidationError/",
+                "code": "invalid",
+                "title": _("Invalid input."),
+                "status": 400,
+                "detail": "",
+                "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
+                "invalidParams": [
+                    {
+                        "name": "literals.translations.en.nextText.nonFieldErrors",
+                        "code": "invalid",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
+                        "name": "literals.translations.en.previousText.nonFieldErrors",
+                        "code": "invalid",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
+                        "name": "literals.translations.en.saveText.nonFieldErrors",
+                        "code": "invalid",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
+                        "name": "literals.translations.nl.nextText.nonFieldErrors",
+                        "code": "invalid",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
+                        "name": "literals.translations.nl.previousText.nonFieldErrors",
+                        "code": "invalid",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
+                        "name": "literals.translations.nl.saveText.nonFieldErrors",
+                        "code": "invalid",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                ],
+            },
+        )
