@@ -63,6 +63,7 @@ maykin-django-two-factor-auth[phonenumbers]
 django-timeline-logger
 django-csp
 django-csp-reports
+mail-cleaner
 
 # API libraries
 djangorestframework~=3.13.0

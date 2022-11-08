@@ -28,8 +28,9 @@ Django Admin
 Email
 -----
 
-.. automodule:: openforms.utils.email
+.. automodule:: openforms.emails.utils
    :members:
+
 
 Internationalization (i18n)
 ---------------------------

@@ -37,7 +37,7 @@ from openforms.utils.urls import build_absolute_uri
 
 from ..confirmation_emails import get_confirmation_email_context_data
 from ..models import ConfirmationEmailTemplate
-from ..utils import render_email_template, unwrap_anchors
+from ..utils import render_email_template
 from .factories import ConfirmationEmailTemplateFactory
 
 NESTED_COMPONENT_CONF = {
@@ -637,13 +637,3 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         with self.subTest("attachments"):
             # file uploads may not be added as attachments, see #1193
             self.assertEqual(message.attachments, [])
-
-
-class UtilsTest(TestCase):
-    def test_unwrap_anchors(self):
-        input = '<p>foo <a href="http://example.com/">text</a> bar</p>'
-        actual = unwrap_anchors(input)
-        # expected = "foo text(http://example.com/) bar"
-        expected = '<p>foo <a href="http://example.com/">text (http://example.com/)</a> bar</p>'
-
-        self.assertEqual(expected, actual)
