@@ -33,11 +33,11 @@ const DateTimeInput = ({name, value, formatDatetime, onChange, ...extraProps}) =
   const datetimePickerRef = useRef();
 
   const wrappedOnChange = (selectedDates, dateStr, instance) => {
-    let selectedDatetime = selectedDates[0];
-    if (formatDatetime) selectedDatetime = formatDatetime(selectedDatetime);
+    let formattedDatetime = dateStr;
+    if (formatDatetime) formattedDatetime = formatDatetime(selectedDates[0]);
 
     const fakeEvent = {
-      target: {name: name, value: selectedDatetime.toISOString()},
+      target: {name: name, value: formattedDatetime},
     };
     onChange(fakeEvent);
   };

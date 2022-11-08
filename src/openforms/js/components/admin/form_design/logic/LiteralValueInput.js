@@ -58,13 +58,24 @@ WrappedJsonWidget.propTypes = {
 };
 
 const WrappedDatetimeInput = ({name, value, onChange}) => {
+  const getFormattedTimezone = offset => {
+    const hoursOffset = ('0' + Math.floor(offset / 60)).slice(-2);
+    const minutesOffset = ('0' + (offset % 60)).slice(-2);
+    return `${offset >= 0 ? '+' : '-'}${hoursOffset}:${minutesOffset}`;
+  };
+
   const formatDatetime = selectedDatetime => {
     // selectedDatetime is a JS Date where the time is 00:00. When converting to a ISOString, the timezone difference
-    // is removed from the time to convert it to a UTC+00 time (which can change the date). So we set the time so that
-    // when it is converted to UTC+00 it remains the same day.
-    const timezoneOffset = -selectedDatetime.getTimezoneOffset() / 60;
-    selectedDatetime.setHours(selectedDatetime.getHours() + timezoneOffset);
-    return selectedDatetime;
+    // is removed from the time to convert it to a UTC+00 time (which changes the date to the day before at 23:00 for
+    // UTC+01). So we set the time so that when it is converted to UTC+00 it remains the same day.
+    selectedDatetime.setMinutes(
+      selectedDatetime.getMinutes() - selectedDatetime.getTimezoneOffset()
+    );
+
+    // Use the timezone of the server
+    let iso_datetime = selectedDatetime.toISOString();
+    const serverOffset = document.body.dataset.adminUtcOffset / 60; // in minutes
+    return iso_datetime.replace('Z', getFormattedTimezone(serverOffset));
   };
 
   return (
@@ -80,7 +91,7 @@ const WrappedDatetimeInput = ({name, value, onChange}) => {
 
 WrappedDatetimeInput.propTypes = {
   name: PropTypes.string,
-  value: PropTypes.object,
+  value: PropTypes.string,
   onChange: PropTypes.func,
 };
 
