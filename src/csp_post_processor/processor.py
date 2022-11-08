@@ -43,18 +43,22 @@ wysiwyg_allowed_tags = [
     "h3",
     "h4",
     "h5",
+    "h6",
     "span",
     "div",
     "table",
+    "thead",
     "tbody",
     "tr",
+    "th",
     "td",
     "hr",
-    # NOTE we don't add "style" here because
+    # NOTE we don't add "style" here
 ]
 
 _tags_with_style = [
     # these will have _style_attrs added to the allowed tag/attr map below
+    "a",
     "p",
     "figure",
     "img",
@@ -65,6 +69,7 @@ _tags_with_style = [
     "h3",
     "h4",
     "h5",
+    "h6",
 ]
 _style_attrs = [
     "id",
@@ -78,10 +83,19 @@ wysiwyg_tag_allowed_attribute_map = {
     "acronym": ["title"],
     "img": ["width", "height", "alt", "src"],
     "figure": ["title", "src"],
+    # CKEditor has a table designer with spans
     "td": ["colspan", "rowspan"],
 }
 
 wysiwyg_css_properties = list(css_sanitizer.ALLOWED_CSS_PROPERTIES)
+wysiwyg_css_properties.append(
+    [
+        # TinyMCE uses padding-left for indent
+        "padding-left",
+        # TinyMCE uses list-style-type for list styling
+        "list-style-type",
+    ]
+)
 
 wysiwyg_svg_properties = list(css_sanitizer.ALLOWED_SVG_PROPERTIES)
 
@@ -107,7 +121,7 @@ def post_process_html(
     with possible other IDs.
 
     The optional argument `allowed_css_declarations` specifies an allow-list of safe
-    CSS declarations (for example: ["width", "font-color"]).
+    CSS declarations (for example: ["width", "color"]).
     """
     if not (csp_nonce := request.headers.get(NONCE_HTTP_HEADER)):
         logger.info("No nonce available on the request, returning html unmodified.")

@@ -206,3 +206,15 @@ class PostProcessingTests(SimpleTestCase):
 
             converted = post_process_html(html, self.request)
             self.assertHTMLEqual(converted, expected)
+
+        with self.subTest("header"):
+            html = """
+            <table><thead><tr><th>cell</th></tr></thead><tbody><tr><td>cell</td></tr></tbody></table>
+            """
+
+            expected = """
+            <table><thead><tr><th>cell</th></tr></thead><tbody><tr><td>cell</td></tr></tbody></table>
+            """
+
+            converted = post_process_html(html, self.request)
+            self.assertHTMLEqual(converted, expected)
