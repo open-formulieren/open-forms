@@ -41,7 +41,7 @@ def replace_dates_with_datetimes(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("forms", "0051_update_translation_fields"),
+        ("forms", "0052_form_translation_enabled"),
     ]
 
     operations = [

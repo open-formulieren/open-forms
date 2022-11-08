@@ -370,8 +370,8 @@ class TestChangeHideLabelSetting(TestMigrations):
 
 @override_settings(TIME_ZONE="Europe/Amsterdam")
 class TestConvertDatesToDatetimes(TestMigrations):
-    migrate_from = "0051_update_translation_fields"
-    migrate_to = "0052_replace_date_datetimes"
+    migrate_from = "0052_form_translation_enabled"
+    migrate_to = "0053_replace_date_datetimes"
     app = "forms"
 
     def setUpBeforeMigration(self, apps):
