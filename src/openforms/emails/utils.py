@@ -54,8 +54,14 @@ def send_mail_html(
     recipient_list: List[str],
     attachment_tuples: AttachmentsType = None,
     fail_silently: bool = False,
-    text_message: str = None,
+    text_message: Optional[str] = None,
 ) -> None:
+    """
+    Send outoing email with HTML content, wrapped in our scaffolding.
+
+    If no explicit text variant if supplied, it will be generated best-effort by
+    :func:`strip_tags_plus`.
+    """
     # render versions
     if not text_message:
         text_message = strip_tags_plus(html_body)
