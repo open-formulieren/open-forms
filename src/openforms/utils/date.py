@@ -7,8 +7,6 @@ from pytz import timezone
 
 logger = logging.getLogger(__name__)
 
-ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
-
 
 def format_date_value(raw_value: str) -> str:
     try:
@@ -25,4 +23,4 @@ def format_date_value(raw_value: str) -> str:
 
 def get_date_in_current_timezone(value: datetime) -> str:
     current_timezone = timezone(settings.TIME_ZONE)
-    return current_timezone.localize(value).strftime(ISO_8601_FORMAT)
+    return current_timezone.localize(value).isoformat()
