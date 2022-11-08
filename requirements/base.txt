@@ -271,7 +271,7 @@ kombu==5.2.3
     # via celery
 lockfile==0.12.2
     # via django-yubin
-lxml==4.6.5
+lxml==4.9.1
     # via
     #   -r requirements/base.in
     #   django-digid-eherkenning
@@ -284,7 +284,7 @@ maykin-django-two-factor-auth[phonenumbers]==2.0.4
     # via -r requirements/base.in
 maykin-json-logic-py @ git+https://github.com/maykinmedia/json-logic-py.git@f877f5326231bdcf4621783278f22c8565ec7913
     # via -r requirements/base.in
-maykin-python3-saml==1.14.0
+maykin-python3-saml==1.14.0.post0
     # via django-digid-eherkenning
 mozilla-django-oidc==1.2.4
     # via mozilla-django-oidc-db
