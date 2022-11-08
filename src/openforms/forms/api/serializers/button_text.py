@@ -26,3 +26,6 @@ class ButtonTextSerializer(serializers.Serializer):
 
     def get_resolved(self, obj) -> str:
         return getattr(obj, self.resolved_getter)()
+
+    def get_translation_literal(self, data):
+        return data[self.raw_field]

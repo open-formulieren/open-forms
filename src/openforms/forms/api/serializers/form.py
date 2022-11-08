@@ -110,7 +110,15 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     is_deleted = serializers.BooleanField(source="_is_deleted", required=False)
     required_fields_with_asterisk = serializers.SerializerMethodField(read_only=True)
 
-    translations = ModelTranslationsSerializer(required=False)
+    translations = ModelTranslationsSerializer(
+        required=False,
+        nested_fields_mapping={
+            "previous_text": "literals",
+            "begin_text": "literals",
+            "change_text": "literals",
+            "confirm_text": "literals",
+        },
+    )
 
     class Meta:
         model = Form
