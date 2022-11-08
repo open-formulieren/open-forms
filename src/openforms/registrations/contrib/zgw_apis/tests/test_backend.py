@@ -516,6 +516,8 @@ class ZGWBackendTests(TestCase):
             {
                 "handelsnaam": "ACME",
                 "vestigingsNummer": "87654321",
+                "innNnpId": "12345678",
+                "statutaireNaam": "ACME",
                 "verblijfsadres": {"postcode": "1000 AA"},
             },
         )
@@ -583,7 +585,6 @@ class ZGWBackendTests(TestCase):
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
                 "coordinaat": [52.36673378967122, 4.893164274470299],
-                "vestigingsNummer": "87654321",
             },
             kvk="12345678",
             form__product__price=Decimal("0"),
@@ -612,6 +613,14 @@ class ZGWBackendTests(TestCase):
         self.assertEqual(
             create_rol_body["betrokkeneType"],
             "niet_natuurlijk_persoon",
+        )
+        self.assertEqual(
+            create_rol_body["betrokkeneIdentificatie"]["statutaireNaam"],
+            "ACME",
+        )
+        self.assertEqual(
+            create_rol_body["betrokkeneIdentificatie"]["innNnpId"],
+            "12345678",
         )
 
     def test_submission_with_zgw_backend_with_vestiging_initiator_kvk_only(self, m):
@@ -742,6 +751,8 @@ class ZGWBackendTests(TestCase):
             create_rol_body["betrokkeneIdentificatie"],
             {
                 "handelsnaam": "ACME",
+                "innNnpId": "12345678",
+                "statutaireNaam": "ACME",
                 "verblijfsadres": {"postcode": "1000 AA"},
             },
         )

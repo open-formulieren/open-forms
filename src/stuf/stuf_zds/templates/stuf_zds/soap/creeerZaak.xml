@@ -95,7 +95,7 @@
                     {% elif  initiator.kvk %}
                         <ZKN:nietNatuurlijkPersoon StUF:entiteittype="NNP" StUF:verwerkingssoort="T">
                             <BG:inn.nnpId>{{ initiator.kvk }}</BG:inn.nnpId>
-                            <BG:authentiek>N</BG:authentiek>
+                            <BG:authentiek>J</BG:authentiek>
                             {% if initiator.verblijfsadres.postcode or initiator.verblijfsadres.woonplaatsNaam %}
                                 {% include "stuf_zds/soap/includes/bezoekadres.xml" %}
                             {% endif %}

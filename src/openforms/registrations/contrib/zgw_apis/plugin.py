@@ -113,12 +113,15 @@ class ZGWRegistration(BasePlugin):
         # Vestiging
         "betrokkeneIdentificatie.vestigingsNummer": RegistrationAttribute.initiator_vestigingsnummer,
         "betrokkeneIdentificatie.handelsnaam": RegistrationAttribute.initiator_handelsnaam,
+        # Niet Natuurlijk Persoon
+        "betrokkeneIdentificatie.statutaireNaam": RegistrationAttribute.initiator_handelsnaam,
+        "betrokkeneIdentificatie.innNnpId": FieldConf(
+            submission_auth_info_attribute="kvk"
+        ),
         # Identifiers
         "betrokkeneIdentificatie.inpBsn": FieldConf(
             submission_auth_info_attribute="bsn"
         ),
-        # This field is not part of the StUF-ZDS standard.
-        "betrokkeneIdentificatie._kvk": FieldConf(submission_auth_info_attribute="kvk"),
     }
 
     zaak_mapping = {
@@ -180,7 +183,7 @@ class ZGWRegistration(BasePlugin):
         )
 
         betrokkene_identificatie = rol_data.get("betrokkeneIdentificatie", {})
-        kvk = betrokkene_identificatie.pop("_kvk", None)
+        kvk = betrokkene_identificatie.get("innNnpId")
         vestigingsnummer = betrokkene_identificatie.get("vestigingsNummer")
 
         if kvk and vestigingsnummer:
