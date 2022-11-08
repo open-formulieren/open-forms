@@ -12,9 +12,9 @@ from django.template.loader import get_template
 from django.utils.html import strip_tags as django_strip_tags
 
 from lxml.html import fromstring, tostring
+from mail_cleaner.mail import send_mail_plus
 
 from openforms.config.models import GlobalConfiguration
-from openforms.utils.email import send_mail_plus
 
 from .constants import URL_REGEX
 from .context import get_wrapper_context
