@@ -1,17 +1,28 @@
 import logging
-from datetime import date, datetime
+from datetime import datetime
+
+from django.conf import settings
+
+from pytz import timezone
 
 logger = logging.getLogger(__name__)
 
+ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 
-def format_date_value(date_value: str) -> str:
+
+def format_date_value(raw_value: str) -> str:
     try:
-        parsed_date = date.fromisoformat(date_value)
+        parsed_datetime = datetime.fromisoformat(raw_value)
     except ValueError:
         try:
-            parsed_date = datetime.strptime(date_value, "%Y%m%d").date()
+            parsed_datetime = datetime.strptime(raw_value, "%Y%m%d")
         except ValueError:
-            logger.info("Can't parse date %s, using empty value.", date_value)
+            logger.info("Can't parse date %s, using empty value.", raw_value)
             return ""
 
-    return parsed_date.isoformat()
+    return get_date_in_current_timezone(parsed_datetime)
+
+
+def get_date_in_current_timezone(value: datetime) -> str:
+    current_timezone = timezone(settings.TIME_ZONE)
+    return current_timezone.localize(value).strftime(ISO_8601_FORMAT)

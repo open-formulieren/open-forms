@@ -2,10 +2,9 @@ from datetime import date, datetime, time
 from typing import Any
 
 from django.utils import timezone
-from django.utils.dateparse import parse_date, parse_datetime, parse_time
+from django.utils.dateparse import parse_datetime, parse_time
 
 from openforms.typing import JSONObject, JSONValue
-from openforms.utils.date import format_date_value
 
 
 def check_date(value: str) -> str:
@@ -60,13 +59,6 @@ def variable_value_to_python(value: JSONValue, data_type: str) -> Any:
 
     # TODO what about an array of datetimes?
     if value and data_type == FormVariableDataTypes.datetime:
-        date = format_date_value(value)
-        naive_date = parse_date(date)
-        if naive_date is not None:
-            aware_date = timezone.make_aware(datetime.combine(naive_date, time.min))
-            return aware_date
-
-        # not a date - try parsing a datetime then
         maybe_naive_datetime = parse_datetime(value)
         if maybe_naive_datetime is not None:
             if timezone.is_aware(maybe_naive_datetime):

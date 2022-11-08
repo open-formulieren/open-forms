@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 
 from django.conf import settings
@@ -5,6 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from openforms.submissions.models import Submission
+from openforms.utils.date import get_date_in_current_timezone
 
 from ..base import BaseStaticVariable
 from ..constants import FormVariableDataTypes
@@ -26,11 +28,10 @@ class Today(BaseStaticVariable):
     data_type = FormVariableDataTypes.datetime
 
     def get_initial_value(self, submission: Optional[Submission] = None) -> str:
-        return (
-            timezone.now()
-            .replace(hour=0, minute=0, second=0, microsecond=0)
-            .isoformat()
+        naive_datetime = datetime.datetime.now().replace(
+            hour=0, minute=0, second=0, microsecond=0
         )
+        return get_date_in_current_timezone(naive_datetime)
 
 
 @register_static_variable("environment")
