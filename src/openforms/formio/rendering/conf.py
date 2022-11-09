@@ -8,9 +8,7 @@ RENDER_CONFIGURATION = {
     RenderModes.pdf: RenderConfiguration(
         RenderConfigurationOptions.show_in_pdf, default=True
     ),
-    RenderModes.summary: RenderConfiguration(
-        RenderConfigurationOptions.show_in_summary, default=True
-    ),
+    RenderModes.summary: RenderConfiguration(key=None, default=True),
     RenderModes.confirmation_email: RenderConfiguration(
         RenderConfigurationOptions.show_in_confirmation_email, default=False
     ),

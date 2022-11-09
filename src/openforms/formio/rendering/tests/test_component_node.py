@@ -31,54 +31,40 @@ class FormNodeTests(TestCase):
                     "label": "Input 2",
                     "hidden": True,
                 },
-                # visible in PDF, summary and confirmation email component, leaf node
+                # visible in PDF and confirmation email component, leaf node
                 {
                     "type": "textfield",
                     "key": "input3",
                     "label": "Input 3",
                     "hidden": False,
                     RenderConfigurationOptions.show_in_pdf: True,
-                    RenderConfigurationOptions.show_in_summary: True,
                     RenderConfigurationOptions.show_in_confirmation_email: True,
                 },
-                # hidden in PDF, summary and confirmation email component, leaf node
+                # hidden in PDF and confirmation email component, leaf node
                 {
                     "type": "textfield",
                     "key": "input4",
                     "label": "Input 4",
                     "hidden": False,
                     RenderConfigurationOptions.show_in_pdf: False,
-                    RenderConfigurationOptions.show_in_summary: False,
                     RenderConfigurationOptions.show_in_confirmation_email: False,
                 },
-                # visible in PDF and summary and hidden in confirmation email component, leaf node
+                # visible in PDF and hidden in confirmation email component, leaf node
                 {
                     "type": "textfield",
                     "key": "input5",
                     "label": "Input 5",
                     "hidden": False,
                     RenderConfigurationOptions.show_in_pdf: True,
-                    RenderConfigurationOptions.show_in_summary: True,
                     RenderConfigurationOptions.show_in_confirmation_email: False,
                 },
-                # hidden in PDF and confirmation email component, visible in summary, leaf node
-                {
-                    "type": "textfield",
-                    "key": "input5_1",
-                    "label": "Input 5.1",
-                    "hidden": False,
-                    RenderConfigurationOptions.show_in_pdf: False,
-                    RenderConfigurationOptions.show_in_summary: True,
-                    RenderConfigurationOptions.show_in_confirmation_email: False,
-                },
-                # hidden in PDF and summary and visible in confirmation email component, leaf node
+                # hidden in PDF and visible in confirmation email component, leaf node
                 {
                     "type": "textfield",
                     "key": "input6",
                     "label": "Input 6",
                     "hidden": False,
                     RenderConfigurationOptions.show_in_pdf: False,
-                    RenderConfigurationOptions.show_in_summary: False,
                     RenderConfigurationOptions.show_in_confirmation_email: True,
                 },
                 # container: visible fieldset without visible children
@@ -210,7 +196,6 @@ class FormNodeTests(TestCase):
             "input3": "ccccc",
             "input4": "ddddd",
             "input5": "eeeee",
-            "input5_1": "eeeee1",
             "input6": "fffff",
             "input7": "ggggg",
             "input8": "hhhhh",
@@ -306,7 +291,7 @@ class FormNodeTests(TestCase):
 
         with self.subTest("Nested hidden component"):
             fieldset = self.step.form_step.form_definition.configuration["components"][
-                7
+                6
             ]
             assert not fieldset["hidden"]
 
@@ -335,7 +320,7 @@ class FormNodeTests(TestCase):
             )
             nodelist += list(component_node)
 
-        self.assertEqual(len(nodelist), 19)
+        self.assertEqual(len(nodelist), 18)
         labels = [node.label for node in nodelist]
         # The fieldset/editgrid components have no labels
         self.assertEqual(
@@ -346,7 +331,6 @@ class FormNodeTests(TestCase):
                 "input3",
                 "input4",
                 "input5",
-                "input5_1",
                 "input6",
                 "input7",
                 "input8",
@@ -411,13 +395,14 @@ class FormNodeTests(TestCase):
                 )
                 nodelist += list(component_node)
 
-        self.assertEqual(len(nodelist), 11)
+        # self.assertEqual(len(nodelist), 12)
         labels = [node.label for node in nodelist]
         expected_labels = [
             "Input 1",
             "Input 3",
+            "Input 4",
             "Input 5",
-            "Input 5.1",
+            "Input 6",
             "A container without visible children",
             "A container with visible children",
             "Input 9",
