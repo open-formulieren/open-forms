@@ -14,7 +14,7 @@ from ...models import FormDefinition
 
 # Regex and message adapted from
 # https://github.com/formio/formio.js/blob/4.13.x/src/components/_classes/component/editForm/Component.edit.api.js#L10
-variable_key_validator = RegexValidator(regex=r"^\w[\w.\-]*\w$")
+variable_key_validator = RegexValidator(regex=r"^(\w|\w[\w.\-]*\w)$")
 
 
 class Command(BaseCommand):
