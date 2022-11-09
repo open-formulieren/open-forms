@@ -28,7 +28,7 @@ if TYPE_CHECKING:  # pragma: nocover
 # Regex and message adapted from
 # https://github.com/formio/formio.js/blob/4.13.x/src/components/_classes/component/editForm/Component.edit.api.js#L10
 variable_key_validator = RegexValidator(
-    regex=_lazy_re_compile(r"^\w[\w.\-]*\w$"),
+    regex=_lazy_re_compile(r"^(\w|\w[\w.\-]*\w)$"),
     message=_(
         "Invalid variable key. "
         "It must only contain alphanumeric characters, underscores, "

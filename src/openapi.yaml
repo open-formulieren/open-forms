@@ -5505,7 +5505,7 @@ components:
         key:
           type: string
           description: Key of the variable, should be unique with the form.
-          pattern: ^\w[\w.\-]*\w$
+          pattern: ^(\w|\w[\w.\-]*\w)$
         source:
           allOf:
           - $ref: '#/components/schemas/SourceEnum'

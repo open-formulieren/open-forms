@@ -586,3 +586,47 @@ class FormVariableViewsetTest(APITestCase):
         self.assertEqual("test2 default value", variable2.initial_value)
         self.assertEqual(["test3 default value"], variable3.initial_value)
         self.assertEqual(4, variable4.initial_value)
+
+    def test_validators_accepts_only_numeric_keys(self):
+        user = SuperUserFactory.create()
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {"key": "1", "type": "textfield"},
+                ]
+            },
+        )
+
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver.com{form_path}"
+
+        form_definition_path = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": form.formstep_set.first().form_definition.uuid},
+        )
+        form_definition_url = f"http://testserver.com{form_definition_path}"
+
+        data = [
+            {
+                "form": form_url,
+                "form_definition": form_definition_url,
+                "key": "1",
+                "name": "Variable 1",
+                "source": FormVariableSources.component,
+                "data_type": FormVariableDataTypes.string,
+            }
+        ]
+
+        self.client.force_authenticate(user)
+
+        response = self.client.put(
+            reverse(
+                "api:form-variables",
+                kwargs={"uuid_or_slug": form.uuid},
+            ),
+            data=data,
+        )
+
+        # The variable is considered valid
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
