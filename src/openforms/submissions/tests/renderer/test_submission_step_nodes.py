@@ -33,6 +33,7 @@ class FormNodeTests(TestCase):
         """
         modes = [
             RenderModes.pdf,
+            RenderModes.summary,
             RenderModes.confirmation_email,
             RenderModes.export,
         ]
@@ -52,6 +53,21 @@ class FormNodeTests(TestCase):
     def test_render_mode_pdf(self):
         renderer = Renderer(
             submission=self.submission, mode=RenderModes.pdf, as_html=False
+        )
+        expected_output = {
+            self.sstep1: "Step 1",
+            self.sstep2: "Step 2",
+        }
+
+        for sstep, expected in expected_output.items():
+            with self.subTest(step=sstep.form_step.form_definition.name):
+                node = SubmissionStepNode(renderer=renderer, step=sstep)
+
+                self.assertEqual(node.render(), expected)
+
+    def test_render_mode_summary(self):
+        renderer = Renderer(
+            submission=self.submission, mode=RenderModes.summary, as_html=False
         )
         expected_output = {
             self.sstep1: "Step 1",
