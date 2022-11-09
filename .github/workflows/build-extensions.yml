@@ -1,0 +1,106 @@
+name: Build and push Open Forms image with custom extensions
+
+on:
+  workflow_call:
+    secrets:
+      DOCKER_TOKEN:
+        description: 'Docker token required to log into Docker hub'
+        required: true
+
+      DOCKER_USERNAME:
+        description: 'Docker hub username'
+        required: true
+
+
+jobs:
+  extensions_docker_image_build:
+    name: Build Docker image with custom extensions
+    runs-on: ubuntu-latest
+    env:
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set tag
+        id: vars
+        run: |
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # Strip "v" prefix from tag name (if present at all)
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+
+          # PRs result in version 'merge' -> transform that into 'latest'
+          [ "$VERSION" == "merge" ] && VERSION=latest
+
+          # Obtain the SDK release to bundle along, use latest if backend is also latest
+          SDK_RELEASE=$(cat .sdk-release | tr -d '[:space:]')
+          [ "$VERSION" == "latest" ] && SDK_RELEASE=latest
+
+          echo ::set-output name=tag::${VERSION}
+          echo ::set-output name=git_hash::${GITHUB_SHA}
+          echo ::set-output name=sdk_release::${SDK_RELEASE}
+
+      - name: Build the Docker image with extensions
+        run: |
+          docker build . \
+          --tag $IMAGE_NAME:extensions \
+          --build-arg ENVIRONMENT=ci \
+          --build-arg COMMIT_HASH=${{ steps.vars.outputs.git_hash }} \
+          --build-arg RELEASE=${{ steps.vars.outputs.tag }} \
+          --build-arg SDK_RELEASE=${{ steps.vars.outputs.sdk_release }}
+
+          - run: docker image save -o image-test.tar $IMAGE_NAME:extensions
+          - name: Store image artifact
+            uses: actions/upload-artifact@v3
+            with:
+              name: docker-image-extensions
+              path: image-extensions.tar
+              retention-days: 1
+
+  docker_push:
+    needs:
+      - extensions_docker_image_build
+
+    name: Push Docker image with extensions
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' # Exclude PRs
+
+    steps:
+      # This will include the updated OAS (if updated) from the update-oas job.
+      - uses: actions/checkout@v3
+
+      - name: Download built image (with extensions)
+        uses: actions/download-artifact@v3
+        with:
+          name: docker-image-extensions
+
+      - name: Set tag
+        id: vars
+        run: |
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # Strip "v" prefix from tag name (if present at all)
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+
+          echo ::set-output name=tag::${VERSION}
+
+      - name: Load image
+        run: |
+          docker image load -i image-extensions.tar
+
+      - name: Log into registry
+        run:
+          echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u ${{ secrets.DOCKER_USERNAME }}
+          --password-stdin
+
+      - name: Push the Docker image with extensions (production)
+        env:
+          RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
+        run: docker push $IMAGE_NAME:extensions-$RELEASE_VERSION
