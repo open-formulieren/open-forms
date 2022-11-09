@@ -451,7 +451,7 @@ class Submission(models.Model):
         from ..rendering import Renderer, RenderModes
         from ..rendering.nodes import SubmissionStepNode
 
-        renderer = Renderer(submission=self, mode=RenderModes.pdf, as_html=False)
+        renderer = Renderer(submission=self, mode=RenderModes.summary, as_html=False)
 
         summary_data = []
         current_step = {}
