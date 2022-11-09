@@ -37,7 +37,7 @@ pip-compile \
     requirements/test-tools.in \
     requirements/docs.in
 
-# Dev depedencies - exact same set as CI + some extra tooling
+# Dev dependencies - exact same set as CI + some extra tooling
 pip-compile \
     --no-emit-index-url \
     --output-file requirements/dev.txt \
@@ -45,3 +45,12 @@ pip-compile \
     "$@" \
     requirements/ci.txt \
     requirements/dev.in
+
+# Dependencies for custom extensions
+pip-compile \
+    --no-emit-index-url \
+    --output-file requirements/extensions.txt \
+    --allow-unsafe \
+    "$@" \
+    requirements/base.txt \
+    requirements/extensions.in

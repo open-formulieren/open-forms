@@ -187,9 +187,9 @@ Testing in CI
 The approach for testing in CI largely follows :ref:`developers_extending_docker`.
 
 Open Forms also publishes an image to Docker Hub including the test dependencies to
-facilitate unit testing in PYthon for your extension. The
-``openformulieren/open-forms:test`` image is always based on the ``latest`` tag and
-includes the upstream ``requirements/ci.txt``.
+facilitate unit testing in Python for your extension. The
+``openformulieren/open-forms:test-latest`` image is always based on the ``latest`` tag
+and includes the upstream ``requirements/ci.txt``.
 
 See also our :ref:`versioning policy<developers_versioning>` to see how and when we
 make breaking changes.
