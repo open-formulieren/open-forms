@@ -35,6 +35,7 @@ class FormNodeTests(TestCase):
     def test_visible(self):
         expected = {
             RenderModes.pdf: True,
+            RenderModes.summary: True,
             RenderModes.confirmation_email: True,
             RenderModes.export: False,
         }
@@ -51,6 +52,7 @@ class FormNodeTests(TestCase):
     def test_render_modes(self):
         expected_output = {
             RenderModes.pdf: "public name",
+            RenderModes.summary: "public name",
             RenderModes.confirmation_email: "public name",
             RenderModes.export: "public name",
         }
@@ -65,7 +67,12 @@ class FormNodeTests(TestCase):
                 self.assertEqual(node.render(), expected)
 
     def test_no_children(self):
-        modes = [RenderModes.pdf, RenderModes.confirmation_email, RenderModes.export]
+        modes = [
+            RenderModes.pdf,
+            RenderModes.summary,
+            RenderModes.confirmation_email,
+            RenderModes.export,
+        ]
         for mode in modes:
             with self.subTest(render_mode=mode):
                 renderer = Renderer(
