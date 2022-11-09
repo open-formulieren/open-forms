@@ -303,6 +303,15 @@ jobs:
           ./sdks/python -g python
           --additional-properties=optionalProjectFile=false,optionalAssemblyInfo=false+
 
+  call_build_extensions_workflow:
+    needs:
+      - tests
+      - oas-lint
+      - oas-postman
+      - oas-generate-sdks
+    uses: ./build-extensions.yml
+    secrets: inherit
+
   docker_push:
     needs:
       - tests
