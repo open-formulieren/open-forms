@@ -31,40 +31,54 @@ class FormNodeTests(TestCase):
                     "label": "Input 2",
                     "hidden": True,
                 },
-                # visible in PDF and confirmation email component, leaf node
+                # visible in PDF, summary and confirmation email component, leaf node
                 {
                     "type": "textfield",
                     "key": "input3",
                     "label": "Input 3",
                     "hidden": False,
                     RenderConfigurationOptions.show_in_pdf: True,
+                    RenderConfigurationOptions.show_in_summary: True,
                     RenderConfigurationOptions.show_in_confirmation_email: True,
                 },
-                # hidden in PDF and confirmation email component, leaf node
+                # hidden in PDF, summary and confirmation email component, leaf node
                 {
                     "type": "textfield",
                     "key": "input4",
                     "label": "Input 4",
                     "hidden": False,
                     RenderConfigurationOptions.show_in_pdf: False,
+                    RenderConfigurationOptions.show_in_summary: False,
                     RenderConfigurationOptions.show_in_confirmation_email: False,
                 },
-                # visible in PDF and hidden in confirmation email component, leaf node
+                # visible in PDF and summary and hidden in confirmation email component, leaf node
                 {
                     "type": "textfield",
                     "key": "input5",
                     "label": "Input 5",
                     "hidden": False,
                     RenderConfigurationOptions.show_in_pdf: True,
+                    RenderConfigurationOptions.show_in_summary: True,
                     RenderConfigurationOptions.show_in_confirmation_email: False,
                 },
-                # hidden in PDF and visible in confirmation email component, leaf node
+                # hidden in PDF and confirmation email component, visible in summary, leaf node
+                {
+                    "type": "textfield",
+                    "key": "input5_1",
+                    "label": "Input 5.1",
+                    "hidden": False,
+                    RenderConfigurationOptions.show_in_pdf: False,
+                    RenderConfigurationOptions.show_in_summary: True,
+                    RenderConfigurationOptions.show_in_confirmation_email: False,
+                },
+                # hidden in PDF and summary and visible in confirmation email component, leaf node
                 {
                     "type": "textfield",
                     "key": "input6",
                     "label": "Input 6",
                     "hidden": False,
                     RenderConfigurationOptions.show_in_pdf: False,
+                    RenderConfigurationOptions.show_in_summary: False,
                     RenderConfigurationOptions.show_in_confirmation_email: True,
                 },
                 # container: visible fieldset without visible children
@@ -196,6 +210,7 @@ class FormNodeTests(TestCase):
             "input3": "ccccc",
             "input4": "ddddd",
             "input5": "eeeee",
+            "input5_1": "eeeee1",
             "input6": "fffff",
             "input7": "ggggg",
             "input8": "hhhhh",
@@ -291,7 +306,7 @@ class FormNodeTests(TestCase):
 
         with self.subTest("Nested hidden component"):
             fieldset = self.step.form_step.form_definition.configuration["components"][
-                6
+                7
             ]
             assert not fieldset["hidden"]
 
@@ -320,7 +335,7 @@ class FormNodeTests(TestCase):
             )
             nodelist += list(component_node)
 
-        self.assertEqual(len(nodelist), 18)
+        self.assertEqual(len(nodelist), 19)
         labels = [node.label for node in nodelist]
         # The fieldset/editgrid components have no labels
         self.assertEqual(
@@ -331,6 +346,7 @@ class FormNodeTests(TestCase):
                 "input3",
                 "input4",
                 "input5",
+                "input5_1",
                 "input6",
                 "input7",
                 "input8",
@@ -379,6 +395,39 @@ class FormNodeTests(TestCase):
         ]
         self.assertEqual(labels, expected_labels)
 
+    def test_render_mode_summary(self):
+        # NOTE the summary renders as text but some like the 'content' component render html
+        renderer = Renderer(self.submission, mode=RenderModes.summary, as_html=False)
+        # set up mock registry without special fieldset/editgrid behaviour
+        register = Registry()
+
+        nodelist = []
+        with patch("openforms.formio.rendering.registry.register", new=register):
+            for component in self.step.form_step.form_definition.configuration[
+                "components"
+            ]:
+                component_node = ComponentNode.build_node(
+                    step=self.step, component=component, renderer=renderer
+                )
+                nodelist += list(component_node)
+
+        # self.assertEqual(len(nodelist), 11)
+        labels = [node.label for node in nodelist]
+        expected_labels = [
+            "Input 1",
+            "Input 3",
+            "Input 5",
+            "Input 5.1",
+            "A container without visible children",
+            "A container with visible children",
+            "Input 9",
+            "Visible editgrid with visible children",
+            "Input 11",
+            "Visible editgrid with hidden children",
+            "Input 14",
+        ]
+        self.assertEqual(labels, expected_labels)
+
     def test_render_mode_confirmation_email(self):
         renderer = Renderer(
             self.submission, mode=RenderModes.confirmation_email, as_html=True
@@ -403,24 +452,3 @@ class FormNodeTests(TestCase):
             "Input 6",
         ]
         self.assertEqual(labels, expected_labels)
-
-
-class ContentNodeTest(TestCase):
-    def test_content_node_value_doesnt_error(self):
-        components = [
-            {
-                "key": "content",
-                "html": '<p><a href="http://bla.com"><span style="color:#4c4ce6;">link</span></a></p>',
-                "type": "content",
-                "label": "Content",
-                "customClass": "info",
-            }
-        ]
-
-        submission = SubmissionFactory.from_components(
-            components_list=components, submitted_data={}
-        )
-
-        summary_data = submission.render_summary_page()
-
-        self.assertEqual("link (http://bla.com)", summary_data[0]["data"][0]["value"])

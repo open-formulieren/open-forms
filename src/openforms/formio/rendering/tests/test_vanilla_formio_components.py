@@ -339,6 +339,7 @@ class FormNodeTests(TestCase):
             RenderModes.confirmation_email: False,
             RenderModes.pdf: True,
             RenderModes.cli: True,
+            RenderModes.summary: False,
         }
 
         for render_mode, is_visible in expected_visibility.items():
