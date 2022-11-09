@@ -114,7 +114,11 @@ class WYSIWYGNode(ComponentNode):
 
     @property
     def is_visible(self) -> bool:
-        if self.mode in (RenderModes.registration, RenderModes.export):
+        if self.mode in (
+            RenderModes.registration,
+            RenderModes.export,
+            RenderModes.summary,
+        ):
             return False
         return super().is_visible
 
