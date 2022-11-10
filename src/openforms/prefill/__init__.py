@@ -98,7 +98,11 @@ def inject_prefill(
 
     prefilled_data = submission.get_prefilled_data()
     for key, prefill_value in prefilled_data.items():
-        component = configuration_wrapper[key]
+        try:
+            component = configuration_wrapper[key]
+        except KeyError:
+            # The component to prefill is not in this step
+            continue
 
         if not (prefill := component.get("prefill")):
             continue
