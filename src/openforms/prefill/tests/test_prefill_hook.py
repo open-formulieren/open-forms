@@ -7,7 +7,7 @@ from django.utils.crypto import get_random_string
 
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.datastructures import FormioConfigurationWrapper
-from openforms.forms.tests.factories import FormStepFactory
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -420,3 +420,48 @@ class PrefillHookTests(TransactionTestCase):
 
         field = new_configuration["components"][0]
         self.assertEqual(field["defaultValue"], "1015 CJ")
+
+    @patch("openforms.prefill.tests.test_prefill_hook.DemoPrefill.get_prefill_values")
+    def test_prefill_form_with_multiple_steps(self, m_get_prefill_value):
+        m_get_prefill_value.return_value = {"random_isodate": "2020-12-12"}
+
+        configuration1 = {
+            "display": "form",
+            "components": [
+                {
+                    "key": "textFieldA",
+                    "type": "textfield",
+                }
+            ],
+        }
+        configuration2 = {
+            "display": "form",
+            "components": [
+                {
+                    "id": "e4ty7zs",
+                    "key": "dateOfBirth",
+                    "type": "date",
+                    "input": True,
+                    "label": "Date of Birth",
+                    "prefill": {
+                        "plugin": "demo",
+                        "attribute": "random_isodate",
+                    },
+                    "multiple": False,
+                    "defaultValue": None,
+                }
+            ],
+        }
+        form = FormFactory.create()
+        form_step1 = FormStepFactory.create(
+            form_definition__configuration=configuration1, form=form
+        )
+        FormStepFactory.create(form_definition__configuration=configuration2, form=form)
+        submission = SubmissionFactory.create(form=form)
+
+        # Doesn't raise KeyError
+        apply_prefill(
+            configuration=form_step1.form_definition.configuration,
+            submission=submission,
+            register=register,
+        )
