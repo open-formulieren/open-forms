@@ -336,6 +336,10 @@ class ZGWBackendTests(TestCase):
                 "geslachtsaanduiding": "m",
             },
         )
+        self.assertEqual(
+            create_rol_body["betrokkeneType"],
+            "natuurlijk_persoon",
+        )
 
         create_status = m.request_history[9]
         create_status_body = create_status.json()
@@ -371,7 +375,7 @@ class ZGWBackendTests(TestCase):
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
         )
 
-    def test_submission_with_zgw_backend_with_vestiging_initiator(self, m):
+    def test_submission_with_zgw_backend_with_vestiging_and_kvk_initiator(self, m):
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -504,10 +508,16 @@ class ZGWBackendTests(TestCase):
             "https://catalogus.nl/api/v1/roltypen/1",
         )
         self.assertEqual(
+            create_rol_body["betrokkeneType"],
+            "vestiging",
+        )
+        self.assertEqual(
             create_rol_body["betrokkeneIdentificatie"],
             {
                 "handelsnaam": "ACME",
                 "vestigingsNummer": "87654321",
+                "innNnpId": "12345678",
+                "statutaireNaam": "ACME",
                 "verblijfsadres": {"postcode": "1000 AA"},
             },
         )
@@ -544,6 +554,73 @@ class ZGWBackendTests(TestCase):
         self.assertEqual(
             relate_attachment_body["informatieobject"],
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+        )
+
+    def test_submission_with_zgw_backend_with_kvk_only_initiator(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "handelsnaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_handelsnaam,
+                    },
+                },
+                {
+                    "key": "postcode",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_postcode,
+                    },
+                },
+                {
+                    "key": "coordinaat",
+                    "type": "map",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+            ],
+            submitted_data={
+                "handelsnaam": "ACME",
+                "postcode": "1000 AA",
+                "coordinaat": [52.36673378967122, 4.893164274470299],
+            },
+            kvk="12345678",
+            form__product__price=Decimal("0"),
+            form__payment_backend="demo",
+        )
+
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+        )
+
+        zgw_form_options = dict(
+            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            organisatie_rsin="000000000",
+            vertrouwelijkheidaanduiding="openbaar",
+        )
+
+        self.install_mocks(m)
+
+        plugin = ZGWRegistration("zgw")
+        plugin.register_submission(submission, zgw_form_options)
+
+        create_rol = m.request_history[7]
+        create_rol_body = create_rol.json()
+
+        self.assertEqual(
+            create_rol_body["betrokkeneType"],
+            "niet_natuurlijk_persoon",
+        )
+        self.assertEqual(
+            create_rol_body["betrokkeneIdentificatie"]["statutaireNaam"],
+            "ACME",
+        )
+        self.assertEqual(
+            create_rol_body["betrokkeneIdentificatie"]["innNnpId"],
+            "12345678",
         )
 
     def test_submission_with_zgw_backend_with_vestiging_initiator_kvk_only(self, m):
@@ -674,6 +751,8 @@ class ZGWBackendTests(TestCase):
             create_rol_body["betrokkeneIdentificatie"],
             {
                 "handelsnaam": "ACME",
+                "innNnpId": "12345678",
+                "statutaireNaam": "ACME",
                 "verblijfsadres": {"postcode": "1000 AA"},
             },
         )

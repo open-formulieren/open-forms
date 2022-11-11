@@ -949,6 +949,217 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:heeft/zkn:gerelateerde/zkn:code": "123",
                 "//zkn:heeft/zkn:gerelateerde/zkn:omschrijving": "aaabbc",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:nietNatuurlijkPersoon/bg:inn.nnpId": "12345678",
+            },
+        )
+
+        # don't expect registered data in extraElementen
+        self.assertXPathNotExists(
+            xml_doc, "//stuf:extraElementen/stuf:extraElement[@naam='voornaam']"
+        )
+
+        # PDF report
+        xml_doc = xml_from_request_history(m, 2)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Di02",
+                "//zkn:stuurgegevens/stuf:functie": "genereerDocumentidentificatie",
+            },
+        )
+
+        xml_doc = xml_from_request_history(m, 3)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "open-forms-inzending.pdf",
+                "//zkn:object/zkn:formaat": "application/pdf",
+                "//zkn:object/zkn:vertrouwelijkAanduiding": "VERTROUWELIJK",
+            },
+        )
+
+        # attachment
+        xml_doc = xml_from_request_history(m, 4)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Di02",
+                "//zkn:stuurgegevens/stuf:functie": "genereerDocumentidentificatie",
+            },
+        )
+
+        xml_doc = xml_from_request_history(m, 5)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:object/zkn:inhoud/@stuf:bestandsnaam": "my-attachment.doc",
+                "//zkn:object/zkn:formaat": "application/msword",
+            },
+        )
+
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_request.txt"
+            ).count(),
+            6,
+        )
+        self.assertEqual(
+            TimelineLogProxy.objects.filter(
+                template="logging/events/stuf_zds_success_response.txt"
+            ).count(),
+            6,
+        )
+
+        # even on success, the intermediate results must be recorded:
+        submission.refresh_from_db()
+        self.assertEqual(
+            submission.registration_result["intermediate"],
+            {
+                "zaaknummer": "foo-zaak",
+                "zaak_created": True,
+                "document_nummers": {
+                    "pdf-report": "bar-document",
+                    str(attachment.id): "bar-document",
+                },
+                "documents_created": {
+                    "pdf-report": True,
+                    str(attachment.id): True,
+                },
+            },
+        )
+
+    @patch("celery.app.task.Task.request")
+    def test_plugin_vestiging_initiator_kvk_and_vestigingsnummer(self, m, mock_task):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "handelsnaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_handelsnaam,
+                    },
+                },
+                {
+                    "key": "postcode",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_postcode,
+                    },
+                },
+                {
+                    "key": "coordinaat",
+                    "type": "map",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+                {
+                    "key": "vestigingsNummer",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_vestigingsnummer,
+                    },
+                },
+            ],
+            submitted_data={
+                "handelsnaam": "ACME",
+                "postcode": "1000 AA",
+                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "vestigingsNummer": "87654321",
+            },
+            kvk="12345678",
+            form__name="my-form",
+            form__product__price=Decimal("0"),
+            form__payment_backend="demo",
+        )
+
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            file_name="my-attachment.doc",
+            content_type="application/msword",
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerZaakIdentificatie.xml",
+                {
+                    "zaak_identificatie": "foo-zaak",
+                },
+            ),
+            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+        mock_task.id = 1
+
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "zds_zaaktype_status_code": "123",
+            "zds_zaaktype_status_omschrijving": "aaabbc",
+            "zds_documenttype_omschrijving_inzending": "aaabbc",
+            # we are deliberately NOT including this to simulate upgrades from earlier
+            # versions where this configuration parameter was not available yet and is
+            # thus missing from the JSON data
+            # "zds_zaakdoc_vertrouwelijkheid": "OPENBAAR",
+        }
+
+        plugin = StufZDSRegistration("stuf")
+        serializer = plugin.configuration_options(data=form_options)
+        self.assertTrue(serializer.is_valid())
+
+        result = plugin.register_submission(submission, serializer.validated_data)
+        self.assertEqual(
+            result,
+            {
+                "zaak": "foo-zaak",
+                "document": "bar-document",
+            },
+        )
+
+        xml_doc = xml_from_request_history(m, 0)
+        self.assertSoapXMLCommon(xml_doc)
+
+        xml_doc = xml_from_request_history(m, 1)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
+                "//zkn:object/zkn:identificatie": "foo-zaak",
+                "//zkn:object/zkn:omschrijving": "my-form",
+                "//zkn:object/zkn:betalingsIndicatie": "N.v.t.",
+                "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:code": "zt-code",
+                "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
+                "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "52.36673378967122 4.893164274470299",
+                "//zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
+                "//zkn:heeft/zkn:gerelateerde/zkn:code": "123",
+                "//zkn:heeft/zkn:gerelateerde/zkn:omschrijving": "aaabbc",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:vestiging/bg:handelsnaam": "ACME",
             },
         )
