@@ -59,6 +59,10 @@ black==21.8b0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+bleach[css]==5.0.1
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 boltons==21.0.0
     # via
     #   -c requirements/ci.txt
@@ -919,6 +923,7 @@ six==1.15.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   bleach
     #   click-repl
     #   django-choices
     #   freezegun
@@ -1047,6 +1052,7 @@ tinycss2==1.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   bleach
     #   cairosvg
     #   cssselect2
     #   weasyprint
@@ -1130,6 +1136,7 @@ webencodings==0.5.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   bleach
     #   cssselect2
     #   html5lib
     #   tinycss2

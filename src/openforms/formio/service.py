@@ -67,6 +67,8 @@ def update_configuration_for_request(
 
     The configuration is modified in the context of the provided :arg:`submission`.
     """
+
+    # TODO move this to openforms.formio.dynamic_config
     pipeline = (
         update_urls_in_place,
         update_default_file_types,
@@ -93,12 +95,8 @@ def update_default_file_types(component: Component, **kwargs) -> None:
 def update_content_inline_csp(component: Component, request: Request) -> None:
     if component.get("type") == "content":
         """
-        NOTE: we apply a CSS declaration whitelist because content components are not purely "trusted" content from form-designers,
+        NOTE: we apply Bleach and a CSS declaration whitelist because content components are not purely "trusted" content from form-designers,
         but can contain malicious user input if the form designer uses variables inside the HTML
         (and the form submission data is passed as template context to those HTML blobs)
-
-        - width is used by the inline figure/image resize feature
         """
-        component["html"] = post_process_html(
-            component["html"], request, allowed_css_declarations=["width"]
-        )
+        component["html"] = post_process_html(component["html"], request)

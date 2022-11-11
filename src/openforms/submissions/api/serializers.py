@@ -399,7 +399,6 @@ class SubmissionProcessingStatusSerializer(serializers.Serializer):
         ),
     )
 
-    # TODO: apply HTML sanitation here with bleach
     confirmation_page_content = CSPPostProcessedHTMLField(
         label=_("Confirmation page content"),
         required=False,
