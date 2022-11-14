@@ -32,7 +32,8 @@ import {
 } from './constants';
 import {loadPlugins, loadForm, saveCompleteForm} from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
-import FormMetaFields from './FormMetaFields';
+import FormDetailFields from './FormDetailFields';
+import FormConfigurationFields from './FormConfigurationFields';
 import FormObjectTools from './FormObjectTools';
 import FormSubmit from './FormSubmit';
 import RegistrationFields from './RegistrationFields';
@@ -1164,7 +1165,16 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
           </TabList>
 
           <TabPanel>
-            <FormMetaFields
+            <FormDetailFields
+              form={state.form}
+              literals={state.literals}
+              onChange={onFieldChange}
+              availableAuthPlugins={state.availableAuthPlugins}
+              selectedAuthPlugins={state.selectedAuthPlugins}
+              availableCategories={state.availableCategories}
+              onAuthPluginChange={onAuthPluginChange}
+            />
+            <FormConfigurationFields
               form={state.form}
               literals={state.literals}
               onChange={onFieldChange}

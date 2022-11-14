@@ -13,7 +13,6 @@ import Select from 'components/admin/forms/Select';
 import {getTranslatedChoices} from 'utils/i18n';
 
 import AuthPluginField from './AuthPluginField';
-import TinyMCEEditor from './Editor';
 import AuthPluginAutoLoginField from './AuthPluginAutoLoginField';
 
 export const SUMBISSION_ALLOWED_CHOICES = [
@@ -57,7 +56,7 @@ const getCategoryChoices = available => {
 /**
  * Component to render the metadata admin form for an Open Forms form.
  */
-const FormMetaFields = ({
+const FormConfigurationFields = ({
   form,
   onChange,
   availableAuthPlugins,
@@ -77,7 +76,6 @@ const FormMetaFields = ({
     maintenanceMode,
     translationEnabled,
     submissionAllowed,
-    explanationTemplate,
   } = form;
 
   const intl = useIntl();
@@ -104,7 +102,14 @@ const FormMetaFields = ({
   };
 
   return (
-    <Fieldset>
+    <Fieldset
+      title={
+        <FormattedMessage
+          defaultMessage="Form configuration"
+          description="Form configuration fieldset title"
+        />
+      }
+    >
       <FormRow>
         <Field
           name="form.uuid"
@@ -118,21 +123,6 @@ const FormMetaFields = ({
           required
         >
           <TextInput value={uuid} onChange={onChange} disabled={true} />
-        </Field>
-      </FormRow>
-      <FormRow>
-        <Field
-          name="form.name"
-          label={<FormattedMessage defaultMessage="Name" description="Form name field label" />}
-          helpText={
-            <FormattedMessage
-              defaultMessage="Name/title of the form"
-              description="Form name field help text"
-            />
-          }
-          required
-        >
-          <TextInput value={name} onChange={onChange} onBlur={setFormSlug} maxLength="150" />
         </Field>
       </FormRow>
       <FormRow>
@@ -332,35 +322,11 @@ const FormMetaFields = ({
           />
         </Field>
       </FormRow>
-      <FormRow>
-        <Field
-          name="form.explanationTemplate"
-          label={
-            <FormattedMessage
-              defaultMessage="Explanation template"
-              description="Start page explanation text label"
-            />
-          }
-          helpText={
-            <FormattedMessage
-              defaultMessage="Content that will be shown on the start page of the form, below the title and above the log in text."
-              description="Start page explanation text"
-            />
-          }
-        >
-          <TinyMCEEditor
-            content={explanationTemplate}
-            onEditorChange={(newValue, editor) =>
-              onChange({target: {name: 'form.explanationTemplate', value: newValue}})
-            }
-          />
-        </Field>
-      </FormRow>
     </Fieldset>
   );
 };
 
-FormMetaFields.propTypes = {
+FormConfigurationFields.propTypes = {
   form: PropTypes.shape({
     name: PropTypes.string.isRequired,
     uuid: PropTypes.string.isRequired,
@@ -386,4 +352,4 @@ FormMetaFields.propTypes = {
   onAuthPluginChange: PropTypes.func.isRequired,
 };
 
-export default FormMetaFields;
+export default FormConfigurationFields;
