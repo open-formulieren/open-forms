@@ -1,3 +1,4 @@
+import logging
 from typing import TYPE_CHECKING, List
 
 from django.core.validators import RegexValidator
@@ -21,6 +22,8 @@ from openforms.variables.utils import check_initial_value
 
 from .form_definition import FormDefinition
 
+logger = logging.getLogger(__name__)
+
 if TYPE_CHECKING:  # pragma: nocover
     from .form import Form
     from .form_step import FormStep
@@ -41,14 +44,22 @@ class FormVariableManager(models.Manager):
     use_in_migrations = True
 
     @transaction.atomic
-    def create_for_form(self, form: "Form") -> None:
+    def create_for_form(self, form: "Form", fix_prefill_config=False) -> None:
+        """
+        Create FormVariable objects for ``form``.
+
+        ``fix_prefill_config`` is used only for patching migrations involving corrupted
+        data and is set for removal.
+        """
         form_steps = form.formstep_set.select_related("form_definition")
 
         for form_step in form_steps:
             # TODO deal with duplicate keys!
-            self.create_for_formstep(form_step)
+            self.create_for_formstep(form_step, fix_prefill_config)
 
-    def create_for_formstep(self, form_step: "FormStep") -> List["FormVariable"]:
+    def create_for_formstep(
+        self, form_step: "FormStep", fix_prefill_config=False
+    ) -> List["FormVariable"]:
         form_definition_configuration = form_step.form_definition.configuration
         component_keys = [
             component["key"]
@@ -97,6 +108,29 @@ class FormVariableManager(models.Manager):
                     initial_value=get_component_default_value(component),
                 )
             )
+
+            if fix_prefill_config:
+                for form_variable in form_variables:
+                    if (
+                        form_variable.prefill_plugin
+                        and not form_variable.prefill_attribute
+                    ):
+                        logger.warning(
+                            "Invalid prefill configuration: "
+                            "plugin %s specified without attribute",
+                            form_variable.prefill_plugin,
+                        )
+                        form_variable.prefill_plugin = ""
+                    elif (
+                        form_variable.prefill_attribute
+                        and not form_variable.prefill_plugin
+                    ):
+                        logger.warning(
+                            "Invalid prefill configuration: "
+                            "attribute %s specified without plugin",
+                            form_variable.prefill_attribute,
+                        )
+                        form_variable.prefill_attribute = ""
 
         return self.bulk_create(form_variables)
 

@@ -18,7 +18,7 @@ def create_form_variables_for_form(apps, schema_editor):
     )
 
     for form in forms_without_form_variables:
-        FormVariable.objects.create_for_form(form)
+        FormVariable.objects.create_for_form(form, fix_prefill_config=True)
 
 
 class Migration(migrations.Migration):
