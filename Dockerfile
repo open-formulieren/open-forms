@@ -42,8 +42,8 @@ RUN pip install pip -U
 COPY ./requirements /app/requirements
 RUN pip install -r requirements/setuptools.txt
 
-ARG ENVIRONMENT=production
-RUN pip install -r requirements/${ENVIRONMENT}.txt
+ARG TARGET_ENVIRONMENT=production
+RUN pip install -r requirements/${TARGET_ENVIRONMENT}.txt
 
 # Stage 2 - Install frontend deps and build assets
 FROM node:16-buster AS frontend-build
@@ -133,6 +133,9 @@ ENV GIT_SHA=${COMMIT_HASH}
 ENV RELEASE=${RELEASE} SDK_RELEASE=${SDK_RELEASE}
 
 ENV DJANGO_SETTINGS_MODULE=openforms.conf.docker
+
+ARG EXTENSIONS=''
+ENV OPEN_FORMS_EXTENSIONS=${EXTENSIONS}
 
 ARG SECRET_KEY=dummy
 

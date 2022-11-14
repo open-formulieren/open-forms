@@ -131,72 +131,39 @@ jobs:
         working-directory: docs
         run: pytest check_sphinx.py -v --tb=auto
 
-  docker_build:
-    name: Build Docker image
+  # see https://github.com/orgs/community/discussions/26671
+  docker_build_setup:
+    name: Set up docker build 'dynamic' env variables
     runs-on: ubuntu-latest
-    env:
-      COMPOSE_DOCKER_CLI_BUILD: 1
-      DOCKER_BUILDKIT: 1
+    outputs:
+      image-name: ${{ steps.set-output-defaults.outputs.image-name }}
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Set tag
-        id: vars
+      - name: Set output with default values
+        id: set-output-defaults
         run: |
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          echo "image-name=${{ env.IMAGE_NAME }}" >> $GITHUB_OUTPUT
 
-          # Strip "v" prefix from tag name (if present at all)
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION=latest
-
-          # PRs result in version 'merge' -> transform that into 'latest'
-          [ "$VERSION" == "merge" ] && VERSION=latest
-
-          # Obtain the SDK release to bundle along, use latest if backend is also latest
-          SDK_RELEASE=$(cat .sdk-release | tr -d '[:space:]')
-          [ "$VERSION" == "latest" ] && SDK_RELEASE=latest
-
-          echo ::set-output name=tag::${VERSION}
-          echo ::set-output name=git_hash::${GITHUB_SHA}
-          echo ::set-output name=sdk_release::${SDK_RELEASE}
-
-      - name: Build the production Docker image
-        run: |
-          docker build . \
-            --tag $IMAGE_NAME:$RELEASE_VERSION \
-            --build-arg COMMIT_HASH=${{ steps.vars.outputs.git_hash }} \
-            --build-arg RELEASE=${{ steps.vars.outputs.tag }} \
-            --build-arg SDK_RELEASE=${{ steps.vars.outputs.sdk_release }}
-        env:
-          RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
-
-      - run: docker image save -o image.tar $IMAGE_NAME:${{ steps.vars.outputs.tag }}
-      - name: Store image artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: docker-image
-          path: image.tar
-          retention-days: 1
-
-      - name: Build the test Docker image
-        run: |
-          docker build . \
-            --tag $IMAGE_NAME:test \
-            --build-arg ENVIRONMENT=ci \
-            --build-arg COMMIT_HASH=${{ steps.vars.outputs.git_hash }} \
-            --build-arg RELEASE=${{ steps.vars.outputs.tag }} \
-            --build-arg SDK_RELEASE=${{ steps.vars.outputs.sdk_release }}
-
-      - run: docker image save -o image-test.tar $IMAGE_NAME:test
-      - name: Store image artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: docker-image-test
-          path: image-test.tar
-          retention-days: 1
+  docker_build:
+    needs: docker_build_setup
+    strategy:
+      matrix:
+        # KEEP IN SYNC WITH docker_push JOB
+        target:
+          - env: production
+            extensions: ''
+            image_tag_prefix: ''
+          - env: extensions
+            extensions: 'token_exchange'
+            image_tag_prefix: 'all-extensions-'
+          - env: ci
+            extensions: ''
+            image_tag_prefix: 'test-'
+    uses: ./.github/workflows/build-image.yml
+    with:
+      image_name: ${{ needs.docker_build_setup.outputs.image-name }}
+      image_tag_prefix: ${{ matrix.target.image_tag_prefix }}
+      target_env: ${{ matrix.target.env }}
+      extensions: ${{ matrix.target.extensions }}
 
   oas-up-to-date:
     needs: tests
@@ -315,21 +282,21 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' # Exclude PRs
 
+    strategy:
+      matrix:
+        # KEEP IN SYNC WITH docker_build JOB
+        target:
+          - env: production
+            image_tag_prefix: ''
+          - env: extensions
+            image_tag_prefix: 'all-extensions-'
+          - env: ci
+            image_tag_prefix: 'test-'
+
     steps:
-      # This will include the updated OAS (if updated) from the update-oas job.
       - uses: actions/checkout@v3
 
-      - name: Download built image
-        uses: actions/download-artifact@v3
-        with:
-          name: docker-image
-
-      - name: Download built image (test)
-        uses: actions/download-artifact@v3
-        with:
-          name: docker-image-test
-
-      - name: Set tag
+      - name: Derive version
         id: vars
         run: |
           # Strip git ref prefix from version
@@ -341,12 +308,19 @@ jobs:
           # Use Docker `latest` tag convention
           [ "$VERSION" == "master" ] && VERSION=latest
 
-          echo ::set-output name=tag::${VERSION}
+          # PRs result in version 'merge' -> transform that into 'latest'
+          [ "$VERSION" == "merge" ] && VERSION=latest
+
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Download built image
+        uses: actions/download-artifact@v3
+        with:
+          name: docker-image-${{ matrix.target.image_tag_prefix }}${{ steps.vars.outputs.version }}
 
       - name: Load image
         run: |
           docker image load -i image.tar
-          docker image load -i image-test.tar
 
       - name: Log into registry
         run:
@@ -354,9 +328,6 @@ jobs:
           --password-stdin
 
       - name: Push the Docker image (production)
+        run: docker push $IMAGE_NAME:$TAG
         env:
-          RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
-        run: docker push $IMAGE_NAME:$RELEASE_VERSION
-
-      - name: Push the Docker image (test)
-        run: docker push $IMAGE_NAME:test
+          TAG: ${{ matrix.target.image_tag_prefix }}${{ steps.vars.outputs.version }}

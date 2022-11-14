@@ -1,0 +1,93 @@
+name: Build the target Docker image
+
+on:
+  workflow_call:
+    inputs:
+      target_env:
+        required: true
+        type: string
+        # choice is not available yet :(
+        # type: choice
+        # options:
+        #   - production
+        #   - extensions
+        #   - ci
+      image_name:
+        required: true
+        type: string # image name without tag, e.g. 'openforms/open-forms'
+      image_tag_prefix:
+        required: true
+        type: string
+        default: ''
+      extensions:
+        required: true
+        type: string
+        default: ''
+    outputs:
+      image_name:
+        description: Image name + tag of the built image
+        value: ${{ jobs.image_build.outputs.image_name }}
+      artifact_name:
+        description: Artifact name for the built image
+        value: ${{ jobs.image_build.outputs.artifact_name }}
+
+jobs:
+  image_build:
+    name: Build image
+    runs-on: ubuntu-latest
+
+    env:
+      COMPOSE_DOCKER_CLI_BUILD: 1
+      DOCKER_BUILDKIT: 1
+
+    outputs:
+      image_name: ${{ steps.build-args.outputs.image_name }}
+      artifact_name: ${{ steps.build-args.outputs.artifact_name }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Extract build args
+        id: build-args
+        run: |
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # Strip "v" prefix from tag name (if present at all)
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+
+          # PRs result in version 'merge' -> transform that into 'latest'
+          [ "$VERSION" == "merge" ] && VERSION=latest
+
+          # Obtain the SDK release to bundle along, use latest if backend is also latest
+          SDK_RELEASE=$(cat .sdk-release | tr -d '[:space:]')
+          # TODO: check how this behaves with tag all-extensions-latest
+          [ "$VERSION" == "latest" ] && SDK_RELEASE=latest
+
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "sdk_release=${SDK_RELEASE}" >> $GITHUB_OUTPUT
+          echo "image_name=${{ inputs.image_name }}:${{ inputs.image_tag_prefix }}${VERSION}" >> $GITHUB_OUTPUT
+          echo "artifact_name=docker-image-${{ inputs.image_tag_prefix }}${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Build the Docker image
+        run: |
+          docker build . \
+            --tag ${{ steps.build-args.outputs.image_name }} \
+            --build-arg TARGET_ENVIRONMENT=${{ inputs.target_env }} \
+            --build-arg EXTENSIONS=${{ inputs.extensions }} \
+            --build-arg SDK_RELEASE=${{ steps.build-args.outputs.sdk_release }} \
+            --build-arg COMMIT_HASH=${GITHUB_SHA} \
+            --build-arg RELEASE=${{ steps.build-args.outputs.version }}
+
+      - name: Dump image to file
+        run: docker image save -o image.tar ${{ steps.build-args.outputs.image_name }}
+
+      - name: Store image artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.build-args.outputs.artifact_name }}
+          path: image.tar
+          retention-days: 1
