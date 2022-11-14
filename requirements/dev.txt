@@ -602,7 +602,6 @@ markupsafe==1.1.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   jinja2
-    #   sphinx
 maykin-django-two-factor-auth[phonenumbers]==2.0.4
     # via
     #   -c requirements/ci.txt
@@ -961,7 +960,7 @@ soupsieve==2.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   beautifulsoup4
-sphinx==4.0.1
+sphinx==4.5.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -990,7 +989,7 @@ sphinxcontrib-devhelp==1.0.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   sphinx
-sphinxcontrib-htmlhelp==1.0.3
+sphinxcontrib-htmlhelp==2.0.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1005,7 +1004,7 @@ sphinxcontrib-qthelp==1.0.3
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   sphinx
-sphinxcontrib-serializinghtml==1.1.4
+sphinxcontrib-serializinghtml==1.1.5
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1188,5 +1187,4 @@ setuptools==59.6.0
     #   josepy
     #   jsonschema
     #   pip-tools
-    #   sphinx
     #   weasyprint
