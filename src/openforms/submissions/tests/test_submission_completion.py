@@ -129,10 +129,6 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 ]
             },
         )
-        form_step2_path = reverse(
-            "api:form-steps-detail",
-            kwargs={"form_uuid_or_slug": form.uuid, "uuid": step2.uuid},
-        )
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={
@@ -143,7 +139,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             },
             actions=[
                 {
-                    "form_step": f"http://example.com{form_step2_path}",
+                    "form_step_uuid": f"{step2.uuid}",
                     "action": {
                         "name": "Step is not applicable",
                         "type": "step-not-applicable",

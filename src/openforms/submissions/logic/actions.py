@@ -22,6 +22,7 @@ class ActionDict(TypedDict):
     component: str
     variable: str
     form_step: str
+    form_step_uuid: str
     action: ActionDetails
 
 
@@ -129,7 +130,7 @@ class StepNotApplicableAction(ActionOperation):
     @classmethod
     def from_action(cls, action: ActionDict) -> "StepNotApplicableAction":
         return cls(
-            form_step_identifier=action["form_step"],
+            form_step_identifier=action["form_step_uuid"],
         )
 
     def apply(self, step: SubmissionStep, configuration: JSONObject) -> None:

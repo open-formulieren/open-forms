@@ -1,6 +1,5 @@
 from unittest.mock import patch
 
-from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.forms.tests.factories import (
@@ -101,11 +100,6 @@ class SubmissionVariablesPerformanceTests(APITestCase):
             },
         )
 
-        form_step1_path = reverse(
-            "api:form-steps-detail",
-            kwargs={"form_uuid_or_slug": form.uuid, "uuid": form_step1.uuid},
-        )
-
         # ensure there is a submission
         submission = SubmissionFactory.create(form=form)
         submission.is_authenticated  # Load the auth info (otherwise an extra query is needed)
@@ -124,7 +118,7 @@ class SubmissionVariablesPerformanceTests(APITestCase):
             json_logic_trigger={"==": [{"var": "var2"}, "test2"]},
             actions=[
                 {
-                    "form_step": f"http://example.com{form_step1_path}",  # Change the saved data of another step
+                    "form_step_uuid": f"{form_step1.uuid}",  # Change the saved data of another step
                     "action": {
                         "name": "Step is not applicable",
                         "type": "step-not-applicable",
