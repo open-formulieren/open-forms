@@ -284,7 +284,11 @@ class FormViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(active=True).filter(_is_deleted=False)
         elif self.action == "list":
             # So that the admin can display deleted forms, but the list endpoint doesn't return them
-            queryset = queryset.filter(_is_deleted=False)
+            queryset = (
+                queryset.filter(_is_deleted=False)
+                .select_related("confirmation_email_template")
+                .prefetch_related("category", "product")
+            )
 
         # ⚡️ - the prefetches are not required for the variables/logic bulk (update/read)
         # endpoints, so we clear prefetches and select_related calls.
