@@ -682,14 +682,14 @@ class FormDefinitionsAPITranslationTests(APITestCase):
                 "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
                 "invalidParams": [
                     {
-                        "name": "translations.en.name",
+                        "name": "translations.nl.name",
                         "code": "max_length",
                         "reason": _(
                             "Ensure this field has no more than {max_length} characters."
                         ).format(max_length=50),
                     },
                     {
-                        "name": "translations.nl.name",
+                        "name": "translations.en.name",
                         "code": "max_length",
                         "reason": _(
                             "Ensure this field has no more than {max_length} characters."

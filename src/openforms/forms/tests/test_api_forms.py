@@ -1401,18 +1401,18 @@ class FormsAPITranslationTests(APITestCase):
         self.assertEqual(form.begin_text_en, "start")
         self.assertEqual(form.change_text_en, "change")
         self.assertEqual(form.confirm_text_en, "confirm")
-        self.assertEqual(form.explanation_template_en, None)
+        self.assertEqual(form.explanation_template_en, "")
         self.assertEqual(form.name_en, "Form 1")
         self.assertEqual(form.previous_text_en, "prev")
-        self.assertEqual(form.submission_confirmation_template_en, None)
+        self.assertEqual(form.submission_confirmation_template_en, "")
 
         self.assertEqual(form.begin_text_nl, "begin")
         self.assertEqual(form.change_text_nl, "pas aan")
         self.assertEqual(form.confirm_text_nl, "bevestig")
-        self.assertEqual(form.explanation_template_nl, None)
+        self.assertEqual(form.explanation_template_nl, "")
         self.assertEqual(form.name_nl, "Formulier 1")
         self.assertEqual(form.previous_text_nl, "vorige")
-        self.assertEqual(form.submission_confirmation_template_nl, None)
+        self.assertEqual(form.submission_confirmation_template_nl, "")
 
         self.assertEqual(form.confirmation_email_template.subject_en, "Subject")
         self.assertEqual(
@@ -1576,6 +1576,39 @@ class FormsAPITranslationTests(APITestCase):
                 "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
                 "invalidParams": [
                     {
+                        "name": "translations.nl.changeText.nonFieldErrors",
+                        "code": "invalid",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
+                        "name": "translations.nl.confirmText.nonFieldErrors",
+                        "code": "invalid",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
+                        "name": "translations.nl.name",
+                        "code": "max_length",
+                        "reason": _(
+                            "Ensure this field has no more than {max_length} characters."
+                        ).format(max_length=150),
+                    },
+                    {
+                        "name": "translations.nl.previousText.nonFieldErrors",
+                        "code": "invalid",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
+                        "name": "translations.nl.submissionConfirmationTemplate",
+                        "code": "syntax_error",
+                        "reason": "\n                <p>Empty variable tag on line 1</p>\n                \n            ",
+                    },
+                    {
                         "name": "translations.en.beginText.nonFieldErrors",
                         "code": "invalid",
                         "reason": Serializer.default_error_messages["invalid"].format(
@@ -1615,39 +1648,73 @@ class FormsAPITranslationTests(APITestCase):
                         "code": "syntax_error",
                         "reason": "\n                <p>Empty variable tag on line 1</p>\n                \n            ",
                     },
-                    {
-                        "name": "translations.nl.changeText.nonFieldErrors",
-                        "code": "invalid",
-                        "reason": Serializer.default_error_messages["invalid"].format(
-                            datatype="str"
-                        ),
-                    },
-                    {
-                        "name": "translations.nl.confirmText.nonFieldErrors",
-                        "code": "invalid",
-                        "reason": Serializer.default_error_messages["invalid"].format(
-                            datatype="str"
-                        ),
-                    },
-                    {
-                        "name": "translations.nl.name",
-                        "code": "max_length",
-                        "reason": _(
-                            "Ensure this field has no more than {max_length} characters."
-                        ).format(max_length=150),
-                    },
-                    {
-                        "name": "translations.nl.previousText.nonFieldErrors",
-                        "code": "invalid",
-                        "reason": Serializer.default_error_messages["invalid"].format(
-                            datatype="str"
-                        ),
-                    },
-                    {
-                        "name": "translations.nl.submissionConfirmationTemplate",
-                        "code": "syntax_error",
-                        "reason": "\n                <p>Empty variable tag on line 1</p>\n                \n            ",
-                    },
                 ],
             },
+        )
+
+    def test_create_with_translations_normalize_values(self):
+        self.client.force_authenticate(user=self.user)
+
+        url = reverse("api:form-list")
+        data = {
+            "name": "Test Post Form",
+            "slug": "test-post-form",
+            "authentication_backends": ["digid"],
+            "translations": {
+                "en": {
+                    "begin_text": {"value": "start"},
+                    "change_text": {"value": "change"},
+                    "confirm_text": {"value": "confirm"},
+                },
+                "nl": {
+                    "explanation_template": "uitleg",
+                    "name": "Formulier 1",
+                    "previous_text": {"value": "vorige"},
+                    "submission_confirmation_template": "bevestiging",
+                },
+            },
+            "confirmation_email_template": {
+                "subject": "foo",
+                "content": "{% appointment_information %} {% payment_information %}",
+                "translations": {
+                    "en": {
+                        "subject": "Subject",
+                        "content": "Content {% appointment_information %} {% payment_information %}",
+                    },
+                },
+            },
+        }
+
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        form = Form.objects.get(uuid=response.data["uuid"])
+
+        self.assertEqual(form.begin_text_en, "start")
+        self.assertEqual(form.change_text_en, "change")
+        self.assertEqual(form.confirm_text_en, "confirm")
+        self.assertEqual(form.explanation_template_en, "")
+        self.assertEqual(form.name_en, "")
+        self.assertEqual(form.previous_text_en, "")
+        self.assertEqual(form.submission_confirmation_template_en, "")
+
+        self.assertEqual(form.begin_text_nl, "")
+        self.assertEqual(form.change_text_nl, "")
+        self.assertEqual(form.confirm_text_nl, "")
+        self.assertEqual(form.explanation_template_nl, "uitleg")
+        self.assertEqual(form.name_nl, "Formulier 1")
+        self.assertEqual(form.previous_text_nl, "vorige")
+        self.assertEqual(form.submission_confirmation_template_nl, "bevestiging")
+
+        self.assertEqual(form.confirmation_email_template.subject_en, "Subject")
+        self.assertEqual(
+            form.confirmation_email_template.content_en,
+            "Content {% appointment_information %} {% payment_information %}",
+        )
+
+        self.assertEqual(form.confirmation_email_template.subject_nl, "")
+        self.assertEqual(
+            form.confirmation_email_template.content_nl,
+            "",
         )

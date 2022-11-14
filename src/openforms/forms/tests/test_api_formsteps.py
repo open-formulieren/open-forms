@@ -810,27 +810,6 @@ class FormStepsAPITranslationTests(APITestCase):
                 "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
                 "invalidParams": [
                     {
-                        "name": "literals.translations.en.nextText.nonFieldErrors",
-                        "code": "invalid",
-                        "reason": Serializer.default_error_messages["invalid"].format(
-                            datatype="str"
-                        ),
-                    },
-                    {
-                        "name": "literals.translations.en.previousText.nonFieldErrors",
-                        "code": "invalid",
-                        "reason": Serializer.default_error_messages["invalid"].format(
-                            datatype="str"
-                        ),
-                    },
-                    {
-                        "name": "literals.translations.en.saveText.nonFieldErrors",
-                        "code": "invalid",
-                        "reason": Serializer.default_error_messages["invalid"].format(
-                            datatype="str"
-                        ),
-                    },
-                    {
                         "name": "literals.translations.nl.nextText.nonFieldErrors",
                         "code": "invalid",
                         "reason": Serializer.default_error_messages["invalid"].format(
@@ -846,6 +825,27 @@ class FormStepsAPITranslationTests(APITestCase):
                     },
                     {
                         "name": "literals.translations.nl.saveText.nonFieldErrors",
+                        "code": "invalid",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
+                        "name": "literals.translations.en.nextText.nonFieldErrors",
+                        "code": "invalid",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
+                        "name": "literals.translations.en.previousText.nonFieldErrors",
+                        "code": "invalid",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
+                        "name": "literals.translations.en.saveText.nonFieldErrors",
                         "code": "invalid",
                         "reason": Serializer.default_error_messages["invalid"].format(
                             datatype="str"
