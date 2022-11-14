@@ -19,9 +19,8 @@ def replace_form_step_urls_with_uuids(apps, schema_editor):
         for action in rule.actions:
             action_type = action.get("action", {}).get("type")
             if action_type and action_type == LogicActionTypes.step_not_applicable:
-                form_step_url = action["form_step"]
+                form_step_url = action["form_step"].replace("/api/v1", "/api/v2")
                 form_step_uuid = resolve(furl(form_step_url).pathstr).kwargs["uuid"]
-
                 action["form_step_uuid"] = form_step_uuid
                 rule_modified = True
 
