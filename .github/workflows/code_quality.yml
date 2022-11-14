@@ -30,6 +30,8 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.8'
+          cache: 'pip'
+          cache-dependency-path: 'requirements/*.txt'
       - name: Install OS dependencies
         run: |
           sudo apt-get update
@@ -49,6 +51,8 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.8'
+          cache: 'pip'
+          cache-dependency-path: 'requirements/*.txt'
       - name: Install OS dependencies
         run: |
           sudo apt-get update
@@ -69,6 +73,8 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.8'
+          cache: 'pip'
+          cache-dependency-path: 'requirements/*.txt'
       - name: Install OS dependencies
         run: |
           sudo apt-get update
@@ -116,6 +122,8 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.8'
+          cache: 'pip'
+          cache-dependency-path: 'requirements/*.txt'
       - name: Install OS dependencies
         run: |
           sudo apt-get update
@@ -154,6 +162,8 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.8'
+          cache: 'pip'
+          cache-dependency-path: 'requirements/*.txt'
 
       - name: Run linter
         run: python ./bin/lint_dependencies.py
