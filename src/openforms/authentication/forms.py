@@ -3,20 +3,37 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.contrib.kvk.validators import validate_kvk
 from openforms.utils.validators import validate_bsn
+from openforms.utils.widgets import OpenFormsRadioSelect
+
+from .constants import ModeChoices
 
 
 class RegistratorSubjectInfoForm(forms.Form):
+    mode = forms.ChoiceField(
+        label=_("Continue as..."),
+        choices=ModeChoices.choices,
+        required=False,
+        widget=OpenFormsRadioSelect,
+    )
     bsn = forms.CharField(
         label=_("BSN number of client"),
         required=False,
         max_length=9,
         validators=[validate_bsn],
+        widget=forms.TextInput(
+            attrs={
+                "class": "openforms-input",
+                "pattern": r"\d{9}",
+                "placeholder": "_" * 9,
+            }
+        ),
     )
     kvk = forms.CharField(
         label=_("KvK number of client"),
         required=False,
         max_length=8,
         validators=[validate_kvk],
+        widget=forms.TextInput(attrs={"class": "openforms-input"}),
     )
     skip_subject = forms.BooleanField(
         label=_("Continue without additional information"),

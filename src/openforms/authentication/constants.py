@@ -17,3 +17,9 @@ class AuthAttribute(DjangoChoices):
     kvk = ChoiceItem("kvk", _("KvK number"))
     pseudo = ChoiceItem("pseudo", _("Pseudo ID"))
     employee_id = ChoiceItem("employee_id", _("Employee ID"))
+
+
+class ModeChoices(DjangoChoices):
+    citizen = ChoiceItem("citizen", _("Citizen"))
+    company = ChoiceItem("company", _("Company"))
+    employee = ChoiceItem("employee", _("Employee"))
