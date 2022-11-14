@@ -1,3 +1,5 @@
+from rest_framework.reverse import reverse
+
 from openforms.utils.tests.test_migrations import TestMigrations
 
 from ..api.serializers.logic.action_serializers import LogicComponentActionSerializer
@@ -227,4 +229,60 @@ class TestChangeInlineEditSetting(TestMigrations):
 
         self.assertTrue(
             self.form_definition.configuration["components"][0]["inlineEdit"]
+        )
+
+
+class TestConvertURLsToUUIDs(TestMigrations):
+    migrate_from = "0050_alter_formvariable_key"
+    migrate_to = "0051_replace_urls_with_uuids"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        Form = apps.get_model("forms", "Form")
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        FormStep = apps.get_model("forms", "FormStep")
+        FormLogic = apps.get_model("forms", "FormLogic")
+
+        form = Form.objects.create(name="Form", slug="form")
+        form_definition = FormDefinition.objects.create(
+            name="Vertaalbare naam",
+            configuration={
+                "components": [
+                    {
+                        "key": "test",
+                        "type": "textfield",
+                    }
+                ]
+            },
+        )
+        form_step = FormStep.objects.create(
+            form=form, form_definition=form_definition, order=0
+        )
+
+        form_step_path = reverse(
+            "api:form-steps-detail",
+            kwargs={"form_uuid_or_slug": form.uuid, "uuid": form_step.uuid},
+        )
+
+        self.rule = FormLogic.objects.create(
+            form=form,
+            order=1,
+            json_logic_trigger={"==": [{"var": "test"}, "test"]},
+            actions=[
+                {
+                    "form_step": f"http://example.com{form_step_path}",
+                    "action": {
+                        "name": "Step is not applicable",
+                        "type": "step-not-applicable",
+                    },
+                }
+            ],
+        )
+        self.form_step = form_step
+
+    def test_assert_url_converted_correctly(self):
+        self.rule.refresh_from_db()
+
+        self.assertEqual(
+            self.rule.actions[0]["form_step_uuid"], str(self.form_step.uuid)
         )
