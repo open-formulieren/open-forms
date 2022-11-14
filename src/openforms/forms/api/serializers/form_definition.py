@@ -113,6 +113,9 @@ class FormDefinitionSerializer(
             )
         return attrs
 
+    def get_model_class(self):
+        return self.Meta.model
+
 
 class FormDefinitionDetailSerializer(FormDefinitionSerializer):
     used_in = UsedInFormSerializer(

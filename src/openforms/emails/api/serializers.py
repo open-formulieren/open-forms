@@ -19,3 +19,6 @@ class ConfirmationEmailTemplateSerializer(serializers.ModelSerializer):
         validators = [
             AllOrNoneRequiredFieldsValidator("subject", "content"),
         ]
+
+    def get_model_class(self):
+        return self.Meta.model

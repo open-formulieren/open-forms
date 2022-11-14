@@ -190,6 +190,9 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             },
         }
 
+    def get_model_class(self):
+        return self.Meta.model
+
     @transaction.atomic()
     def create(self, validated_data):
         confirmation_email_template = validated_data.pop(

@@ -93,10 +93,14 @@ class ModelTranslationsSerializer(serializers.Serializer):
         ret = OrderedDict()
         errors = OrderedDict()
 
-        for language, fields in data.items():
+        fields = sorted(
+            get_translatable_fields_for_model(self.parent.get_model_class())
+        )
+        for language, _label in settings.LANGUAGES:
             errors_for_lang = OrderedDict()
-            for field_name, value in fields.items():
+            for field_name in fields:
                 parent_field = self.get_parent_field(field_name)
+                value = data.get(language, {}).get(field_name)
                 if value is None:
                     if isinstance(parent_field, serializers.Serializer):
                         value = parent_field.data
@@ -110,11 +114,14 @@ class ModelTranslationsSerializer(serializers.Serializer):
                     if validate_method is not None:
                         validated_value = validate_method(validated_value)
                 except serializers.ValidationError as exc:
-                    error = exc.detail
+                    error = self.ignore_blank_errors(exc.detail)
                 except DjangoValidationError as exc:
-                    error = get_error_detail(exc)
+                    error = self.ignore_blank_errors(get_error_detail(exc))
                 except SkipField:
                     pass
+
+                if error:
+                    errors_for_lang[field_name] = error
                 else:
                     # TODO instead allow string values via serializer?
                     if hasattr(parent_field, "get_translation_literal"):
@@ -122,9 +129,6 @@ class ModelTranslationsSerializer(serializers.Serializer):
                             validated_value
                         )
                     ret[f"{field_name}_{language}"] = validated_value
-
-                if error and (error_detail := self.ignore_blank_errors(error)):
-                    errors_for_lang[field_name] = error_detail
 
             if errors_for_lang:
                 errors[language] = errors_for_lang
