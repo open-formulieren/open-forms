@@ -1,7 +1,6 @@
 from django.test import TestCase
 
 from freezegun import freeze_time
-from rest_framework.reverse import reverse
 
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import (
@@ -99,10 +98,6 @@ class StepModificationTests(TestCase):
                 ]
             },
         )
-        form_step2_path = reverse(
-            "api:form-steps-detail",
-            kwargs={"form_uuid_or_slug": form.uuid, "uuid": step2.uuid},
-        )
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={
@@ -113,7 +108,7 @@ class StepModificationTests(TestCase):
             },
             actions=[
                 {
-                    "form_step": f"http://example.com{form_step2_path}",
+                    "form_step_uuid": f"{step2.uuid}",
                     "action": {
                         "name": "Step is not applicable",
                         "type": "step-not-applicable",

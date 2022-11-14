@@ -566,6 +566,9 @@ class FormViewSet(viewsets.ModelViewSet):
                 # context for :class:`openforms.api.fields.RelatedFieldFromContext` lookups
                 "forms": {str(form.uuid): form},
                 "form_variables": FormVariableWrapper(form),
+                "form_steps": {
+                    form_step.uuid: form_step for form_step in form.formstep_set.all()
+                },
             },
         )
         serializer.is_valid(raise_exception=True)

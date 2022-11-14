@@ -1,6 +1,9 @@
+import warnings
+
 from django.utils.translation import ugettext_lazy as _
 
 from drf_polymorphic.serializers import PolymorphicSerializer
+from drf_spectacular.utils import extend_schema_serializer
 from rest_framework import serializers
 
 from openforms.submissions.api.fields import URLRelatedField
@@ -8,6 +11,7 @@ from openforms.submissions.api.fields import URLRelatedField
 from ....constants import LogicActionTypes, PropertyTypes
 from ....models import FormStep
 from ...validators import JsonLogicActionValueValidator
+from .fields import ActionFormStepUUIDField
 
 
 class ComponentPropertySerializer(serializers.Serializer):
@@ -69,6 +73,7 @@ class LogicActionPolymorphicSerializer(PolymorphicSerializer):
     }
 
 
+@extend_schema_serializer(deprecate_fields=["form_step"])
 class LogicComponentActionSerializer(serializers.Serializer):
     # TODO: validate that the component is present on the form
     component = serializers.CharField(
@@ -117,6 +122,16 @@ class LogicComponentActionSerializer(serializers.Serializer):
         )
         % {"action_type": LogicActionTypes.step_not_applicable},
     )
+    form_step_uuid = ActionFormStepUUIDField(
+        allow_null=True,
+        required=False,  # validated against the action.type
+        label=_("form step"),
+        help_text=_(
+            "The UUID of the form step that will be affected by the action. This field is "
+            "required if the action type is `%(action_type)s`, otherwise optional."
+        )
+        % {"action_type": LogicActionTypes.step_not_applicable},
+    )
     action = LogicActionPolymorphicSerializer()
 
     def validate(self, data: dict) -> dict:
@@ -126,6 +141,16 @@ class LogicComponentActionSerializer(serializers.Serializer):
         action_type = data.get("action", {}).get("type")
         component = data.get("component")
         form_step = data.get("form_step")
+
+        if form_step and not data.get("form_step_uuid"):
+            warnings.warn(
+                "Logic action 'formStep' is deprecated, use 'formStepUuid' instead",
+                DeprecationWarning,
+            )
+            # normalize to UUID following deprecation of URL reference
+            data["form_step_uuid"] = form_step.uuid
+
+        form_step_uuid = data.get("form_step_uuid")
         variable = data.get("variable")
 
         if (
@@ -151,10 +176,14 @@ class LogicComponentActionSerializer(serializers.Serializer):
         if (
             action_type
             and action_type == LogicActionTypes.step_not_applicable
-            and not form_step
+            and (not form_step and not form_step_uuid)
         ):
             raise serializers.ValidationError(
-                {"form_step": self.fields["form_step"].error_messages["null"]},
+                {
+                    "form_step_uuid": self.fields["form_step_uuid"].error_messages[
+                        "null"
+                    ]
+                },
                 code="blank",
             )
 

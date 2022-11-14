@@ -45,10 +45,6 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 ]
             },
         )
-        form_step2_path = reverse(
-            "api:form-steps-detail",
-            kwargs={"form_uuid_or_slug": form.uuid, "uuid": step2.uuid},
-        )
         step3 = FormStepFactory.create(
             form=form,
             form_definition__configuration={
@@ -60,10 +56,6 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
                 ]
             },
         )
-        form_step3_path = reverse(
-            "api:form-steps-detail",
-            kwargs={"form_uuid_or_slug": form.uuid, "uuid": step3.uuid},
-        )
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={
@@ -74,7 +66,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
             },
             actions=[
                 {
-                    "form_step": f"http://example.com{form_step2_path}",
+                    "form_step_uuid": f"{step2.uuid}",
                     "action": {
                         "name": "Step is not applicable",
                         "type": "step-not-applicable",
@@ -92,7 +84,7 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
             },
             actions=[
                 {
-                    "form_step": f"http://example.com{form_step3_path}",
+                    "form_step_uuid": f"{step3.uuid}",
                     "action": {
                         "name": "Step is not applicable",
                         "type": "step-not-applicable",

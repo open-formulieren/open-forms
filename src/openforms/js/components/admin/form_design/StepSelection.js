@@ -13,7 +13,7 @@ const StepSelection = ({name, value, onChange}) => {
   const formSteps = formContext.formSteps;
   const formStepChoices = formSteps.map((step, index) => {
     const display = getStepDisplayName(step);
-    const identifier = step.url || step._generatedId;
+    const identifier = step.uuid || step._generatedId;
     return [identifier, display];
   });
 

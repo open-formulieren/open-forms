@@ -7,12 +7,10 @@ from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Union
 from django.conf import settings
 from django.db import models, transaction
 from django.template import Context, Template
-from django.urls import resolve
 from django.utils.translation import get_language, gettext_lazy as _
 
 import elasticapm
 from django_better_admin_arrayfield.models.fields import ArrayField
-from furl import furl
 from glom import glom
 
 from openforms.config.models import GlobalConfiguration
@@ -102,9 +100,8 @@ class SubmissionState:
             None,
         )
 
-    def resolve_step(self, form_step_url: str) -> "SubmissionStep":
-        step_to_modify_uuid = resolve(furl(form_step_url).pathstr).kwargs["uuid"]
-        return self.get_submission_step(form_step_uuid=step_to_modify_uuid)
+    def resolve_step(self, form_step_uuid: str) -> "SubmissionStep":
+        return self.get_submission_step(form_step_uuid=form_step_uuid)
 
 
 class Submission(models.Model):
