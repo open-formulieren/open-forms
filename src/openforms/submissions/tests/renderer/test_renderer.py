@@ -1,7 +1,5 @@
 from django.test import TestCase
 
-from rest_framework.reverse import reverse
-
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
@@ -92,16 +90,12 @@ class FormNodeTests(TestCase):
     def test_renderer_with_form_logic_and_disabled_step(self):
         # set up logic
         form = self.submission.form
-        form_step2_path = reverse(
-            "api:form-steps-detail",
-            kwargs={"form_uuid_or_slug": form.uuid, "uuid": self.sstep2.form_step.uuid},
-        )
         FormLogicFactory.create(
             form=form,
             json_logic_trigger={"==": [{"var": "input1"}, "disabled-step-2"]},
             actions=[
                 {
-                    "form_step": f"http://example.com{form_step2_path}",
+                    "form_step_uuid": f"{self.sstep2.form_step.uuid}",
                     "action": {
                         "name": "Step is not applicable",
                         "type": "step-not-applicable",

@@ -111,8 +111,8 @@ const ActionVariableValue = ({action, errors, onChange}) => {
 
 const ActionStepNotApplicable = ({action, errors, onChange}) => {
   return (
-    <DSLEditorNode errors={errors.formStep}>
-      <StepSelection name="formStep" value={action.formStep} onChange={onChange} />
+    <DSLEditorNode errors={errors.formStepUuid}>
+      <StepSelection name="formStepUuid" value={action.formStepUuid} onChange={onChange} />
     </DSLEditorNode>
   );
 };

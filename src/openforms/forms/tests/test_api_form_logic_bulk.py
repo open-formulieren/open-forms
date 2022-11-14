@@ -965,9 +965,55 @@ class FormLogicAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            "0.actions.0.formStep", response.json()["invalidParams"][0]["name"]
+            "0.actions.0.formStepUuid", response.json()["invalidParams"][0]["name"]
         )
         self.assertEqual("blank", response.json()["invalidParams"][0]["code"])
+
+    def test_mark_step_as_not_applicable_action_works_with_uuid(self):
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "text1",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "text2",
+                    },
+                ]
+            },
+        )
+        form_step = form.formstep_set.first()
+
+        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_logic_data = [
+            {
+                "form": f"http://testserver{form_url}",
+                "order": 0,
+                "json_logic_trigger": {"==": [{"var": "text1"}, {"var": "text2"}]},
+                "actions": [
+                    {
+                        "formStepUuid": f"{form_step.uuid}",
+                        "action": {
+                            "name": "Mark step as not applicable",
+                            "type": "step-not-applicable",
+                            "property": {"value": "", "type": ""},
+                            "state": "",
+                        },
+                    }
+                ],
+                "is_advanced": False,
+            }
+        ]
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.put(url, data=form_logic_data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_form_logic_with_trigger_from_step(self):
         user = SuperUserFactory.create(username="test", password="test")
@@ -1180,11 +1226,12 @@ class FormLogicAPITests(APITestCase):
         # 1. transaction SAVEPOINT
         # 2. Fetch the form (from UUID param in endpoint)
         # 3. Delete all the existing logic rules (to be replaced)
-        # 4. Look up all the form variables for the form (once)
-        # 5. Get max order within form (from ordered_model.models.OrderedModelQuerySet.bulk_create)
-        # 6. Bulk insert logic rules
-        # 7. transaction RELEASE SAVEPOINT
-        with self.assertNumQueries(7):
+        # 4. Look up all the form steps for the form (once)
+        # 5. Look up all the form variables for the form (once)
+        # 6. Get max order within form (from ordered_model.models.OrderedModelQuerySet.bulk_create)
+        # 7. Bulk insert logic rules
+        # 8. transaction RELEASE SAVEPOINT
+        with self.assertNumQueries(8):
             response = self.client.put(url, data=form_logic_data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)

@@ -22,6 +22,7 @@ const Action = PropTypes.shape({
   }),
   component: PropTypes.string,
   formStep: PropTypes.string,
+  formStepUuid: PropTypes.string,
 });
 
 const ActionError = PropTypes.shape({
@@ -36,6 +37,7 @@ const ActionError = PropTypes.shape({
   }),
   component: PropTypes.string,
   formStep: PropTypes.string,
+  formStepUuid: PropTypes.string,
 });
 
 export {jsonLogicVar, Action, ActionError};
