@@ -1,5 +1,7 @@
 import {onLoaded} from 'utils/dom';
 
+import 'components/auth-mode';
+
 // connect the "Print this page" link element to a handler
 const registerPrintHandler = () => {
   const nodes = document.querySelectorAll('.a11y-toolbar__window-print-action');

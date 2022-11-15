@@ -1,0 +1,10 @@
+@import 'microscope-sass/lib/bem';
+
+.auth-mode {
+  // hidden until explicitly displayed
+  display: none;
+
+  @include modifier('active') {
+    display: block;
+  }
+}
