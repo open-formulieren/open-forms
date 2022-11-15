@@ -1,0 +1,17 @@
+@import 'microscope-sass/lib/bem';
+@import 'microscope-sass/lib/responsive';
+
+.openforms-form-choices {
+  @include modifier('inline') {
+    display: flex;
+    gap: 1em;
+
+    @include mobile-only {
+      display: block;
+    }
+
+    @include element('choice') {
+      width: 100%;
+    }
+  }
+}
