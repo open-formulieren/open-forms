@@ -42,6 +42,20 @@ class FormioConfigurationWrapper:
     def __getitem__(self, key: str) -> Component:
         return self.component_map[key]
 
+    def __add__(self, configuration: JSONObject):
+        new_components = configuration["components"]
+        self._configuration["components"] += new_components
+
+        if self._cached_component_map is not None:
+            self._cached_component_map = {
+                **self._cached_component_map,
+                **{
+                    component["key"]: component
+                    for component in iter_components(configuration, recursive=True)
+                },
+            }
+        return self
+
     @property
     def configuration(self) -> JSONObject:
         return self._configuration
