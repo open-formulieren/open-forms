@@ -10,11 +10,14 @@ from openforms.formio.service import (
     get_dynamic_configuration,
 )
 from openforms.forms.models import FormVariable
-from openforms.forms.tests.factories import FormStepFactory
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.constants import SubmissionValueVariableSources
-from openforms.submissions.tests.factories import SubmissionStepFactory
+from openforms.submissions.tests.factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+)
 
 from .. import prefill_variables
 from ..contrib.haalcentraal.models import HaalCentraalConfig
@@ -84,10 +87,15 @@ class PrefillVariablesTests(TestCase):
 
     @patch(
         "openforms.prefill._fetch_prefill_values",
-        return_value={"postcode": {"static": "1015CJ"}},
+        return_value={
+            "postcode": {"static": "1015CJ"},
+            "birthDate": {"static": "19990615"},
+        },
     )
     def test_normalization_applied(self, m_prefill):
-        form_step = FormStepFactory.create(
+        form = FormFactory.create()
+        form_step1 = FormStepFactory.create(
+            form=form,
             form_definition__configuration={
                 "components": [
                     {
@@ -101,28 +109,67 @@ class PrefillVariablesTests(TestCase):
                         "defaultValue": "",
                     }
                 ]
-            }
+            },
         )
-        submission_step = SubmissionStepFactory.create(
-            submission__form=form_step.form,
-            form_step=form_step,
+        form_step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "birthDate",
+                        "prefill": {
+                            "plugin": "birthDate",
+                            "attribute": "static",
+                        },
+                        "defaultValue": "",
+                    }
+                ]
+            },
+        )
+        submission = SubmissionFactory.create(form=form)
+        submission_step1 = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step1,
+        )
+        submission_step2 = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step2,
         )
 
-        prefill_variables(submission=submission_step.submission)
+        prefill_variables(submission=submission)
 
         request = RequestFactory().get("/foo")
-        config_wrapper = FormioConfigurationWrapper(
-            submission_step.form_step.form_definition.configuration
+        config_wrapper1 = FormioConfigurationWrapper(
+            submission_step1.form_step.form_definition.configuration
         )
-        config_wrapper = get_dynamic_configuration(
-            config_wrapper,
+        dynamic_config1 = get_dynamic_configuration(
+            config_wrapper1,
             request=request,
-            submission=submission_step.submission,
+            submission=submission,
+        )
+        config_wrapper2 = FormioConfigurationWrapper(
+            submission_step2.form_step.form_definition.configuration
+        )
+        dynamic_config2 = get_dynamic_configuration(
+            config_wrapper2,
+            request=request,
+            submission=submission,
         )
 
-        component = config_wrapper.configuration["components"][0]
-        self.assertEqual(component["type"], "postcode")
-        self.assertEqual(component["defaultValue"], "1015 CJ")
+        component_postcode = dynamic_config1.configuration["components"][0]
+        self.assertEqual(component_postcode["type"], "postcode")
+        self.assertEqual(component_postcode["defaultValue"], "1015 CJ")
+
+        component_date = dynamic_config2.configuration["components"][0]
+        self.assertEqual(component_date["type"], "date")
+        self.assertEqual(component_date["defaultValue"], "1999-06-15")
+
+        variable_postcode = submission.submissionvaluevariable_set.get(key="postcode")
+        variable_date = submission.submissionvaluevariable_set.get(key="birthDate")
+
+        self.assertEqual(variable_postcode.value, "1015 CJ")
+        self.assertEqual(variable_date.value, "1999-06-15")
 
     @requests_mock.Mocker()
     @patch("openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo")
