@@ -4,7 +4,13 @@
   // hidden until explicitly displayed
   display: none;
 
+  &:not(:first-child) {
+    margin-top: 2em;
+  }
+
   @include modifier('active') {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
   }
 }

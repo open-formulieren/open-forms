@@ -16,7 +16,8 @@ class RegistratorSubjectInfoForm(forms.Form):
         widget=OpenFormsRadioSelect,
     )
     bsn = forms.CharField(
-        label=_("BSN number of client"),
+        label=_("BSN of client"),
+        help_text=_("Social security number of the customer"),
         required=False,
         max_length=9,
         validators=[validate_bsn],
@@ -30,6 +31,7 @@ class RegistratorSubjectInfoForm(forms.Form):
     )
     kvk = forms.CharField(
         label=_("KvK number of client"),
+        help_text=_("Chamber of Commerce number of the customer"),
         required=False,
         max_length=8,
         validators=[validate_kvk],
