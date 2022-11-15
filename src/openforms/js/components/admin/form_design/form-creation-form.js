@@ -30,7 +30,7 @@ import {
   CATEGORIES_ENDPOINT,
   STATIC_VARIABLES_ENDPOINT,
 } from './constants';
-import {loadPlugins, loadForm, saveCompleteForm} from './data';
+import {loadPlugins, loadForm, saveCompleteForm, loadLanguages} from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import FormDetailFields from './FormDetailFields';
 import FormConfigurationFields from './FormConfigurationFields';
@@ -91,6 +91,27 @@ const initialFormState = {
     confirmationEmailOption: 'global_email',
     explanationTemplate: '',
     autoLoginAuthenticationBackend: '',
+    // TODO dynamic
+    translations: {
+      en: {
+        name: '',
+        changeText: {value: ''},
+        confirmText: {value: ''},
+        previousText: {value: ''},
+        beginText: {value: ''},
+        submissionConfirmationTemplate: '',
+        explanationTemplate: '',
+      },
+      nl: {
+        name: '',
+        changeText: {value: ''},
+        confirmText: {value: ''},
+        previousText: {value: ''},
+        beginText: {value: ''},
+        submissionConfirmationTemplate: '',
+        explanationTemplate: '',
+      },
+    },
   },
   literals: {
     beginText: {
@@ -125,6 +146,7 @@ const initialFormState = {
   // backend error handling
   validationErrors: [],
   tabsWithErrors: [],
+  languages: [],
 };
 
 const newStepData = {
@@ -731,6 +753,14 @@ function reducer(draft, action) {
     }
 
     /**
+     * Internationalization
+     */
+    case 'LANGUAGES_LOADED': {
+      draft.languages = action.payload;
+      break;
+    }
+
+    /**
      * Submit & validation error handling
      */
     case 'SUBMIT_STARTED': {
@@ -887,11 +917,12 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
       // TODO: this is a bad function name, refactor
       loadPlugins(pluginsToLoad),
       loadForm(formUuid),
+      loadLanguages(),
     ];
 
     // TODO: API error handling - this should be done using ErrorBoundary instead of
     // state-changes.
-    const [pluginsData, formData] = await Promise.all(promises);
+    const [pluginsData, formData, languages] = await Promise.all(promises);
     dispatch({
       type: 'FORM_DATA_LOADED',
       payload: formData,
@@ -908,6 +939,11 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
         },
       });
     }
+
+    dispatch({
+      type: 'LANGUAGES_LOADED',
+      payload: languages,
+    });
   }, []);
 
   /**
@@ -1173,6 +1209,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
               selectedAuthPlugins={state.selectedAuthPlugins}
               availableCategories={state.availableCategories}
               onAuthPluginChange={onAuthPluginChange}
+              languages={state.languages}
             />
             <FormConfigurationFields
               form={state.form}
