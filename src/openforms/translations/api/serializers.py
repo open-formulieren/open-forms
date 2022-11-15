@@ -157,7 +157,7 @@ class ModelTranslationsSerializer(serializers.Serializer):
             data = {}
             for field_name in translatable_fields:
                 translated_field_name = f"{field_name}_{language_code}"
-                value = getattr(instance, translated_field_name)
+                value = getattr(instance, translated_field_name) or ""
 
                 parent_field = self.get_parent_field(field_name)
                 if isinstance(parent_field, ButtonTextSerializer):
@@ -169,6 +169,8 @@ class ModelTranslationsSerializer(serializers.Serializer):
                     virtual_field.bind(field_name=field_name, parent=self)
                     # TODO default value empty string
                     data[field_name] = virtual_field.to_representation(instance)
+                    if data[field_name]["value"] is None:
+                        data[field_name]["value"] = ""
                 else:
                     data[field_name] = value
             response[language_code] = data
