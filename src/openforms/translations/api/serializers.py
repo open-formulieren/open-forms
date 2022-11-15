@@ -103,11 +103,16 @@ class ModelTranslationsSerializer(serializers.Serializer):
             for field_name in fields:
                 parent_field = self.get_parent_field(field_name)
                 value = data.get(language, {}).get(field_name)
+
+                # Workaround for literals
+                if isinstance(parent_field, ButtonTextSerializer):
+                    if value is None:
+                        value = {"value": ""}
+                    elif isinstance(value, dict) and value.get("value") is None:
+                        value["value"] = ""
+
                 if value is None:
-                    if isinstance(parent_field, serializers.Serializer):
-                        value = parent_field.data
-                    else:
-                        value = ""
+                    value = ""
 
                 error = None
                 validate_method = getattr(parent_field, "validate_" + field_name, None)
@@ -162,6 +167,7 @@ class ModelTranslationsSerializer(serializers.Serializer):
                         resolved_getter=f"get_{translated_field_name}",
                     )
                     virtual_field.bind(field_name=field_name, parent=self)
+                    # TODO default value empty string
                     data[field_name] = virtual_field.to_representation(instance)
                 else:
                     data[field_name] = value
