@@ -1,7 +1,13 @@
 from unittest import skip
 
+from django.apps import apps
+from django.test import TestCase
+from django.utils.module_loading import import_string
+
 from openforms.formio.utils import iter_components
 from openforms.utils.tests.test_migrations import TestMigrations
+
+from ..models import Form, FormDefinition, FormStep, FormVariable
 
 
 @skip("Code is moved to squashed migration, these tests are now broken.")
@@ -521,3 +527,56 @@ class TestChangeOpenWhenEmptyConfiguration(TestMigrations):
             component = components["editgrid4"]
 
             self.assertFalse(component["openWhenEmpty"])
+
+
+class FormVariableMigrationTests(TestCase):
+    def test_migrate(self):
+        """import and test function from squashed migration 003..."""
+        form_definition = FormDefinition.objects.create(
+            name="FormDefinition1",
+            configuration={
+                "components": [
+                    {
+                        "key": "theFirstName",
+                        "type": "textfield",
+                        "label": "First Name",
+                        "prefill": {
+                            "plugin": "demo",
+                            "attribute": "",
+                        },
+                    },
+                ]
+            },
+        )
+        form = Form.objects.create(name="Form1")
+        FormStep.objects.create(form=form, form_definition=form_definition)
+        form_definition2 = FormDefinition.objects.create(
+            name="FormDefinition2",
+            configuration={
+                "components": [
+                    {
+                        "key": "theLastName",
+                        "type": "textfield",
+                        "label": "Last Name",
+                        "prefill": {
+                            "plugin": "",
+                            "attribute": "achternaam",
+                        },
+                    },
+                ]
+            },
+        )
+        form2 = Form.objects.create(name="Form2")
+        FormStep.objects.create(form=form2, form_definition=form_definition2)
+        test_func = import_string(
+            "openforms.forms.migrations."
+            "0033_formvariable_datamigration.create_form_variables_for_form"
+        )
+        test_func(apps, schema_editor=None)
+
+        form_variables = FormVariable.objects.all()
+
+        for form_variable in form_variables:
+            with self.subTest(form_variable):
+                self.assertEqual(form_variable.prefill_plugin, "")
+                self.assertEqual(form_variable.prefill_attribute, "")
