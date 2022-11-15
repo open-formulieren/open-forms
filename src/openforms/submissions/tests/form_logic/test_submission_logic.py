@@ -773,6 +773,11 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
         )
 
     def test_evaluate_logic_log_event_triggered(self):
+        # Logs need to be cleared, otherwise an AssertionError is raised in the
+        # logs.count test due to logevents created elsewhere for plugins with
+        # empty prefill values
+        TimelineLogProxy.objects.all().delete()
+
         form = FormFactory.create()
         form_step = FormStepFactory.create(
             form=form,
@@ -829,6 +834,11 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self.assertTrue(log.extra_data["evaluated_rules"][0]["trigger"])
 
     def test_evaluate_logic_log_event_not_triggered(self):
+        # Logs need to be cleared, otherwise an AssertionError is raised in the
+        # logs.count test due to logevents created elsewhere for plugins with
+        # empty prefill values
+        TimelineLogProxy.objects.all().delete()
+
         form = FormFactory.create()
         form_step = FormStepFactory.create(
             form=form,
@@ -885,6 +895,11 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self.assertFalse(log.extra_data["evaluated_rules"][0]["trigger"])
 
     def test_evaluate_logic_log_event_can_handle_primitives(self):
+        # Logs need to be cleared, otherwise an AssertionError is raised in the
+        # logs.count test due to logevents created elsewhere for plugins with
+        # empty prefill values
+        TimelineLogProxy.objects.all().delete()
+
         form = FormFactory.create()
         form_step = FormStepFactory.create(
             form=form,

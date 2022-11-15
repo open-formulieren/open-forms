@@ -8,6 +8,7 @@ from django.utils.crypto import get_random_string
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.logging.models import TimelineLogProxy
 from openforms.plugins.exceptions import PluginNotEnabled
 from openforms.submissions.models import Submission
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -218,6 +219,34 @@ class PrefillHookTests(TransactionTestCase):
         field = new_configuration["components"][0]
         self.assertIsNotNone(field["defaultValue"])
         self.assertEqual(field["defaultValue"], "some-default")
+
+    def test_logging_for_empty_prefill(self):
+        config = deepcopy(CONFIGURATION)
+        form_step = FormStepFactory.create(form_definition__configuration=config)
+        submission = SubmissionFactory.create(form=form_step.form)
+
+        register = Registry()
+
+        @register("demo")
+        class EmptyPrefillPlug(DemoPrefill):
+            @staticmethod
+            def get_prefill_values(submission, attributes):
+                return {}
+
+        apply_prefill(
+            configuration=config,
+            submission=submission,
+            register=register,
+        )
+
+        log = TimelineLogProxy.objects.first()
+        plugin_id = log.extra_data["plugin_id"]
+
+        self.assertEqual(log.event, "prefill_retrieve_empty")
+        self.assertIn(
+            f"({plugin_id}) reported: Empty values",
+            log.get_message(),
+        )
 
     def test_prefill_exception(self):
         configuration = deepcopy(CONFIGURATION)

@@ -72,6 +72,8 @@ def _fetch_prefill_values(
         else:
             if values:
                 logevent.prefill_retrieve_success(submission, plugin, fields)
+            else:
+                logevent.prefill_retrieve_empty(submission, plugin, fields)
             return plugin_id, values
 
     with parallel() as executor:

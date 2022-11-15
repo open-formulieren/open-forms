@@ -225,6 +225,11 @@ class TestSubmissionAdmin(WebTest):
         self.assertEqual(failed_below_limit.registration_attempts, 0)
 
     def test_change_view_displays_logs_if_not_avg(self):
+        # Logs need to be cleared, otherwise a ValueError is raised upon retrieval of
+        # TimeLineLogProxy objects due to logevents created elsewhere for plugins
+        # with empty prefill values
+        TimelineLogProxy.objects.all().delete()
+
         # add regular submission log
         submission_start(self.submission_1)
 
