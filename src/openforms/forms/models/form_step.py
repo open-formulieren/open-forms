@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from ordered_model.models import OrderedModel
 
-from .utils import literal_getter
+from .utils import literal_getter, set_dynamic_literal_getters
 
 
 class FormStep(OrderedModel):
@@ -57,6 +57,13 @@ class FormStep(OrderedModel):
     class Meta(OrderedModel.Meta):
         verbose_name = _("form step")
         verbose_name_plural = _("form steps")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        set_dynamic_literal_getters(
+            ["previous_text", "save_text", "next_text"], self.__class__, "form_step"
+        )
 
     def __str__(self):
         if self.form_id and self.form_definition_id:

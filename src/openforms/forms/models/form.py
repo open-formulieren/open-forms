@@ -28,7 +28,7 @@ from openforms.utils.validators import DjangoTemplateValidator
 from openforms.variables.constants import FormVariableSources
 
 from ..constants import ConfirmationEmailOptions, SubmissionAllowedChoices
-from .utils import literal_getter
+from .utils import literal_getter, set_dynamic_literal_getters
 
 User = get_user_model()
 
@@ -267,6 +267,15 @@ class Form(models.Model):
     class Meta:
         verbose_name = _("form")
         verbose_name_plural = _("forms")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        set_dynamic_literal_getters(
+            ["begin_text", "previous_text", "change_text", "confirm_text"],
+            self.__class__,
+            "form",
+        )
 
     def __str__(self):
         if self._is_deleted:

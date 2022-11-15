@@ -9,6 +9,8 @@ from modeltranslation.manager import get_translatable_fields_for_model
 from rest_framework import serializers
 from rest_framework.fields import SkipField, get_error_detail
 
+from openforms.forms.api.serializers.button_text import ButtonTextSerializer
+
 from ..utils import get_model_class
 
 
@@ -146,8 +148,23 @@ class ModelTranslationsSerializer(serializers.Serializer):
             translatable_fields = get_translatable_fields_for_model(
                 instance._meta.model
             )
-            response[language_code] = {
-                field_name: getattr(instance, f"{field_name}_{language_code}")
-                for field_name in translatable_fields
-            }
+
+            data = {}
+            for field_name in translatable_fields:
+                translated_field_name = f"{field_name}_{language_code}"
+                value = getattr(instance, translated_field_name)
+
+                parent_field = self.get_parent_field(field_name)
+                if isinstance(parent_field, ButtonTextSerializer):
+                    # Workaround to render literals in the proper shape
+                    virtual_field = parent_field.__class__(
+                        raw_field=translated_field_name,
+                        resolved_getter=f"get_{translated_field_name}",
+                    )
+                    virtual_field.bind(field_name=field_name, parent=self)
+                    data[field_name] = virtual_field.to_representation(instance)
+                else:
+                    data[field_name] = value
+            response[language_code] = data
+
         return response
