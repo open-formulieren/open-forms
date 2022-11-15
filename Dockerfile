@@ -9,7 +9,7 @@ FROM openformulieren/open-forms-sdk:${SDK_RELEASE} as sdk-image
 
 # Stage 1 - Backend build environment
 # includes compilers and build tooling to create the environment
-FROM python:3.8-slim-buster AS backend-build
+FROM python:3.10-slim-buster AS backend-build
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         pkg-config \
@@ -68,7 +68,7 @@ COPY ./src /app/src
 RUN npm run build
 
 # Stage 3 - Build docker image suitable for production
-FROM python:3.8-slim-buster
+FROM python:3.10-slim-buster
 
 # Stage 3.1 - Set up the needed production dependencies
 # install all the dependencies for GeoDjango
@@ -104,7 +104,7 @@ RUN mkdir /app/bin /app/log /app/media /app/private_media /app/certifi_ca_bundle
 VOLUME ["/app/log", "/app/media", "/app/private_media", "/app/certifi_ca_bundle"]
 
 # copy backend build deps
-COPY --from=backend-build /usr/local/lib/python3.8 /usr/local/lib/python3.8
+COPY --from=backend-build /usr/local/lib/python3.10 /usr/local/lib/python3.10
 COPY --from=backend-build /usr/local/bin/uwsgi /usr/local/bin/uwsgi
 COPY --from=backend-build /usr/local/bin/celery /usr/local/bin/celery
 COPY --from=backend-build /app/src/ /app/src/
