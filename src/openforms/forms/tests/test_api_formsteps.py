@@ -14,6 +14,7 @@ from openforms.accounts.tests.factories import (
     TokenFactory,
     UserFactory,
 )
+from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.translations.tests.utils import make_translated
 
@@ -629,6 +630,16 @@ class FormStepsAPITranslationTests(APITestCase):
 
         cls.user = StaffUserFactory.create(user_permissions=["change_form"])
 
+        config = GlobalConfiguration.get_solo()
+        config.form_step_previous_text_nl = "Vorige stap"
+        config.form_step_next_text_nl = "Volgende"
+        config.form_step_save_text_nl = "Tussentijds opslaan"
+
+        config.form_step_previous_text_en = "Previous step"
+        config.form_step_next_text_en = "Next"
+        config.form_step_save_text_en = "Save"
+        config.save()
+
     def test_detail_staff_show_translations(self):
         """
         Translations for all available languages should be returned for staff users,
@@ -647,14 +658,14 @@ class FormStepsAPITranslationTests(APITestCase):
             response.data["literals"]["translations"],
             {
                 "en": {
-                    "next_text": "Next",
-                    "previous_text": "Previous",
-                    "save_text": "Save",
+                    "next_text": {"resolved": "Next", "value": "Next"},
+                    "previous_text": {"resolved": "Previous", "value": "Previous"},
+                    "save_text": {"resolved": "Save", "value": "Save"},
                 },
                 "nl": {
-                    "next_text": None,
-                    "previous_text": None,
-                    "save_text": None,
+                    "next_text": {"resolved": "Volgende", "value": None},
+                    "previous_text": {"resolved": "Vorige stap", "value": None},
+                    "save_text": {"resolved": "Tussentijds opslaan", "value": None},
                 },
             },
         )
@@ -854,3 +865,70 @@ class FormStepsAPITranslationTests(APITestCase):
                 ],
             },
         )
+
+    def test_literal_translations_based_on_global_config(self):
+        """
+        If there are no explicit values for literals, they should be populated from the appropriate translationfield on the GlobalConfiguration
+        """
+        self.client.force_authenticate(user=self.user)
+
+        url = reverse(
+            "api:form-steps-list", kwargs={"form_uuid_or_slug": self.form.uuid}
+        )
+        form_detail_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": self.form_definition.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{form_detail_url}",
+            "index": 0,
+            "literals": {
+                "previousText": {"value": "Different Previous Text"},
+                "saveText": {"value": "Different Save Text"},
+                "nextText": {"value": "Different Next Text"},
+                "translations": {
+                    "en": {
+                        "next_text": {"value": ""},
+                        "previous_text": {"value": ""},
+                        "save_text": {"value": ""},
+                    },
+                    "nl": {
+                        "next_text": {"value": ""},
+                        "previous_text": {"value": ""},
+                        "save_text": {"value": ""},
+                    },
+                },
+            },
+        }
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            response.data["literals"]["translations"],
+            {
+                "en": {
+                    "next_text": {"resolved": "Next", "value": ""},
+                    "previous_text": {"resolved": "Previous step", "value": ""},
+                    "save_text": {"resolved": "Save", "value": ""},
+                },
+                "nl": {
+                    "next_text": {"resolved": "Volgende", "value": ""},
+                    "previous_text": {"resolved": "Vorige stap", "value": ""},
+                    "save_text": {"resolved": "Tussentijds opslaan", "value": ""},
+                },
+            },
+        )
+        self.assertEqual(
+            FormStep.objects.filter(form_definition=self.form_definition).count(),
+            1,
+        )
+
+        form_step = FormStep.objects.get(form_definition=self.form_definition)
+
+        self.assertEqual(form_step.previous_text_en, "")
+        self.assertEqual(form_step.save_text_en, "")
+        self.assertEqual(form_step.next_text_en, "")
+
+        self.assertEqual(form_step.previous_text_nl, "")
+        self.assertEqual(form_step.save_text_nl, "")
+        self.assertEqual(form_step.next_text_nl, "")
