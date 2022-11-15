@@ -28,9 +28,6 @@ class FormStepLiteralsSerializer(PublicFieldsSerializerMixin, serializers.Serial
             "next_text",
         )
 
-    def get_model_class(self):
-        return FormStep
-
 
 class MinimalFormStepSerializer(serializers.ModelSerializer):
     form_definition = serializers.SlugRelatedField(read_only=True, slug_field="name")

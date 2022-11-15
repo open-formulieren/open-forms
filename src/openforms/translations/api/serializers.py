@@ -9,6 +9,8 @@ from modeltranslation.manager import get_translatable_fields_for_model
 from rest_framework import serializers
 from rest_framework.fields import SkipField, get_error_detail
 
+from ..utils import get_model_class
+
 
 class LanguageCodeField(serializers.ChoiceField):
     def __init__(self, *args, **kwargs):
@@ -93,9 +95,7 @@ class ModelTranslationsSerializer(serializers.Serializer):
         ret = OrderedDict()
         errors = OrderedDict()
 
-        fields = sorted(
-            get_translatable_fields_for_model(self.parent.get_model_class())
-        )
+        fields = sorted(get_translatable_fields_for_model(get_model_class(self.parent)))
         for language, _label in settings.LANGUAGES:
             errors_for_lang = OrderedDict()
             for field_name in fields:
@@ -114,14 +114,14 @@ class ModelTranslationsSerializer(serializers.Serializer):
                     if validate_method is not None:
                         validated_value = validate_method(validated_value)
                 except serializers.ValidationError as exc:
-                    error = self.ignore_blank_errors(exc.detail)
+                    error = exc.detail
                 except DjangoValidationError as exc:
-                    error = self.ignore_blank_errors(get_error_detail(exc))
+                    error = get_error_detail(exc)
                 except SkipField:
                     pass
 
-                if error:
-                    errors_for_lang[field_name] = error
+                if error and (filtered_error := self.ignore_blank_errors(error)):
+                    errors_for_lang[field_name] = filtered_error
                 else:
                     # TODO instead allow string values via serializer?
                     if hasattr(parent_field, "get_translation_literal"):
