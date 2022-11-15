@@ -642,8 +642,7 @@ class FormStepsAPITranslationTests(APITestCase):
 
     def test_detail_staff_show_translations(self):
         """
-        Translations for all available languages should be returned for staff users,
-        because they are relevant for the form design UI
+        Translations for all available languages should be returned for staff users, because they are relevant for the form design UI
         """
         self.client.force_authenticate(user=self.user)
 
@@ -663,17 +662,16 @@ class FormStepsAPITranslationTests(APITestCase):
                     "save_text": {"resolved": "Save", "value": "Save"},
                 },
                 "nl": {
-                    "next_text": {"resolved": "Volgende", "value": None},
-                    "previous_text": {"resolved": "Vorige stap", "value": None},
-                    "save_text": {"resolved": "Tussentijds opslaan", "value": None},
+                    "next_text": {"resolved": "Volgende", "value": ""},
+                    "previous_text": {"resolved": "Vorige stap", "value": ""},
+                    "save_text": {"resolved": "Tussentijds opslaan", "value": ""},
                 },
             },
         )
 
     def test_detail_non_staff_no_translations(self):
         """
-        Translations for different languages than the active language should not be
-        returned for non-staff users
+        Translations for different languages than the active language should not be returned for non-staff users
         """
         url = reverse(
             "api:form-steps-detail",

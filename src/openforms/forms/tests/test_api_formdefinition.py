@@ -552,8 +552,7 @@ class FormDefinitionsAPITranslationTests(APITestCase):
 
     def test_detail_staff_show_translations(self):
         """
-        Translations for all available languages should be returned for staff users,
-        because they are relevant for the form design UI
+        Translations for all available languages should be returned for staff users, because they are relevant for the form design UI
         """
         self.client.force_authenticate(user=self.user)
 
@@ -570,15 +569,14 @@ class FormDefinitionsAPITranslationTests(APITestCase):
                     "name": "FormDefinition 1",
                 },
                 "nl": {
-                    "name": None,
+                    "name": "",
                 },
             },
         )
 
     def test_detail_non_staff_no_translations(self):
         """
-        Translations for different languages than the active language should not be
-        returned for non-staff users
+        Translations for different languages than the active language should not be returned for non-staff users
         """
         url = reverse(
             "api:formdefinition-detail", kwargs={"uuid": self.form_definition.uuid}

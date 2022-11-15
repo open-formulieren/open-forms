@@ -903,7 +903,7 @@ class FormsAPITests(APITestCase):
                 "subject": "Initial subject",
                 "content": "Initial content",
                 "translations": {
-                    "en": {"content": None, "subject": None},
+                    "en": {"content": "", "subject": ""},
                     "nl": {"content": "Initial content", "subject": "Initial subject"},
                 },
             },
@@ -1228,8 +1228,7 @@ class FormsAPITranslationTests(APITestCase):
 
     def test_detail_staff_show_translations(self):
         """
-        Translations for all available languages should be returned for staff users,
-        because they are relevant for the form design UI
+        Translations for all available languages should be returned for staff users, because they are relevant for the form design UI
         """
         self.user = UserFactory.create(is_staff=True)
         self.client.force_authenticate(user=self.user)
@@ -1245,19 +1244,19 @@ class FormsAPITranslationTests(APITestCase):
                     "begin_text": {"resolved": "start", "value": "start"},
                     "change_text": {"resolved": "change", "value": "change"},
                     "confirm_text": {"resolved": "confirm", "value": "confirm"},
-                    "explanation_template": None,
+                    "explanation_template": "",
                     "name": "Form 1",
                     "previous_text": {"resolved": "prev", "value": "prev"},
-                    "submission_confirmation_template": None,
+                    "submission_confirmation_template": "",
                 },
                 "nl": {
-                    "begin_text": {"resolved": "Formulier starten", "value": None},
-                    "change_text": {"resolved": "Wijzigen", "value": None},
-                    "confirm_text": {"resolved": "Verzenden", "value": None},
-                    "explanation_template": None,
-                    "name": None,
-                    "previous_text": {"resolved": "Vorige stap", "value": None},
-                    "submission_confirmation_template": None,
+                    "begin_text": {"resolved": "Formulier starten", "value": ""},
+                    "change_text": {"resolved": "Wijzigen", "value": ""},
+                    "confirm_text": {"resolved": "Verzenden", "value": ""},
+                    "explanation_template": "",
+                    "name": "",
+                    "previous_text": {"resolved": "Vorige stap", "value": ""},
+                    "submission_confirmation_template": "",
                 },
             },
         )
@@ -1270,9 +1269,9 @@ class FormsAPITranslationTests(APITestCase):
                     "save_text": {"resolved": "Save", "value": "Save"},
                 },
                 "nl": {
-                    "next_text": {"resolved": "Volgende", "value": None},
-                    "previous_text": {"resolved": "Vorige stap", "value": None},
-                    "save_text": {"resolved": "Tussentijds opslaan", "value": None},
+                    "next_text": {"resolved": "Volgende", "value": ""},
+                    "previous_text": {"resolved": "Vorige stap", "value": ""},
+                    "save_text": {"resolved": "Tussentijds opslaan", "value": ""},
                 },
             },
         )
@@ -1280,14 +1279,13 @@ class FormsAPITranslationTests(APITestCase):
             response.data["confirmation_email_template"]["translations"],
             {
                 "en": {"subject": "Initial subject", "content": "Initial content"},
-                "nl": {"subject": None, "content": None},
+                "nl": {"subject": "", "content": ""},
             },
         )
 
     def test_detail_non_staff_no_translations(self):
         """
-        Translations for different languages than the active language should not be
-        returned for non-staff users
+        Translations for different languages than the active language should not be returned for non-staff users
         """
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": self.en_form.uuid})
         response = self.client.get(url)
