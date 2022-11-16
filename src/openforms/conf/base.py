@@ -238,6 +238,7 @@ INSTALLED_APPS = [
     "openforms.upgrades",
     "openforms.plugins",
     "openforms.custom_field_types",  # TODO: remove completely after 2.1 is released
+    "openforms.variables",
     # Apps registering static variables
     "openforms.variables.static_variables.apps.StaticVariables",
     "openforms.authentication.static_variables.apps.AuthStaticVariables",

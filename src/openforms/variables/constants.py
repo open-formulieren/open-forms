@@ -22,6 +22,16 @@ class FormVariableDataTypes(DjangoChoices):
     date = ChoiceItem("date", _("Date"))
 
 
+class ServiceFetchMethods(DjangoChoices):
+    get = ChoiceItem("GET", "GET")
+    post = ChoiceItem("POST", "POST")
+
+
+class DataMappingTypes(DjangoChoices):
+    json_logic = ChoiceItem("JsonLogic", "JsonLogic")
+    jq = ChoiceItem("jq", "jq")
+
+
 DEFAULT_INITIAL_VALUE = {
     FormVariableDataTypes.string: "",
     FormVariableDataTypes.boolean: False,
