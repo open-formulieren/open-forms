@@ -1,0 +1,8 @@
+<div class="openforms-form-choices {% if widget.inline %}openforms-form-choices--inline{% endif %}">
+{% for group, options, index in widget.optgroups %}
+    {% if group %}OPTGROUPS ARE NOT SUPPORTED{% endif %}
+    {% for option in options %}
+        {% include option.template_name with widget=option %}
+    {% endfor %}
+{% endfor %}
+</div>

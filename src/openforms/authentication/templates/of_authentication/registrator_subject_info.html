@@ -1,0 +1,68 @@
+{% extends 'ui/views/abstract/detail.html' %}
+{% load i18n static %}
+
+{% block extra_css %}
+    {% include "forms/sdk_css_snippet.html" %}
+    {{ block.super }} {# Called after SDK CSS for custom design overrides #}
+{% endblock %}
+
+{% block card %}
+<div class="card">
+    <header class="card__header">
+        <h1 class="title">
+            {% blocktranslate with name=user.get_employee_name trimmed %}
+               Logged in as employee {{ name }}
+            {% endblocktranslate %}
+        </h1>
+    </header>
+
+    <div class="card__body">
+        <p class="body">
+            {% blocktranslate trimmed %}
+               When filling out a form for a client or company please enter additional information.
+            {% endblocktranslate %}
+        </p>
+
+
+        <form id="registrator-subject" method="post">
+            {% csrf_token %}
+
+            {% include "includes/forms/errorlist.html" with errors=form.non_field_errors only %}
+
+            {# Toggle for continue-mode: citizen, company or employee #}
+            {% include "includes/forms/field_wrapper.html" with field=form.mode type='radio' only %}
+
+            <div class="auth-mode auth-mode--citizen">
+
+                {% include "includes/forms/field_wrapper.html" with field=form.bsn type='bsn' only %}
+
+                <div class="openforms-toolbar openforms-toolbar--reverse">
+                    <button class="openforms-button openforms-button--primary" type="submit">
+                        <span class="openforms-button__label">{% trans "Continue" %}</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="auth-mode auth-mode--company">
+                {% include "includes/forms/field_wrapper.html" with field=form.kvk only %}
+
+                <div class="openforms-toolbar openforms-toolbar--reverse">
+                    <button class="openforms-button openforms-button--primary" type="submit">
+                        <span class="openforms-button__label">{% trans "Continue" %}</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="auth-mode auth-mode--employee">
+                <div class="openforms-toolbar openforms-toolbar--reverse">
+                    <button class="openforms-button openforms-button--primary" type="submit" name="skip_subject" value="on">
+                        <span class="openforms-button__label">{{ form.skip_subject.label }}</span>
+                    </button>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+{% endblock %}

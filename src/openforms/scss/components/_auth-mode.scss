@@ -1,0 +1,16 @@
+@import 'microscope-sass/lib/bem';
+
+.auth-mode {
+  // hidden until explicitly displayed
+  display: none;
+
+  &:not(:first-child) {
+    margin-top: 2em;
+  }
+
+  @include modifier('active') {
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+  }
+}

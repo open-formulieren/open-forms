@@ -1,0 +1,9 @@
+<div class="openforms-form-choices__choice">
+    <div class="openforms-checkbox">
+        {% include "django/forms/widgets/input.html" %}
+        <div class="openforms-checkbox__checkmark"></div>
+        <label for="{{ widget.attrs.id }}" class="openforms-checkbox__label">
+            {{ widget.label }}
+        </label>
+    </div>
+</div>

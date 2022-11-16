@@ -200,6 +200,7 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
         registrator_subject_form = registrator_subject_form_response.forms[
             "registrator-subject"
         ]
+        registrator_subject_form["mode"].select("citizen")
         registrator_subject_form["bsn"] = "999990676"
 
         form_response = registrator_subject_form.submit(status=302).follow(status=200)

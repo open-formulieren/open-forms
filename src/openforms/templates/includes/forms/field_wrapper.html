@@ -1,0 +1,15 @@
+{# Takes a 'field' context argument, which should be an instance of a BoundField #}
+<div class="openforms-form-control">
+    <div class="openforms-form-control openforms-form-control--{{ type|default:'textfield' }}">
+        <label for="{{ field.auto_id }}" class="openforms-label">
+            {{ field.label }}
+        </label>
+        <div>
+            {{ field }}
+        </div>
+        {% if field.help_text %}<div class="openforms-help-text">{{ field.help_text }}</div>{% endif %}
+    </div>
+
+    {# validation errors #}
+    {% include "includes/forms/errorlist.html" with errors=field.errors only %}
+</div>

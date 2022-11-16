@@ -385,7 +385,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
 
 class RegistratorSubjectInfoView(PermissionRequiredMixin, FormView):
     form_class = RegistratorSubjectInfoForm
-    template_name = "authentication/registrator_subject_info.html"
+    template_name = "of_authentication/registrator_subject_info.html"
     permission_required = ["of_authentication.can_register_customer_submission"]
 
     # block the AccessMixin login redirection
