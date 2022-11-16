@@ -1,4 +1,3 @@
-import copy
 import logging
 import uuid
 from collections import OrderedDict
@@ -15,6 +14,7 @@ from django_better_admin_arrayfield.models.fields import ArrayField
 from glom import glom
 
 from openforms.config.models import GlobalConfiguration
+from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.formio.formatters.service import filter_printable
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
@@ -307,9 +307,11 @@ class Submission(models.Model):
             if len(form_steps) == 0:
                 return
 
-            wrapper = copy.deepcopy(form_steps[0].form_definition.configuration_wrapper)
+            wrapper = FormioConfigurationWrapper(
+                form_steps[0].form_definition.configuration
+            )
             for form_step in form_steps[1:]:
-                wrapper += form_step.form_definition.configuration
+                wrapper += form_step.form_definition.configuration_wrapper
             self._total_configuration_wrapper = wrapper
         return self._total_configuration_wrapper
 
