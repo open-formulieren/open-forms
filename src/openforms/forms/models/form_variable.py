@@ -45,7 +45,6 @@ class FormVariableManager(models.Manager):
         form_steps = form.formstep_set.select_related("form_definition")
 
         for form_step in form_steps:
-            # TODO deal with duplicate keys!
             self.create_for_formstep(form_step)
 
     def create_for_formstep(self, form_step: "FormStep") -> List["FormVariable"]:

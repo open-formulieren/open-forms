@@ -300,12 +300,12 @@ class Submission(models.Model):
         self.save(update_fields=update_fields)
 
     @property
-    def total_configuration_wrapper(self):
+    def total_configuration_wrapper(self) -> FormioConfigurationWrapper:
         if not self._total_configuration_wrapper:
             state = self.load_execution_state()
             form_steps = state.form_steps
             if len(form_steps) == 0:
-                return
+                return FormioConfigurationWrapper(configuration={})
 
             wrapper = FormioConfigurationWrapper(
                 form_steps[0].form_definition.configuration

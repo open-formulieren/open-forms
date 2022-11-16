@@ -146,7 +146,6 @@ def prefill_variables(submission: "Submission", register=None) -> None:
     results = _fetch_prefill_values(grouped_fields, submission, register)
 
     total_config_wrapper = submission.total_configuration_wrapper
-
     prefill_data = {}
     for variable in variables_to_prefill:
         try:
