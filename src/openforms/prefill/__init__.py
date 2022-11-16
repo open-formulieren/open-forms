@@ -31,6 +31,7 @@ So, to recap:
 """
 import logging
 from collections import defaultdict
+from itertools import chain
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple
 
 import elasticapm
@@ -133,12 +134,23 @@ def inject_prefill(configuration: dict, submission: "Submission") -> None:
 
 @elasticapm.capture_span(span_type="app.prefill")
 def prefill_variables(submission: "Submission", register=None) -> None:
+    from openforms.formio.service import normalize_value_for_component
+
     from .registry import register as default_register
 
     register = register or default_register
 
+    execution_state = submission.load_execution_state()
     state = submission.load_submission_value_variables_state()
     variables_to_prefill = state.get_prefill_variables()
+
+    _component_generators = [
+        iter_components(step.form_definition.configuration)
+        for step in execution_state.form_steps
+    ]
+    _components = {
+        component["key"]: component for component in chain(*_component_generators)
+    }
 
     grouped_fields = defaultdict(list)
     for variable in variables_to_prefill:
@@ -161,6 +173,8 @@ def prefill_variables(submission: "Submission", register=None) -> None:
         except PathAccessError:
             continue
         else:
+            if (component := _components.get(variable.key)) is not None:
+                prefill_value = normalize_value_for_component(component, prefill_value)
             prefill_data[variable.key] = prefill_value
 
     state.save_prefill_data(prefill_data)
