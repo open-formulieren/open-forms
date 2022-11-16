@@ -368,7 +368,7 @@ django-sessionprofile==2.0.0
     #   django-digid-eherkenning
 django-silk==5.0.1
     # via -r requirements/dev.in
-django-simple-certmanager==1.1.1
+django-simple-certmanager==1.1.2
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
