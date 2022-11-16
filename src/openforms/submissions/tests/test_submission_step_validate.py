@@ -1,6 +1,8 @@
 from pathlib import Path
+from unittest.mock import patch
 
 from django.core.files import File
+from django.test import tag
 
 from privates.test import temp_private_root
 from rest_framework import status
@@ -8,6 +10,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.prefill import prefill_variables
 
 from ..models import SubmissionValueVariable
 from .factories import SubmissionFactory, TemporaryFileUploadFactory
@@ -241,3 +244,46 @@ class SubmissionStepValidationTests(SubmissionsMixin, APITestCase):
         self.assertEqual(
             SubmissionValueVariable.objects.get(key="birthdate").value, "1999-01-01"
         )
+
+    @tag("gh-1899")
+    @patch(
+        "openforms.prefill._fetch_prefill_values",
+        return_value={
+            "postcode": {"static": "1015CJ"},
+        },
+    )
+    def test_flow_with_badly_structure_prefill_data(self, m_prefill):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "postcode",
+                        "key": "postcode",
+                        "inputMask": "9999 AA",
+                        "prefill": {
+                            "plugin": "postcode",
+                            "attribute": "static",
+                        },
+                        "defaultValue": "",
+                    }
+                ]
+            },
+        )
+        submission = SubmissionFactory.create(form=form)
+        prefill_variables(submission=submission)
+        self._add_submission_to_session(submission)
+
+        response = self.client.get(
+            reverse(
+                "api:submission-steps-detail",
+                kwargs={
+                    "submission_uuid": submission.uuid,
+                    "step_uuid": form_step.uuid,
+                },
+            ),
+        )
+
+        data = response.json()["data"]
+        self.assertEqual(data["postcode"], "1015 CJ")
