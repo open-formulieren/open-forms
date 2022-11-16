@@ -6244,7 +6244,7 @@ msgstr "Naam van de formulierdefinitie horend bij de stap."
 
 #: openforms/submissions/api/validators.py:15
 msgid "The prefill data may not be altered."
-msgstr "Je mag de prefill-gegevens niet wijzingen."
+msgstr "Je mag de prefill-gegevens niet wijzigen."
 
 #: openforms/submissions/api/views.py:23
 msgid "Download the PDF report"
