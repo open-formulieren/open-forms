@@ -38,6 +38,7 @@ from glom import Path, PathAccessError, glom
 from zgw_consumers.concurrent import parallel
 
 from openforms.plugins.exceptions import PluginNotEnabled
+from openforms.variables.constants import FormVariableSources
 
 if TYPE_CHECKING:  # pragma: nocover
     from openforms.formio.service import FormioConfigurationWrapper
@@ -127,6 +128,8 @@ def inject_prefill(
 
 @elasticapm.capture_span(span_type="app.prefill")
 def prefill_variables(submission: "Submission", register=None) -> None:
+    from openforms.formio.service import normalize_value_for_component
+
     from .registry import register as default_register
 
     register = register or default_register
@@ -142,6 +145,8 @@ def prefill_variables(submission: "Submission", register=None) -> None:
 
     results = _fetch_prefill_values(grouped_fields, submission, register)
 
+    total_config_wrapper = submission.total_configuration_wrapper
+
     prefill_data = {}
     for variable in variables_to_prefill:
         try:
@@ -155,6 +160,9 @@ def prefill_variables(submission: "Submission", register=None) -> None:
         except PathAccessError:
             continue
         else:
+            if variable.form_variable.source == FormVariableSources.component:
+                component = total_config_wrapper[variable.key]
+                prefill_value = normalize_value_for_component(component, prefill_value)
             prefill_data[variable.key] = prefill_value
 
     state.save_prefill_data(prefill_data)

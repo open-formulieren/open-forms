@@ -14,6 +14,7 @@ from django_better_admin_arrayfield.models.fields import ArrayField
 from glom import glom
 
 from openforms.config.models import GlobalConfiguration
+from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.formio.formatters.service import filter_printable
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
@@ -253,6 +254,7 @@ class Submission(models.Model):
 
     _form_login_required: Optional[bool] = None  # can be set via annotation
     _prefilled_data = None
+    _total_configuration_wrapper = None
 
     class Meta:
         verbose_name = _("submission")
@@ -296,6 +298,22 @@ class Submission(models.Model):
             update_fields += ["needs_on_completion_retry"]
 
         self.save(update_fields=update_fields)
+
+    @property
+    def total_configuration_wrapper(self):
+        if not self._total_configuration_wrapper:
+            state = self.load_execution_state()
+            form_steps = state.form_steps
+            if len(form_steps) == 0:
+                return
+
+            wrapper = FormioConfigurationWrapper(
+                form_steps[0].form_definition.configuration
+            )
+            for form_step in form_steps[1:]:
+                wrapper += form_step.form_definition.configuration_wrapper
+            self._total_configuration_wrapper = wrapper
+        return self._total_configuration_wrapper
 
     @property
     def form_login_required(self):
