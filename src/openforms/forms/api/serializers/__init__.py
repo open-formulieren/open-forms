@@ -1,9 +1,4 @@
-from .form import (
-    CurrentLanguageSerializer,
-    FormExportSerializer,
-    FormImportSerializer,
-    FormSerializer,
-)
+from .form import FormExportSerializer, FormImportSerializer, FormSerializer
 from .form_admin_message import FormAdminMessageSerializer
 from .form_definition import FormDefinitionDetailSerializer, FormDefinitionSerializer
 from .form_step import FormStepSerializer
@@ -13,7 +8,6 @@ from .logic.form_logic import FormLogicSerializer
 from .logic.form_logic_price import FormPriceLogicSerializer
 
 __all__ = [
-    "CurrentLanguageSerializer",
     "FormLogicSerializer",
     "FormPriceLogicSerializer",
     "FormSerializer",

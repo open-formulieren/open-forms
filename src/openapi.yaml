@@ -65,6 +65,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -78,6 +80,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '502':
           content:
             application/json:
@@ -91,6 +95,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/appointments/dates:
     get:
       operationId: appointments_dates_list
@@ -131,6 +137,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/appointments/locations:
     get:
       operationId: appointments_locations_list
@@ -165,6 +173,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/appointments/products:
     get:
       operationId: appointments_products_list
@@ -188,6 +198,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/appointments/times:
     get:
       operationId: appointments_times_list
@@ -235,6 +247,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/authentication/{uuid}/session:
     delete:
       operationId: submission_session_destroy
@@ -268,6 +282,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/authentication/plugins:
     get:
       operationId: authentication_plugins_list
@@ -299,6 +315,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/categories:
     get:
       operationId: categories_list
@@ -323,6 +341,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/categories/{uuid}:
     get:
       operationId: categories_retrieve
@@ -352,6 +372,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/config/privacy_policy_info:
     get:
       operationId: config_privacy_policy_info_retrieve
@@ -375,6 +397,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/dmn/decision-definitions:
     get:
       operationId: dmn_decision_definitions_list
@@ -410,6 +434,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '400':
           content:
             application/json:
@@ -423,6 +449,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -436,6 +464,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/dmn/decision-definitions/versions:
     get:
       operationId: dmn_decision_definitions_versions_list
@@ -482,6 +512,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '400':
           content:
             application/json:
@@ -495,6 +527,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -508,6 +542,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/dmn/decision-definitions/xml:
     get:
       operationId: dmn_decision_definitions_xml_retrieve
@@ -550,6 +586,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '400':
           content:
             application/json:
@@ -563,6 +601,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -576,6 +616,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/dmn/plugins:
     get:
       operationId: dmn_plugins_list
@@ -601,6 +643,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -614,6 +658,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/form-definitions:
     get:
       operationId: form_definitions_list
@@ -645,6 +691,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     post:
       operationId: form_definitions_create
       summary: Create a form definition
@@ -674,6 +722,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/form-definitions/{uuid}:
     get:
       operationId: form_definitions_retrieve
@@ -705,6 +755,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     put:
       operationId: form_definitions_update
       summary: Update all details of a form definition
@@ -741,6 +793,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     patch:
       operationId: form_definitions_partial_update
       summary: Update some details of a form definition
@@ -776,6 +830,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     delete:
       operationId: form_definitions_destroy
       summary: Delete a form definition
@@ -802,6 +858,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/form-definitions/{uuid}/configuration:
     get:
       operationId: form_definitions_configuration_retrieve
@@ -839,6 +897,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/formio/fileupload:
     post:
       operationId: formio_fileupload_create
@@ -875,6 +935,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '400':
           content:
             text/plain:
@@ -888,6 +950,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
       parameters:
       - in: header
         name: X-CSRFToken
@@ -950,6 +1014,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     post:
       operationId: forms_create
       description: |-
@@ -1015,6 +1081,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/forms-import:
     post:
       operationId: forms_import_create
@@ -1046,6 +1114,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/forms/{form_uuid_or_slug}/steps:
     get:
       operationId: forms_steps_list
@@ -1078,6 +1148,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     post:
       operationId: forms_steps_create
       summary: Create a form step
@@ -1119,6 +1191,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/forms/{form_uuid_or_slug}/steps/{uuid}:
     get:
       operationId: forms_steps_retrieve
@@ -1155,6 +1229,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     put:
       operationId: forms_steps_update
       summary: Update all details of a form step
@@ -1202,6 +1278,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     patch:
       operationId: forms_steps_partial_update
       summary: Update some details of a form step
@@ -1248,6 +1326,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     delete:
       operationId: forms_steps_destroy
       summary: Delete a form step
@@ -1279,6 +1359,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/forms/{form_uuid_or_slug}/versions:
     get:
       operationId: forms_versions_list
@@ -1311,6 +1393,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     post:
       operationId: forms_versions_create
       description: Save the current version of the form so that it can later be retrieved
@@ -1352,6 +1436,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/forms/{form_uuid_or_slug}/versions/{uuid}/restore:
     post:
       operationId: forms_versions_restore_create
@@ -1396,35 +1482,25 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/forms/{uuid_or_slug}:
     get:
       operationId: forms_retrieve
-      description: |-
-        Manage forms.
-
-        Forms are collections of form steps, where each form step points to a formio.js
-        form definition. Multiple definitions are combined in logical steps to build a
-        multi-step/page form for end-users to fill out. Form definitions can be (and are)
-        re-used among different forms.
-
-        **Warning: the response data depends on user permissions**
-
-        Non-staff users receive a subset of the documented fields which are used
-        for internal form configuration. These fields are:
-
-        - `internalName`
-        - `registrationBackend`
-        - `registrationBackendOptions`
-        - `paymentBackend`
-        - `paymentBackendOptions`
-        - `product`
-        - `category`
-        - `isDeleted`
-        - `submissionConfirmationTemplate`
-        - `submissionsRemovalOptions`
-        - `confirmationEmailTemplate`
-        - `confirmationEmailOption`
-        - `displayMainWebsiteLink`
+      description: "Retrieve the details/configuration of a particular form. \n\n\
+        A form is a collection of form steps, where each form step points to a formio.js\
+        \ form definition. Multiple definitions are combined in logical steps to build\
+        \ a multi-step/page form for end-users to fill out. Form definitions can be\
+        \ (and are) re-used among different forms.\n\n**Warning: the response data\
+        \ depends on user permissions**\n\nNon-staff users receive a subset of the\
+        \ documented fields which are usedfor internal form configuration. These fields\
+        \ are:\n\n- `internalName`\n- `registrationBackend`\n- `registrationBackendOptions`\n\
+        - `paymentBackend`\n- `paymentBackendOptions`\n- `product`\n- `category`\n\
+        - `isDeleted`\n- `submissionConfirmationTemplate`\n- `submissionsRemovalOptions`\n\
+        - `confirmationEmailTemplate`\n- `confirmationEmailOption`\n- `displayMainWebsiteLink`\n\
+        \nIf the form doesn't have translations enabled, its default language is forced\
+        \ by setting a language cookie and reflected in the Content-Language response\
+        \ header. Normal HTTP Content Negotiation rules apply."
       summary: Retrieve form details
       parameters:
       - in: header
@@ -1462,6 +1538,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     put:
       operationId: forms_update
       description: |-
@@ -1533,6 +1611,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     patch:
       operationId: forms_partial_update
       description: |-
@@ -1603,6 +1683,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     delete:
       operationId: forms_destroy
       description: Destroying a form leads to a soft-delete to protect related submissions.
@@ -1640,48 +1722,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
-  /api/v2/forms/{uuid_or_slug}/activate_default_language:
-    post:
-      operationId: forms_activate_default_language_create
-      description: |-
-        Activate the default language of a form.
-
-        In case translation is not enabled for the Form, the default language is set to
-        settings.LANGUAGE_CODE.
-      summary: Activate the default language for a Form
-      parameters:
-      - in: header
-        name: X-CSP-Nonce
-        schema:
-          type: string
-        description: The value of the CSP nonce generated by the page embedding the
-          SDK. If provided, fields containing rich text from WYSIWYG editors will
-          be post-processed to allow inline styles with the provided nonce. If the
-          embedding page emits a `style-src` policy containing `unsafe-inline`, then
-          you can omit this header without losing functionality. We recommend favouring
-          the nonce mechanism though.
-      - in: path
-        name: uuid_or_slug
-        schema:
-          type: string
-        description: Either a UUID4 or a slug identifiying the form.
-        required: true
-      tags:
-      - forms
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CurrentLanguage'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/forms/{uuid_or_slug}/admin-message:
     post:
       operationId: forms_admin_message_create
@@ -1737,6 +1779,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/forms/{uuid_or_slug}/copy:
     post:
       operationId: forms_copy_create
@@ -1782,6 +1826,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           content:
             application/json:
               schema:
@@ -1831,6 +1877,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/forms/{uuid_or_slug}/logic-rules:
     get:
       operationId: forms_logic_rules_list
@@ -1864,6 +1912,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '401':
           content:
             application/json:
@@ -1877,6 +1927,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -1890,6 +1942,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '404':
           content:
             application/json:
@@ -1903,6 +1957,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '405':
           content:
             application/json:
@@ -1916,6 +1972,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     put:
       operationId: forms_logic_rules_update
       description: By sending a list of LogicRules to this endpoint, all the LogicRules
@@ -1967,6 +2025,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '400':
           content:
             application/json:
@@ -1980,6 +2040,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '401':
           content:
             application/json:
@@ -1993,6 +2055,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -2006,6 +2070,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '404':
           content:
             application/json:
@@ -2019,6 +2085,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '405':
           content:
             application/json:
@@ -2032,6 +2100,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/forms/{uuid_or_slug}/price-logic-rules:
     get:
       operationId: forms_price_logic_rules_list
@@ -2065,6 +2135,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '401':
           content:
             application/json:
@@ -2078,6 +2150,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -2091,6 +2165,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '404':
           content:
             application/json:
@@ -2104,6 +2180,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '405':
           content:
             application/json:
@@ -2117,6 +2195,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     put:
       operationId: forms_price_logic_rules_update
       description: By sending a list of FormPriceLogic to this endpoint, all the FormPriceLogic
@@ -2168,6 +2248,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '400':
           content:
             application/json:
@@ -2181,6 +2263,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '401':
           content:
             application/json:
@@ -2194,6 +2278,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -2207,6 +2293,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '404':
           content:
             application/json:
@@ -2220,6 +2308,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '405':
           content:
             application/json:
@@ -2233,6 +2323,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/forms/{uuid_or_slug}/variables:
     get:
       operationId: forms_variables_list
@@ -2274,6 +2366,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '401':
           content:
             application/json:
@@ -2287,6 +2381,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -2300,6 +2396,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '404':
           content:
             application/json:
@@ -2313,6 +2411,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '405':
           content:
             application/json:
@@ -2326,6 +2426,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     put:
       operationId: forms_variables_update
       description: By sending a list of FormVariables to this endpoint, all the FormVariables
@@ -2377,6 +2479,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '400':
           content:
             application/json:
@@ -2390,6 +2494,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '401':
           content:
             application/json:
@@ -2403,6 +2509,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -2416,6 +2524,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '404':
           content:
             application/json:
@@ -2429,6 +2539,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '405':
           content:
             application/json:
@@ -2442,6 +2554,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/i18n/info:
     get:
       operationId: i18n_info_retrieve
@@ -2472,6 +2586,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/i18n/language:
     put:
       operationId: i18n_language_update
@@ -2500,6 +2616,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '400':
           content:
             application/json:
@@ -2513,6 +2631,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         5XX:
           content:
             application/json:
@@ -2526,6 +2646,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/location/get-street-name-and-city:
     get:
       operationId: get_street_name_and_city_list
@@ -2561,6 +2683,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/payment/plugins:
     get:
       operationId: payment_plugins_list
@@ -2591,6 +2715,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/ping:
     get:
       operationId: ping_retrieve
@@ -2611,6 +2737,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         4XX:
           content:
             application/json:
@@ -2624,6 +2752,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/prefill/plugins:
     get:
       operationId: prefill_plugins_list
@@ -2649,6 +2779,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/prefill/plugins/{plugin}/attributes:
     get:
       operationId: prefill_plugins_attributes_list
@@ -2680,6 +2812,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/products:
     get:
       operationId: products_list
@@ -2722,6 +2856,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/products/{uuid}:
     get:
       operationId: products_retrieve
@@ -2769,6 +2905,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/registration/attributes:
     get:
       operationId: registration_attributes_list
@@ -2794,6 +2932,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/registration/plugins:
     get:
       operationId: registration_plugins_list
@@ -2823,6 +2963,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/registration/plugins/camunda/process-definitions:
     get:
       operationId: registration_plugins_camunda_process_definitions_list
@@ -2848,6 +2990,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/registration/plugins/zgw/informatieobjecttypen:
     get:
       operationId: registration_plugins_zgw_informatieobjecttypen_list
@@ -2873,6 +3017,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/submissions:
     get:
       operationId: submissions_list
@@ -2905,6 +3051,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     post:
       operationId: submissions_create
       description: Start a submission for a particular form. The submission is added
@@ -2940,6 +3088,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '400':
           content:
             application/json:
@@ -2953,6 +3103,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -2966,6 +3118,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '422':
           content:
             application/json:
@@ -2979,6 +3133,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '503':
           content:
             application/json:
@@ -2992,6 +3148,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
       parameters:
       - in: header
         name: X-CSRFToken
@@ -3033,6 +3191,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/submissions/{submission_uuid}/steps/{step_uuid}:
     get:
       operationId: submissions_steps_retrieve
@@ -3071,6 +3231,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -3084,6 +3246,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     put:
       operationId: submissions_steps_update
       description: |-
@@ -3136,6 +3300,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '201':
           content:
             application/json:
@@ -3149,6 +3315,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '400':
           content:
             application/json:
@@ -3162,6 +3330,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -3175,6 +3345,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '422':
           content:
             application/json:
@@ -3188,6 +3360,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '503':
           content:
             application/json:
@@ -3201,6 +3375,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/submissions/{submission_uuid}/steps/{step_uuid}/_check_logic:
     post:
       operationId: submissions_steps__check_logic_create
@@ -3247,6 +3423,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -3260,6 +3438,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '422':
           content:
             application/json:
@@ -3273,6 +3453,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '503':
           content:
             application/json:
@@ -3286,6 +3468,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/submissions/{submission_uuid}/steps/{step_uuid}/validate:
     post:
       operationId: submissions_steps_validate_create
@@ -3332,6 +3516,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '400':
           content:
             application/json:
@@ -3345,6 +3531,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -3358,6 +3546,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '422':
           content:
             application/json:
@@ -3371,6 +3561,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '503':
           content:
             application/json:
@@ -3384,6 +3576,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/submissions/{uuid}:
     get:
       operationId: submissions_retrieve
@@ -3414,6 +3608,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/submissions/{uuid}/{token}/status:
     get:
       operationId: submissions_status_retrieve
@@ -3454,6 +3650,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -3467,6 +3665,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '429':
           content:
             application/json:
@@ -3480,6 +3680,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/submissions/{uuid}/_complete:
     post:
       operationId: submissions__complete_create
@@ -3542,6 +3744,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '400':
           content:
             application/json:
@@ -3555,6 +3759,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '422':
           content:
             application/json:
@@ -3568,6 +3774,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '503':
           content:
             application/json:
@@ -3581,6 +3789,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/submissions/{uuid}/_suspend:
     post:
       operationId: submissions__suspend_create
@@ -3632,6 +3842,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '422':
           content:
             application/json:
@@ -3645,6 +3857,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '503':
           content:
             application/json:
@@ -3658,6 +3872,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/submissions/{uuid}/co-sign:
     get:
       operationId: submissions_co_sign_retrieve
@@ -3688,6 +3904,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -3701,6 +3919,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '404':
           content:
             application/json:
@@ -3714,6 +3934,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '405':
           content:
             application/json:
@@ -3727,6 +3949,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/submissions/{uuid}/summary:
     get:
       operationId: submissions_summary_list
@@ -3759,6 +3983,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/submissions/files/{uuid}:
     get:
       operationId: submissions_files_retrieve
@@ -3795,6 +4021,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
     delete:
       operationId: submissions_files_destroy
       description: "Delete temporary file upload by the uploader. \n\nThis is called\
@@ -3828,6 +4056,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         4XX:
           content:
             application/json:
@@ -3841,6 +4071,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         5XX:
           content:
             application/json:
@@ -3854,6 +4086,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/translations/formio:
     get:
       operationId: translations_formio_retrieve
@@ -3873,6 +4107,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/validation/plugins:
     get:
       operationId: validation_plugins_list
@@ -3898,6 +4134,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/validation/plugins/{validator}:
     post:
       operationId: validation_run
@@ -3948,6 +4186,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/variables/static:
     get:
       operationId: variables_static_list
@@ -3973,6 +4213,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '403':
           content:
             application/json:
@@ -3986,6 +4228,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /auth/{slug}/{plugin_id}/return:
     get:
       operationId: auth_return_retrieve
@@ -4045,6 +4289,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           description: No response body
         '400':
           headers:
@@ -4059,6 +4305,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           content:
             text/html:
               schema:
@@ -4077,6 +4325,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           content:
             text/html:
               schema:
@@ -4095,6 +4345,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           content:
             text/html:
               schema:
@@ -4163,6 +4415,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           content:
             text/html:
               schema:
@@ -4187,6 +4441,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           description: No response body
         '400':
           headers:
@@ -4201,6 +4457,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           content:
             text/html:
               schema:
@@ -4219,6 +4477,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           content:
             text/html:
               schema:
@@ -4237,6 +4497,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           content:
             text/html:
               schema:
@@ -4306,6 +4568,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '302':
           headers:
             Location:
@@ -4322,6 +4586,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           description: No response body
         '400':
           content:
@@ -4336,6 +4602,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '404':
           content:
             text/html:
@@ -4349,6 +4617,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /payment/{plugin_id}/webhook:
     get:
       operationId: payment_webhook_retrieve
@@ -4385,6 +4655,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           description: No response body
         '400':
           headers:
@@ -4399,6 +4671,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           content:
             application/problem+json:
               schema:
@@ -4417,6 +4691,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           content:
             application/problem+json:
               schema:
@@ -4457,6 +4733,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           description: No response body
         '400':
           headers:
@@ -4471,6 +4749,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           content:
             application/problem+json:
               schema:
@@ -4489,6 +4769,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           content:
             application/problem+json:
               schema:
@@ -4551,6 +4833,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '400':
           content:
             application/problem+json:
@@ -4564,6 +4848,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '404':
           content:
             application/problem+json:
@@ -4578,6 +4864,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /payment/{uuid}/return:
     get:
       operationId: payment_return_retrieve
@@ -4623,6 +4911,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           description: Tempomrary redirect
         '400':
           headers:
@@ -4637,6 +4927,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           content:
             application/problem+json:
               schema:
@@ -4655,6 +4947,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           content:
             application/problem+json:
               schema:
@@ -4705,6 +4999,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           description: Tempomrary redirect
         '400':
           headers:
@@ -4719,6 +5015,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           content:
             application/problem+json:
               schema:
@@ -4737,6 +5035,8 @@ paths:
               $ref: '#/components/headers/X-CSRFToken'
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
           content:
             application/problem+json:
               schema:
@@ -4745,6 +5045,14 @@ paths:
             or the `plugin_id` does not exist.
 components:
   headers:
+    Content-Language:
+      schema:
+        type: string
+        enum:
+        - en
+        - nl
+      description: Language code of the currently activated language.
+      required: true
     X-CSRFToken:
       schema:
         type: string
@@ -4938,15 +5246,6 @@ components:
       required:
       - configuration
       - index
-    CurrentLanguage:
-      type: object
-      properties:
-        activeLanguage:
-          allOf:
-          - $ref: '#/components/schemas/AvailableLanguagesEnum'
-          description: RFC5646 language tag, e.g. `en` or `en-us`
-      required:
-      - activeLanguage
     DataTypeEnum:
       enum:
       - string
