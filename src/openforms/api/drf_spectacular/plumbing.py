@@ -11,6 +11,7 @@ def build_response_header_parameter(
     description: str,
     schema_type: type = str,
     required: bool = True,
+    **kwargs,
 ):
     parameter = build_parameter_type(
         name=name,
@@ -18,6 +19,7 @@ def build_response_header_parameter(
         location=OpenApiParameter.HEADER,
         description=description,
         required=required,
+        **kwargs,
     )
 
     # following drf_spectacular.openapi.AutoSchema._get_response_headers_for_code, this is
@@ -33,12 +35,14 @@ def build_response_header_component(
     description: str,
     schema_type: type = str,
     required: bool = True,
+    **kwargs,
 ) -> ResolvedComponent:
     parameter = build_response_header_parameter(
         name=name,
         description=description,
         schema_type=schema_type,
         required=required,
+        **kwargs,
     )
     component = ResolvedComponent(
         name=name,

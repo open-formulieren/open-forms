@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.plumbing import build_parameter_type
@@ -10,6 +11,7 @@ from openforms.middleware import (
     SESSION_EXPIRES_IN_HEADER,
 )
 
+from .functional import lazy_enum
 from .plumbing import build_response_header_component
 
 # Session Expires header
@@ -36,6 +38,13 @@ IS_FORM_DESIGNER_COMPONENT = build_response_header_component(
     ),
 )
 
+# Content-Language header
+CONTENT_LANGUAGE_COMPONENT = build_response_header_component(
+    name="Content-Language",
+    description=_("Language code of the currently activated language."),
+    enum=lazy_enum(lambda: [code for code, _ in settings.LANGUAGES]),
+)
+
 
 def add_middleware_headers(result, generator, request, public):
     """
@@ -44,6 +53,7 @@ def add_middleware_headers(result, generator, request, public):
     generator.registry.register_on_missing(SESSION_EXPIRES_IN_COMPONENT)
     generator.registry.register_on_missing(CSRF_TOKEN_COMPONENT)
     generator.registry.register_on_missing(IS_FORM_DESIGNER_COMPONENT)
+    generator.registry.register_on_missing(CONTENT_LANGUAGE_COMPONENT)
 
     for path in result["paths"].values():
         for operation in path.values():
@@ -59,6 +69,7 @@ def add_middleware_headers(result, generator, request, public):
                         SESSION_EXPIRES_IN_HEADER: SESSION_EXPIRES_IN_COMPONENT.ref,
                         CSRF_TOKEN_HEADER_NAME: CSRF_TOKEN_COMPONENT.ref,
                         IS_FORM_DESIGNER_HEADER_NAME: IS_FORM_DESIGNER_COMPONENT.ref,
+                        "Content-Language": CONTENT_LANGUAGE_COMPONENT.ref,
                     }
                 )
 

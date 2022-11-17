@@ -1085,8 +1085,10 @@ class FormsAPITranslationTests(APITestCase):
         )
 
     def test_detail_shows_translated_values_based_on_request_header(self):
-
+        self.en_form.translation_enabled = True
+        self.en_form.save()
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": self.en_form.uuid})
+
         response = self.client.get(url, HTTP_ACCEPT_LANGUAGE="en")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -1128,16 +1130,12 @@ class FormsAPITranslationTests(APITestCase):
         Default language should be set, because translation is disabled (ignoring any language headers)
         """
         form = FormFactory.create(translation_enabled=False)
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
 
-        url = reverse(
-            "api:form-activate-default-language", kwargs={"uuid_or_slug": form.uuid}
-        )
-        self.client.force_authenticate(user=None)
-
-        response = self.client.post(url, HTTP_ACCEPT_LANGUAGE="en")
+        response = self.client.get(url, HTTP_ACCEPT_LANGUAGE="en")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {"active_language": "nl"})
+        self.assertEqual(response["Content-Language"], "nl")
         self.assertIn(settings.LANGUAGE_COOKIE_NAME, response.cookies)
 
         language_cookie = response.cookies[settings.LANGUAGE_COOKIE_NAME]
@@ -1159,14 +1157,11 @@ class FormsAPITranslationTests(APITestCase):
         Endpoint should do nothing in this case, because translation is enabled
         """
         form = FormFactory.create(translation_enabled=True)
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
 
-        url = reverse(
-            "api:form-activate-default-language", kwargs={"uuid_or_slug": form.uuid}
-        )
-        self.client.force_authenticate(user=None)
-        response = self.client.post(url, HTTP_ACCEPT_LANGUAGE="en")
+        response = self.client.get(url, HTTP_ACCEPT_LANGUAGE="en")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {"active_language": "en"})
+        self.assertEqual(response["Content-Language"], "en")
         self.assertNotIn(settings.LANGUAGE_COOKIE_NAME, response.cookies)
         self.assertEqual(translation.get_language(), "en")

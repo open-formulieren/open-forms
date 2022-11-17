@@ -38,7 +38,6 @@ from .parsers import (
 from .permissions import FormAPIPermissions
 from .renderers import FormCamelCaseJSONRenderer
 from .serializers import (
-    CurrentLanguageSerializer,
     FormAdminMessageSerializer,
     FormDefinitionDetailSerializer,
     FormDefinitionSerializer,
@@ -175,6 +174,11 @@ _FORM_ADMIN_FIELDS_MARKDOWN = "\n".join(
     retrieve=extend_schema(
         summary=_("Retrieve form details"),
         parameters=[UUID_OR_SLUG_PARAMETER],
+        description=_(
+            "Retrieve the details/configuration of a particular form. \n\nFor forms "
+            "that don't have translations enabled, the default language is activated, "
+            "otherwise the browser preferences determine the active language."
+        ),
     ),
     create=extend_schema(summary=_("Create form")),
     update=extend_schema(
@@ -328,6 +332,18 @@ class FormViewSet(viewsets.ModelViewSet):
 
         return request
 
+    def retrieve(self, request, *args, **kwargs):
+        form = self.get_object()
+        if not form.translation_enabled:
+            translation.activate(settings.LANGUAGE_CODE)
+            current_language = translation.get_language()
+
+        response = super().retrieve(request, *args, **kwargs)
+
+        if not form.translation_enabled:
+            set_language_cookie(response, current_language)
+        return response
+
     @extend_schema(
         summary=_("Copy form"),
         tags=["forms"],
@@ -394,40 +410,6 @@ class FormViewSet(viewsets.ModelViewSet):
         export_form(instance.id, response=response)
 
         response["Content-Length"] = len(response.content)
-        return response
-
-    @extend_schema(
-        summary=_("Activate the default language for a Form"),
-        tags=["forms"],
-        request=None,
-        responses={status.HTTP_200_OK: CurrentLanguageSerializer},
-        parameters=[UUID_OR_SLUG_PARAMETER],
-    )
-    @transaction.atomic
-    @action(
-        detail=True,
-        methods=["post"],
-        authentication_classes=(),
-        permission_classes=(),
-    )
-    def activate_default_language(self, request, *args, **kwargs):
-        """
-        Activate the default language of a form.
-
-        In case translation is not enabled for the Form, the default language is set to
-        settings.LANGUAGE_CODE.
-        """
-        form = self.get_object()
-        response = Response(status=status.HTTP_200_OK)
-        current_language = translation.get_language()
-        if not form.translation_enabled:
-            translation.activate(settings.LANGUAGE_CODE)
-            current_language = translation.get_language()
-            set_language_cookie(response, current_language)
-
-        response.data = CurrentLanguageSerializer(
-            instance={"active_language": current_language}
-        ).data
         return response
 
     def perform_destroy(self, instance):
