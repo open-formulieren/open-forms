@@ -711,6 +711,7 @@ CORS_EXPOSE_HEADERS = [
     "X-Session-Expires-In",
     "X-CSRFToken",
     "X-Is-Form-Designer",
+    "Content-Language",
 ]
 CORS_ALLOW_CREDENTIALS = True  # required to send cross domain cookies
 
