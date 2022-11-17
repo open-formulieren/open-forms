@@ -119,7 +119,7 @@ class EditGrid extends EditGridFormio {
       {
         label: 'Repeating Group',
         key: 'repeatingGroup',
-        hideLabel: true,
+        hideLabel: false,
         inlineEdit: true,
       },
       ...extend
@@ -127,7 +127,7 @@ class EditGrid extends EditGridFormio {
   }
   static get builderInfo() {
     return {
-      hideLabel: true,
+      hideLabel: false,
       title: 'Repeating Group',
       icon: 'repeat',
       schema: EditGrid.schema(),
