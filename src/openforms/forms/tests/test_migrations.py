@@ -325,3 +325,43 @@ class TestConvertURLsToUUIDs(TestMigrations):
         self.assertEqual(
             self.rule.actions[0]["form_step_uuid"], str(self.form_step.uuid)
         )
+
+
+class TestChangeHideLabelSetting(TestMigrations):
+    migrate_from = "0054_merge_20221114_1308"
+    migrate_to = "0055_make_hidelabel_false"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        self.form_definition = FormDefinition.objects.create(
+            name="Definition with repeating group",
+            slug="definition-with-repeating-group",
+            configuration={
+                "components": [
+                    {
+                        "key": "repeatingGroup",
+                        "type": "editgrid",
+                        "label": "Repeating Group",
+                        "hideLabel": True,
+                        "components": [],
+                    },
+                    {
+                        "key": "SomeTextField",
+                        "type": "textfield",
+                        "label": "Text Field",
+                        "hideLabel": True,
+                    },
+                ]
+            },
+        )
+
+    def test_editgrid_hidelabel_false(self):
+        self.form_definition.refresh_from_db()
+
+        self.assertFalse(
+            self.form_definition.configuration["components"][0]["hideLabel"]
+        )
+        self.assertTrue(
+            self.form_definition.configuration["components"][1]["hideLabel"]
+        )
