@@ -21,6 +21,8 @@ from ..constants import ConfirmationEmailOptions
 from ..models import Form
 from .factories import FormFactory, FormStepFactory
 
+TranslatedFormFactory = make_translated(FormFactory)
+
 
 class FormSerializerTests(APITestCase):
     def test_public_fields_meta_exist_in_fields_meta(self):
@@ -1075,7 +1077,6 @@ class FormsAPITranslationTests(APITestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        TranslatedFormFactory = make_translated(FormFactory)
         cls.en_form = TranslatedFormFactory.create(
             _language="en",
             begin_text="start",
@@ -1085,20 +1086,27 @@ class FormsAPITranslationTests(APITestCase):
         )
 
     def test_detail_shows_translated_values_based_on_request_header(self):
-        self.en_form.translation_enabled = True
-        self.en_form.save()
-        url = reverse("api:form-detail", kwargs={"uuid_or_slug": self.en_form.uuid})
+        form = TranslatedFormFactory.create(
+            _language="en",
+            translation_enabled=True,
+            begin_text="start",
+            previous_text="prev",
+            change_text="change",
+            confirm_text="confirm",
+        )
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
 
         response = self.client.get(url, HTTP_ACCEPT_LANGUAGE="en")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.headers["Content-Language"], "en")
-        form = response.json()
+        data = response.json()
 
-        self.assertTrue(form["name"])  # it has a name from the factory
+        self.assertTrue(data["name"])  # it has a name from the factory
 
         def literal_value(field):
-            return form["literals"][field]["value"]
+            return data["literals"][field]["value"]
 
         self.assertEqual(literal_value("beginText"), "start")
         self.assertEqual(literal_value("previousText"), "prev")

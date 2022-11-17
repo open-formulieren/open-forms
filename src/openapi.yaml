@@ -1488,8 +1488,19 @@ paths:
     get:
       operationId: forms_retrieve
       description: "Retrieve the details/configuration of a particular form. \n\n\
-        For forms that don't have translations enabled, the default language is activated,\
-        \ otherwise the browser preferences determine the active language."
+        A form is a collection of form steps, where each form step points to a formio.js\
+        \ form definition. Multiple definitions are combined in logical steps to build\
+        \ a multi-step/page form for end-users to fill out. Form definitions can be\
+        \ (and are) re-used among different forms.\n\n**Warning: the response data\
+        \ depends on user permissions**\n\nNon-staff users receive a subset of the\
+        \ documented fields which are usedfor internal form configuration. These fields\
+        \ are:\n\n- `internalName`\n- `registrationBackend`\n- `registrationBackendOptions`\n\
+        - `paymentBackend`\n- `paymentBackendOptions`\n- `product`\n- `category`\n\
+        - `isDeleted`\n- `submissionConfirmationTemplate`\n- `submissionsRemovalOptions`\n\
+        - `confirmationEmailTemplate`\n- `confirmationEmailOption`\n- `displayMainWebsiteLink`\n\
+        \nIf the form doesn't have translations enabled, its default language is forced\
+        \ by setting a language cookie and reflected in the Content-Language response\
+        \ header. Normal HTTP Content Negotiation rules apply."
       summary: Retrieve form details
       parameters:
       - in: header
