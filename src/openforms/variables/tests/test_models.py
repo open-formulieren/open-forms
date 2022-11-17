@@ -1,29 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.test import SimpleTestCase
 
-import factory
-from model_bakery import baker
-
-from ..models import DataMappingTypes, ServiceFetchConfiguration, ServiceFetchMethods
-
-
-class ServiceFetchConfigurationFactory(factory.django.DjangoModelFactory):
-    """An incomplete ServiceFetchConfiguration factory
-
-    no service is created.
-    """
-
-    class Meta:
-        model = ServiceFetchConfiguration
-
-    service = None  # No
-    path = ""
-    method = "GET"
-    headers = None
-    query_params = ""
-    body = None
-    data_mapping_type = None
-    mapping_expression = None
+from ..models import DataMappingTypes, ServiceFetchConfiguration
 
 
 class ServiceFetchConfigurationTests(SimpleTestCase):
