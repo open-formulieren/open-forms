@@ -15,11 +15,6 @@
                 "user"
             ],
             [
-                "delete_user",
-                "accounts",
-                "user"
-            ],
-            [
                 "view_user",
                 "accounts",
                 "user"
@@ -485,11 +480,6 @@
             ],
             [
                 "change_user",
-                "accounts",
-                "user"
-            ],
-            [
-                "delete_user",
                 "accounts",
                 "user"
             ],
