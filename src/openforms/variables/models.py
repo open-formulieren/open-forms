@@ -14,18 +14,21 @@ class ServiceFetchConfiguration(models.Model):
         on_delete=models.PROTECT,
     )
     path = models.CharField(
+        _("path"),
         max_length=250,
         blank=True,  # allow "" for the root, but not None
         default="",
         help_text=_("path relative to the Service API root"),
     )
     method = models.CharField(
+        _("HTTP method"),
         max_length=4,
         choices=ServiceFetchMethods.choices,
         default="GET",
         help_text=_("POST is allowed, but should not be used to mutate data"),
     )
     headers = models.JSONField(
+        _("HTTP request headers"),
         blank=True,
         null=True,
         help_text=_(
@@ -33,10 +36,12 @@ class ServiceFetchConfiguration(models.Model):
         ),
     )
     query_params = models.TextField(
+        _("HTTP query string"),
         blank=True,
         default="",
     )
     body = models.JSONField(
+        _("HTTP request body"),
         blank=True,
         null=True,
         help_text=_(
@@ -44,12 +49,14 @@ class ServiceFetchConfiguration(models.Model):
         ),
     )
     data_mapping_type = models.CharField(
+        _("Mapping expression language"),
         max_length=10,
         blank=True,
         null=True,
         choices=DataMappingTypes.choices,
     )
     mapping_expression = models.JSONField(
+        _("Mapping expression"),
         blank=True,
         null=True,
         help_text=_("For jq, pass a string containing the filter expression"),
