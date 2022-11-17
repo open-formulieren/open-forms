@@ -1,5 +1,10 @@
 from django.conf import settings
-from django.utils.translation import get_language, get_language_info, gettext_lazy as _
+from django.utils.translation import (
+    activate,
+    get_language,
+    get_language_info,
+    gettext_lazy as _,
+)
 
 from drf_spectacular.utils import OpenApiExample, extend_schema
 from rest_framework import status
@@ -78,6 +83,8 @@ class SetLanguageView(APIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        language_code = serializer.data["code"]
+        activate(language_code)
         response = Response(status=status.HTTP_204_NO_CONTENT)
-        set_language_cookie(response, serializer.data["code"])
+        set_language_cookie(response, language_code)
         return response
