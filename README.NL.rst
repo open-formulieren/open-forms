@@ -34,7 +34,7 @@ eindgebruikers als beheerders.
 .. image:: docs/introduction/_assets/open-forms-from-designer-to-form.png
     :width: 100%
 
-.. _`SDK`: https://github.com/open-formuliere/open-forms-sdk/
+.. _`SDK`: https://github.com/open-formulieren/open-forms-sdk/
 .. _`Common Ground`: https://commonground.nl/
 .. _`Open Zaak`: https://open-zaak.readthedocs.io/
 
