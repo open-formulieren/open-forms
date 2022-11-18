@@ -21,6 +21,7 @@ class FormIOTranslationsView(APIView):
     @extend_schema(
         summary=_("Get FormIO translations"),
         description=_("Retrieve the translations for the strings used by FormIO"),
+        deprecated=True,
     )
     def get(self, request, *args, **kwargs):
         filepath = os.path.abspath(
