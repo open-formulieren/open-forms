@@ -2,7 +2,7 @@ import json
 import random
 import string
 import zipfile
-from typing import List, Optional
+from typing import Dict, List, Optional
 from uuid import uuid4
 
 from django.conf import settings
@@ -302,7 +302,10 @@ def remove_key_from_dict(dictionary, key):
                     remove_key_from_dict(value, key)
 
 
-def parse_trigger(trigger_info: JSONObject) -> Optional[JSONObject]:
+def parse_trigger(
+    trigger_info: JSONObject,
+    configuration_wrapper: Optional[Dict[str, JSONObject]] = None,
+) -> Optional[JSONObject]:
     trigger_type = trigger_info["type"]
     trigger = trigger_info[trigger_type]
 
@@ -312,6 +315,13 @@ def parse_trigger(trigger_info: JSONObject) -> Optional[JSONObject]:
     if trigger_type == "simple":
         trigger_component_key = trigger.get("when")
         compare_value = trigger.get("eq")
+
+        if (
+            configuration_wrapper
+            and configuration_wrapper[trigger_component_key]["type"] == "selectboxes"
+        ):
+            return {"==": [{"var": f"{trigger_component_key}.{compare_value}"}, True]}
+
         return {"==": [{"var": trigger_component_key}, compare_value]}
 
     if trigger_type == "json":
@@ -389,14 +399,21 @@ def advanced_formio_logic_to_backend_logic(
     form_steps = FormStep.objects.filter(form_definition__pk=form_definition.pk)
     forms = Form.objects.filter(pk__in=form_steps.values_list("form", flat=True))
 
+    configuration_wrapper = {
+        component["key"]: component
+        for component in iter_components(form_definition.configuration, recursive=True)
+    }
+
     logic_rules_to_create = []
-    for component in iter_components(form_definition.configuration):
+    for key, component in configuration_wrapper.items():
         if "logic" not in component or not len(component["logic"]):
             continue
 
         component_key = component["key"]
         for component_logic_rule in component["logic"]:
-            parsed_trigger = parse_trigger(component_logic_rule["trigger"])
+            parsed_trigger = parse_trigger(
+                component_logic_rule["trigger"], configuration_wrapper
+            )
             if not parsed_trigger:
                 continue
 
