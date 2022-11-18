@@ -16,6 +16,7 @@ from openforms.formio.utils import iter_components
 from openforms.typing import JSONObject
 from openforms.variables.constants import FormVariableSources
 
+from ..formio.datastructures import FormioConfigurationWrapper
 from .api.datastructures import FormVariableWrapper
 from .api.serializers import (
     FormDefinitionSerializer,
@@ -474,3 +475,15 @@ def fix_broken_rules(rules: models.QuerySet) -> None:
 
     if fixed_rules:
         FormLogic.objects.bulk_update(fixed_rules, fields=["actions"])
+
+
+def get_total_form_configuration_wrapper(
+    form_steps: models.QuerySet | list["FormStep"],
+) -> "FormioConfigurationWrapper":
+    if len(form_steps) == 0:
+        return FormioConfigurationWrapper(configuration={})
+
+    wrapper = FormioConfigurationWrapper(form_steps[0].form_definition.configuration)
+    for form_step in form_steps[1:]:
+        wrapper += form_step.form_definition.configuration_wrapper
+    return wrapper

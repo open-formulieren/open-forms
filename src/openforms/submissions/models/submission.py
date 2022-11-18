@@ -302,17 +302,12 @@ class Submission(models.Model):
     @property
     def total_configuration_wrapper(self) -> FormioConfigurationWrapper:
         if not self._total_configuration_wrapper:
-            state = self.load_execution_state()
-            form_steps = state.form_steps
-            if len(form_steps) == 0:
-                return FormioConfigurationWrapper(configuration={})
+            from openforms.forms.utils import get_total_form_configuration_wrapper
 
-            wrapper = FormioConfigurationWrapper(
-                form_steps[0].form_definition.configuration
+            state = self.load_execution_state()
+            self._total_configuration_wrapper = get_total_form_configuration_wrapper(
+                state.form_steps
             )
-            for form_step in form_steps[1:]:
-                wrapper += form_step.form_definition.configuration_wrapper
-            self._total_configuration_wrapper = wrapper
         return self._total_configuration_wrapper
 
     @property
