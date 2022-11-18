@@ -73,7 +73,7 @@ cairosvg==2.5.2
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   weasyprint
-celery==5.2.3
+celery==5.2.7
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -965,11 +965,10 @@ zgw-consumers==0.22.0
     #   -r requirements/base.txt
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==59.6.0
+setuptools==65.5.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   celery
     #   django-axes
     #   drf-jsonschema
     #   josepy

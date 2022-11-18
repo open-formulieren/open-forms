@@ -89,7 +89,7 @@ cairosvg==2.5.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   weasyprint
-celery==5.2.3
+celery==5.2.7
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1177,11 +1177,10 @@ zgw-consumers==0.22.0
 # The following packages are considered to be unsafe in a requirements file:
 pip==22.3.1
     # via pip-tools
-setuptools==59.6.0
+setuptools==65.5.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-    #   celery
     #   django-axes
     #   drf-jsonschema
     #   josepy
