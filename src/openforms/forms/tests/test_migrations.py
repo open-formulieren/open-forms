@@ -365,3 +365,73 @@ class TestChangeHideLabelSetting(TestMigrations):
         self.assertTrue(
             self.form_definition.configuration["components"][1]["hideLabel"]
         )
+
+
+class TestFixRulesWithCheckboxes(TestMigrations):
+    migrate_from = "0055_make_hidelabel_false"
+    migrate_to = "0056_fix_rules_with_selectboxes"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        FormStep = apps.get_model("forms", "FormStep")
+        Form = apps.get_model("forms", "Form")
+        FormLogic = apps.get_model("forms", "FormLogic")
+
+        form_definition = FormDefinition.objects.create(
+            name="Definition with select boxes",
+            slug="definition-with-select-boxes",
+            configuration={
+                "components": [
+                    {
+                        "key": "selectBoxes",
+                        "type": "selectboxes",
+                        "label": "Select Boxes",
+                        "values": [
+                            {
+                                "label": "A",
+                                "value": "a",
+                            },
+                            {
+                                "label": "B",
+                                "value": "b",
+                            },
+                        ],
+                    },
+                    {
+                        "key": "textField",
+                        "type": "textfield",
+                        "label": "Text Field",
+                    },
+                ]
+            },
+        )
+
+        form = Form.objects.create(name="Form", slug="form")
+        FormStep.objects.create(form=form, form_definition=form_definition, order=0)
+
+        self.rule_well_formatted = FormLogic.objects.create(
+            form=form,
+            order=1,
+            json_logic_trigger={"==": [{"var": "selectBoxes.a"}, True]},
+            actions=[],
+        )
+        self.rule_badly_formatted = FormLogic.objects.create(
+            form=form,
+            order=2,
+            json_logic_trigger={"==": [{"var": "selectBoxes"}, "a"]},
+            actions=[],
+        )
+
+    def test_fix_badly_formatted_rules(self):
+        self.rule_well_formatted.refresh_from_db()
+        self.rule_badly_formatted.refresh_from_db()
+
+        self.assertEqual(
+            self.rule_well_formatted.json_logic_trigger,
+            {"==": [{"var": "selectBoxes.a"}, True]},
+        )
+        self.assertEqual(
+            self.rule_badly_formatted.json_logic_trigger,
+            {"==": [{"var": "selectBoxes.a"}, True]},
+        )
