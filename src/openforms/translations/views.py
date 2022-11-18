@@ -11,7 +11,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
-# TODO: Optimize this view with sendfile #855
 class FormIOTranslationsView(APIView):
     authentication_classes = ()
     permission_classes = (permissions.AllowAny,)
