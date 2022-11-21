@@ -1,9 +1,13 @@
 from django.conf import settings
 from django.core import mail
 from django.core.exceptions import SuspiciousOperation
+from django.template.loader import get_template
 from django.test import TestCase
 
+from pyquery import PyQuery
+
 from openforms.config.models import GlobalConfiguration
+from openforms.emails.context import _get_design_token_values
 from openforms.emails.utils import send_mail_html
 
 
@@ -102,3 +106,74 @@ class HTMLEmailWrapperTest(TestCase):
                 "foo@sender.com",
                 ["foo@bar.baz"],
             )
+
+
+class DesignTokenFilterTest(TestCase):
+    """unit tests for ``emails.context._get_design_token_values``"""
+
+    def test_strip_px_unit(self):
+        self.design_tokens = {
+            "header-logo": {
+                "height": {"value": "100px"},
+                "width": {"value": "100px"},
+            }
+        }
+        result = _get_design_token_values(self.design_tokens)
+        self.assertEqual(result["logo"]["height"], "100px")
+        self.assertEqual(result["logo"]["width"], "100px")
+        self.assertEqual(result["logo"]["height_attr"], "100")
+        self.assertEqual(result["logo"]["width_attr"], "100")
+
+    def test_return_empty_string_for_non_px_unit(self):
+        self.design_tokens = {
+            "header-logo": {
+                "height": {"value": "100em"},
+                "width": {"value": "100em"},
+            }
+        }
+        result = _get_design_token_values(self.design_tokens)
+        self.assertEqual(result["logo"]["height"], "100em")
+        self.assertEqual(result["logo"]["width"], "100em")
+        self.assertEqual(result["logo"]["height_attr"], "")
+        self.assertEqual(result["logo"]["width_attr"], "")
+
+    def test_return_empty_string_for_auto_size(self):
+        """default for width: 'auto'"""
+        self.design_tokens = {"header-logo": {}}
+        result = _get_design_token_values(self.design_tokens)
+        self.assertEqual(result["logo"]["width"], "auto")
+        self.assertEqual(result["logo"]["width_attr"], "")
+
+
+class TemplateRenderingTest(TestCase):
+    """
+    integration test for the display of design token values
+
+    assumes that ``emails.context.get_wrapper_context`` works correctly,
+    hence the context variable is provided manually.
+    """
+
+    def test_design_token_values(self):
+        template = get_template("emails/wrapper.html")
+        ctx = {
+            "content": "<p>Hello there!</p>",
+            "main_website_url": "https://logoresizingdoneright.com",
+            "style": {
+                "logo": {
+                    "height": "150px",
+                    "width": "auto",
+                    "height_attr": "150",
+                    "width_attr": "",
+                }
+            },
+            "logo_url": "https://logo.png",
+        }
+        html_message = template.render(ctx)
+        img = PyQuery(html_message)("img")
+
+        self.assertEqual(img.attr("height"), "150")
+        self.assertIsNone(img.attr("width"))
+
+        img_styles = img.attr("style").replace(" ", "").split(";")
+        self.assertIn("width:auto", img_styles)
+        self.assertIn("height:150px", img_styles)
