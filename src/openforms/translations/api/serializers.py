@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.translation import gettext_lazy as _
 
+from glom import assign, glom
 from modeltranslation.manager import get_translatable_fields_for_model
 from rest_framework import serializers
 from rest_framework.fields import SkipField, get_error_detail
@@ -104,6 +105,9 @@ class ModelTranslationsSerializer(serializers.Serializer):
                 parent_field = self.get_parent_field(field_name)
                 value = data.get(language, {}).get(field_name)
 
+                # if field_name == "name":
+                #     import pdb; pdb.set_trace()
+
                 # Workaround for literals
                 if isinstance(parent_field, ButtonTextSerializer):
                     if value is None:
@@ -176,3 +180,37 @@ class ModelTranslationsSerializer(serializers.Serializer):
             response[language_code] = data
 
         return response
+
+
+class DefaultTranslationValueSerializerMixin:
+    def to_internal_value(self, data):
+        """
+        Populate defaults for translatable fields, based on the default language (if those translations are supplied)
+
+        This is to prevent the API from throwing errors because values for these fields are missing
+        """
+        if "translations" in self.fields and "translations" in data:
+            nested_fields_mapping = self.fields["translations"].nested_fields_mapping
+            translatable_fields = get_translatable_fields_for_model(
+                get_model_class(self)
+            )
+            for field_name in translatable_fields:
+                path = field_name
+                if nested_path := nested_fields_mapping.get(field_name, ""):
+                    path = f"{nested_path}.{field_name}"
+
+                translated_value = glom(
+                    data,
+                    f"translations.{settings.LANGUAGE_CODE}.{field_name}",
+                    default=None,
+                )
+
+                if translated_value is not None:
+                    assign(
+                        data,
+                        path,
+                        translated_value,
+                        missing=dict,
+                    )
+
+        return super().to_internal_value(data)

@@ -15,7 +15,10 @@ from openforms.payments.api.fields import PaymentOptionsReadOnlyField
 from openforms.payments.registry import register as payment_register
 from openforms.products.models import Product
 from openforms.registrations.registry import register as registration_register
-from openforms.translations.api.serializers import ModelTranslationsSerializer
+from openforms.translations.api.serializers import (
+    DefaultTranslationValueSerializerMixin,
+    ModelTranslationsSerializer,
+)
 
 from ...constants import ConfirmationEmailOptions
 from ...models import Category, Form
@@ -44,7 +47,11 @@ class FormLiteralsSerializer(serializers.Serializer):
     confirm_text = ButtonTextSerializer(raw_field="confirm_text", required=False)
 
 
-class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
+class FormSerializer(
+    DefaultTranslationValueSerializerMixin,
+    PublicFieldsSerializerMixin,
+    serializers.ModelSerializer,
+):
     """
     Represent a single `Form` definition.
 

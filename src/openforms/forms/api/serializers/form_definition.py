@@ -7,7 +7,10 @@ from rest_framework import serializers
 
 from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.formio.service import rewrite_formio_components_for_request
-from openforms.translations.api.serializers import ModelTranslationsSerializer
+from openforms.translations.api.serializers import (
+    DefaultTranslationValueSerializerMixin,
+    ModelTranslationsSerializer,
+)
 
 from ...models import Form, FormDefinition
 from ...validators import validate_form_definition_is_reusable
@@ -50,7 +53,9 @@ class UsedInFormSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class FormDefinitionSerializer(
-    PublicFieldsSerializerMixin, serializers.HyperlinkedModelSerializer
+    DefaultTranslationValueSerializerMixin,
+    PublicFieldsSerializerMixin,
+    serializers.HyperlinkedModelSerializer,
 ):
     translations = ModelTranslationsSerializer(required=False)
 
