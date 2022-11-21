@@ -2,6 +2,107 @@
 Changelog
 =========
 
+2.1.0-alpha.0 (2022-11-21)
+==========================
+
+First alpha version of the 2.1.0 release.
+
+Open Forms now has the ambition to release an alpha version about every 4 weeks (at
+the end of a sprint) and putting out a new minor or major version every quarter.
+
+**New features**
+
+* [#1861, #1862] Added organization member authentication for forms. Using OIDC, employees of
+  the organization can now log in to (internal) forms and submit them. It is also
+  possible for employees (e.g. service desk staff) to start forms on behalf of customers.
+* [#2042] Optimized component mutations (by logic) by using a caching datastructure
+* [#2209] Simplified number component validation error messages
+* Ensured that upgrading to 2.1 enforces upgrading to 2.0 first
+* [#2225] Emit openforms-theme as default theme unless an explicit theme is configured
+* [#2197] Implemented plugin hooks to modify requests that are about to be made to
+  third party services
+* [#2197] Added container image tag/version including all official extensions
+  (including token-exchange authorization)
+* [#1929] Added early file type/extension validation for file uploads
+* Added ``reverse_plus()`` utility function
+* [#1849] DigiD/eHerkenning/eIDAS metadata can now be configured and generated from the admin
+* First steps for translatable content/forms:
+
+  * [#2228] Enabled run-time language preference detection
+  * [#2229] Added endpoint to expose available (and currently activated) language(s)
+  * [#2230] Expose translatable properties for forms (in the admin)
+  * [#2231] API endpoints return content in the currently activated/requested language
+  * [#2232] Expose whether form translations are enabled (and enforce the default
+    language if they're not)
+  * [#2278, #2279] Store the language for a form submission when it's created
+  * [#2255] SDK: use the correct locale for static translations
+
+* [#2289] Create NNP/Vestiging depending on the available properties (registration backends)
+* [#2329] The CSP post-processor now performs HTML sanitation too, stripping tags and
+  attributes that are not on the allowlist.
+* Optimized form list endpoint
+* Upgraded to Python 3.10
+
+**Bugfixes**
+
+* [#2062] Fixed "Print this page" CSP violation
+* [#1180] Fixed Google Analytics not measuring form steps correctly
+* [#2208] Fixed JSON-logic expressions with primitives (number, string...)
+* [#1924] Various fixes to the dark mode theme for the form designer
+* [#2206] Fixed a race condition related to prefill variables
+* [#2213] Fixed inconsistent default values for copied components in the form designer
+* [#2246] Fixed invalid error styling in form designer
+* [#1901] Fixed image inline styles in content components by CSP post-processing them
+* [#1957] Fixes admin ``retry_processing_submissions()`` action to reset
+  submission registration attempts counter
+* [#2148] Changed VertrouwelijkheidsAanduidingen translatable choice labels to Dutch
+* [#2245] Changed privacy policy link in summary page to open in new window
+* [#2277] Fixed Ogone feedback URL
+* [#2301] Fixed identifying attributes still being hashed after a submission is resumed
+* [#2135] Fixed submission step data being cascade deleted in certain edge cases
+* [#2244] Fixed 'content' component and components not marked as ``showInSummary``
+  showing up in server rendered summary
+* Fixed pattern for formio key validation
+* [#2337] Fixed crash on data prefill for certain multi-step forms
+* [#2304] Refactored form logic action "mark step as not applicable" to use ID references
+  rather than API paths.
+* [#1899] Apply prefill data normalization before saving into variables
+* [#2352] Removed permissions to delete user from standard groups as those cascade
+  delete admin log entries.
+* [#2344] Fixed out-of-place repeating groups required-field asterisk
+* [#2145] Removed copy-paste snippets from form change page as they are not guaranteed
+  to be correct to your use-case.
+
+**Documentation**
+
+* [#2163] Document file upload storage flow
+* Installation docs: configure db *before* migrate and runserver
+* Installation docs: added missing OS-level dependencies
+* [#2205] Documented unsupported JSON-logic operators
+
+
+**Project maintenance**
+
+* [#2050] Removed ``SubmissionFileAttachment.form_key`` field and using variables instead
+* [#2117] Fixed spelling 'organisation' -> 'organization'
+* Fixed example dotenv file
+* Emit deprecation warning for openforms.formio.utils.get_component
+* Update Django to latest patch/security releases
+* [#2221] Removed code for warning about duplicate keys
+* Converted squashed migration into regular migrations
+* Updated github workflows to action versions following some deprecations
+* Fixed private media and add media mount in examples/docker-compose file
+* Upgraded to latest lxml version
+* Dropped django-capture-on-commit-callbacks as Django provides it now
+* Pin postgres version to 14 in docker-compose
+* [#2166] Modified Dockerfile with Volumes hint to prevent writing to container layer
+* [#2165] Upgrade django-simple-certmanager
+* [#2280] Removed ``SubmissionValueVariable.language``
+* Refactored mail cleaning utilities into separate library
+* Parametrize workflows/dockerfile for extensions build
+
+
+
 1.1.8 (2022-11-07)
 ==================
 
