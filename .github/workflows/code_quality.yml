@@ -36,10 +36,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libxml2-dev libxmlsec1-dev libxmlsec1-openssl
-      - uses: isort/isort-action@v0.1.0
+      - uses: isort/isort-action@v1.1.0
         with:
-          requirementsFiles: requirements/ci.txt
-          sortPaths: 'src docs'
+          requirements-files: requirements/ci.txt
+          sort-paths: 'src docs'
           configuration: '--check-only --diff'
 
   black:
