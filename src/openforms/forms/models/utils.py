@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from django.conf import settings
 from django.db import models
@@ -16,6 +16,7 @@ class literal_getter:
 
     model_field: str
     config_field: str
+    language_code: Optional[str] = None
 
     def contribute_to_class(self, cls: ModelBase, name: str) -> None:
         # validate the existing fields were passed in - raises django.core.exceptions.FieldDoesNotExist
@@ -24,12 +25,18 @@ class literal_getter:
 
         # generate the getter function & set it on the class
         def getter(instance: models.Model) -> str:
-            value = getattr(instance, self.model_field)
+            model_field = self.model_field
+            config_field = self.config_field
+            if self.language_code:
+                model_field = f"{self.model_field}_{self.language_code}"
+                config_field = f"{self.config_field}_{self.language_code}"
+
+            value = getattr(instance, model_field)
             if value:
                 return value
 
             config = GlobalConfiguration.get_solo()
-            return getattr(config, self.config_field)
+            return getattr(config, config_field)
 
         setattr(cls, name, getter)
 
@@ -43,7 +50,8 @@ def set_dynamic_literal_getters(
     for literal in literal_names:
         for language_code, _label in settings.LANGUAGES:
             getter = literal_getter(
-                f"{literal}_{language_code}",
-                f"{config_field_prefix}_{literal}_{language_code}",
+                literal,
+                f"{config_field_prefix}_{literal}",
+                language_code=language_code,
             )
             getter.contribute_to_class(cls, f"get_{literal}_{language_code}")
