@@ -542,7 +542,7 @@ isodate==0.6.1
     #   -r requirements/ci.txt
     #   maykin-python3-saml
     #   zeep
-isort==5.7.0
+isort==5.10.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
