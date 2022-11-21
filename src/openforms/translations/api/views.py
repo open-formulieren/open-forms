@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import List
 
 from django.conf import settings
 from django.http import FileResponse
@@ -23,10 +22,7 @@ from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerial
 from openforms.translations.utils import set_language_cookie
 
 from .serializers import LanguageCodeSerializer, LanguageInfoSerializer
-
-
-def get_language_codes() -> List[str]:
-    return [language[0] for language in settings.LANGUAGES]
+from .utils import get_language_codes
 
 
 class LanguageInfoView(APIView):
@@ -60,7 +56,7 @@ class LanguageInfoView(APIView):
         ],
     )
     def get(self, request: Request) -> Response:
-        codes = (lang[0] for lang in settings.LANGUAGES)
+        codes = get_language_codes()
         languages = [
             {"code": code, "name": get_language_info(code)["name_local"]}
             for code in codes
