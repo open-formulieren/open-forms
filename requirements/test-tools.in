@@ -16,5 +16,5 @@ pytest  # documentation tests
 
 # Code formatting
 black
-isort~=5.7.0
+isort~=5.10.0
 flake8

@@ -11,7 +11,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
-# TODO: Optimize this view with sendfile #855
 class FormIOTranslationsView(APIView):
     authentication_classes = ()
     permission_classes = (permissions.AllowAny,)
@@ -21,6 +20,7 @@ class FormIOTranslationsView(APIView):
     @extend_schema(
         summary=_("Get FormIO translations"),
         description=_("Retrieve the translations for the strings used by FormIO"),
+        deprecated=True,
     )
     def get(self, request, *args, **kwargs):
         filepath = os.path.abspath(
