@@ -819,6 +819,27 @@ class FormStepsAPITranslationTests(APITestCase):
                 "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
                 "invalidParams": [
                     {
+                        "code": "invalid",
+                        "name": "literals.previousText.nonFieldErrors",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
+                        "code": "invalid",
+                        "name": "literals.saveText.nonFieldErrors",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
+                        "code": "invalid",
+                        "name": "literals.nextText.nonFieldErrors",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
                         "name": "literals.translations.nl.nextText.nonFieldErrors",
                         "code": "invalid",
                         "reason": Serializer.default_error_messages["invalid"].format(

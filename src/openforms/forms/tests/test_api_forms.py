@@ -1594,6 +1594,39 @@ class FormsAPITranslationTests(APITestCase):
                 "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
                 "invalidParams": [
                     {
+                        "code": "max_length",
+                        "name": "name",
+                        "reason": _(
+                            "Ensure this field has no more than {max_length} characters."
+                        ).format(max_length=150),
+                    },
+                    {
+                        "code": "invalid",
+                        "name": "literals.previousText.nonFieldErrors",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
+                        "code": "invalid",
+                        "name": "literals.changeText.nonFieldErrors",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
+                        "code": "invalid",
+                        "name": "literals.confirmText.nonFieldErrors",
+                        "reason": Serializer.default_error_messages["invalid"].format(
+                            datatype="str"
+                        ),
+                    },
+                    {
+                        "code": "syntax_error",
+                        "name": "submissionConfirmationTemplate",
+                        "reason": "\n                <p>Empty variable tag on line 1</p>\n                \n            ",
+                    },
+                    {
                         "name": "translations.nl.changeText.nonFieldErrors",
                         "code": "invalid",
                         "reason": Serializer.default_error_messages["invalid"].format(
