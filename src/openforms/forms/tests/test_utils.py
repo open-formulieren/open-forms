@@ -255,7 +255,7 @@ class ConvertAdvancedFrontendLogicTest(TestCase):
         )
         form_step = FormStepFactory.create(form_definition=form_definition)
 
-        advanced_formio_logic_to_backend_logic(form_definition)
+        advanced_formio_logic_to_backend_logic(form_definition, apps)
 
         form_definition.refresh_from_db()
 

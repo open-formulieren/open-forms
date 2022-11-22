@@ -2,7 +2,7 @@ import json
 import random
 import string
 import zipfile
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 from uuid import uuid4
 
 from django.conf import settings
@@ -12,6 +12,7 @@ from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
+from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.formio.utils import iter_components
 from openforms.typing import JSONObject
 from openforms.variables.constants import FormVariableSources
@@ -477,18 +478,12 @@ def fix_broken_rules(rules: models.QuerySet) -> None:
 
 
 def get_total_form_configuration_wrapper(
-    form_steps: Union[models.QuerySet, List["FormStep"]],
-) -> Dict[str, JSONObject]:
+    form_steps: models.QuerySet | list["FormStep"],
+) -> FormioConfigurationWrapper:
     if len(form_steps) == 0:
-        return {}
+        return FormioConfigurationWrapper(configuration={})
 
-    def _get_component_map(configuration):
-        return {
-            component["key"]: component
-            for component in iter_components(configuration, recursive=True)
-        }
-
-    wrapper = _get_component_map(form_steps[0].form_definition.configuration)
+    wrapper = FormioConfigurationWrapper(form_steps[0].form_definition.configuration)
     for form_step in form_steps[1:]:
-        wrapper.update(_get_component_map(form_step.form_definition.configuration))
+        wrapper += form_step.form_definition.configuration_wrapper
     return wrapper
