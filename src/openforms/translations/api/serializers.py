@@ -121,9 +121,9 @@ class ModelTranslationsSerializer(serializers.Serializer):
                 error = None
                 validate_method = getattr(parent_field, "validate_" + field_name, None)
                 try:
-                    validated_value = parent_field.run_validation(value)
+                    value = parent_field.run_validation(value)
                     if validate_method is not None:
-                        validated_value = validate_method(validated_value)
+                        value = validate_method(value)
                 except serializers.ValidationError as exc:
                     error = exc.detail
                 except DjangoValidationError as exc:
@@ -136,10 +136,8 @@ class ModelTranslationsSerializer(serializers.Serializer):
                 else:
                     # TODO instead allow string values via serializer?
                     if hasattr(parent_field, "get_translation_literal"):
-                        validated_value = parent_field.get_translation_literal(
-                            validated_value
-                        )
-                    ret[f"{field_name}_{language}"] = validated_value
+                        value = parent_field.get_translation_literal(value)
+                    ret[f"{field_name}_{language}"] = value
 
             if errors_for_lang:
                 errors[language] = errors_for_lang
