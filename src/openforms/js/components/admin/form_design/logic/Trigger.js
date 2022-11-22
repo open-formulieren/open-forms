@@ -103,6 +103,11 @@ const parseJsonLogic = (logic, allVariablesKeys) => {
         operand = compareValue.date.var ? compareValue.date.var : compareValue.date;
         break;
       }
+      case 'datetime': {
+        operandType = compareValue.datetime.var ? 'variable' : 'literal';
+        operand = compareValue.datetime.var ? compareValue.datetime.var : compareValue.datetime;
+        break;
+      }
       case '+':
       case '-': {
         operandType = 'today';
@@ -190,10 +195,20 @@ const Trigger = ({name, logic, onChange, error, withDSLPreview = false, children
           onChange={onTriggerChange}
         />
       );
-      if (triggerVariable?.dataType === 'datetime') {
-        compareValue = {date: operand};
-      } else {
-        compareValue = operand;
+
+      const dataType = triggerVariable?.dataType;
+      switch (dataType) {
+        case 'date': {
+          compareValue = {date: operand};
+          break;
+        }
+        case 'datetime': {
+          compareValue = {datetime: operand};
+          break;
+        }
+        default: {
+          compareValue = operand;
+        }
       }
       break;
     }
