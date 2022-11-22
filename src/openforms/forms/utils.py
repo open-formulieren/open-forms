@@ -2,7 +2,7 @@ import json
 import random
 import string
 import zipfile
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 from uuid import uuid4
 
 from django.conf import settings
@@ -464,7 +464,7 @@ def fix_broken_rules(rules: models.QuerySet) -> None:
 
 
 def get_total_form_configuration_wrapper(
-    form_steps: models.QuerySet | List["FormStep"],
+    form_steps: Union[models.QuerySet, List["FormStep"]],
 ) -> Dict[str, JSONObject]:
     if len(form_steps) == 0:
         return {}
