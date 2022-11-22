@@ -165,9 +165,29 @@ const newStepData = {
     nextText: {
       value: '',
     },
+    translations: {
+      nl: {
+        previousText: {value: ''},
+        saveText: {value: ''},
+        nextText: {value: ''},
+      },
+      en: {
+        previousText: {value: ''},
+        saveText: {value: ''},
+        nextText: {value: ''},
+      },
+    },
   },
   isNew: true,
   validationErrors: [],
+  translations: {
+    nl: {
+      name: '',
+    },
+    en: {
+      name: '',
+    },
+  },
 };
 
 // Maps in which Tab the different form fields are displayed.
@@ -360,6 +380,18 @@ function reducer(draft, action) {
           slug,
           url,
           literals: {
+            translations: {
+              nl: {
+                previousText: {value: ''},
+                saveText: {value: ''},
+                nextText: {value: ''},
+              },
+              en: {
+                previousText: {value: ''},
+                saveText: {value: ''},
+                nextText: {value: ''},
+              },
+            },
             previousText: {
               value: '',
             },
@@ -372,6 +404,14 @@ function reducer(draft, action) {
           },
           isNew: false,
           validationErrors: [],
+          translations: {
+            nl: {
+              name: '',
+            },
+            en: {
+              name: '',
+            },
+          },
         };
 
         // Add form variables for the reusable configuration
@@ -475,8 +515,17 @@ function reducer(draft, action) {
     }
     case 'STEP_FIELD_CHANGED': {
       const {index, name, value} = action.payload;
+      // const [prefix, ...rest] = name.split('.');
       const step = draft.formSteps[index];
-      step[name] = value;
+
+      // Translations for FormDefinition data are stored on the FormDefinitions
+      // if (prefix === 'translations') {
+      //   const formDef = draft.formDefinitions.find(elem => {
+      //     return elem.url === step.formDefinition;
+      //   });
+      //   set(formDef, name, value);
+      // }
+      set(step, name, value);
       step.validationErrors = step.validationErrors.filter(([key]) => key !== name);
 
       const anyStepHasErrors = draft.formSteps.some(step => step.validationErrors.length > 0);
@@ -487,7 +536,8 @@ function reducer(draft, action) {
     }
     case 'STEP_LITERAL_FIELD_CHANGED': {
       const {index, name, value} = action.payload;
-      draft.formSteps[index]['literals'][name]['value'] = value;
+      const [prefix, languageCode, fieldName] = name.split('.');
+      draft.formSteps[index]['literals'][prefix][languageCode][fieldName]['value'] = value;
       break;
     }
     case 'MOVE_UP_STEP': {
@@ -1245,6 +1295,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
                   e.preventDefault();
                   dispatch({type: 'ADD_STEP'});
                 }}
+                languages={state.languages}
                 submitting={state.submitting}
               />
             </Fieldset>

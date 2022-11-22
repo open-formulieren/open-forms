@@ -5,7 +5,9 @@ import get from 'lodash/get';
 import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
+import {Tabs, TabList, TabPanel} from 'react-tabs';
 
+import Tab from './Tab';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
 import Field, {normalizeErrors} from 'components/admin/forms/Field';
 import MessageList from 'components/admin/MessageList';
@@ -46,11 +48,14 @@ const FormStepDefinition = ({
   nextText = '',
   loginRequired = false,
   isReusable = false,
+  translations = {},
+  literals = {},
   configuration = emptyConfiguration,
   onChange,
   onComponentMutated,
   onFieldChange,
   onLiteralFieldChange,
+  languages,
   errors,
   ...props
 }) => {
@@ -67,6 +72,178 @@ const FormStepDefinition = ({
       },
     });
   };
+
+  let tabs = languages.map((language, index) => {
+    return <Tab key={language.code}>{language.code}</Tab>;
+  });
+
+  let tabPanels = languages.map((language, index) => {
+    const langCode = language.code;
+    return (
+      <TabPanel key={langCode}>
+        <FormRow>
+          <Field
+            name={`translations.${langCode}.name`}
+            label={
+              <FormattedMessage defaultMessage="Step name" description="Form step name label" />
+            }
+            helpText={
+              <FormattedMessage
+                defaultMessage="Name of the form definition used in this form step"
+                description="Form step name field help text"
+              />
+            }
+            required
+            fieldBox
+          >
+            <TextInput
+              value={translations[langCode].name}
+              onChange={onFieldChange}
+              onBlur={setSlug}
+            />
+          </Field>
+          <Field
+            name="internalName"
+            label={
+              <FormattedMessage
+                defaultMessage="Internal step name"
+                description="Form step internal name label"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                defaultMessage="Internal name of the form definition used in this form step"
+                description="Form step internal name field help text"
+              />
+            }
+            fieldBox
+          >
+            <TextInput value={internalName} onChange={onFieldChange} />
+          </Field>
+          <Field
+            name="slug"
+            label={
+              <FormattedMessage defaultMessage="Step slug" description="Form step slug label" />
+            }
+            helpText={
+              <FormattedMessage
+                defaultMessage="Slug of the form definition used in this form step"
+                description="Form step slug field help text"
+              />
+            }
+            required
+            fieldBox
+          >
+            <TextInput value={slug} onChange={onFieldChange} />
+          </Field>
+        </FormRow>
+        <FormRow>
+          <Field
+            name={`translations.${langCode}.previousText`}
+            label={
+              <FormattedMessage
+                defaultMessage="Previous text"
+                description="Form step previous text label"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                defaultMessage="The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration."
+                description="Form step previous text field help text"
+              />
+            }
+            fieldBox
+          >
+            <TextInput
+              value={literals.translations[langCode].previousText.value}
+              onChange={onLiteralFieldChange}
+              maxLength="50"
+            />
+          </Field>
+          <Field
+            name={`translations.${langCode}.saveText`}
+            label={
+              <FormattedMessage
+                defaultMessage="Save text"
+                description="Form step save text label"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                defaultMessage="The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
+                description="Form step save text field help text"
+              />
+            }
+            fieldBox
+          >
+            <TextInput
+              value={literals.translations[langCode].saveText.value}
+              onChange={onLiteralFieldChange}
+              maxLength="50"
+            />
+          </Field>
+          <Field
+            name={`translations.${langCode}.nextText`}
+            label={
+              <FormattedMessage
+                defaultMessage="Next text"
+                description="Form step next text label"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                defaultMessage="The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration."
+                description="Form step next text field help text"
+              />
+            }
+            fieldBox
+          >
+            <TextInput
+              value={literals.translations[langCode].nextText.value}
+              onChange={onLiteralFieldChange}
+              maxLength="50"
+            />
+          </Field>
+        </FormRow>
+        <FormRow>
+          <Field
+            name="loginRequired"
+            errorClassPrefix={'checkbox'}
+            errorClassModifier={'no-padding'}
+          >
+            <Checkbox
+              label={
+                <FormattedMessage
+                  defaultMessage="Login required?"
+                  description="Form step login required label"
+                />
+              }
+              name="loginRequired"
+              checked={loginRequired}
+              onChange={e =>
+                onFieldChange({target: {name: 'loginRequired', value: !loginRequired}})
+              }
+            />
+          </Field>
+        </FormRow>
+        <FormRow>
+          <Field name="isReusable" errorClassPrefix={'checkbox'} errorClassModifier={'no-padding'}>
+            <Checkbox
+              label={
+                <FormattedMessage
+                  defaultMessage="Is reusable?"
+                  description="Form step is reusable label"
+                />
+              }
+              name="isReusable"
+              checked={isReusable}
+              onChange={e => onFieldChange({target: {name: 'isReusable', value: !isReusable}})}
+            />
+          </Field>
+        </FormRow>
+      </TabPanel>
+    );
+  });
 
   const {changed, affectedForms} = useDetectConfigurationChanged(url, configuration);
   const {warnings} = useDetectSimpleLogicErrors(configuration);
@@ -115,150 +292,11 @@ const FormStepDefinition = ({
           />
         </h2>
 
-        <FormRow>
-          <Field
-            name="name"
-            label={
-              <FormattedMessage defaultMessage="Step name" description="Form step name label" />
-            }
-            helpText={
-              <FormattedMessage
-                defaultMessage="Name of the form definition used in this form step"
-                description="Form step name field help text"
-              />
-            }
-            required
-            fieldBox
-          >
-            <TextInput value={name} onChange={onFieldChange} onBlur={setSlug} />
-          </Field>
-          <Field
-            name="internalName"
-            label={
-              <FormattedMessage
-                defaultMessage="Internal step name"
-                description="Form step internal name label"
-              />
-            }
-            helpText={
-              <FormattedMessage
-                defaultMessage="Internal name of the form definition used in this form step"
-                description="Form step internal name field help text"
-              />
-            }
-            fieldBox
-          >
-            <TextInput value={internalName} onChange={onFieldChange} />
-          </Field>
-          <Field
-            name="slug"
-            label={
-              <FormattedMessage defaultMessage="Step slug" description="Form step slug label" />
-            }
-            helpText={
-              <FormattedMessage
-                defaultMessage="Slug of the form definition used in this form step"
-                description="Form step slug field help text"
-              />
-            }
-            required
-            fieldBox
-          >
-            <TextInput value={slug} onChange={onFieldChange} />
-          </Field>
-        </FormRow>
-        <FormRow>
-          <Field
-            name="previousText"
-            label={
-              <FormattedMessage
-                defaultMessage="Previous text"
-                description="Form step previous text label"
-              />
-            }
-            helpText={
-              <FormattedMessage
-                defaultMessage="The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration."
-                description="Form step previous text field help text"
-              />
-            }
-            fieldBox
-          >
-            <TextInput value={previousText} onChange={onLiteralFieldChange} maxLength="50" />
-          </Field>
-          <Field
-            name="saveText"
-            label={
-              <FormattedMessage
-                defaultMessage="Save text"
-                description="Form step save text label"
-              />
-            }
-            helpText={
-              <FormattedMessage
-                defaultMessage="The text that will be displayed in the form step to save the current information. Leave blank to get value from global configuration."
-                description="Form step save text field help text"
-              />
-            }
-            fieldBox
-          >
-            <TextInput value={saveText} onChange={onLiteralFieldChange} maxLength="50" />
-          </Field>
-          <Field
-            name="nextText"
-            label={
-              <FormattedMessage
-                defaultMessage="Next text"
-                description="Form step next text label"
-              />
-            }
-            helpText={
-              <FormattedMessage
-                defaultMessage="The text that will be displayed in the form step to go to the next step. Leave blank to get value from global configuration."
-                description="Form step next text field help text"
-              />
-            }
-            fieldBox
-          >
-            <TextInput value={nextText} onChange={onLiteralFieldChange} maxLength="50" />
-          </Field>
-        </FormRow>
-        <FormRow>
-          <Field
-            name="loginRequired"
-            errorClassPrefix={'checkbox'}
-            errorClassModifier={'no-padding'}
-          >
-            <Checkbox
-              label={
-                <FormattedMessage
-                  defaultMessage="Login required?"
-                  description="Form step login required label"
-                />
-              }
-              name="loginRequired"
-              checked={loginRequired}
-              onChange={e =>
-                onFieldChange({target: {name: 'loginRequired', value: !loginRequired}})
-              }
-            />
-          </Field>
-        </FormRow>
-        <FormRow>
-          <Field name="isReusable" errorClassPrefix={'checkbox'} errorClassModifier={'no-padding'}>
-            <Checkbox
-              label={
-                <FormattedMessage
-                  defaultMessage="Is reusable?"
-                  description="Form step is reusable label"
-                />
-              }
-              name="isReusable"
-              checked={isReusable}
-              onChange={e => onFieldChange({target: {name: 'isReusable', value: !isReusable}})}
-            />
-          </Field>
-        </FormRow>
+        <Tabs defaultIndex={null}>
+          <TabList>{tabs}</TabList>
+
+          {tabPanels}
+        </Tabs>
       </fieldset>
 
       <h2>Velden</h2>
@@ -293,6 +331,7 @@ FormStepDefinition.propTypes = {
   onFieldChange: PropTypes.func.isRequired,
   onLiteralFieldChange: PropTypes.func.isRequired,
   errors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+  translations: PropTypes.object,
 };
 
 const ConfigurationErrors = ({errors = []}) => {

@@ -12,6 +12,7 @@ const FormStep = ({
   onFieldChange,
   onLiteralFieldChange,
   onReplace,
+  languages,
 }) => {
   const {
     _generatedId,
@@ -22,6 +23,7 @@ const FormStep = ({
     slug,
     literals,
     loginRequired,
+    translations,
     isReusable,
     isNew,
     validationErrors = [],
@@ -52,6 +54,8 @@ const FormStep = ({
       previousText={literals.previousText.value}
       saveText={literals.saveText.value}
       nextText={literals.nextText.value}
+      translations={translations}
+      literals={literals}
       configuration={configuration}
       loginRequired={loginRequired}
       isReusable={isReusable}
@@ -61,6 +65,7 @@ const FormStep = ({
       onComponentMutated={onComponentMutated}
       forceUpdate={forceBuilderUpdate}
       errors={validationErrors}
+      languages={languages}
     />
   );
 };
@@ -78,6 +83,7 @@ FormStep.propTypes = {
     url: PropTypes.string,
     isNew: PropTypes.bool,
     validationErrors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+    translations: PropTypes.object,
   }).isRequired,
   onEdit: PropTypes.func.isRequired,
   onComponentMutated: PropTypes.func.isRequired,

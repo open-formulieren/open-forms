@@ -19,6 +19,7 @@ const FormSteps = ({
   onReorder,
   onReplace,
   onAdd,
+  languages,
   submitting = false,
 }) => {
   const [activeStepIndex, setActiveStepIndex] = useState(steps.length ? 0 : null);
@@ -53,6 +54,7 @@ const FormSteps = ({
               onFieldChange={onFieldChange.bind(null, activeStepIndex)}
               onLiteralFieldChange={onLiteralFieldChange.bind(null, activeStepIndex)}
               onReplace={onReplace.bind(null, activeStepIndex)}
+              languages={languages}
             />
           </ValidationErrorsProvider>
         ) : (
