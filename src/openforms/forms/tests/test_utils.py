@@ -202,6 +202,70 @@ class ConvertAdvancedFrontendLogicTest(TestCase):
 
         self.assertEqual([], form_definition.configuration["components"][1]["logic"])
 
+    def test_convert_logic_with_selectboxes(self):
+        form_definition = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "type": "selectboxes",
+                        "key": "test1",
+                        "values": [
+                            {
+                                "label": "A",
+                                "value": "a",
+                            },
+                            {
+                                "label": "B",
+                                "value": "b",
+                            },
+                        ],
+                    },
+                    {
+                        "type": "fieldset",
+                        "key": "test2",
+                        "components": [],
+                        "logic": [
+                            {
+                                "name": "Rule 1",
+                                "trigger": {
+                                    "type": "simple",
+                                    "simple": {
+                                        "show": True,
+                                        "when": "test1",
+                                        "eq": "a",
+                                    },
+                                },
+                                "actions": [
+                                    {
+                                        "name": "Action 1",
+                                        "type": "property",
+                                        "property": {
+                                            "label": "Hidden",
+                                            "value": "hidden",
+                                            "type": "boolean",
+                                        },
+                                        "state": False,
+                                    }
+                                ],
+                            }
+                        ],
+                    },
+                ]
+            }
+        )
+        form_step = FormStepFactory.create(form_definition=form_definition)
+
+        advanced_formio_logic_to_backend_logic(form_definition)
+
+        form_definition.refresh_from_db()
+
+        rule = form_step.form.formlogic_set.first()
+
+        self.assertEqual(
+            {"==": [{"var": "test1.a"}, True]},
+            rule.json_logic_trigger,
+        )
+
 
 class FixBrokenConvertedLogicTest(TestCase):
     def test_convert_broken_rules(self):
