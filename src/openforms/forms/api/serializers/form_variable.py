@@ -7,7 +7,6 @@ from rest_framework.exceptions import ValidationError
 
 from openforms.api.fields import RelatedFieldFromContext
 from openforms.api.serializers import ListWithChildSerializer
-from openforms.formio.utils import get_component
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.service import get_static_variables
 
@@ -126,7 +125,8 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
         if (form_definition := attrs.get("form_definition")) and attrs.get(
             "source"
         ) == FormVariableSources.component:
-            component = get_component(form_definition.configuration, attrs["key"])
+            config_wrapper = form_definition.configuration_wrapper
+            component = config_wrapper.component_map.get(attrs["key"])
             if not component:
                 raise ValidationError(
                     {
