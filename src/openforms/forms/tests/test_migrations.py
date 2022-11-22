@@ -1,5 +1,6 @@
-from rest_framework.reverse import reverse
 from django.test import override_settings
+
+from rest_framework.reverse import reverse
 
 from openforms.utils.tests.test_migrations import TestMigrations
 
