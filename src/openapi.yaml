@@ -5930,6 +5930,10 @@ components:
           readOnly: true
         literals:
           $ref: '#/components/schemas/FormStepLiterals'
+        translations:
+          allOf:
+          - $ref: '#/components/schemas/ModelTranslations'
+          readOnly: true
       required:
       - configuration
       - formDefinition
@@ -5939,6 +5943,7 @@ components:
       - loginRequired
       - name
       - slug
+      - translations
       - url
       - uuid
     FormStepLiterals:
@@ -6660,6 +6665,10 @@ components:
           readOnly: true
         literals:
           $ref: '#/components/schemas/FormStepLiterals'
+        translations:
+          allOf:
+          - $ref: '#/components/schemas/ModelTranslations'
+          readOnly: true
     PaymentBackendEnum:
       enum:
       - ogone-legacy

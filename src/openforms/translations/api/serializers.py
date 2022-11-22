@@ -48,7 +48,7 @@ class ModelTranslationsSerializer(serializers.Serializer):
         fields = [code for code, label in settings.LANGUAGES]
 
     def __init__(self, *args, nested_fields_mapping: Optional[dict] = None, **kwargs):
-        kwargs["source"] = "*"
+        kwargs.setdefault("source", "*")
         self.nested_fields_mapping = nested_fields_mapping or {}
         super().__init__(*args, **kwargs)
 

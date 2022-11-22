@@ -66,7 +66,9 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
         }
 
 
-class FormStepSerializer(serializers.HyperlinkedModelSerializer):
+class FormStepSerializer(
+    PublicFieldsSerializerMixin, serializers.HyperlinkedModelSerializer
+):
     index = serializers.IntegerField(source="order")
     configuration = serializers.JSONField(
         source="form_definition.configuration", read_only=True
@@ -90,6 +92,11 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
         parent_lookup_kwargs={"form_uuid_or_slug": "form__uuid"},
         read_only=True,
     )
+    translations = ModelTranslationsSerializer(
+        source="form_definition",
+        required=False,
+        read_only=True,
+    )
 
     parent_lookup_kwargs = {
         "form_uuid_or_slug": "form__uuid",
@@ -98,6 +105,20 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = FormStep
         fields = (
+            "uuid",
+            "index",
+            "slug",
+            "configuration",
+            "form_definition",
+            "name",
+            "internal_name",
+            "url",
+            "login_required",
+            "is_reusable",
+            "literals",
+            "translations",
+        )
+        public_fields = (
             "uuid",
             "index",
             "slug",
