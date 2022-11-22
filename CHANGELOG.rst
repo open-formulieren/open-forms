@@ -2,6 +2,31 @@
 Changelog
 =========
 
+2.0.1 (2022-11-23)
+==================
+
+First maintenance release of the 2.0 series.
+
+This patch fixes a couple of bugs encountered when upgrading from 1.1 to 2.0.
+
+**Bugfixes**
+
+* [#2301] Fixed identifying attributes still being hashed after a submission is resumed
+* [#2135] Fixed submission step data being cascade deleted in certain edge cases
+* [#2219] A fix was also attempted for bad CSS unit usage in confirmation e-mails, but
+  this caused other problems. As a workaround you should use the correctly sized images
+  for the time being.
+* [#2244] Fixed 'content' component and components not marked as showInSummary showing
+  up in server rendered summary
+* Fixed pattern for formio key validation
+* [#2304] Refactored form logic action "mark step as not applicable" to use ID
+  references rather than API paths, which affected some logic actions.
+* [#2262] Fixed upgrade from < 2.0 crash when corrupt prefill configuration was present
+  in existing forms
+* [#1899] Apply prefill data normalization before saving into variables
+* [#2367] Fixed automatic conversion of advanced frontend logic when using selectboxes
+  component type
+
 2.0.0 "Règâh" (2022-10-26)
 ==========================
 
