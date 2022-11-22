@@ -118,7 +118,11 @@ const FormStepDefinition = ({
             }
             fieldBox
           >
-            <TextInput value={internalName} onChange={onFieldChange} />
+            <TextInput
+              value={internalName}
+              onChange={onFieldChange}
+              disabled={langCode === 'nl' ? false : true}
+            />
           </Field>
           <Field
             name="slug"
@@ -134,7 +138,11 @@ const FormStepDefinition = ({
             required
             fieldBox
           >
-            <TextInput value={slug} onChange={onFieldChange} />
+            <TextInput
+              value={slug}
+              onChange={onFieldChange}
+              disabled={langCode === 'nl' ? false : true}
+            />
           </Field>
         </FormRow>
         <FormRow>
@@ -223,6 +231,7 @@ const FormStepDefinition = ({
               onChange={e =>
                 onFieldChange({target: {name: 'loginRequired', value: !loginRequired}})
               }
+              disabled={langCode === 'nl' ? false : true}
             />
           </Field>
         </FormRow>
@@ -238,6 +247,7 @@ const FormStepDefinition = ({
               name="isReusable"
               checked={isReusable}
               onChange={e => onFieldChange({target: {name: 'isReusable', value: !isReusable}})}
+              disabled={langCode === 'nl' ? false : true}
             />
           </Field>
         </FormRow>
