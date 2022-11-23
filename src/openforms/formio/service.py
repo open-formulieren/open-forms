@@ -13,7 +13,6 @@ from openforms.typing import DataMapping
 
 from .datastructures import FormioConfigurationWrapper
 from .dynamic_config.service import apply_dynamic_configuration
-from .normalization import normalize_value_for_component
 from .registry import register
 from .typing import Component
 from .utils import iter_components
@@ -33,6 +32,14 @@ from ..config.models import GlobalConfiguration
 
 def format_value(component: Component, value: Any, as_html: bool = False):
     return register.format(component, value, as_html=as_html)
+
+
+def normalize_value_for_component(component: Component, value: Any) -> Any:
+    """
+    Given a value (actual or default value) and the component, apply the component-
+    specific normalization.
+    """
+    return register.normalize(component, value)
 
 
 # TODO: it might be beneficial to memoize this function if it runs multiple times in

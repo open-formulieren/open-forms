@@ -32,6 +32,11 @@ class FormatterProtocol(Protocol):
         ...
 
 
+class NormalizerProtocol(Protocol):
+    def __call__(self, component: Component, value: Any) -> Any:
+        ...
+
+
 class BasePlugin(AbstractBasePlugin):
     """
     Base class for Formio component plugins.
@@ -46,6 +51,7 @@ class BasePlugin(AbstractBasePlugin):
     Formatter (class) implementation, used by
     :meth:`openforms.formio.registry.ComponentRegistry.format`.
     """
+    normalizer: None | NormalizerProtocol = None
 
     @staticmethod
     def mutate(component: Component, data: DataMapping) -> None:  # pragma: nocover
@@ -59,7 +65,12 @@ class ComponentRegistry(BaseRegistry):
         """
         Given a value from any source, normalize it according to the component rules.
         """
-        raise NotImplementedError()
+        if (component_type := component["type"]) not in self:
+            return value
+        normalizer = self[component_type].normalizer
+        if normalizer is None:
+            return value
+        return normalizer(component, value)
 
     def format(self, component: Component, value: Any, as_html=False):
         """
