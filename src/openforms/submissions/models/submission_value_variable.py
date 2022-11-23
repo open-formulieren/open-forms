@@ -348,6 +348,12 @@ class SubmissionValueVariable(models.Model):
                 aware_date = timezone.make_aware(datetime.combine(naive_date, time.min))
                 return aware_date
 
+            maybe_naive_datetime = parse_datetime(self.value)
+            if maybe_naive_datetime is not None:
+                if timezone.is_aware(maybe_naive_datetime):
+                    return maybe_naive_datetime.date()
+                return timezone.make_aware(maybe_naive_datetime).date()
+
             raise ValueError(f"Could not parse date '{self.value}'")  # pragma: nocover
 
         if self.value and data_type == FormVariableDataTypes.datetime:
