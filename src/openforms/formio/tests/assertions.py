@@ -4,7 +4,14 @@ from glom import GlomError, glom
 
 from openforms.typing import JSONObject, JSONValue
 
-from ..utils import get_component
+from ..typing import Component
+from ..utils import iter_components
+
+
+def _get_component(configuration: JSONObject, key: str) -> Component | None:
+    for component in iter_components(configuration=configuration, recursive=True):
+        if component["key"] == key:
+            return component
 
 
 class FormioMixin:
@@ -19,7 +26,7 @@ class FormioMixin:
         :arg properties_map: a mapping of formio property name to expected property
           value. Note that the dict keys can be dotted paths for nested properties.
         """
-        component = get_component(configuration, key)
+        component = _get_component(configuration, key)
         if component is None:
             self.fail(f"Component with key '{key}' not found in configuration.")
 
