@@ -24,14 +24,22 @@ class HeaderValidator:
     > obs-text       = %x80-FF
     """
 
-    _header_re = re.compile(
-        r"^[!#$%&'*+\-.\^_`|~0-9a-zA-Z]+$"
-    )
+    _header_re = re.compile(r"^[!#$%&'*+\-.\^_`|~0-9a-zA-Z]+$")
+
+    # field-content may not start or end with SP / HTAB
+    # but to provide a friendlier error this is handled separately,
+    # so this much simpler regexp suffices as a catch-all
     _value_re = re.compile(
-        r"^[ \t"  # SP / HTAB
-        + "\x21-\x7e"  # VCHAR
-        + "\x80-\xff"  # obs-text
-        + "]*$"
+        r"""
+        ^          # start of string
+        [          # define a character class
+        \ \t       # SP / HTAB
+        \x21-\x7e  # VCHAR
+        \x80-\xff  # obs-text
+        ]*         # repeat the class 0 or more times
+        $          # end of string
+        """,
+        re.VERBOSE,
     )
 
     def __call__(self, value: None | dict[str, str]) -> None:
