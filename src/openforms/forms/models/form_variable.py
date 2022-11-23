@@ -10,7 +10,6 @@ from glom import Path, glom
 
 from openforms.formio.utils import (
     component_in_editgrid,
-    get_component,
     get_component_datatype,
     get_component_default_value,
     is_layout_component,
@@ -211,7 +210,8 @@ class FormVariable(models.Model):
         if self.source != FormVariableSources.component or not self.form_definition:
             return
 
-        component = get_component(self.form_definition.configuration, self.key)
+        config_wrapper = self.form_definition.configuration_wrapper
+        component = config_wrapper.component_map.get(self.key)
 
         if self.initial_value is None:
             self.initial_value = get_component_default_value(component)
