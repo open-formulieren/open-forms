@@ -5324,6 +5324,7 @@ components:
       - float
       - datetime
       - time
+      - date
       type: string
     Date:
       type: object
