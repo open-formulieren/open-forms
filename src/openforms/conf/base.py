@@ -194,7 +194,6 @@ INSTALLED_APPS = [
     "openforms.emails",
     "openforms.formio",
     "openforms.formio.dynamic_config",
-    "openforms.formio.formatters.apps.FormIOFormattersApp",
     "openforms.formio.rendering",
     "openforms.forms",
     "openforms.multidomain",
