@@ -39,8 +39,7 @@ class Component(TypedDict):
     We deliberately document keys here that may be absent, because:
 
     * we don't run mypy (yet) and type hints are used as just hints/documentation
-    * the mechanism to define this correctly is not fleshed out, see also
-      https://discuss.python.org/t/pep-655-required-and-notrequired-for-typeddict/13817/3
+    * NotRequired is only available in typing_extensions and Python 3.11+
     """
 
     type: str

@@ -25,32 +25,10 @@ if TYPE_CHECKING:
 
 
 class FormatterProtocol(Protocol):
-    multiple_separator: str = "; "
-    """
-    Separator to use for multi-value components.
-
-    Defaults to semi-colon, as formatted numbers already use comma's which hurts
-    readability.
-    """
-    as_html = False
-    """
-    Format for HTML output or not.
-
-    The default is to format for plain text output, but toggling this will emit
-    HTML where relevant.
-    """
-
-    # there is an interesting open question on what to do for empty values
-    # currently we're eating them in normalise_value_to_list()
-    empty_values = [None, ""]
-
-    def __call__(self, component: Component, value: Any, as_html=False) -> str:
+    def __init__(self, as_html: bool):
         ...
 
-    def format(self, component: Component, value: Any) -> str:
-        """
-        Format a single value for the given component.
-        """
+    def __call__(self, component: Component, value: Any) -> str:
         ...
 
 
@@ -77,7 +55,13 @@ class BasePlugin(AbstractBasePlugin):
 class ComponentRegistry(BaseRegistry):
     module = "formio_components"
 
-    def format(self, info: Component, value: Any, as_html=False):
+    def normalize(self, component: Component, value: Any) -> Any:
+        """
+        Given a value from any source, normalize it according to the component rules.
+        """
+        raise NotImplementedError()
+
+    def format(self, component: Component, value: Any, as_html=False):
         """
         Format a given value in the appropriate way for the specified component.
 
@@ -85,10 +69,12 @@ class ComponentRegistry(BaseRegistry):
         for the given component type, as it makes the best sense for that component
         type.
         """
-        formatter = (
-            register[info["type"]] if info["type"] in register else register["default"]
-        )
-        return formatter(info, value, as_html=as_html)
+        if (component_type := component["type"]) not in self:
+            component_type = "default"
+
+        component_plugin = self[component_type]
+        formatter = component_plugin.formatter(as_html=as_html)
+        return formatter(component, value)
 
     def update_config(
         self, component: Component, data: DataMapping | None = None
