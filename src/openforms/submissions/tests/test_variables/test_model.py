@@ -140,7 +140,7 @@ class SubmissionValueVariableModelTests(TestCase):
         with self.subTest("date 1"):
             date_var1 = SubmissionValueVariableFactory.create(
                 form_variable__user_defined=True,
-                form_variable__data_type=FormVariableDataTypes.datetime,
+                form_variable__data_type=FormVariableDataTypes.date,
                 value="2022-09-13",
             )
 
@@ -167,7 +167,7 @@ class SubmissionValueVariableModelTests(TestCase):
             # -> fall back to stored value
             self.assertEqual(date_value2, "2022-09-13")
 
-        with self.subTest("date 3"):
+        with self.subTest("datetime 1"):
             date_var3 = SubmissionValueVariableFactory.create(
                 form_variable__user_defined=True,
                 form_variable__data_type=FormVariableDataTypes.datetime,
@@ -182,7 +182,7 @@ class SubmissionValueVariableModelTests(TestCase):
             expected = timezone.make_aware(datetime(2022, 9, 13, 11, 10, 45))
             self.assertEqual(date_value3, expected)
 
-        with self.subTest("date 4 (naive datetime)"):
+        with self.subTest("datetime 2 (naive datetime)"):
             date_var3 = SubmissionValueVariableFactory.create(
                 form_variable__user_defined=True,
                 form_variable__data_type=FormVariableDataTypes.datetime,

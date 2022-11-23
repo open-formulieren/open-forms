@@ -389,7 +389,7 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
             submission=submission,
             key="userDefinedDate",
             form_variable__user_defined=True,
-            form_variable__data_type=FormVariableDataTypes.datetime,
+            form_variable__data_type=FormVariableDataTypes.date,
             value="2022-12-31",
         )
         endpoint = reverse(
