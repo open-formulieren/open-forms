@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {TextInput, NumberInput, DateInput} from 'components/admin/forms/Inputs';
+import {TextInput, NumberInput, DateInput, DateTimeInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 import ArrayInput from 'components/admin/forms/ArrayInput';
 import JsonWidget from 'components/admin/forms/JsonWidget';
