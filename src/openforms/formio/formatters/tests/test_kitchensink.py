@@ -5,9 +5,9 @@ from openforms.submissions.tests.factories import (
     SubmissionFileAttachmentFactory,
 )
 
+from ...service import format_value
 from ...utils import iter_components
 from ..printable import filter_printable
-from ..service import format_value
 from .mixins import BaseFormatterTestCase
 from .utils import load_json
 

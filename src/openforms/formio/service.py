@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 from django.urls import reverse
 
@@ -14,6 +14,7 @@ from openforms.typing import DataMapping
 from .datastructures import FormioConfigurationWrapper
 from .dynamic_config.service import apply_dynamic_configuration
 from .normalization import normalize_value_for_component
+from .registry import register
 from .typing import Component
 from .utils import iter_components
 from .variables import inject_variables
@@ -24,9 +25,14 @@ __all__ = [
     "normalize_value_for_component",
     "iter_components",
     "inject_variables",
+    "format_value",
 ]
 
 from ..config.models import GlobalConfiguration
+
+
+def format_value(component: Component, value: Any, as_html: bool = False):
+    return register.format(component, value, as_html=as_html)
 
 
 # TODO: it might be beneficial to memoize this function if it runs multiple times in

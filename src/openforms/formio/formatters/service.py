@@ -1,12 +1,15 @@
-from typing import Any
+import warnings
 
-from ..registry import register
-from ..typing import Component
+from ..service import format_value as _format_value
 from .printable import filter_printable
 
-__all__ = ["format_value", "filter_printable"]
+__all__ = ["filter_printable"]
 
 
-# TODO: move to parent level service module and deprecate this one.
-def format_value(component: Component, value: Any, as_html=False):
-    return register.format(component, value, as_html=as_html)
+def format_value(*args, **kwargs):
+    warnings.warn(
+        "`openforms.formio.formatters.service.format_value` is deprecated in favour of "
+        "`openforms.formio.service.format_value`. Please update your references.",
+        DeprecationWarning,
+    )
+    return _format_value(*args, **kwargs)

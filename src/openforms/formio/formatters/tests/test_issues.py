@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from openforms.formio.formatters.service import format_value
+from ...service import format_value
 
 
 class IssuesTestCase(TestCase):
