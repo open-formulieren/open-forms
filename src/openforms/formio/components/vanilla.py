@@ -4,6 +4,15 @@ Implement backend functionality for core Formio (built-in) component types.
 Custom component types (defined by us or third parties) need to be organized in the
 adjacent custom.py module.
 """
+from typing import Literal
+
+from rest_framework.request import Request
+from rest_framework.reverse import reverse
+
+from csp_post_processor import post_process_html
+from openforms.config.models import GlobalConfiguration
+from openforms.utils.urls import build_absolute_uri
+
 from ..formatters.formio import (
     CheckboxFormatter,
     CurrencyFormatter,
@@ -22,6 +31,7 @@ from ..formatters.formio import (
     TimeFormatter,
 )
 from ..registry import BasePlugin, register
+from ..typing import Component
 
 
 @register("default")
@@ -53,9 +63,27 @@ class PhoneNumber(BasePlugin):
     formatter = PhoneNumberFormatter
 
 
+class FileComponent(Component):
+    storage: Literal["url"]
+    url: str
+    useConfigFiletypes: bool
+    filePattern: str
+
+
 @register("file")
 class File(BasePlugin):
     formatter = FileFormatter
+
+    @staticmethod
+    def rewrite_for_request(component: FileComponent, request: Request):
+        # write the upload endpoint information
+        upload_endpoint = reverse("api:formio:temporary-file-upload")
+        component["url"] = build_absolute_uri(upload_endpoint, request=request)
+
+        # check if we need to apply "filePattern" modifications
+        if component.get("useConfigFiletypes", False):
+            config = GlobalConfiguration.get_solo()
+            component["filePattern"] = ",".join(config.form_upload_default_file_types)
 
 
 @register("textarea")
@@ -101,3 +129,31 @@ class Radio(BasePlugin):
 @register("signature")
 class Signature(BasePlugin):
     formatter = SignatureFormatter
+
+
+class ContentComponent(Component):
+    html: str
+
+
+@register("content")
+class Content(BasePlugin):
+    """
+    Formio's WYSIWYG component.
+    """
+
+    # not really relevant as content components don't have values
+    formatter = DefaultFormatter
+
+    @staticmethod
+    def rewrite_for_request(component: ContentComponent, request: Request):
+        """
+        Ensure that the inline styles are made compatible with Content-Security-Policy.
+
+        .. note:: we apply Bleach and a CSS declaration allowlist as part of the
+           post-processor because content components are not purely "trusted" content
+           from form-designers, but can contain malicious user input if the form
+           designer uses variables inside the HTML. The form submission data is passed
+           as template context to these HTML blobs, posing a potential injection
+           security risk.
+        """
+        component["html"] = post_process_html(component["html"], request)

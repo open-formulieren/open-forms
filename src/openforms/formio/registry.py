@@ -15,6 +15,8 @@ from typing import TYPE_CHECKING, Any, Protocol
 
 from django.utils.translation import gettext as _
 
+from rest_framework.request import Request
+
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
 from openforms.typing import DataMapping
@@ -39,6 +41,11 @@ class NormalizerProtocol(Protocol):
         ...
 
 
+class RewriterForRequestProtocol(Protocol):
+    def __call__(self, component: Component, request: Request) -> None:
+        ...
+
+
 class BasePlugin(AbstractBasePlugin):
     """
     Base class for Formio component plugins.
@@ -56,6 +63,10 @@ class BasePlugin(AbstractBasePlugin):
     normalizer: None | NormalizerProtocol = None
     """
     Specify the normalizer callable to use for value normalization.
+    """
+    rewrite_for_request: None | RewriterForRequestProtocol = None
+    """
+    Callback to invoke to rewrite plugin configuration for a given HTTP request.
     """
 
     @property
@@ -113,6 +124,21 @@ class ComponentRegistry(BaseRegistry):
         # invoke plugin if exists
         plugin = self[component_type]
         plugin.mutate_config_dynamically(component, data)
+
+    def update_config_for_request(self, component: Component, request: Request) -> None:
+        """
+        Mutate the component in place for the given request context.
+        """
+        # if there is no plugin registered for the component, return the input
+        if (component_type := component["type"]) not in register:
+            return
+
+        # invoke plugin if exists
+        rewriter = self[component_type].rewrite_for_request
+        if rewriter is None:
+            return
+
+        rewriter(component, request)
 
     def handle_custom_types(
         self,

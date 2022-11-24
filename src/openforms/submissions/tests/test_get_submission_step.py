@@ -10,6 +10,8 @@ aware step definition.
 """
 import uuid
 
+from django.test import tag
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -186,6 +188,37 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             response.json()["data"],
             {"someField": "data"},
         )
+
+    @tag("gh-1208", "gh-1068")
+    def test_dynamic_config_applied(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "file",
+                    "key": "file",
+                    "storage": "url",
+                    "url": "",  # must be set dynamically
+                }
+            ]
+        )
+        self._add_submission_to_session(submission)
+        step = submission.submissionstep_set.get()
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.form_step.uuid,
+            },
+        )
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        component = data["formStep"]["configuration"]["components"][0]
+        self.assertEqual(component["key"], "file")
+        self.assertEqual(component["type"], "file")
+        self.assertEqual(component["url"], "http://testserver/api/v2/formio/fileupload")
 
 
 class GetSubmissionStepTests(SubmissionsMixin, APITestCase):
