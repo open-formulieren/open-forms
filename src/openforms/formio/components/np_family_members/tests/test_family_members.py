@@ -18,8 +18,8 @@ from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import StufServiceFactory
 
 from ..constants import FamilyMembersDataAPIChoices
-from ..handlers.haal_centraal import get_np_children_haal_centraal
-from ..handlers.stuf_bg import get_np_children_stuf_bg
+from ..haal_centraal import get_np_children_haal_centraal
+from ..stuf_bg import get_np_children_stuf_bg
 from ..models import FamilyMembersTypeConfig
 
 

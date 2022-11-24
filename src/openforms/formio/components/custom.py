@@ -12,6 +12,10 @@ from ..formatters.formio import DefaultFormatter, TextFieldFormatter
 from ..registry import BasePlugin, register
 from ..typing import Component
 from ..utils import conform_to_mask
+from .np_family_members.constants import FamilyMembersDataAPIChoices
+from .np_family_members.haal_centraal import get_np_children_haal_centraal
+from .np_family_members.models import FamilyMembersTypeConfig
+from .np_family_members.stuf_bg import get_np_children_stuf_bg
 
 logger = logging.getLogger(__name__)
 
@@ -70,16 +74,6 @@ class NPFamilyMembers(BasePlugin):
 
     @staticmethod
     def _get_handler() -> Callable[[str], list[tuple[str, str]]]:
-        # TODO: move these into a subpackage of openforms.formio
-        from openforms.custom_field_types.constants import FamilyMembersDataAPIChoices
-        from openforms.custom_field_types.handlers.haal_centraal import (
-            get_np_children_haal_centraal,
-        )
-        from openforms.custom_field_types.handlers.stuf_bg import (
-            get_np_children_stuf_bg,
-        )
-        from openforms.custom_field_types.models import FamilyMembersTypeConfig
-
         handlers = {
             FamilyMembersDataAPIChoices.haal_centraal: get_np_children_haal_centraal,
             FamilyMembersDataAPIChoices.stuf_bg: get_np_children_stuf_bg,
