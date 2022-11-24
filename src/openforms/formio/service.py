@@ -38,6 +38,9 @@ __all__ = [
 
 
 def format_value(component: Component, value: Any, as_html: bool = False):
+    """
+    Format a submitted value in a way that is most appropriate for the component type.
+    """
     return register.format(component, value, as_html=as_html)
 
 
@@ -59,7 +62,8 @@ def get_dynamic_configuration(
     """
     Given a static Formio configuration, apply the hooks to dynamically transform this.
 
-    The configuration is modified in the context of the provided :arg:`submission`.
+    The configuration is modified in the context of the provided ``submission``
+    parameter.
     """
     rewrite_formio_components(config_wrapper, submission=submission, data=data)
 

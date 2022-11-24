@@ -44,6 +44,7 @@ Core
     :maxdepth: 1
 
     core/index
+    core/formio
     core/submissions
     core/submission-renderer
     core/variables
