@@ -55,15 +55,17 @@ const DateTimeInput = ({name, value, formatDatetime, onChange, ...extraProps}) =
   }, []);
 
   const placeHolder =
-    extraProps.placeholder ||
-    defineMessage({
-      description: 'datetime input widget placeholder',
-      defaultMessage: 'Select date/time...',
-    });
+    extraProps.placeholder ??
+    intl.formatMessage(
+      defineMessage({
+        description: 'datetime input widget placeholder',
+        defaultMessage: 'Select date/time...',
+      })
+    );
 
   return (
     <div className="datetime-input">
-      <input ref={datetimePickerRef} placeholder={intl.formatMessage(placeHolder)} />
+      <input ref={datetimePickerRef} placeholder={placeHolder} />
     </div>
   );
 };
