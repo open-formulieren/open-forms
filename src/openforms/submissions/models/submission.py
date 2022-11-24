@@ -507,7 +507,7 @@ class Submission(models.Model):
         return submission_state.get_last_completed_step()
 
     def get_ordered_data_with_component_type(self) -> OrderedDict:
-        from openforms.formio.formatters.service import filter_printable
+        from openforms.formio.formatters.printable import filter_printable
 
         ordered_data = OrderedDict()
         merged_data = self.get_merged_data()

@@ -23,11 +23,11 @@ from openforms.typing import DataMapping
 
 from .typing import Component
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: nocover
     from openforms.submissions.models import Submission
 
 
-class FormatterProtocol(Protocol):
+class FormatterProtocol(Protocol):  # pragma: nocover
     def __init__(self, as_html: bool):
         ...
 
@@ -35,12 +35,12 @@ class FormatterProtocol(Protocol):
         ...
 
 
-class NormalizerProtocol(Protocol):
+class NormalizerProtocol(Protocol):  # pragma: nocover
     def __call__(self, component: Component, value: Any) -> Any:
         ...
 
 
-class RewriterForRequestProtocol(Protocol):
+class RewriterForRequestProtocol(Protocol):  # pragma: nocover
     def __call__(self, component: Component, request: Request) -> None:
         ...
 

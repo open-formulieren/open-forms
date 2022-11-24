@@ -24,12 +24,11 @@ from ..stuf_bg import get_np_children_stuf_bg
 
 
 class FamilyMembersCustomFieldTypeTest(TestCase):
-    @patch("openforms.formio.components.custom.NPFamilyMembers._get_handler")
-    def test_get_values_for_custom_field(self, mock_get_handler):
-        mock_get_handler.return_value.return_value = [
-            ("222333444", "Billy Doe"),
-            ("333444555", "Jane Doe"),
-        ]
+    @patch(
+        "openforms.formio.components.custom.get_np_children_haal_centraal",
+        return_value=[("222333444", "Billy Doe"), ("333444555", "Jane Doe")],
+    )
+    def test_get_values_for_custom_field(self, mock_get_np_children):
         submission = SubmissionFactory.from_components(
             [
                 {

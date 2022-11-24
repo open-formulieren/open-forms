@@ -52,14 +52,3 @@ class FormioConfigurationWrapper:
     @property
     def configuration(self) -> JSONObject:
         return self._configuration
-
-    @configuration.setter
-    def configuration(self, new: JSONObject) -> None:
-        # if there are no changes in the configuration, do not invalidate the cache
-        if self._configuration == new:
-            return
-
-        # invalidate cache on configuration mutations
-        if self._cached_component_map is not None:
-            self._cached_component_map = None
-        self._configuration = new

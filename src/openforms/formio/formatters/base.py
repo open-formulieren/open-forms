@@ -70,5 +70,5 @@ class FormatterBase:
             component, self.join_formatted_values(component, formatted_values)
         )
 
-    def format(self, component: Component, value: Any) -> str:
+    def format(self, component: Component, value: Any) -> str:  # pragma:nocover
         raise NotImplementedError("%r must implement the 'format' method" % type(self))

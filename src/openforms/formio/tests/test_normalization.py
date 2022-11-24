@@ -56,3 +56,10 @@ class NormalizationTests(SimpleTestCase):
         result = normalize_value_for_component(component, "AAAA 34")
 
         self.assertEqual(result, "AAAA 34")
+
+    def test_normalize_unknown_component_type(self):
+        component = {"type": "7923abf1-1397-40ed-b194-7a1d05e23b23"}
+
+        result = normalize_value_for_component(component, "foo.bar-baz")
+
+        self.assertEqual(result, "foo.bar-baz")  # unmodified
