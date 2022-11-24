@@ -1,8 +1,8 @@
 .. _developers_backend_core_submissions:
 
-===========
-Submissions
-===========
+===========================
+Core: submission processing
+===========================
 
 Once a form is submitted by the user, a number of actions take place to process
 this submission. The complete process is shown below.

@@ -19,8 +19,8 @@ from stuf.tests.factories import StufServiceFactory
 
 from ..constants import FamilyMembersDataAPIChoices
 from ..haal_centraal import get_np_children_haal_centraal
-from ..stuf_bg import get_np_children_stuf_bg
 from ..models import FamilyMembersTypeConfig
+from ..stuf_bg import get_np_children_stuf_bg
 
 
 class FamilyMembersCustomFieldTypeTest(TestCase):
