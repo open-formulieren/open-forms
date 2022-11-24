@@ -111,7 +111,7 @@ class FormVariableModelTests(TestCase):
             FormVariableDataTypes.float: [None, "", 1.4],
             FormVariableDataTypes.datetime: [
                 "",
-                "Invalid date",
+                "Invalid datetime",
                 "2022-09-05",
                 "2022-09-08T00:00:00+02:00",
             ],
@@ -121,6 +121,12 @@ class FormVariableModelTests(TestCase):
                 "11:30",
                 "11:30:00",
                 "2022-09-08T11:30:00+02:00",
+            ],
+            FormVariableDataTypes.date: [
+                "",
+                "Invalid date",
+                "2022-09-05",
+                "2022-09-08T00:00:00+02:00",
             ],
         }
 
@@ -148,6 +154,12 @@ class FormVariableModelTests(TestCase):
                 "11:30",
                 "11:30:00",
                 "2022-09-08T11:30:00+02:00",
+            ],
+            FormVariableDataTypes.date: [
+                "",
+                "",
+                "2022-09-05",
+                "2022-09-08T00:00:00+02:00",
             ],
         }
 

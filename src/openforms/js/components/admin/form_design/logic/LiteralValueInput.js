@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {TextInput, NumberInput, DateInput} from 'components/admin/forms/Inputs';
+import {TextInput, NumberInput, DateInput, DateTimeInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 import ArrayInput from 'components/admin/forms/ArrayInput';
 import JsonWidget from 'components/admin/forms/JsonWidget';
@@ -57,10 +57,48 @@ WrappedJsonWidget.propTypes = {
   onChange: PropTypes.func,
 };
 
+const WrappedDatetimeInput = ({name, value, onChange}) => {
+  const getFormattedTimezone = offset => {
+    const hoursOffset = ('0' + Math.floor(offset / 60)).slice(-2);
+    const minutesOffset = ('0' + (offset % 60)).slice(-2);
+    return `${offset >= 0 ? '+' : '-'}${hoursOffset}:${minutesOffset}`;
+  };
+
+  const formatDatetime = selectedDatetime => {
+    // When converting to a ISOString, it is converted to UTC+00. We format it using the timezone of the server.
+    selectedDatetime.setMinutes(
+      selectedDatetime.getMinutes() - selectedDatetime.getTimezoneOffset()
+    );
+
+    // Use the timezone of the server
+    let iso_datetime = selectedDatetime.toISOString();
+    const serverOffset = document.body.dataset.adminUtcOffset / 60; // in minutes
+    return iso_datetime.replace('Z', getFormattedTimezone(serverOffset));
+  };
+
+  return (
+    <DateTimeInput
+      name={name}
+      value={value}
+      formatDatetime={formatDatetime}
+      onChange={onChange}
+      defaultDate={value || null}
+      enableTime={true}
+    />
+  );
+};
+
+WrappedDatetimeInput.propTypes = {
+  name: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func,
+};
+
 const TYPE_TO_INPUT_TYPE = {
   float: NumberInput,
   string: TextInput,
-  datetime: DateInput,
+  datetime: WrappedDatetimeInput,
+  date: DateInput,
   boolean: CheckboxChoices,
   array: WrapperArrayInput,
   object: WrappedJsonWidget,

@@ -1,5 +1,5 @@
 COMPONENT_DATATYPES = {
-    "date": "datetime",
+    "date": "date",
     "time": "time",
     "file": "array",
     "currency": "float",

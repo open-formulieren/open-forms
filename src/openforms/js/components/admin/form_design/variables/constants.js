@@ -1,7 +1,7 @@
 import {defineMessage} from 'react-intl';
 
 const COMPONENT_DATATYPES = {
-  date: 'datetime',
+  date: 'date',
   time: 'time',
   file: 'array',
   currency: 'float',
@@ -61,6 +61,13 @@ const DATATYPES_CHOICES = [
     defineMessage({
       description: 'data type datetime',
       defaultMessage: 'Datetime',
+    }),
+  ],
+  [
+    'date',
+    defineMessage({
+      description: 'data type date',
+      defaultMessage: 'Date',
     }),
   ],
   [

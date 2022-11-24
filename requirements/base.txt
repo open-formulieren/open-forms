@@ -288,7 +288,7 @@ mail-parser==3.15.0
     # via django-yubin
 maykin-django-two-factor-auth[phonenumbers]==2.0.4
     # via -r requirements/base.in
-maykin-json-logic-py @ git+https://github.com/maykinmedia/json-logic-py.git@f877f5326231bdcf4621783278f22c8565ec7913
+maykin-json-logic-py @ git+https://github.com/maykinmedia/json-logic-py.git@160816204f8157e84a3442e4c02508fc1f7cc91d
     # via -r requirements/base.in
 maykin-python3-saml==1.14.0.post0
     # via django-digid-eherkenning

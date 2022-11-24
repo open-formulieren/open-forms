@@ -93,3 +93,13 @@ class FormTests(TestCase):
             self.assertEqual(
                 variable.initial_value, "f5ea7397-65c3-4ce0-b955-9b8f408e0ae0"
             )
+
+
+class TodayTests(TestCase):
+    @freeze_time("2022-11-24T00:30:00+01:00")
+    def test_date_has_the_right_day(self):
+        submission = SubmissionFactory.build()
+
+        variable = _get_variable("today", submission=submission)
+
+        self.assertEqual(variable.initial_value.day, 24)

@@ -19,6 +19,7 @@ class FormVariableDataTypes(DjangoChoices):
     float = ChoiceItem("float", _("Float"))
     datetime = ChoiceItem("datetime", _("Datetime"))
     time = ChoiceItem("time", _("Time"))
+    date = ChoiceItem("date", _("Date"))
 
 
 DEFAULT_INITIAL_VALUE = {
@@ -29,6 +30,7 @@ DEFAULT_INITIAL_VALUE = {
     FormVariableDataTypes.int: None,
     FormVariableDataTypes.float: None,
     FormVariableDataTypes.datetime: "",
+    FormVariableDataTypes.date: "",
     FormVariableDataTypes.time: "",
 }
 
@@ -40,5 +42,6 @@ CHECK_VARIABLE_TYPE = {
     FormVariableDataTypes.int: int,
     FormVariableDataTypes.float: float,
     FormVariableDataTypes.datetime: check_date,
+    FormVariableDataTypes.date: check_date,
     FormVariableDataTypes.time: check_time,
 }

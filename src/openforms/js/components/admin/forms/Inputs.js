@@ -1,7 +1,8 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
 
 import {PrefixContext} from './Context';
+import {defineMessage, useIntl} from 'react-intl';
 
 const Input = ({type = 'text', name, ...extraProps}) => {
   const prefix = useContext(PrefixContext);
@@ -27,6 +28,54 @@ const TextArea = ({name, rows = 5, cols = 10, ...extraProps}) => {
 const NumberInput = props => <Input type="number" {...props} />;
 
 const DateInput = props => <Input type="date" {...props} />;
+
+const DateTimeInput = ({name, value, formatDatetime, onChange, ...extraProps}) => {
+  const datetimePickerRef = useRef();
+  const intl = useIntl();
+
+  const wrappedOnChange = (selectedDates, dateStr, instance) => {
+    let formattedDatetime = dateStr;
+    if (formatDatetime) formattedDatetime = formatDatetime(selectedDates[0]);
+
+    const fakeEvent = {
+      target: {name: name, value: formattedDatetime},
+    };
+    onChange(fakeEvent);
+  };
+
+  useEffect(() => {
+    const flatpickrInstance = flatpickr(datetimePickerRef.current, {
+      onChange: wrappedOnChange,
+      ...extraProps,
+    });
+
+    return function cleanup() {
+      flatpickrInstance.destroy();
+    };
+  }, []);
+
+  const placeHolder =
+    extraProps.placeholder ??
+    intl.formatMessage(
+      defineMessage({
+        description: 'datetime input widget placeholder',
+        defaultMessage: 'Select date/time...',
+      })
+    );
+
+  return (
+    <div className="datetime-input">
+      <input ref={datetimePickerRef} placeholder={placeHolder} />
+    </div>
+  );
+};
+
+DateTimeInput.propTypes = {
+  name: PropTypes.string,
+  value: PropTypes.string,
+  formatDatetime: PropTypes.func,
+  onChange: PropTypes.func,
+};
 
 const Checkbox = ({name, label, helpText, ...extraProps}) => {
   const prefix = useContext(PrefixContext);
@@ -68,4 +117,4 @@ Radio.propTypes = {
   helpText: PropTypes.node,
 };
 
-export {Input, TextInput, TextArea, NumberInput, DateInput, Checkbox, Radio};
+export {Input, TextInput, TextArea, NumberInput, DateInput, DateTimeInput, Checkbox, Radio};

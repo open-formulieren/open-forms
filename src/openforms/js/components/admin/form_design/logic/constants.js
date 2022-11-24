@@ -51,6 +51,7 @@ const TYPE_TO_OPERATORS = {
   float: ['==', '!=', '>', '>=', '<', '<='],
   string: ['==', '!=', 'in'],
   datetime: ['==', '!=', '>', '>=', '<', '<='],
+  date: ['==', '!=', '>', '>=', '<', '<='],
   _default: ['==', '!='],
 };
 
@@ -92,7 +93,8 @@ const ACTIONS_WITH_OPTIONS = ['property'];
 const TYPE_TO_OPERAND_TYPE = {
   float: ['literal', 'variable'],
   string: ['literal', 'variable', 'array'],
-  datetime: ['literal', 'variable', 'today'],
+  datetime: ['literal', 'variable'],
+  date: ['literal', 'variable', 'today'],
   object: ['literal'],
   _default: ['literal'],
 };
