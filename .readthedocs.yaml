@@ -8,13 +8,15 @@ sphinx:
   configuration: docs/conf.py
 
 build:
+  os: 'ubuntu-20.04'
   apt_packages:
     - libxml2-dev
     - libxmlsec1-dev
     - libxmlsec1-openssl
+  tools:
+    python: '3.10'
 
 python:
-  version: 3.8
+  version: 3.10
   install:
-  - requirements: requirements/setuptools.txt
-  - requirements: requirements/ci.txt
+    - requirements: requirements/ci.txt
