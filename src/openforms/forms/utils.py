@@ -485,5 +485,5 @@ def get_total_form_configuration_wrapper(
 
     wrapper = FormioConfigurationWrapper(form_steps[0].form_definition.configuration)
     for form_step in form_steps[1:]:
-        wrapper += form_step.form_definition.configuration_wrapper
+        wrapper += FormioConfigurationWrapper(form_step.form_definition.configuration)
     return wrapper
