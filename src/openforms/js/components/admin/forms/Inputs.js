@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
 
 import {PrefixContext} from './Context';
-import {defineMessage, FormattedMessage, useIntl} from 'react-intl';
+import {defineMessage, useIntl} from 'react-intl';
 
 const Input = ({type = 'text', name, ...extraProps}) => {
   const prefix = useContext(PrefixContext);
@@ -44,10 +44,14 @@ const DateTimeInput = ({name, value, formatDatetime, onChange, ...extraProps}) =
   };
 
   useEffect(() => {
-    flatpickr(datetimePickerRef.current, {
+    const flatpickrInstance = flatpickr(datetimePickerRef.current, {
       onChange: wrappedOnChange,
       ...extraProps,
     });
+
+    return function cleanup() {
+      flatpickrInstance.destroy();
+    };
   }, []);
 
   const placeHolder =
