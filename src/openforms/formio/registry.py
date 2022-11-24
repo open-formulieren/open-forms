@@ -21,7 +21,6 @@ from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
 from openforms.typing import DataMapping
 
-from .datastructures import FormioConfigurationWrapper
 from .typing import Component
 
 if TYPE_CHECKING:
@@ -74,7 +73,7 @@ class BasePlugin(AbstractBasePlugin):
         return _("{type} component").format(type=self.identifier.capitalize())
 
     def mutate_config_dynamically(
-        self, component: Component, data: DataMapping
+        self, component: Component, submission: "Submission", data: DataMapping
     ) -> None:  # pragma: nocover
         ...
 
@@ -109,7 +108,10 @@ class ComponentRegistry(BaseRegistry):
         return formatter(component, value)
 
     def update_config(
-        self, component: Component, data: DataMapping | None = None
+        self,
+        component: Component,
+        submission: "Submission",
+        data: DataMapping | None = None,
     ) -> None:
         """
         Mutate the component configuration in place.
@@ -118,19 +120,19 @@ class ComponentRegistry(BaseRegistry):
         for example) to work.
         """
         # if there is no plugin registered for the component, return the input
-        if (component_type := component["type"]) not in register:
+        if (component_type := component["type"]) not in self:
             return
 
         # invoke plugin if exists
         plugin = self[component_type]
-        plugin.mutate_config_dynamically(component, data)
+        plugin.mutate_config_dynamically(component, submission, data)
 
     def update_config_for_request(self, component: Component, request: Request) -> None:
         """
         Mutate the component in place for the given request context.
         """
         # if there is no plugin registered for the component, return the input
-        if (component_type := component["type"]) not in register:
+        if (component_type := component["type"]) not in self:
             return
 
         # invoke plugin if exists
@@ -139,21 +141,6 @@ class ComponentRegistry(BaseRegistry):
             return
 
         rewriter(component, request)
-
-    def handle_custom_types(
-        self,
-        configuration: FormioConfigurationWrapper,
-        submission: "Submission",
-    ):
-        """
-        Process custom backend-only formio types.
-
-        Formio types can be transformed in the context of a given
-        :class:`openforms.submissions.models.Submission` and ultimately manifest as
-        modified or standard Formio types, essentially performing some sort of "rewrite"
-        of the Formio configuration object.
-        """
-        raise NotImplementedError()
 
 
 # Sentinel to provide the default registry. You can easily instantiate another

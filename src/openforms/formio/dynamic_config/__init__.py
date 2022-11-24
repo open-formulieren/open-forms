@@ -7,6 +7,7 @@ from typing import Optional
 
 from rest_framework.request import Request
 
+from openforms.submissions.models import Submission
 from openforms.typing import DataMapping
 
 from ..datastructures import FormioConfigurationWrapper
@@ -17,6 +18,7 @@ __all__ = ["rewrite_formio_components", "rewrite_formio_components_for_request"]
 
 def rewrite_formio_components(
     configuration_wrapper: FormioConfigurationWrapper,
+    submission: Submission,
     data: Optional[DataMapping] = None,
 ) -> FormioConfigurationWrapper:
     """
@@ -33,7 +35,7 @@ def rewrite_formio_components(
     """
     data = data or {}  # normalize
     for component in configuration_wrapper:
-        register.update_config(component, data=data)
+        register.update_config(component, submission=submission, data=data)
     return configuration_wrapper
 
 

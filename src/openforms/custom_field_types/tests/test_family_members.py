@@ -9,7 +9,7 @@ import requests_mock
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.brp.models import BRPConfig
-from openforms.forms.custom_field_types import handle_custom_types
+from openforms.formio.service import get_dynamic_configuration
 from openforms.prefill.contrib.haalcentraal.tests.test_plugin import load_binary_mock
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -24,14 +24,14 @@ from ..models import FamilyMembersTypeConfig
 
 
 class FamilyMembersCustomFieldTypeTest(TestCase):
-    @patch(
-        "openforms.custom_field_types.family_members.get_np_children_haal_centraal",
-        return_value=[("222333444", "Billy Doe"), ("333444555", "Jane Doe")],
-    )
-    def test_get_values_for_custom_field(self, m):
-        configuration = {
-            "display": "form",
-            "components": [
+    @patch("openforms.formio.components.custom.NPFamilyMembers._get_handler")
+    def test_get_values_for_custom_field(self, mock_get_handler):
+        mock_get_handler.return_value.return_value = [
+            ("222333444", "Billy Doe"),
+            ("333444555", "Jane Doe"),
+        ]
+        submission = SubmissionFactory.from_components(
+            [
                 {
                     "key": "npFamilyMembers",
                     "type": "npFamilyMembers",
@@ -39,32 +39,35 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
                     "values": [{"label": "", "value": ""}],
                 },
             ],
-        }
-        submission = SubmissionFactory.create(
             auth_info__attribute=AuthAttribute.bsn,
             auth_info__value="111222333",
-            form__generate_minimal_setup=True,
-            form__formstep__form_definition__configuration=configuration,
         )
         config = FamilyMembersTypeConfig.get_solo()
         config.data_api = FamilyMembersDataAPIChoices.haal_centraal
         config.save()
+        formio_wrapper = (
+            submission.submissionstep_set.get().form_step.form_definition.configuration_wrapper
+        )
 
-        rewritten_configuration = handle_custom_types(configuration, submission)
+        updated_config_wrapper = get_dynamic_configuration(
+            formio_wrapper,
+            request=None,
+            submission=submission,
+        )
 
-        rewritten_component = rewritten_configuration["components"][0]
+        rewritten_component = updated_config_wrapper["npFamilyMembers"]
         self.assertEqual("selectboxes", rewritten_component["type"])
         self.assertFalse(rewritten_component["fieldSet"])
         self.assertFalse(rewritten_component["inline"])
         self.assertEqual("checkbox", rewritten_component["inputType"])
         self.assertEqual(2, len(rewritten_component["values"]))
-        self.assertDictEqual(
-            {"value": "222333444", "label": "Billy Doe"},
+        self.assertEqual(
             rewritten_component["values"][0],
+            {"value": "222333444", "label": "Billy Doe"},
         )
-        self.assertDictEqual(
-            {"value": "333444555", "label": "Jane Doe"},
+        self.assertEqual(
             rewritten_component["values"][1],
+            {"value": "333444555", "label": "Jane Doe"},
         )
 
     def test_get_children_haal_centraal(self):

@@ -13,7 +13,6 @@ from typing import Any, Optional
 import elasticapm
 from rest_framework.request import Request
 
-from openforms.forms.custom_field_types import handle_custom_types
 from openforms.prefill import inject_prefill
 from openforms.submissions.models import Submission
 from openforms.typing import DataMapping
@@ -62,12 +61,7 @@ def get_dynamic_configuration(
 
     The configuration is modified in the context of the provided :arg:`submission`.
     """
-    # TODO: see if we can make the config wrapper smart enough to deal with this
-    config_wrapper.configuration = handle_custom_types(
-        config_wrapper.configuration, submission=submission
-    )
-
-    rewrite_formio_components(config_wrapper, data=data)
+    rewrite_formio_components(config_wrapper, submission=submission, data=data)
 
     # prefill is still 'special' even though it uses variables, as we specifically
     # set the `defaultValue` key to the resulting variable.
