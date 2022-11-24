@@ -2,14 +2,12 @@ import json
 import os
 from unittest.mock import patch
 
-from django.contrib.sessions.middleware import SessionMiddleware
 from django.template import Context, Template
 from django.test import TestCase
-from django.test.client import RequestFactory
 
 import requests_mock
 
-from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.brp.models import BRPConfig
 from openforms.forms.custom_field_types import handle_custom_types
 from openforms.prefill.contrib.haalcentraal.tests.test_plugin import load_binary_mock
@@ -31,15 +29,6 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
         return_value=[("222333444", "Billy Doe"), ("333444555", "Jane Doe")],
     )
     def test_get_values_for_custom_field(self, m):
-        request = RequestFactory().get("/")
-        middleware = SessionMiddleware()
-        middleware.process_request(request)
-        request.session[FORM_AUTH_SESSION_KEY] = {
-            "attribute": AuthAttribute.bsn,
-            "value": "111222333",
-        }
-        request.session.save()
-
         configuration = {
             "display": "form",
             "components": [
@@ -52,6 +41,7 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
             ],
         }
         submission = SubmissionFactory.create(
+            auth_info__attribute=AuthAttribute.bsn,
             auth_info__value="111222333",
             form__generate_minimal_setup=True,
             form__formstep__form_definition__configuration=configuration,
@@ -60,9 +50,7 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
         config.data_api = FamilyMembersDataAPIChoices.haal_centraal
         config.save()
 
-        rewritten_configuration = handle_custom_types(
-            configuration, request, submission
-        )
+        rewritten_configuration = handle_custom_types(configuration, submission)
 
         rewritten_component = rewritten_configuration["components"][0]
         self.assertEqual("selectboxes", rewritten_component["type"])

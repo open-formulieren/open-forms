@@ -1,8 +1,7 @@
 from typing import Any, Dict
 
-from rest_framework.request import Request
-
-from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from openforms.authentication.constants import AuthAttribute
+from openforms.formio.typing import Component
 from openforms.forms.custom_field_types import register
 from openforms.submissions.models import Submission
 
@@ -14,18 +13,17 @@ from .models import FamilyMembersTypeConfig
 
 @register("npFamilyMembers")
 def fill_out_family_members(
-    component: Dict[str, Any], request: Request, submission: Submission
+    component: Component, submission: Submission
 ) -> Dict[str, Any]:
 
     # Check authentication details
-    form_auth = request.session.get(FORM_AUTH_SESSION_KEY)
-    if not form_auth:
+    if not submission.is_authenticated:
         raise RuntimeError("No authenticated person!")
 
-    if form_auth.get("attribute") != AuthAttribute.bsn:
+    if submission.auth_info.attribute != AuthAttribute.bsn:
         raise RuntimeError("No BSN found in the authentication details.")
 
-    bsn = form_auth["value"]
+    bsn = submission.auth_info.value
 
     # Decide which API should be used to retrieve the children's data
     config = FamilyMembersTypeConfig.get_solo()

@@ -1,7 +1,6 @@
 from typing import Any, Dict
 
 import elasticapm
-from rest_framework.request import Request
 
 from openforms.submissions.models import Submission
 
@@ -28,7 +27,6 @@ def unregister(custom_type: str):
 @elasticapm.capture_span(span_type="app.formio")
 def handle_custom_types(
     configuration: Dict[str, Any],
-    request: Request,
     submission: Submission,
 ) -> Dict[str, Any]:
 
@@ -44,7 +42,7 @@ def handle_custom_types(
 
         # if there is a handler, invoke it
         handler = REGISTRY[type_key]
-        rewritten_components.append(handler(component, request, submission))
+        rewritten_components.append(handler(component, submission))
 
     return {
         "components": rewritten_components,

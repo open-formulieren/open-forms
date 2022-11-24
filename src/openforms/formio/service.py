@@ -64,7 +64,7 @@ def get_dynamic_configuration(
     """
     # TODO: see if we can make the config wrapper smart enough to deal with this
     config_wrapper.configuration = handle_custom_types(
-        config_wrapper.configuration, request=request, submission=submission
+        config_wrapper.configuration, submission=submission
     )
 
     rewrite_formio_components(config_wrapper, data=data)
