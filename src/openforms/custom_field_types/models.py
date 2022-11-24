@@ -16,3 +16,4 @@ class FamilyMembersTypeConfig(SingletonModel):
 
     class Meta:
         verbose_name = _("Family members type configuration")
+        db_table = "custom_field_types_familymemberstypeconfig"
