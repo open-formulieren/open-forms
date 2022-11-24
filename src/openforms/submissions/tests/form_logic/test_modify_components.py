@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, tag
 
 from freezegun import freeze_time
 from rest_framework import status
@@ -1522,3 +1522,45 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self.assertEqual(
             "Some data that must not be cleared!", submission.data["textField"]
         )
+
+    @tag("gh-1183")
+    def test_component_incomplete_frontend_logic(self):
+        form = FormFactory.create()
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textFieldA",
+                        "hidden": True,
+                        "conditional": {
+                            "eq": "",
+                            "show": "",
+                            "when": None,
+                        },  # show is "" instead of None
+                        "clearOnHide": True,
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "textFieldB",
+                        "hidden": True,
+                        "conditional": {
+                            "eq": "yes",
+                            "show": True,
+                            "when": None,
+                        },  # Partially filled rule
+                        "clearOnHide": True,
+                    },
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+        )
+
+        # Does not raise exception
+        evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
