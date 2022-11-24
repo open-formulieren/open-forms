@@ -12,7 +12,7 @@ from openforms.submissions.models import Submission
 from openforms.typing import DataMapping
 
 from .datastructures import FormioConfigurationWrapper
-from .dynamic_config.service import apply_dynamic_configuration
+from .dynamic_config import apply_dynamic_configuration
 from .registry import register
 from .typing import Component
 from .utils import iter_components

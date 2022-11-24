@@ -13,6 +13,8 @@ the public API better defined and smaller.
 """
 from typing import TYPE_CHECKING, Any, Protocol
 
+from django.utils.translation import gettext as _
+
 from openforms.plugins.plugin import AbstractBasePlugin
 from openforms.plugins.registry import BaseRegistry
 from openforms.typing import DataMapping
@@ -52,9 +54,17 @@ class BasePlugin(AbstractBasePlugin):
     :meth:`openforms.formio.registry.ComponentRegistry.format`.
     """
     normalizer: None | NormalizerProtocol = None
+    """
+    Specify the normalizer callable to use for value normalization.
+    """
 
-    @staticmethod
-    def mutate(component: Component, data: DataMapping) -> None:  # pragma: nocover
+    @property
+    def verbose_name(self):
+        return _("{type} component").format(type=self.identifier.capitalize())
+
+    def mutate_config_dynamically(
+        self, component: Component, data: DataMapping
+    ) -> None:  # pragma: nocover
         ...
 
 
@@ -102,7 +112,7 @@ class ComponentRegistry(BaseRegistry):
 
         # invoke plugin if exists
         plugin = self[component_type]
-        plugin.mutate(component, data)
+        plugin.mutate_config_dynamically(component, data)
 
     def handle_custom_types(
         self,

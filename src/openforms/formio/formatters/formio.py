@@ -55,11 +55,6 @@ class EmailFormatter(FormatterBase):
         return str(value)
 
 
-class DateFormatter(FormatterBase):
-    def format(self, component: Component, value: str) -> str:
-        return fmt_date(parse_date(value))
-
-
 class TimeFormatter(FormatterBase):
     def format(self, component: Component, value: str) -> str:
         return fmt_time(parse_time(value))

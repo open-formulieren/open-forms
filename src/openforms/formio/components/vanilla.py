@@ -4,12 +4,9 @@ Implement backend functionality for core Formio (built-in) component types.
 Custom component types (defined by us or third parties) need to be organized in the
 adjacent custom.py module.
 """
-from openforms.utils.date import format_date_value
-
 from ..formatters.formio import (
     CheckboxFormatter,
     CurrencyFormatter,
-    DateFormatter,
     DefaultFormatter,
     EmailFormatter,
     FileFormatter,
@@ -25,7 +22,6 @@ from ..formatters.formio import (
     TimeFormatter,
 )
 from ..registry import BasePlugin, register
-from ..typing import Component
 
 
 @register("default")
@@ -45,15 +41,6 @@ class TextField(BasePlugin):
 @register("email")
 class Email(BasePlugin):
     formatter = EmailFormatter
-
-
-@register("date")
-class Date(BasePlugin):
-    formatter = DateFormatter
-
-    @staticmethod
-    def normalizer(component: Component, value: str) -> str:
-        return format_date_value(value)
 
 
 @register("time")
