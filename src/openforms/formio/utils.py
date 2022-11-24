@@ -174,10 +174,12 @@ def is_visible_in_frontend(component: JSONObject, data: DataMapping) -> bool:
     hidden = component.get("hidden")
     conditional = component.get("conditional")
 
-    if not conditional or (conditional_show := conditional.get("show")) is None:
+    if not conditional or (conditional_show := conditional.get("show")) in [None, ""]:
         return not hidden
 
-    trigger_component_key = conditional.get("when")
+    if not (trigger_component_key := conditional.get("when")):
+        return not hidden
+
     trigger_component_value = glom(data, trigger_component_key, default=None)
     compare_value = conditional.get("eq")
 
