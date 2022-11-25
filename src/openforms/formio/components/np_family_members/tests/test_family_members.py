@@ -2,16 +2,14 @@ import json
 import os
 from unittest.mock import patch
 
-from django.contrib.sessions.middleware import SessionMiddleware
 from django.template import Context, Template
 from django.test import TestCase
-from django.test.client import RequestFactory
 
 import requests_mock
 
-from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.brp.models import BRPConfig
-from openforms.forms.custom_field_types import handle_custom_types
+from openforms.formio.service import get_dynamic_configuration
 from openforms.prefill.contrib.haalcentraal.tests.test_plugin import load_binary_mock
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
@@ -20,29 +18,19 @@ from stuf.stuf_bg.models import StufBGConfig
 from stuf.tests.factories import StufServiceFactory
 
 from ..constants import FamilyMembersDataAPIChoices
-from ..handlers.haal_centraal import get_np_children_haal_centraal
-from ..handlers.stuf_bg import get_np_children_stuf_bg
+from ..haal_centraal import get_np_children_haal_centraal
 from ..models import FamilyMembersTypeConfig
+from ..stuf_bg import get_np_children_stuf_bg
 
 
 class FamilyMembersCustomFieldTypeTest(TestCase):
     @patch(
-        "openforms.custom_field_types.family_members.get_np_children_haal_centraal",
+        "openforms.formio.components.custom.get_np_children_haal_centraal",
         return_value=[("222333444", "Billy Doe"), ("333444555", "Jane Doe")],
     )
-    def test_get_values_for_custom_field(self, m):
-        request = RequestFactory().get("/")
-        middleware = SessionMiddleware()
-        middleware.process_request(request)
-        request.session[FORM_AUTH_SESSION_KEY] = {
-            "attribute": AuthAttribute.bsn,
-            "value": "111222333",
-        }
-        request.session.save()
-
-        configuration = {
-            "display": "form",
-            "components": [
+    def test_get_values_for_custom_field(self, mock_get_np_children):
+        submission = SubmissionFactory.from_components(
+            [
                 {
                     "key": "npFamilyMembers",
                     "type": "npFamilyMembers",
@@ -50,33 +38,35 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
                     "values": [{"label": "", "value": ""}],
                 },
             ],
-        }
-        submission = SubmissionFactory.create(
+            auth_info__attribute=AuthAttribute.bsn,
             auth_info__value="111222333",
-            form__generate_minimal_setup=True,
-            form__formstep__form_definition__configuration=configuration,
         )
         config = FamilyMembersTypeConfig.get_solo()
         config.data_api = FamilyMembersDataAPIChoices.haal_centraal
         config.save()
-
-        rewritten_configuration = handle_custom_types(
-            configuration, request, submission
+        formio_wrapper = (
+            submission.submissionstep_set.get().form_step.form_definition.configuration_wrapper
         )
 
-        rewritten_component = rewritten_configuration["components"][0]
+        updated_config_wrapper = get_dynamic_configuration(
+            formio_wrapper,
+            request=None,
+            submission=submission,
+        )
+
+        rewritten_component = updated_config_wrapper["npFamilyMembers"]
         self.assertEqual("selectboxes", rewritten_component["type"])
         self.assertFalse(rewritten_component["fieldSet"])
         self.assertFalse(rewritten_component["inline"])
         self.assertEqual("checkbox", rewritten_component["inputType"])
         self.assertEqual(2, len(rewritten_component["values"]))
-        self.assertDictEqual(
-            {"value": "222333444", "label": "Billy Doe"},
+        self.assertEqual(
             rewritten_component["values"][0],
+            {"value": "222333444", "label": "Billy Doe"},
         )
-        self.assertDictEqual(
-            {"value": "333444555", "label": "Jane Doe"},
+        self.assertEqual(
             rewritten_component["values"][1],
+            {"value": "333444555", "label": "Jane Doe"},
         )
 
     def test_get_children_haal_centraal(self):

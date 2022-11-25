@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.utils.translation import gettext_lazy as _
 
-from ..service import format_value
+from ...service import format_value
 from .utils import load_json
 
 

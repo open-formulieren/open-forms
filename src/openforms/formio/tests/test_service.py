@@ -5,13 +5,13 @@ from django.urls import reverse
 
 from openforms.formio.service import (
     FormioConfigurationWrapper,
-    update_configuration_for_request,
+    rewrite_formio_components_for_request,
 )
 
 
 class ServiceTestCase(TestCase):
     @patch("csp_post_processor.processor.get_html_id", return_value="1234")
-    def test_update_configuration_for_request(self, m):
+    def test_rewrite_formio_components_for_request(self, m):
         request = RequestFactory().get("/", HTTP_X_CSP_NONCE="dGVzdA==")
 
         configuration = {
@@ -31,7 +31,7 @@ class ServiceTestCase(TestCase):
                 },
             ],
         }
-        update_configuration_for_request(
+        rewrite_formio_components_for_request(
             FormioConfigurationWrapper(configuration), request
         )
         with self.subTest("temporary file upload url"):

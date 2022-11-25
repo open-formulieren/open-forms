@@ -1,25 +1,22 @@
 import logging
 from datetime import datetime
-from typing import Any, Dict, Iterable, List, Union
+from typing import Any
 
 from django.template.defaultfilters import date as fmt_date, time as fmt_time, yesno
 from django.utils.dateparse import parse_date, parse_time
-from django.utils.encoding import force_str
 from django.utils.formats import number_format
-from django.utils.html import format_html, format_html_join
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from glom import glom
 
-from openforms.plugins.plugin import AbstractBasePlugin
-
 from ..typing import Component, OptionDict
-from .registry import register
+from .base import FormatterBase
 
 logger = logging.getLogger(__name__)
 
 
-def get_value_label(possible_values: List[OptionDict], value: Union[int, str]) -> str:
+def get_value_label(possible_values: list[OptionDict], value: int | str) -> str:
     # From #1466 it's clear that Formio does not force the values to be strings, e.g.
     # if you use numeric values for the options. They are stored as string in the form
     # configuration, but the submitted value is a number.
@@ -43,116 +40,33 @@ def get_value_label(possible_values: List[OptionDict], value: Union[int, str]) -
     return value
 
 
-def join_mapped(value: Any, formatter: callable = str, separator: str = ", ") -> str:
-    # map multiple value into a joined string
-    # note: filter before passing to this
-    # TODO if this stays this simple after the refactoring we can inline and remove it
-    return separator.join(map(formatter, value))
-
-
-class FormioFormatter(AbstractBasePlugin):
-    multiple_separator = "; "
-    """
-    Separator to use for multi-value components.
-
-    Defaults to semi-colon, as formatted numbers already use comma's which hurts
-    readability.
-    """
-    as_html = False
-    """
-    Format for HTML output or not.
-
-    The default is to format for plain text output, but toggling this will emit
-    HTML where relevant.
-    """
-
-    # there is an interesting open question on what to do for empty values
-    # currently we're eating them in normalise_value_to_list()
-    empty_values = [None, ""]
-
-    def is_empty_value(self, component: Component, value: Any):
-        return value in self.empty_values
-
-    def normalise_value_to_list(self, component: Component, value: Any):
-        multiple = component.get("multiple", False)
-        # this breaks if multiple is true and value not a list
-        if multiple:
-            if not isinstance(value, (tuple, list)):
-                # this happens if value is None
-                value = [value]
-        else:
-            value = [value]
-        # convert to list of useful values
-        return [v for v in value if not self.is_empty_value(component, v)]
-
-    def join_formatted_values(
-        self, component: Component, formatted_values: Iterable[str]
-    ) -> str:
-        if self.as_html:
-            args_generator = ((formatted,) for formatted in formatted_values)
-            return format_html_join(self.multiple_separator, "{}", args_generator)
-        else:
-            return self.multiple_separator.join(formatted_values)
-
-    def process_result(self, component: Component, formatted: str) -> str:
-        return formatted
-
-    def __call__(self, component: Component, value: Any, as_html=False) -> str:
-        self.as_html = as_html
-        # note all this depends on value not being unexpected type or shape
-        values = self.normalise_value_to_list(component, value)
-
-        formatted_values = (
-            force_str(self.format(component, value)) for value in values
-        )
-        # logically we'd want a .filter_formatted_values() step here
-        return self.process_result(
-            component, self.join_formatted_values(component, formatted_values)
-        )
-
-    def format(self, component: Component, value: Any) -> str:
-        raise NotImplementedError("%r must implement the 'format' method" % type(self))
-
-
-@register("default")
-class DefaultFormatter(FormioFormatter):
+class DefaultFormatter(FormatterBase):
     def format(self, component: Component, value: Any) -> str:
         return str(value)
 
 
-@register("textfield")
-class TextFieldFormatter(FormioFormatter):
+class TextFieldFormatter(FormatterBase):
     def format(self, component: Component, value: str) -> str:
         return str(value)
 
 
-@register("email")
-class EmailFormatter(FormioFormatter):
+class EmailFormatter(FormatterBase):
     def format(self, component: Component, value: str) -> str:
         return str(value)
 
 
-@register("date")
-class DateFormatter(FormioFormatter):
-    def format(self, component: Component, value: str) -> str:
-        return fmt_date(parse_date(value))
-
-
-@register("time")
-class TimeFormatter(FormioFormatter):
+class TimeFormatter(FormatterBase):
     def format(self, component: Component, value: str) -> str:
         return fmt_time(parse_time(value))
 
 
-@register("phoneNumber")
-class PhoneNumberFormatter(FormioFormatter):
+class PhoneNumberFormatter(FormatterBase):
     def format(self, component: Component, value: str) -> str:
         # TODO custom formatting?
         return str(value)
 
 
-@register("file")
-class FileFormatter(FormioFormatter):
+class FileFormatter(FormatterBase):
     def normalise_value_to_list(self, component: Component, value: Any):
         if value is None:
             return []
@@ -166,50 +80,44 @@ class FileFormatter(FormioFormatter):
             return _("attachment: %s") % formatted
         return formatted
 
-    def format(self, component: Component, value: List) -> str:
+    def format(self, component: Component, value: dict) -> str:
         # this is only valid for display to the user (because filename component option, dedupe etc)
         return value["originalName"]
 
 
-@register("textarea")
-class TextAreaFormatter(FormioFormatter):
+class TextAreaFormatter(FormatterBase):
     def format(self, component: Component, value: str) -> str:
         # TODO custom formatting?
         return str(value)
 
 
-@register("number")
-class NumberFormatter(FormioFormatter):
-    def format(self, component: Component, value: Union[int, float]) -> str:
+class NumberFormatter(FormatterBase):
+    def format(self, component: Component, value: int | float) -> str:
         # localized and forced to decimalLimit
         return number_format(value, decimal_pos=component.get("decimalLimit"))
 
 
-@register("password")
-class PasswordFormatter(FormioFormatter):
+class PasswordFormatter(FormatterBase):
     def format(self, component: Component, value: str) -> str:
         # TODO legacy just printed as-is, but we might want to use unicode-dots or stars
         # return "\u25CF" * len(value)
         return str(value)
 
 
-@register("checkbox")
-class CheckboxFormatter(FormioFormatter):
+class CheckboxFormatter(FormatterBase):
     def format(self, component: Component, value: bool) -> str:
-        return yesno(value)
+        return str(yesno(value))
 
 
-@register("selectboxes")
-class SelectBoxesFormatter(FormioFormatter):
-    def format(self, component: Component, value: Dict[str, bool]) -> str:
+class SelectBoxesFormatter(FormatterBase):
+    def format(self, component: Component, value: dict[str, bool]) -> str:
         selected_labels = [
             entry["label"] for entry in component["values"] if value.get(entry["value"])
         ]
         return self.multiple_separator.join(selected_labels)
 
 
-@register("select")
-class SelectFormatter(FormioFormatter):
+class SelectFormatter(FormatterBase):
     def format(self, component: Component, value: str) -> str:
         # grab appointment specific data
         if glom(component, "appointments.showDates", default=False):
@@ -230,22 +138,19 @@ class SelectFormatter(FormioFormatter):
             return get_value_label(component["data"]["values"], value)
 
 
-@register("currency")
-class CurrencyFormatter(FormioFormatter):
+class CurrencyFormatter(FormatterBase):
     def format(self, component: Component, value: float) -> str:
         # localized and forced to decimalLimit
         # note we mirror formio and default to 2 decimals
         return number_format(value, decimal_pos=component.get("decimalLimit", 2))
 
 
-@register("radio")
-class RadioFormatter(FormioFormatter):
-    def format(self, component: Component, value: Union[str, int]) -> str:
+class RadioFormatter(FormatterBase):
+    def format(self, component: Component, value: str | int) -> str:
         return get_value_label(component["values"], value)
 
 
-@register("signature")
-class SignatureFormatter(FormioFormatter):
+class SignatureFormatter(FormatterBase):
     def format(self, component: Component, value: str) -> str:
         text = _("signature added")
         if not self.as_html:
@@ -261,10 +166,3 @@ class SignatureFormatter(FormioFormatter):
             src=value,
             alt=text,
         )
-
-
-@register("map")
-class MapFormatter(FormioFormatter):
-    def format(self, component: Component, value: List[float]) -> str:
-        # use a comma here since its a single data element
-        return join_mapped(value, separator=", ")

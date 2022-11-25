@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.serializers import JSONField
 
-from openforms.formio.normalization import normalize_value_for_component
+from openforms.formio.service import normalize_value_for_component
 from openforms.forms.models import Form
 
 from ..exceptions import FormMaintenance

@@ -1,12 +1,13 @@
 .. _developers_backend_core_variables:
 
-=========
-Variables
-=========
+===============
+Core: variables
+===============
 
 There are two models for variables, :class:`openforms.forms.models.FormVariable` and
-:class:`openforms.submissions.models.SubmissionValueVariable`. ``FormVariable`` are related to
-a form while ``SubmissionValueVariable`` are related to a submission.
+:class:`openforms.submissions.models.SubmissionValueVariable`. ``FormVariable`` objects
+are related to a form while ``SubmissionValueVariable`` objects are related to a
+submission (and a form variable).
 
 Form Variables
 ==============

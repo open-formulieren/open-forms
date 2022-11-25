@@ -2,9 +2,9 @@
 
 .. currentmodule:: openforms.submissions.rendering
 
-====================
-Submission rendering
-====================
+==========================
+Core: submission rendering
+==========================
 
 Submission rendering is the concept of outputting the submitted data for a given form
 in a particular format. A couple of examples:

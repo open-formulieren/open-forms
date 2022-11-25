@@ -9,13 +9,18 @@ The tests in this module validate that we can retrieve the submission-context
 aware step definition.
 """
 import uuid
+from unittest.mock import patch
+
+from django.test import tag
 
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, SuperUserFactory
-from openforms.forms.custom_field_types import register, unregister
+from openforms.formio.components.vanilla import SelectBoxes, TextField
+from openforms.formio.formatters.formio import TextFieldFormatter
+from openforms.formio.registry import BasePlugin, ComponentRegistry
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
@@ -110,15 +115,21 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.json(), expected)
 
     def test_dynamic_form_definition(self):
-        @register("textfield")
-        def custom_handler(component: dict, request, submission):
-            component["label"] = "Rewritten label"
-            return component
+        register = ComponentRegistry()
+        register("selectboxes")(SelectBoxes)
 
-        self.addCleanup(lambda: unregister("textfield"))
+        @register("textfield")
+        class TextField(BasePlugin):
+            formatter = TextFieldFormatter
+
+            @staticmethod
+            def mutate_config_dynamically(component, submission, data):
+                component["label"] = "Rewritten label"
+
         self._add_submission_to_session(self.submission)
 
-        response = self.client.get(self.step_url)
+        with patch("openforms.formio.dynamic_config.register", new=register):
+            response = self.client.get(self.step_url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected = {
@@ -186,6 +197,37 @@ class ReadSubmissionStepTests(SubmissionsMixin, APITestCase):
             response.json()["data"],
             {"someField": "data"},
         )
+
+    @tag("gh-1208", "gh-1068")
+    def test_dynamic_config_applied(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "type": "file",
+                    "key": "file",
+                    "storage": "url",
+                    "url": "",  # must be set dynamically
+                }
+            ]
+        )
+        self._add_submission_to_session(submission)
+        step = submission.submissionstep_set.get()
+        url = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.form_step.uuid,
+            },
+        )
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        component = data["formStep"]["configuration"]["components"][0]
+        self.assertEqual(component["key"], "file")
+        self.assertEqual(component["type"], "file")
+        self.assertEqual(component["url"], "http://testserver/api/v2/formio/fileupload")
 
 
 class GetSubmissionStepTests(SubmissionsMixin, APITestCase):
@@ -410,18 +452,26 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         self.assertEqual(date2["datePicker"]["maxDate"], "2022-12-31T00:00:00+01:00")
 
     def test_custom_components_and_form_logic(self):
-
         # set up custom field type for test only
-        self.addCleanup(lambda: unregister("testCustomType"))
+        register = ComponentRegistry()
+        register("textfield")(TextField)
 
         @register("testCustomType")
-        def custom_type(component, request, submission):
-            return {
-                "type": "textfield",
-                "key": component["key"],
-                "defaultValue": "testCustomType",
-                "hidden": False,
-            }
+        class CustomType(BasePlugin):
+            formatter = TextFieldFormatter
+
+            @staticmethod
+            def mutate_config_dynamically(component, submission, data):
+                key = component["key"]
+                component.clear()
+                component.update(
+                    {
+                        "type": "textfield",
+                        "key": key,
+                        "defaultValue": "testCustomType",
+                        "hidden": False,
+                    }
+                )
 
         form = FormFactory.create(
             generate_minimal_setup=True,
@@ -471,7 +521,8 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         )
         self._add_submission_to_session(submission)
 
-        response = self.client.get(endpoint)
+        with patch("openforms.formio.dynamic_config.register", new=register):
+            response = self.client.get(endpoint)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         components = response.data["form_step"]["configuration"]["components"]

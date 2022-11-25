@@ -193,8 +193,7 @@ INSTALLED_APPS = [
     "openforms.config",
     "openforms.emails",
     "openforms.formio",
-    "openforms.formio.dynamic_config",
-    "openforms.formio.formatters.apps.FormIOFormattersApp",
+    "openforms.formio.components.np_family_members",
     "openforms.formio.rendering",
     "openforms.forms",
     "openforms.multidomain",
@@ -238,7 +237,7 @@ INSTALLED_APPS = [
     "openforms.utils",
     "openforms.upgrades",
     "openforms.plugins",
-    "openforms.custom_field_types",
+    "openforms.custom_field_types",  # TODO: remove completely after 2.1 is released
     # Apps registering static variables
     "openforms.variables.static_variables.apps.StaticVariables",
     "openforms.authentication.static_variables.apps.AuthStaticVariables",

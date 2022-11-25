@@ -7,7 +7,7 @@ from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
 
-from ..formatters.service import format_value
+from ..service import format_value
 from ..typing import Component
 from ..utils import is_layout_component, is_visible_in_frontend, iter_components
 
@@ -189,7 +189,7 @@ class ComponentNode(Node):
         Format the value according to the render mode and/or output content type.
 
         This applies the registry of Formio formatters to the value based on the
-        component type, using :func:`openforms.formio.formatter.service.format_value`.
+        component type, using :func:`openforms.formio.service.format_value`.
         """
         # in export mode, expose the raw datatype
         if self.mode == RenderModes.export:
