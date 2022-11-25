@@ -1,9 +1,11 @@
 from string import ascii_letters
-from typing import Any, Literal, TypeAlias
+from typing import Any, Literal
 
 from django.test import SimpleTestCase
 
 from hypothesis import given, strategies as st
+
+from openforms.typing import JSONPrimitive, JSONValue
 
 from ..validators import HeaderValidator, ValidationError
 
@@ -18,11 +20,8 @@ NUL = "\x00"
 FIELD_VALUE_ALPHABET = "".join((VCHAR, OBS_TEXT, SP, HTAB))
 
 
-JSONValue: TypeAlias = (
-    None | bool | int | float | str | list["JSONValue"] | dict[str, "JSONValue"]
-)
-
-json_base_values = st.one_of(
+json_primitives: st.SearchStrategy[JSONPrimitive]
+json_primitives = st.one_of(
     st.none(),
     st.booleans(),
     st.integers(),
@@ -41,7 +40,7 @@ def json_collections(
 
 
 def json_values(*, max_leaves: int = 15) -> st.SearchStrategy[JSONValue]:
-    return st.recursive(json_base_values, json_collections, max_leaves=max_leaves)
+    return st.recursive(json_primitives, json_collections, max_leaves=max_leaves)
 
 
 def field_names() -> st.SearchStrategy[str]:
@@ -105,7 +104,7 @@ class HeaderValidatorTests(SimpleTestCase):
             self.assertEqual(return_value, None)
 
     @given(st.dictionaries(keys=field_names(), values=field_values()))
-    def test_it_validates_well_formed_rfc_9110_headers(self, userinput: JSONValue):
+    def test_it_validates_well_formed_rfc_9110_headers(self, userinput: dict[str, str]):
         try:
             return_value = self.validate(userinput)
         except ValidationError as e:
@@ -122,7 +121,7 @@ class HeaderValidatorTests(SimpleTestCase):
         st.booleans(),
     )
     def test_it_invalidates_unstripped_values(
-        self, userinput: JSONValue, whitespace, whitespace2, first_elem
+        self, userinput: dict[str, str], whitespace, whitespace2, first_elem
     ):
         """
         > A field value does not include leading or trailing whitespace. When a

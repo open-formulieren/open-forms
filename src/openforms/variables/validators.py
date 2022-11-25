@@ -1,8 +1,11 @@
 import re
+from typing import Mapping
 
 from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
+
+from openforms.typing import JSONValue
 
 
 @deconstructible
@@ -44,10 +47,10 @@ class HeaderValidator:
         re.VERBOSE,
     )
 
-    def __call__(self, value: None | dict[str, str]) -> None:
+    def __call__(self, value: Mapping[str, str] | JSONValue) -> None:
         if value is None:
             return
-        if not isinstance(value, dict):
+        if not isinstance(value, Mapping):
             raise ValidationError(
                 _('Header should have the form {"X-my-header": "My header value"}')
             )

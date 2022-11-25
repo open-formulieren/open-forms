@@ -15,6 +15,7 @@ class ServiceFetchConfiguration(models.Model):
     service = models.ForeignKey(
         "zgw_consumers.Service",
         on_delete=models.PROTECT,
+        verbose_name=_("service"),
     )
     path = models.CharField(
         _("path"),
@@ -56,7 +57,7 @@ class ServiceFetchConfiguration(models.Model):
         _("mapping expression language"),
         max_length=10,
         blank=True,
-        null=True,
+        default="",
         choices=DataMappingTypes.choices,
     )
     mapping_expression = models.JSONField(
@@ -80,9 +81,9 @@ class ServiceFetchConfiguration(models.Model):
         if self.method == ServiceFetchMethods.get and self.body not in (None, ""):
             errors["body"] = _("GET requests may not have a body")
 
-        if self.data_mapping_type is None and self.mapping_expression not in (None, ""):
+        if self.data_mapping_type == "" and self.mapping_expression not in (None, ""):
             errors["mapping_expression"] = _("Data mapping type missing for expression")
-        elif self.data_mapping_type is not None and self.mapping_expression is None:
+        elif self.data_mapping_type != "" and self.mapping_expression is None:
             errors["mapping_expression"] = _(
                 "Missing {mapping_type} expression"
             ).format(mapping_type=self.data_mapping_type)

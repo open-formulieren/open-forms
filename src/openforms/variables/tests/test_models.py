@@ -27,15 +27,15 @@ class ServiceFetchConfigurationTests(SimpleTestCase):
 
     def test_mapping_expresssion_should_be_empty_if_no_type_is_known(self):
         null = ServiceFetchConfiguration(
-            data_mapping_type=None,
+            data_mapping_type="",
             mapping_expression=None,
         )
         empty = ServiceFetchConfiguration(
-            data_mapping_type=None,
+            data_mapping_type="",
             mapping_expression="",
         )
         valid_jq = ServiceFetchConfiguration(
-            data_mapping_type=None,
+            data_mapping_type="",
             mapping_expression=".",  # identity
         )
 
