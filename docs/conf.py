@@ -22,7 +22,7 @@ django.setup()
 # -- Project information -----------------------------------------------------
 
 project = "Open Forms"
-copyright = "2021, Maykin Media"
+copyright = "2022, Maykin Media"
 author = openforms.__author__
 
 # The full version, including alpha/beta/rc tags

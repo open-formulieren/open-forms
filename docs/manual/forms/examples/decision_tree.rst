@@ -18,7 +18,7 @@ In dit voorbeeld gaan we er van uit dat u een
     U kunt dit voorbeeld downloaden en :ref:`importeren <manual_export_import>`
     in Open Formulieren.
 
-    Download: :download:`decision_tree.zip <_assets/decision_tree.zip>`
+    Download: :download:`decision_tree_2.zip <_assets/decision_tree_2.zip>`
 
 
 Formulier maken

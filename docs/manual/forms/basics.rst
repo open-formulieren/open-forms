@@ -148,7 +148,7 @@ Bevestigingsmailsjabloon
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 In het veld **Inhoud** kan een tekst worden opgemaakt die gebruikt wordt in de
-e-mailbevestging. Het **Onderwerp** van de email kan ook worden opgegeven.
+e-mailbevestiging. Het **Onderwerp** van de email kan ook worden opgegeven.
 
 U moet in de optie **E-mailsjabloon** expliciet opgeven welk e-mailsjabloon
 gebruikt wordt voor de e-mailbevestiging. U kunt er ook voor kiezen om geen
@@ -269,5 +269,5 @@ auth.value      string    ``111222333``               De identificerende waarde 
 auth.machtigen  object    TODO                        
 auth_bsn        string    ``111222333``               De waarde van ``auth.value`` indien ``auth.attribute`` als waarde ``bsn`` heeft. Anders leeg.
 auth_kvk        string    ``90001354``                De waarde van ``auth.value`` indien ``auth.attribute`` als waarde ``kvk`` heeft. Anders leeg.
-auth_pseudo     string    ``a8bfe7a293dd``...         De waarde van ``auth.value`` indien ``auth.attribute`` als waarde ``psuedo`` heeft. Anders leeg.
+auth_pseudo     string    ``a8bfe7a293dd``...         De waarde van ``auth.value`` indien ``auth.attribute`` als waarde ``pseudo`` heeft. Anders leeg.
 =============== ========= =========================== ====================================================================================================================

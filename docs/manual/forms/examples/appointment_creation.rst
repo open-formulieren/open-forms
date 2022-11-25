@@ -64,14 +64,16 @@ Formulier maken
    * **Label**: Telefoonnummer
 
 13. Klik op het tabblad **Afspraken**.
-14. Kies de juiste componenten voor elke veld in deze tabblad.
+14. Kies de juiste componenten voor elke veld in dit tabblad.
+
+.. image:: _assets/appointment_creation_2_2.png
+
 15. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
 
-U kunt nu het formulier bekijken.
 
 .. note::
 
-   De velden *Acternaam*, *Geboortedatum*, en *Telefoonnummer* mogen in een aparte formulierdefinitie (stap)
+   De velden *Achternaam*, *Geboortedatum*, en *Telefoonnummer* mogen in een aparte formulierdefinitie (stap)
    aanwezig zijn maar de velden *Producten*, *Locaties*, *Datums*, en *Tijden* moeten in dezelfde
    formulierdefinitie (stap) aanwezig zijn.
 

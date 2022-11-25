@@ -8,6 +8,9 @@ In dit voorbeeld maken we een deel-formulier bestaande uit 1 stap, waarbij
 de geboorte datum ingevuld door de gebruiker beïnvloedt of het formulier kan worden
 ingediend.
 
+.. image:: _assets/logic_rules_2_1.png
+    :width: 24%
+
 In dit voorbeeld gaan we er van uit dat u een
 :ref:`eenvoudig formulier <example_simple_form>` kan maken.
 
@@ -16,7 +19,7 @@ In dit voorbeeld gaan we er van uit dat u een
     U kunt dit voorbeeld downloaden en :ref:`importeren <manual_export_import>`
     in Open Formulieren.
 
-    Download: :download:`logic_age.zip <_assets/logic_age.zip>`
+    Download: :download:`logic_rules_2.zip <_assets/logic_rules_2.zip>`
 
 
 Formulier maken
@@ -49,40 +52,46 @@ Formulier maken
     * **Label**: Geboorte datum
     * Klik op het tabblad **Validatie** en selecteer **Verplicht**.
 
-9. Onder de formulier velden, klik op **Opmaak**. Sleep een **Content** component op het
+9. Onder de formulier velden, klik op **Opmaak**. Sleep een **Vrije tekst** component op het
    witte vlak. Vul de volgende gegevens in en druk daarna op **Opslaan**:
 
-    * Onder **Content component**: Om een rijbewijs te kunnen aanvragen moet u ouder dan 18 jaar zijn.
-    * **Label**: Warning.
-    * Selecteer **Hidden**.
+    * Onder **Vrije tekst**: Om een rijbewijs te kunnen aanvragen moet u ouder dan 18 jaar zijn.
+    * **Aangepaste CSS class**: Warning.
+    * Selecteer **Verborgen**, daarna op **Opslaan**.
 
-10. Klik op het tabblad **Logica**.
-11. Klik op **Regel toevoegen**.
-12. Selecteer de **Geboorte datum** component van de drop-down. Er verschijnt dan een nieuwe drop-down.
-13. Selecteer **is groter dan**. Er verschijnt dan nog een drop-down.
-14. Selecteer **vandaag**. Er verschijnen dan een nieuwe drop-down en drie nummer velden voor jaren, manden en dagen.
-15. Selecteer **minus** en vult **18** in het jaren veld.
+.. image:: _assets/logic_rules_2_2.png
+    :width: 51%
 
-.. note::
+10. Klik op de **Logica** tab in het formulier menu
+11. Klik op **Regel toevoegen**, gevolgd door **Eenvoudig**.
+12. Bij **Triggervoorwaarde** selecteer je:
 
-    Deze regel betekent: 'Als de geboorte datum van de gebruiker later
-    is dan vandaag 18 jaar geleden'. Het is dus een check dat
-    de gebruiker 18 jaar of ouder is op het moment dat hij/zij het formulier invult.
+    * Als: **Persoonlijke Gegevens: Geboorte datum (geboorteDatum)**
+    * **is groter dan**
+    * **vandaag**
+    * **Minus**
+    * **18** jaren
 
-16. Klik op **Voeg actie toe**.
-17. Selecteer **blokkeer doorgaan naar de volgende stap**.
-18. Klik opnieuw op **Voeg actie toe**.
-19. Selecteer **wijzig een attribuut van een veld/component.**. Er verschijnen dan nieuwe drop-downs.
-20. Selecteer de component **Warning** in de eerst drop-down, dan **verborgen** en **Nee** in de laatste drop-down.
+13. Klik op **Actie Toevoegen**
+
+    * dan **wijzig een attribuut van een veld/component**
+    * **Persoonlijke Gegevens: Content (content)** 
+    * **verborgen**
+    * **Nee**
+    
+14. Klik op **Actie Toevoegen**
+
+    * en **blokkeer doorgaan naar de volgende stap**
+
+.. image:: _assets/logic_rules_2_3.png
+    :width: 51%
+
 
 .. note::
 
     Deze twee acties betekenen: als de gebruiker jonger dan 18 is, dan blokkeer
-    doorgaan naar de volgende formulier stap en maak de 'Warning component' zichtbaar.
+    doorgaan naar de volgende formulier stap en maak de 'Warning component' van stap 9 zichtbaar.
 
-.. image:: _assets/logic_age.png
-    :width: 100%
-
-21. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
+15. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
 
 U kunt nu het formulier bekijken.

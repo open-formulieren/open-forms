@@ -32,7 +32,7 @@ U vindt twee velden:
 
 * **Server certificate**:
 
-   Hiermee verifiëert Open Formulieren het servercertificaat. Als dit veld leeg blijft,
+   Hiermee verifieert Open Formulieren het servercertificaat. Als dit veld leeg blijft,
    dan wordt de server-configuratie gebruikt om de lijst van vertrouwde certificaten op
    te halen. Dit wordt ingesteld tijdens de installatie van Open Formulieren door de
    dienstverlener.

@@ -8,7 +8,7 @@ Open Forms ondersteunt sjablonen voor verschillende aspecten. Sjablonen zijn
 teksten die aangepaste kunnen worden op basis van het ingevulde formulier.
 
 .. note::
-    Voor de ontwikkelaardocumentatie, zie :ref:`developers_backend_core_templating`.
+    Voor de ontwikkelaars documentatie, zie :ref:`developers_backend_core_templating`.
 
 Momenteel worden sjablonen gebruikt voor:
 
@@ -90,7 +90,7 @@ de waarde van de ``eigenschap`` niet leeg is. Ten slotte kunt u controleren
 of een variabele leeg is door ``not`` ervoor te zetten:
 ``{% if not <eigenschap> %}...``
 
-Het is mogelijk om voorwaarden binnen aandere voorwaarden te gebruiken.
+Het is mogelijk om voorwaarden binnen andere voorwaarden te gebruiken.
 
 Voorbeeld
 ~~~~~~~~~
@@ -151,7 +151,7 @@ Expressie                           Voorbeeld waarde                   Toelichti
 ``{{ consent|yesno:"ok,niet ok"}}`` ``niet ok``                        Weergave op basis van ``True``/ ``False`` waarde
 =================================== ================================== ================================================
 
-.. note:: Op dit moment krijgt u altijd de Nederlandse vertalingen/localisatie.
+.. note:: Op dit moment krijgt u altijd de Nederlandse vertalingen/lokalisatie.
    Er is nog geen ondersteuning voor andere talen.
 
 

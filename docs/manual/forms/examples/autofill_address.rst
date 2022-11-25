@@ -6,6 +6,10 @@ In dit voorbeeld maken we een deel-formulier bestaande uit 1 stap, waarbij de
 straatnaam en stad automatisch worden ingevuld zodra de postcode en huisnummer
 zijn ingevuld.
 
+.. image:: _assets/autofill_address_2.png
+    :width: 24%
+
+
 In dit voorbeeld gaan we er van uit dat u een
 :ref:`eenvoudig formulier <example_simple_form>` kan maken.
 
@@ -14,7 +18,7 @@ In dit voorbeeld gaan we er van uit dat u een
     U kunt dit voorbeeld downloaden en :ref:`importeren <manual_export_import>`
     in Open Formulieren.
 
-    Download: :download:`autofill_address.zip <_assets/autofill_address.zip>`
+    Download: :download:`autofill_address_2.zip <_assets/autofill_address_2.zip>`
 
 
 Configuratie

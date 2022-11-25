@@ -50,6 +50,6 @@ Formulier maken
     * **Plugin attribuut**: ``handelsnaam``
 
 9. (Optioneel) Herhalen stappen 6 naar 8 met andere **Plugin attribuut**
-10. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
+10. Ga terug naar de **Formulier** opties en bij **Authenticatiemethode** selecteer je optie die ``biedt kvk aan`` bevat.
+11. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
 
-U kunt nu het formulier bekijken.

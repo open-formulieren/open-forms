@@ -39,6 +39,10 @@ Formulier maken
    * **Label**: Number A+B*C
 
 #. Druk daarna op **Opslaan en opnieuw bewerken**.
+
+.. note::
+    Berekeningen beperken zich niet alleen tot **Getal** componenten. Ook getallen in **Bedrag**, **Tekst** componenten en **Gebruikersvariabelen** kunnen worden gebruikt. 
+
 #. Klik op het tabblad **Logica** en voeg een geavanceerde regel toe met de volgende trigger:
 
     .. code-block:: json
@@ -72,7 +76,11 @@ Formulier maken
           ]
         }
 
-   en de volgende actie: **wijzig de waarde van een variabele**, **Number A+B\*C**, met de waarde:
+    .. note::
+        als ``numberA`` niet is ``null`` en ``numberB`` niet is ``null`` en ``numberC`` niet is ``null`` 
+
+
+    en de volgende actie: **zet de waarde van een variabele**, **Number A+B\*C**, met de waarde:
 
     .. code-block:: json
 
@@ -94,7 +102,7 @@ Formulier maken
           ]
         }
 
-   Deze actie vermeningvuldigt **Number B** en **Number C** en voegt de resultaat aan **Number A**.
+   Deze actie vermenigvuldigt **Number B** en **Number C** en voegt de resultaat aan **Number A**.
 
 
 U kunt nu het formulier bekijken. Als u waarden invult in de velden **Number A**, **Number B** en **Number C**
@@ -105,3 +113,7 @@ dan verschijnt het resultaat van de berekening in het veld **Number A+B\*C**
 
 .. image:: _assets/calculations_show_result.png
     :width: 49%
+
+.. note::
+    Als er decimalen worden gebruikt in de berekeningen is het vaak een goed idee om dit aantal te beperken in het resultaat veld. 
+    Het aantal decimalen kan je instellen in de eigenschappen van een **Getal** component.

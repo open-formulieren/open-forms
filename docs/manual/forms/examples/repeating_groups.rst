@@ -31,7 +31,12 @@ Formulier maken
    gegevens in en druk daarna op **Opslaan**:
 
    * **Basis** > **Label**: _`Auto's`
-   * **Weergave** > **Open eerste groep als leeg**: *aangevinkt*
+   * **Basis** > **Groepslabel**: _`Auto`
+
+   .. note::
+
+      Het Groepslabel is het label dat boven iedere herhaalde groep weergegeven wordt in de overzichtspagina, inzendings-PDF en bevestigingsmail + 1.
+
 
 #. Klik op **Formuliervelden** en sleep een **Tekstveld** component binnen de herhalende groep. Vul de volgende
    gegevens in en druk daarna op **Opslaan**:
@@ -53,12 +58,12 @@ Formulier maken
 #. Voeg een variabele toe met de volgende gegevens:
 
    * **Naam**: Aantal auto's
-   * **Data type**: float
+   * **Data type**: Kommagetal/float
 
 #. Voeg nog een variabele toe met de volgende gegevens:
 
    * **Naam**: Totale waarde
-   * **Data type**: float
+   * **Data type**: Kommagetal/float
 
 #. Klik op het **Logica** tabblad en voeg een geavanceerde regel met de de volgende gegevens:
 
@@ -106,9 +111,9 @@ Formulier maken
 
 U kunt nu het formulier bekijken.
 
-.. image:: _assets/repeating_groups_fill_form.png
+.. image:: _assets/repeating_groups_fill_form_2.png
     :width: 51%
 
-.. image:: _assets/repeating_groups_result_calculation.png
+.. image:: _assets/repeating_groups_result_calculation_2.png
     :width: 51%
 
