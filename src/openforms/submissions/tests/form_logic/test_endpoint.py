@@ -135,3 +135,63 @@ class CheckLogicEndpointTests(SubmissionsMixin, APITestCase):
         # Check that get_object retrieves also the auth info as part of the select related
         with self.assertNumQueries(0):
             hasattr(object.submission, "auth_info")
+
+    def test_updating_data_marks_step_as_applicable_again(self):
+        form = FormFactory.create()
+        form_step0 = FormStepFactory.create(form=form)
+        form_step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "radio",
+                        "key": "radio",
+                        "values": [
+                            {"label": "A", "value": "a"},
+                            {"label": "B", "value": "b"},
+                        ],
+                    }
+                ]
+            },
+        )
+        form_step2 = FormStepFactory.create(form=form)
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [
+                    {"var": "radio"},
+                    "a",
+                ]
+            },
+            actions=[
+                {
+                    "form_step_uuid": f"{form_step2.uuid}",
+                    "action": {
+                        "name": "Step is not applicable",
+                        "type": "step-not-applicable",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step0, data={"some": "data"}
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step1,
+            data={"radio": "a"},
+        )
+
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": form_step1.uuid},
+        )
+        self._add_submission_to_session(submission)
+
+        # Make a change to the data, which causes step 2 to be applicable again
+        response = self.client.post(endpoint, data={"data": {"radio": "b"}})
+
+        data = response.json()
+
+        self.assertTrue(data["submission"]["steps"][2]["isApplicable"])

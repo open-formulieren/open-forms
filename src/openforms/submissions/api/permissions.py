@@ -138,6 +138,9 @@ class CanNavigateBetweenSubmissionStepsPermission(permissions.BasePermission):
             if is_step_unexpectedly_incomplete(submission_step)
         ]
 
+        # Clean up the cached execution state
+        del submission._execution_state
+
         if not incomplete_steps:
             return True
 
