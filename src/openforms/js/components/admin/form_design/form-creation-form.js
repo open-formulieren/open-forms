@@ -273,7 +273,11 @@ function reducer(draft, action) {
           break;
         }
         case 'literals': {
-          draft.literals[fieldName].value = value;
+          if (fieldName.includes('translations')) {
+            set(draft.form, `${fieldName}.value`, value);
+          } else {
+            draft.literals[fieldName].value = value;
+          }
           break;
         }
         default: {
@@ -1328,7 +1332,12 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
           </TabPanel>
 
           <TabPanel>
-            <TextLiterals literals={state.literals} onChange={onFieldChange} />
+            <TextLiterals
+              literals={state.literals}
+              onChange={onFieldChange}
+              languages={state.languages}
+              translations={state.form.translations}
+            />
           </TabPanel>
 
           <TabPanel>

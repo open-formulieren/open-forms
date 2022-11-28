@@ -1,93 +1,129 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
-
+import {Tabs, TabList, TabPanel} from 'react-tabs';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {TextInput} from 'components/admin/forms/Inputs';
+import Tab from './Tab';
 
-const TextLiterals = ({literals, onChange}) => {
+const activeTab = new URLSearchParams(window.location.search).get('tab');
+
+const TextLiterals = ({literals, onChange, languages, translations}) => {
   const intl = useIntl();
-  const {beginText, previousText, changeText, confirmText} = literals;
+
+  let tabs = languages.map((language, index) => {
+    return <Tab key={language.code}>{language.code}</Tab>;
+  });
+
+  let tabPanels = languages.map((language, index) => {
+    const langCode = language.code;
+    return (
+      <TabPanel key={langCode}>
+        <FormRow>
+          <Field
+            name={`literals.translations.${langCode}.beginText`}
+            label={
+              <FormattedMessage
+                description="literals.beginText form label"
+                defaultMessage="Begin text"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                description="literals.beginText help text"
+                defaultMessage="The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration."
+              />
+            }
+          >
+            <TextInput
+              value={translations[langCode].beginText.value}
+              onChange={onChange}
+              maxLength="50"
+            />
+          </Field>
+        </FormRow>
+        <FormRow>
+          <Field
+            name={`literals.translations.${langCode}.previousText`}
+            label={
+              <FormattedMessage
+                description="literals.previousText form label"
+                defaultMessage="Previous text"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                description="literals.previousText help text"
+                defaultMessage="The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
+              />
+            }
+          >
+            <TextInput
+              value={translations[langCode].previousText.value}
+              onChange={onChange}
+              maxLength="50"
+            />
+          </Field>
+        </FormRow>
+        <FormRow>
+          <Field
+            name={`literals.translations.${langCode}.changeText`}
+            label={
+              <FormattedMessage
+                description="literals.changeText form label"
+                defaultMessage="Change text"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                description="literals.changeText help text"
+                defaultMessage="The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
+              />
+            }
+          >
+            <TextInput
+              value={translations[langCode].changeText.value}
+              onChange={onChange}
+              maxLength="50"
+            />
+          </Field>
+        </FormRow>
+        <FormRow>
+          <Field
+            name={`literals.translations.${langCode}.confirmText`}
+            label={
+              <FormattedMessage
+                description="literals.confirmText form label"
+                defaultMessage="Confirm text"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                description="literals.confirmText help text"
+                defaultMessage="The text that will be displayed in the overview page to confirm the form is filled in correctly. Leave blank to get value from global configuration."
+              />
+            }
+          >
+            <TextInput
+              value={translations[langCode].confirmText.value}
+              onChange={onChange}
+              maxLength="50"
+            />
+          </Field>
+        </FormRow>
+      </TabPanel>
+    );
+  });
+
   return (
     <Fieldset>
-      <FormRow>
-        <Field
-          name="literals.beginText"
-          label={
-            <FormattedMessage
-              description="literals.beginText form label"
-              defaultMessage="Begin text"
-            />
-          }
-          helpText={
-            <FormattedMessage
-              description="literals.beginText help text"
-              defaultMessage="The text that will be displayed at the start of the form to indicate the user can begin to fill in the form. Leave blank to get value from global configuration."
-            />
-          }
-        >
-          <TextInput value={beginText.value} onChange={onChange} maxLength="50" />
-        </Field>
-      </FormRow>
-      <FormRow>
-        <Field
-          name="literals.previousText"
-          label={
-            <FormattedMessage
-              description="literals.previousText form label"
-              defaultMessage="Previous text"
-            />
-          }
-          helpText={
-            <FormattedMessage
-              description="literals.previousText help text"
-              defaultMessage="The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration."
-            />
-          }
-        >
-          <TextInput value={previousText.value} onChange={onChange} maxLength="50" />
-        </Field>
-      </FormRow>
-      <FormRow>
-        <Field
-          name="literals.changeText"
-          label={
-            <FormattedMessage
-              description="literals.changeText form label"
-              defaultMessage="Change text"
-            />
-          }
-          helpText={
-            <FormattedMessage
-              description="literals.changeText help text"
-              defaultMessage="The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
-            />
-          }
-        >
-          <TextInput value={changeText.value} onChange={onChange} maxLength="50" />
-        </Field>
-      </FormRow>
-      <FormRow>
-        <Field
-          name="literals.confirmText"
-          label={
-            <FormattedMessage
-              description="literals.confirmText form label"
-              defaultMessage="Confirm text"
-            />
-          }
-          helpText={
-            <FormattedMessage
-              description="literals.confirmText help text"
-              defaultMessage="The text that will be displayed in the overview page to confirm the form is filled in correctly. Leave blank to get value from global configuration."
-            />
-          }
-        >
-          <TextInput value={confirmText.value} onChange={onChange} maxLength="50" />
-        </Field>
-      </FormRow>
+      <Tabs defaultIndex={activeTab ? parseInt(activeTab, 10) : null}>
+        <TabList>{tabs}</TabList>
+
+        {tabPanels}
+      </Tabs>
     </Fieldset>
   );
 };
@@ -108,6 +144,8 @@ TextLiterals.propTypes = {
     }).isRequired,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
+  languages: PropTypes.array,
+  translations: PropTypes.object,
 };
 
 export default TextLiterals;
