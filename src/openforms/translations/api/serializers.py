@@ -105,9 +105,6 @@ class ModelTranslationsSerializer(serializers.Serializer):
                 parent_field = self.get_parent_field(field_name)
                 value = data.get(language, {}).get(field_name)
 
-                # if field_name == "name":
-                #     import pdb; pdb.set_trace()
-
                 # Workaround for literals
                 if isinstance(parent_field, ButtonTextSerializer):
                     if value is None:
@@ -169,7 +166,6 @@ class ModelTranslationsSerializer(serializers.Serializer):
                         resolved_getter=f"get_{translated_field_name}",
                     )
                     virtual_field.bind(field_name=field_name, parent=self)
-                    # TODO default value empty string
                     data[field_name] = virtual_field.to_representation(instance)
                     if data[field_name]["value"] is None:
                         data[field_name]["value"] = ""

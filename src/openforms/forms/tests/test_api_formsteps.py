@@ -622,6 +622,7 @@ class FormStepsAPITranslationTests(APITestCase):
         TranslatedFormStepFactory = make_translated(FormStepFactory)
         cls.form_step = TranslatedFormStepFactory.create(
             _language="en",
+            form_definition__name="FormDef 001",
             form=cls.form,
             next_text="Next",
             previous_text="Previous",
@@ -758,6 +759,14 @@ class FormStepsAPITranslationTests(APITestCase):
                         },
                     },
                 },
+                "translations": {
+                    "nl": {
+                        "name": "Dutch",
+                    },
+                    "en": {
+                        "name": "English",
+                    },
+                },
             },
         )
 
@@ -772,6 +781,10 @@ class FormStepsAPITranslationTests(APITestCase):
         self.assertEqual(self.form_step.previous_text_nl, "Vorige")
         self.assertEqual(self.form_step.save_text_nl, "Opslaan")
         self.assertEqual(self.form_step.next_text_nl, "Volgende")
+
+        # The FormDefinition translations on this endpoint are read only
+        self.assertEqual(self.form_step.form_definition.name_en, None)
+        self.assertEqual(self.form_step.form_definition.name_nl, "FormDef 001")
 
     @patch(
         "openforms.api.exception_handling.uuid.uuid4",
