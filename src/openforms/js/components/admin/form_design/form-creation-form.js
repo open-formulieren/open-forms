@@ -869,6 +869,14 @@ function reducer(draft, action) {
               tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldPrefix]);
             }
 
+            // Errors for specific translations
+            if (err.name.includes('translations')) {
+              const langCode = err.name.split('translations.')[1].split('.')[0];
+              tabsWithErrors.push(
+                `${FORM_FIELDS_TO_TAB_NAMES[fieldName]}.${fieldName}.${langCode}`
+              );
+            }
+
             let key;
             switch (fieldPrefix) {
               // literals are tracked separately in the state
@@ -1319,6 +1327,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
               onChange={onFieldChange}
               languages={state.languages}
               translations={state.form.translations}
+              tabsWithErrors={state.tabsWithErrors}
             />
           </TabPanel>
 

@@ -74,7 +74,16 @@ const FormStepDefinition = ({
   };
 
   let tabs = languages.map((language, index) => {
-    return <Tab key={language.code}>{language.code}</Tab>;
+    return (
+      <Tab
+        hasErrors={errors.some(err => {
+          return err[0].includes(`translations.${language.code}`);
+        })}
+        key={language.code}
+      >
+        {language.code}
+      </Tab>
+    );
   });
 
   let tabPanels = languages.map((language, index) => {

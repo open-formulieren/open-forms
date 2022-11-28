@@ -48,6 +48,7 @@ const Confirmation = ({
   onChange,
   languages,
   translations,
+  tabsWithErrors,
 }) => {
   const intl = useIntl();
   const emailOptions = getTranslatedChoices(intl, EMAIL_OPTIONS);
@@ -63,8 +64,17 @@ const Confirmation = ({
     onChange({target: {name, value: !currentValue}});
   };
 
-  let tabs = languages.map((language, index) => {
-    return <Tab key={language.code}>{language.code}</Tab>;
+  let confirmationTemplateTabs = languages.map((language, index) => {
+    return (
+      <Tab
+        hasErrors={tabsWithErrors.includes(
+          `submission-confirmation.submissionConfirmationTemplate.${language.code}`
+        )}
+        key={language.code}
+      >
+        {language.code}
+      </Tab>
+    );
   });
 
   let confirmationTemplateTabPanels = languages.map((language, index) => {
@@ -126,6 +136,19 @@ const Confirmation = ({
           />
         </FormRow>
       </TabPanel>
+    );
+  });
+
+  let confirmationEmailTabs = languages.map((language, index) => {
+    return (
+      <Tab
+        hasErrors={tabsWithErrors.includes(
+          `submission-confirmation.confirmationEmailTemplate.${language.code}`
+        )}
+        key={language.code}
+      >
+        {language.code}
+      </Tab>
     );
   });
 
@@ -218,7 +241,7 @@ const Confirmation = ({
         }
       >
         <Tabs defaultIndex={null}>
-          <TabList>{tabs}</TabList>
+          <TabList>{confirmationTemplateTabs}</TabList>
 
           {confirmationTemplateTabPanels}
         </Tabs>
@@ -232,7 +255,7 @@ const Confirmation = ({
         }
       >
         <Tabs defaultIndex={null}>
-          <TabList>{tabs}</TabList>
+          <TabList>{confirmationEmailTabs}</TabList>
 
           {submissionTemplateTabPanels}
         </Tabs>
