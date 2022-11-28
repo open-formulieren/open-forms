@@ -1,3 +1,5 @@
+from unittest import expectedFailure
+
 from django.test import override_settings, tag
 
 from freezegun import freeze_time
@@ -807,6 +809,100 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             data = response.json()
             self.assertEqual(data["step"]["data"], {"textfield1": ""})
+
+    @tag("gh-2409")
+    @expectedFailure
+    def test_component_values_hidden_fieldset_used_in_subsequent_logic(self):
+        """
+        Test that values that should be cleared can be used safely in other logic rules.
+
+        This is expected to fail until #2409 has been implemented which re-organizes
+        the logic evaluation.
+        """
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "radio",
+                        "type": "radio",
+                        "values": [
+                            {"label": "show", "value": "show"},
+                            {"label": "hide", "value": "hide"},
+                        ],
+                    },
+                    {
+                        "key": "fieldset",
+                        "type": "fieldset",
+                        "hidden": True,
+                        "components": [
+                            {
+                                "key": "textfield",
+                                "type": "textfield",
+                                "clearOnHide": True,
+                            },
+                        ],
+                    },
+                    {
+                        "key": "calculatedResult",
+                        "type": "fieldset",
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "radio"}, "show"]},
+            actions=[
+                {
+                    "component": "fieldSet",
+                    "action": {
+                        "type": "property",
+                        "property": {
+                            "value": "hidden",
+                            "type": "bool",
+                        },
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "textfield"}, "foo"]},
+            actions=[
+                {
+                    "variable": "calculatedResult",
+                    "action": {
+                        "type": "variable",
+                        "value": "bar",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form.formstep_set.get().uuid,
+            },
+        )
+
+        response = self.client.post(
+            logic_check_endpoint,
+            {
+                "data": {
+                    "radio": "hide",
+                    "textfield": "foo",
+                }
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.json()
+        self.assertEqual(data["step"]["data"], {})
 
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
