@@ -712,6 +712,102 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
         self.assertEqual({}, data["step"]["data"])
 
+    @tag("gh-2340")
+    def test_component_values_in_hidden_fieldset_are_cleared(self):
+        """
+        Components that are children in hidden fieldsets must be cleared when clearOnHide is set.
+        """
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "radio",
+                        "type": "radio",
+                        "values": [
+                            {"label": "show", "value": "show"},
+                            {"label": "hide", "value": "hide"},
+                        ],
+                    },
+                    {
+                        "key": "fieldset",
+                        "type": "fieldset",
+                        "hidden": True,
+                        "components": [
+                            {
+                                "key": "textfield1",
+                                "type": "textfield",
+                                "clearOnHide": True,
+                            },
+                            {
+                                "key": "textfield2",
+                                "type": "textfield",
+                                "clearOnHide": False,
+                            },
+                        ],
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "radio"}, "show"]},
+            actions=[
+                {
+                    "component": "fieldset",
+                    "action": {
+                        "type": "property",
+                        "property": {
+                            "value": "hidden",
+                            "type": "bool",
+                        },
+                        "state": False,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form.formstep_set.get().uuid,
+            },
+        )
+
+        with self.subTest("values not cleared when fieldset is visible"):
+            response = self.client.post(
+                logic_check_endpoint,
+                {
+                    "data": {
+                        "radio": "show",
+                        "textfield1": "foo",
+                        "textfield2": "bar",
+                    }
+                },
+            )
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            data = response.json()
+            self.assertEqual(data["step"]["data"], {})
+
+        with self.subTest("one value cleared when fieldset is hidden"):
+            response = self.client.post(
+                logic_check_endpoint,
+                {
+                    "data": {
+                        "radio": "hide",
+                        "textfield1": "foo",
+                        "textfield2": "bar",
+                    }
+                },
+            )
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            data = response.json()
+            self.assertEqual(data["step"]["data"], {"textfield1": ""})
+
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
