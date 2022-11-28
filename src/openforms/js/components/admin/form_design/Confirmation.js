@@ -1,7 +1,9 @@
 import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {defineMessage, FormattedMessage, useIntl} from 'react-intl';
+import {Tabs, TabList, TabPanel} from 'react-tabs';
 
+import Tab from './Tab';
 import FormRow from 'components/admin/forms/FormRow';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
@@ -44,6 +46,8 @@ const Confirmation = ({
   emailOption = 'global_email',
   emailTemplate = {},
   onChange,
+  languages,
+  translations,
 }) => {
   const intl = useIntl();
   const emailOptions = getTranslatedChoices(intl, EMAIL_OPTIONS);
@@ -59,16 +63,14 @@ const Confirmation = ({
     onChange({target: {name, value: !currentValue}});
   };
 
-  return (
-    <div className="confirmation-page">
-      <Fieldset
-        title={
-          <FormattedMessage
-            defaultMessage="Submission confirmation template"
-            description="Submission confirmation fieldset title"
-          />
-        }
-      >
+  let tabs = languages.map((language, index) => {
+    return <Tab key={language.code}>{language.code}</Tab>;
+  });
+
+  let confirmationTemplateTabPanels = languages.map((language, index) => {
+    const langCode = language.code;
+    return (
+      <TabPanel key={langCode}>
         {formValidationErrors.submissionConfirmationTemplate?.nonFieldErrors && (
           <ErrorList classNamePrefix="confirmation-page">
             {formValidationErrors.submissionConfirmationTemplate.nonFieldErrors}
@@ -76,7 +78,7 @@ const Confirmation = ({
         )}
         <FormRow>
           <Field
-            name="form.submissionConfirmationTemplate"
+            name={`form.translations.${langCode}.submissionConfirmationTemplate`}
             label={
               <FormattedMessage
                 defaultMessage="Page content"
@@ -91,9 +93,14 @@ const Confirmation = ({
             }
           >
             <TinyMCEEditor
-              content={pageTemplate}
+              content={translations[langCode].submissionConfirmationTemplate}
               onEditorChange={(newValue, editor) =>
-                onChange({target: {name: 'form.submissionConfirmationTemplate', value: newValue}})
+                onChange({
+                  target: {
+                    name: `form.translations.${langCode}.submissionConfirmationTemplate`,
+                    value: newValue,
+                  },
+                })
               }
             />
           </Field>
@@ -115,17 +122,17 @@ const Confirmation = ({
             }
             checked={displayMainWebsiteLink}
             onChange={event => onCheckboxChange(event, displayMainWebsiteLink)}
+            disabled={langCode === 'nl' ? false : true}
           />
         </FormRow>
-      </Fieldset>
-      <Fieldset
-        title={
-          <FormattedMessage
-            defaultMessage="Submission confirmation email template"
-            description="Submission confirmation email fieldset title"
-          />
-        }
-      >
+      </TabPanel>
+    );
+  });
+
+  let submissionTemplateTabPanels = languages.map((language, index) => {
+    const langCode = language.code;
+    return (
+      <TabPanel key={langCode}>
         {formValidationErrors.confirmationEmailTemplate?.nonFieldErrors && (
           <ErrorList classNamePrefix="confirmation-page">
             {formValidationErrors.confirmationEmailTemplate.nonFieldErrors}
@@ -133,7 +140,7 @@ const Confirmation = ({
         )}
         <FormRow>
           <Field
-            name="form.confirmationEmailTemplate.subject"
+            name={`form.confirmationEmailTemplate.translations.${langCode}.subject`}
             label={
               <FormattedMessage
                 defaultMessage="Subject"
@@ -141,12 +148,16 @@ const Confirmation = ({
               />
             }
           >
-            <TextInput value={subject || ''} onChange={onChange} maxLength="1000" />
+            <TextInput
+              value={emailTemplate.translations[langCode].subject}
+              onChange={onChange}
+              maxLength="1000"
+            />
           </Field>
         </FormRow>
         <FormRow>
           <Field
-            name="form.confirmationEmailTemplate.content"
+            name={`form.confirmationEmailTemplate.translations.${langCode}.content`}
             label={
               <FormattedMessage
                 defaultMessage="Content"
@@ -155,10 +166,13 @@ const Confirmation = ({
             }
           >
             <TinyMCEEditor
-              content={content}
+              content={emailTemplate.translations[langCode].content}
               onEditorChange={(newValue, editor) =>
                 onChange({
-                  target: {name: 'form.confirmationEmailTemplate.content', value: newValue},
+                  target: {
+                    name: `form.confirmationEmailTemplate.translations.${langCode}.content`,
+                    value: newValue,
+                  },
                 })
               }
             />
@@ -185,9 +199,43 @@ const Confirmation = ({
               choices={emailOptions}
               value={emailOption}
               onChange={onChange}
+              disabled={langCode === 'nl' ? false : true}
             />
           </Field>
         </FormRow>
+      </TabPanel>
+    );
+  });
+
+  return (
+    <div className="confirmation-page">
+      <Fieldset
+        title={
+          <FormattedMessage
+            defaultMessage="Submission confirmation template"
+            description="Submission confirmation fieldset title"
+          />
+        }
+      >
+        <Tabs defaultIndex={null}>
+          <TabList>{tabs}</TabList>
+
+          {confirmationTemplateTabPanels}
+        </Tabs>
+      </Fieldset>
+      <Fieldset
+        title={
+          <FormattedMessage
+            defaultMessage="Submission confirmation email template"
+            description="Submission confirmation email fieldset title"
+          />
+        }
+      >
+        <Tabs defaultIndex={null}>
+          <TabList>{tabs}</TabList>
+
+          {submissionTemplateTabPanels}
+        </Tabs>
       </Fieldset>
     </div>
   );

@@ -87,7 +87,12 @@ const initialFormState = {
     paymentBackend: '',
     paymentBackendOptions: {},
     submissionsRemovalOptions: {},
-    confirmationEmailTemplate: null,
+    confirmationEmailTemplate: {
+      translations: {
+        nl: {},
+        en: {},
+      },
+    },
     confirmationEmailOption: 'global_email',
     explanationTemplate: '',
     autoLoginAuthenticationBackend: '',
@@ -1308,6 +1313,8 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
               emailOption={state.form.confirmationEmailOption}
               emailTemplate={state.form.confirmationEmailTemplate || {}}
               onChange={onFieldChange}
+              languages={state.languages}
+              translations={state.form.translations}
             />
           </TabPanel>
 
