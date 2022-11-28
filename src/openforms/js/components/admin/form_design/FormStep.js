@@ -90,6 +90,7 @@ FormStep.propTypes = {
   onFieldChange: PropTypes.func.isRequired,
   onLiteralFieldChange: PropTypes.func.isRequired,
   onReplace: PropTypes.func.isRequired,
+  languages: PropTypes.array,
 };
 
 export default FormStep;

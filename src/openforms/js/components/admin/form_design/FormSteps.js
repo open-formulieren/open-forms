@@ -89,6 +89,7 @@ FormSteps.propTypes = {
   onReorder: PropTypes.func.isRequired,
   onReplace: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
+  languages: PropTypes.array,
   submitting: PropTypes.bool,
 };
 

@@ -41,7 +41,6 @@ const EMAIL_OPTIONS = [
 ];
 
 const Confirmation = ({
-  pageTemplate = '',
   displayMainWebsiteLink = false,
   emailOption = 'global_email',
   emailTemplate = {},
@@ -54,8 +53,6 @@ const Confirmation = ({
   const emailOptions = getTranslatedChoices(intl, EMAIL_OPTIONS);
 
   const formValidationErrors = parseValidationErrors(useContext(ValidationErrorContext), 'form');
-
-  const {subject, content} = emailTemplate;
 
   const onCheckboxChange = (event, currentValue) => {
     const {
@@ -265,11 +262,13 @@ const Confirmation = ({
 };
 
 Confirmation.propTypes = {
-  pageTemplate: PropTypes.string,
   displayMainPage: PropTypes.bool,
   emailOption: PropTypes.string,
   emailTemplate: PropTypes.object,
   onChange: PropTypes.func.isRequired,
+  languages: PropTypes.array,
+  translations: PropTypes.object,
+  tabsWithErrors: PropTypes.array,
 };
 
 export default Confirmation;

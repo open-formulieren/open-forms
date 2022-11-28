@@ -10,9 +10,7 @@ import Tab from './Tab';
 
 const activeTab = new URLSearchParams(window.location.search).get('tab');
 
-const TextLiterals = ({literals, onChange, languages, translations}) => {
-  const intl = useIntl();
-
+const TextLiterals = ({onChange, languages, translations}) => {
   let tabs = languages.map((language, index) => {
     return <Tab key={language.code}>{language.code}</Tab>;
   });
@@ -129,23 +127,10 @@ const TextLiterals = ({literals, onChange, languages, translations}) => {
 };
 
 TextLiterals.propTypes = {
-  literals: PropTypes.shape({
-    beginText: PropTypes.shape({
-      value: PropTypes.string.isRequired,
-    }).isRequired,
-    previousText: PropTypes.shape({
-      value: PropTypes.string.isRequired,
-    }).isRequired,
-    changeText: PropTypes.shape({
-      value: PropTypes.string.isRequired,
-    }).isRequired,
-    confirmText: PropTypes.shape({
-      value: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
   onChange: PropTypes.func.isRequired,
   languages: PropTypes.array,
   translations: PropTypes.object,
+  languages: PropTypes.array,
 };
 
 export default TextLiterals;

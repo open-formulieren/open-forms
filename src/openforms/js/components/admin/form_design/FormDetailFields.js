@@ -3,7 +3,7 @@ global URLify;
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import {FormattedMessage, useIntl} from 'react-intl';
+import {FormattedMessage} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
@@ -14,30 +14,11 @@ import {Tabs, TabList, TabPanel} from 'react-tabs';
 import TinyMCEEditor from './Editor';
 import Tab from './Tab';
 
-const activeTab = new URLSearchParams(window.location.search).get('tab');
-
 /**
  * Component to render the metadata admin form for an Open Forms form.
  */
-const FormDetailFields = ({
-  form,
-  onChange,
-  availableAuthPlugins,
-  selectedAuthPlugins,
-  onAuthPluginChange,
-  availableCategories,
-  languages,
-}) => {
-  const {name, slug, explanationTemplate, translations} = form;
-
-  const intl = useIntl();
-
-  const onCheckboxChange = (event, currentValue) => {
-    const {
-      target: {name},
-    } = event;
-    onChange({target: {name, value: !currentValue}});
-  };
+const FormDetailFields = ({form, onChange, languages}) => {
+  const {slug, translations} = form;
 
   const setFormSlug = event => {
     // do nothing if there's already a slug set
@@ -121,7 +102,7 @@ const FormDetailFields = ({
         <FormattedMessage defaultMessage="Form details" description="Form details fieldset title" />
       }
     >
-      <Tabs defaultIndex={activeTab ? parseInt(activeTab, 10) : null}>
+      <Tabs>
         <TabList>{tabs}</TabList>
 
         {tabPanels}
@@ -145,15 +126,7 @@ FormDetailFields.propTypes = {
     registrationBackendOptions: PropTypes.object,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
-  availableAuthPlugins: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string,
-      label: PropTypes.string,
-      providesAuth: PropTypes.arrayOf(PropTypes.string),
-    })
-  ),
-  selectedAuthPlugins: PropTypes.array.isRequired,
-  onAuthPluginChange: PropTypes.func.isRequired,
+  languages: PropTypes.array,
 };
 
 export default FormDetailFields;

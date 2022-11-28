@@ -87,20 +87,6 @@ const FormConfigurationFields = ({
     onChange({target: {name, value: !currentValue}});
   };
 
-  const setFormSlug = event => {
-    // do nothing if there's already a slug set
-    if (slug) return;
-
-    // sort-of taken from Django's jquery prepopulate module
-    const newSlug = URLify(event.target.value, 100, false);
-    onChange({
-      target: {
-        name: 'form.slug',
-        value: newSlug,
-      },
-    });
-  };
-
   return (
     <Fieldset
       title={

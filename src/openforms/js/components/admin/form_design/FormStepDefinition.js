@@ -351,6 +351,7 @@ FormStepDefinition.propTypes = {
   onLiteralFieldChange: PropTypes.func.isRequired,
   errors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
   translations: PropTypes.object,
+  languages: PropTypes.array,
 };
 
 const ConfigurationErrors = ({errors = []}) => {

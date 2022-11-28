@@ -1270,12 +1270,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
           <TabPanel>
             <FormDetailFields
               form={state.form}
-              literals={state.literals}
               onChange={onFieldChange}
-              availableAuthPlugins={state.availableAuthPlugins}
-              selectedAuthPlugins={state.selectedAuthPlugins}
-              availableCategories={state.availableCategories}
-              onAuthPluginChange={onAuthPluginChange}
               languages={state.languages}
             />
             <FormConfigurationFields
@@ -1320,7 +1315,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
 
           <TabPanel>
             <Confirmation
-              pageTemplate={state.form.submissionConfirmationTemplate}
               displayMainWebsiteLink={state.form.displayMainWebsiteLink}
               emailOption={state.form.confirmationEmailOption}
               emailTemplate={state.form.confirmationEmailTemplate || {}}
@@ -1342,7 +1336,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
 
           <TabPanel>
             <TextLiterals
-              literals={state.literals}
               onChange={onFieldChange}
               languages={state.languages}
               translations={state.form.translations}
