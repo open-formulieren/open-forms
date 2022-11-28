@@ -116,7 +116,7 @@ class GlobalConfiguration(SingletonModel):
     )
 
     form_previous_text = models.CharField(
-        _("previous text"),
+        _("back to form text"),
         max_length=50,
         default=runtime_gettext(_("Previous page")),
         help_text=_(
@@ -153,7 +153,7 @@ class GlobalConfiguration(SingletonModel):
     )
 
     form_step_previous_text = models.CharField(
-        _("step previous text"),
+        _("previous step text"),
         max_length=50,
         default=runtime_gettext(_("Previous page")),
         help_text=_(
