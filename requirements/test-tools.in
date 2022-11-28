@@ -13,6 +13,7 @@ tblib
 testfixtures
 pep8
 pytest  # documentation tests
+hypothesis  # property-based testing
 
 # Code formatting
 black

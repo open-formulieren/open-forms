@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Union
 
-JSONPrimitive = Union[str, int, None, float]
+JSONPrimitive = Union[str, int, None, float, bool]
 
 JSONValue = Union[JSONPrimitive, "JSONObject", List["JSONValue"]]
 
