@@ -18,10 +18,12 @@ __pycache__
 /docs/_build
 /certifi_ca_bundle
 
-# Coverage reports
+# tests & coverage reports
 /reports/
 /htmlcov/
 .coverage
+.pytest_cache
+.hypothesis
 
 # Environment
 /deployment/app.*.yml

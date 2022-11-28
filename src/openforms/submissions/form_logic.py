@@ -117,11 +117,10 @@ def evaluate_form_logic(
     # TODO: refactor this to rely on variables state
     config_wrapper = get_dynamic_configuration(
         config_wrapper,
-        # context is expected to contain request, as is the default behaviour with DRF
-        # view(set)s and serializers. Note that :func:`get_dynamic_configuration` is
-        # planned for refactor as part of #1068, which should drop the ``request``
-        # argument. The required information is available on the ``submission`` object
-        # already.
+        # context is expected to contain request, as it's the default behaviour with
+        # DRF view(set)s and serializers.
+        # TODO: check if we can use context["request"] rather than .get - None is not
+        # expected, but that currently breaks a lot of tests...
         request=context.get("request"),
         submission=submission,
         data=data_container.data,
