@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from openforms.forms.models import Form
 from openforms.utils.urls import reverse_plus
 
-from ...base import BasePlugin
+from ...base import BasePlugin, LoginLogo
 from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...registry import register
 
@@ -81,8 +81,9 @@ class OIDCAuthentication(BasePlugin):
     def get_label(self):
         return _("OpenID Connect")
 
-    def get_logo(self, request: HttpRequest):
-        return {
-            "image_src": request.build_absolute_uri(static("img/openid.png")),
-            "href": "https://openid.net/",
-        }
+    def get_logo(self, request: HttpRequest) -> LoginLogo:
+        return LoginLogo(
+            title=self.get_label(),
+            image_src=request.build_absolute_uri(static("img/openid.png")),
+            href="https://openid.net/",
+        )
