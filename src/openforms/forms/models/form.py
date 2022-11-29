@@ -23,7 +23,6 @@ from openforms.payments.registry import register as payment_register
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
-from openforms.translations.models import TranslatedLiteralsModelBase
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 from openforms.utils.validators import DjangoTemplateValidator
 from openforms.variables.constants import FormVariableSources
@@ -43,7 +42,7 @@ class FormManager(models.Manager.from_queryset(FormQuerySet)):
     pass
 
 
-class Form(models.Model, metaclass=TranslatedLiteralsModelBase):
+class Form(models.Model):
     """
     Form model, containing a list of order form steps.
     """
@@ -264,13 +263,6 @@ class Form(models.Model, metaclass=TranslatedLiteralsModelBase):
     get_previous_text = literal_getter("previous_text", "form_previous_text")
     get_change_text = literal_getter("change_text", "form_change_text")
     get_confirm_text = literal_getter("confirm_text", "form_confirm_text")
-
-    literal_fields = (
-        "begin_text",
-        "previous_text",
-        "change_text",
-        "confirm_text",
-    )
 
     class Meta:
         verbose_name = _("form")

@@ -5,12 +5,10 @@ from django.utils.translation import gettext_lazy as _
 
 from ordered_model.models import OrderedModel
 
-from openforms.translations.models import TranslatedLiteralsModelBase
-
 from .utils import literal_getter
 
 
-class FormStep(OrderedModel, metaclass=TranslatedLiteralsModelBase):
+class FormStep(OrderedModel):
     """
     Through table for Form -> FormDefinitions.
     Allows for FormDefinitions to be reused as FormSteps in other Form instances.
@@ -55,12 +53,6 @@ class FormStep(OrderedModel, metaclass=TranslatedLiteralsModelBase):
     get_previous_text = literal_getter("previous_text", "form_step_previous_text")
     get_save_text = literal_getter("save_text", "form_step_save_text")
     get_next_text = literal_getter("next_text", "form_step_next_text")
-
-    literal_fields = (
-        "previous_text",
-        "save_text",
-        "next_text",
-    )
 
     class Meta(OrderedModel.Meta):
         verbose_name = _("form step")
