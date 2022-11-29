@@ -2,8 +2,10 @@ import logging
 from copy import deepcopy
 from unittest.mock import patch
 
+from django.template.defaultfilters import escape_filter
 from django.test import TransactionTestCase
 from django.utils.crypto import get_random_string
+from django.utils.translation import gettext as _
 
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.datastructures import FormioConfigurationWrapper
@@ -239,14 +241,16 @@ class PrefillHookTests(TransactionTestCase):
             register=register,
         )
 
-        log = TimelineLogProxy.objects.first()
-        plugin_id = log.extra_data["plugin_id"]
+        log = TimelineLogProxy.objects.get()
 
         self.assertEqual(log.event, "prefill_retrieve_empty")
-        self.assertIn(
-            f"({plugin_id}) reported: Empty values",
-            log.get_message(),
-        )
+        expected_message = _(
+            "%(lead)s: Prefill plugin %(plugin)s returned empty values"
+        ) % {
+            "lead": escape_filter(log.fmt_lead),
+            "plugin": escape_filter(log.fmt_plugin),
+        }
+        self.assertEqual(log.get_message().strip(), expected_message)
 
     def test_prefill_exception(self):
         configuration = deepcopy(CONFIGURATION)

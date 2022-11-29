@@ -1,3 +1,5 @@
+import warnings
+
 from django.test import override_settings, tag
 
 from freezegun import freeze_time
@@ -715,6 +717,18 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
+    def setUp(self):
+        super().setUp()
+
+        log_entries = TimelineLogProxy.objects.all()
+        if log_entries:
+            warnings.warn(
+                "Found left over log entries from *other* tests! Clearing them now, "
+                "but this should be fixed in the tests creating them.",
+                RuntimeWarning,
+            )
+            log_entries.delete()
+
     def test_evaluate_logic_with_default_values(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
@@ -773,11 +787,6 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
         )
 
     def test_evaluate_logic_log_event_triggered(self):
-        # Logs need to be cleared, otherwise an AssertionError is raised in the
-        # logs.count test due to logevents created elsewhere for plugins with
-        # empty prefill values
-        TimelineLogProxy.objects.all().delete()
-
         form = FormFactory.create()
         form_step = FormStepFactory.create(
             form=form,
@@ -834,11 +843,6 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self.assertTrue(log.extra_data["evaluated_rules"][0]["trigger"])
 
     def test_evaluate_logic_log_event_not_triggered(self):
-        # Logs need to be cleared, otherwise an AssertionError is raised in the
-        # logs.count test due to logevents created elsewhere for plugins with
-        # empty prefill values
-        TimelineLogProxy.objects.all().delete()
-
         form = FormFactory.create()
         form_step = FormStepFactory.create(
             form=form,
@@ -895,11 +899,6 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self.assertFalse(log.extra_data["evaluated_rules"][0]["trigger"])
 
     def test_evaluate_logic_log_event_can_handle_primitives(self):
-        # Logs need to be cleared, otherwise an AssertionError is raised in the
-        # logs.count test due to logevents created elsewhere for plugins with
-        # empty prefill values
-        TimelineLogProxy.objects.all().delete()
-
         form = FormFactory.create()
         form_step = FormStepFactory.create(
             form=form,

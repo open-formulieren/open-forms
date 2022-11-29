@@ -1,3 +1,4 @@
+import warnings
 from typing import cast
 from unittest.mock import patch
 
@@ -51,6 +52,16 @@ class TestSubmissionAdmin(WebTest):
 
     def setUp(self):
         super().setUp()
+
+        log_entries = TimelineLogProxy.objects.all()
+        if log_entries:
+            warnings.warn(
+                "Found left over log entries from *other* tests! Clearing them now, "
+                "but this should be fixed in the tests creating them.",
+                RuntimeWarning,
+            )
+            log_entries.delete()
+
         self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)
 
     def test_displaying_merged_data_formio_formatters(self):
@@ -225,11 +236,6 @@ class TestSubmissionAdmin(WebTest):
         self.assertEqual(failed_below_limit.registration_attempts, 0)
 
     def test_change_view_displays_logs_if_not_avg(self):
-        # Logs need to be cleared, otherwise a ValueError is raised upon retrieval of
-        # TimeLineLogProxy objects due to logevents created elsewhere for plugins
-        # with empty prefill values
-        TimelineLogProxy.objects.all().delete()
-
         # add regular submission log
         submission_start(self.submission_1)
 
