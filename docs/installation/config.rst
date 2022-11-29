@@ -150,35 +150,6 @@ Log settings
 .. _`Sentry settings`: https://docs.sentry.io/
 .. _`Elastic settings`: https://www.elastic.co/guide/en/apm/agent/python/current/configuration.html
 
-.. _installation_config_eherkenning:
-
-DigiD/EHerkenning/eIDAS settings
---------------------------------
-
-* ``BASE_URL``: Base url on which open-forms is deployed.
-* ``DIGID_METADATA``: This is the path to the metadata file provided by the Identity Provider.
-* ``DIGID_SSL_CERTIFICATE_PATH``: Path to the DigiD TLS/SSL certificate on the server.
-* ``DIGID_SSL_KEY_PATH``: Path to the DigiD TLS/SSL key on the server.
-* ``DIGID_SERVICE_ENTITY_ID``: The URL where the Identity Provider serves its metadata.
-* ``DIGID_WANT_ASSERTIONS_SIGNED``: If ``True``, the XML assertions need to be signed, otherwise the whole response needs to be signed. Defaults to ``True``.
-* ``EHERKENNING_METADATA``: Path to the metadata file provided by the Identity Provider.
-* ``EHERKENNING_SERVICE_ENTITY_ID``: Value that matches the ``entityID`` attribute in the ``md:EntityDescriptor`` tag of the Identity Provider metadata.
-* ``EHERKENNING_SSL_CERTIFICATE_PATH``: Path to the EHerkenning TLS/SSL certificate on the server.
-* ``EHERKENNING_SSL_KEY_PATH``: Path to the EHerkenning TLS/SSL key on the server.
-* ``EHERKENNING_ENTITY_ID``: It has the format ``urn:etoegang:DV:<OIN>:entities:<index>``. More information can be found `here <https://afsprakenstelsel.etoegang.nl/display/as/EntityID>`__.
-* ``EHERKENNING_LOA``: LOA stands for 'Level Of Assurance'. The possible values can be found `here <https://afsprakenstelsel.etoegang.nl/display/as/Level+of+assurance>`__. Defaults to ``"urn:etoegang:core:assurance-class:loa3"``.
-* ``EHERKENNING_OIN``: The OIN for the organization. There is a OIN `catalogue <https://portaal.digikoppeling.nl/registers/>`_ that can be used to search for OINs.
-* ``EHERKENNING_WANT_ASSERTIONS_SIGNED``: Whether the assertions in the responses should be signed. Defaults to ``True``.
-* ``EHERKENNING_WANT_ASSERTIONS_ENCRYPTED``: Whether the assertions should be encrypted. Defaults to ``False``.
-* ``EHERKENNING_SIGNATURE_ALGORITHM``: Which algorithm to use for the signatures. Defaults to rsa-sha256.
-* ``EHERKENNING_SERVICE_INDEX``: The index that was specified in the metadata for the eHerkenning service.
-* ``EHERKENNING_SERVICE_UUID``: The UUID of the eHerkenning service. This can be found in the dienstencatalogus in the ``ServiceUUID`` element (inside the ``ServiceDescription`` element)
-* ``EHERKENNING_SERVICE_INSTANCE_UUID``: The UUID of the eHerkenning service instance. This can be found in the dienstencatalogus in the ``ServiceUUID`` element (inside the ``ServiceInstance`` element)
-* ``EHERKENNING_CONTENT_TYPE``: The value of the ``content-type`` header used in the Artifact resolution request. Defaults to ``application/soap+xml``.
-* ``EIDAS_SERVICE_INDEX``: The index that was specified in the metadata for the eIDAS service.
-* ``EIDAS_SERVICE_UUID``: The UUID of the eIDAS service. This can be found in the dienstencatalogus in the ``ServiceUUID`` element (inside the ``ServiceDescription`` element)
-* ``EIDAS_SERVICE_INSTANCE_UUID``: The UUID of the eIDAS service instance. This can be found in the dienstencatalogus in the ``ServiceUUID`` element (inside the ``ServiceInstance`` element)
-
 Processing of submissions
 -------------------------
 
