@@ -1,5 +1,3 @@
-import warnings
-
 from django.test import override_settings, tag
 
 from freezegun import freeze_time
@@ -717,18 +715,6 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
-    def setUp(self):
-        super().setUp()
-
-        log_entries = TimelineLogProxy.objects.all()
-        if log_entries:
-            warnings.warn(
-                "Found left over log entries from *other* tests! Clearing them now, "
-                "but this should be fixed in the tests creating them.",
-                RuntimeWarning,
-            )
-            log_entries.delete()
-
     def test_evaluate_logic_with_default_values(self):
         form = FormFactory.create(
             generate_minimal_setup=True,

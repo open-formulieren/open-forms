@@ -1,4 +1,3 @@
-import warnings
 from typing import cast
 from unittest.mock import patch
 
@@ -52,16 +51,6 @@ class TestSubmissionAdmin(WebTest):
 
     def setUp(self):
         super().setUp()
-
-        log_entries = TimelineLogProxy.objects.all()
-        if log_entries:
-            warnings.warn(
-                "Found left over log entries from *other* tests! Clearing them now, "
-                "but this should be fixed in the tests creating them.",
-                RuntimeWarning,
-            )
-            log_entries.delete()
-
         self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)
 
     def test_displaying_merged_data_formio_formatters(self):
