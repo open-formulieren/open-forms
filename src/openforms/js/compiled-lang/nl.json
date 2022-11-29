@@ -55,6 +55,12 @@
       "value": " wilt verwijderen?"
     }
   ],
+  "0c0WcI": [
+    {
+      "type": 0,
+      "value": "Form configuration"
+    }
+  ],
   "1ArmQ5": [
     {
       "type": 0,
@@ -451,6 +457,12 @@
     {
       "type": 0,
       "value": "is groter dan"
+    }
+  ],
+  "APOVFs": [
+    {
+      "type": 0,
+      "value": "Form details"
     }
   ],
   "AUADgz": [
@@ -929,6 +941,12 @@
       "value": "Variabeledefinitie"
     }
   ],
+  "LMCo4N": [
+    {
+      "type": 0,
+      "value": "Select date/time..."
+    }
+  ],
   "LN58C1": [
     {
       "type": 0,
@@ -1307,6 +1325,12 @@
       "value": "verplicht"
     }
   ],
+  "Vi0+dd": [
+    {
+      "type": 0,
+      "value": "Indicates whether translations are enabled for this form."
+    }
+  ],
   "Vsgunp": [
     {
       "type": 0,
@@ -1581,6 +1605,12 @@
     {
       "type": 0,
       "value": "Tekst (string)"
+    }
+  ],
+  "dlrWUr": [
+    {
+      "type": 0,
+      "value": "Date"
     }
   ],
   "eBk+W0": [
@@ -2139,6 +2169,12 @@
     {
       "type": 0,
       "value": "Afspraken"
+    }
+  ],
+  "xTfMk5": [
+    {
+      "type": 0,
+      "value": "Translation enabled"
     }
   ],
   "xcp+LU": [

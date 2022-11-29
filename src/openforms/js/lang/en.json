@@ -39,6 +39,11 @@
     "description": "Step delete confirmation",
     "originalDefault": "Are you sure you want to delete the step {step}?"
   },
+  "0c0WcI": {
+    "defaultMessage": "Form configuration",
+    "description": "Form configuration fieldset title",
+    "originalDefault": "Form configuration"
+  },
   "1ArmQ5": {
     "defaultMessage": "Confirm",
     "description": "Camunda complex process variables confirm button",
@@ -283,6 +288,11 @@
     "defaultMessage": "is greater than",
     "description": "\">\" operator description",
     "originalDefault": "is greater than"
+  },
+  "APOVFs": {
+    "defaultMessage": "Form details",
+    "description": "Form details fieldset title",
+    "originalDefault": "Form details"
   },
   "AUADgz": {
     "defaultMessage": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration.",
@@ -634,6 +644,11 @@
     "description": "JSON editor: complex variable definition title",
     "originalDefault": "Variable definition"
   },
+  "LMCo4N": {
+    "defaultMessage": "Select date/time...",
+    "description": "datetime input widget placeholder",
+    "originalDefault": "Select date/time..."
+  },
   "LN58C1": {
     "defaultMessage": "Sensitive data within the submissions will be deleted",
     "description": "make_anonymous removal method option label",
@@ -894,6 +909,11 @@
     "description": "component property \"required\" label",
     "originalDefault": "required"
   },
+  "Vi0+dd": {
+    "defaultMessage": "Indicates whether translations are enabled for this form.",
+    "description": "Form translation enabled field help text",
+    "originalDefault": "Indicates whether translations are enabled for this form."
+  },
   "Vsgunp": {
     "defaultMessage": "Sensitive data",
     "description": "Variable table sensitive data title",
@@ -1093,6 +1113,11 @@
     "defaultMessage": "String",
     "description": "data type string",
     "originalDefault": "String"
+  },
+  "dlrWUr": {
+    "defaultMessage": "Date",
+    "description": "data type date",
+    "originalDefault": "Date"
   },
   "eBk+W0": {
     "defaultMessage": "Manage process variables",
@@ -1543,6 +1568,11 @@
     "defaultMessage": "Appointments",
     "description": "Appointments tab title",
     "originalDefault": "Appointments"
+  },
+  "xTfMk5": {
+    "defaultMessage": "Translation enabled",
+    "description": "Form translation enabled field label",
+    "originalDefault": "Translation enabled"
   },
   "xcp+LU": {
     "defaultMessage": "Create definition",
