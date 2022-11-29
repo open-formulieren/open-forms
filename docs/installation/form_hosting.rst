@@ -20,13 +20,6 @@ Published forms are available via the URL ``https://open-forms.gemeente.nl/<form
 which renders the form in a minimal skeleton. The look and feel of this skeleton can be
 modified by administrators, to some extent. See :ref:`configuration_general_styling`.
 
-Deployment configuration
-------------------------
-
-The privacy policy URL in the footer is taken from the ``EHERKENNING_PRIVACY_POLICY``
-environment variable, which is configured at deployment time. See
-:ref:`installation_config_eherkenning` for more information.
-
 
 Configuration with CNAME DNS records
 ====================================
