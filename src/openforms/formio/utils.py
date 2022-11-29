@@ -228,7 +228,7 @@ def conform_to_mask(value: str, mask: str) -> str:
     return "".join(result)
 
 
-def is_visible_in_frontend(component: JSONObject, data: DataMapping) -> bool:
+def is_visible_in_frontend(component: Component, data: DataMapping) -> bool:
     """Check if the component is visible because of frontend logic
 
     The rules in formio are expressed as:
@@ -241,6 +241,8 @@ def is_visible_in_frontend(component: JSONObject, data: DataMapping) -> bool:
             "eq": <compare value>
         }
 
+    .. warning:: this function currently does not take parent components into account
+       that may be hidden, which lead to this component being hidden too.
     """
     hidden = component.get("hidden")
     conditional = component.get("conditional")

@@ -130,6 +130,34 @@ def evaluate_form_logic(
     for mutation in mutation_operations:
         mutation.apply(step, config_wrapper)
 
+    initial_data = data_container.initial_data
+
+    # XXX: See #2340 and #2409 - we need to clear the values of components that are
+    # (eventually) hidden BEFORE we do any further processing. This is only a bandaid
+    # fix, as the (stale) data has potentially been input for other logic rules.
+    # Note that only the dirty data logic check acts on these differences.
+
+    # only keep the changes in the data, so that old values do not overwrite otherwise
+    # debounced client-side data changes
+    data_diff = {}
+    for component in config_wrapper:
+        key = component["key"]
+        is_visible = config_wrapper.is_visible_in_frontend(key, data_container.data)
+        if is_visible:
+            continue
+
+        original_value = initial_data.get(key, empty)
+        empty_value = get_component_empty_value(component)
+        if original_value is empty or original_value == empty_value:
+            continue
+
+        if not component.get("clearOnHide", False):
+            continue
+
+        # clear the value
+        data_container.update({key: empty_value})
+        data_diff[key] = empty_value
+
     # 7.2 Interpolate the component configuration with the variables.
     inject_variables(config_wrapper, data_container.data)
 
@@ -137,7 +165,6 @@ def evaluate_form_logic(
     # :func:`get_dynamic_configuration` so that it can use variables.
 
     # Logging the rules
-    initial_data = data_container.initial_data
     logevent.submission_logic_evaluated(
         submission,
         evaluated_rules,
@@ -147,13 +174,13 @@ def evaluate_form_logic(
 
     # process the output for logic checks with dirty data
     if dirty:
-        # only keep the changes in the data, so that old values do not overwrite otherwise
-        # debounced client-side data changes
-        data_diff = {}
-
         # Iterate over all components instead of `step.data`, to take hidden fields into account (See: #1755)
         for component in config_wrapper:
             key = component["key"]
+            # already processed, don't process it again
+            if key in data_diff:
+                continue
+
             new_value = updated_step_data.get(key, empty)
             original_value = initial_data.get(key, empty)
             # Reset the value of any field that may have become hidden again after evaluating the logic
