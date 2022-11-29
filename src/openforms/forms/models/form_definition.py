@@ -72,6 +72,13 @@ class FormDefinition(models.Model):
         help_text=_("The total number of Formio components used in the configuration"),
     )
 
+    component_translations = models.JSONField(
+        verbose_name=_("Component translations"),
+        help_text=_("Translations for literals used in components"),
+        blank=True,
+        null=True,
+    )
+
     def __str__(self):
         return self.admin_name
 
