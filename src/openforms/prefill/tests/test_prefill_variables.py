@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, TransactionTestCase
 
 import requests_mock
 
@@ -171,6 +171,26 @@ class PrefillVariablesTests(TestCase):
         self.assertEqual(variable_postcode.value, "1015 CJ")
         self.assertEqual(variable_date.value, "1999-06-15")
 
+    def test_prefill_variables_are_retrieved_when_form_variables_deleted(self):
+        form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
+        submission_step = SubmissionStepFactory.create(
+            submission__form=form_step.form,
+            form_step=form_step,
+            data={"voornamen": "", "age": None},
+        )
+
+        submission_value_variables_state = (
+            submission_step.submission.load_submission_value_variables_state()
+        )
+        submission_value_variables_state.variables
+
+        FormVariable.objects.all().delete()
+
+        prefill_variables = submission_value_variables_state.get_prefill_variables()
+        self.assertEqual(2, len(prefill_variables))
+
+
+class PrefillVariablesTransactionTests(TransactionTestCase):
     @requests_mock.Mocker()
     @patch("openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo")
     def test_no_success_message_on_failure(self, m, m_solo):
@@ -220,21 +240,3 @@ class PrefillVariablesTests(TestCase):
 
         for log in logs:
             self.assertNotEqual(log.event, "prefill_retrieve_success")
-
-    def test_prefill_variables_are_retrieved_when_form_variables_deleted(self):
-        form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
-        submission_step = SubmissionStepFactory.create(
-            submission__form=form_step.form,
-            form_step=form_step,
-            data={"voornamen": "", "age": None},
-        )
-
-        submission_value_variables_state = (
-            submission_step.submission.load_submission_value_variables_state()
-        )
-        submission_value_variables_state.variables
-
-        FormVariable.objects.all().delete()
-
-        prefill_variables = submission_value_variables_state.get_prefill_variables()
-        self.assertEqual(2, len(prefill_variables))

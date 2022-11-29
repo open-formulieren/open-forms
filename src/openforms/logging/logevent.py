@@ -170,6 +170,16 @@ def prefill_retrieve_success(submission: "Submission", plugin, prefill_fields):
     )
 
 
+def prefill_retrieve_empty(submission: "Submission", plugin, prefill_fields):
+    _create_log(
+        submission,
+        "prefill_retrieve_empty",
+        extra_data={"prefill_fields": prefill_fields},
+        plugin=plugin,
+        tags=[TimelineLogTags.AVG],
+    )
+
+
 def prefill_retrieve_failure(submission: "Submission", plugin, error: Exception):
     _create_log(
         submission,
