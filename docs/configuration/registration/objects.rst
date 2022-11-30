@@ -14,7 +14,7 @@ register form submissions.
 
 Below is an example of the contents in the ``record.data`` attribute in the
 Objects API. The top-level has meta-data about the form submission, and the
-``data`` element holds the submitted form values:
+``data`` element holds the submitted form values, nested within each step (using the step-slug as key):
 
 .. tabs::
 
@@ -24,9 +24,11 @@ Objects API. The top-level has meta-data about the form submission, and the
 
          {
            "data": {
-              "naam": "Jan Jansen",
-              "omschrijving": "Ik heb een vraag over mijn paspoort",
-              "telefoonnummer": "0612345678"
+             "uw-gegevens": {
+               "naam": "Jan Jansen",
+               "omschrijving": "Ik heb een vraag over mijn paspoort",
+               "telefoonnummer": "0612345678"
+           }
            },
            "type": "terugbelnotitie",
            "bsn": "111222333",
