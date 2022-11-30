@@ -91,7 +91,7 @@ class ColumnsNode(ContainerMixin, ComponentNode):
                 ],
             }
         """
-        for column in self.component["columns"]:
+        for index, column in enumerate(self.component["columns"]):
             for component in iter_components(
                 configuration=column, recursive=False, _is_root=False
             ):
@@ -101,6 +101,11 @@ class ColumnsNode(ContainerMixin, ComponentNode):
                     renderer=self.renderer,
                     depth=self.depth + 1,
                     path=self.path,
+                    configuration_path=Path(
+                        self.configuration_path, self.component["key"], index
+                    )
+                    if self.configuration_path
+                    else Path(self.component["key"], index),
                 )
 
 
@@ -214,6 +219,9 @@ class EditGridNode(ContainerMixin, ComponentNode):
 
         for node_index in range(repeats):
             path = Path(self.component["key"])
+            configuration_path = (
+                Path(self.configuration_path, path) if self.configuration_path else path
+            )
 
             yield EditGridGroupNode(
                 step=self.step,
@@ -222,6 +230,7 @@ class EditGridNode(ContainerMixin, ComponentNode):
                 depth=self.depth + 1,
                 group_index=node_index,
                 path=path,
+                configuration_path=configuration_path,
             )
 
 
@@ -242,6 +251,9 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
                 renderer=self.renderer,
                 depth=self.depth + 1,
                 path=Path(self.path, Path(self.group_index)),
+                configuration_path=Path(
+                    self.configuration_path, Path(self.group_index)
+                ),
             )
 
     @property
