@@ -92,7 +92,7 @@ class ZgwConfig(SingletonModel):
                         )
                     }
                 )
- 
+
         if self.medewerker_roltype:
             if not self.medewerker_roltype.startswith(self.ztc_service.api_root):
                 raise ValidationError(
