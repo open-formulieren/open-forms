@@ -28,7 +28,7 @@ Objects API. The top-level has meta-data about the form submission, and the
                "naam": "Jan Jansen",
                "omschrijving": "Ik heb een vraag over mijn paspoort",
                "telefoonnummer": "0612345678"
-           }
+             }
            },
            "type": "terugbelnotitie",
            "bsn": "111222333",

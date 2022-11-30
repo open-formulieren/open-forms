@@ -11,7 +11,7 @@ from openforms.contrib.zgw.service import (
     create_csv_document,
     create_report_document,
 )
-from openforms.formio.rendering.utils import render_nested_json
+from openforms.formio.rendering.structured import render_json
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
@@ -107,7 +107,7 @@ class ObjectsAPIRegistration(BasePlugin):
         objects_client = config.objects_service.build_client()
 
         object_data = {
-            "data": render_nested_json(submission),
+            "data": render_json(submission),
             "type": options["productaanvraag_type"],
             "submission_id": str(submission.uuid),
             "attachments": attachments,

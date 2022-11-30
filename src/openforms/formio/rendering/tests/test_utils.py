@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from openforms.formio.rendering.utils import render_nested_json
+from openforms.formio.rendering.structured import render_json
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
@@ -62,7 +62,7 @@ class TestRenderNestedJSON(TestCase):
             },
         )
 
-        data = render_nested_json(submission)
+        data = render_json(submission)
 
         self.assertEqual(
             data,
@@ -134,7 +134,7 @@ class TestRenderNestedJSON(TestCase):
             },
         )
 
-        data = render_nested_json(submission)
+        data = render_json(submission)
 
         self.assertEqual(
             data,
@@ -209,7 +209,7 @@ class TestRenderNestedJSON(TestCase):
             },
         )
 
-        data = render_nested_json(submission)
+        data = render_json(submission)
 
         self.assertEqual(
             data,
@@ -256,7 +256,7 @@ class TestRenderNestedJSON(TestCase):
             data={"editgrid1": [{"input1": "Foo"}, {"input1": "Bar"}]},
         )
 
-        data = render_nested_json(submission)
+        data = render_json(submission)
 
         self.assertEqual(
             data,

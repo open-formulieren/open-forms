@@ -13,11 +13,14 @@ if TYPE_CHECKING:
     from openforms.submissions.models import Submission
 
 
-def render_nested_json(submission: "Submission") -> JSONObject:
+def render_json(submission: "Submission") -> JSONObject:
     """Render submission as JSON with nesting
 
     The data is nested within each submission step (using the form definition slug as key).
     The data is nested for fieldset components and for column components.
+
+    This is different from how Formio treats fieldsets/columns in the submission data: their children are not
+    nested. We treat them more like Formio treats the 'container' component (currently not supported in Open Forms).
     """
     renderer = Renderer(
         submission=submission, mode=RenderModes.registration, as_html=False
