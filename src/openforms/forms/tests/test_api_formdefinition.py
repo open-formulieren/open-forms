@@ -12,6 +12,7 @@ from openforms.accounts.tests.factories import (
     UserFactory,
 )
 from openforms.prefill.models import PrefillConfig
+from openforms.translations.tests.utils import make_translated
 
 from ..models import FormDefinition
 from .factories import FormDefinitionFactory, FormStepFactory
@@ -532,3 +533,173 @@ class FormioCoSignComponentValidationTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+class FormDefinitionsAPITranslationTests(APITestCase):
+    maxDiff = None
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        TranslatedFormDefinitionFactory = make_translated(FormDefinitionFactory)
+        cls.form_definition = TranslatedFormDefinitionFactory.create(
+            _language="en",
+            name="FormDefinition 1",
+        )
+
+        cls.user = StaffUserFactory.create(user_permissions=["change_form"])
+
+    def test_detail_staff_show_translations(self):
+        """
+        Translations for all available languages should be returned for staff users, because they are relevant for the form design UI
+        """
+        self.client.force_authenticate(user=self.user)
+
+        url = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": self.form_definition.uuid}
+        )
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data["translations"],
+            {
+                "en": {
+                    "name": "FormDefinition 1",
+                },
+                "nl": {
+                    "name": "",
+                },
+            },
+        )
+
+    def test_detail_non_staff_no_translations(self):
+        """
+        Translations for different languages than the active language should not be returned for non-staff users
+        """
+        url = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": self.form_definition.uuid}
+        )
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn("translations", response.data)
+
+    def test_create_with_translations(self):
+        self.client.force_authenticate(user=self.user)
+
+        url = reverse("api:formdefinition-list")
+        response = self.client.post(
+            url,
+            data={
+                "name": "Name",
+                "slug": "a-slug",
+                "configuration": {
+                    "display": "form",
+                    "components": [
+                        {
+                            "label": "New field",
+                            "key": "newField",
+                            "type": "textfield",
+                        }
+                    ],
+                },
+                "translations": {
+                    "en": {"name": "FormDefinition 1"},
+                    "nl": {"name": "Formulierdefinitie 1"},
+                },
+            },
+        )
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        definition = FormDefinition.objects.get(uuid=response.data["uuid"])
+
+        self.assertEqual(definition.name_en, "FormDefinition 1")
+        self.assertEqual(definition.name_nl, "Formulierdefinitie 1")
+
+    def test_update_with_translations(self):
+        self.client.force_authenticate(user=self.user)
+
+        definition = FormDefinitionFactory.create(
+            name_en="english name",
+            name_nl="nederlandse naam",
+        )
+
+        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
+        response = self.client.patch(
+            url,
+            data={
+                "translations": {
+                    "en": {"name": "FormDefinition 1"},
+                    "nl": {"name": "Formulierdefinitie 1"},
+                }
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        definition.refresh_from_db()
+
+        self.assertEqual(definition.name_en, "FormDefinition 1")
+        self.assertEqual(definition.name_nl, "Formulierdefinitie 1")
+
+    @patch(
+        "openforms.api.exception_handling.uuid.uuid4",
+        return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
+    )
+    def test_update_with_translations_validate_name(self, _mock):
+        self.client.force_authenticate(user=self.user)
+
+        definition = FormDefinitionFactory.create(
+            name_en="english name",
+            name_nl="nederlandse naam",
+        )
+
+        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
+        response = self.client.patch(
+            url,
+            data={
+                "translations": {
+                    "en": {"name": "x" * 51},
+                    "nl": {"name": "x" * 51},
+                }
+            },
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.json(),
+            {
+                "type": "http://testserver/fouten/ValidationError/",
+                "code": "invalid",
+                "title": _("Invalid input."),
+                "status": 400,
+                "detail": "",
+                "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
+                "invalidParams": [
+                    {
+                        "name": "name",
+                        "code": "max_length",
+                        "reason": _(
+                            "Ensure this field has no more than {max_length} characters."
+                        ).format(max_length=50),
+                    },
+                    {
+                        "name": "translations.nl.name",
+                        "code": "max_length",
+                        "reason": _(
+                            "Ensure this field has no more than {max_length} characters."
+                        ).format(max_length=50),
+                    },
+                    {
+                        "name": "translations.en.name",
+                        "code": "max_length",
+                        "reason": _(
+                            "Ensure this field has no more than {max_length} characters."
+                        ).format(max_length=50),
+                    },
+                ],
+            },
+        )

@@ -22,17 +22,19 @@ import {getUniqueRandomString} from 'utils/random';
 import {FormContext} from './Context';
 import FormSteps from './FormSteps';
 import {
-  FORM_DEFINITIONS_ENDPOINT,
-  REGISTRATION_BACKENDS_ENDPOINT,
   AUTH_PLUGINS_ENDPOINT,
-  PREFILL_PLUGINS_ENDPOINT,
-  PAYMENT_PLUGINS_ENDPOINT,
   CATEGORIES_ENDPOINT,
+  FORM_DEFINITIONS_ENDPOINT,
+  LANGUAGE_INFO_ENDPOINT,
+  PAYMENT_PLUGINS_ENDPOINT,
+  PREFILL_PLUGINS_ENDPOINT,
+  REGISTRATION_BACKENDS_ENDPOINT,
   STATIC_VARIABLES_ENDPOINT,
 } from './constants';
 import {loadPlugins, loadForm, saveCompleteForm} from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
-import FormMetaFields from './FormMetaFields';
+import FormDetailFields from './FormDetailFields';
+import FormConfigurationFields from './FormConfigurationFields';
 import FormObjectTools from './FormObjectTools';
 import FormSubmit from './FormSubmit';
 import RegistrationFields from './RegistrationFields';
@@ -86,10 +88,36 @@ const initialFormState = {
     paymentBackend: '',
     paymentBackendOptions: {},
     submissionsRemovalOptions: {},
-    confirmationEmailTemplate: null,
+    confirmationEmailTemplate: {
+      translations: {
+        nl: {},
+        en: {},
+      },
+    },
     confirmationEmailOption: 'global_email',
     explanationTemplate: '',
     autoLoginAuthenticationBackend: '',
+    // TODO dynamic
+    translations: {
+      en: {
+        name: '',
+        changeText: {value: ''},
+        confirmText: {value: ''},
+        previousText: {value: ''},
+        beginText: {value: ''},
+        submissionConfirmationTemplate: '',
+        explanationTemplate: '',
+      },
+      nl: {
+        name: '',
+        changeText: {value: ''},
+        confirmText: {value: ''},
+        previousText: {value: ''},
+        beginText: {value: ''},
+        submissionConfirmationTemplate: '',
+        explanationTemplate: '',
+      },
+    },
   },
   literals: {
     beginText: {
@@ -115,6 +143,7 @@ const initialFormState = {
   selectedAuthPlugins: [],
   availablePaymentBackends: [],
   availableCategories: [],
+  languageInfo: {languages: [], current: ''},
   stepsToDelete: [],
   submitting: false,
   logicRules: [],
@@ -142,9 +171,29 @@ const newStepData = {
     nextText: {
       value: '',
     },
+    translations: {
+      nl: {
+        previousText: {value: ''},
+        saveText: {value: ''},
+        nextText: {value: ''},
+      },
+      en: {
+        previousText: {value: ''},
+        saveText: {value: ''},
+        nextText: {value: ''},
+      },
+    },
   },
   isNew: true,
   validationErrors: [],
+  translations: {
+    nl: {
+      name: '',
+    },
+    en: {
+      name: '',
+    },
+  },
 };
 
 // Maps in which Tab the different form fields are displayed.
@@ -225,7 +274,11 @@ function reducer(draft, action) {
           break;
         }
         case 'literals': {
-          draft.literals[fieldName].value = value;
+          if (fieldName.includes('translations')) {
+            set(draft.form, `${fieldName}.value`, value);
+          } else {
+            draft.literals[fieldName].value = value;
+          }
           break;
         }
         default: {
@@ -323,9 +376,8 @@ function reducer(draft, action) {
           isNew: false,
         };
       } else {
-        const {configuration, name, internalName, isReusable, slug} = draft.formDefinitions.find(
-          fd => fd.url === formDefinitionUrl
-        );
+        const {configuration, name, internalName, isReusable, slug, translations} =
+          draft.formDefinitions.find(fd => fd.url === formDefinitionUrl);
         const {url} = draft.formSteps[index];
         draft.formSteps[index] = {
           configuration,
@@ -337,6 +389,18 @@ function reducer(draft, action) {
           slug,
           url,
           literals: {
+            translations: {
+              nl: {
+                previousText: {value: ''},
+                saveText: {value: ''},
+                nextText: {value: ''},
+              },
+              en: {
+                previousText: {value: ''},
+                saveText: {value: ''},
+                nextText: {value: ''},
+              },
+            },
             previousText: {
               value: '',
             },
@@ -349,6 +413,7 @@ function reducer(draft, action) {
           },
           isNew: false,
           validationErrors: [],
+          translations,
         };
 
         // Add form variables for the reusable configuration
@@ -452,8 +517,17 @@ function reducer(draft, action) {
     }
     case 'STEP_FIELD_CHANGED': {
       const {index, name, value} = action.payload;
+      // const [prefix, ...rest] = name.split('.');
       const step = draft.formSteps[index];
-      step[name] = value;
+
+      // Translations for FormDefinition data are stored on the FormDefinitions
+      // if (prefix === 'translations') {
+      //   const formDef = draft.formDefinitions.find(elem => {
+      //     return elem.url === step.formDefinition;
+      //   });
+      //   set(formDef, name, value);
+      // }
+      set(step, name, value);
       step.validationErrors = step.validationErrors.filter(([key]) => key !== name);
 
       const anyStepHasErrors = draft.formSteps.some(step => step.validationErrors.length > 0);
@@ -464,7 +538,8 @@ function reducer(draft, action) {
     }
     case 'STEP_LITERAL_FIELD_CHANGED': {
       const {index, name, value} = action.payload;
-      draft.formSteps[index]['literals'][name]['value'] = value;
+      const [prefix, languageCode, fieldName] = name.split('.');
+      draft.formSteps[index]['literals'][prefix][languageCode][fieldName]['value'] = value;
       break;
     }
     case 'MOVE_UP_STEP': {
@@ -879,6 +954,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     {endpoint: CATEGORIES_ENDPOINT, stateVar: 'availableCategories'},
     {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
     {endpoint: STATIC_VARIABLES_ENDPOINT, stateVar: 'staticVariables'},
+    {endpoint: LANGUAGE_INFO_ENDPOINT, stateVar: 'languageInfo'},
   ];
 
   const {loading} = useAsync(async () => {
@@ -1109,6 +1185,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
             selectedAuthPlugins: state.selectedAuthPlugins,
             availablePrefillPlugins: state.availablePrefillPlugins,
           },
+          languages: state.languageInfo.languages,
         }}
       >
         <Tabs defaultIndex={activeTab ? parseInt(activeTab, 10) : null}>
@@ -1164,7 +1241,8 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
           </TabList>
 
           <TabPanel>
-            <FormMetaFields
+            <FormDetailFields form={state.form} onChange={onFieldChange} />
+            <FormConfigurationFields
               form={state.form}
               literals={state.literals}
               onChange={onFieldChange}
@@ -1205,11 +1283,11 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
 
           <TabPanel>
             <Confirmation
-              pageTemplate={state.form.submissionConfirmationTemplate}
               displayMainWebsiteLink={state.form.displayMainWebsiteLink}
               emailOption={state.form.confirmationEmailOption}
               emailTemplate={state.form.confirmationEmailTemplate || {}}
               onChange={onFieldChange}
+              translations={state.form.translations}
             />
           </TabPanel>
 
@@ -1223,7 +1301,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
           </TabPanel>
 
           <TabPanel>
-            <TextLiterals literals={state.literals} onChange={onFieldChange} />
+            <TextLiterals onChange={onFieldChange} translations={state.form.translations} />
           </TabPanel>
 
           <TabPanel>

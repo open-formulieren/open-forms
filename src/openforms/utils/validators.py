@@ -140,6 +140,8 @@ class DjangoTemplateValidator:
 
     This validators ensure that the template is syntactically correct. Additionally,
     it can enforce the presence of certain required template tags.
+
+    TODO: move this to openforms.template
     """
 
     def __init__(self, required_template_tags: Optional[List[str]] = None):

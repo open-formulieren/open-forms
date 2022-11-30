@@ -24,6 +24,7 @@ const updateOrCreateSingleFormStep = async (
     configuration: step.configuration,
     loginRequired: step.loginRequired,
     isReusable: step.isReusable,
+    translations: step.translations,
   };
 
   try {
@@ -63,6 +64,7 @@ const updateOrCreateSingleFormStep = async (
       previousText: {
         value: step.literals.previousText.value,
       },
+      translations: step.literals.translations,
     },
   };
 

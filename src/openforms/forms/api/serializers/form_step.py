@@ -1,14 +1,39 @@
 from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
+from openforms.api.serializers import PublicFieldsSerializerMixin
+from openforms.translations.api.serializers import (
+    DefaultTranslationValueSerializerMixin,
+    ModelTranslationsSerializer,
+)
+
 from ...models import FormStep
 from .button_text import ButtonTextSerializer
 
 
-class FormStepLiteralsSerializer(serializers.Serializer):
+class FormStepLiteralsSerializer(
+    DefaultTranslationValueSerializerMixin,
+    PublicFieldsSerializerMixin,
+    serializers.Serializer,
+):
     previous_text = ButtonTextSerializer(raw_field="previous_text", required=False)
     save_text = ButtonTextSerializer(raw_field="save_text", required=False)
     next_text = ButtonTextSerializer(raw_field="next_text", required=False)
+    translations = ModelTranslationsSerializer(required=False)
+
+    class Meta:
+        fields = (
+            "previous_text",
+            "save_text",
+            "next_text",
+            "translations",
+        )
+        # allowlist for anonymous users
+        public_fields = (
+            "previous_text",
+            "save_text",
+            "next_text",
+        )
 
 
 class MinimalFormStepSerializer(serializers.ModelSerializer):
@@ -41,7 +66,9 @@ class MinimalFormStepSerializer(serializers.ModelSerializer):
         }
 
 
-class FormStepSerializer(serializers.HyperlinkedModelSerializer):
+class FormStepSerializer(
+    PublicFieldsSerializerMixin, serializers.HyperlinkedModelSerializer
+):
     index = serializers.IntegerField(source="order")
     configuration = serializers.JSONField(
         source="form_definition.configuration", read_only=True
@@ -65,6 +92,11 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
         parent_lookup_kwargs={"form_uuid_or_slug": "form__uuid"},
         read_only=True,
     )
+    translations = ModelTranslationsSerializer(
+        source="form_definition",
+        required=False,
+        read_only=True,
+    )
 
     parent_lookup_kwargs = {
         "form_uuid_or_slug": "form__uuid",
@@ -73,6 +105,20 @@ class FormStepSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = FormStep
         fields = (
+            "uuid",
+            "index",
+            "slug",
+            "configuration",
+            "form_definition",
+            "name",
+            "internal_name",
+            "url",
+            "login_required",
+            "is_reusable",
+            "literals",
+            "translations",
+        )
+        public_fields = (
             "uuid",
             "index",
             "slug",

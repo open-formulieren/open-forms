@@ -9,3 +9,4 @@ export const CATEGORIES_ENDPOINT = '/api/v2/categories';
 export const PROCESS_DEFINITIONS_ENDPOINT =
   '/api/v2/registration/plugins/camunda/process-definitions';
 export const STATIC_VARIABLES_ENDPOINT = '/api/v2/variables/static';
+export const LANGUAGE_INFO_ENDPOINT = '/api/v2/i18n/info';

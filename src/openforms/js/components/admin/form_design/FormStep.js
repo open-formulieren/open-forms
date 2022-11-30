@@ -22,6 +22,7 @@ const FormStep = ({
     slug,
     literals,
     loginRequired,
+    translations,
     isReusable,
     isNew,
     validationErrors = [],
@@ -52,6 +53,8 @@ const FormStep = ({
       previousText={literals.previousText.value}
       saveText={literals.saveText.value}
       nextText={literals.nextText.value}
+      translations={translations}
+      literals={literals}
       configuration={configuration}
       loginRequired={loginRequired}
       isReusable={isReusable}
@@ -78,6 +81,7 @@ FormStep.propTypes = {
     url: PropTypes.string,
     isNew: PropTypes.bool,
     validationErrors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+    translations: PropTypes.object,
   }).isRequired,
   onEdit: PropTypes.func.isRequired,
   onComponentMutated: PropTypes.func.isRequired,

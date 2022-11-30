@@ -11,7 +11,9 @@ import {getTranslatedChoices} from 'utils/i18n';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import ErrorList from 'components/admin/forms/ErrorList';
 
+import {FormContext} from './Context';
 import TinyMCEEditor from './Editor';
+import LanguageTabs from './LanguageTabs';
 import {parseValidationErrors} from './utils';
 
 const EMAIL_OPTIONS = [
@@ -39,18 +41,16 @@ const EMAIL_OPTIONS = [
 ];
 
 const Confirmation = ({
-  pageTemplate = '',
   displayMainWebsiteLink = false,
   emailOption = 'global_email',
   emailTemplate = {},
   onChange,
+  translations,
 }) => {
   const intl = useIntl();
+  const {languages} = useContext(FormContext);
+  const allValidationErrors = useContext(ValidationErrorContext);
   const emailOptions = getTranslatedChoices(intl, EMAIL_OPTIONS);
-
-  const formValidationErrors = parseValidationErrors(useContext(ValidationErrorContext), 'form');
-
-  const {subject, content} = emailTemplate;
 
   const onCheckboxChange = (event, currentValue) => {
     const {
@@ -58,6 +58,34 @@ const Confirmation = ({
     } = event;
     onChange({target: {name, value: !currentValue}});
   };
+
+  const formValidationErrors = parseValidationErrors(allValidationErrors, 'form');
+
+  const erroredLanguages = {submission: [], email: []};
+  const errorChecks = [
+    {
+      key: 'submission',
+      container: formValidationErrors?.translations,
+      fieldList: ['submissionConfirmationTemplate', 'displayMainWebsiteLink'],
+    },
+    {
+      key: 'email',
+      container: formValidationErrors?.confirmationEmailTemplate?.translations,
+      fieldList: ['subject', 'content', 'confirmationEmailOption', 'nonFieldErrors'],
+    },
+  ];
+
+  errorChecks.forEach(({key, container, fieldList}) => {
+    if (!container) return;
+    Object.entries(container).forEach(([languageCode, errors]) => {
+      Object.keys(errors).forEach(fieldName => {
+        if (fieldList.includes(fieldName)) {
+          erroredLanguages[key].push(languageCode);
+          return;
+        }
+      });
+    });
+  });
 
   return (
     <div className="confirmation-page">
@@ -69,55 +97,63 @@ const Confirmation = ({
           />
         }
       >
-        {formValidationErrors.submissionConfirmationTemplate?.nonFieldErrors && (
-          <ErrorList classNamePrefix="confirmation-page">
-            {formValidationErrors.submissionConfirmationTemplate.nonFieldErrors}
-          </ErrorList>
-        )}
-        <FormRow>
-          <Field
-            name="form.submissionConfirmationTemplate"
-            label={
-              <FormattedMessage
-                defaultMessage="Page content"
-                description="Confirmation page content label"
-              />
-            }
-            helpText={
-              <FormattedMessage
-                defaultMessage="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
-                description="Confirmation template help text"
-              />
-            }
-          >
-            <TinyMCEEditor
-              content={pageTemplate}
-              onEditorChange={(newValue, editor) =>
-                onChange({target: {name: 'form.submissionConfirmationTemplate', value: newValue}})
-              }
-            />
-          </Field>
-        </FormRow>
-        <FormRow>
-          <Checkbox
-            name="form.displayMainWebsiteLink"
-            label={
-              <FormattedMessage
-                defaultMessage="Display main website link"
-                description="Display main website link field label"
-              />
-            }
-            helpText={
-              <FormattedMessage
-                defaultMessage="Whether to show a link to the main website on the confirmation page."
-                description="Display main website link help text"
-              />
-            }
-            checked={displayMainWebsiteLink}
-            onChange={event => onCheckboxChange(event, displayMainWebsiteLink)}
-          />
-        </FormRow>
+        <LanguageTabs haveErrors={erroredLanguages.submission} forceRenderTabPanel>
+          {(langCode, defaultLang) => (
+            <>
+              <FormRow>
+                <Field
+                  name={`form.translations.${langCode}.submissionConfirmationTemplate`}
+                  label={
+                    <FormattedMessage
+                      defaultMessage="Page content"
+                      description="Confirmation page content label"
+                    />
+                  }
+                  helpText={
+                    <FormattedMessage
+                      defaultMessage="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
+                      description="Confirmation template help text"
+                    />
+                  }
+                >
+                  <TinyMCEEditor
+                    content={translations[langCode].submissionConfirmationTemplate}
+                    onEditorChange={(newValue, editor) =>
+                      onChange({
+                        target: {
+                          name: `form.translations.${langCode}.submissionConfirmationTemplate`,
+                          value: newValue,
+                        },
+                      })
+                    }
+                  />
+                </Field>
+              </FormRow>
+              <FormRow>
+                <Checkbox
+                  name="form.displayMainWebsiteLink"
+                  label={
+                    <FormattedMessage
+                      defaultMessage="Display main website link"
+                      description="Display main website link field label"
+                    />
+                  }
+                  helpText={
+                    <FormattedMessage
+                      defaultMessage="Whether to show a link to the main website on the confirmation page."
+                      description="Display main website link help text"
+                    />
+                  }
+                  checked={displayMainWebsiteLink}
+                  onChange={event => onCheckboxChange(event, displayMainWebsiteLink)}
+                  disabled={langCode !== defaultLang}
+                />
+              </FormRow>
+            </>
+          )}
+        </LanguageTabs>
       </Fieldset>
+
       <Fieldset
         title={
           <FormattedMessage
@@ -126,79 +162,97 @@ const Confirmation = ({
           />
         }
       >
-        {formValidationErrors.confirmationEmailTemplate?.nonFieldErrors && (
-          <ErrorList classNamePrefix="confirmation-page">
-            {formValidationErrors.confirmationEmailTemplate.nonFieldErrors}
-          </ErrorList>
-        )}
-        <FormRow>
-          <Field
-            name="form.confirmationEmailTemplate.subject"
-            label={
-              <FormattedMessage
-                defaultMessage="Subject"
-                description="Confirmation Email Subject label"
-              />
-            }
-          >
-            <TextInput value={subject || ''} onChange={onChange} maxLength="1000" />
-          </Field>
-        </FormRow>
-        <FormRow>
-          <Field
-            name="form.confirmationEmailTemplate.content"
-            label={
-              <FormattedMessage
-                defaultMessage="Content"
-                description="Confirmation Email Content label"
-              />
-            }
-          >
-            <TinyMCEEditor
-              content={content}
-              onEditorChange={(newValue, editor) =>
-                onChange({
-                  target: {name: 'form.confirmationEmailTemplate.content', value: newValue},
-                })
-              }
-            />
-          </Field>
-        </FormRow>
-        <FormRow>
-          <Field
-            name="form.confirmationEmailOption"
-            label={
-              <FormattedMessage
-                defaultMessage="Email option"
-                description="Form confirmation email label"
-              />
-            }
-            helpText={
-              <FormattedMessage
-                defaultMessage="Will send the email specified."
-                description="Form confirmation email help text"
-              />
-            }
-          >
-            <Select
-              name="form.confirmationEmailOption"
-              choices={emailOptions}
-              value={emailOption}
-              onChange={onChange}
-            />
-          </Field>
-        </FormRow>
+        <LanguageTabs haveErrors={erroredLanguages.email} forceRenderTabPanel>
+          {(langCode, defaultLang) => (
+            <>
+              {formValidationErrors?.confirmationEmailTemplate?.nonFieldErrors && (
+                <ErrorList classNamePrefix="confirmation-page">
+                  {formValidationErrors.confirmationEmailTemplate.nonFieldErrors}
+                </ErrorList>
+              )}
+              <FormRow>
+                <Field
+                  name={`form.confirmationEmailTemplate.translations.${langCode}.subject`}
+                  label={
+                    <FormattedMessage
+                      defaultMessage="Subject"
+                      description="Confirmation Email Subject label"
+                    />
+                  }
+                >
+                  <TextInput
+                    value={emailTemplate.translations[langCode].subject}
+                    onChange={onChange}
+                    maxLength="1000"
+                  />
+                </Field>
+              </FormRow>
+              <FormRow>
+                <Field
+                  name={`form.confirmationEmailTemplate.translations.${langCode}.content`}
+                  label={
+                    <FormattedMessage
+                      defaultMessage="Content"
+                      description="Confirmation Email Content label"
+                    />
+                  }
+                >
+                  <TinyMCEEditor
+                    content={emailTemplate.translations[langCode].content}
+                    onEditorChange={(newValue, editor) =>
+                      onChange({
+                        target: {
+                          name: `form.confirmationEmailTemplate.translations.${langCode}.content`,
+                          value: newValue,
+                        },
+                      })
+                    }
+                  />
+                </Field>
+              </FormRow>
+              <FormRow>
+                <Field
+                  name="form.confirmationEmailOption"
+                  label={
+                    <FormattedMessage
+                      defaultMessage="Email option"
+                      description="Form confirmation email label"
+                    />
+                  }
+                  helpText={
+                    <FormattedMessage
+                      defaultMessage="Will send the email specified."
+                      description="Form confirmation email help text"
+                    />
+                  }
+                >
+                  <Select
+                    name="form.confirmationEmailOption"
+                    choices={emailOptions}
+                    value={emailOption}
+                    onChange={onChange}
+                    disabled={langCode !== defaultLang}
+                  />
+                </Field>
+              </FormRow>
+            </>
+          )}
+        </LanguageTabs>
       </Fieldset>
     </div>
   );
 };
 
 Confirmation.propTypes = {
-  pageTemplate: PropTypes.string,
   displayMainPage: PropTypes.bool,
   emailOption: PropTypes.string,
   emailTemplate: PropTypes.object,
   onChange: PropTypes.func.isRequired,
+  translations: PropTypes.objectOf(
+    PropTypes.shape({
+      submissionConfirmationTemplate: PropTypes.string,
+    })
+  ),
 };
 
 export default Confirmation;

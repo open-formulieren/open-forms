@@ -29,6 +29,7 @@ from ..models import Category, Form, FormDefinition, FormStep, FormVersion
 from ..tasks import recouple_submission_variables_to_form_variables
 from ..utils import export_form, import_form
 from .datastructures import FormVariableWrapper
+from .documentation import get_admin_fields_markdown
 from .filters import FormVariableFilter
 from .parsers import (
     FormCamelCaseJSONParser,
@@ -45,6 +46,7 @@ from .serializers import (
     FormLogicSerializer,
     FormPriceLogicSerializer,
     FormSerializer,
+    FormStepLiteralsSerializer,
     FormStepSerializer,
     FormVariableListSerializer,
     FormVariableSerializer,
@@ -77,6 +79,15 @@ class FormStepViewSet(
     NestedViewSetMixin,
     viewsets.ModelViewSet,
 ):
+    """
+    **Warning: the response data depends on user permissions**
+
+    Non-staff users receive a subset of the documented fields which are used
+    for internal form configuration. These fields are:
+
+    {admin_fields}
+    """
+
     serializer_class = FormStepSerializer
     queryset = FormStep.objects.all().order_by("order")
     permission_classes = [FormAPIPermissions]
@@ -86,6 +97,14 @@ class FormStepViewSet(
         context = super().get_serializer_context()
         context["form"] = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
         return context
+
+
+_FORMSTEP_ADMIN_FIELDS_MARKDOWN = get_admin_fields_markdown(
+    FormStepLiteralsSerializer, subpath="literals"
+)
+FormStepViewSet.__doc__ = inspect.getdoc(FormStepViewSet).format(
+    admin_fields=_FORMSTEP_ADMIN_FIELDS_MARKDOWN
+)
 
 
 @extend_schema_view(
@@ -115,6 +134,15 @@ class FormStepViewSet(
     ),
 )
 class FormDefinitionViewSet(viewsets.ModelViewSet):
+    """
+    **Warning: the response data depends on user permissions**
+
+    Non-staff users receive a subset of the documented fields which are used
+    for internal form configuration. These fields are:
+
+    {admin_fields}
+    """
+
     parser_classes = (IgnoreConfigurationFieldCamelCaseJSONParser,)
     renderer_classes = (IgnoreConfigurationFieldCamelCaseJSONRenderer,)
     queryset = FormDefinition.objects.order_by("slug")
@@ -148,6 +176,13 @@ class FormDefinitionViewSet(viewsets.ModelViewSet):
         return Response(data=definition.configuration, status=status.HTTP_200_OK)
 
 
+_FORMDEFINITION_ADMIN_FIELDS_MARKDOWN = get_admin_fields_markdown(
+    FormDefinitionSerializer
+)
+FormDefinitionViewSet.__doc__ = inspect.getdoc(FormDefinitionViewSet).format(
+    admin_fields=_FORMDEFINITION_ADMIN_FIELDS_MARKDOWN
+)
+
 UUID_OR_SLUG_PARAMETER = OpenApiParameter(
     name="uuid_or_slug",
     location=OpenApiParameter.PATH,
@@ -155,9 +190,7 @@ UUID_OR_SLUG_PARAMETER = OpenApiParameter(
     description=_("Either a UUID4 or a slug identifiying the form."),
 )
 
-_FORM_ADMIN_FIELDS_MARKDOWN = "\n".join(
-    [f"- `{field}`" for field in FormSerializer._get_admin_field_names()]
-)
+_FORM_ADMIN_FIELDS_MARKDOWN = get_admin_fields_markdown(FormSerializer)
 
 
 @extend_schema_view(

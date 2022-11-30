@@ -1,7 +1,11 @@
+from typing import List
+
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
+
+from openforms.api.utils import underscore_to_camel
 
 
 class FieldValidationErrorSerializer(serializers.Serializer):
@@ -76,3 +80,56 @@ class ListWithChildSerializer(serializers.ListSerializer):
             objects_to_create.append(self.process_object(obj))
 
         return model.objects.bulk_create(objects_to_create)
+
+
+class PublicFieldsSerializerMixin:
+    # Mixin to distinguish between public and private serializer fields
+    # Public fields are displayed for all users and private fields are (by default) only
+    # displayed for staff users.
+
+    # Example usage:
+
+    #     class PersonSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
+    #         class Meta:
+    #             fields = (
+    #                 "first_name",
+    #                 "family_name",
+    #                 "phone_number",
+    #             )
+    #             public_fields = (
+    #                 "first_name",
+    #                 "family_name",
+    #             )
+
+    @classmethod
+    def _get_admin_field_names(cls, camelize=True) -> List[str]:
+        formatter = underscore_to_camel if camelize else lambda x: x
+        return [
+            formatter(name)
+            for name in cls.Meta.fields
+            if name not in cls.Meta.public_fields
+        ]
+
+    def get_fields(self):
+        fields = super().get_fields()
+
+        request = self.context.get("request")
+        view = self.context.get("view")
+        is_api_schema_generation = (
+            getattr(view, "swagger_fake_view", False) if view else False
+        )
+        is_mock_request = request and getattr(
+            request, "is_mock_request", is_api_schema_generation
+        )
+
+        admin_only_fields = self._get_admin_field_names(camelize=False)
+
+        # filter public fields if not staff and not exporting or schema generating
+        # request.is_mock_request is set by the export serializers (possibly from management command etc)
+        # also this can be called from schema generator without request
+        if request and not is_mock_request:
+            if not request.user.is_staff:
+                for admin_field in admin_only_fields:
+                    del fields[admin_field]
+
+        return fields
