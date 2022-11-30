@@ -93,6 +93,8 @@ class ObjectsAPIBackendTests(TestCase):
                 "coordinaat": [52.36673378967122, 4.893164274470299],
             },
         )
+        submission_step = submission.steps[0]
+        step_slug = submission_step.form_step.form_definition.slug
 
         mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
         mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
@@ -116,7 +118,15 @@ class ObjectsAPIBackendTests(TestCase):
                 "index": 0,
                 "typeVersion": objects_form_options["objecttype_version"],
                 "data": {
-                    "data": submission.get_merged_data(),
+                    "data": {
+                        f"{step_slug}": {
+                            "voornaam": "Foo",
+                            "achternaam": "Bar",
+                            "tussenvoegsel": "de",
+                            "geboortedatum": "2000-12-31",
+                            "coordinaat": [52.36673378967122, 4.893164274470299],
+                        }
+                    },
                     "type": objects_form_options["productaanvraag_type"],
                     "submission_id": str(submission.uuid),
                     "attachments": [],
@@ -228,7 +238,15 @@ class ObjectsAPIBackendTests(TestCase):
             "record": {
                 "typeVersion": 2,
                 "data": {
-                    "data": submission.get_merged_data(),
+                    "data": {
+                        f"{step_slug}": {
+                            "voornaam": "Foo",
+                            "achternaam": "Bar",
+                            "tussenvoegsel": "de",
+                            "geboortedatum": "2000-12-31",
+                            "coordinaat": [52.36673378967122, 4.893164274470299],
+                        }
+                    },
                     "type": "testproduct",
                     "submission_id": str(submission.uuid),
                     "attachments": [],
@@ -262,6 +280,8 @@ class ObjectsAPIBackendTests(TestCase):
             ],
             submitted_data={"voornaam": "Foo"},
         )
+        submission_step = submission.steps[0]
+        step_slug = submission_step.form_step.form_definition.slug
 
         mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
         mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
@@ -284,7 +304,11 @@ class ObjectsAPIBackendTests(TestCase):
                 "index": 0,
                 "typeVersion": objects_form_options["objecttype_version"],
                 "data": {
-                    "data": submission.get_merged_data(),
+                    "data": {
+                        f"{step_slug}": {
+                            "voornaam": "Foo",
+                        }
+                    },
                     "type": objects_form_options["productaanvraag_type"],
                     "submission_id": str(submission.uuid),
                     "attachments": [],
@@ -393,7 +417,11 @@ class ObjectsAPIBackendTests(TestCase):
             "record": {
                 "typeVersion": 2,
                 "data": {
-                    "data": submission.get_merged_data(),
+                    "data": {
+                        f"{step_slug}": {
+                            "voornaam": "Foo",
+                        }
+                    },
                     "type": "testproduct",
                     "submission_id": str(submission.uuid),
                     "attachments": [],
@@ -423,6 +451,8 @@ class ObjectsAPIBackendTests(TestCase):
             ],
             submitted_data={"voornaam": "Foo"},
         )
+        submission_step = submission.steps[0]
+        step_slug = submission_step.form_step.form_definition.slug
 
         mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
         mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
@@ -445,7 +475,11 @@ class ObjectsAPIBackendTests(TestCase):
                 "index": 0,
                 "typeVersion": objects_form_options["objecttype_version"],
                 "data": {
-                    "data": submission.get_merged_data(),
+                    "data": {
+                        f"{step_slug}": {
+                            "voornaam": "Foo",
+                        }
+                    },
                     "type": objects_form_options["productaanvraag_type"],
                     "submission_id": str(submission.uuid),
                     "attachments": [],
@@ -523,7 +557,11 @@ class ObjectsAPIBackendTests(TestCase):
             "record": {
                 "typeVersion": 2,
                 "data": {
-                    "data": submission.get_merged_data(),
+                    "data": {
+                        f"{step_slug}": {
+                            "voornaam": "Foo",
+                        }
+                    },
                     "type": "testproduct",
                     "submission_id": str(submission.uuid),
                     "attachments": [],
@@ -573,6 +611,8 @@ class ObjectsAPIBackendTests(TestCase):
                 "geboortedatum": "2000-12-31",
             },
         )
+        submission_step = submission.steps[0]
+        step_slug = submission_step.form_step.form_definition.slug
 
         mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
         mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
@@ -585,7 +625,14 @@ class ObjectsAPIBackendTests(TestCase):
                 "index": 0,
                 "typeVersion": 1,
                 "data": {
-                    "data": submission.get_merged_data(),
+                    "data": {
+                        f"{step_slug}": {
+                            "voornaam": "Foo",
+                            "achternaam": "Bar",
+                            "tussenvoegsel": "de",
+                            "geboortedatum": "2000-12-31",
+                        }
+                    },
                     "type": "terugbelnotitie",
                     "submission_id": str(submission.uuid),
                     "attachments": [],
@@ -660,7 +707,14 @@ class ObjectsAPIBackendTests(TestCase):
             "record": {
                 "typeVersion": 1,
                 "data": {
-                    "data": submission.get_merged_data(),
+                    "data": {
+                        f"{step_slug}": {
+                            "voornaam": "Foo",
+                            "achternaam": "Bar",
+                            "tussenvoegsel": "de",
+                            "geboortedatum": "2000-12-31",
+                        }
+                    },
                     "type": "terugbelnotitie",
                     "submission_id": str(submission.uuid),
                     "attachments": [],
@@ -711,6 +765,8 @@ class ObjectsAPIBackendTests(TestCase):
             },
             bsn="111222333",
         )
+        submission_step = submission.steps[0]
+        step_slug = submission_step.form_step.form_definition.slug
 
         mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
         mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
@@ -723,7 +779,14 @@ class ObjectsAPIBackendTests(TestCase):
                 "index": 0,
                 "typeVersion": 1,
                 "data": {
-                    "data": submission.get_merged_data(),
+                    "data": {
+                        f"{step_slug}": {
+                            "voornaam": "Foo",
+                            "achternaam": "Bar",
+                            "tussenvoegsel": "de",
+                            "geboortedatum": "2000-12-31",
+                        }
+                    },
                     "type": "terugbelnotitie",
                     "submission_id": str(submission.uuid),
                     "attachments": [],
@@ -799,7 +862,14 @@ class ObjectsAPIBackendTests(TestCase):
             "record": {
                 "typeVersion": 1,
                 "data": {
-                    "data": submission.get_merged_data(),
+                    "data": {
+                        f"{step_slug}": {
+                            "voornaam": "Foo",
+                            "achternaam": "Bar",
+                            "tussenvoegsel": "de",
+                            "geboortedatum": "2000-12-31",
+                        }
+                    },
                     "type": "terugbelnotitie",
                     "submission_id": str(submission.uuid),
                     "attachments": [],
@@ -828,6 +898,8 @@ class ObjectsAPIBackendTests(TestCase):
             submitted_data={"voornaam": "Foo"},
             kvk="11122233",
         )
+        submission_step = submission.steps[0]
+        step_slug = submission_step.form_step.form_definition.slug
 
         mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
         mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
@@ -840,7 +912,7 @@ class ObjectsAPIBackendTests(TestCase):
                 "index": 0,
                 "typeVersion": 1,
                 "data": {
-                    "data": submission.get_merged_data(),
+                    "data": {f"{step_slug}": {"voornaam": "Foo"}},
                     "type": "terugbelnotitie",
                     "submission_id": str(submission.uuid),
                     "attachments": [],
@@ -916,7 +988,7 @@ class ObjectsAPIBackendTests(TestCase):
             "record": {
                 "typeVersion": 1,
                 "data": {
-                    "data": submission.get_merged_data(),
+                    "data": {f"{step_slug}": {"voornaam": "Foo"}},
                     "type": "terugbelnotitie",
                     "submission_id": str(submission.uuid),
                     "attachments": [],
@@ -969,6 +1041,7 @@ class ObjectsAPIBackendTests(TestCase):
             completed=True,
         )
         submission_step = submission.steps[0]
+        step_slug = submission_step.form_step.form_definition.slug
 
         SubmissionFileAttachmentFactory.create(
             submission_step=submission_step, file_name="attachment1.jpg"
@@ -988,7 +1061,14 @@ class ObjectsAPIBackendTests(TestCase):
                 "index": 0,
                 "typeVersion": 1,
                 "data": {
-                    "data": submission.get_merged_data(),
+                    "data": {
+                        f"{step_slug}": {
+                            "voornaam": "Foo",
+                            "achternaam": "Bar",
+                            "tussenvoegsel": "de",
+                            "geboortedatum": "2000-12-31",
+                        }
+                    },
                     "type": "terugbelnotitie",
                     "submission_id": str(submission.uuid),
                     "attachments": [
@@ -1149,7 +1229,14 @@ class ObjectsAPIBackendTests(TestCase):
             "record": {
                 "typeVersion": 1,
                 "data": {
-                    "data": submission.get_merged_data(),
+                    "data": {
+                        f"{step_slug}": {
+                            "voornaam": "Foo",
+                            "achternaam": "Bar",
+                            "tussenvoegsel": "de",
+                            "geboortedatum": "2000-12-31",
+                        }
+                    },
                     "type": "terugbelnotitie",
                     "submission_id": str(submission.uuid),
                     "attachments": [
@@ -1198,6 +1285,8 @@ class ObjectsAPIBackendTests(TestCase):
                 "voornaam": "Foo",
             },
         )
+        submission_step = submission.steps[0]
+        step_slug = submission_step.form_step.form_definition.slug
 
         SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
@@ -1221,7 +1310,12 @@ class ObjectsAPIBackendTests(TestCase):
                 "index": 0,
                 "typeVersion": 1,
                 "data": {
-                    "data": submission.get_merged_data(),
+                    "data": {
+                        f"{step_slug}": {
+                            "field1": None,
+                            "field2": None,
+                        }
+                    },
                     "type": "terugbelnotitie",
                     "submission_id": str(submission.uuid),
                     "attachments": [
@@ -1372,7 +1466,12 @@ class ObjectsAPIBackendTests(TestCase):
             "record": {
                 "typeVersion": 1,
                 "data": {
-                    "data": submission.get_merged_data(),
+                    "data": {
+                        f"{step_slug}": {
+                            "field1": None,
+                            "field2": None,
+                        }
+                    },
                     "type": "terugbelnotitie",
                     "submission_id": str(submission.uuid),
                     "attachments": [
