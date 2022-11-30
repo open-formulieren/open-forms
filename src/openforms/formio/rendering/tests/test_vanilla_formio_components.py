@@ -458,3 +458,49 @@ class FormNodeTests(TestCase):
         )
         link = component_node.render()
         self.assertEqual(link, "My File: ")
+
+    def test_fieldset_with_logic_depending_on_selectboxes(self):
+        submission = SubmissionFactory.create(
+            form__name="public name",
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "fieldset",
+                        "key": "fieldSet1",
+                        "conditional": {
+                            "show": True,
+                            "when": "selectBoxes1",
+                            "eq": "a",
+                        },
+                        "components": [
+                            {
+                                "key": "textField1",
+                                "type": "textfield",
+                            }
+                        ],
+                    },
+                    {
+                        "key": "selectBoxes1",
+                        "type": "selectboxes",
+                        "values": [
+                            {"value": "a", "label": "A"},
+                            {"value": "b", "label": "B"},
+                        ],
+                    },
+                ]
+            },
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={"selectBoxes1": {"a": True, "b": False}, "textField1": "some data"},
+        )
+
+        renderer = Renderer(submission, mode=RenderModes.pdf, as_html=True)
+
+        nodes = list(renderer)
+
+        # Check that the fieldset is present
+        # Nodes: Form, SubmissionStep, Fieldset, Component (textfield), Component (radio), Variables
+        self.assertEqual(6, len(nodes))
