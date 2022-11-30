@@ -10,6 +10,7 @@ from zds_client.oas import schema_fetcher
 from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
+from openforms.authentication.tests.factories import RegistratorInfoFactory
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.tests.factories import (
@@ -789,6 +790,71 @@ class ZGWBackendTests(TestCase):
         self.assertEqual(
             relate_attachment_body["informatieobject"],
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+        )
+
+    def test_submission_with_registrator(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "handelsnaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_handelsnaam,
+                    },
+                },
+                {
+                    "key": "postcode",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_postcode,
+                    },
+                },
+                {
+                    "key": "coordinaat",
+                    "type": "map",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+            ],
+            submitted_data={
+                "handelsnaam": "ACME",
+                "postcode": "1000 AA",
+                "coordinaat": [52.36673378967122, 4.893164274470299],
+            },
+            kvk="12345678",
+            form__product__price=Decimal("0"),
+            form__payment_backend="demo",
+        )
+        RegistratorInfoFactory.create(submission=submission, value="123456782")
+
+        zgw_form_options = dict(
+            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            organisatie_rsin="000000000",
+            vertrouwelijkheidaanduiding="openbaar",
+            medewerker_roltype="https://catalogi.nl/api/v1/roltypen/1",
+        )
+
+        self.install_mocks(m)
+
+        plugin = ZGWRegistration("zgw")
+        result = plugin.register_submission(submission, zgw_form_options)
+
+        self.assertIn("medewerker_rol", result)
+
+        create_medewerker_rol_call = m.request_history[-3]
+
+        post_data = create_medewerker_rol_call.json()
+        self.assertEqual(post_data["betrokkeneType"], "medewerker")
+        self.assertEqual(post_data["roltoelichting"], "medewerker balie")
+        self.assertEqual(
+            post_data["roltype"],
+            zgw_form_options["medewerker_roltype"],
+        )
+        self.assertEqual(
+            post_data["betrokkeneIdentificatie"]["identificatie"],
+            "123456782",
         )
 
     def test_retried_registration_with_internal_reference(self, m):

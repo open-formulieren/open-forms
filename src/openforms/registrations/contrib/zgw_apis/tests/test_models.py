@@ -33,3 +33,8 @@ class ZGWBackendTests(TestCase):
         with self.assertRaises(ValidationError):
             self.config.organisatie_rsin = "063-08836"
             self.config.full_clean()
+
+    def test_model_invalid_medewerker_roltype(self):
+        with self.assertRaises(ValidationError):
+            self.config.medewerker_roltype = "https://BAD_DOMAIN.nl/api/v1/info/1"
+            self.config.full_clean()
