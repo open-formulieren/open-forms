@@ -193,7 +193,7 @@ def create_rol(zaak: dict, initiator: dict, options: dict) -> Optional[dict]:
         "zaak": zaak["url"],
         # "betrokkene": initiator.get("betrokkene", ""),
         "betrokkeneType": initiator.get("betrokkeneType", "natuurlijk_persoon"),
-        "roltype": rol_typen["results"][0]["url"],
+        "roltype": initiator.get("roltype", rol_typen["results"][0]["url"]),
         "roltoelichting": initiator.get("roltoelichting", "inzender formulier"),
         "indicatieMachtiging": initiator.get("indicatieMachtiging", ""),
         "betrokkeneIdentificatie": initiator.get("betrokkeneIdentificatie", {}),

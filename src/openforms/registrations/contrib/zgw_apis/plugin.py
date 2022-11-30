@@ -52,6 +52,12 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "Indication of the level to which extend the dossier of the ZAAK is meant to be public."
         ),
     )
+    medewerker_roltype = serializers.URLField(
+        required=False,
+        help_text=_(
+            "URL of the ROLTYPE to use for employees filling in a form for a citizen/company."
+        ),
+    )
 
 
 def _point_coordinate(value):
@@ -197,6 +203,24 @@ class ZGWRegistration(BasePlugin):
             partial(create_rol, zaak, rol_data, options), submission, "intermediate.rol"
         )
 
+        has_registrator = (
+            hasattr(submission, "_registrator") and submission._registrator
+        )
+        if has_registrator:
+            registrator_rol_data = {
+                "betrokkeneType": "medewerker",
+                "roltype": options["medewerker_roltype"],
+                "roltoelichting": "medewerker balie",
+                "betrokkeneIdentificatie": {
+                    "identificatie": submission.registrator.value,
+                },
+            }
+            medewerker_rol = execute_unless_result_exists(
+                partial(create_rol, zaak, registrator_rol_data, options),
+                submission,
+                "intermediate.medewerker_rol",
+            )
+
         status = execute_unless_result_exists(
             partial(create_status, zaak), submission, "intermediate.status"
         )
@@ -226,6 +250,9 @@ class ZGWRegistration(BasePlugin):
             "status": status,
             "rol": rol,
         }
+        if has_registrator:
+            result["medewerker_rol"] = medewerker_rol
+
         return result
 
     def get_reference_from_result(self, result: Dict[str, str]) -> str:
