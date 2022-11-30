@@ -36,14 +36,16 @@ class ComponentNode(Node):
     step: SubmissionStep
     depth: int = 0
     is_layout = False
-    path: Path = None
+    path: Path = None  # Path in the data (#TODO rename to data_path?)
+    configuration_path: Path = None  # Path in the configuration tree
 
     @staticmethod
     def build_node(
         step: SubmissionStep,
         component: Component,
         renderer: "Renderer",
-        path: Path = None,
+        path: Path = None,  # Path in the data
+        configuration_path: Path = None,
         depth: int = 0,
     ) -> "ComponentNode":
         """
@@ -53,7 +55,12 @@ class ComponentNode(Node):
 
         node_cls = register[component["type"]]
         nested_node = node_cls(
-            step=step, component=component, renderer=renderer, depth=depth, path=path
+            step=step,
+            component=component,
+            renderer=renderer,
+            depth=depth,
+            path=path,
+            configuration_path=configuration_path,
         )
         return nested_node
 
@@ -142,6 +149,9 @@ class ComponentNode(Node):
                 renderer=self.renderer,
                 depth=self.depth + 1,
                 path=self.path,
+                configuration_path=Path(self.configuration_path, self.component["key"])
+                if self.configuration_path
+                else Path(self.component["key"]),
             )
 
     def __iter__(self) -> Iterator["ComponentNode"]:
@@ -205,6 +215,10 @@ class ComponentNode(Node):
         Output a simple key-value pair of label and value.
         """
         return f"{self.indent}{self.label}: {self.display_value}"
+
+    @property
+    def key(self):
+        return self.component["key"]
 
 
 @dataclass
