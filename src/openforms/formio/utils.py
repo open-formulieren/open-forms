@@ -256,6 +256,16 @@ def is_visible_in_frontend(component: Component, data: DataMapping) -> bool:
     trigger_component_value = glom(data, trigger_component_key, default=None)
     compare_value = conditional.get("eq")
 
+    if (
+        isinstance(trigger_component_value, dict)
+        and compare_value in trigger_component_value
+    ):
+        return (
+            conditional_show
+            if trigger_component_value[compare_value]
+            else not conditional_show
+        )
+
     return (
         conditional_show
         if trigger_component_value == compare_value
