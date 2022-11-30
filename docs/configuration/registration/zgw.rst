@@ -15,8 +15,8 @@ Open Forms can be configured to access these API's to register form submissions.
    external system, offered or maintained by a service provider.
 
 
-What does the Open Forms administator need?
-===========================================
+What does the Open Forms administrator need?
+============================================
 
 The values for these parameters should be provided to the Open Forms
 administrator by the service provider.
@@ -105,6 +105,7 @@ Configuration
    * **Zaaktype**: Select the default Zaaktype to be used to create the Zaak. *For example:* ``https://example.com/catalogi/api/v1/zaaktypen/1/``
    * **Informatieobjecttype**: Fill in the URL of the Informatieobjecttype to be used to create the Document. *For example:* ``https://example.com/catalogi/api/v1/informatieobjecttypen/1/``
    * **Organisatie RSIN**: Fill the RSIN to be referred to in the created objects. *For example:* ``123456789``
+   * **Medewerker roltype**: Fill in the URL of the Roltype to be used when creating a role for an employee filling in a form for a citizen or company. For example: ``https://example.com/catalogi/api/v1/roltypen/2/``
 
 7. Click **Opslaan**
 
