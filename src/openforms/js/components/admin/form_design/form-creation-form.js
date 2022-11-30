@@ -22,15 +22,16 @@ import {getUniqueRandomString} from 'utils/random';
 import {FormContext} from './Context';
 import FormSteps from './FormSteps';
 import {
-  FORM_DEFINITIONS_ENDPOINT,
-  REGISTRATION_BACKENDS_ENDPOINT,
   AUTH_PLUGINS_ENDPOINT,
-  PREFILL_PLUGINS_ENDPOINT,
-  PAYMENT_PLUGINS_ENDPOINT,
   CATEGORIES_ENDPOINT,
+  FORM_DEFINITIONS_ENDPOINT,
+  LANGUAGE_INFO_ENDPOINT,
+  PAYMENT_PLUGINS_ENDPOINT,
+  PREFILL_PLUGINS_ENDPOINT,
+  REGISTRATION_BACKENDS_ENDPOINT,
   STATIC_VARIABLES_ENDPOINT,
 } from './constants';
-import {loadPlugins, loadForm, saveCompleteForm, loadLanguages} from './data';
+import {loadPlugins, loadForm, saveCompleteForm} from './data';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import FormDetailFields from './FormDetailFields';
 import FormConfigurationFields from './FormConfigurationFields';
@@ -142,6 +143,7 @@ const initialFormState = {
   selectedAuthPlugins: [],
   availablePaymentBackends: [],
   availableCategories: [],
+  languageInfo: {languages: [], current: ''},
   stepsToDelete: [],
   submitting: false,
   logicRules: [],
@@ -151,7 +153,6 @@ const initialFormState = {
   // backend error handling
   validationErrors: [],
   tabsWithErrors: [],
-  languages: [],
 };
 
 const newStepData = {
@@ -375,9 +376,8 @@ function reducer(draft, action) {
           isNew: false,
         };
       } else {
-        const {configuration, name, internalName, isReusable, slug} = draft.formDefinitions.find(
-          fd => fd.url === formDefinitionUrl
-        );
+        const {configuration, name, internalName, isReusable, slug, translations} =
+          draft.formDefinitions.find(fd => fd.url === formDefinitionUrl);
         const {url} = draft.formSteps[index];
         draft.formSteps[index] = {
           configuration,
@@ -413,14 +413,7 @@ function reducer(draft, action) {
           },
           isNew: false,
           validationErrors: [],
-          translations: {
-            nl: {
-              name: '',
-            },
-            en: {
-              name: '',
-            },
-          },
+          translations,
         };
 
         // Add form variables for the reusable configuration
@@ -812,14 +805,6 @@ function reducer(draft, action) {
     }
 
     /**
-     * Internationalization
-     */
-    case 'LANGUAGES_LOADED': {
-      draft.languages = action.payload;
-      break;
-    }
-
-    /**
      * Submit & validation error handling
      */
     case 'SUBMIT_STARTED': {
@@ -977,6 +962,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     {endpoint: CATEGORIES_ENDPOINT, stateVar: 'availableCategories'},
     {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
     {endpoint: STATIC_VARIABLES_ENDPOINT, stateVar: 'staticVariables'},
+    {endpoint: LANGUAGE_INFO_ENDPOINT, stateVar: 'languageInfo'},
   ];
 
   const {loading} = useAsync(async () => {
@@ -984,12 +970,11 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
       // TODO: this is a bad function name, refactor
       loadPlugins(pluginsToLoad),
       loadForm(formUuid),
-      loadLanguages(),
     ];
 
     // TODO: API error handling - this should be done using ErrorBoundary instead of
     // state-changes.
-    const [pluginsData, formData, languages] = await Promise.all(promises);
+    const [pluginsData, formData] = await Promise.all(promises);
     dispatch({
       type: 'FORM_DATA_LOADED',
       payload: formData,
@@ -1006,11 +991,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
         },
       });
     }
-
-    dispatch({
-      type: 'LANGUAGES_LOADED',
-      payload: languages,
-    });
   }, []);
 
   /**
@@ -1213,6 +1193,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
             selectedAuthPlugins: state.selectedAuthPlugins,
             availablePrefillPlugins: state.availablePrefillPlugins,
           },
+          languages: state.languageInfo.languages,
         }}
       >
         <Tabs defaultIndex={activeTab ? parseInt(activeTab, 10) : null}>
@@ -1268,11 +1249,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
           </TabList>
 
           <TabPanel>
-            <FormDetailFields
-              form={state.form}
-              onChange={onFieldChange}
-              languages={state.languages}
-            />
+            <FormDetailFields form={state.form} onChange={onFieldChange} />
             <FormConfigurationFields
               form={state.form}
               literals={state.literals}
@@ -1307,7 +1284,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
                   e.preventDefault();
                   dispatch({type: 'ADD_STEP'});
                 }}
-                languages={state.languages}
                 submitting={state.submitting}
               />
             </Fieldset>
@@ -1319,7 +1295,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
               emailOption={state.form.confirmationEmailOption}
               emailTemplate={state.form.confirmationEmailTemplate || {}}
               onChange={onFieldChange}
-              languages={state.languages}
               translations={state.form.translations}
               tabsWithErrors={state.tabsWithErrors}
             />
@@ -1335,11 +1310,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
           </TabPanel>
 
           <TabPanel>
-            <TextLiterals
-              onChange={onFieldChange}
-              languages={state.languages}
-              translations={state.form.translations}
-            />
+            <TextLiterals onChange={onFieldChange} translations={state.form.translations} />
           </TabPanel>
 
           <TabPanel>

@@ -2,7 +2,7 @@
 global URLify;
  */
 import get from 'lodash/get';
-import React from 'react';
+import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 import {Tabs, TabList, TabPanel} from 'react-tabs';
@@ -14,12 +14,13 @@ import MessageList from 'components/admin/MessageList';
 import FormRow from 'components/admin/forms/FormRow';
 import FormIOBuilder from 'components/formio_builder/builder';
 
-import useDetectConfigurationChanged from './useDetectConfigurationChanged';
-import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
-import PluginWarning from './PluginWarning';
 import AuthenticationWarning from './AuthenticationWarning';
-import useDetectSimpleLogicErrors from './useDetectSimpleLogicErrors';
+import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
+import {FormContext} from './Context';
 import LogicWarning from './LogicWarning';
+import PluginWarning from './PluginWarning';
+import useDetectConfigurationChanged from './useDetectConfigurationChanged';
+import useDetectSimpleLogicErrors from './useDetectSimpleLogicErrors';
 
 const emptyConfiguration = {
   display: 'form',
@@ -55,10 +56,11 @@ const FormStepDefinition = ({
   onComponentMutated,
   onFieldChange,
   onLiteralFieldChange,
-  languages,
   errors,
   ...props
 }) => {
+  const {languages} = useContext(FormContext);
+
   const setSlug = () => {
     // do nothing if there's already a slug set
     if (slug) return;
@@ -351,7 +353,6 @@ FormStepDefinition.propTypes = {
   onLiteralFieldChange: PropTypes.func.isRequired,
   errors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
   translations: PropTypes.object,
-  languages: PropTypes.array,
 };
 
 const ConfigurationErrors = ({errors = []}) => {

@@ -13,6 +13,7 @@ import {getTranslatedChoices} from 'utils/i18n';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import ErrorList from 'components/admin/forms/ErrorList';
 
+import {FormContext} from './Context';
 import TinyMCEEditor from './Editor';
 import {parseValidationErrors} from './utils';
 
@@ -45,10 +46,10 @@ const Confirmation = ({
   emailOption = 'global_email',
   emailTemplate = {},
   onChange,
-  languages,
   translations,
   tabsWithErrors,
 }) => {
+  const {languages} = useContext(FormContext);
   const intl = useIntl();
   const emailOptions = getTranslatedChoices(intl, EMAIL_OPTIONS);
 
@@ -266,7 +267,6 @@ Confirmation.propTypes = {
   emailOption: PropTypes.string,
   emailTemplate: PropTypes.object,
   onChange: PropTypes.func.isRequired,
-  languages: PropTypes.array,
   translations: PropTypes.object,
   tabsWithErrors: PropTypes.array,
 };

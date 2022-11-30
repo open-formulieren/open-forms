@@ -12,7 +12,6 @@ const FormStep = ({
   onFieldChange,
   onLiteralFieldChange,
   onReplace,
-  languages,
 }) => {
   const {
     _generatedId,
@@ -65,7 +64,6 @@ const FormStep = ({
       onComponentMutated={onComponentMutated}
       forceUpdate={forceBuilderUpdate}
       errors={validationErrors}
-      languages={languages}
     />
   );
 };
@@ -90,7 +88,6 @@ FormStep.propTypes = {
   onFieldChange: PropTypes.func.isRequired,
   onLiteralFieldChange: PropTypes.func.isRequired,
   onReplace: PropTypes.func.isRequired,
-  languages: PropTypes.array,
 };
 
 export default FormStep;

@@ -1,16 +1,20 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage, useIntl} from 'react-intl';
 import {Tabs, TabList, TabPanel} from 'react-tabs';
+
 import Field from 'components/admin/forms/Field';
-import FormRow from 'components/admin/forms/FormRow';
 import Fieldset from 'components/admin/forms/Fieldset';
+import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
+
+import {FormContext} from './Context';
 import Tab from './Tab';
 
 const activeTab = new URLSearchParams(window.location.search).get('tab');
 
-const TextLiterals = ({onChange, languages, translations}) => {
+const TextLiterals = ({onChange, translations}) => {
+  const {languages} = useContext(FormContext);
   let tabs = languages.map((language, index) => {
     return <Tab key={language.code}>{language.code}</Tab>;
   });
@@ -128,9 +132,7 @@ const TextLiterals = ({onChange, languages, translations}) => {
 
 TextLiterals.propTypes = {
   onChange: PropTypes.func.isRequired,
-  languages: PropTypes.array,
   translations: PropTypes.object,
-  languages: PropTypes.array,
 };
 
 export default TextLiterals;

@@ -1,7 +1,7 @@
 /*
 global URLify;
  */
-import React from 'react';
+import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
 import {FormattedMessage} from 'react-intl';
 
@@ -11,13 +11,15 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import {TextInput} from 'components/admin/forms/Inputs';
 import {Tabs, TabList, TabPanel} from 'react-tabs';
 
+import {FormContext} from './Context';
 import TinyMCEEditor from './Editor';
 import Tab from './Tab';
 
 /**
  * Component to render the metadata admin form for an Open Forms form.
  */
-const FormDetailFields = ({form, onChange, languages}) => {
+const FormDetailFields = ({form, onChange}) => {
+  const {languages} = useContext(FormContext);
   const {slug, translations} = form;
 
   const setFormSlug = event => {
@@ -126,7 +128,6 @@ FormDetailFields.propTypes = {
     registrationBackendOptions: PropTypes.object,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
-  languages: PropTypes.array,
 };
 
 export default FormDetailFields;
