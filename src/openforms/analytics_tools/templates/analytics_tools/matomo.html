@@ -4,9 +4,9 @@
 {% load solo_tags %}
 {% get_solo 'analytics_tools.AnalyticsToolsConfiguration' as analytics_tools_config %}
 
-{% if analytics_tools_config.matomo_enabled %}
+{% if analytics_tools_config.is_matomo_enabled %}
 <!-- Matomo -->
-<script type="text/javascript" nonce="{{ request.csp_nonce }}">
+<script id="matomo-analytics" type="text/javascript" nonce="{{ request.csp_nonce }}">
   var _paq = window._paq = window._paq || [];
   _paq.push(['trackPageView']);
   _paq.push(['enableLinkTracking']);

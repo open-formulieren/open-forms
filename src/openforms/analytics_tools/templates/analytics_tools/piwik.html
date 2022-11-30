@@ -5,9 +5,9 @@
     django-piwik-analytics for example.
 {% endcomment %}
 
-{% if analytics_tools_config.piwik_enabled %}
+{% if analytics_tools_config.is_piwik_enabled %}
 <!-- Piwik -->
-<script type="text/javascript" nonce="{{ request.csp_nonce }}">
+<script id="piwik-analytics" type="text/javascript" nonce="{{ request.csp_nonce }}">
 var pkBaseURL = "//{{ analytics_tools_config.piwik_url|escapejs }}";
 document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
 </script><script type="text/javascript" nonce="{{ request.csp_nonce }}">
