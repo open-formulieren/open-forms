@@ -334,7 +334,7 @@ class Submission(models.Model):
     def registrator(self):
         if hasattr(self, "_registrator") and self._registrator:
             return self._registrator
-        else:
+        elif self.is_authenticated:
             return self.auth_info
 
     @property

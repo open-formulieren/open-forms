@@ -57,6 +57,14 @@ class ZgwConfig(SingletonModel):
         validators=[validate_rsin],
         help_text=_("Default RSIN of organization, which creates the ZAAK"),
     )
+    medewerker_roltype = models.URLField(
+        _("medewerker roltype"),
+        blank=True,
+        help_text=_(
+            "URL of the ROLTYPE to use for employees filling in a form for a citizen/company."
+        ),
+        max_length=1000,
+    )
 
     class Meta:
         verbose_name = _("ZGW API's configuration")
@@ -83,4 +91,10 @@ class ZgwConfig(SingletonModel):
                             "INFORMATIEOBJECTTYPE is not part of the Catalogi API"
                         )
                     }
+                )
+ 
+        if self.medewerker_roltype:
+            if not self.medewerker_roltype.startswith(self.ztc_service.api_root):
+                raise ValidationError(
+                    {"medewerker_roltype": _("ROLTYPE is not part of the Catalogi API")}
                 )
