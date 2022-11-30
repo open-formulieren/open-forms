@@ -14,6 +14,11 @@ if TYPE_CHECKING:
 
 
 def render_nested_json(submission: "Submission") -> JSONObject:
+    """Render submission as JSON with nesting
+
+    The data is nested within each submission step (using the form definition slug as key).
+    The data is nested for fieldset components and for column components.
+    """
     renderer = Renderer(
         submission=submission, mode=RenderModes.registration, as_html=False
     )
