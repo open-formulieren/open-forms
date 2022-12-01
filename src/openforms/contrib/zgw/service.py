@@ -202,6 +202,17 @@ def create_rol(zaak: dict, initiator: dict, options: dict) -> Optional[dict]:
     return rol
 
 
+def retrieve_roltype(omschrijving, **query_params):
+    config = ZgwConfig.get_solo()
+    ztc_client = config.ztc_service.build_client()
+    roltypen = ztc_client.list("roltype", query_params)
+
+    for roltype in roltypen["results"]:
+        if roltype.get("omschrijving") == omschrijving:
+            return roltype
+    return None
+
+
 def create_status(zaak: dict) -> dict:
     config = ZgwConfig.get_solo()
 

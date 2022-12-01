@@ -833,10 +833,27 @@ class ZGWBackendTests(TestCase):
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
             vertrouwelijkheidaanduiding="openbaar",
-            medewerker_roltype="https://catalogi.nl/api/v1/roltypen/1",
+            medewerker_roltype="Some description",
         )
 
         self.install_mocks(m)
+        m.get(
+            "https://catalogus.nl/api/v1/roltypen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
+            status_code=200,
+            json={
+                "count": 1,
+                "next": None,
+                "previous": None,
+                "results": [
+                    generate_oas_component(
+                        "catalogi",
+                        "schemas/RolType",
+                        url="https://catalogus.nl/api/v1/roltypen/111",
+                        omschrijving="Some description",
+                    )
+                ],
+            },
+        )
 
         plugin = ZGWRegistration("zgw")
         result = plugin.register_submission(submission, zgw_form_options)
@@ -850,7 +867,7 @@ class ZGWBackendTests(TestCase):
         self.assertEqual(post_data["roltoelichting"], "medewerker balie")
         self.assertEqual(
             post_data["roltype"],
-            zgw_form_options["medewerker_roltype"],
+            "https://catalogus.nl/api/v1/roltypen/111",
         )
         self.assertEqual(
             post_data["betrokkeneIdentificatie"]["identificatie"],

@@ -105,11 +105,16 @@ Configuration
    * **Zaaktype**: Select the default Zaaktype to be used to create the Zaak. *For example:* ``https://example.com/catalogi/api/v1/zaaktypen/1/``
    * **Informatieobjecttype**: Fill in the URL of the Informatieobjecttype to be used to create the Document. *For example:* ``https://example.com/catalogi/api/v1/informatieobjecttypen/1/``
    * **Organisatie RSIN**: Fill the RSIN to be referred to in the created objects. *For example:* ``123456789``
-   * **Medewerker roltype**: Fill in the URL of the Roltype to be used when creating a role for an employee filling in a form for a citizen or company. For example: ``https://example.com/catalogi/api/v1/roltypen/2/``
 
 7. Click **Opslaan**
 
 The ZGW API's configuration is now completed and can be selected as registration backend in the form builder.
+In each form, the global defaults can be overwritten and additional properties can be configured. These include:
+
+   * **Vertrouwelijkheidaanduiding**: The level of confidentiality of the case.
+   * **Medewerker roltype**: The description (omschrijving) of the Roltype associated to the Zaaktype to be used
+     when creating a role for an employee filling in a form for a citizen or company.
+     For example: ``some description``.
 
 
 Technical

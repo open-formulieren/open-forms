@@ -16,6 +16,7 @@ from openforms.contrib.zgw.service import (
     create_status,
     create_zaak,
     relate_document,
+    retrieve_roltype,
     set_zaak_payment,
 )
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
@@ -30,6 +31,7 @@ from ...registry import register
 from ...utils import execute_unless_result_exists
 from .checks import check_config
 from .models import ZgwConfig
+from .validators import RoltypeOmschrijvingValidator
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -52,12 +54,17 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "Indication of the level to which extend the dossier of the ZAAK is meant to be public."
         ),
     )
-    medewerker_roltype = serializers.URLField(
+    medewerker_roltype = serializers.CharField(
         required=False,
         help_text=_(
-            "URL of the ROLTYPE to use for employees filling in a form for a citizen/company."
+            "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
         ),
     )
+
+    class Meta:
+        validators = [
+            RoltypeOmschrijvingValidator(),
+        ]
 
 
 def _point_coordinate(value):
@@ -207,9 +214,12 @@ class ZGWRegistration(BasePlugin):
             hasattr(submission, "_registrator") and submission._registrator
         )
         if has_registrator:
+            roltype = retrieve_roltype(
+                options["medewerker_roltype"], **{"zaaktype": options["zaaktype"]}
+            )
             registrator_rol_data = {
                 "betrokkeneType": "medewerker",
-                "roltype": options["medewerker_roltype"],
+                "roltype": roltype["url"],
                 "roltoelichting": "medewerker balie",
                 "betrokkeneIdentificatie": {
                     "identificatie": submission.registrator.value,
