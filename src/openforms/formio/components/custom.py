@@ -1,6 +1,9 @@
 import logging
 from typing import Callable
 
+from django.utils.html import format_html
+from django.utils.translation import gettext as _
+
 from openforms.authentication.constants import AuthAttribute
 from openforms.submissions.models import Submission
 from openforms.typing import DataMapping
@@ -86,10 +89,24 @@ class NPFamilyMembers(BasePlugin):
         cls, component: Component, submission: Submission, data: DataMapping
     ) -> None:
         # Check authentication details/status before proceeding
-        if not submission.is_authenticated:
-            raise RuntimeError("No authenticated person!")
-        if submission.auth_info.attribute != AuthAttribute.bsn:
-            raise RuntimeError("No BSN found in the authentication details.")
+        has_bsn = (
+            submission.is_authenticated
+            and submission.auth_info.attribute == AuthAttribute.bsn
+        )
+        if not has_bsn:
+            component.update(
+                {
+                    "type": "content",
+                    "html": format_html(
+                        "<p>{message}</p>",
+                        message=_(
+                            "Selecting family members is currently not available."
+                        ),
+                    ),
+                    "input": False,
+                }
+            )
+            return
 
         bsn = submission.auth_info.value
 

@@ -4,6 +4,8 @@ from unittest.mock import patch
 
 from django.template import Context, Template
 from django.test import TestCase
+from django.utils.html import format_html
+from django.utils.translation import gettext as _
 
 import requests_mock
 
@@ -133,3 +135,41 @@ class FamilyMembersCustomFieldTypeTest(TestCase):
             self.assertEqual(2, len(kids_choices))
             self.assertEqual(("456789123", "Bolly van Doe"), kids_choices[0])
             self.assertEqual(("789123456", "Billy van Doe"), kids_choices[1])
+
+    @patch(
+        "openforms.formio.components.custom.FamilyMembersTypeConfig.get_solo",
+        return_value=FamilyMembersTypeConfig(
+            data_api=FamilyMembersDataAPIChoices.haal_centraal
+        ),
+    )
+    def test_no_crash_when_no_bsn_available(self, mock_get_solo):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "npFamilyMembers",
+                    "type": "npFamilyMembers",
+                    "label": "FamilyMembers",
+                    "values": [{"label": "", "value": ""}],
+                },
+            ],
+            auth_info=None,
+        )
+        formio_wrapper = (
+            submission.submissionstep_set.get().form_step.form_definition.configuration_wrapper
+        )
+
+        updated_config_wrapper = get_dynamic_configuration(
+            formio_wrapper,
+            request=None,
+            submission=submission,
+        )
+
+        rewritten_component = updated_config_wrapper["npFamilyMembers"]
+        self.assertEqual(rewritten_component["type"], "content")
+        self.assertEqual(
+            rewritten_component["html"],
+            format_html(
+                "<p>{message}</p>",
+                message=_("Selecting family members is currently not available."),
+            ),
+        )
