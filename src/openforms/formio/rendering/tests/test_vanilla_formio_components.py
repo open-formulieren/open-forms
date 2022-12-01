@@ -502,5 +502,5 @@ class FormNodeTests(TestCase):
         nodes = list(renderer)
 
         # Check that the fieldset is present
-        # Nodes: Form, SubmissionStep, Fieldset, Component (textfield), Component (radio), Variables
-        self.assertEqual(6, len(nodes))
+        # Nodes: Form, SubmissionStep, Fieldset, Component (textfield), Component (radio)
+        self.assertEqual(5, len(nodes))
