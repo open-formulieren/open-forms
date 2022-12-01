@@ -24,6 +24,7 @@ and expertise.
 
    docker_compose
    ansible
+   security
    config
    file_uploads
    self_signed

@@ -12,6 +12,10 @@ You also need to expose Open Forms through a web server acting as a reverse prox
 as nginx or your ingress solution on Kubernetes. See the
 :ref:`installation_config_webserver` section for some configuration recommendations.
 
+.. seealso::
+
+    * :ref:`installation_security`
+
 Available environment variables
 ===============================
 
@@ -304,28 +308,3 @@ Provide the envvars via the process manager
 
 If you use a process manager (such as supervisor/systemd), use their techniques
 to define the envvars. The component will pick them up out of the box.
-
-
-.. _installation_config_webserver:
-
-Webserver configuration
-=======================
-
-Permissions policy
-------------------
-
-The ``Permissions-Policy`` response header controls which browser feature may be used/
-requested by Open Forms. For privacy and security reasons you may want to disable most
-of the features, except the following:
-
-* ``camera=(self)``: file upload components with images may use the camera feature to
-  take pictures for upload.
-* ``geolocation=(self)``: when using the map component, Open Forms will try to get the
-  geolocation from the browser.
-
-SSL/TLS
--------
-
-Typically your webserver terminates SSL/TLS. Therefore, we recommend you to apply the
-``Strict-Transport-Security`` response header to instruct browser to only connect over
-HTTPS with Open Forms.
