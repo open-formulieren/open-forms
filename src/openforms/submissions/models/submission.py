@@ -338,6 +338,10 @@ class Submission(models.Model):
             return self.auth_info
 
     @property
+    def has_registrator(self):
+        return hasattr(self, "_registrator") and self._registrator is not None
+
+    @property
     def is_completed(self):
         return bool(self.completed_on)
 

@@ -211,10 +211,7 @@ class ZGWRegistration(BasePlugin):
             partial(create_rol, zaak, rol_data, options), submission, "intermediate.rol"
         )
 
-        has_registrator = (
-            hasattr(submission, "_registrator") and submission._registrator
-        )
-        if has_registrator:
+        if submission.has_registrator:
             roltype = retrieve_roltypen(
                 matcher=partial(
                     match_omschrijving, omschrijving=options["medewerker_roltype"]
@@ -266,7 +263,7 @@ class ZGWRegistration(BasePlugin):
             "status": status,
             "rol": rol,
         }
-        if has_registrator:
+        if submission.has_registrator:
             result["medewerker_rol"] = medewerker_rol
 
         return result
