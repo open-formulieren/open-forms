@@ -9,7 +9,6 @@ from django.utils import translation
 from django.utils.translation import gettext as _
 
 from rest_framework import status
-from rest_framework.serializers import Serializer
 from rest_framework.test import APIRequestFactory, APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
@@ -1117,26 +1116,6 @@ class FormsAPITranslationTests(APITestCase):
 
         cls.user = StaffUserFactory.create(user_permissions=["change_form"])
 
-        config = GlobalConfiguration.get_solo()
-        config.form_begin_text_nl = "Formulier starten"
-        config.form_previous_text_nl = "Vorige stap"
-        config.form_change_text_nl = "Wijzigen"
-        config.form_confirm_text_nl = "Verzenden"
-
-        config.form_step_previous_text_nl = "Vorige stap"
-        config.form_step_next_text_nl = "Volgende"
-        config.form_step_save_text_nl = "Tussentijds opslaan"
-
-        config.form_begin_text_en = "Start form"
-        config.form_previous_text_en = "Previous step"
-        config.form_change_text_en = "Change"
-        config.form_confirm_text_en = "Submit"
-
-        config.form_step_previous_text_en = "Previous step"
-        config.form_step_next_text_en = "Next"
-        config.form_step_save_text_en = "Save"
-        config.save()
-
     def test_detail_shows_translated_values_based_on_request_header(self):
         form = TranslatedFormFactory.create(
             _language="en",
@@ -1241,37 +1220,22 @@ class FormsAPITranslationTests(APITestCase):
             response.data["translations"],
             {
                 "en": {
-                    "begin_text": {"resolved": "start", "value": "start"},
-                    "change_text": {"resolved": "change", "value": "change"},
-                    "confirm_text": {"resolved": "confirm", "value": "confirm"},
+                    "begin_text": "start",
+                    "change_text": "change",
+                    "confirm_text": "confirm",
                     "explanation_template": "",
                     "name": "Form 1",
-                    "previous_text": {"resolved": "prev", "value": "prev"},
+                    "previous_text": "prev",
                     "submission_confirmation_template": "",
                 },
                 "nl": {
-                    "begin_text": {"resolved": "Formulier starten", "value": ""},
-                    "change_text": {"resolved": "Wijzigen", "value": ""},
-                    "confirm_text": {"resolved": "Verzenden", "value": ""},
+                    "begin_text": "",
+                    "change_text": "",
+                    "confirm_text": "",
                     "explanation_template": "",
                     "name": "",
-                    "previous_text": {"resolved": "Vorige stap", "value": ""},
+                    "previous_text": "",
                     "submission_confirmation_template": "",
-                },
-            },
-        )
-        self.assertEqual(
-            response.data["steps"][0]["literals"]["translations"],
-            {
-                "en": {
-                    "next_text": {"resolved": "Next", "value": "Next"},
-                    "previous_text": {"resolved": "Previous", "value": "Previous"},
-                    "save_text": {"resolved": "Save", "value": "Save"},
-                },
-                "nl": {
-                    "next_text": {"resolved": "Volgende", "value": ""},
-                    "previous_text": {"resolved": "Vorige stap", "value": ""},
-                    "save_text": {"resolved": "Tussentijds opslaan", "value": ""},
                 },
             },
         )
@@ -1304,21 +1268,21 @@ class FormsAPITranslationTests(APITestCase):
             "authentication_backends": ["digid"],
             "translations": {
                 "en": {
-                    "begin_text": {"value": "start"},
-                    "change_text": {"value": "change"},
-                    "confirm_text": {"value": "confirm"},
-                    "explanation_template": "explanation",
                     "name": "Form 1",
-                    "previous_text": {"value": "prev"},
+                    "begin_text": "start",
+                    "change_text": "change",
+                    "confirm_text": "confirm",
+                    "previous_text": "prev",
+                    "explanation_template": "explanation",
                     "submission_confirmation_template": "submission",
                 },
                 "nl": {
-                    "begin_text": {"value": "begin"},
-                    "change_text": {"value": "pas aan"},
-                    "confirm_text": {"value": "bevestig"},
-                    "explanation_template": "uitleg",
                     "name": "Formulier 1",
-                    "previous_text": {"value": "vorige"},
+                    "begin_text": "begin",
+                    "change_text": "pas aan",
+                    "confirm_text": "bevestig",
+                    "previous_text": "vorige",
+                    "explanation_template": "uitleg",
                     "submission_confirmation_template": "bevestiging",
                 },
             },
@@ -1381,18 +1345,18 @@ class FormsAPITranslationTests(APITestCase):
         data = {
             "translations": {
                 "en": {
-                    "begin_text": {"value": "start"},
-                    "change_text": {"value": "change"},
-                    "confirm_text": {"value": "confirm"},
+                    "begin_text": "start",
+                    "change_text": "change",
+                    "confirm_text": "confirm",
                     "name": "Form 1",
-                    "previous_text": {"value": "prev"},
+                    "previous_text": "prev",
                 },
                 "nl": {
-                    "begin_text": {"value": "begin"},
-                    "change_text": {"value": "pas aan"},
-                    "confirm_text": {"value": "bevestig"},
+                    "begin_text": "begin",
+                    "change_text": "pas aan",
+                    "confirm_text": "bevestig",
                     "name": "Formulier 1",
-                    "previous_text": {"value": "vorige"},
+                    "previous_text": "vorige",
                 },
             },
             "confirmation_email_template": {
@@ -1444,12 +1408,8 @@ class FormsAPITranslationTests(APITestCase):
             "Inhoud {% appointment_information %} {% payment_information %}",
         )
 
-    @patch(
-        "openforms.api.exception_handling.uuid.uuid4",
-        return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
-    )
     def test_update_with_translations_confirmation_email_template_validate_content(
-        self, _mock
+        self,
     ):
         self.client.force_authenticate(user=self.user)
 
@@ -1475,33 +1435,22 @@ class FormsAPITranslationTests(APITestCase):
         response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        invalid_params = response.json()["invalidParams"]
         self.assertEqual(
-            response.json(),
-            {
-                "type": "http://testserver/fouten/ValidationError/",
-                "code": "invalid",
-                "title": _("Invalid input."),
-                "status": 400,
-                "detail": "",
-                "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
-                "invalidParams": [
-                    {
-                        "name": "confirmationEmailTemplate.translations.en.content",
-                        "code": "invalid",
-                        "reason": _("Missing required template-tag {tag}").format(
-                            tag="{% appointment_information %}"
-                        ),
-                    }
-                ],
-            },
+            invalid_params,
+            [
+                {
+                    "name": "confirmationEmailTemplate.translations.en.content",
+                    "code": "invalid",
+                    "reason": _("Missing required template-tag {tag}").format(
+                        tag="{% appointment_information %}"
+                    ),
+                }
+            ],
         )
 
-    @patch(
-        "openforms.api.exception_handling.uuid.uuid4",
-        return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
-    )
     def test_update_with_translations_confirmation_email_template_validate_all_or_none(
-        self, _mock
+        self,
     ):
         self.client.force_authenticate(user=self.user)
 
@@ -1527,32 +1476,21 @@ class FormsAPITranslationTests(APITestCase):
         response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        invalid_params = response.json()["invalidParams"]
         self.assertEqual(
-            response.json(),
-            {
-                "type": "http://testserver/fouten/ValidationError/",
-                "code": "invalid",
-                "title": _("Invalid input."),
-                "status": 400,
-                "detail": "",
-                "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
-                "invalidParams": [
-                    {
-                        "name": "confirmationEmailTemplate.translations",
-                        "code": "required",
-                        "reason": _(
-                            "The fields {fields} must all be provided if one of them is provided."
-                        ).format(fields="subject, content"),
-                    }
-                ],
-            },
+            invalid_params,
+            [
+                {
+                    "name": "confirmationEmailTemplate.translations.en.nonFieldErrors",
+                    "code": "required",
+                    "reason": _(
+                        "The fields {fields} must all be provided if one of them is provided."
+                    ).format(fields="subject, content"),
+                }
+            ],
         )
 
-    @patch(
-        "openforms.api.exception_handling.uuid.uuid4",
-        return_value="95a55a81-d316-44e8-b090-0519dd21be5f",
-    )
-    def test_update_with_translations_validate_literals(self, _mock):
+    def test_update_with_translations_validate_literals(self):
         self.client.force_authenticate(user=self.user)
 
         form = FormFactory.create()
@@ -1561,147 +1499,106 @@ class FormsAPITranslationTests(APITestCase):
         data = {
             "translations": {
                 "en": {
-                    "begin_text": "incorrect_value",
-                    "change_text": "incorrect_value",
-                    "confirm_text": "incorrect_value",
-                    "explanation_template": "",
                     "name": "x" * 151,
-                    "previous_text": "incorrect_value",
+                    "explanation_template": "",
                     "submission_confirmation_template": r"{{}}}",
+                    "begin_text": {"value": "incorrect_value"},
+                    "change_text": {"value": "incorrect_value"},
+                    "confirm_text": {"value": "incorrect_value"},
+                    "previous_text": {"value": "incorrect_value"},
                 },
                 "nl": {
-                    "begin_text": {"value": "correct"},
-                    "change_text": "incorrect_value",
-                    "confirm_text": "incorrect_value",
-                    "explanation_template": "",
                     "name": "x" * 151,
-                    "previous_text": "x" * 51,
+                    "explanation_template": "",
                     "submission_confirmation_template": r"{{}}}",
+                    "begin_text": "correct",
+                    "change_text": {"value": "incorrect_value"},
+                    "confirm_text": {"value": "incorrect_value"},
+                    "previous_text": "x" * 51,
                 },
             },
         }
         response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(
-            response.json(),
+        invalid_params = response.json()["invalidParams"]
+        expected_errors = [
             {
-                "type": "http://testserver/fouten/ValidationError/",
-                "code": "invalid",
-                "title": _("Invalid input."),
-                "status": 400,
-                "detail": "",
-                "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
-                "invalidParams": [
-                    {
-                        "code": "max_length",
-                        "name": "name",
-                        "reason": _(
-                            "Ensure this field has no more than {max_length} characters."
-                        ).format(max_length=150),
-                    },
-                    {
-                        "code": "invalid",
-                        "name": "literals.previousText.nonFieldErrors",
-                        "reason": Serializer.default_error_messages["invalid"].format(
-                            datatype="str"
-                        ),
-                    },
-                    {
-                        "code": "invalid",
-                        "name": "literals.changeText.nonFieldErrors",
-                        "reason": Serializer.default_error_messages["invalid"].format(
-                            datatype="str"
-                        ),
-                    },
-                    {
-                        "code": "invalid",
-                        "name": "literals.confirmText.nonFieldErrors",
-                        "reason": Serializer.default_error_messages["invalid"].format(
-                            datatype="str"
-                        ),
-                    },
-                    {
-                        "code": "syntax_error",
-                        "name": "submissionConfirmationTemplate",
-                        "reason": "\n                <p>Empty variable tag on line 1</p>\n                \n            ",
-                    },
-                    {
-                        "name": "translations.nl.changeText.nonFieldErrors",
-                        "code": "invalid",
-                        "reason": Serializer.default_error_messages["invalid"].format(
-                            datatype="str"
-                        ),
-                    },
-                    {
-                        "name": "translations.nl.confirmText.nonFieldErrors",
-                        "code": "invalid",
-                        "reason": Serializer.default_error_messages["invalid"].format(
-                            datatype="str"
-                        ),
-                    },
-                    {
-                        "name": "translations.nl.name",
-                        "code": "max_length",
-                        "reason": _(
-                            "Ensure this field has no more than {max_length} characters."
-                        ).format(max_length=150),
-                    },
-                    {
-                        "name": "translations.nl.previousText.nonFieldErrors",
-                        "code": "invalid",
-                        "reason": Serializer.default_error_messages["invalid"].format(
-                            datatype="str"
-                        ),
-                    },
-                    {
-                        "name": "translations.nl.submissionConfirmationTemplate",
-                        "code": "syntax_error",
-                        "reason": "\n                <p>Empty variable tag on line 1</p>\n                \n            ",
-                    },
-                    {
-                        "name": "translations.en.beginText.nonFieldErrors",
-                        "code": "invalid",
-                        "reason": Serializer.default_error_messages["invalid"].format(
-                            datatype="str"
-                        ),
-                    },
-                    {
-                        "name": "translations.en.changeText.nonFieldErrors",
-                        "code": "invalid",
-                        "reason": Serializer.default_error_messages["invalid"].format(
-                            datatype="str"
-                        ),
-                    },
-                    {
-                        "name": "translations.en.confirmText.nonFieldErrors",
-                        "code": "invalid",
-                        "reason": Serializer.default_error_messages["invalid"].format(
-                            datatype="str"
-                        ),
-                    },
-                    {
-                        "name": "translations.en.name",
-                        "code": "max_length",
-                        "reason": _(
-                            "Ensure this field has no more than {max_length} characters."
-                        ).format(max_length=150),
-                    },
-                    {
-                        "name": "translations.en.previousText.nonFieldErrors",
-                        "code": "invalid",
-                        "reason": Serializer.default_error_messages["invalid"].format(
-                            datatype="str"
-                        ),
-                    },
-                    {
-                        "name": "translations.en.submissionConfirmationTemplate",
-                        "code": "syntax_error",
-                        "reason": "\n                <p>Empty variable tag on line 1</p>\n                \n            ",
-                    },
-                ],
+                "name": "translations.nl.name",
+                "code": "max_length",
+                "reason": _(
+                    "Ensure this field has no more than {max_length} characters."
+                ).format(max_length=150),
             },
-        )
+            {
+                "name": "translations.nl.changeText",
+                "code": "invalid",
+                "reason": _("Not a valid string."),
+            },
+            {
+                "name": "translations.nl.confirmText",
+                "code": "invalid",
+                "reason": _("Not a valid string."),
+            },
+            {
+                "name": "translations.nl.previousText",
+                "code": "max_length",
+                "reason": _(
+                    "Ensure this field has no more than {max_length} characters."
+                ).format(max_length=50),
+            },
+            {
+                "name": "translations.nl.submissionConfirmationTemplate",
+                "code": "syntax_error",
+                "reason": "\n                <p>Empty variable tag on line 1</p>\n                \n            ",
+            },
+            {
+                "name": "translations.en.name",
+                "code": "max_length",
+                "reason": _(
+                    "Ensure this field has no more than {max_length} characters."
+                ).format(max_length=150),
+            },
+            {
+                "name": "translations.en.submissionConfirmationTemplate",
+                "code": "syntax_error",
+                "reason": "\n                <p>Empty variable tag on line 1</p>\n                \n            ",
+            },
+            {
+                "name": "translations.en.beginText",
+                "code": "invalid",
+                "reason": _("Not a valid string."),
+            },
+            {
+                "name": "translations.en.changeText",
+                "code": "invalid",
+                "reason": _("Not a valid string."),
+            },
+            {
+                "name": "translations.en.confirmText",
+                "code": "invalid",
+                "reason": _("Not a valid string."),
+            },
+            {
+                "name": "translations.en.previousText",
+                "code": "invalid",
+                "reason": _("Not a valid string."),
+            },
+        ]
+
+        for error in expected_errors:
+            with self.subTest(field=error["name"], code=error["code"]):
+                self.assertIn(error, invalid_params)
+
+        expected_valid = [
+            "translations.en.explanation_template",
+            "translations.nl.explanation_template",
+            "translations.nl.begin_text",
+        ]
+        error_names = [err["name"] for err in invalid_params]
+        for unexpected_error in expected_valid:
+            with self.subTest(name=unexpected_error):
+                self.assertNotIn(unexpected_error, error_names)
 
     def test_create_with_translations_normalize_values(self):
         self.client.force_authenticate(user=self.user)
@@ -1713,14 +1610,14 @@ class FormsAPITranslationTests(APITestCase):
             "authentication_backends": ["digid"],
             "translations": {
                 "en": {
-                    "begin_text": {"value": "start"},
-                    "change_text": {"value": "change"},
-                    "confirm_text": {"value": "confirm"},
+                    "begin_text": "start",
+                    "change_text": "change",
+                    "confirm_text": "confirm",
                 },
                 "nl": {
                     "explanation_template": "uitleg",
                     "name": "Formulier 1",
-                    "previous_text": {"value": "vorige"},
+                    "previous_text": "vorige",
                     "submission_confirmation_template": "bevestiging",
                 },
             },
@@ -1764,112 +1661,10 @@ class FormsAPITranslationTests(APITestCase):
             "Content {% appointment_information %} {% payment_information %}",
         )
 
-        self.assertEqual(form.confirmation_email_template.subject_nl, "")
+        # checks that the fallback to original non-translation fields is registered
+        # in the default language field
+        self.assertEqual(form.confirmation_email_template.subject_nl, "foo")
         self.assertEqual(
             form.confirmation_email_template.content_nl,
-            "",
-        )
-
-    def test_literal_translations_based_on_global_config(self):
-        """
-        If there are no explicit values for literals, they should be populated from the appropriate translationfield on the GlobalConfiguration
-        """
-        self.client.force_authenticate(user=self.user)
-
-        url = reverse("api:form-list")
-        data = {
-            "name": "Test Post Form",
-            "slug": "test-post-form",
-            "authentication_backends": ["digid"],
-            "translations": {
-                "en": {
-                    "begin_text": {"value": ""},
-                    "change_text": {"value": ""},
-                    "confirm_text": {"value": ""},
-                    "explanation_template": "explanation",
-                    "name": "Form 1",
-                    "previous_text": {"value": ""},
-                    "submission_confirmation_template": "submission",
-                },
-                "nl": {
-                    "begin_text": {"value": ""},
-                    "change_text": {"value": ""},
-                    "confirm_text": {"value": ""},
-                    "explanation_template": "uitleg",
-                    "name": "Formulier 1",
-                    "previous_text": {"value": ""},
-                    "submission_confirmation_template": "bevestiging",
-                },
-            },
-            "confirmation_email_template": {
-                "subject": "foo",
-                "content": "{% appointment_information %} {% payment_information %}",
-                "translations": {
-                    "en": {
-                        "subject": "Subject",
-                        "content": "Content {% appointment_information %} {% payment_information %}",
-                    },
-                    "nl": {
-                        "subject": "Onderwerp",
-                        "content": "Inhoud {% appointment_information %} {% payment_information %}",
-                    },
-                },
-            },
-        }
-
-        response = self.client.post(url, data=data)
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(
-            response.data["translations"],
-            {
-                "en": {
-                    "begin_text": {"resolved": "Start form", "value": ""},
-                    "change_text": {"resolved": "Change", "value": ""},
-                    "confirm_text": {"resolved": "Submit", "value": ""},
-                    "explanation_template": "explanation",
-                    "name": "Form 1",
-                    "previous_text": {"resolved": "Previous step", "value": ""},
-                    "submission_confirmation_template": "submission",
-                },
-                "nl": {
-                    "begin_text": {"resolved": "Formulier starten", "value": ""},
-                    "change_text": {"resolved": "Wijzigen", "value": ""},
-                    "confirm_text": {"resolved": "Verzenden", "value": ""},
-                    "explanation_template": "uitleg",
-                    "name": "Formulier 1",
-                    "previous_text": {"resolved": "Vorige stap", "value": ""},
-                    "submission_confirmation_template": "bevestiging",
-                },
-            },
-        )
-
-        form = Form.objects.get(uuid=response.data["uuid"])
-
-        self.assertEqual(form.begin_text_en, "")
-        self.assertEqual(form.change_text_en, "")
-        self.assertEqual(form.confirm_text_en, "")
-        self.assertEqual(form.explanation_template_en, "explanation")
-        self.assertEqual(form.name_en, "Form 1")
-        self.assertEqual(form.previous_text_en, "")
-        self.assertEqual(form.submission_confirmation_template_en, "submission")
-
-        self.assertEqual(form.begin_text_nl, "")
-        self.assertEqual(form.change_text_nl, "")
-        self.assertEqual(form.confirm_text_nl, "")
-        self.assertEqual(form.explanation_template_nl, "uitleg")
-        self.assertEqual(form.name_nl, "Formulier 1")
-        self.assertEqual(form.previous_text_nl, "")
-        self.assertEqual(form.submission_confirmation_template_nl, "bevestiging")
-
-        self.assertEqual(form.confirmation_email_template.subject_en, "Subject")
-        self.assertEqual(
-            form.confirmation_email_template.content_en,
-            "Content {% appointment_information %} {% payment_information %}",
-        )
-
-        self.assertEqual(form.confirmation_email_template.subject_nl, "Onderwerp")
-        self.assertEqual(
-            form.confirmation_email_template.content_nl,
-            "Inhoud {% appointment_information %} {% payment_information %}",
+            "{% appointment_information %} {% payment_information %}",
         )
