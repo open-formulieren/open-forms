@@ -1,18 +1,13 @@
 from rest_framework import serializers
 
 from openforms.api.validators import AllOrNoneRequiredFieldsValidator
-from openforms.translations.api.serializers import (
-    DefaultTranslationValueSerializerMixin,
-    ModelTranslationsSerializer,
-)
+from openforms.translations.api.serializers import ModelTranslationsSerializer
 
 from ..models import ConfirmationEmailTemplate
 
 
-class ConfirmationEmailTemplateSerializer(
-    DefaultTranslationValueSerializerMixin, serializers.ModelSerializer
-):
-    translations = ModelTranslationsSerializer(required=False)
+class ConfirmationEmailTemplateSerializer(serializers.ModelSerializer):
+    translations = ModelTranslationsSerializer()
 
     class Meta:
         model = ConfirmationEmailTemplate

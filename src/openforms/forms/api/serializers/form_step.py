@@ -2,31 +2,22 @@ from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
 from openforms.api.serializers import PublicFieldsSerializerMixin
-from openforms.translations.api.serializers import (
-    DefaultTranslationValueSerializerMixin,
-    ModelTranslationsSerializer,
-)
+from openforms.translations.api.serializers import ModelTranslationsSerializer
 
 from ...models import FormStep
 from .button_text import ButtonTextSerializer
 
 
-class FormStepLiteralsSerializer(
-    DefaultTranslationValueSerializerMixin,
-    PublicFieldsSerializerMixin,
-    serializers.Serializer,
-):
+class FormStepLiteralsSerializer(serializers.Serializer):
     previous_text = ButtonTextSerializer(raw_field="previous_text", required=False)
     save_text = ButtonTextSerializer(raw_field="save_text", required=False)
     next_text = ButtonTextSerializer(raw_field="next_text", required=False)
-    translations = ModelTranslationsSerializer(required=False)
 
     class Meta:
         fields = (
             "previous_text",
             "save_text",
             "next_text",
-            "translations",
         )
         # allowlist for anonymous users
         public_fields = (
@@ -92,11 +83,7 @@ class FormStepSerializer(
         parent_lookup_kwargs={"form_uuid_or_slug": "form__uuid"},
         read_only=True,
     )
-    translations = ModelTranslationsSerializer(
-        source="form_definition",
-        required=False,
-        read_only=True,
-    )
+    translations = ModelTranslationsSerializer()
 
     parent_lookup_kwargs = {
         "form_uuid_or_slug": "form__uuid",

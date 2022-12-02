@@ -15,10 +15,7 @@ from openforms.payments.api.fields import PaymentOptionsReadOnlyField
 from openforms.payments.registry import register as payment_register
 from openforms.products.models import Product
 from openforms.registrations.registry import register as registration_register
-from openforms.translations.api.serializers import (
-    DefaultTranslationValueSerializerMixin,
-    ModelTranslationsSerializer,
-)
+from openforms.translations.api.serializers import ModelTranslationsSerializer
 
 from ...constants import ConfirmationEmailOptions
 from ...models import Category, Form
@@ -47,11 +44,7 @@ class FormLiteralsSerializer(serializers.Serializer):
     confirm_text = ButtonTextSerializer(raw_field="confirm_text", required=False)
 
 
-class FormSerializer(
-    DefaultTranslationValueSerializerMixin,
-    PublicFieldsSerializerMixin,
-    serializers.ModelSerializer,
-):
+class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     """
     Represent a single `Form` definition.
 
@@ -117,15 +110,7 @@ class FormSerializer(
     is_deleted = serializers.BooleanField(source="_is_deleted", required=False)
     required_fields_with_asterisk = serializers.SerializerMethodField(read_only=True)
 
-    translations = ModelTranslationsSerializer(
-        required=False,
-        nested_fields_mapping={
-            "previous_text": "literals",
-            "begin_text": "literals",
-            "change_text": "literals",
-            "confirm_text": "literals",
-        },
-    )
+    translations = ModelTranslationsSerializer()
 
     class Meta:
         model = Form
@@ -222,7 +207,10 @@ class FormSerializer(
     def get_fields(self):
         fields = super().get_fields()
         # lazy set choices
-        fields["authentication_backends"].child.choices = auth_register.get_choices()
+        if "authentication_backends" in fields:
+            fields[
+                "authentication_backends"
+            ].child.choices = auth_register.get_choices()
         if "payment_backend" in fields:
             fields["payment_backend"].choices = [
                 ("", "")
@@ -338,9 +326,12 @@ class FormExportSerializer(FormSerializer):
     def get_fields(self):
         fields = super().get_fields()
         # for export we want to use the list of plugin-id's instead of detailed info objects
-        del fields["login_options"]
-        del fields["payment_options"]
-        fields["authentication_backends"].write_only = False
+        if "login_options" in fields:
+            del fields["login_options"]
+        if "payment_options" in fields:
+            del fields["payment_options"]
+        if "authentication_backends" in fields:
+            fields["authentication_backends"].write_only = False
         return fields
 
 
