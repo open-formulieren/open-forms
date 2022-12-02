@@ -538,6 +538,13 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
+        with self.subTest("#2422: postcode must be normalized"):
+            self.assertXPathEquals(
+                xml_doc,
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:verblijfsadres/bg:aoa.postcode",
+                "1000AA",
+            )
+
         # don't expect registered data in extraElementen
         self.assertXPathNotExists(
             xml_doc, "//stuf:extraElementen/stuf:extraElement[@naam='voornaam']"
