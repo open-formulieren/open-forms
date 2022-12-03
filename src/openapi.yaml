@@ -1169,7 +1169,7 @@ paths:
         Non-staff users receive a subset of the documented fields which are used
         for internal form configuration. These fields are:
 
-        - `literals.translations`
+        - `translations`
       summary: List form steps
       parameters:
       - in: path
@@ -1209,7 +1209,7 @@ paths:
         Non-staff users receive a subset of the documented fields which are used
         for internal form configuration. These fields are:
 
-        - `literals.translations`
+        - `translations`
       summary: Create a form step
       parameters:
       - in: path
@@ -1260,7 +1260,7 @@ paths:
         Non-staff users receive a subset of the documented fields which are used
         for internal form configuration. These fields are:
 
-        - `literals.translations`
+        - `translations`
       summary: Retrieve form step details
       parameters:
       - in: path
@@ -1304,7 +1304,7 @@ paths:
         Non-staff users receive a subset of the documented fields which are used
         for internal form configuration. These fields are:
 
-        - `literals.translations`
+        - `translations`
       summary: Update all details of a form step
       parameters:
       - in: path
@@ -1360,7 +1360,7 @@ paths:
         Non-staff users receive a subset of the documented fields which are used
         for internal form configuration. These fields are:
 
-        - `literals.translations`
+        - `translations`
       summary: Update some details of a form step
       parameters:
       - in: path
@@ -1415,7 +1415,7 @@ paths:
         Non-staff users receive a subset of the documented fields which are used
         for internal form configuration. These fields are:
 
-        - `literals.translations`
+        - `translations`
       summary: Delete a form step
       parameters:
       - in: path
@@ -5390,7 +5390,68 @@ components:
           description: The content of the email message can contain variables that
             will be templated from the submitted form data.
         translations:
-          $ref: '#/components/schemas/ModelTranslations'
+          $ref: '#/components/schemas/ConfirmationEmailTemplateModelTranslations'
+    ConfirmationEmailTemplateENTranslations:
+      type: object
+      properties:
+        subject:
+          type: string
+          nullable: true
+          title: Subject [en]
+          description: Subject of the email message
+          maxLength: 1000
+        content:
+          type: string
+          nullable: true
+          title: Content [en]
+          description: The content of the email message can contain variables that
+            will be templated from the submitted form data.
+    ConfirmationEmailTemplateModelTranslations:
+      type: object
+      description: |-
+        Nest a model's translatable fields inside the serializer.
+
+        This serializer takes the structure of the parent serializer it's included in
+        and analyzes the model it belongs to to extract the translatable fields. The parent
+        serializer is stripped down for only the translatable fields and assigned to the
+        language-specific model fields, while keeping parent serializer validation logic/
+        definitions.
+
+        This stripped down serializer is applied for every language code in
+        settings.LANGUAGES. Effectively, this results in a structure like:
+
+            ParentModelSerializer:
+                ... other fields/serializers
+
+                ModelTranslationsSerializer:
+                    nl:
+                        StrippedParentModelSerializer (nl)
+                    en:
+                        StrippedParentModelSerializer (en)
+      properties:
+        nl:
+          allOf:
+          - $ref: '#/components/schemas/ConfirmationEmailTemplateNLTranslations'
+          description: 'Content translations for: Dutch'
+        en:
+          allOf:
+          - $ref: '#/components/schemas/ConfirmationEmailTemplateENTranslations'
+          description: 'Content translations for: English'
+    ConfirmationEmailTemplateNLTranslations:
+      type: object
+      properties:
+        subject:
+          type: string
+          nullable: true
+          title: Subject [nl]
+          description: Subject of the email message
+          maxLength: 1000
+        content:
+          type: string
+          nullable: true
+          title: Content [nl]
+          description: The content of the email message can contain variables that
+            will be templated from the submitted form data.
     ContextAwareFormStep:
       type: object
       properties:
@@ -5659,7 +5720,7 @@ components:
           type: boolean
           readOnly: true
         translations:
-          $ref: '#/components/schemas/ModelTranslations'
+          $ref: '#/components/schemas/FormModelTranslations'
       required:
       - loginOptions
       - loginRequired
@@ -5736,7 +5797,7 @@ components:
           type: boolean
           description: Allow this definition to be re-used in multiple forms
         translations:
-          $ref: '#/components/schemas/ModelTranslations'
+          $ref: '#/components/schemas/FormDefinitionModelTranslations'
       required:
       - configuration
       - name
@@ -5775,7 +5836,7 @@ components:
           type: boolean
           description: Allow this definition to be re-used in multiple forms
         translations:
-          $ref: '#/components/schemas/ModelTranslations'
+          $ref: '#/components/schemas/FormDefinitionDetailModelTranslations'
         usedIn:
           type: array
           items:
@@ -5789,6 +5850,160 @@ components:
       - slug
       - url
       - usedIn
+    FormDefinitionDetailENTranslations:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          title: Name [en]
+          maxLength: 50
+    FormDefinitionDetailModelTranslations:
+      type: object
+      description: |-
+        Nest a model's translatable fields inside the serializer.
+
+        This serializer takes the structure of the parent serializer it's included in
+        and analyzes the model it belongs to to extract the translatable fields. The parent
+        serializer is stripped down for only the translatable fields and assigned to the
+        language-specific model fields, while keeping parent serializer validation logic/
+        definitions.
+
+        This stripped down serializer is applied for every language code in
+        settings.LANGUAGES. Effectively, this results in a structure like:
+
+            ParentModelSerializer:
+                ... other fields/serializers
+
+                ModelTranslationsSerializer:
+                    nl:
+                        StrippedParentModelSerializer (nl)
+                    en:
+                        StrippedParentModelSerializer (en)
+      properties:
+        nl:
+          allOf:
+          - $ref: '#/components/schemas/FormDefinitionDetailNLTranslations'
+          description: 'Content translations for: Dutch'
+        en:
+          allOf:
+          - $ref: '#/components/schemas/FormDefinitionDetailENTranslations'
+          description: 'Content translations for: English'
+    FormDefinitionDetailNLTranslations:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          title: Name [nl]
+          maxLength: 50
+    FormDefinitionENTranslations:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          title: Name [en]
+          maxLength: 50
+    FormDefinitionModelTranslations:
+      type: object
+      description: |-
+        Nest a model's translatable fields inside the serializer.
+
+        This serializer takes the structure of the parent serializer it's included in
+        and analyzes the model it belongs to to extract the translatable fields. The parent
+        serializer is stripped down for only the translatable fields and assigned to the
+        language-specific model fields, while keeping parent serializer validation logic/
+        definitions.
+
+        This stripped down serializer is applied for every language code in
+        settings.LANGUAGES. Effectively, this results in a structure like:
+
+            ParentModelSerializer:
+                ... other fields/serializers
+
+                ModelTranslationsSerializer:
+                    nl:
+                        StrippedParentModelSerializer (nl)
+                    en:
+                        StrippedParentModelSerializer (en)
+      properties:
+        nl:
+          allOf:
+          - $ref: '#/components/schemas/FormDefinitionNLTranslations'
+          description: 'Content translations for: Dutch'
+        en:
+          allOf:
+          - $ref: '#/components/schemas/FormDefinitionENTranslations'
+          description: 'Content translations for: English'
+    FormDefinitionNLTranslations:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+          title: Name [nl]
+          maxLength: 50
+    FormENTranslations:
+      type: object
+      description: |-
+        Represent a single `Form` definition.
+
+        Contains all the relevant metadata and configuration from the form design. Form
+        renderers should use this as starting point.
+
+        Note that this schema is used for both non-admin users filling out forms and
+        admin users designing forms. The fields that are only relevant for admin users are:
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `translations`.
+      properties:
+        name:
+          type: string
+          nullable: true
+          title: Name [en]
+          maxLength: 150
+        submissionConfirmationTemplate:
+          type: string
+          nullable: true
+          title: Submission confirmation template [en]
+          description: The content of the submission confirmation page. It can contain
+            variables that will be templated from the submitted form data. If not
+            specified, the global template will be used.
+        beginText:
+          type: string
+          nullable: true
+          title: Begin text [en]
+          description: The text that will be displayed at the start of the form to
+            indicate the user can begin to fill in the form. Leave blank to get value
+            from global configuration.
+          maxLength: 50
+        previousText:
+          type: string
+          nullable: true
+          title: Previous text [en]
+          description: The text that will be displayed in the overview page to go
+            to the previous step. Leave blank to get value from global configuration.
+          maxLength: 50
+        changeText:
+          type: string
+          nullable: true
+          title: Change text [en]
+          description: The text that will be displayed in the overview page to change
+            a certain step. Leave blank to get value from global configuration.
+          maxLength: 50
+        confirmText:
+          type: string
+          nullable: true
+          title: Confirm text [en]
+          description: The text that will be displayed in the overview page to confirm
+            the form is filled in correctly. Leave blank to get value from global
+            configuration.
+          maxLength: 50
+        explanationTemplate:
+          type: string
+          nullable: true
+          title: Explanation template [en]
+          description: Content that will be shown on the start page of the form, below
+            the title and above the log in text.
     FormImport:
       type: object
       properties:
@@ -5861,6 +6076,97 @@ components:
       - order
       - url
       - uuid
+    FormModelTranslations:
+      type: object
+      description: |-
+        Nest a model's translatable fields inside the serializer.
+
+        This serializer takes the structure of the parent serializer it's included in
+        and analyzes the model it belongs to to extract the translatable fields. The parent
+        serializer is stripped down for only the translatable fields and assigned to the
+        language-specific model fields, while keeping parent serializer validation logic/
+        definitions.
+
+        This stripped down serializer is applied for every language code in
+        settings.LANGUAGES. Effectively, this results in a structure like:
+
+            ParentModelSerializer:
+                ... other fields/serializers
+
+                ModelTranslationsSerializer:
+                    nl:
+                        StrippedParentModelSerializer (nl)
+                    en:
+                        StrippedParentModelSerializer (en)
+      properties:
+        nl:
+          allOf:
+          - $ref: '#/components/schemas/FormNLTranslations'
+          description: 'Content translations for: Dutch'
+        en:
+          allOf:
+          - $ref: '#/components/schemas/FormENTranslations'
+          description: 'Content translations for: English'
+    FormNLTranslations:
+      type: object
+      description: |-
+        Represent a single `Form` definition.
+
+        Contains all the relevant metadata and configuration from the form design. Form
+        renderers should use this as starting point.
+
+        Note that this schema is used for both non-admin users filling out forms and
+        admin users designing forms. The fields that are only relevant for admin users are:
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `translations`.
+      properties:
+        name:
+          type: string
+          nullable: true
+          title: Name [nl]
+          maxLength: 150
+        submissionConfirmationTemplate:
+          type: string
+          nullable: true
+          title: Submission confirmation template [nl]
+          description: The content of the submission confirmation page. It can contain
+            variables that will be templated from the submitted form data. If not
+            specified, the global template will be used.
+        beginText:
+          type: string
+          nullable: true
+          title: Begin text [nl]
+          description: The text that will be displayed at the start of the form to
+            indicate the user can begin to fill in the form. Leave blank to get value
+            from global configuration.
+          maxLength: 50
+        previousText:
+          type: string
+          nullable: true
+          title: Previous text [nl]
+          description: The text that will be displayed in the overview page to go
+            to the previous step. Leave blank to get value from global configuration.
+          maxLength: 50
+        changeText:
+          type: string
+          nullable: true
+          title: Change text [nl]
+          description: The text that will be displayed in the overview page to change
+            a certain step. Leave blank to get value from global configuration.
+          maxLength: 50
+        confirmText:
+          type: string
+          nullable: true
+          title: Confirm text [nl]
+          description: The text that will be displayed in the overview page to confirm
+            the form is filled in correctly. Leave blank to get value from global
+            configuration.
+          maxLength: 50
+        explanationTemplate:
+          type: string
+          nullable: true
+          title: Explanation template [nl]
+          description: Content that will be shown on the start page of the form, below
+            the title and above the log in text.
     FormPriceLogic:
       type: object
       properties:
@@ -5931,9 +6237,7 @@ components:
         literals:
           $ref: '#/components/schemas/FormStepLiterals'
         translations:
-          allOf:
-          - $ref: '#/components/schemas/ModelTranslations'
-          readOnly: true
+          $ref: '#/components/schemas/FormStepModelTranslations'
       required:
       - configuration
       - formDefinition
@@ -5943,9 +6247,32 @@ components:
       - loginRequired
       - name
       - slug
-      - translations
       - url
       - uuid
+    FormStepENTranslations:
+      type: object
+      properties:
+        previousText:
+          type: string
+          nullable: true
+          title: Step previous text [en]
+          description: The text that will be displayed in the form step to go to the
+            previous step. Leave blank to get value from global configuration.
+          maxLength: 50
+        saveText:
+          type: string
+          nullable: true
+          title: Step save text [en]
+          description: The text that will be displayed in the form step to save the
+            current information. Leave blank to get value from global configuration.
+          maxLength: 50
+        nextText:
+          type: string
+          nullable: true
+          title: Step next text [en]
+          description: The text that will be displayed in the form step to go to the
+            next step. Leave blank to get value from global configuration.
+          maxLength: 50
     FormStepLiterals:
       type: object
       properties:
@@ -5955,8 +6282,61 @@ components:
           $ref: '#/components/schemas/ButtonText'
         nextText:
           $ref: '#/components/schemas/ButtonText'
-        translations:
-          $ref: '#/components/schemas/ModelTranslations'
+    FormStepModelTranslations:
+      type: object
+      description: |-
+        Nest a model's translatable fields inside the serializer.
+
+        This serializer takes the structure of the parent serializer it's included in
+        and analyzes the model it belongs to to extract the translatable fields. The parent
+        serializer is stripped down for only the translatable fields and assigned to the
+        language-specific model fields, while keeping parent serializer validation logic/
+        definitions.
+
+        This stripped down serializer is applied for every language code in
+        settings.LANGUAGES. Effectively, this results in a structure like:
+
+            ParentModelSerializer:
+                ... other fields/serializers
+
+                ModelTranslationsSerializer:
+                    nl:
+                        StrippedParentModelSerializer (nl)
+                    en:
+                        StrippedParentModelSerializer (en)
+      properties:
+        nl:
+          allOf:
+          - $ref: '#/components/schemas/FormStepNLTranslations'
+          description: 'Content translations for: Dutch'
+        en:
+          allOf:
+          - $ref: '#/components/schemas/FormStepENTranslations'
+          description: 'Content translations for: English'
+    FormStepNLTranslations:
+      type: object
+      properties:
+        previousText:
+          type: string
+          nullable: true
+          title: Step previous text [nl]
+          description: The text that will be displayed in the form step to go to the
+            previous step. Leave blank to get value from global configuration.
+          maxLength: 50
+        saveText:
+          type: string
+          nullable: true
+          title: Step save text [nl]
+          description: The text that will be displayed in the form step to save the
+            current information. Leave blank to get value from global configuration.
+          maxLength: 50
+        nextText:
+          type: string
+          nullable: true
+          title: Step next text [nl]
+          description: The text that will be displayed in the form step to go to the
+            next step. Leave blank to get value from global configuration.
+          maxLength: 50
     FormVariable:
       type: object
       properties:
@@ -6341,18 +6721,6 @@ components:
       - slug
       - url
       - uuid
-    ModelTranslations:
-      type: object
-      properties:
-        nl:
-          type: object
-          additionalProperties: {}
-        en:
-          type: object
-          additionalProperties: {}
-      required:
-      - en
-      - nl
     NestedSubmissionPaymentDetail:
       type: object
       properties:
@@ -6593,7 +6961,7 @@ components:
           type: boolean
           readOnly: true
         translations:
-          $ref: '#/components/schemas/ModelTranslations'
+          $ref: '#/components/schemas/FormModelTranslations'
     PatchedFormDefinition:
       type: object
       properties:
@@ -6627,7 +6995,7 @@ components:
           type: boolean
           description: Allow this definition to be re-used in multiple forms
         translations:
-          $ref: '#/components/schemas/ModelTranslations'
+          $ref: '#/components/schemas/FormDefinitionModelTranslations'
     PatchedFormStep:
       type: object
       properties:
@@ -6666,9 +7034,7 @@ components:
         literals:
           $ref: '#/components/schemas/FormStepLiterals'
         translations:
-          allOf:
-          - $ref: '#/components/schemas/ModelTranslations'
-          readOnly: true
+          $ref: '#/components/schemas/FormStepModelTranslations'
     PaymentBackendEnum:
       enum:
       - ogone-legacy
