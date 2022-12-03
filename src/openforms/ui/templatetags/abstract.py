@@ -14,22 +14,6 @@ def get_config(kwargs):
     return config
 
 
-def get_config_from_prefix(config, prefix):
-    """
-    Creates a new "config" from kwargs, only for keys that start with prefix.
-    Strips prefix from resulting dict keys.
-    Strips leading underscore ("_") from dict keys.
-    :param config: dict, possibly output from get_config().
-    :param prefix: str, the prefix (without trailing underscore) to filter config on.
-    :return: dict
-    """
-    return {
-        key[len(prefix) + 1 :]: value
-        for key, value in config.items()
-        if key.startswith(prefix)
-    }
-
-
 def get_href(config, key="href", required_name=""):
     """
     Finds a "href" value, can be a url or a url name.
