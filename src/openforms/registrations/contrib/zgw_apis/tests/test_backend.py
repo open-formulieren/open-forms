@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from django.test import TestCase, tag
+from django.test import TestCase, override_settings, tag
 
 import requests_mock
 from freezegun import freeze_time
@@ -792,6 +792,7 @@ class ZGWBackendTests(TestCase):
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
         )
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_submission_with_registrator(self, m):
         submission = SubmissionFactory.from_components(
             [
@@ -864,7 +865,10 @@ class ZGWBackendTests(TestCase):
 
         post_data = create_medewerker_rol_call.json()
         self.assertEqual(post_data["betrokkeneType"], "medewerker")
-        self.assertEqual(post_data["roltoelichting"], "medewerker balie")
+        self.assertEqual(
+            post_data["roltoelichting"],
+            "Employee who registered the case on behalf of the customer.",
+        )
         self.assertEqual(
             post_data["roltype"],
             "https://catalogus.nl/api/v1/roltypen/111",

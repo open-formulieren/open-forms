@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 import requests_mock
 from zds_client.oas import schema_fetcher
@@ -9,10 +9,12 @@ from ..plugin import ZaakOptionsSerializer
 from .factories import ZgwConfigFactory
 
 
-@requests_mock.Mocker(real_http=False)
+@requests_mock.Mocker()
 class OmschrijvingValidatorTests(TestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         ZgwConfigFactory.create(
             zrc_service__api_root="https://zaken.nl/api/v1/",
             zrc_service__oas="https://zaken.nl/api/v1/schema/openapi.yaml",
@@ -59,6 +61,7 @@ class OmschrijvingValidatorTests(TestCase):
 
         self.assertTrue(is_valid)
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_invalid_omschrijving(self, m):
         mock_service_oas_get(m, "https://catalogus.nl/api/v1/", "catalogi")
         m.get(
@@ -82,3 +85,8 @@ class OmschrijvingValidatorTests(TestCase):
         is_valid = serializer.is_valid()
 
         self.assertFalse(is_valid)
+        self.assertIn("non_field_errors", serializer.errors)
+        self.assertEqual(
+            "Could not find a roltype with this description related to the zaaktype",
+            serializer.errors["non_field_errors"][0],
+        )

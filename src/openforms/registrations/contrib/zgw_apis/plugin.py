@@ -2,7 +2,7 @@ from functools import partial, wraps
 from typing import Dict, List, Optional, Tuple
 
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 import requests
 from rest_framework import serializers
@@ -15,8 +15,9 @@ from openforms.contrib.zgw.service import (
     create_rol,
     create_status,
     create_zaak,
+    match_omschrijving,
     relate_document,
-    retrieve_roltype,
+    retrieve_roltypen,
     set_zaak_payment,
 )
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
@@ -214,13 +215,18 @@ class ZGWRegistration(BasePlugin):
             hasattr(submission, "_registrator") and submission._registrator
         )
         if has_registrator:
-            roltype = retrieve_roltype(
-                options["medewerker_roltype"], **{"zaaktype": options["zaaktype"]}
-            )
+            roltype = retrieve_roltypen(
+                matcher=partial(
+                    match_omschrijving, omschrijving=options["medewerker_roltype"]
+                ),
+                query_params={"zaaktype": options["zaaktype"]},
+            )[0]
             registrator_rol_data = {
                 "betrokkeneType": "medewerker",
                 "roltype": roltype["url"],
-                "roltoelichting": "medewerker balie",
+                "roltoelichting": _(
+                    "Employee who registered the case on behalf of the customer."
+                ),
                 "betrokkeneIdentificatie": {
                     "identificatie": submission.registrator.value,
                 },
