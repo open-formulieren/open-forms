@@ -57,11 +57,16 @@
         {% if initiator.bsn or initiator.kvk %}
             <ZKN:heeftAlsInitiator StUF:verwerkingssoort="T" StUF:entiteittype="ZAKBTRINI">
                 <ZKN:gerelateerde>
-                    {% if medewerker %}
+                    {% comment SUPPORT FOR EMPLOYEES AS INITIATOR %}
+                    {% if initiator.TODO %}
                         <ZKN:medewerker StUF:entiteittype="MDW" StUF:verwerkingssoort="T">
-                            <ZKN:identificatie>{{ medewerker.identificatie }}</ZKN:identificatie>
+                            <ZKN:identificatie>?</ZKN:identificatie>
+                            <ZKN:achternaam>?</ZKN:achternaam>
+                            <ZKN:voorletters>?</ZKN:voorletters>
+                            <ZKN:voorvoegselAchternaam>?</ZKN:voorvoegselAchternaam>
                         </ZKN:medewerker>
                     {% endif %}
+                    {% endcomment %}
                     {% if initiator.bsn %}
                         <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
                             <BG:inp.bsn>{{ initiator.bsn }}</BG:inp.bsn>
@@ -109,6 +114,15 @@
                 </ZKN:gerelateerde>
                 <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
             </ZKN:heeftAlsInitiator>
+        {% endif %}
+        {% if medewerker %}
+        <ZKN:heeftAlsOverigBetrokkene StUF:entiteittype="ZAKBTROVR" StUF:verwerkingssoort="T">
+            <ZKN:gerelateerde>
+                <ZKN:medewerker StUF:entiteittype="MDW" StUF:verwerkingssoort="T">
+                    <ZKN:identificatie>{{ medewerker.identificatie }}</ZKN:identificatie>
+                </ZKN:medewerker>
+            </ZKN:gerelateerde>
+        </ZKN:heeftAlsOverigBetrokkene>
         {% endif %}
         {% if zds_zaaktype_status_code or zds_zaaktype_status_omschrijving %}
             <ZKN:heeft StUF:entiteittype="ZAKSTT" StUF:verwerkingssoort="T">

@@ -1408,7 +1408,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20001231",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": "J.W.",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsaanduiding": "M",
-                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:medewerker/zkn:identificatie": "123456782",  # Identificatie of the employee
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:gerelateerde/zkn:medewerker/zkn:identificatie": "123456782",  # Identificatie of the employee
                 "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
                 "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "52.36673378967122 4.893164274470299",
                 "//zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
