@@ -132,8 +132,10 @@ jobs:
           pip install -r requirements/ci.txt
 
       - name: Build and test docs
+        run: |
+          export OPENSSL_CONF=$(pwd)/openssl.conf
+          pytest check_sphinx.py -v --tb=auto
         working-directory: docs
-        run: pytest check_sphinx.py -v --tb=auto
 
   # see https://github.com/orgs/community/discussions/26671
   docker_build_setup:
