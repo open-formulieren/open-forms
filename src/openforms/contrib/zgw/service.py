@@ -204,24 +204,26 @@ def create_rol(zaak: dict, betrokkene: dict, options: dict) -> Optional[dict]:
     return rol
 
 
-def match_omschrijving(roltypen: List, **kwargs) -> List:
+def match_omschrijving(roltypen: List, omschrijving: str) -> List:
     matches = []
     for roltype in roltypen:
-        if roltype.get("omschrijving") == kwargs["omschrijving"]:
+        if roltype.get("omschrijving") == omschrijving:
             matches.append(roltype)
     return matches
 
 
+def noop_matcher(roltypen: list) -> list:
+    return roltypen
+
+
 def retrieve_roltypen(
-    matcher: Callable = None, query_params: Optional[dict] = None
+    matcher: Callable[[list], list] = noop_matcher, query_params: None | dict = None
 ) -> List:
     config = ZgwConfig.get_solo()
     ztc_client = config.ztc_service.build_client()
     roltypen = ztc_client.list("roltype", query_params)
 
-    if matcher:
-        return matcher(roltypen["results"])
-    return roltypen["results"]
+    return matcher(roltypen["results"])
 
 
 def create_status(zaak: dict) -> dict:
