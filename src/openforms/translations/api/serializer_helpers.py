@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from glom import assign, glom
 from rest_framework import serializers
 from rest_framework.fields import empty
@@ -61,6 +63,10 @@ def build_translated_model_fields_serializer(
     if set(base._declared_fields).intersection(set(fields)):
         raise TypeError("Declared translatable fields are currently not supported.")
 
+    model_fields = {
+        f.name: f for f in base.Meta.model._meta.get_fields() if f.name in fields
+    }
+
     # create the Meta class, which inherits from the base Meta
     Meta = type(
         "Meta",
@@ -71,7 +77,12 @@ def build_translated_model_fields_serializer(
             # Note that this does *not yet* take into account any possible
             # superclass extra_kwargs defined (such as validators).
             "extra_kwargs": {
-                field: {"source": f"{field}_{language_code}"} for field in fields
+                field: {
+                    "source": f"{field}_{language_code}",
+                    "allow_blank": language_code != settings.LANGUAGE_CODE
+                    or model_fields[field].blank,
+                }
+                for field in fields
             },
         },
     )
