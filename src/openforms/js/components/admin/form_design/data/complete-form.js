@@ -293,13 +293,21 @@ const saveCompleteForm = async (state, csrftoken) => {
   let stepsValidationErrors = [];
   let variableValidationErrors = [];
 
+  // we must reset validation errors before proceeding, otherwise the same validation
+  // error is shown multiple times
+  newState = produce(state, draft => {
+    draft.errors = {};
+    draft.validationErrors = [];
+    draft.tabsWithErrors = [];
+  });
+
   // first, persist the form itself as everything is related to this. If this succeeds
   // without validation errors, then `newState.form.uuid` will be set, guaranteed.
   try {
     newState = await saveForm(state, csrftoken);
   } catch (e) {
     if (e instanceof ValidationErrors) {
-      return [state, [e]];
+      return [newState, [e]];
     }
     throw e;
   }
