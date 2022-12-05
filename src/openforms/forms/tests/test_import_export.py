@@ -241,7 +241,7 @@ class ImportExportTests(TestCase):
         call_command("import", import_file=self.filepath)
 
         imported_form = Form.objects.last()
-        imported_form_step = imported_form.formstep_set.first()
+        imported_form_step = imported_form.formstep_set.get()
         imported_form_definition = imported_form_step.form_definition
 
         # check we imported a new form
@@ -451,7 +451,7 @@ class ImportExportTests(TestCase):
                 {% appointment_information %}
                 {% payment_information %}
                 """
-            ),
+            ).strip(),
         )
         email_template.subject = "Untranslated confirmation email subject"
         email_template.content = dedent(
@@ -460,7 +460,7 @@ class ImportExportTests(TestCase):
             {% appointment_information %}
             {% payment_information %}
             """
-        )
+        ).strip()
         email_template.save()
 
         form_definition = TranslatedFormDefinitionFactory.create(
@@ -488,7 +488,7 @@ class ImportExportTests(TestCase):
         # roundtrip
         with translation.override(other_language):
             call_command("export", form.pk, self.filepath)
-        # switch language
+        # language switched back to default
         form.delete()
         form_definition.delete()
         form_step.delete()
@@ -498,8 +498,8 @@ class ImportExportTests(TestCase):
         self.assertEqual(FormStep.objects.count(), 0)
         call_command("import", import_file=self.filepath)
 
-        imported_form = Form.objects.first()
-        imported_form_step = imported_form.formstep_set.select_related().first()
+        imported_form = Form.objects.get()
+        imported_form_step = imported_form.formstep_set.select_related().get()
 
         # assert translations survived the import
         self.assertEqual(imported_form.name, "Untranslated form name")
@@ -582,7 +582,6 @@ class ImportExportTests(TestCase):
                 "url",  # contains uuid
                 "active",  # import gets set to inactive
                 "category",  # gets unset
-                "confirmation_email_template",  # TODO bug???
                 "steps",  # duplicated in formSteps
             ],
             "formSteps": [
@@ -609,13 +608,14 @@ class ImportExportTests(TestCase):
 
         # assert JSON is still equivalent
         for part, json_string in original_json.items():
-            expected_data = json.loads(json_string)
-            imported_data = json.loads(imported_json[part])
-            # they should have the same number of elements/keys to start with
-            self.assertEqual(len(imported_data), len(expected_data))
+            with self.subTest(part=part):
+                expected_data = json.loads(json_string)
+                imported_data = json.loads(imported_json[part])
+                # they should have the same number of elements/keys to start with
+                self.assertEqual(len(imported_data), len(expected_data))
 
-            expected = head(expected_data)
-            imported_value = head(imported_data)
+                expected = head(expected_data)
+                imported_value = head(imported_data)
 
-            remove_expected_differences(part, expected, imported_value)
-            self.assertEqual(imported_value, expected)
+                remove_expected_differences(part, expected, imported_value)
+                self.assertEqual(imported_value, expected)

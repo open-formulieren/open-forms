@@ -343,10 +343,6 @@ class Form(models.Model):
         # this will later be more dynamic and determined from oa. the linked Product
         return bool(self.payment_backend and self.product and self.product.price)
 
-    @property
-    def first_step(self):
-        return step.order if (step := self.formstep_set.first()) else None
-
     @transaction.atomic
     def copy(self):
         from .form_variable import FormVariable
