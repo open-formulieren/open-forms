@@ -32,11 +32,11 @@ const loadForm = async formUuid => {
     logicRulesResponse,
     priceRulesResponse,
   ] = responses;
-  const {literals, ...form} = formResponse.data;
+
+  const form = formResponse.data;
 
   return {
     form,
-    literals,
     selectedAuthPlugins: form.loginOptions.map((plugin, index) => plugin.identifier),
     steps: formStepsResponse.data,
     variables: formVariablesResponse.data,

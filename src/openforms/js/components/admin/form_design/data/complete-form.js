@@ -1,6 +1,7 @@
 import produce from 'immer';
 
 import {FORM_ENDPOINT} from 'components/admin/form_design/constants';
+import {DEFAULT_LANGUAGE} from 'components/admin/form_design/LanguageTabs';
 import {ValidationErrors} from 'utils/exception';
 import {post, put, apiDelete} from 'utils/fetch';
 
@@ -52,7 +53,8 @@ const saveForm = async (state, csrftoken) => {
   const formDetails = produce(state, draft => {
     return {
       ...draft.form,
-      literals: draft.literals,
+      // FIXME - should not be required in backend for form designer
+      name: draft.form?.translations?.[DEFAULT_LANGUAGE]?.name,
       authenticationBackends: draft.selectedAuthPlugins,
     };
   });
@@ -77,10 +79,9 @@ const saveForm = async (state, csrftoken) => {
   // update with the backend generated data, like UUID and URL. Note that this is a noop
   // for form updates.
   const newState = produce(state, draft => {
-    const {uuid, url, literals} = response.data;
+    const {uuid, url} = response.data;
     draft.form.uuid = uuid;
     draft.form.url = url;
-    draft.literals = literals;
     draft.newForm = false; // it's either created now, or updated -> both are not 'new form anymore'
   });
   return newState;

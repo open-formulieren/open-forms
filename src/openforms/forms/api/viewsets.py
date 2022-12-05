@@ -46,7 +46,6 @@ from .serializers import (
     FormLogicSerializer,
     FormPriceLogicSerializer,
     FormSerializer,
-    FormStepLiteralsSerializer,
     FormStepSerializer,
     FormVariableListSerializer,
     FormVariableSerializer,
@@ -99,9 +98,7 @@ class FormStepViewSet(
         return context
 
 
-_FORMSTEP_ADMIN_FIELDS_MARKDOWN = get_admin_fields_markdown(
-    FormStepLiteralsSerializer, subpath="literals"
-)
+_FORMSTEP_ADMIN_FIELDS_MARKDOWN = get_admin_fields_markdown(FormStepSerializer)
 FormStepViewSet.__doc__ = inspect.getdoc(FormStepViewSet).format(
     admin_fields=_FORMSTEP_ADMIN_FIELDS_MARKDOWN
 )

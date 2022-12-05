@@ -14,7 +14,6 @@ const FormSteps = ({
   onEdit,
   onComponentMutated,
   onFieldChange,
-  onLiteralFieldChange,
   onDelete,
   onReorder,
   onReplace,
@@ -51,7 +50,6 @@ const FormSteps = ({
               onEdit={onEdit.bind(null, activeStepIndex)}
               onComponentMutated={onComponentMutated}
               onFieldChange={onFieldChange.bind(null, activeStepIndex)}
-              onLiteralFieldChange={onLiteralFieldChange.bind(null, activeStepIndex)}
               onReplace={onReplace.bind(null, activeStepIndex)}
             />
           </ValidationErrorsProvider>
@@ -82,7 +80,6 @@ FormSteps.propTypes = {
   onEdit: PropTypes.func.isRequired,
   onComponentMutated: PropTypes.func.isRequired,
   onFieldChange: PropTypes.func.isRequired,
-  onLiteralFieldChange: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onReorder: PropTypes.func.isRequired,
   onReplace: PropTypes.func.isRequired,

@@ -37,6 +37,7 @@ import FormDetailFields from './FormDetailFields';
 import FormConfigurationFields from './FormConfigurationFields';
 import FormObjectTools from './FormObjectTools';
 import FormSubmit from './FormSubmit';
+import {DEFAULT_LANGUAGE} from './LanguageTabs';
 import RegistrationFields from './RegistrationFields';
 import PaymentFields from './PaymentFields';
 import ProductFields from './ProductFields';
@@ -66,10 +67,15 @@ import VariablesEditor from './variables/VariablesEditor';
 import {EMPTY_VARIABLE} from './variables/constants';
 import Tab from './Tab';
 import {updateWarningsValidationError} from './logic/utils';
+import {
+  assignInitialTranslations,
+  initialFormTranslations,
+  initialConfirmationEmailTranslations,
+  initialStepTranslations,
+} from './translations';
 
 const initialFormState = {
   form: {
-    name: '',
     internalName: '',
     uuid: '',
     url: '',
@@ -80,7 +86,6 @@ const initialFormState = {
     isDeleted: false,
     maintenanceMode: false,
     translationEnabled: false,
-    submissionConfirmationTemplate: '',
     submissionAllowed: 'yes',
     registrationBackend: '',
     registrationBackendOptions: {},
@@ -88,50 +93,10 @@ const initialFormState = {
     paymentBackend: '',
     paymentBackendOptions: {},
     submissionsRemovalOptions: {},
-    confirmationEmailTemplate: {
-      translations: {
-        nl: {},
-        en: {},
-      },
-    },
+    confirmationEmailTemplate: {translations: {}},
     confirmationEmailOption: 'global_email',
-    explanationTemplate: '',
     autoLoginAuthenticationBackend: '',
-    // TODO dynamic
-    translations: {
-      en: {
-        name: '',
-        changeText: {value: ''},
-        confirmText: {value: ''},
-        previousText: {value: ''},
-        beginText: {value: ''},
-        submissionConfirmationTemplate: '',
-        explanationTemplate: '',
-      },
-      nl: {
-        name: '',
-        changeText: {value: ''},
-        confirmText: {value: ''},
-        previousText: {value: ''},
-        beginText: {value: ''},
-        submissionConfirmationTemplate: '',
-        explanationTemplate: '',
-      },
-    },
-  },
-  literals: {
-    beginText: {
-      value: '',
-    },
-    previousText: {
-      value: '',
-    },
-    changeText: {
-      value: '',
-    },
-    confirmText: {
-      value: '',
-    },
+    translations: {},
   },
   newForm: true,
   formSteps: [],
@@ -161,39 +126,8 @@ const newStepData = {
   slug: '',
   url: '',
   _generatedId: '', // Consumers should generate this if there is no form definition url
-  literals: {
-    previousText: {
-      value: '',
-    },
-    saveText: {
-      value: '',
-    },
-    nextText: {
-      value: '',
-    },
-    translations: {
-      nl: {
-        previousText: {value: ''},
-        saveText: {value: ''},
-        nextText: {value: ''},
-      },
-      en: {
-        previousText: {value: ''},
-        saveText: {value: ''},
-        nextText: {value: ''},
-      },
-    },
-  },
   isNew: true,
   validationErrors: [],
-  translations: {
-    nl: {
-      name: '',
-    },
-    en: {
-      name: '',
-    },
-  },
 };
 
 // Maps in which Tab the different form fields are displayed.
@@ -208,7 +142,6 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   isDeleted: 'form',
   maintenanceMode: 'form',
   translationEnabled: 'form',
-  submissionConfirmationTemplate: 'submission-confirmation',
   confirmationEmailTemplate: 'submission-confirmation',
   submissionAllowed: 'form',
   registrationBackend: 'registration',
@@ -217,11 +150,19 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   paymentBackend: 'product-payment',
   paymentBackendOptions: 'product-payment',
   submissionsRemovalOptions: 'submission-removal-options',
-  literals: 'literals',
-  explanationTemplate: 'form',
   logicRules: 'logic-rules',
   priceRules: 'product-payment',
   variables: 'variables',
+};
+
+const TRANSLATION_FIELD_TO_TAB_NAMES = {
+  name: 'form',
+  explanationTemplate: 'form',
+  submissionConfirmationTemplate: 'submission-confirmation',
+  beginText: 'literals',
+  previousText: 'literals',
+  changeText: 'literals',
+  confirmText: 'literals',
 };
 
 function reducer(draft, action) {
@@ -229,12 +170,15 @@ function reducer(draft, action) {
     /**
      * Form-level actions
      */
-    case 'FORM_DATA_LOADED': {
-      const {form, literals, selectedAuthPlugins, steps, variables, logicRules, priceRules} =
-        action.payload;
+    case 'BACKEND_DATA_LOADED': {
+      const {formData, supportingData} = action.payload;
+      const {form, selectedAuthPlugins, steps, variables, logicRules, priceRules} = formData;
+
+      for (const [stateVar, data] of Object.entries(supportingData)) {
+        draft[stateVar] = data;
+      }
 
       if (form) draft.form = form;
-      if (literals) draft.literals = literals;
       if (selectedAuthPlugins) draft.selectedAuthPlugins = selectedAuthPlugins;
       if (variables) draft.formVariables = variables;
       if (logicRules)
@@ -244,10 +188,29 @@ function reducer(draft, action) {
         }));
       if (priceRules) draft.priceRules = priceRules;
 
+      // set initial translations if needed
+      for (const {code} of draft.languageInfo.languages) {
+        assignInitialTranslations(draft.form.translations, code, initialFormTranslations);
+        assignInitialTranslations(
+          draft.form.confirmationEmailTemplate.translations,
+          code,
+          initialConfirmationEmailTranslations
+        );
+      }
+
+      const formDefinitions = Object.fromEntries(draft.formDefinitions.map(fd => [fd.url, fd]));
+
       // Add component FormVariables and the step validation errors to the state
       draft.formSteps = steps;
       let stepsFormVariables = [];
       for (const step of draft.formSteps) {
+        // merge form definition translations into form step state var
+        const fd = formDefinitions[step.formDefinition];
+        for (const [code, translations] of Object.entries(fd.translations)) {
+          step.translations[code] = {...step.translations[code], ...translations};
+        }
+
+        // add variables
         stepsFormVariables = stepsFormVariables.concat(
           getFormVariables(step.formDefinition, step.configuration)
         );
@@ -263,28 +226,10 @@ function reducer(draft, action) {
     }
     case 'FIELD_CHANGED': {
       const {name, value} = action.payload;
-      // names are prefixed like `form.foo` and `literals.bar`
       const nameBits = name.split('.');
-      const [prefix, ...rest] = nameBits;
-      const fieldName = rest.join('.');
 
-      switch (prefix) {
-        case 'form': {
-          set(draft.form, fieldName, value);
-          break;
-        }
-        case 'literals': {
-          if (fieldName.includes('translations')) {
-            set(draft.form, `${fieldName}.value`, value);
-          } else {
-            draft.literals[fieldName].value = value;
-          }
-          break;
-        }
-        default: {
-          throw new Error(`Unknown prefix: ${prefix}`);
-        }
-      }
+      // assign new value to state draft
+      set(draft, name, value);
 
       const componentContextPath = nameBits.splice(0, nameBits.length - 1).join('.');
 
@@ -307,15 +252,17 @@ function reducer(draft, action) {
       // check which tabs still need the marker and which don't
       const errorsPerTab = groupBy(draft.validationErrors, ([key]) => {
         const [prefix, fieldPrefix] = key.split('.');
-        return FORM_FIELDS_TO_TAB_NAMES[fieldPrefix];
+        switch (fieldPrefix) {
+          case 'translations': {
+            const [, , , translationField] = key.split('.');
+            return TRANSLATION_FIELD_TO_TAB_NAMES[translationField];
+          }
+          default: {
+            return FORM_FIELDS_TO_TAB_NAMES[fieldPrefix];
+          }
+        }
       });
       draft.tabsWithErrors = draft.tabsWithErrors.filter(tabId => tabId in errorsPerTab);
-      break;
-    }
-    case 'PLUGINS_LOADED': {
-      const {stateVar, data} = action.payload;
-
-      draft[stateVar] = data;
       break;
     }
     case 'TOGGLE_AUTH_PLUGIN': {
@@ -360,6 +307,9 @@ function reducer(draft, action) {
         ...newStepData,
         index: newIndex,
         name: `Stap ${newIndex + 1}`,
+        translations: Object.fromEntries(
+          draft.languageInfo.languages.map(language => [language.code, initialStepTranslations])
+        ),
       };
       draft.formSteps.push(emptyStep);
       break;
@@ -367,6 +317,7 @@ function reducer(draft, action) {
     case 'FORM_DEFINITION_CHOSEN': {
       const {index, formDefinitionUrl} = action.payload;
       if (!formDefinitionUrl) {
+        // creating a new form definition
         draft.formSteps[index] = {
           ...draft.formSteps[index],
           ...newStepData,
@@ -376,9 +327,22 @@ function reducer(draft, action) {
           isNew: false,
         };
       } else {
-        const {configuration, name, internalName, isReusable, slug, translations} =
-          draft.formDefinitions.find(fd => fd.url === formDefinitionUrl);
+        // re-using an existing form definition
+        const fd = draft.formDefinitions.find(fd => fd.url === formDefinitionUrl);
+        const {configuration, name, internalName, isReusable, slug, translations} = fd;
         const {url} = draft.formSteps[index];
+
+        const stepTranslations = Object.fromEntries(
+          draft.languageInfo.languages.map(({code}) => {
+            const formDefinitionTranslations = translations[code];
+            const mergedTranslations = {
+              ...initialStepTranslations,
+              ...formDefinitionTranslations,
+            };
+            return [code, mergedTranslations];
+          })
+        );
+
         draft.formSteps[index] = {
           configuration,
           formDefinition: formDefinitionUrl,
@@ -388,32 +352,9 @@ function reducer(draft, action) {
           isReusable,
           slug,
           url,
-          literals: {
-            translations: {
-              nl: {
-                previousText: {value: ''},
-                saveText: {value: ''},
-                nextText: {value: ''},
-              },
-              en: {
-                previousText: {value: ''},
-                saveText: {value: ''},
-                nextText: {value: ''},
-              },
-            },
-            previousText: {
-              value: '',
-            },
-            saveText: {
-              value: '',
-            },
-            nextText: {
-              value: '',
-            },
-          },
           isNew: false,
           validationErrors: [],
-          translations,
+          translations: stepTranslations,
         };
 
         // Add form variables for the reusable configuration
@@ -517,29 +458,21 @@ function reducer(draft, action) {
     }
     case 'STEP_FIELD_CHANGED': {
       const {index, name, value} = action.payload;
-      // const [prefix, ...rest] = name.split('.');
       const step = draft.formSteps[index];
 
-      // Translations for FormDefinition data are stored on the FormDefinitions
-      // if (prefix === 'translations') {
-      //   const formDef = draft.formDefinitions.find(elem => {
-      //     return elem.url === step.formDefinition;
-      //   });
-      //   set(formDef, name, value);
-      // }
+      // otherwise, set the attribute directly on the stap
       set(step, name, value);
       step.validationErrors = step.validationErrors.filter(([key]) => key !== name);
+
+      // ensure that the (Dutch) name is set as "the" name
+      if (name === `translations.${DEFAULT_LANGUAGE}.name`) {
+        step.name = value;
+      }
 
       const anyStepHasErrors = draft.formSteps.some(step => step.validationErrors.length > 0);
       if (!anyStepHasErrors && draft.tabsWithErrors.includes('form-steps')) {
         draft.tabsWithErrors = draft.tabsWithErrors.filter(tab => tab !== 'form-steps');
       }
-      break;
-    }
-    case 'STEP_LITERAL_FIELD_CHANGED': {
-      const {index, name, value} = action.payload;
-      const [prefix, languageCode, fieldName] = name.split('.');
-      draft.formSteps[index]['literals'][prefix][languageCode][fieldName]['value'] = value;
       break;
     }
     case 'MOVE_UP_STEP': {
@@ -845,7 +778,13 @@ function reducer(draft, action) {
           let {context: fieldPrefix, errors} = validationError;
           const _prefixedErrors = errors.map(err => {
             const fieldName = err.name.split('.')[0];
-            if (!tabsWithErrors.includes(fieldName) && FORM_FIELDS_TO_TAB_NAMES[fieldName]) {
+
+            if (fieldName === 'translations') {
+              // structure is translations[langCode][fieldName]
+              const [, , translationField] = err.name.split('.');
+              const tabName = TRANSLATION_FIELD_TO_TAB_NAMES[translationField];
+              tabName && tabsWithErrors.push(tabName);
+            } else if (!tabsWithErrors.includes(fieldName) && FORM_FIELDS_TO_TAB_NAMES[fieldName]) {
               tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldName]);
             } else if (
               !tabsWithErrors.includes(fieldPrefix) &&
@@ -854,18 +793,7 @@ function reducer(draft, action) {
               tabsWithErrors.push(FORM_FIELDS_TO_TAB_NAMES[fieldPrefix]);
             }
 
-            let key;
-            switch (fieldPrefix) {
-              // literals are tracked separately in the state
-              case 'literals': {
-                key = err.name;
-                break;
-              }
-              default: {
-                key = `${fieldPrefix}.${err.name}`;
-              }
-            }
-
+            const key = `${fieldPrefix}.${err.name}`;
             return [key, err.reason];
           });
           prefixedErrors.push(..._prefixedErrors);
@@ -947,6 +875,7 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
   // TODO: 'plugin' is no longer the best name, it's more loading the data that's dynamic
   // but not dependent on the form itself.
   const pluginsToLoad = [
+    {endpoint: LANGUAGE_INFO_ENDPOINT, stateVar: 'languageInfo'},
     {endpoint: PAYMENT_PLUGINS_ENDPOINT, stateVar: 'availablePaymentBackends'},
     {endpoint: FORM_DEFINITIONS_ENDPOINT, stateVar: 'formDefinitions'},
     {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},
@@ -954,7 +883,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     {endpoint: CATEGORIES_ENDPOINT, stateVar: 'availableCategories'},
     {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
     {endpoint: STATIC_VARIABLES_ENDPOINT, stateVar: 'staticVariables'},
-    {endpoint: LANGUAGE_INFO_ENDPOINT, stateVar: 'languageInfo'},
   ];
 
   const {loading} = useAsync(async () => {
@@ -967,22 +895,13 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     // TODO: API error handling - this should be done using ErrorBoundary instead of
     // state-changes.
     const [pluginsData, formData] = await Promise.all(promises);
+    const supportingData = Object.fromEntries(
+      zip(pluginsToLoad, pluginsData).map(([plugin, data]) => [plugin.stateVar, data])
+    );
     dispatch({
-      type: 'FORM_DATA_LOADED',
-      payload: formData,
+      type: 'BACKEND_DATA_LOADED',
+      payload: {supportingData, formData},
     });
-
-    // load various module plugins & update the state
-    for (const group of zip(pluginsToLoad, pluginsData)) {
-      const [plugin, data] = group;
-      dispatch({
-        type: 'PLUGINS_LOADED',
-        payload: {
-          stateVar: plugin.stateVar,
-          data: data,
-        },
-      });
-    }
   }, []);
 
   /**
@@ -1042,14 +961,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
     const {name, value} = event.target;
     dispatch({
       type: 'STEP_FIELD_CHANGED',
-      payload: {name, value, index},
-    });
-  };
-
-  const onStepLiteralFieldChange = (index, event) => {
-    const {name, value} = event.target;
-    dispatch({
-      type: 'STEP_LITERAL_FIELD_CHANGED',
       payload: {name, value, index},
     });
   };
@@ -1244,7 +1155,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
             <FormDetailFields form={state.form} onChange={onFieldChange} />
             <FormConfigurationFields
               form={state.form}
-              literals={state.literals}
               onChange={onFieldChange}
               availableAuthPlugins={state.availableAuthPlugins}
               selectedAuthPlugins={state.selectedAuthPlugins}
@@ -1268,7 +1178,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
                 onEdit={onStepEdit}
                 onComponentMutated={onComponentMutated}
                 onFieldChange={onStepFieldChange}
-                onLiteralFieldChange={onStepLiteralFieldChange}
                 onDelete={onStepDelete}
                 onReorder={onStepReorder}
                 onReplace={onStepReplace}

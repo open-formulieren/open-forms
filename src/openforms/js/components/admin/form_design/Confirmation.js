@@ -87,6 +87,8 @@ const Confirmation = ({
     });
   });
 
+  const emailTranslationErrors = formValidationErrors?.confirmationEmailTemplate?.translations;
+
   return (
     <div className="confirmation-page">
       <Fieldset
@@ -165,9 +167,9 @@ const Confirmation = ({
         <LanguageTabs haveErrors={erroredLanguages.email} forceRenderTabPanel>
           {(langCode, defaultLang) => (
             <>
-              {formValidationErrors?.confirmationEmailTemplate?.nonFieldErrors && (
+              {emailTranslationErrors?.[langCode]?.nonFieldErrors && (
                 <ErrorList classNamePrefix="confirmation-page">
-                  {formValidationErrors.confirmationEmailTemplate.nonFieldErrors}
+                  {emailTranslationErrors[langCode].nonFieldErrors}
                 </ErrorList>
               )}
               <FormRow>

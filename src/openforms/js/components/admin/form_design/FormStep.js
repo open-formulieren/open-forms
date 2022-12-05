@@ -5,14 +5,7 @@ import usePrevious from 'react-use/esm/usePrevious';
 import FormStepDefinition from './FormStepDefinition';
 import NewStepFormDefinitionPicker from './NewStepFormDefinitionPicker';
 
-const FormStep = ({
-  data,
-  onEdit,
-  onComponentMutated,
-  onFieldChange,
-  onLiteralFieldChange,
-  onReplace,
-}) => {
+const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) => {
   const {
     _generatedId,
     configuration,
@@ -20,14 +13,12 @@ const FormStep = ({
     name,
     internalName,
     slug,
-    literals,
     loginRequired,
     translations,
     isReusable,
     isNew,
     validationErrors = [],
   } = data;
-
   const previousFormDefinition = usePrevious(formDefinition);
   let forceBuilderUpdate = false;
   if (previousFormDefinition && previousFormDefinition != formDefinition) {
@@ -45,21 +36,15 @@ const FormStep = ({
 
   return (
     <FormStepDefinition
-      name={name}
       internalName={internalName}
       slug={slug}
       url={formDefinition}
       generatedId={_generatedId}
-      previousText={literals.previousText.value}
-      saveText={literals.saveText.value}
-      nextText={literals.nextText.value}
       translations={translations}
-      literals={literals}
       configuration={configuration}
       loginRequired={loginRequired}
       isReusable={isReusable}
       onFieldChange={onFieldChange}
-      onLiteralFieldChange={onLiteralFieldChange}
       onChange={onEdit}
       onComponentMutated={onComponentMutated}
       forceUpdate={forceBuilderUpdate}
@@ -81,12 +66,18 @@ FormStep.propTypes = {
     url: PropTypes.string,
     isNew: PropTypes.bool,
     validationErrors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
-    translations: PropTypes.object,
+    translations: PropTypes.objectOf(
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        saveText: PropTypes.string.isRequired,
+        previousText: PropTypes.string.isRequired,
+        nextText: PropTypes.string.isRequired,
+      })
+    ),
   }).isRequired,
   onEdit: PropTypes.func.isRequired,
   onComponentMutated: PropTypes.func.isRequired,
   onFieldChange: PropTypes.func.isRequired,
-  onLiteralFieldChange: PropTypes.func.isRequired,
   onReplace: PropTypes.func.isRequired,
 };
 

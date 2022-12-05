@@ -680,13 +680,6 @@ class FormDefinitionsAPITranslationTests(APITestCase):
                 "instance": "urn:uuid:95a55a81-d316-44e8-b090-0519dd21be5f",
                 "invalidParams": [
                     {
-                        "name": "name",
-                        "code": "max_length",
-                        "reason": _(
-                            "Ensure this field has no more than {max_length} characters."
-                        ).format(max_length=50),
-                    },
-                    {
                         "name": "translations.nl.name",
                         "code": "max_length",
                         "reason": _(
@@ -703,3 +696,21 @@ class FormDefinitionsAPITranslationTests(APITestCase):
                 ],
             },
         )
+
+    def test_default_language_name_required(self):
+        self.client.force_authenticate(user=self.user)
+        definition = FormDefinitionFactory.create(
+            name_en="english name",
+            name_nl="nederlandse naam",
+        )
+        url = reverse("api:formdefinition-detail", kwargs={"uuid": definition.uuid})
+
+        response = self.client.patch(
+            url,
+            data={"translations": {"nl": {"name": ""}}},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        invalid_params = response.json()["invalidParams"]
+        self.assertEqual(len(invalid_params), 1)
+        self.assertEqual(invalid_params[0]["code"], "blank")

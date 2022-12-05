@@ -7,10 +7,7 @@ from rest_framework import serializers
 
 from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.formio.service import rewrite_formio_components_for_request
-from openforms.translations.api.serializers import (
-    DefaultTranslationValueSerializerMixin,
-    ModelTranslationsSerializer,
-)
+from openforms.translations.api.serializers import ModelTranslationsSerializer
 
 from ...models import Form, FormDefinition
 from ...validators import validate_form_definition_is_reusable
@@ -53,26 +50,9 @@ class UsedInFormSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class FormDefinitionSerializer(
-    DefaultTranslationValueSerializerMixin,
-    PublicFieldsSerializerMixin,
-    serializers.HyperlinkedModelSerializer,
+    PublicFieldsSerializerMixin, serializers.HyperlinkedModelSerializer
 ):
-    translations = ModelTranslationsSerializer(required=False)
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance=instance)
-        # Finalize formio component configuration with dynamic parts that depend on the
-        # HTTP request. Note that this is invoked through:
-        # 1. the :class:`openforms.submissions.api.serializers.SubmissionStepSerializer`
-        #    for the dynamic formio configuration in the context of a submission.
-        # 2. The serializers/API endpoints of :module:`openforms.forms.api` for
-        #    'standalone' use/introspection.
-        rewrite_formio_components_for_request(
-            instance.configuration_wrapper,
-            request=self.context["request"],
-        )
-        representation["configuration"] = instance.configuration_wrapper.configuration
-        return representation
+    translations = ModelTranslationsSerializer()
 
     class Meta:
         model = FormDefinition
@@ -102,6 +82,8 @@ class FormDefinitionSerializer(
                 "view_name": "api:formdefinition-detail",
                 "lookup_field": "uuid",
             },
+            # TODO: enable this in v3, deprecate writing this field
+            # "name": {"read_only": True},  # writing is done via the `translations` field
             "configuration": {
                 "validators": [
                     FormIOComponentsValidator(),
@@ -109,6 +91,23 @@ class FormDefinitionSerializer(
                 ],
             },
         }
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance=instance)
+        # if "configuration" in self.fields:
+        # Finalize formio component configuration with dynamic parts that depend on the
+        # HTTP request. Note that this is invoked through:
+        # 1. the :class:`openforms.submissions.api.serializers.SubmissionStepSerializer`
+        #    for the dynamic formio configuration in the context of a submission.
+        # 2. The serializers/API endpoints of :module:`openforms.forms.api` for
+        #    'standalone' use/introspection.
+        rewrite_formio_components_for_request(
+            instance.configuration_wrapper,
+            request=self.context["request"],
+        )
+        representation["configuration"] = instance.configuration_wrapper.configuration
+
+        return representation
 
     def validate(self, attrs):
         attrs = super().validate(attrs)

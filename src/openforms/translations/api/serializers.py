@@ -1,18 +1,13 @@
-from collections import OrderedDict
-from typing import Dict, List, Optional, Union
+from typing import cast
 
 from django.conf import settings
-from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db.models.base import ModelBase
 from django.utils.translation import gettext_lazy as _
 
-from glom import assign, glom
 from modeltranslation.manager import get_translatable_fields_for_model
 from rest_framework import serializers
-from rest_framework.fields import SkipField, get_error_detail
 
-from openforms.forms.api.serializers.button_text import ButtonTextSerializer
-
-from ..utils import get_model_class
+from .serializer_helpers import build_translated_model_fields_serializer
 
 
 class LanguageCodeField(serializers.ChoiceField):
@@ -44,167 +39,68 @@ class LanguageInfoSerializer(serializers.Serializer):
 
 
 class ModelTranslationsSerializer(serializers.Serializer):
-    class Meta:
-        fields = [code for code, label in settings.LANGUAGES]
+    """
+    Nest a model's translatable fields inside the serializer.
 
-    def __init__(self, *args, nested_fields_mapping: Optional[dict] = None, **kwargs):
-        kwargs.setdefault("source", "*")
-        self.nested_fields_mapping = nested_fields_mapping or {}
-        super().__init__(*args, **kwargs)
+    This serializer takes the structure of the parent serializer it's included in
+    and analyzes the model it belongs to to extract the translatable fields. The parent
+    serializer is stripped down for only the translatable fields and assigned to the
+    language-specific model fields, while keeping parent serializer validation logic/
+    definitions.
 
-    def get_parent_field(self, field_name):
-        """
-        Some fields may be nested in the parent serializer
-        """
-        if nested_path := self.nested_fields_mapping.get(field_name):
-            serializer = self.parent
-            for part in nested_path.split("."):
-                serializer = serializer.fields[part]
-            return serializer.fields[field_name]
-        return self.parent.fields[field_name]
+    This stripped down serializer is applied for every language code in
+    settings.LANGUAGES. Effectively, this results in a structure like:
 
-    def ignore_blank_errors(self, error: Union[Dict, List]):
-        if isinstance(error, dict):
-            for key, errors in error.items():
-                modified_errors = self.ignore_blank_errors(errors)
-                if modified_errors:
-                    error[key] = modified_errors
-                else:
-                    error.pop(key)
-            return error
-        else:
-            return [err for err in error if err.code != "blank"]
+        ParentModelSerializer:
+            ... other fields/serializers
 
-    def run_validation(self, data):
-        """
-        Apply the original validation for the base fields to the translated fields
-        """
-        (is_empty_value, data) = self.validate_empty_values(data)
-        if is_empty_value:
-            return data
+            ModelTranslationsSerializer:
+                nl:
+                    StrippedParentModelSerializer (nl)
+                en:
+                    StrippedParentModelSerializer (en)
+    """
 
-        for language, fields in data.items():
-            self.parent.run_validators(fields)
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("required", False)
 
-        return super().run_validation(data=data)
+        source = kwargs.pop("source", None)
+        if source and source != "*":
+            raise TypeError("Only source='*' is supported.")
+
+        super().__init__(source="*", *args, **kwargs)
 
     def get_fields(self):
-        return {code: serializers.JSONField() for code, label in settings.LANGUAGES}
-
-    def to_internal_value(self, data):
-        """
-        Run field validation and flatten the data, so it can be saved properly
-        """
-        ret = OrderedDict()
-        errors = OrderedDict()
-
-        fields = sorted(get_translatable_fields_for_model(get_model_class(self.parent)))
-        for language, _label in settings.LANGUAGES:
-            errors_for_lang = OrderedDict()
-            for field_name in fields:
-                parent_field = self.get_parent_field(field_name)
-                value = data.get(language, {}).get(field_name)
-
-                # Workaround for literals
-                if isinstance(parent_field, ButtonTextSerializer):
-                    if value is None:
-                        value = {"value": ""}
-                    elif isinstance(value, dict) and value.get("value") is None:
-                        value["value"] = ""
-
-                if value is None:
-                    value = ""
-
-                error = None
-                validate_method = getattr(parent_field, "validate_" + field_name, None)
-                try:
-                    value = parent_field.run_validation(value)
-                    if validate_method is not None:
-                        value = validate_method(value)
-                except serializers.ValidationError as exc:
-                    error = exc.detail
-                except DjangoValidationError as exc:
-                    error = get_error_detail(exc)
-                except SkipField:
-                    pass
-
-                if error and (filtered_error := self.ignore_blank_errors(error)):
-                    errors_for_lang[field_name] = filtered_error
-                else:
-                    # TODO instead allow string values via serializer?
-                    if hasattr(parent_field, "get_translation_literal"):
-                        value = parent_field.get_translation_literal(value)
-                    ret[f"{field_name}_{language}"] = value
-
-            if errors_for_lang:
-                errors[language] = errors_for_lang
-
-        if errors:
-            raise serializers.ValidationError(errors)
-
-        return ret
-
-    def to_representation(self, instance):
-        language_codes = self.get_fields()
-
-        response = {}
-        for language_code in language_codes:
-            translatable_fields = get_translatable_fields_for_model(
-                instance._meta.model
+        fields = {}
+        for language_code, label in settings.LANGUAGES:
+            field_cls = self._get_field(language_code)
+            fields[language_code] = field_cls(
+                source="*",
+                # TODO: future make this required if language_code == settings.LANGUAGE_CODE
+                # to make the default language *required*
+                required=False,
+                help_text=_("Content translations for: {label}").format(label=label),
             )
 
-            data = {}
-            for field_name in translatable_fields:
-                translated_field_name = f"{field_name}_{language_code}"
-                value = getattr(instance, translated_field_name) or ""
+        return fields
 
-                parent_field = self.get_parent_field(field_name)
-                if isinstance(parent_field, ButtonTextSerializer):
-                    # Workaround to render literals in the proper shape
-                    virtual_field = parent_field.__class__(
-                        raw_field=translated_field_name,
-                        resolved_getter=f"get_{translated_field_name}",
-                    )
-                    virtual_field.bind(field_name=field_name, parent=self)
-                    data[field_name] = virtual_field.to_representation(instance)
-                    if data[field_name]["value"] is None:
-                        data[field_name]["value"] = ""
-                else:
-                    data[field_name] = value
-            response[language_code] = data
+    def _get_field(self, language_code: str):
+        parent = self.parent
+        # handle when the serializer/field is not bound yet - we can't look up to figure
+        # out the model/modelserializer to use as base
+        if parent is None:
+            return serializers.JSONField
 
-        return response
-
-
-class DefaultTranslationValueSerializerMixin:
-    def to_internal_value(self, data):
-        """
-        Populate defaults for translatable fields, based on the default language (if those translations are supplied)
-
-        This is to prevent the API from throwing errors because values for these fields are missing
-        """
-        if "translations" in self.fields and "translations" in data:
-            nested_fields_mapping = self.fields["translations"].nested_fields_mapping
-            translatable_fields = get_translatable_fields_for_model(
-                get_model_class(self)
-            )
-            for field_name in translatable_fields:
-                path = field_name
-                if nested_path := nested_fields_mapping.get(field_name, ""):
-                    path = f"{nested_path}.{field_name}"
-
-                translated_value = glom(
-                    data,
-                    f"translations.{settings.LANGUAGE_CODE}.{field_name}",
-                    default=None,
-                )
-
-                if translated_value is not None:
-                    assign(
-                        data,
-                        path,
-                        translated_value,
-                        missing=dict,
-                    )
-
-        return super().to_internal_value(data)
+        parent = cast(serializers.ModelSerializer, parent)
+        base = type(parent)
+        model: ModelBase = parent.Meta.model
+        # get the translatable models fields, with deterministic ordering
+        _translatable_fields = get_translatable_fields_for_model(model) or []
+        translatable_fields = [
+            field.name
+            for field in model._meta.get_fields()
+            if field.name in _translatable_fields
+        ]
+        return build_translated_model_fields_serializer(
+            base, language_code, translatable_fields
+        )
