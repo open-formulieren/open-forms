@@ -51,6 +51,9 @@ def create_submission_export(queryset: SubmissionQuerySet) -> tablib.Dataset:
 
     first_submission = queryset[0]
     headers = ["Formuliernaam", "Inzendingdatum"]
+    if first_submission.form.translation_enabled:
+        headers.append("Taalcode")
+
     for data_node in iter_submission_data_nodes(first_submission):
         if hasattr(data_node, "component"):
             headers.append(data_node.component["key"])
@@ -66,7 +69,11 @@ def create_submission_export(queryset: SubmissionQuerySet) -> tablib.Dataset:
         submission_data = [
             submission.form.admin_name,
             inzending_datum,
-            *[data_node.value for data_node in iter_submission_data_nodes(submission)],
+        ]
+        if first_submission.form.translation_enabled:
+            submission_data.append(submission.language_code)
+        submission_data += [
+            data_node.value for data_node in iter_submission_data_nodes(submission)
         ]
         data.append(submission_data)
     return data
