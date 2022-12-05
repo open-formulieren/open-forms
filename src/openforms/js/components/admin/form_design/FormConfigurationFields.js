@@ -66,7 +66,6 @@ const FormConfigurationFields = ({
 }) => {
   const {
     uuid,
-    name,
     internalName,
     slug,
     showProgressIndicator,
@@ -314,7 +313,6 @@ const FormConfigurationFields = ({
 
 FormConfigurationFields.propTypes = {
   form: PropTypes.shape({
-    name: PropTypes.string.isRequired,
     uuid: PropTypes.string.isRequired,
     slug: PropTypes.string.isRequired,
     showProgressIndicator: PropTypes.bool.isRequired,
@@ -322,9 +320,7 @@ FormConfigurationFields.propTypes = {
     isDeleted: PropTypes.bool.isRequired,
     maintenanceMode: PropTypes.bool.isRequired,
     translationEnabled: PropTypes.bool.isRequired,
-    submissionConfirmationTemplate: PropTypes.string.isRequired,
-    registrationBackend: PropTypes.string.isRequired,
-    registrationBackendOptions: PropTypes.object,
+    submissionAllowed: PropTypes.oneOf(SUMBISSION_ALLOWED_CHOICES.map(opt => opt[0])),
   }).isRequired,
   onChange: PropTypes.func.isRequired,
   availableAuthPlugins: PropTypes.arrayOf(

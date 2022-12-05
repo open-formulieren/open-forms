@@ -1,4 +1,5 @@
 import {FORM_DEFINITIONS_ENDPOINT} from 'components/admin/form_design/constants';
+import {DEFAULT_LANGUAGE} from 'components/admin/form_design/LanguageTabs';
 import {FormException} from 'utils/exception';
 import {post, put, ValidationErrors} from 'utils/fetch';
 
@@ -17,14 +18,22 @@ const updateOrCreateSingleFormStep = async (
     : `${FORM_DEFINITIONS_ENDPOINT}`;
   var definitionResponse, stepResponse;
 
+  const formDefinitionTranslations = Object.fromEntries(
+    Object.entries(step.translations).map(([code, translations]) => [
+      code,
+      {name: translations.name},
+    ])
+  );
+
   const definitionData = {
-    name: step.name,
+    // FIXME - name should not be required in backend for form designer
+    name: step.translations?.[DEFAULT_LANGUAGE]?.name,
     internalName: step.internalName,
     slug: step.slug,
     configuration: step.configuration,
     loginRequired: step.loginRequired,
     isReusable: step.isReusable,
-    translations: step.translations,
+    translations: formDefinitionTranslations,
   };
 
   try {
@@ -49,23 +58,18 @@ const updateOrCreateSingleFormStep = async (
   }
 
   // okay, form definition create-update succeeded, let's proceed...
+  const formStepTranslations = Object.fromEntries(
+    Object.entries(step.translations).map(([code, translations]) => {
+      const {name, ...stepTranslations} = translations;
+      return [code, stepTranslations];
+    })
+  );
   const stepCreateOrUpdate = step.url ? put : post;
   const stepEndpoint = step.url ? step.url : `${formUrl}/steps`;
   const stepData = {
     index: index,
     formDefinition: definitionResponse.data.url,
-    literals: {
-      nextText: {
-        value: step.literals.nextText.value,
-      },
-      saveText: {
-        value: step.literals.saveText.value,
-      },
-      previousText: {
-        value: step.literals.previousText.value,
-      },
-      translations: step.literals.translations,
-    },
+    translations: formStepTranslations,
   };
 
   try {

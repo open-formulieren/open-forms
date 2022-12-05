@@ -104,17 +104,13 @@ const FormDetailFields = ({form: {slug, translations}, onChange}) => {
 
 FormDetailFields.propTypes = {
   form: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    uuid: PropTypes.string.isRequired,
     slug: PropTypes.string.isRequired,
-    showProgressIndicator: PropTypes.bool.isRequired,
-    active: PropTypes.bool.isRequired,
-    isDeleted: PropTypes.bool.isRequired,
-    maintenanceMode: PropTypes.bool.isRequired,
-    translationEnabled: PropTypes.bool.isRequired,
-    submissionConfirmationTemplate: PropTypes.string.isRequired,
-    registrationBackend: PropTypes.string.isRequired,
-    registrationBackendOptions: PropTypes.object,
+    translations: PropTypes.objectOf(
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        explanationTemplate: PropTypes.string.isRequired,
+      })
+    ).isRequired,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
 };

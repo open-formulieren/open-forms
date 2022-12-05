@@ -18,7 +18,7 @@ const TextLiterals = ({onChange, translations}) => {
           <>
             <FormRow>
               <Field
-                name={`literals.translations.${langCode}.beginText`}
+                name={`form.translations.${langCode}.beginText`}
                 label={
                   <FormattedMessage
                     description="literals.beginText form label"
@@ -33,7 +33,7 @@ const TextLiterals = ({onChange, translations}) => {
                 }
               >
                 <TextInput
-                  value={translations[langCode].beginText.value}
+                  value={translations[langCode].beginText}
                   onChange={onChange}
                   maxLength="50"
                 />
@@ -41,7 +41,7 @@ const TextLiterals = ({onChange, translations}) => {
             </FormRow>
             <FormRow>
               <Field
-                name={`literals.translations.${langCode}.previousText`}
+                name={`form.translations.${langCode}.previousText`}
                 label={
                   <FormattedMessage
                     description="literals.previousText form label"
@@ -56,7 +56,7 @@ const TextLiterals = ({onChange, translations}) => {
                 }
               >
                 <TextInput
-                  value={translations[langCode].previousText.value}
+                  value={translations[langCode].previousText}
                   onChange={onChange}
                   maxLength="50"
                 />
@@ -64,7 +64,7 @@ const TextLiterals = ({onChange, translations}) => {
             </FormRow>
             <FormRow>
               <Field
-                name={`literals.translations.${langCode}.changeText`}
+                name={`form.translations.${langCode}.changeText`}
                 label={
                   <FormattedMessage
                     description="literals.changeText form label"
@@ -79,7 +79,7 @@ const TextLiterals = ({onChange, translations}) => {
                 }
               >
                 <TextInput
-                  value={translations[langCode].changeText.value}
+                  value={translations[langCode].changeText}
                   onChange={onChange}
                   maxLength="50"
                 />
@@ -87,7 +87,7 @@ const TextLiterals = ({onChange, translations}) => {
             </FormRow>
             <FormRow>
               <Field
-                name={`literals.translations.${langCode}.confirmText`}
+                name={`form.translations.${langCode}.confirmText`}
                 label={
                   <FormattedMessage
                     description="literals.confirmText form label"
@@ -102,7 +102,7 @@ const TextLiterals = ({onChange, translations}) => {
                 }
               >
                 <TextInput
-                  value={translations[langCode].confirmText.value}
+                  value={translations[langCode].confirmText}
                   onChange={onChange}
                   maxLength="50"
                 />

@@ -39,29 +39,24 @@ const emptyConfiguration = {
 const FormStepDefinition = ({
   url = '',
   generatedId = '',
-  name = '',
   internalName = '',
   slug = '',
-  previousText = '',
-  saveText = '',
-  nextText = '',
   loginRequired = false,
   isReusable = false,
   translations = {},
-  literals = {},
   configuration = emptyConfiguration,
   onChange,
   onComponentMutated,
   onFieldChange,
-  onLiteralFieldChange,
   errors,
   ...props
 }) => {
-  const setSlug = () => {
+  const setSlug = langCode => {
     // do nothing if there's already a slug set
     if (slug) return;
 
     // sort-of taken from Django's jquery prepopulate module
+    const name = translations[langCode].name;
     const newSlug = URLify(name, 100, false);
     onFieldChange({
       target: {
@@ -106,7 +101,7 @@ const FormStepDefinition = ({
   const erroredLanguages = new Set();
   for (const [errPath] of errors) {
     if (!errPath.startsWith('translations.')) continue;
-    const langCode = errPath.replace('translations.', '').split('.', 1)[0];
+    const [, langCode] = errPath.split('.');
     erroredLanguages.add(langCode);
   }
 
@@ -149,7 +144,7 @@ const FormStepDefinition = ({
                   <TextInput
                     value={translations[langCode].name}
                     onChange={onFieldChange}
-                    onBlur={setSlug}
+                    onBlur={() => setSlug(langCode)}
                   />
                 </Field>
                 <Field
@@ -216,8 +211,8 @@ const FormStepDefinition = ({
                   fieldBox
                 >
                   <TextInput
-                    value={literals.translations[langCode].previousText.value}
-                    onChange={onLiteralFieldChange}
+                    value={translations[langCode].previousText}
+                    onChange={onFieldChange}
                     maxLength="50"
                   />
                 </Field>
@@ -238,8 +233,8 @@ const FormStepDefinition = ({
                   fieldBox
                 >
                   <TextInput
-                    value={literals.translations[langCode].saveText.value}
-                    onChange={onLiteralFieldChange}
+                    value={translations[langCode].saveText}
+                    onChange={onFieldChange}
                     maxLength="50"
                   />
                 </Field>
@@ -260,8 +255,8 @@ const FormStepDefinition = ({
                   fieldBox
                 >
                   <TextInput
-                    value={literals.translations[langCode].nextText.value}
-                    onChange={onLiteralFieldChange}
+                    value={translations[langCode].nextText}
+                    onChange={onFieldChange}
                     maxLength="50"
                   />
                 </Field>
@@ -333,21 +328,23 @@ const FormStepDefinition = ({
 
 FormStepDefinition.propTypes = {
   configuration: PropTypes.object,
-  name: PropTypes.string,
   internalName: PropTypes.string,
   url: PropTypes.string,
   slug: PropTypes.string,
-  previousText: PropTypes.string,
-  saveText: PropTypes.string,
-  nextText: PropTypes.string,
   loginRequired: PropTypes.bool,
   isReusable: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
   onComponentMutated: PropTypes.func.isRequired,
   onFieldChange: PropTypes.func.isRequired,
-  onLiteralFieldChange: PropTypes.func.isRequired,
   errors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
-  translations: PropTypes.object,
+  translations: PropTypes.objectOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      saveText: PropTypes.string.isRequired,
+      previousText: PropTypes.string.isRequired,
+      nextText: PropTypes.string.isRequired,
+    })
+  ),
 };
 
 const ConfigurationErrors = ({errors = []}) => {

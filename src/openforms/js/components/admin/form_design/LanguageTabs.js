@@ -50,4 +50,5 @@ LanguageTabs.propTypes = {
   children: PropTypes.func,
 };
 
+export {DEFAULT_LANGUAGE};
 export default LanguageTabs;
