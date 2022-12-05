@@ -345,7 +345,7 @@ class Form(models.Model):
 
     @property
     def first_step(self):
-        return self.formstep_set.first().order
+        return step.order if (step := self.formstep_set.first()) else None
 
     @transaction.atomic
     def copy(self):
