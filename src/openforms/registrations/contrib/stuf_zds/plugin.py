@@ -238,7 +238,11 @@ class StufZDSRegistration(BasePlugin):
         # Add medewerker to the data
         if submission.has_registrator:
             zaak_data.update(
-                {"medewerker": {"identificatie": submission.registrator.value}}
+                {
+                    "registrator": {
+                        "medewerker": {"identificatie": submission.registrator.value}
+                    }
+                }
             )
 
         execute_unless_result_exists(

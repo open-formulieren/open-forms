@@ -115,11 +115,11 @@
                 <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
             </ZKN:heeftAlsInitiator>
         {% endif %}
-        {% if medewerker %}
+        {% if registrator.medewerker %}
         <ZKN:heeftAlsOverigBetrokkene StUF:entiteittype="ZAKBTROVR" StUF:verwerkingssoort="T">
             <ZKN:gerelateerde>
                 <ZKN:medewerker StUF:entiteittype="MDW" StUF:verwerkingssoort="T">
-                    <ZKN:identificatie>{{ medewerker.identificatie }}</ZKN:identificatie>
+                    <ZKN:identificatie>{{ registrator.medewerker.identificatie }}</ZKN:identificatie>
                 </ZKN:medewerker>
             </ZKN:gerelateerde>
         </ZKN:heeftAlsOverigBetrokkene>
