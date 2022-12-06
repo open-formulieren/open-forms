@@ -260,7 +260,7 @@ class ExportTests(TestCase):
     @freeze_time()
     def test_submissions_of_forms_with_translation_enabled_have_language_codes(self):
         SubmissionFactory.create(
-            form=FormFactory.create(translation_enabled=True),
+            form__translation_enabled=True,
             language_code="en",
         )
         export = create_submission_export(Submission.objects.all())
