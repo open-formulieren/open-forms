@@ -2,7 +2,7 @@ from typing import Optional
 
 from django.core.files.base import ContentFile
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, override
 
 from celery.result import AsyncResult
 from privates.fields import PrivateMediaFileField
@@ -65,15 +65,17 @@ class SubmissionReport(models.Model):
         :return: string with the HTML used for the PDF generation, so that contents
           can be tested.
         """
-        form = self.submission.form
-        html_report, pdf_report = render_to_pdf(
-            "report/submission_report.html",
-            context={"report": Report(self.submission)},
-        )
-        self.content = ContentFile(
-            content=pdf_report,
-            name=f"{form.name}.pdf",  # Takes care of replacing spaces with underscores
-        )
+        with override(self.submission.language_code):
+            form = self.submission.form
+            # Switch to submission lang TODO
+            html_report, pdf_report = render_to_pdf(
+                "report/submission_report.html",
+                context={"report": Report(self.submission)},
+            )
+            self.content = ContentFile(
+                content=pdf_report,
+                name=f"{form.name}.pdf",  # Takes care of replacing spaces with underscores
+            )
         self.save()
         return html_report
 

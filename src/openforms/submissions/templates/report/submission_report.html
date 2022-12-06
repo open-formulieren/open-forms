@@ -1,6 +1,7 @@
 {% load static i18n solo_tags style_dictionary %}<!DOCTYPE html>
 {% get_solo 'config.GlobalConfiguration' as config %}
-<html lang="nl" class="{{ config.theme_classname }}">
+{% get_current_language as LANG %}
+<html lang="{{ LANG }}" class="{{ config.theme_classname }}">
     <head>
         <meta charset="utf-8">
         <title>{% block title %}{% trans "Summary PDF" %}{% endblock %}</title>

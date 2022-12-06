@@ -97,6 +97,18 @@ class DownloadSubmissionReportTests(APITestCase):
         # report.content.name contains the path too
         self.assertTrue(report.content.name.endswith("Test_Form.pdf"))
 
+    def test_report_is_generated_in_same_language_as_submission(self):
+        submission = SubmissionFactory.create(
+            language_code="en",
+            completed=True,
+            form__name_en="Translated form name",
+        )
+        report = SubmissionReportFactory(submission=submission)
+
+        html_report = report.generate_submission_report_pdf()
+
+        self.assertInHTML("Translated form name", html_report)
+
     @patch(
         "celery.result.AsyncResult._get_task_meta", return_value={"status": "SUCCESS"}
     )
