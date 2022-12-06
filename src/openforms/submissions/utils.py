@@ -4,6 +4,7 @@ from typing import Any, Union
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
 from django.http import HttpRequest
+from django.utils import translation
 
 from rest_framework.permissions import SAFE_METHODS
 from rest_framework.request import Request
@@ -90,7 +91,11 @@ def remove_submission_uploads_from_session(
 
 def send_confirmation_email(submission: Submission):
     logevent.confirmation_email_start(submission)
+    with translation.override(submission.language_code):
+        _send_confirmation_email(submission)
 
+
+def _send_confirmation_email(submission: Submission):
     try:
         subject_template, content_template = get_confirmation_email_templates(
             submission

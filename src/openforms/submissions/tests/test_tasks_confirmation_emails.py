@@ -16,7 +16,8 @@ from openforms.config.models import GlobalConfiguration
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.constants import ConfirmationEmailOptions
-from openforms.forms.tests.factories import FormStepFactory
+from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.translations.tests.utils import make_translated
 from openforms.utils.tests.html_assert import HTMLAssertMixin
 
 from ..tasks import maybe_send_confirmation_email
@@ -558,6 +559,55 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
         message = mail.outbox[0]
         self.assertEqual(message.subject, f"Confirmation mail {_('(updated)')}")
+
+    def test_template_is_rendered_in_submission_language(self):
+        language = "en"
+
+        form = make_translated(FormFactory).create(
+            _language=language,
+            name="Translated form name",
+        )
+
+        submission = SubmissionFactory.from_components(
+            language_code=language,
+            form=form,
+            completed=True,
+            components_list=[
+                {
+                    "key": "email",
+                    "type": "email",
+                    "label": "Email",
+                    "confirmationRecipient": True,
+                },
+            ],
+            submitted_data={"email": "abuse@example.com"},
+        )
+        # TODO after form IO add steps
+
+        make_translated(ConfirmationEmailTemplateFactory).create(
+            _language=language,
+            form=form,
+            subject="Translated confirmation mail",
+            content="""Translated content
+            {{form_name}}
+            {% summary %}
+            """,
+        )
+
+        # "execute" the celery task
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            maybe_send_confirmation_email(submission.id)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(message.subject, "Translated confirmation mail")
+        self.assertEqual(message.to, ["abuse@example.com"])
+
+        html_message, _ = message.alternatives[0]
+        self.assertIn("Translated content", html_message)
+        self.assertIn("Translated form name", html_message)
 
 
 class RaceConditionTests(TransactionTestCase):
