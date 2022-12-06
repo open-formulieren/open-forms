@@ -5,8 +5,8 @@
     Documentation: https://support.siteimprove.com/hc/en-gb/articles/206343703-Adding-Siteimprove-Analytics-JavaScript-to-your-website
 {% endcomment %}
 
-{% if analytics_tools_config.siteimprove_enabled %}
-<script type="text/javascript" nonce="{{ request.csp_nonce }}">
+{% if analytics_tools_config.is_siteimprove_enabled %}
+<script id="siteimprove-analytics" type="text/javascript" nonce="{{ request.csp_nonce }}">
 /*<![CDATA[*/
 (function() {
 var sz = document.createElement('script'); sz.type = 'text/javascript'; sz.async = true;
