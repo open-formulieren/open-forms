@@ -255,3 +255,14 @@ class ExportTests(TestCase):
                 "sub1.input2",
             ),
         )
+
+    @tag("gh-2389")
+    @freeze_time()
+    def test_submissions_of_forms_with_translation_enabled_have_language_codes(self):
+        SubmissionFactory.create(
+            form__translation_enabled=True,
+            language_code="en",
+        )
+        export = create_submission_export(Submission.objects.all())
+
+        self.assertIn(("Taalcode", "en"), zip(export.headers, export[0]))
