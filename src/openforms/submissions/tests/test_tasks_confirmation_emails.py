@@ -567,6 +567,22 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             _language=language,
             name="Translated form name",
         )
+        FormStepFactory.create(
+            form=form,
+            form_definition__name_en="A Quickstep",
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "foo",
+                        "type": "textfield",
+                        "label": "Foo",
+                        "showInEmail": True,
+                    }
+                ],
+            },
+        )
+        # TODO after form IO add steps
+        # dropdown, radio, checkbox
 
         submission = SubmissionFactory.from_components(
             language_code=language,
@@ -582,7 +598,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             ],
             submitted_data={"email": "abuse@example.com"},
         )
-        # TODO after form IO add steps
 
         make_translated(ConfirmationEmailTemplateFactory).create(
             _language=language,
@@ -608,6 +623,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         html_message, _ = message.alternatives[0]
         self.assertIn("Translated content", html_message)
         self.assertIn("Translated form name", html_message)
+        self.assertIn("A Quickstep", html_message)
 
 
 class RaceConditionTests(TransactionTestCase):

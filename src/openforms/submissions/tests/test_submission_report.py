@@ -10,6 +10,8 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.forms.tests.factories import FormStepFactory
+
 from ..models import SubmissionReport
 from ..tasks import generate_submission_report
 from ..tokens import submission_report_token_generator
@@ -103,11 +105,28 @@ class DownloadSubmissionReportTests(APITestCase):
             completed=True,
             form__name_en="Translated form name",
         )
+        FormStepFactory.create(
+            form=submission.form,
+            form_definition__name="Walsje",
+            form_definition__name_en="A Quickstep",
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "foo",
+                        "type": "textfield",
+                        "label": "Foo",
+                        "showInEmail": True,
+                    }
+                ],
+            },
+        )
         report = SubmissionReportFactory(submission=submission)
 
         html_report = report.generate_submission_report_pdf()
 
-        self.assertInHTML("Translated form name", html_report)
+        self.assertIn("Translated form name", html_report)
+        self.assertIn("A Quickstep", html_report)
+        self.assertNotIn("Walsje", html_report)
 
     @patch(
         "celery.result.AsyncResult._get_task_meta", return_value={"status": "SUCCESS"}
