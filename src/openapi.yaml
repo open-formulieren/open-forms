@@ -5798,6 +5798,11 @@ components:
           description: Allow this definition to be re-used in multiple forms
         translations:
           $ref: '#/components/schemas/FormDefinitionModelTranslations'
+        componentTranslations:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: Translations for literals used in components
       required:
       - configuration
       - name
@@ -5837,6 +5842,11 @@ components:
           description: Allow this definition to be re-used in multiple forms
         translations:
           $ref: '#/components/schemas/FormDefinitionDetailModelTranslations'
+        componentTranslations:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: Translations for literals used in components
         usedIn:
           type: array
           items:
@@ -6238,7 +6248,12 @@ components:
           $ref: '#/components/schemas/FormStepLiterals'
         translations:
           $ref: '#/components/schemas/FormStepModelTranslations'
+        componentTranslations:
+          type: object
+          additionalProperties: {}
+          readOnly: true
       required:
+      - componentTranslations
       - configuration
       - formDefinition
       - index
@@ -6996,6 +7011,11 @@ components:
           description: Allow this definition to be re-used in multiple forms
         translations:
           $ref: '#/components/schemas/FormDefinitionModelTranslations'
+        componentTranslations:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: Translations for literals used in components
     PatchedFormStep:
       type: object
       properties:
@@ -7035,6 +7055,10 @@ components:
           $ref: '#/components/schemas/FormStepLiterals'
         translations:
           $ref: '#/components/schemas/FormStepModelTranslations'
+        componentTranslations:
+          type: object
+          additionalProperties: {}
+          readOnly: true
     PaymentBackendEnum:
       enum:
       - ogone-legacy

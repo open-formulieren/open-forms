@@ -84,6 +84,10 @@ class FormStepSerializer(
         read_only=True,
     )
     translations = ModelTranslationsSerializer()
+    component_translations = serializers.JSONField(
+        source="form_definition.component_translations",
+        read_only=True,
+    )
 
     parent_lookup_kwargs = {
         "form_uuid_or_slug": "form__uuid",
@@ -104,6 +108,7 @@ class FormStepSerializer(
             "is_reusable",
             "literals",
             "translations",
+            "component_translations",
         )
         public_fields = (
             "uuid",
@@ -117,6 +122,7 @@ class FormStepSerializer(
             "login_required",
             "is_reusable",
             "literals",
+            "component_translations",
         )
 
         extra_kwargs = {

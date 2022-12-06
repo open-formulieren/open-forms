@@ -66,6 +66,7 @@ class FormDefinitionSerializer(
             "login_required",
             "is_reusable",
             "translations",
+            "component_translations",
         )
         public_fields = (
             "url",
@@ -76,6 +77,7 @@ class FormDefinitionSerializer(
             "configuration",
             "login_required",
             "is_reusable",
+            "component_translations",
         )
         extra_kwargs = {
             "url": {
