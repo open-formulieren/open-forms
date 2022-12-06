@@ -6,6 +6,11 @@ TinyMceContext.displayName = 'TinyMceContext';
 const FeatureFlagsContext = React.createContext({});
 FeatureFlagsContext.displayName = 'FeatureFlagsContext';
 
+const FormStepContext = React.createContext({
+  componentTranslations: {},
+});
+FormStepContext.displayName = 'FormStepContext';
+
 const FormContext = React.createContext({
   form: {url: ''},
   components: {},
@@ -17,4 +22,4 @@ const FormContext = React.createContext({
 });
 FormContext.displayName = 'FormContext';
 
-export {FormContext, TinyMceContext, FeatureFlagsContext};
+export {FormContext, TinyMceContext, FeatureFlagsContext, FormStepContext};

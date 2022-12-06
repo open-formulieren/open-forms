@@ -156,6 +156,16 @@ const getPathToComponent = (configuration, key) => {
   return '';
 };
 
+const mergeComponentTranslations = (currentTranslations, newTranslations) => {
+  let merged = {};
+
+  for (const [languageCode, translations] of Object.entries(newTranslations)) {
+    merged[languageCode] = {...(currentTranslations[languageCode] || {}), ...translations};
+  }
+
+  return merged;
+};
+
 export {
   stripIdFromComponents,
   getFormComponents,
@@ -165,5 +175,6 @@ export {
   getUniqueKey,
   getFormStep,
   parseValidationErrors,
+  mergeComponentTranslations,
   getPathToComponent,
 };

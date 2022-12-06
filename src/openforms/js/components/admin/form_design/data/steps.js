@@ -34,6 +34,7 @@ const updateOrCreateSingleFormStep = async (
     loginRequired: step.loginRequired,
     isReusable: step.isReusable,
     translations: formDefinitionTranslations,
+    componentTranslations: step.componentTranslations,
   };
 
   try {

@@ -321,28 +321,78 @@ const PREFILL = {
   ],
 };
 
+// TODO should be dynamic, based on languageInfo endpoint
+const LANGUAGES = ['nl', 'en'];
+const TRANSLATIONS = {
+  key: 'tabs',
+  label: 'Translations',
+  type: 'tabs',
+  components: LANGUAGES.map(language => {
+    return {
+      type: 'panel',
+      title: language.toUpperCase(),
+      key: language,
+      theme: 'default',
+      components: [
+        {
+          type: 'datagrid',
+          input: true,
+          label: 'Translations',
+          key: `of-translations.${language}`,
+          tooltip: 'Translations for literals used for this field',
+          weight: 10,
+          reorder: false,
+          components: [
+            {
+              label: 'Literal',
+              key: 'literal',
+              input: true,
+              unique: true,
+              type: 'textfield',
+            },
+            {
+              label: 'Vertaling',
+              key: 'translation',
+              input: true,
+              type: 'textfield',
+            },
+          ],
+        },
+      ],
+    };
+  }),
+};
+
 const DEFAULT_TABS = {
   type: 'tabs',
   key: 'tabs',
-  components: [BASIC, ADVANCED, VALIDATION, REGISTRATION],
+  components: [BASIC, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
 };
 
 const DEFAULT_SENSITIVE_TABS = {
   type: 'tabs',
   key: 'tabs',
-  components: [SENSITIVE_BASIC, ADVANCED, VALIDATION, REGISTRATION],
+  components: [SENSITIVE_BASIC, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
 };
 
 const DEFAULT_TEXT_TABS = {
   type: 'tabs',
   key: 'tabs',
-  components: [TEXT_BASIC, LOCATION, ADVANCED, TEXT_VALIDATION, REGISTRATION, PREFILL],
+  components: [
+    TEXT_BASIC,
+    LOCATION,
+    ADVANCED,
+    TEXT_VALIDATION,
+    REGISTRATION,
+    PREFILL,
+    TRANSLATIONS,
+  ],
 };
 
 const DEFAULT_CHOICES_TABS = {
   type: 'tabs',
   key: 'tabs',
-  components: [CHOICES_BASIC, ADVANCED, VALIDATION, REGISTRATION],
+  components: [CHOICES_BASIC, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
 };
 
 export {

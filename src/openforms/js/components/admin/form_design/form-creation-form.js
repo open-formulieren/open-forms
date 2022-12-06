@@ -56,6 +56,7 @@ import {
   getFormStep,
   getPathToComponent,
   parseValidationErrors,
+  mergeComponentTranslations,
 } from './utils';
 import {
   checkForDuplicateKeys,
@@ -412,6 +413,21 @@ function reducer(draft, action) {
 
       // TODO: This could break if a reusable definition is used multiple times in a form
       const step = getFormStep(formDefinition, draft.formSteps, true);
+
+      if (mutationType === 'changed' && schema['of-translations']) {
+        const allTranslations = schema['of-translations'];
+        let mutatedTranslations = {};
+        delete schema['of-translations'];
+        for (const [languageCode, translations] of Object.entries(allTranslations)) {
+          for (const entry of translations) {
+            set(mutatedTranslations, `${languageCode}.${entry.literal}`, entry.translation);
+          }
+        }
+        step.componentTranslations = mergeComponentTranslations(
+          step.componentTranslations,
+          mutatedTranslations
+        );
+      }
 
       if (!isNew) {
         // In the case the component was removed, originalComp is null
