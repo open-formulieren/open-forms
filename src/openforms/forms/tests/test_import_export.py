@@ -1,16 +1,24 @@
 import json
-import os
 import zipfile
+from pathlib import Path
+from textwrap import dedent
 
 from django.core.management import call_command
 from django.test import TestCase, override_settings
+from django.utils import translation
 
+from freezegun import freeze_time
+
+from openforms.emails.models import ConfirmationEmailTemplate
+from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 from openforms.products.tests.factories import ProductFactory
+from openforms.translations.tests.utils import make_translated
 from openforms.variables.constants import FormVariableSources
 
 from ..constants import EXPORT_META_KEY
 from ..models import Form, FormDefinition, FormLogic, FormStep, FormVariable
+from ..utils import form_to_json
 from .factories import (
     CategoryFactory,
     FormDefinitionFactory,
@@ -20,20 +28,13 @@ from .factories import (
     FormVariableFactory,
 )
 
-PATH = os.path.abspath(os.path.dirname(__file__))
+PATH = Path(__file__).parent
 
 
 class ImportExportTests(TestCase):
     def setUp(self):
-        self.filepath = os.path.join(PATH, "export_test.zip")
-
-        def remove_file():
-            try:
-                os.remove(self.filepath)
-            except Exception:
-                pass
-
-        self.addCleanup(remove_file)
+        self.filepath = PATH / "export_test.zip"
+        self.addCleanup(lambda: self.filepath.unlink(missing_ok=True))
 
     @override_settings(ALLOWED_HOSTS=["example.com"])
     def test_export(self):
@@ -240,7 +241,7 @@ class ImportExportTests(TestCase):
         call_command("import", import_file=self.filepath)
 
         imported_form = Form.objects.last()
-        imported_form_step = imported_form.formstep_set.first()
+        imported_form_step = imported_form.formstep_set.get()
         imported_form_definition = imported_form_step.form_definition
 
         # check we imported a new form
@@ -399,3 +400,222 @@ class ImportExportTests(TestCase):
 
         form = Form.objects.get()
         self.assertIsNone(form.category)
+
+    @freeze_time()  # export metadata contains a timestamp
+    def test_roundtrip_a_translated_form(self):
+        self.maxDiff = None
+        TranslatedFormFactory = make_translated(FormFactory)
+        TranslatedFormDefinitionFactory = make_translated(FormDefinitionFactory)
+        TranslatedFormStepFactory = make_translated(FormStepFactory)
+        TranslatedConfirmationEmailTemplateFactory = make_translated(
+            ConfirmationEmailTemplateFactory
+        )
+        other_language = "en"
+
+        form: Form
+        form_definition: FormDefinition
+        form_step: FormStep
+        email_template: ConfirmationEmailTemplate
+
+        form = TranslatedFormFactory.create(
+            _language=other_language,
+            translation_enabled=True,
+            name="Some form name translation",
+            submission_confirmation_template="Some submission confirmation template translation",
+            begin_text="Some begin text translation",
+            previous_text="Some previous text translation",
+            change_text="Some change text translation",
+            confirm_text="Some confirm text translation",
+            explanation_template="Some explanations template",
+        )
+
+        # set required untranslated string
+        form.name = "Untranslated form name"
+        form.submission_confirmation_template = (
+            "Untranslated submission confirmation template"
+        )
+        form.begin_text = "Untranslated begin text"
+        form.previous_text = "Untranslated previous text"
+        form.change_text = "Untranslated change text"
+        form.confirm_text = "Untranslated confirm text"
+        form.explanation_template = "Some explanations template"
+        form.save()
+
+        email_template = TranslatedConfirmationEmailTemplateFactory.build(
+            _language=other_language,
+            form=form,
+            subject="Some confirmation email subject translation",
+            content=dedent(
+                """
+                Some confirmation email content translation with the obligatory
+                {% appointment_information %}
+                {% payment_information %}
+                """
+            ).strip(),
+        )
+        email_template.subject = "Untranslated confirmation email subject"
+        email_template.content = dedent(
+            """
+            Untranslated confirmation email content with the obligatory
+            {% appointment_information %}
+            {% payment_information %}
+            """
+        ).strip()
+        email_template.save()
+
+        form_definition = TranslatedFormDefinitionFactory.create(
+            _language=other_language,
+            name="Some form definition name translation",
+        )
+        form_definition.name = "Untranslated form definition name"
+        form_definition.save()
+
+        form_step = TranslatedFormStepFactory.build(
+            _language=other_language,
+            form=form,
+            form_definition=form_definition,
+            previous_text="Some previous step text translation",
+            save_text="Some save step text translation",
+            next_text="Some next step text translation",
+        )
+        form_step.previous_text = "Untranslated previous step text"
+        form_step.save_text = "Untranslated save step text"
+        form_step.next_text = "Untranslated next step text"
+        form_step.save()
+
+        original_json = form_to_json(form.pk)
+
+        # roundtrip
+        with translation.override(other_language):
+            call_command("export", form.pk, self.filepath)
+        # language switched back to default
+        form.delete()
+        form_definition.delete()
+        form_step.delete()
+        email_template.delete()
+        self.assertEqual(Form.objects.count(), 0)
+        self.assertEqual(FormDefinition.objects.count(), 0)
+        self.assertEqual(FormStep.objects.count(), 0)
+        call_command("import", import_file=self.filepath)
+
+        imported_form = Form.objects.get()
+        imported_form_step = imported_form.formstep_set.select_related().get()
+
+        # assert translations survived the import
+        self.assertEqual(imported_form.name, "Untranslated form name")
+        self.assertEqual(
+            imported_form.submission_confirmation_template,
+            "Untranslated submission confirmation template",
+        )
+        self.assertEqual(imported_form.begin_text, "Untranslated begin text")
+        self.assertEqual(imported_form.previous_text, "Untranslated previous text")
+        self.assertEqual(imported_form.change_text, "Untranslated change text")
+        self.assertEqual(imported_form.confirm_text, "Untranslated confirm text")
+        self.assertEqual(
+            imported_form.explanation_template, "Some explanations template"
+        )
+        self.assertEqual(imported_form.name_en, "Some form name translation")
+        self.assertEqual(
+            imported_form.submission_confirmation_template_en,
+            "Some submission confirmation template translation",
+        )
+        self.assertEqual(imported_form.begin_text_en, "Some begin text translation")
+        self.assertEqual(
+            imported_form.previous_text_en, "Some previous text translation"
+        )
+        self.assertEqual(imported_form.change_text_en, "Some change text translation")
+        self.assertEqual(imported_form.confirm_text_en, "Some confirm text translation")
+        self.assertEqual(
+            imported_form.explanation_template_en, "Some explanations template"
+        )
+
+        self.assertEqual(
+            imported_form_step.previous_text_en, "Some previous step text translation"
+        )
+        self.assertEqual(
+            imported_form_step.save_text_en, "Some save step text translation"
+        )
+        self.assertEqual(
+            imported_form_step.next_text_en, "Some next step text translation"
+        )
+        self.assertEqual(
+            imported_form.confirmation_email_template.subject_en,
+            "Some confirmation email subject translation",
+        )
+        self.assertEqual(
+            imported_form.confirmation_email_template.content_en,
+            dedent(
+                """
+                Some confirmation email content translation with the obligatory
+                {% appointment_information %}
+                {% payment_information %}
+                """
+            ).strip(),  # trailing newline
+        )
+        self.assertEqual(
+            imported_form.confirmation_email_template.content,
+            dedent(
+                """
+                Untranslated confirmation email content with the obligatory
+                {% appointment_information %}
+                {% payment_information %}
+                """
+            ).strip(),  # trailing newline
+        )
+
+        self.assertEqual(
+            imported_form_step.form_definition.name, "Untranslated form definition name"
+        )
+        self.assertEqual(
+            imported_form_step.form_definition.name_en,
+            "Some form definition name translation",
+        )
+        self.assertEqual(form_step.previous_text, "Untranslated previous step text")
+        self.assertEqual(form_step.save_text, "Untranslated save step text")
+        self.assertEqual(form_step.next_text, "Untranslated next step text")
+
+        # inspect the exported data structure, configs etc.
+        imported_json = form_to_json(imported_form.pk)
+        expected_differences = {
+            "forms": [
+                "uuid",  # import gets assigned a new one
+                "url",  # contains uuid
+                "active",  # import gets set to inactive
+                "category",  # gets unset
+                "steps",  # duplicated in formSteps
+            ],
+            "formSteps": [
+                "form_definition",  # is a url with uuid
+                "uuid",
+                "url",
+            ],
+            "formDefinitions": [
+                "uuid",
+                "url",
+            ],
+        }
+
+        def remove_expected_differences(part: str, obj1: dict, obj2: dict) -> None:
+            for field in expected_differences.get(part, ()):
+                del obj1[field]
+                del obj2[field]
+
+        def head(v: list | dict) -> dict | None:
+            "Return first dict in the list"
+            if isinstance(v, dict):  # _meta is already an object
+                return v
+            return None if not v else v[0]
+
+        # assert JSON is still equivalent
+        for part, json_string in original_json.items():
+            with self.subTest(part=part):
+                expected_data = json.loads(json_string)
+                imported_data = json.loads(imported_json[part])
+                # they should have the same number of elements/keys to start with
+                self.assertEqual(len(imported_data), len(expected_data))
+
+                expected = head(expected_data)
+                imported_value = head(imported_data)
+
+                remove_expected_differences(part, expected, imported_value)
+                self.assertEqual(imported_value, expected)
