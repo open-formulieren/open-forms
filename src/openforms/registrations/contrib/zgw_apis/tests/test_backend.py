@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from django.test import TestCase, tag
+from django.test import TestCase, override_settings, tag
 
 import requests_mock
 from freezegun import freeze_time
@@ -10,6 +10,7 @@ from zds_client.oas import schema_fetcher
 from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
+from openforms.authentication.tests.factories import RegistratorInfoFactory
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.tests.factories import (
@@ -789,6 +790,92 @@ class ZGWBackendTests(TestCase):
         self.assertEqual(
             relate_attachment_body["informatieobject"],
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+        )
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_submission_with_registrator(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "handelsnaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_handelsnaam,
+                    },
+                },
+                {
+                    "key": "postcode",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_postcode,
+                    },
+                },
+                {
+                    "key": "coordinaat",
+                    "type": "map",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+            ],
+            submitted_data={
+                "handelsnaam": "ACME",
+                "postcode": "1000 AA",
+                "coordinaat": [52.36673378967122, 4.893164274470299],
+            },
+            kvk="12345678",
+            form__product__price=Decimal("0"),
+            form__payment_backend="demo",
+        )
+        RegistratorInfoFactory.create(submission=submission, value="123456782")
+
+        zgw_form_options = dict(
+            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            organisatie_rsin="000000000",
+            vertrouwelijkheidaanduiding="openbaar",
+            medewerker_roltype="Some description",
+        )
+
+        self.install_mocks(m)
+        m.get(
+            "https://catalogus.nl/api/v1/roltypen?zaaktype=https%3A%2F%2Fcatalogi.nl%2Fapi%2Fv1%2Fzaaktypen%2F1",
+            status_code=200,
+            json={
+                "count": 1,
+                "next": None,
+                "previous": None,
+                "results": [
+                    generate_oas_component(
+                        "catalogi",
+                        "schemas/RolType",
+                        url="https://catalogus.nl/api/v1/roltypen/111",
+                        omschrijving="Some description",
+                    )
+                ],
+            },
+        )
+
+        plugin = ZGWRegistration("zgw")
+        result = plugin.register_submission(submission, zgw_form_options)
+
+        self.assertIn("medewerker_rol", result)
+
+        create_medewerker_rol_call = m.request_history[-3]
+
+        post_data = create_medewerker_rol_call.json()
+        self.assertEqual(post_data["betrokkeneType"], "medewerker")
+        self.assertEqual(
+            post_data["roltoelichting"],
+            "Employee who registered the case on behalf of the customer.",
+        )
+        self.assertEqual(
+            post_data["roltype"],
+            "https://catalogus.nl/api/v1/roltypen/111",
+        )
+        self.assertEqual(
+            post_data["betrokkeneIdentificatie"]["identificatie"],
+            "123456782",
         )
 
     def test_retried_registration_with_internal_reference(self, m):

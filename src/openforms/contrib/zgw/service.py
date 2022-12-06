@@ -1,7 +1,7 @@
 import logging
 from base64 import b64encode
 from datetime import date
-from typing import Optional
+from typing import Callable, List, Optional
 
 from django.utils import timezone
 
@@ -173,33 +173,57 @@ def relate_document(zaak_url: str, document_url: str) -> dict:
     return zio
 
 
-def create_rol(zaak: dict, initiator: dict, options: dict) -> Optional[dict]:
-    config = ZgwConfig.get_solo()
-    ztc_client = config.ztc_service.build_client()
-    query_params = {
-        "zaaktype": options["zaaktype"],
-        "omschrijvingGeneriek": initiator.get("omschrijvingGeneriek", "initiator"),
-    }
-    rol_typen = ztc_client.list("roltype", query_params)
-    if not rol_typen or not rol_typen.get("results"):
-        logger.warning(
-            "Roltype specified, but no matching roltype found in the zaaktype.",
-            extra={"query_params": query_params},
-        )
-        return None
+def create_rol(zaak: dict, betrokkene: dict, options: dict) -> Optional[dict]:
+    roltype = betrokkene.get("roltype")
+    if not roltype:
+        query_params = {
+            "zaaktype": options["zaaktype"],
+            "omschrijvingGeneriek": betrokkene.get("omschrijvingGeneriek", "initiator"),
+        }
+        rol_typen = retrieve_roltypen(query_params=query_params)
+        if not rol_typen or not rol_typen:
+            logger.warning(
+                "No matching roltype found in the zaaktype.",
+                extra={"query_params": query_params},
+            )
+            return None
+        roltype = rol_typen[0]["url"]
 
+    config = ZgwConfig.get_solo()
     zrc_client = config.zrc_service.build_client()
     data = {
         "zaak": zaak["url"],
-        # "betrokkene": initiator.get("betrokkene", ""),
-        "betrokkeneType": initiator.get("betrokkeneType", "natuurlijk_persoon"),
-        "roltype": rol_typen["results"][0]["url"],
-        "roltoelichting": initiator.get("roltoelichting", "inzender formulier"),
-        "indicatieMachtiging": initiator.get("indicatieMachtiging", ""),
-        "betrokkeneIdentificatie": initiator.get("betrokkeneIdentificatie", {}),
+        # "betrokkene": betrokkene.get("betrokkene", ""),
+        "betrokkeneType": betrokkene.get("betrokkeneType", "natuurlijk_persoon"),
+        "roltype": roltype,
+        "roltoelichting": betrokkene.get("roltoelichting", "inzender formulier"),
+        "indicatieMachtiging": betrokkene.get("indicatieMachtiging", ""),
+        "betrokkeneIdentificatie": betrokkene.get("betrokkeneIdentificatie", {}),
     }
     rol = zrc_client.create("rol", data)
     return rol
+
+
+def match_omschrijving(roltypen: List, omschrijving: str) -> List:
+    matches = []
+    for roltype in roltypen:
+        if roltype.get("omschrijving") == omschrijving:
+            matches.append(roltype)
+    return matches
+
+
+def noop_matcher(roltypen: list) -> list:
+    return roltypen
+
+
+def retrieve_roltypen(
+    matcher: Callable[[list], list] = noop_matcher, query_params: None | dict = None
+) -> List:
+    config = ZgwConfig.get_solo()
+    ztc_client = config.ztc_service.build_client()
+    roltypen = ztc_client.list("roltype", query_params)
+
+    return matcher(roltypen["results"])
 
 
 def create_status(zaak: dict) -> dict:

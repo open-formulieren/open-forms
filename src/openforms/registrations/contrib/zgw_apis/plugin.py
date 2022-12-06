@@ -2,7 +2,7 @@ from functools import partial, wraps
 from typing import Dict, List, Optional, Tuple
 
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 import requests
 from rest_framework import serializers
@@ -15,7 +15,9 @@ from openforms.contrib.zgw.service import (
     create_rol,
     create_status,
     create_zaak,
+    match_omschrijving,
     relate_document,
+    retrieve_roltypen,
     set_zaak_payment,
 )
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
@@ -30,6 +32,7 @@ from ...registry import register
 from ...utils import execute_unless_result_exists
 from .checks import check_config
 from .models import ZgwConfig
+from .validators import RoltypeOmschrijvingValidator
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -52,6 +55,17 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "Indication of the level to which extend the dossier of the ZAAK is meant to be public."
         ),
     )
+    medewerker_roltype = serializers.CharField(
+        required=False,
+        help_text=_(
+            "Description (omschrijving) of the ROLTYPE to use for employees filling in a form for a citizen/company."
+        ),
+    )
+
+    class Meta:
+        validators = [
+            RoltypeOmschrijvingValidator(),
+        ]
 
 
 def _point_coordinate(value):
@@ -197,6 +211,32 @@ class ZGWRegistration(BasePlugin):
             partial(create_rol, zaak, rol_data, options), submission, "intermediate.rol"
         )
 
+        has_registrator = (
+            hasattr(submission, "_registrator") and submission._registrator
+        )
+        if has_registrator:
+            roltype = retrieve_roltypen(
+                matcher=partial(
+                    match_omschrijving, omschrijving=options["medewerker_roltype"]
+                ),
+                query_params={"zaaktype": options["zaaktype"]},
+            )[0]
+            registrator_rol_data = {
+                "betrokkeneType": "medewerker",
+                "roltype": roltype["url"],
+                "roltoelichting": _(
+                    "Employee who registered the case on behalf of the customer."
+                ),
+                "betrokkeneIdentificatie": {
+                    "identificatie": submission.registrator.value,
+                },
+            }
+            medewerker_rol = execute_unless_result_exists(
+                partial(create_rol, zaak, registrator_rol_data, options),
+                submission,
+                "intermediate.medewerker_rol",
+            )
+
         status = execute_unless_result_exists(
             partial(create_status, zaak), submission, "intermediate.status"
         )
@@ -226,6 +266,9 @@ class ZGWRegistration(BasePlugin):
             "status": status,
             "rol": rol,
         }
+        if has_registrator:
+            result["medewerker_rol"] = medewerker_rol
+
         return result
 
     def get_reference_from_result(self, result: Dict[str, str]) -> str:

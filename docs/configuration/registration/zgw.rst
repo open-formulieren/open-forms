@@ -15,8 +15,8 @@ Open Forms can be configured to access these API's to register form submissions.
    external system, offered or maintained by a service provider.
 
 
-What does the Open Forms administator need?
-===========================================
+What does the Open Forms administrator need?
+============================================
 
 The values for these parameters should be provided to the Open Forms
 administrator by the service provider.
@@ -109,6 +109,12 @@ Configuration
 7. Click **Opslaan**
 
 The ZGW API's configuration is now completed and can be selected as registration backend in the form builder.
+In each form, the global defaults can be overwritten and additional properties can be configured. These include:
+
+   * **Vertrouwelijkheidaanduiding**: The level of confidentiality of the case.
+   * **Medewerker roltype**: The description (omschrijving) of the Roltype associated to the Zaaktype to be used
+     when creating a role for an employee filling in a form for a citizen or company.
+     For example: ``some description``.
 
 
 Technical
