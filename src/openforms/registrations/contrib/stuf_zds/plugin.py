@@ -235,6 +235,16 @@ class StufZDSRegistration(BasePlugin):
         if submission.public_registration_reference:
             zaak_data.update({"kenmerken": [submission.public_registration_reference]})
 
+        # Add medewerker to the data
+        if submission.has_registrator:
+            zaak_data.update(
+                {
+                    "registrator": {
+                        "medewerker": {"identificatie": submission.registrator.value}
+                    }
+                }
+            )
+
         execute_unless_result_exists(
             lambda: client.create_zaak(
                 zaak_id, zaak_data, extra_data, submission.payment_required

@@ -6,6 +6,7 @@ import requests_mock
 from freezegun import freeze_time
 from privates.test import temp_private_root
 
+from openforms.authentication.tests.factories import RegistratorInfoFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
@@ -1247,6 +1248,172 @@ class StufZDSPluginTests(StUFZDSTestBase):
                     "pdf-report": True,
                     str(attachment.id): True,
                 },
+            },
+        )
+
+    @patch("celery.app.task.Task.request")
+    def test_plugin_medewerker(self, m, mock_task):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voorletters",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voorletters,
+                    },
+                },
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+                {
+                    "key": "tussenvoegsel",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    },
+                },
+                {
+                    "key": "geboortedatum",
+                    "type": "date",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geboortedatum,
+                    },
+                },
+                {
+                    "key": "geslachtsaanduiding",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsaanduiding,
+                    },
+                },
+                {
+                    "key": "postcode",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_postcode,
+                    },
+                },
+                {
+                    "key": "coordinaat",
+                    "type": "map",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+            ],
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "tussenvoegsel": "de",
+                "postcode": "1000 AA",
+                "geboortedatum": "2000-12-31",
+                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "voorletters": "J.W.",
+                "geslachtsaanduiding": "mannelijk",
+            },
+            bsn="111222333",
+            form__name="my-form",
+            form__product__price=Decimal("0"),
+            form__payment_backend="demo",
+        )
+        RegistratorInfoFactory.create(submission=submission, value="123456782")
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerZaakIdentificatie.xml",
+                {
+                    "zaak_identificatie": "foo-zaak",
+                },
+            ),
+            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+        mock_task.id = 1
+
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "zds_zaaktype_status_code": "123",
+            "zds_zaaktype_status_omschrijving": "aaabbc",
+            "zds_documenttype_omschrijving_inzending": "aaabbc",
+            # we are deliberately NOT including this to simulate upgrades from earlier
+            # versions where this configuration parameter was not available yet and is
+            # thus missing from the JSON data
+            # "zds_zaakdoc_vertrouwelijkheid": "OPENBAAR",
+        }
+
+        plugin = StufZDSRegistration("stuf")
+        serializer = plugin.configuration_options(data=form_options)
+        self.assertTrue(serializer.is_valid())
+
+        result = plugin.register_submission(submission, serializer.validated_data)
+        self.assertEqual(
+            result,
+            {
+                "zaak": "foo-zaak",
+                "document": "bar-document",
+            },
+        )
+
+        xml_doc = xml_from_request_history(m, 0)
+        self.assertSoapXMLCommon(xml_doc)
+
+        xml_doc = xml_from_request_history(m, 1)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
+                "//zkn:object/zkn:identificatie": "foo-zaak",
+                "//zkn:object/zkn:omschrijving": "my-form",
+                "//zkn:object/zkn:betalingsIndicatie": "N.v.t.",
+                "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:code": "zt-code",
+                "//zkn:object/zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:inp.bsn": "111222333",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": "Foo",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Bar",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorvoegselGeslachtsnaam": "de",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20001231",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": "J.W.",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsaanduiding": "M",
+                "//zkn:object/zkn:heeftAlsOverigBetrokkene/zkn:gerelateerde/zkn:medewerker/zkn:identificatie": "123456782",  # Identificatie of the employee
+                "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "52.36673378967122 4.893164274470299",
+                "//zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
+                "//zkn:heeft/zkn:gerelateerde/zkn:code": "123",
+                "//zkn:heeft/zkn:gerelateerde/zkn:omschrijving": "aaabbc",
             },
         )
 
