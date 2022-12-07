@@ -2,6 +2,8 @@ import _ from 'lodash';
 import {Utils as FormioUtils} from 'formiojs';
 import {defineMessage} from 'react-intl';
 
+import {getComponentEmptyValue} from 'components/utils';
+
 import {COMPONENT_DATATYPES, VARIABLE_SOURCES} from './constants';
 
 const getComponentDatatype = component => {
@@ -210,7 +212,7 @@ const getDefaultValue = component => {
   if (component.hasOwnProperty('defaultValue') && component.defaultValue !== null)
     return component.defaultValue;
 
-  return null;
+  return getComponentEmptyValue(component);
 };
 
 const variableHasErrors = variable => !!Object.entries(variable.errors || {}).length;
