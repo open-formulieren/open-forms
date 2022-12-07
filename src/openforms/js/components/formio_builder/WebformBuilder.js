@@ -1,6 +1,9 @@
 import {Formio} from 'formiojs';
 import BuilderUtils from 'formiojs/utils/builder';
 import cloneDeep from 'lodash/cloneDeep';
+import FormioUtils from 'formiojs/utils';
+
+import FormIOModule from 'formio_module';
 
 const WebformBuilderFormio = Formio.Builders.builders.webform;
 
@@ -203,11 +206,31 @@ class WebformBuilder extends WebformBuilderFormio {
       return console.warn('Session storage is not supported in this browser.');
     }
     this.addClass(this.refs.form, 'builder-paste-mode');
-    // #2213 - Copied textField components had null defaultValue instead of the right empty value
     window.sessionStorage.setItem(
       'formio.clipboard',
-      JSON.stringify({defaultValue: component.emptyValue, ...component.schema})
+      JSON.stringify(this.fixDefaultValues(component))
     );
+  }
+
+  fixDefaultValues(component) {
+    // Cheeky workaround to get the empty value of components. Once inside the eachComponent(), we only have access to
+    // the schema and not the component instance
+    const componentClasses = FormIOModule.components;
+
+    // #2213 - Copied textField components had null defaultValue instead of the right empty value
+    const updatedSchema = {defaultValue: component.emptyValue, ...component.schema};
+
+    // #2436 - Copied fieldsets with components inside give the wrong default value for the nested components
+    if (FormioUtils.isLayoutComponent(updatedSchema)) {
+      const components = updatedSchema.components || updatedSchema.columns || updatedSchema.rows;
+      FormioUtils.eachComponent(components, component => {
+        if (component.defaultValue == null) {
+          const componentInstance = new componentClasses[component.type]();
+          component.defaultValue = componentInstance.emptyValue;
+        }
+      });
+    }
+    return updatedSchema;
   }
 }
 
