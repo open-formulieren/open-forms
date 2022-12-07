@@ -3,7 +3,7 @@ import BuilderUtils from 'formiojs/utils/builder';
 import cloneDeep from 'lodash/cloneDeep';
 import FormioUtils from 'formiojs/utils';
 
-import FormIOModule from 'formio_module';
+import {getComponentEmptyValue} from 'components/utils';
 
 const WebformBuilderFormio = Formio.Builders.builders.webform;
 
@@ -213,10 +213,6 @@ class WebformBuilder extends WebformBuilderFormio {
   }
 
   fixDefaultValues(component) {
-    // Cheeky workaround to get the empty value of components. Once inside the eachComponent(), we only have access to
-    // the schema and not the component instance
-    const componentClasses = FormIOModule.components;
-
     // #2213 - Copied textField components had null defaultValue instead of the right empty value
     const updatedSchema = {defaultValue: component.emptyValue, ...component.schema};
 
@@ -225,8 +221,9 @@ class WebformBuilder extends WebformBuilderFormio {
       const components = updatedSchema.components || updatedSchema.columns || updatedSchema.rows;
       FormioUtils.eachComponent(components, component => {
         if (component.defaultValue == null) {
-          const componentInstance = new componentClasses[component.type]();
-          component.defaultValue = componentInstance.emptyValue;
+          // Cheeky workaround to get the empty value of components. Once inside the eachComponent(), we only have
+          // access to the schema and not the component instance
+          component.defaultValue = getComponentEmptyValue(component);
         }
       });
     }
