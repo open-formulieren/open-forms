@@ -5,7 +5,7 @@ from django.db import migrations, models
 import tinymce.models
 
 import csp_post_processor.fields
-import openforms.utils.validators
+import openforms.template.validators
 
 
 class Migration(migrations.Migration):
@@ -150,7 +150,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 help_text="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used.",
                 null=True,
-                validators=[openforms.utils.validators.DjangoTemplateValidator()],
+                validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="submission confirmation template",
             ),
         ),
@@ -161,7 +161,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 help_text="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used.",
                 null=True,
-                validators=[openforms.utils.validators.DjangoTemplateValidator()],
+                validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="submission confirmation template",
             ),
         ),

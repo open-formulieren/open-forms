@@ -23,9 +23,9 @@ from tinymce.models import HTMLField
 from openforms.data_removal.constants import RemovalMethods
 from openforms.emails.validators import URLSanitationValidator
 from openforms.payments.validators import validate_payment_order_id_prefix
+from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import ensure_default_language, runtime_gettext
-from openforms.utils.validators import DjangoTemplateValidator
 
 from .constants import CSPDirective, UploadFileType
 

@@ -19,8 +19,8 @@ import csp_post_processor.fields
 import openforms.forms.models.form_variable
 import openforms.forms.models.form_version
 import openforms.forms.validators
+import openforms.template.validators
 import openforms.utils.files
-import openforms.utils.validators
 
 
 class Migration(migrations.Migration):
@@ -186,7 +186,7 @@ class Migration(migrations.Migration):
             field=tinymce.models.HTMLField(
                 blank=True,
                 help_text="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used.",
-                validators=[openforms.utils.validators.DjangoTemplateValidator()],
+                validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="submission confirmation template",
             ),
         ),

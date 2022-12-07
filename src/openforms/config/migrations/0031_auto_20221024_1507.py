@@ -8,8 +8,8 @@ import tinymce.models
 
 import openforms.config.models
 import openforms.emails.validators
+import openforms.template.validators
 import openforms.utils.translations
-import openforms.utils.validators
 
 
 class Migration(migrations.Migration):
@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 help_text="Content of the confirmation email message. Can be overridden on the form level",
                 null=True,
                 validators=[
-                    openforms.utils.validators.DjangoTemplateValidator(
+                    openforms.template.validators.DjangoTemplateValidator(
                         required_template_tags=[
                             "appointment_information",
                             "payment_information",
@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
                 help_text="Content of the confirmation email message. Can be overridden on the form level",
                 null=True,
                 validators=[
-                    openforms.utils.validators.DjangoTemplateValidator(
+                    openforms.template.validators.DjangoTemplateValidator(
                         required_template_tags=[
                             "appointment_information",
                             "payment_information",
@@ -80,7 +80,7 @@ class Migration(migrations.Migration):
                 help_text="Subject of the confirmation email message. Can be overridden on the form level",
                 max_length=1000,
                 null=True,
-                validators=[openforms.utils.validators.DjangoTemplateValidator()],
+                validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="subject",
             ),
         ),
@@ -96,7 +96,7 @@ class Migration(migrations.Migration):
                 help_text="Subject of the confirmation email message. Can be overridden on the form level",
                 max_length=1000,
                 null=True,
-                validators=[openforms.utils.validators.DjangoTemplateValidator()],
+                validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="subject",
             ),
         ),
@@ -320,7 +320,7 @@ class Migration(migrations.Migration):
                 help_text="Content of the save form email message.",
                 null=True,
                 validators=[
-                    openforms.utils.validators.DjangoTemplateValidator(),
+                    openforms.template.validators.DjangoTemplateValidator(),
                     openforms.emails.validators.URLSanitationValidator(),
                 ],
                 verbose_name="content",
@@ -338,7 +338,7 @@ class Migration(migrations.Migration):
                 help_text="Content of the save form email message.",
                 null=True,
                 validators=[
-                    openforms.utils.validators.DjangoTemplateValidator(),
+                    openforms.template.validators.DjangoTemplateValidator(),
                     openforms.emails.validators.URLSanitationValidator(),
                 ],
                 verbose_name="content",
@@ -356,7 +356,7 @@ class Migration(migrations.Migration):
                 help_text="Subject of the save form email message.",
                 max_length=1000,
                 null=True,
-                validators=[openforms.utils.validators.DjangoTemplateValidator()],
+                validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="subject",
             ),
         ),
@@ -372,7 +372,7 @@ class Migration(migrations.Migration):
                 help_text="Subject of the save form email message.",
                 max_length=1000,
                 null=True,
-                validators=[openforms.utils.validators.DjangoTemplateValidator()],
+                validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="subject",
             ),
         ),
@@ -387,7 +387,7 @@ class Migration(migrations.Migration):
                 ),
                 help_text="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data.",
                 null=True,
-                validators=[openforms.utils.validators.DjangoTemplateValidator()],
+                validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="submission confirmation template",
             ),
         ),
@@ -402,7 +402,7 @@ class Migration(migrations.Migration):
                 ),
                 help_text="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data.",
                 null=True,
-                validators=[openforms.utils.validators.DjangoTemplateValidator()],
+                validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="submission confirmation template",
             ),
         ),
