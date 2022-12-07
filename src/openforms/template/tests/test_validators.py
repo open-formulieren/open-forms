@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, override_settings
 from django.utils.translation import gettext as _
 
 from ..validators import DjangoTemplateValidator
@@ -66,3 +66,23 @@ class DjangoTemplateValidatorTest(SimpleTestCase):
             with self.subTest(f"invalid: {text}"):
                 with self.assertRaisesRegex(ValidationError, message):
                     validator(text)
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_validation_error_no_html(self):
+        """
+        Validation errors cannot contain HTML if they're used in API endpoints.
+
+        Discovered via #2418 - while the markup works nicely in the Django admin,
+        DRF cannot handle the templated out validation error. ErrorDetail is a str
+        subclass, and essentially discards the SafeString contextual information.
+        Additionally, it's hard to selectively allow HTML in the frontend code without
+        increasing XSS risks.
+        """
+        validator = DjangoTemplateValidator()
+
+        with self.assertRaisesMessage(
+            ValidationError,
+            "Invalid block tag on line 1: 'bad-tag'. Did you forget to register "
+            "or load this tag?",
+        ):
+            validator("{% bad-tag %}")
