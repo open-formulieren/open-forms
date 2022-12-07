@@ -15,7 +15,7 @@ include the SDK snippet directly.
 </style>
 {% endif %}
 
-{% trans "Back to website" as logo_alt %}
+{% blocktranslate with name=config.organization_name asvar logo_alt %}Back to website of {{ name }}{% endblocktranslate %}
 
 <header class="page-header {% if config.logo %}page-header--has-logo{% endif %}">
     {# if there's a logo, output a design token that the CSS can pick up to set as background #}
