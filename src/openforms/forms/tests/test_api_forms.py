@@ -1550,7 +1550,7 @@ class FormsAPITranslationTests(APITestCase):
             {
                 "name": "translations.nl.submissionConfirmationTemplate",
                 "code": "syntax_error",
-                "reason": "\n                <p>Empty variable tag on line 1</p>\n                \n            ",
+                "reason": "Empty variable tag on line 1",
             },
             {
                 "name": "translations.en.name",
@@ -1562,7 +1562,7 @@ class FormsAPITranslationTests(APITestCase):
             {
                 "name": "translations.en.submissionConfirmationTemplate",
                 "code": "syntax_error",
-                "reason": "\n                <p>Empty variable tag on line 1</p>\n                \n            ",
+                "reason": "Empty variable tag on line 1",
             },
             {
                 "name": "translations.en.beginText",
