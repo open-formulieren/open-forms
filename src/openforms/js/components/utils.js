@@ -1,8 +1,7 @@
-import FormIOModule from 'formio_module';
+import {Formio} from 'formiojs';
 
 const getComponentEmptyValue = component => {
-  const componentClasses = FormIOModule.components;
-  const componentInstance = new componentClasses[component.type]();
+  const componentInstance = Formio.Components.create(component);
   return componentInstance.emptyValue;
 };
 
