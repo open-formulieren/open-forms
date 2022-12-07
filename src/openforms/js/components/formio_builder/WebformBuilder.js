@@ -1,6 +1,9 @@
 import {Formio} from 'formiojs';
 import BuilderUtils from 'formiojs/utils/builder';
 import cloneDeep from 'lodash/cloneDeep';
+import FormioUtils from 'formiojs/utils';
+
+import {getComponentEmptyValue} from 'components/utils';
 
 const WebformBuilderFormio = Formio.Builders.builders.webform;
 
@@ -194,6 +197,37 @@ class WebformBuilder extends WebformBuilderFormio {
 
     this.highlightInvalidComponents();
     return Promise.resolve();
+  }
+
+  // Taken from https://github.com/formio/formio.js/blob/v4.13.13/src/WebformBuilder.js#L1450
+  // Modified so that copied components have the right defaultValue
+  copyComponent(component) {
+    if (!window.sessionStorage) {
+      return console.warn('Session storage is not supported in this browser.');
+    }
+    this.addClass(this.refs.form, 'builder-paste-mode');
+    window.sessionStorage.setItem(
+      'formio.clipboard',
+      JSON.stringify(this.fixDefaultValues(component))
+    );
+  }
+
+  fixDefaultValues(component) {
+    // #2213 - Copied textField components had null defaultValue instead of the right empty value
+    const updatedSchema = {defaultValue: component.emptyValue, ...component.schema};
+
+    // #2436 - Copied fieldsets with components inside give the wrong default value for the nested components
+    if (FormioUtils.isLayoutComponent(updatedSchema)) {
+      const components = updatedSchema.components || updatedSchema.columns || updatedSchema.rows;
+      FormioUtils.eachComponent(components, component => {
+        if (component.defaultValue == null) {
+          // Cheeky workaround to get the empty value of components. Once inside the eachComponent(), we only have
+          // access to the schema and not the component instance
+          component.defaultValue = getComponentEmptyValue(component);
+        }
+      });
+    }
+    return updatedSchema;
   }
 }
 
