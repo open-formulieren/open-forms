@@ -58,10 +58,15 @@ const shouldNotUpdateVariables = (newComponent, oldComponent, mutationType, step
   // Issue #1695: content components are not considered layout components
   if (newComponent.type === 'content') return true;
 
+  const isLayout = isLayoutComponent(newComponent);
+
+  // When deleting a layout component, all child components need to be removed
+  if (isLayout && mutationType === 'removed') return false;
+
   // editGrids ARE layout components, but we want to create a variable for them that contains all
   // the data of the children
   const isComponentWithVariable =
-    isLayoutComponent(newComponent) &&
+    isLayout &&
     !(newComponent.type === 'editgrid') &&
     !isPasteEvent(mutationType, newComponent, oldComponent);
 
