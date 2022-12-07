@@ -229,6 +229,15 @@ class GlobalConfiguration(SingletonModel):
             "URL to the main website. Used for the 'back to municipality website' link."
         ),
     )
+    organization_name = models.CharField(
+        _("organization name"),
+        max_length=100,
+        blank=True,
+        help_text=_(
+            "The name of your organization that will be used as label for elements "
+            "like the logo."
+        ),
+    )
     # the configuration of the values of available design tokens, following the
     # format outlined in https://github.com/amzn/style-dictionary#design-tokens which
     # is used by NLDS.
