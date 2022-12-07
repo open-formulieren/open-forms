@@ -14,8 +14,8 @@ import tinymce.models
 import openforms.config.models
 import openforms.emails.validators
 import openforms.payments.validators
+import openforms.template.validators
 import openforms.utils.translations
-import openforms.utils.validators
 
 # default colors from CKEditor source code (in CSS HSL format)
 # via https://github.com/ckeditor/ckeditor5/blob/master/packages/ckeditor5-font/src/fontcolor/fontcolorediting.js
@@ -133,7 +133,7 @@ class Migration(migrations.Migration):
                     **{}
                 ),
                 help_text="Content of the confirmation email message. Can be overridden on the form level",
-                validators=[openforms.utils.validators.DjangoTemplateValidator()],
+                validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="content",
             ),
         ),
@@ -148,7 +148,7 @@ class Migration(migrations.Migration):
                 ),
                 help_text="Subject of the confirmation email message. Can be overridden on the form level",
                 max_length=1000,
-                validators=[openforms.utils.validators.DjangoTemplateValidator()],
+                validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="subject",
             ),
         ),
@@ -192,7 +192,7 @@ class Migration(migrations.Migration):
                 ),
                 help_text="Content of the confirmation email message. Can be overridden on the form level",
                 validators=[
-                    openforms.utils.validators.DjangoTemplateValidator(
+                    openforms.template.validators.DjangoTemplateValidator(
                         required_template_tags=[
                             "appointment_information",
                             "payment_information",
@@ -213,7 +213,7 @@ class Migration(migrations.Migration):
                     **{}
                 ),
                 help_text="The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data.",
-                validators=[openforms.utils.validators.DjangoTemplateValidator()],
+                validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="submission confirmation template",
             ),
         ),

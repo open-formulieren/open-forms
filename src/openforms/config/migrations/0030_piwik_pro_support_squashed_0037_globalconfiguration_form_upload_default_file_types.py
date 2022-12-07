@@ -11,7 +11,7 @@ import tinymce.models
 
 import openforms.config.models
 import openforms.emails.validators
-import openforms.utils.validators
+import openforms.template.validators
 from openforms.analytics_tools.constants import AnalyticsTools
 from openforms.analytics_tools.utils import (
     get_cookies,
@@ -243,7 +243,7 @@ class Migration(migrations.Migration):
                 ),
                 help_text="Content of the save form email message.",
                 validators=[
-                    openforms.utils.validators.DjangoTemplateValidator(),
+                    openforms.template.validators.DjangoTemplateValidator(),
                     openforms.emails.validators.URLSanitationValidator(),
                 ],
                 verbose_name="content",
@@ -260,7 +260,7 @@ class Migration(migrations.Migration):
                 ),
                 help_text="Subject of the save form email message.",
                 max_length=1000,
-                validators=[openforms.utils.validators.DjangoTemplateValidator()],
+                validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="subject",
             ),
         ),

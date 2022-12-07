@@ -2,8 +2,8 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
-from openforms.utils.validators import DjangoTemplateValidator
 
 from .constants import AttachmentFormat
 

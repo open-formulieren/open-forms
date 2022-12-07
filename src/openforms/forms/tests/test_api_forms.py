@@ -846,7 +846,7 @@ class FormsAPITests(APITestCase):
         self,
     ):
         patcher = patch(
-            "openforms.utils.validators.DjangoTemplateValidator.check_required_tags",
+            "openforms.template.validators.DjangoTemplateValidator.check_required_tags",
             return_value=None,
         )
         patcher.start()

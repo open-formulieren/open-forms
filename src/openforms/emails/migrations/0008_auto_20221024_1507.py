@@ -3,7 +3,7 @@
 from django.db import migrations, models
 
 import openforms.emails.validators
-import openforms.utils.validators
+import openforms.template.validators
 
 
 class Migration(migrations.Migration):
@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 help_text="The content of the email message can contain variables that will be templated from the submitted form data.",
                 null=True,
                 validators=[
-                    openforms.utils.validators.DjangoTemplateValidator(
+                    openforms.template.validators.DjangoTemplateValidator(
                         required_template_tags=[
                             "appointment_information",
                             "payment_information",
@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
                 help_text="The content of the email message can contain variables that will be templated from the submitted form data.",
                 null=True,
                 validators=[
-                    openforms.utils.validators.DjangoTemplateValidator(
+                    openforms.template.validators.DjangoTemplateValidator(
                         required_template_tags=[
                             "appointment_information",
                             "payment_information",
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 help_text="Subject of the email message",
                 max_length=1000,
                 null=True,
-                validators=[openforms.utils.validators.DjangoTemplateValidator()],
+                validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="subject",
             ),
         ),
@@ -71,7 +71,7 @@ class Migration(migrations.Migration):
                 help_text="Subject of the email message",
                 max_length=1000,
                 null=True,
-                validators=[openforms.utils.validators.DjangoTemplateValidator()],
+                validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="subject",
             ),
         ),
