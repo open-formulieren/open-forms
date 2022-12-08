@@ -162,12 +162,9 @@ const FormStepDefinition = ({
                     />
                   }
                   fieldBox
+                  disabled={langCode !== defaultLang}
                 >
-                  <TextInput
-                    value={internalName}
-                    onChange={onFieldChange}
-                    disabled={langCode !== defaultLang}
-                  />
+                  <TextInput value={internalName} onChange={onFieldChange} />
                 </Field>
                 <Field
                   name="slug"
@@ -185,12 +182,9 @@ const FormStepDefinition = ({
                   }
                   required
                   fieldBox
+                  disabled={langCode !== defaultLang}
                 >
-                  <TextInput
-                    value={slug}
-                    onChange={onFieldChange}
-                    disabled={langCode !== defaultLang}
-                  />
+                  <TextInput value={slug} onChange={onFieldChange} />
                 </Field>
               </FormRow>
               <FormRow>

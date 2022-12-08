@@ -6,6 +6,8 @@ DO NOT PUT ANY TARGET APP-SPECIFIC RULES HERE.
 @use 'sass:list' as list;
 @use 'sass:selector' as selector;
 
+@import 'microscope-sass/lib/bem';
+
 @import '../vars';
 
 // override django CSS variables
@@ -330,6 +332,43 @@ body.popup {
     #main {
       padding-top: 0; // popup menu's have no header
     }
+  }
+}
+
+/**
+ * Styling disabled fields/inputs
+ */
+.checkbox-row {
+  @include modifier('disabled') {
+    opacity: 0.5;
+
+    &,
+    input,
+    label {
+      cursor: not-allowed;
+    }
+
+    input:disabled {
+      opacity: 1;
+    }
+  }
+}
+
+.field--disabled {
+  opacity: 0.5;
+
+  input,
+  select {
+    &:disabled {
+      opacity: 1;
+    }
+  }
+
+  &,
+  input,
+  select,
+  label {
+    cursor: not-allowed;
   }
 }
 

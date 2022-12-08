@@ -30,6 +30,7 @@ const Field = ({
   label = '',
   helpText = '',
   required = false,
+  disabled = false,
   errors = [],
   children,
   fieldBox = false,
@@ -43,9 +44,17 @@ const Field = ({
 
   const htmlFor = `id_${name}`;
 
-  const modifiedChildren = React.cloneElement(children, {id: htmlFor, name: originalName});
+  const childProps = {id: htmlFor, name: originalName};
+  if (disabled) {
+    childProps.disabled = true;
+  }
+  const modifiedChildren = React.cloneElement(children, childProps);
   const [hasErrors, formattedErrors] = normalizeErrors(errors, intl);
-  const className = classNames({fieldBox: fieldBox}, {errors: hasErrors});
+  const className = classNames({
+    fieldBox: fieldBox,
+    errors: hasErrors,
+    'field--disabled': disabled,
+  });
 
   return (
     <>
@@ -83,6 +92,7 @@ Field.propTypes = {
     PropTypes.string,
   ]),
   fieldBox: PropTypes.bool,
+  disabled: PropTypes.bool,
 };
 
 export default Field;

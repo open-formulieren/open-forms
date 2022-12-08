@@ -227,13 +227,13 @@ const Confirmation = ({
                       description="Form confirmation email help text"
                     />
                   }
+                  disabled={langCode !== defaultLang}
                 >
                   <Select
                     name="form.confirmationEmailOption"
                     choices={emailOptions}
                     value={emailOption}
                     onChange={onChange}
-                    disabled={langCode !== defaultLang}
                   />
                 </Field>
               </FormRow>

@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, {useContext, useEffect, useRef} from 'react';
 import {defineMessage, useIntl} from 'react-intl';
@@ -83,7 +84,7 @@ const Checkbox = ({name, label, helpText, ...extraProps}) => {
   name = prefix ? `${prefix}-${name}` : name;
   const idFor = disabled ? undefined : `id_${name}`;
   return (
-    <div className="checkbox-row">
+    <div className={classNames('checkbox-row', {'checkbox-row--disabled': disabled})}>
       <input type="checkbox" name={name} id={idFor} {...extraProps} />
       <label className="vCheckboxLabel inline" htmlFor={idFor}>
         {label}
