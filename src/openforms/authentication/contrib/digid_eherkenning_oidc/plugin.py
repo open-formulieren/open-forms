@@ -148,6 +148,7 @@ class DigiDMachtigenOIDCAuthentication(OIDCAuthentication):
     init_url = "digid_machtigen_oidc:init"
     session_key = DIGID_MACHTIGEN_OIDC_AUTH_SESSION_KEY
     config_class = OpenIDConnectDigiDMachtigenConfig
+    is_for_gemachtigde = True
 
     def add_claims_to_sessions_if_not_cosigning(self, claim, request):
         # set the session auth key only if we're not co-signing
@@ -174,6 +175,7 @@ class EHerkenningBewindvoeringOIDCAuthentication(OIDCAuthentication):
     init_url = "eherkenning_bewindvoering_oidc:init"
     session_key = EHERKENNING_BEWINDVOERING_OIDC_AUTH_SESSION_KEY
     config_class = OpenIDConnectEHerkenningBewindvoeringConfig
+    is_for_gemachtigde = True
 
     def add_claims_to_sessions_if_not_cosigning(self, claim, request):
         # set the session auth key only if we're not co-signing

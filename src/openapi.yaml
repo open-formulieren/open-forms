@@ -6690,8 +6690,14 @@ components:
           readOnly: true
           title: Optional logo
           description: Optional logo
+        isForGemachtigde:
+          type: boolean
+          readOnly: true
+          description: This authorization method can be used to log in on behalf of
+            another person or company
       required:
       - identifier
+      - isForGemachtigde
       - label
       - logo
       - url
