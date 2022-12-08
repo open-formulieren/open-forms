@@ -2,7 +2,9 @@ import copy
 from datetime import timedelta
 from typing import List, Optional
 
+from django.conf import settings
 from django.utils import timezone
+from django.utils.translation import get_language
 
 import factory
 import magic
@@ -27,8 +29,17 @@ from ..models import (
 
 
 class SubmissionFactory(factory.django.DjangoModelFactory):
-    form = factory.SubFactory(FormFactory)
-    language_code = "nl"
+
+    # this repeats the default of the Charfield LazyAttribute evaluation needs;
+    # stub.factory_parent.__getattr__ cs. doesn't check the model's attributes.
+    language_code = factory.LazyAttribute(lambda _: get_language())
+
+    form = factory.SubFactory(
+        FormFactory,
+        translation_enabled=factory.LazyAttribute(
+            lambda stub: stub.factory_parent.language_code != settings.LANGUAGE_CODE
+        ),
+    )
 
     class Meta:
         model = Submission
