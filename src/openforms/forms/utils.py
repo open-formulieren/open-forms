@@ -1,4 +1,5 @@
 import json
+import logging
 import random
 import string
 import zipfile
@@ -29,6 +30,9 @@ from .api.serializers import (
 from .api.serializers.logic.action_serializers import LogicComponentActionSerializer
 from .constants import EXPORT_META_KEY
 from .models import Form, FormDefinition, FormLogic, FormStep, FormVariable
+
+logger = logging.getLogger(__name__)
+
 
 IMPORT_ORDER = {
     "formDefinitions": FormDefinition,
@@ -319,12 +323,20 @@ def parse_trigger(
         trigger_component_key = trigger.get("when")
         compare_value = trigger.get("eq")
 
-        if (
-            configuration_wrapper
-            and configuration_wrapper[trigger_component_key]["type"] == "selectboxes"
-        ):
-            return {"==": [{"var": f"{trigger_component_key}.{compare_value}"}, True]}
-
+        if configuration_wrapper:
+            if trigger_component_key not in configuration_wrapper:
+                logger.warning(
+                    "Logic trigger with non-existing component (%s)",
+                    trigger_component_key,
+                )
+                return
+            else:
+                trigger_component_type = configuration_wrapper[trigger_component_key][
+                    "type"
+                ]
+                if trigger_component_type == "selectboxes":
+                    trigger_component_key = f"{trigger_component_key}.{compare_value}"
+                    compare_value = True
         return {"==": [{"var": trigger_component_key}, compare_value]}
 
     if trigger_type == "json":
