@@ -6,7 +6,7 @@ from unittest.mock import patch
 from django.core import mail
 from django.db import close_old_connections
 from django.test import TestCase, TransactionTestCase, override_settings
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext as _, override as override_language
 
 from privates.test import temp_private_root
 
@@ -16,8 +16,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.constants import ConfirmationEmailOptions
-from openforms.forms.tests.factories import FormFactory, FormStepFactory
-from openforms.translations.tests.utils import make_translated
+from openforms.forms.tests.factories import FormStepFactory
 from openforms.utils.tests.html_assert import HTMLAssertMixin
 
 from ..tasks import maybe_send_confirmation_email
@@ -562,52 +561,44 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
     def test_template_is_rendered_in_submission_language(self):
         language = "en"
-
-        form = make_translated(FormFactory).create(
-            _language=language,
-            name="Translated form name",
-        )
-        FormStepFactory.create(
-            form=form,
-            form_definition__name_en="A Quickstep",
-            form_definition__configuration={
-                "components": [
+        with override_language(language):
+            submission = SubmissionFactory.from_components(
+                language_code=language,
+                completed=True,
+                components_list=[
                     {
-                        "key": "foo",
-                        "type": "textfield",
-                        "label": "Foo",
-                        "showInEmail": True,
-                    }
+                        "key": "email",
+                        "type": "email",
+                        "label": "Email",
+                        "confirmationRecipient": True,
+                    },
                 ],
-            },
-        )
-        # TODO after form IO add steps
-        # dropdown, radio, checkbox
-
-        submission = SubmissionFactory.from_components(
-            language_code=language,
-            form=form,
-            completed=True,
-            components_list=[
-                {
-                    "key": "email",
-                    "type": "email",
-                    "label": "Email",
-                    "confirmationRecipient": True,
+                submitted_data={"email": "abuse@example.com"},
+                form__generate_minimal_setup=True,
+                form__translation_enabled=True,
+                form__name="Translated form name",
+                form__formstep__form_definition__name="A Quickstep",
+                form__formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "key": "foo",
+                            "type": "textfield",
+                            "label": "Foo",
+                            "showInEmail": True,
+                        }
+                    ],
                 },
-            ],
-            submitted_data={"email": "abuse@example.com"},
-        )
-
-        make_translated(ConfirmationEmailTemplateFactory).create(
-            _language=language,
-            form=form,
-            subject="Translated confirmation mail",
-            content="""Translated content
-            {{form_name}}
-            {% summary %}
-            """,
-        )
+            )
+            ConfirmationEmailTemplateFactory.create(
+                form=submission.form,
+                subject="Translated confirmation mail",
+                content="""Translated content
+                {{form_name}}
+                {% summary %}
+                """,
+            )
+            # TODO after form IO add steps
+            # dropdown, radio, checkbox
 
         # "execute" the celery task
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):

@@ -67,7 +67,6 @@ class SubmissionReport(models.Model):
         """
         with override(self.submission.language_code):
             form = self.submission.form
-            # Switch to submission lang TODO
             html_report, pdf_report = render_to_pdf(
                 "report/submission_report.html",
                 context={"report": Report(self.submission)},

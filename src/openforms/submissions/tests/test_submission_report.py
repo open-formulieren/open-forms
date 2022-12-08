@@ -10,8 +10,6 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.forms.tests.factories import FormStepFactory
-
 from ..models import SubmissionReport
 from ..tasks import generate_submission_report
 from ..tokens import submission_report_token_generator
@@ -100,16 +98,15 @@ class DownloadSubmissionReportTests(APITestCase):
         self.assertTrue(report.content.name.endswith("Test_Form.pdf"))
 
     def test_report_is_generated_in_same_language_as_submission(self):
-        submission = SubmissionFactory.create(
-            language_code="en",
-            completed=True,
-            form__name_en="Translated form name",
-        )
-        FormStepFactory.create(
-            form=submission.form,
-            form_definition__name="Walsje",
-            form_definition__name_en="A Quickstep",
-            form_definition__configuration={
+        report = SubmissionReportFactory(
+            submission__language_code="en",
+            submission__completed=True,
+            submission__form__generate_minimal_setup=True,
+            submission__form__translation_enabled=True,
+            submission__form__name_en="Translated form name",
+            submission__form__formstep__form_definition__name_nl="Walsje",
+            submission__form__formstep__form_definition__name_en="A Quickstep",
+            submission__form__formstep__form_definition__configuration={
                 "components": [
                     {
                         "key": "foo",
@@ -120,7 +117,6 @@ class DownloadSubmissionReportTests(APITestCase):
                 ],
             },
         )
-        report = SubmissionReportFactory(submission=submission)
 
         html_report = report.generate_submission_report_pdf()
 
