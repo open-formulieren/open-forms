@@ -40,6 +40,7 @@ RETURN_ACTION_PARAM = "action"
 
 @register("ogone-legacy")
 class OgoneLegacyPaymentPlugin(BasePlugin):
+    return_method = ("GET", "POST")
     verbose_name = _("Ogone legacy")
     configuration_options = OgoneOptionsSerializer
 
@@ -76,7 +77,10 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         client = OgoneClient(merchant)
 
         try:
-            params = client.get_validated_params(request.query_params)
+            if request.method == "GET":
+                params = client.get_validated_params(request.query_params)
+            elif request.method == "POST":
+                params = client.get_validated_params(request.data)
         except InvalidSignature as e:
             logger.warning(f"invalid SHASIGN for payment {payment}")
             logevent.payment_flow_failure(payment, self, e)

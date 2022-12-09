@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView
 
 from drf_spectacular.types import OpenApiTypes
@@ -215,7 +216,7 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
         if payment.plugin_id != payment.form.payment_backend:
             raise ParseError(detail="plugin not allowed")
 
-        if plugin.return_method.upper() != request.method.upper():
+        if request.method.upper() not in plugin.return_method:
             raise MethodNotAllowed(request.method)
 
         try:
@@ -245,6 +246,7 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
     def get(self, request, *args, **kwargs):
         return self._handle_return(request, *args, **kwargs)
 
+    @method_decorator(csrf_exempt)
     def post(self, request, *args, **kwargs):
         return self._handle_return(request, *args, **kwargs)
 

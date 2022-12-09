@@ -110,6 +110,74 @@ class OgoneTests(TestCase):
 
         self.assertEqual(submission.payment_user_has_paid, True)
 
+    def test_cancel_payment(self):
+        """Check that cancelling payment with POST request works"""
+
+        merchant = OgoneMerchantFactory.create(
+            pspid="psp123",
+        )
+        submission = SubmissionFactory.create(
+            completed=True,
+            form__slug="myform",
+            form__payment_backend="ogone-legacy",
+            form__payment_backend_options={"merchant_id": merchant.id},
+            form__product__price=Decimal("11.35"),
+            form_url="http://foo.bar",
+        )
+
+        self.assertEqual(submission.payment_required, True)
+        self.assertEqual(submission.payment_user_has_paid, False)
+
+        plugin = register["ogone-legacy"]
+
+        # we need an arbitrary request
+        factory = RequestFactory()
+        request = factory.get("/foo")
+
+        # start url
+        url = plugin.get_start_url(request, submission)
+
+        # good
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 200)
+
+        payment = submission.payments.get()
+        self.assertEqual(payment.plugin_id, "ogone-legacy")
+        self.assertEqual(payment.status, PaymentStatus.started)
+
+        # return url
+        url = plugin.get_return_url(request, payment)
+
+        ogone_params = {
+            "branding": "OGONE",
+            "CSRFKEY": "14E0F142C9DD124394E4F2E7EA252E1CC0E7EE18",
+            "CSRFSP": "/ncol/test/order_ANetb_flowhandler_UTF8.asp",
+            "CSRFTS": "20221212112519",
+            "hash_param": "5B0F24D75FF7B02D79213B33C9D70912F845B14D",
+            "payid": "3248862357",
+        }
+
+        return_url = furl(url)
+        return_url.args[RETURN_ACTION_PARAM] = "cancel"
+
+        # cancel payment with POST request
+        response = self.client.post(return_url.url, ogone_params)
+
+        self.assertEqual(response.status_code, 302)
+
+        # check if we end up back at the form
+        self.assertRegex(response["Location"], r"^http://foo.bar")
+        loc = furl(response["Location"])
+        self.assertEqual(loc.args["of_payment_action"], "cancel")
+        self.assertEqual(loc.args["of_payment_status"], "failed")
+        self.assertEqual(loc.args["of_payment_id"], str(payment.uuid))
+
+        # assert that payment has failed
+        submission.refresh_from_db()
+        payment.refresh_from_db()
+        self.assertEqual(payment.status, PaymentStatus.failed)
+        self.assertEqual(submission.payment_user_has_paid, False)
+
     def test_webhook(self):
         merchant = OgoneMerchantFactory.create(
             pspid="psp123",
