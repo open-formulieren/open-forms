@@ -1,4 +1,11 @@
-import {ADVANCED, PREFILL, REGISTRATION, SENSITIVE_READ_ONLY, VALIDATION} from './edit/tabs';
+import {
+  ADVANCED,
+  PREFILL,
+  REGISTRATION,
+  SENSITIVE_READ_ONLY,
+  VALIDATION,
+  TRANSLATIONS,
+} from './edit/tabs';
 import TextField from './textfield';
 
 class BsnField extends TextField {
@@ -28,7 +35,7 @@ class BsnField extends TextField {
     const tabs = {
       type: 'tabs',
       key: 'tabs',
-      components: [SENSITIVE_READ_ONLY, ADVANCED, VALIDATION, REGISTRATION, PREFILL],
+      components: [SENSITIVE_READ_ONLY, ADVANCED, VALIDATION, REGISTRATION, PREFILL, TRANSLATIONS],
     };
     return {components: [tabs]};
   }

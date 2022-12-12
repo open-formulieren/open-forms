@@ -1,5 +1,11 @@
 import {Formio} from 'formiojs';
-import DEFAULT_TABS, {ADVANCED, SENSITIVE_BASIC, REGISTRATION, VALIDATION} from './edit/tabs';
+import DEFAULT_TABS, {
+  ADVANCED,
+  SENSITIVE_BASIC,
+  REGISTRATION,
+  VALIDATION,
+  TRANSLATIONS,
+} from './edit/tabs';
 
 const FormioEmail = Formio.Components.components.email;
 
@@ -39,7 +45,7 @@ class EmailField extends FormioEmail {
     };
     const TABS = {
       ...DEFAULT_TABS,
-      components: [BASIC_TAB, ADVANCED, VALIDATION, REGISTRATION],
+      components: [BASIC_TAB, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
     };
     return {components: [TABS]};
   }

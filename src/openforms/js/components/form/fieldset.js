@@ -1,6 +1,6 @@
 import {Formio} from 'formiojs';
 
-import {ADVANCED} from 'components/form/edit/tabs';
+import {ADVANCED, TRANSLATIONS} from 'components/form/edit/tabs';
 import {LABEL, KEY, HIDDEN, CLEAR_ON_HIDE} from 'components/form/edit/options';
 
 const FormioFieldSet = Formio.Components.components.fieldset;
@@ -32,6 +32,7 @@ class FieldSet extends FormioFieldSet {
       // have this field in the FIELDSET_BASIC tab.
       // The Conditions and Layout tabs have also been removed since they are not used
       ADVANCED,
+      TRANSLATIONS,
     ];
     return parentEditForm;
   }

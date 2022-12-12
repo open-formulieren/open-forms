@@ -1,6 +1,6 @@
 import {Formio} from 'formiojs';
 import {HIDDEN, KEY, LABEL, PRESENTATION, SHOW_IN_EMAIL, SHOW_IN_PDF} from './edit/options';
-import {ADVANCED} from './edit/tabs';
+import {ADVANCED, TRANSLATIONS} from './edit/tabs';
 
 const FormioContentField = Formio.Components.components.content;
 
@@ -50,6 +50,7 @@ const CONTENT_EDIT_TABS = {
           components: [LABEL, KEY, HIDDEN, CONTENT_PRESENTATION, CUSTOM_CSS_CLASS],
         },
         ADVANCED,
+        TRANSLATIONS,
       ],
     },
   ],

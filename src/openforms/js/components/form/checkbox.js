@@ -1,7 +1,7 @@
 import {Formio} from 'formiojs';
 
 import {MULTIPLE} from './edit/options';
-import {DEFAULT_TABS, BASIC, ADVANCED, VALIDATION, REGISTRATION} from './edit/tabs';
+import {DEFAULT_TABS, BASIC, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS} from './edit/tabs';
 
 class CheckboxField extends Formio.Components.components.checkbox {
   static editForm() {
@@ -17,6 +17,7 @@ class CheckboxField extends Formio.Components.components.checkbox {
             ADVANCED,
             VALIDATION,
             REGISTRATION,
+            TRANSLATIONS,
           ],
         },
       ],

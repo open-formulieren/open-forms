@@ -6,6 +6,7 @@ import {
   REGISTRATION,
   SENSITIVE_BASIC,
   VALIDATION,
+  TRANSLATIONS,
 } from './edit/tabs';
 import {REGEX_VALIDATION} from './edit/options';
 
@@ -40,7 +41,7 @@ class PhoneNumberField extends PhoneNumber {
     const extendedDefaults = {
       type: 'tabs',
       key: 'tabs',
-      components: [SENSITIVE_BASIC, ADVANCED, validationTab, REGISTRATION],
+      components: [SENSITIVE_BASIC, ADVANCED, validationTab, REGISTRATION, TRANSLATIONS],
     };
 
     return {components: [extendedDefaults]};

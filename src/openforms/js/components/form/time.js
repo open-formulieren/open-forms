@@ -1,6 +1,12 @@
 import {Formio} from 'formiojs';
 
-import DEFAULT_TABS, {ADVANCED, REGISTRATION, SENSITIVE_BASIC, VALIDATION} from './edit/tabs';
+import DEFAULT_TABS, {
+  ADVANCED,
+  REGISTRATION,
+  SENSITIVE_BASIC,
+  VALIDATION,
+  TRANSLATIONS,
+} from './edit/tabs';
 
 const Time = Formio.Components.components.time;
 
@@ -59,7 +65,7 @@ class TimeField extends Time {
     };
     const TABS = {
       ...DEFAULT_TABS,
-      components: [BASIC_TAB, ADVANCED, VALIDATION, REGISTRATION],
+      components: [BASIC_TAB, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
     };
     return {components: [TABS]};
   }

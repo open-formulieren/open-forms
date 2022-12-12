@@ -8,6 +8,7 @@ import {
   LABEL_REQUIRED,
   REQUIRED,
 } from './edit/options';
+import {TRANSLATIONS} from './edit/tabs';
 
 const EditGridFormio = Formio.Components.components.editgrid;
 
@@ -109,6 +110,7 @@ const EDIT_FORM_TABS = [
           },
         ],
       },
+      TRANSLATIONS,
     ],
   },
 ];
