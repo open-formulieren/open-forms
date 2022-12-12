@@ -59,6 +59,7 @@ class VariablesNodeTests(TestCase):
                         "type": "textfield",
                         "showInEmail": True,
                         "showInPDF": True,
+                        "autocomplete": True,
                     },
                 ],
             },

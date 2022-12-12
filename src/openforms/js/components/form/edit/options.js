@@ -54,6 +54,14 @@ const SHOW_IN_PDF = {
   defaultValue: true,
 };
 
+const AUTOCOMPLETE = {
+  type: 'checkbox',
+  key: 'autocomplete',
+  label: 'Autocomplete',
+  tooltip: 'Display options to fill in the field, based on earlier typed values.',
+  defaultValue: true,
+};
+
 const PRESENTATION = {
   type: 'panel',
   title: 'Display in summaries and confirmations',
@@ -135,6 +143,7 @@ export {
   SHOW_IN_SUMMARY,
   SHOW_IN_EMAIL,
   SHOW_IN_PDF,
+  AUTOCOMPLETE,
   PRESENTATION,
   MULTIPLE,
   HIDDEN,

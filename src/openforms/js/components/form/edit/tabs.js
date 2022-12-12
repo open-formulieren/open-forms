@@ -16,6 +16,7 @@ import {
   READ_ONLY,
   REGEX_VALIDATION,
   REQUIRED,
+  AUTOCOMPLETE,
 } from './options';
 import {getValidationEditForm} from './validationEditFormUtils';
 
@@ -30,6 +31,7 @@ const BASIC = {
     LABEL_REQUIRED,
     KEY,
     DESCRIPTION,
+    AUTOCOMPLETE,
     PRESENTATION,
     MULTIPLE,
     HIDDEN,
