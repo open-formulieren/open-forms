@@ -2,6 +2,7 @@ from django.db import IntegrityError
 from django.test import TestCase
 
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 from ..factories import FormFactory, FormVariableFactory
 
@@ -20,6 +21,14 @@ class FormVariableModelTests(TestCase):
             FormVariableFactory.create(
                 source=FormVariableSources.component, form_definition=None
             )
+
+    def test_variable_can_have_a_service_fetch_configuration(self):
+        try:
+            FormVariableFactory.create(
+                service_fetch_configuration=ServiceFetchConfigurationFactory.create()
+            )
+        except TypeError as e:
+            raise self.failureException("Failed valid input") from e
 
     def test_component_variable_data_type_automatically_set(self):
         form = FormFactory.create(

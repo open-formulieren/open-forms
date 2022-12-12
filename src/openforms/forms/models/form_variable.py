@@ -133,6 +133,13 @@ class FormVariable(models.Model):
         choices=FormVariableSources.choices,
         max_length=50,
     )
+    service_fetch_configuration = models.ForeignKey(
+        verbose_name=_("service fetch configuration"),
+        to="variables.ServiceFetchConfiguration",
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+    )
     prefill_plugin = models.CharField(
         verbose_name=_("prefill plugin"),
         help_text=_("Which, if any, prefill plugin should be used"),
