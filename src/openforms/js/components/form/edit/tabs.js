@@ -1,4 +1,5 @@
 import {Utils} from 'formiojs';
+import jsonScriptToVar from 'utils/json-script';
 
 import {getFullyQualifiedUrl} from '../../../utils/urls';
 import {
@@ -321,24 +322,23 @@ const PREFILL = {
   ],
 };
 
-// TODO should be dynamic, based on languageInfo endpoint
-const LANGUAGES = ['nl', 'en'];
+const LANGUAGES = jsonScriptToVar('languages', {default: []});
 const TRANSLATIONS = {
   key: 'tabs',
   label: 'Translations',
   type: 'tabs',
-  components: LANGUAGES.map(language => {
+  components: LANGUAGES.map(([languageCode, _label]) => {
     return {
       type: 'panel',
-      title: language.toUpperCase(),
-      key: language,
+      title: languageCode.toUpperCase(),
+      key: languageCode,
       theme: 'default',
       components: [
         {
           type: 'datagrid',
           input: true,
           label: 'Translations',
-          key: `of-translations.${language}`,
+          key: `of-translations.${languageCode}`,
           tooltip: 'Translations for literals used for this field',
           weight: 10,
           reorder: false,

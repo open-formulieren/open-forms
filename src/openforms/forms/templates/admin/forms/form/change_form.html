@@ -18,6 +18,8 @@
 {% block field_sets %}
 {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
 
+{{ languages|json_script:'languages' }}  {# Used to determine languages for FormIO translations #}
+
 <div
     class="react-form-create"
     data-form-uuid="{{ original.uuid|default:'' }}"

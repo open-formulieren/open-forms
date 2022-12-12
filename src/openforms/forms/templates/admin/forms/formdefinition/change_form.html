@@ -7,4 +7,5 @@
 
 {% block extrastyle %}
 {{ block.super }}
+{{ languages|json_script:'languages' }}  {# Used to determine languages for FormIO translations #}
 {% endblock %}
