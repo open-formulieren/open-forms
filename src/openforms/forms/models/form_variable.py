@@ -196,6 +196,13 @@ class FormVariable(models.Model):
                 name="prefill_config_empty_or_complete",
             ),
             CheckConstraint(
+                check=~Q(
+                    (~Q(prefill_plugin=""))
+                    & Q(service_fetch_configuration__isnull=False)
+                ),
+                name="prefill_config_xor_service_fetch_config",
+            ),
+            CheckConstraint(
                 check=Q(
                     (
                         Q(form_definition__isnull=True)

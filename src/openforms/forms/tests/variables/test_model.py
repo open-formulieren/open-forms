@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.test import TestCase
 
@@ -15,6 +16,20 @@ class FormVariableModelTests(TestCase):
     def test_prefill_plugin_filled_prefill_attribute_empty(self):
         with self.assertRaises(IntegrityError):
             FormVariableFactory.create(prefill_plugin="demo", prefill_attribute="")
+
+    def test_valid_prefill_plugin_config(self):
+        try:
+            FormVariableFactory.create(prefill_plugin="demo", prefill_attribute="demo")
+        except (ValidationError, IntegrityError) as e:
+            raise self.failureException("Failed valid input") from e
+
+    def test_service_fetch_config_and_prefill_plugin_are_mutually_exclusive(self):
+        with self.assertRaises(IntegrityError):
+            FormVariableFactory.create(
+                service_fetch_configuration=ServiceFetchConfigurationFactory.create(),
+                prefill_plugin="demo",
+                prefill_attribute="demo",
+            )
 
     def test_component_variable_without_form_definition_invalid(self):
         with self.assertRaises(IntegrityError):

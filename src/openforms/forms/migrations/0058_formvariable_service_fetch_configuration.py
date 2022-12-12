@@ -23,4 +23,17 @@ class Migration(migrations.Migration):
                 verbose_name="service fetch configuration",
             ),
         ),
+        migrations.AddConstraint(
+            model_name="formvariable",
+            constraint=models.CheckConstraint(
+                check=models.Q(
+                    models.Q(
+                        models.Q(("prefill_plugin", ""), _negated=True),
+                        ("service_fetch_configuration__isnull", False),
+                    ),
+                    _negated=True,
+                ),
+                name="prefill_config_xor_service_fetch_config",
+            ),
+        ),
     ]
