@@ -160,6 +160,8 @@ const mergeComponentTranslations = (currentTranslations, newTranslations) => {
   let merged = {};
 
   for (const [languageCode, translations] of Object.entries(newTranslations)) {
+    // Ignore empty keys
+    delete translations[''];
     merged[languageCode] = {...(currentTranslations[languageCode] || {}), ...translations};
   }
 
