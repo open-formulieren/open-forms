@@ -323,44 +323,49 @@ const PREFILL = {
 };
 
 const LANGUAGES = jsonScriptToVar('languages', {default: []});
+const tabComponents = LANGUAGES.map(([languageCode, _label]) => {
+  return {
+    key: languageCode,
+    label: languageCode.toUpperCase(),
+    components: [
+      {
+        type: 'datagrid',
+        input: true,
+        label: 'Translations',
+        key: `of-translations.${languageCode}`,
+        tooltip: 'Translations for literals used for this field',
+        weight: 10,
+        reorder: false,
+        components: [
+          {
+            label: 'Literal',
+            key: 'literal',
+            input: true,
+            unique: true,
+            type: 'textfield',
+          },
+          {
+            label: 'Vertaling',
+            key: 'translation',
+            input: true,
+            type: 'textfield',
+          },
+        ],
+      },
+    ],
+  };
+});
+
 const TRANSLATIONS = {
-  key: 'tabs',
+  key: 'translations',
   label: 'Translations',
-  type: 'tabs',
-  components: LANGUAGES.map(([languageCode, _label]) => {
-    return {
-      type: 'panel',
-      title: languageCode.toUpperCase(),
-      key: languageCode,
-      theme: 'default',
-      components: [
-        {
-          type: 'datagrid',
-          input: true,
-          label: 'Translations',
-          key: `of-translations.${languageCode}`,
-          tooltip: 'Translations for literals used for this field',
-          weight: 10,
-          reorder: false,
-          components: [
-            {
-              label: 'Literal',
-              key: 'literal',
-              input: true,
-              unique: true,
-              type: 'textfield',
-            },
-            {
-              label: 'Vertaling',
-              key: 'translation',
-              input: true,
-              type: 'textfield',
-            },
-          ],
-        },
-      ],
-    };
-  }),
+  components: [
+    {
+      key: 'languages',
+      type: 'tabs',
+      components: tabComponents,
+    },
+  ],
 };
 
 const DEFAULT_TABS = {
