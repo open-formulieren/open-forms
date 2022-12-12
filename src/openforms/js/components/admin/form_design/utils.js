@@ -1,4 +1,6 @@
 import FormioUtils from 'formiojs/utils';
+import set from 'lodash/set';
+import cloneDeep from 'lodash/cloneDeep';
 
 const stripIdFromComponents = obj => {
   const {id, ...objWithoutId} = obj;
@@ -156,13 +158,60 @@ const getPathToComponent = (configuration, key) => {
   return '';
 };
 
+// Determine the translations for a configuration, and transform them into the proper shape
+const extractTranslationsFromConfiguration = configuration => {
+  let componentTranslations = {};
+  if (configuration.components) {
+    configuration.components.forEach(component => {
+      componentTranslations = mergeComponentTranslations(
+        componentTranslations,
+        extractTranslationsFromConfiguration(component)
+      );
+    });
+  }
+
+  if (configuration['of-translations']) {
+    componentTranslations = mergeComponentTranslations(
+      componentTranslations,
+      rewriteComponentTranslations(configuration['of-translations'])
+    );
+  }
+  return componentTranslations;
+};
+
+const removeTranslationsFromConfiguration = configuration => {
+  if (configuration.components) {
+    configuration.components.forEach(component => {
+      removeTranslationsFromConfiguration(component);
+    });
+  }
+
+  delete configuration['of-translations'];
+  return configuration;
+};
+
+const rewriteComponentTranslations = allTranslations => {
+  let mutatedTranslations = {};
+  for (const [languageCode, translations] of Object.entries(allTranslations)) {
+    for (const entry of translations) {
+      set(mutatedTranslations, `${languageCode}.${entry.literal}`, entry.translation);
+    }
+  }
+  return mutatedTranslations;
+};
+
 const mergeComponentTranslations = (currentTranslations, newTranslations) => {
   let merged = {};
 
-  for (const [languageCode, translations] of Object.entries(newTranslations)) {
+  for (const languageCode of Object.keys({...currentTranslations, ...newTranslations})) {
     // Ignore empty keys
-    delete translations[''];
-    merged[languageCode] = {...(currentTranslations[languageCode] || {}), ...translations};
+    if (currentTranslations[languageCode]) delete currentTranslations[languageCode][''];
+    if (newTranslations[languageCode]) delete newTranslations[languageCode][''];
+
+    merged[languageCode] = {
+      ...(currentTranslations[languageCode] || {}),
+      ...(newTranslations[languageCode] || {}),
+    };
   }
 
   return merged;
@@ -177,6 +226,9 @@ export {
   getUniqueKey,
   getFormStep,
   parseValidationErrors,
+  removeTranslationsFromConfiguration,
+  rewriteComponentTranslations,
+  extractTranslationsFromConfiguration,
   mergeComponentTranslations,
   getPathToComponent,
 };
