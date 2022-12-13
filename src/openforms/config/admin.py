@@ -73,6 +73,7 @@ class GlobalConfigurationAdmin(
             _("Organization configuration"),
             {
                 "fields": (
+                    "organization_name",
                     "logo",
                     "main_website",
                     "theme_classname",
