@@ -435,3 +435,60 @@ class TestFixRulesWithCheckboxes(TestMigrations):
             self.rule_badly_formatted.json_logic_trigger,
             {"==": [{"var": "selectBoxes.a"}, True]},
         )
+
+
+class TestLogicParsing(TestMigrations):
+    migrate_from = "0002_auto_20210917_1114_squashed_0045_remove_formstep_optional"
+    migrate_to = "0046_convert_advanced_logic"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        Form = apps.get_model("forms", "Form")
+        FormStep = apps.get_model("forms", "FormStep")
+        components = [
+            {
+                "type": "fieldset",
+                "key": "fieldset-1",
+                "logic": [
+                    {
+                        "trigger": {
+                            "type": "simple",
+                            "simple": {
+                                "show": True,
+                                "when": "non-existing-object",
+                                "eq": "trigger value",
+                            },
+                        },
+                        "actions": [
+                            {
+                                "type": "property",
+                                "property": {
+                                    "label": "Hidden",
+                                    "value": "hidden",
+                                    "type": "boolean",
+                                },
+                                "state": False,
+                            }
+                        ],
+                    },
+                ],
+            },
+        ]
+        form_def = FormDefinition.objects.create(
+            slug="form_def", configuration={"components": components}
+        )
+        form = Form.objects.create(slug="form")
+        FormStep.objects.create(form=form, form_definition=form_def, order=0)
+
+    def test_logic_records(self):
+        """Check that form definition is migrated correctly
+
+        The test checks that migrations from 1.1.x to 2.0.1 with form definitions
+        containing references to non-existing objects (a) do not crash and (b) don't
+        trigger any logic actions. The forms themselves are left unmodified (garbage in,
+        garbage out).
+        """
+        FormLogic = self.apps.get_model("forms", "FormLogic")
+        logic_records = FormLogic.objects.all()
+        self.assertFalse(logic_records)
