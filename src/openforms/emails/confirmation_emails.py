@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, Dict, Tuple
 
 from django.template.defaultfilters import date as date_filter
 from django.urls import reverse
+from django.utils import translation
 
 from openforms.appointments.models import AppointmentInfo
 from openforms.config.models import GlobalConfiguration
@@ -23,37 +24,39 @@ def get_confirmation_email_templates(submission: "Submission") -> Tuple[str, str
     if template_option == ConfirmationEmailOptions.no_email:
         raise SkipConfirmationEmail("Confirmation e-mail sending is disabled.")
 
-    if template_option == ConfirmationEmailOptions.form_specific_email:
-        email_template = submission.form.confirmation_email_template
-        return (
-            email_template.subject,
-            email_template.content,
-        )
+    with translation.override(submission.language_code):
+        if template_option == ConfirmationEmailOptions.form_specific_email:
+            email_template = submission.form.confirmation_email_template
+            return (
+                email_template.subject,
+                email_template.content,
+            )
 
-    if template_option == ConfirmationEmailOptions.global_email:
-        config = GlobalConfiguration.get_solo()
-        return (
-            config.confirmation_email_subject,
-            config.confirmation_email_content,
-        )
+        if template_option == ConfirmationEmailOptions.global_email:
+            config = GlobalConfiguration.get_solo()
+            return (
+                config.confirmation_email_subject,
+                config.confirmation_email_content,
+            )
 
     raise ValueError(f"Unexpected option '{template_option}'")  # noqa
 
 
 def get_confirmation_email_context_data(submission: "Submission") -> Dict[str, Any]:
-    context = {
-        # use private variables that can't be accessed in the template data, so that
-        # template designers can't call the .delete method, for example. Variables
-        # starting with underscores are blocked by the Django template engine.
-        "_submission": submission,
-        "_form": submission.form,  # should be the same as self.form
-        # TODO: this should use the :func:`openforms.formio.service.format_value`
-        # but be keyed by component.key instead of the label, which
-        # submission.get_printable_data did.
-        **submission.data,
-        "public_reference": submission.public_registration_reference,
-        "form_name": submission.form.name,
-    }
+    with translation.override(submission.language_code):
+        context = {
+            # use private variables that can't be accessed in the template data, so that
+            # template designers can't call the .delete method, for example. Variables
+            # starting with underscores are blocked by the Django template engine.
+            "_submission": submission,
+            "_form": submission.form,  # should be the same as self.form
+            # TODO: this should use the :func:`openforms.formio.service.format_value`
+            # but be keyed by component.key instead of the label, which
+            # submission.get_printable_data did.
+            **submission.data,
+            "public_reference": submission.public_registration_reference,
+            "form_name": submission.form.name,
+        }
 
     # use the ``|date`` filter so that the timestamp is first localized to the correct
     # timezone, and then the date is formatted according to the django global setting.

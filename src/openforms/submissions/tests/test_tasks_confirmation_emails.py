@@ -6,7 +6,7 @@ from unittest.mock import patch
 from django.core import mail
 from django.db import close_old_connections
 from django.test import TestCase, TransactionTestCase, override_settings
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext as _, override as override_language
 
 from privates.test import temp_private_root
 
@@ -558,6 +558,63 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
 
         message = mail.outbox[0]
         self.assertEqual(message.subject, f"Confirmation mail {_('(updated)')}")
+
+    def test_template_is_rendered_in_submission_language(self):
+        language = "en"
+        with override_language(language):
+            submission = SubmissionFactory.from_components(
+                language_code=language,
+                completed=True,
+                components_list=[
+                    {
+                        "key": "email",
+                        "type": "email",
+                        "label": "Email",
+                        "confirmationRecipient": True,
+                    },
+                ],
+                submitted_data={"email": "abuse@example.com"},
+                form__generate_minimal_setup=True,
+                form__translation_enabled=True,
+                form__name="Translated form name",
+                form__formstep__form_definition__name="A Quickstep",
+                form__formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "key": "foo",
+                            "type": "textfield",
+                            "label": "Foo",
+                            "showInEmail": True,
+                        }
+                    ],
+                },
+            )
+            ConfirmationEmailTemplateFactory.create(
+                form=submission.form,
+                subject="Translated confirmation mail",
+                content="""Translated content
+                {{form_name}}
+                {% summary %}
+                """,
+            )
+            # TODO after form IO add steps
+            # dropdown, radio, checkbox
+
+        # "execute" the celery task
+        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
+            maybe_send_confirmation_email(submission.id)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(message.subject, "Translated confirmation mail")
+        self.assertEqual(message.to, ["abuse@example.com"])
+
+        html_message, _ = message.alternatives[0]
+        self.assertIn("Translated content", html_message)
+        self.assertIn("Translated form name", html_message)
+        self.assertIn("A Quickstep", html_message)
 
 
 class RaceConditionTests(TransactionTestCase):

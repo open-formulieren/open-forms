@@ -4,6 +4,7 @@ from typing import Any, Union
 from django.conf import settings
 from django.contrib.sessions.backends.base import SessionBase
 from django.http import HttpRequest
+from django.utils import translation
 
 from rest_framework.permissions import SAFE_METHODS
 from rest_framework.request import Request
@@ -90,7 +91,6 @@ def remove_submission_uploads_from_session(
 
 def send_confirmation_email(submission: Submission):
     logevent.confirmation_email_start(submission)
-
     try:
         subject_template, content_template = get_confirmation_email_templates(
             submission
@@ -118,18 +118,19 @@ def send_confirmation_email(submission: Submission):
     context = get_confirmation_email_context_data(submission)
 
     # render the templates with the submission context
-    subject = render_email_template(
-        subject_template, context, rendering_text=True
-    ).strip()
+    with translation.override(submission.language_code):
+        subject = render_email_template(
+            subject_template, context, rendering_text=True
+        ).strip()
 
-    if subject_suffix := get_confirmation_mail_suffix(submission):
-        subject = f"{subject} {subject_suffix}"
+        if subject_suffix := get_confirmation_mail_suffix(submission):
+            subject = f"{subject} {subject_suffix}"
 
-    html_content = render_email_template(content_template, context)
-    text_content = strip_tags_plus(
-        render_email_template(content_template, context, rendering_text=True),
-        keep_leading_whitespace=True,
-    )
+        html_content = render_email_template(content_template, context)
+        text_content = strip_tags_plus(
+            render_email_template(content_template, context, rendering_text=True),
+            keep_leading_whitespace=True,
+        )
 
     try:
         send_mail_html(

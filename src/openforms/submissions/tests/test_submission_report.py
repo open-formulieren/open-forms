@@ -97,6 +97,33 @@ class DownloadSubmissionReportTests(APITestCase):
         # report.content.name contains the path too
         self.assertTrue(report.content.name.endswith("Test_Form.pdf"))
 
+    def test_report_is_generated_in_same_language_as_submission(self):
+        report = SubmissionReportFactory(
+            submission__language_code="en",
+            submission__completed=True,
+            submission__form__generate_minimal_setup=True,
+            submission__form__translation_enabled=True,
+            submission__form__name_en="Translated form name",
+            submission__form__formstep__form_definition__name_nl="Walsje",
+            submission__form__formstep__form_definition__name_en="A Quickstep",
+            submission__form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "key": "foo",
+                        "type": "textfield",
+                        "label": "Foo",
+                        "showInEmail": True,
+                    }
+                ],
+            },
+        )
+
+        html_report = report.generate_submission_report_pdf()
+
+        self.assertIn("Translated form name", html_report)
+        self.assertIn("A Quickstep", html_report)
+        self.assertNotIn("Walsje", html_report)
+
     @patch(
         "celery.result.AsyncResult._get_task_meta", return_value={"status": "SUCCESS"}
     )
