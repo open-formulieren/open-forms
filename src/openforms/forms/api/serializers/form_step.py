@@ -2,7 +2,10 @@ from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
 from openforms.api.serializers import PublicFieldsSerializerMixin
-from openforms.translations.api.serializers import ModelTranslationsSerializer
+from openforms.translations.api.serializers import (
+    ComponentTranslationsSerializer,
+    ModelTranslationsSerializer,
+)
 
 from ...models import FormStep
 from .button_text import ButtonTextSerializer
@@ -84,7 +87,7 @@ class FormStepSerializer(
         read_only=True,
     )
     translations = ModelTranslationsSerializer()
-    component_translations = serializers.JSONField(
+    component_translations = ComponentTranslationsSerializer(
         source="form_definition.component_translations",
         read_only=True,
     )

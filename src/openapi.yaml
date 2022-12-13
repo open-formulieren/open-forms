@@ -5372,6 +5372,38 @@ components:
       - bool
       - json
       type: string
+    ComponentTranslations:
+      type: object
+      description: |-
+        Nest translations for literals used in the FormIO configuration inside the serializer.
+
+        This serializer produces a similar structure as the `translations` for model fields,
+        except that the literals are dependent on the literals used in the components defined
+        in the FormIO configuration.
+
+        Literals are mapped to their translation, e.g. a configuration with a `TextField`
+        with default label `Text field` and `FileField` with default label `File field`
+        could look as follows:
+
+            ParentModelSerializer:
+                ... other fields/serializers
+
+                ComponentTranslationsSerializer:
+                    nl:
+                        "Text field": "Tekstveld"
+                        "File field": "Uploadveld"
+                    en:
+                        "Text field": "Text field"
+                        "File field": "File field"
+      properties:
+        nl:
+          type: object
+          additionalProperties:
+            type: string
+        en:
+          type: object
+          additionalProperties:
+            type: string
     ConfirmationEmailOptionEnum:
       enum:
       - form_specific_email
@@ -5799,10 +5831,9 @@ components:
         translations:
           $ref: '#/components/schemas/FormDefinitionModelTranslations'
         componentTranslations:
-          type: object
-          additionalProperties: {}
+          allOf:
+          - $ref: '#/components/schemas/ComponentTranslations'
           nullable: true
-          description: Translations for literals used in components
       required:
       - configuration
       - name
@@ -5843,10 +5874,9 @@ components:
         translations:
           $ref: '#/components/schemas/FormDefinitionDetailModelTranslations'
         componentTranslations:
-          type: object
-          additionalProperties: {}
+          allOf:
+          - $ref: '#/components/schemas/ComponentTranslations'
           nullable: true
-          description: Translations for literals used in components
         usedIn:
           type: array
           items:
@@ -6249,8 +6279,8 @@ components:
         translations:
           $ref: '#/components/schemas/FormStepModelTranslations'
         componentTranslations:
-          type: object
-          additionalProperties: {}
+          allOf:
+          - $ref: '#/components/schemas/ComponentTranslations'
           readOnly: true
       required:
       - componentTranslations
@@ -7012,10 +7042,9 @@ components:
         translations:
           $ref: '#/components/schemas/FormDefinitionModelTranslations'
         componentTranslations:
-          type: object
-          additionalProperties: {}
+          allOf:
+          - $ref: '#/components/schemas/ComponentTranslations'
           nullable: true
-          description: Translations for literals used in components
     PatchedFormStep:
       type: object
       properties:
@@ -7056,8 +7085,8 @@ components:
         translations:
           $ref: '#/components/schemas/FormStepModelTranslations'
         componentTranslations:
-          type: object
-          additionalProperties: {}
+          allOf:
+          - $ref: '#/components/schemas/ComponentTranslations'
           readOnly: true
     PaymentBackendEnum:
       enum:
