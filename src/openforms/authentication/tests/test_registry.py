@@ -117,3 +117,10 @@ class RegistryTests(TestCase):
             .set({"next": "http://foo.bar/form"})
             .url,
         )
+
+    def test_default_plugin_is_not_for_gemachtigde(self):
+        register = Registry()
+        register("plugin1")(Plugin)
+        plugin = register["plugin1"]
+
+        self.assertFalse(plugin.is_for_gemachtigde)

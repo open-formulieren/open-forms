@@ -53,3 +53,10 @@ class LoginOptionSerializer(serializers.Serializer):
         read_only=True,
         required=False,
     )
+    is_for_gemachtigde = serializers.BooleanField(
+        label=_("Is for gemachtigde"),
+        help_text=_(
+            "This authorization method can be used to log in on behalf of another person or company"
+        ),
+        read_only=True,
+    )

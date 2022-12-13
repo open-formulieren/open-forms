@@ -23,11 +23,13 @@ class LoginInfo:
     label: str
     logo: LoginLogo = None
     url: Optional[str] = None
+    is_for_gemachtigde: bool = False
 
 
 class BasePlugin(AbstractBasePlugin):
     provides_auth = None
     return_method = "GET"
+    is_for_gemachtigde = False
 
     # override
 
@@ -91,6 +93,7 @@ class BasePlugin(AbstractBasePlugin):
             self.get_label(),
             url=self.get_start_url(request, form),
             logo=self.get_logo(request),
+            is_for_gemachtigde=self.is_for_gemachtigde,
         )
         return info
 
