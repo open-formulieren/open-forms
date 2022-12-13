@@ -58,8 +58,8 @@ validate the schema of this JSON data using serializers, but this is not always
 reflected in the generated OAS 3 API schema.
 
 Part of the reason for that is that the schema varies with a selected plugin, so we are
-looking at polymorphic schema's. In light of better upfront documentation, we should
-explicitly declare these serializers as being polymorphic through ``drc-polymorphic``.
+looking at polymorphic schema's. To provide better upfront documentation, we should
+explicitly declare these serializers as being polymorphic through ``drf-polymorphic``.
 
 **API formatting**
 
@@ -74,7 +74,7 @@ but this proves to be challenging when dealing with user-supplied keys or ``JSON
 content that should be left untouched.
 
 The drf-camel-case library has some options to (globally) ignore some field names, but
-this is not flexible enough and will cause confusion later down the drain.
+this is not flexible enough and will cause confusion later down the road.
 
 We should explore possible improvements to drf-camel-case or completely other approaches
 do deal with the camel-case/underscore conversions.
@@ -111,7 +111,7 @@ Frontend
 
 Status: start made
 
-The SDK styling at the moment makes use of SASS variables for colors, widths, sizes...
+The SDK styling at the moment makes use of SASS variables for colors, widths, sizes…
 
 This provides flexibility at code- and build time, but not at runtime. Given that Open
 Forms is in essence a white-label product where the styling can be adapted to your own
