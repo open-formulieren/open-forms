@@ -9,7 +9,7 @@
   "complete": "afgerond",
   "Month": "Maand",
   "Do you want to clear data?": "Wilt u alle gegevens wissen?",
-  "invalidRowError": "Ongeldige rij. Los de problemen op of verwijder de rij.",
+  "invalidRowError": "Nog niet alle velden zijn goed ingevuld.",
   "invalidRowsError": "Pas de ongeldige rijen aan voordat u doorgaat.",
   "unsavedRowsError": "Bewaar alle rijen voordat u doorgaat.",
   "Processing file, Please wait...": "Bezig met verwerken. Even geduld alstublieft...",
