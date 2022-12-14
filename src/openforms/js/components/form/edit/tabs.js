@@ -31,7 +31,6 @@ const BASIC = {
     LABEL_REQUIRED,
     KEY,
     DESCRIPTION,
-    AUTOCOMPLETE,
     PRESENTATION,
     MULTIPLE,
     HIDDEN,
@@ -54,7 +53,7 @@ const SENSITIVE_BASIC = {
 
 const SENSITIVE_READ_ONLY = {
   ...SENSITIVE_BASIC,
-  components: [...SENSITIVE_BASIC.components, READ_ONLY],
+  components: [...SENSITIVE_BASIC.components, AUTOCOMPLETE, READ_ONLY],
 };
 
 const TEXT_BASIC = {
@@ -62,6 +61,7 @@ const TEXT_BASIC = {
   label: 'Basic',
   components: [
     ...BASIC.components,
+    AUTOCOMPLETE,
     READ_ONLY,
     {
       weight: 100,

@@ -55,11 +55,11 @@ const SHOW_IN_PDF = {
 };
 
 const AUTOCOMPLETE = {
-  type: 'checkbox',
+  type: 'textfield',
   key: 'autocomplete',
   label: 'Autocomplete',
+  placeholder: 'on',
   tooltip: 'Display options to fill in the field, based on earlier typed values.',
-  defaultValue: true,
 };
 
 const PRESENTATION = {

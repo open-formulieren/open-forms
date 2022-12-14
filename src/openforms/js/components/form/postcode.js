@@ -8,6 +8,24 @@ import {
 } from './edit/tabs';
 import TextField from './textfield';
 
+// const postcodeBasicTab = {
+//   key: 'basic',
+//   label: 'Basic',
+//   components: [
+//     {
+//       title: 'Postcode Field',
+//       icon: 'home',
+//       group: 'basic',
+//       weight: 10,
+//     },
+//     {
+//       key: 'basic',
+//       label: 'Basic',
+//       components: [AUTOCOMPLETE],
+//     },
+//   ],
+// };
+
 class PostcodeField extends TextField {
   static schema(...extend) {
     return TextField.schema(
