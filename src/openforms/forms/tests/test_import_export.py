@@ -3,7 +3,7 @@ import os
 import zipfile
 
 from django.core.management import call_command
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 from openforms.products.tests.factories import ProductFactory
@@ -399,3 +399,89 @@ class ImportExportTests(TestCase):
 
         form = Form.objects.get()
         self.assertIsNone(form.category)
+
+    @tag("gh-2432")
+    def test_import_form_with_disable_step_logic(self):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "authentication_backends": [],
+                    "is_deleted": False,
+                    "login_required": False,
+                    "maintenance_mode": False,
+                    "name": "Test Form 1",
+                    "internal_name": "Test Form Internal 1",
+                    "product": None,
+                    "show_progress_indicator": True,
+                    "slug": "auth-plugins",
+                    "url": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                }
+            ],
+            "formSteps": [
+                {
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "form_definition": "http://testserver/api/v2/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                    "index": 0,
+                    "slug": "test-step-1",
+                    "uuid": "3ca01601-cd20-4746-bce5-baab47636823",
+                },
+                {
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "form_definition": "http://testserver/api/v2/form-definitions/a54864c6-c460-48bd-a520-eced60ffb209",
+                    "index": 1,
+                    "slug": "test-step-2",
+                    "uuid": "a54864c6-c460-48bd-a520-eced60ffb209",
+                },
+            ],
+            "formDefinitions": [
+                {
+                    "configuration": {
+                        "components": [
+                            {
+                                "key": "radio",
+                                "type": "radio",
+                                "values": [
+                                    {"label": "yes", "value": "yes"},
+                                    {"label": "no", "value": "no"},
+                                ],
+                            },
+                        ]
+                    },
+                    "name": "Def 1 - With condition",
+                    "slug": "test-definition-1",
+                    "url": "http://testserver/api/v2/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                    "uuid": "f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                },
+                {
+                    "configuration": {"components": []},
+                    "name": "Def 2 - to be marked as not applicable",
+                    "slug": "test-definition-2",
+                    "url": "http://testserver/api/v2/form-definitions/a54864c6-c460-48bd-a520-eced60ffb209",
+                    "uuid": "a54864c6-c460-48bd-a520-eced60ffb209",
+                },
+            ],
+            "formLogic": [
+                {
+                    "actions": [
+                        {
+                            "action": {"type": "step-not-applicable"},
+                            # In versions <= 2.0, we used the url of the form step, but this was replaced with the UUID
+                            "form_step": "http://127.0.0.1:8999/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2/steps/a54864c6-c460-48bd-a520-eced60ffb209",
+                        }
+                    ],
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "json_logic_trigger": {"==": [{"var": "radio"}, "ja"]},
+                    "uuid": "b92342be-05e0-4070-b2cc-1b88af472091",
+                }
+            ],
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+
+        self.assertTrue(Form.objects.filter(slug="auth-plugins").exists())
