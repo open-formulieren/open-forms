@@ -199,6 +199,11 @@ const FormIOBuilder = ({configuration, onChange, onComponentMutated, forceUpdate
   const formRef = useRef(clone);
   const {componentTranslations} = useContext(FormStepContext);
 
+  // TODO instead of injecting this into the configuration, the componentTranslations
+  // should be passed to the components, and each component should then determine which
+  // translations are relevant. Additionally, there should be an onChange event that
+  // mutates these componentTranslations when changing labels/translations, such that
+  // the displayed translations are always up to date
   injectTranslationsIntoConfiguration(clone, componentTranslations);
 
   // track some state to force re-renders, and we can also keep track of the amount of
