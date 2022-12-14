@@ -34,6 +34,7 @@ class OpenIDConnectConfigBaseAdmin(DynamicArrayMixin, SingletonModelAdmin):
                     "oidc_rp_scopes_list",
                     "oidc_rp_sign_algo",
                     "oidc_rp_idp_sign_key",
+                    "userinfo_claims_source",
                 )
             },
         ),
@@ -82,6 +83,7 @@ class OpenIDConnectConfigDigiDMachtigenAdmin(DynamicArrayMixin, SingletonModelAd
                     "oidc_rp_scopes_list",
                     "oidc_rp_sign_algo",
                     "oidc_rp_idp_sign_key",
+                    "userinfo_claims_source",
                 )
             },
         ),
@@ -131,6 +133,7 @@ class OpenIDConnectConfigEHerkenningBewindvoeringAdmin(
                     "oidc_rp_scopes_list",
                     "oidc_rp_sign_algo",
                     "oidc_rp_idp_sign_key",
+                    "userinfo_claims_source",
                 )
             },
         ),
