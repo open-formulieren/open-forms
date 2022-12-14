@@ -9,25 +9,23 @@ gebruiker dient in te loggen met *DigiD simulatie*. Ingezonden formulieren
 worden opgeslagen in Open Formulieren zelf en niet doorgestuurd naar een 
 registratie systeem.
 
-.. image:: _assets/simple_form_1.png
+.. image:: _assets/simple_form_2_1.png
     :width: 24%
 
-.. image:: _assets/simple_form_2.png
+.. image:: _assets/simple_form_2_2.png
     :width: 24%
 
-.. image:: _assets/simple_form_3.png
+.. image:: _assets/simple_form_2_3.png
     :width: 24%
 
-.. image:: _assets/simple_form_4.png
+.. image:: _assets/simple_form_2_4.png
     :width: 24%
 
 
 .. note::
-
     U kunt dit voorbeeld downloaden en :ref:`importeren <manual_export_import>`
     in Open Formulieren.
-
-    Download: :download:`simple_form.zip <_assets/simple_form.zip>`
+    Download: :download:`simple_form_2.zip <_assets/simple_form_2.zip>`
 
 
 Formulier maken
@@ -49,7 +47,7 @@ Formulier maken
 6. Onder de sectie **(Herbruikbare) stapgegevens** vul het volgende in:
    
     * **Naam**: Persoonsgegevens
-    * **Inloggen vereist?**: *Aangevinkt*
+    * **Vereist authenticatie**: *Aangevinkt*
 
 7. Scroll naar de sectie **Velden**.
 8. Sleep een **Tekstveld** component van de kolom aan de linkerkant, naar 
@@ -76,6 +74,12 @@ Formulier maken
 
       * **Verplicht**: *Aangevinkt*
 
+.. note::
+    Je herkend velden die verplicht zijn aan de **dik** gedrukte labels
+    
+    .. image:: _assets/simple_form_2_5.png
+ 
+
 13. Sleep een **Email** component op het witte vlak, vul de volgende gegevens 
     in en druk daarna op **Opslaan**.
 
@@ -97,7 +101,7 @@ Formulier maken
     * **Naam**: Vraag of klacht
 
 16. Scroll naar de sectie **Velden**.
-17. Sleep een **Textvlak** component op het witte vlak, vul de volgende 
+17. Sleep een **Tekstvlak** component op het witte vlak, vul de volgende 
     gegevens in en druk daarna op **Opslaan**.
 
     * **Basic** tab:
@@ -116,4 +120,7 @@ Formulier maken
 19. Vul bij **Inhoud bevestigingspagina** in: Bedankt voor uw bericht.
 20. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
 
-U kunt nu het formulier bekijken.
+U kunt nu het formulier bekijken door rechtsboven de knop "TOON FORMULIER" te gebruiken. 
+
+.. warning::
+    Door het gebruik van de DigiD simulatie plugin is dit formulier alleen te gebruiken als je bent ingelogd als beheerder.

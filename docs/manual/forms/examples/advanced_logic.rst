@@ -11,7 +11,7 @@ In dit voorbeeld gaan we er van uit dat u een
 :ref:`formulier met eenvoudige logica <example_logic_rules>` kan maken en dat
 u op de hoogte bent van hoe :ref:`logica <manual_logic>` werkt.
 
-.. image:: _assets/advanced_logic.png
+.. image:: _assets/advanced_logic_2.png
     :width: 100%
 
 .. note::
@@ -19,4 +19,4 @@ u op de hoogte bent van hoe :ref:`logica <manual_logic>` werkt.
     U kunt dit voorbeeld downloaden en :ref:`importeren <manual_export_import>`
     in Open Formulieren.
 
-    Download: :download:`advanced_logic.zip <_assets/advanced_logic.zip>`
+    Download: :download:`advanced_logic_2.zip <_assets/advanced_logic_2.zip>`

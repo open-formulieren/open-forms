@@ -31,7 +31,7 @@ Registratiesysteem
 Elke inzending **kan** worden doorgezet naar een achterliggend 
 registratiesysteem. Er zijn verschillende 
 :ref:`plugins <configuration_registration_index>` beschikbaar om inzendingen
-door te zetten naar specifeke registratiesystemen.
+door te zetten naar specifieke registratiesystemen.
 
 Als er geen registratiesysteem is gekozen, dan zijn inzendingen alleen te 
 raadplegen via de Open Formulieren 

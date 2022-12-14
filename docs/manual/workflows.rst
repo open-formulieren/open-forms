@@ -53,7 +53,7 @@ gebruiken.
 .. note::
 
    Als de wijzigingen niet de structuur van het formulier wijzigen, zoals een 
-   veld of stap toevoegen danwel verwijderen, dan kunt u het formulier gewoon 
+   veld of stap toevoegen dan wel verwijderen, dan kunt u het formulier gewoon 
    wijzigen en opslaan, zonder dit formulier eerst op inactief te zetten.
 
    Lopende sessies blijven gewoon bestaan en ondervinden geen hinder.

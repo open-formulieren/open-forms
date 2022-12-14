@@ -62,5 +62,5 @@ en wordt het *URL-deel* van de stap gewijzigd. Bijvoorbeeld van
 melding van.
 
 Als het *URL-deel* van een te importeren formulier zelf al bestaat, dan kan het 
-formulier niet worden geimporteerd. U kunt dan het *URL-deel* van het 
+formulier niet worden geïmporteerd. U kunt dan het *URL-deel* van het 
 conflicterende formulier zelf aanpassen en het nogmaals proberen.

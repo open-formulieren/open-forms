@@ -115,7 +115,7 @@ Definitief verwijderen
     omschreven.
 
     Het verwijderen van organisatie accounts heeft alleen zin als de gebruiker
-    ook geen organsiatie account meer heeft.
+    ook geen organisatie account meer heeft.
 
     Organisatie accounts zijn te herkennen aan de gebruikersnaam die bestaat
     uit een reeks willekeurige karakters.
@@ -123,6 +123,6 @@ Definitief verwijderen
 1. Navigeer naar **Accounts** > **Gebruikers**.
 2. Klik op de gewenste gebruiker om te verwijderen.
 3. Klik linksonder op de knop **Verwijderen**.
-4. U wordt gevraagd om de actie te bevestingen en ziet ook een overzicht van
+4. U wordt gevraagd om de actie te bevestigen en ziet ook een overzicht van
    alle gerelateerde objecten die worden mee verwijderd.
 5. Klik op **Ja, ik weet het zeker** om de actie te bevestigen.

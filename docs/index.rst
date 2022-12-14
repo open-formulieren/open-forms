@@ -16,7 +16,7 @@ backends (ie. `Open Zaak`_), authentication schemes, payment providers, calendar
 apps and pre-fill services.
 
 Open Forms is developed in line with the `Common Ground`_ principles,
-specificly for municipalities and with a strong focus on usability for both
+specifically for municipalities and with a strong focus on usability for both
 the civilian users and the administrator.
 
 .. _`SDK`: https://github.com/open-formulieren/open-forms-sdk/
