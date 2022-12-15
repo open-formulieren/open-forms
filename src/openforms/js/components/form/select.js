@@ -1,5 +1,5 @@
+import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION, TRANSLATIONS} from './edit/tabs';
 import {Formio} from 'formiojs';
-import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION} from './edit/tabs';
 
 const Select = Formio.Components.components.select;
 
@@ -41,7 +41,7 @@ class SelectField extends Select {
     };
     const TABS = {
       ...DEFAULT_TABS,
-      components: [BASIC_TAB, ADVANCED, VALIDATION, REGISTRATION],
+      components: [BASIC_TAB, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
     };
     return {components: [TABS]};
   }
