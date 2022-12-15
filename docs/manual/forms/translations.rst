@@ -1,4 +1,4 @@
-.. _translations:
+.. _manual_forms_translations:
 
 =============
 Meertaligheid
@@ -7,16 +7,16 @@ Meertaligheid
 Introductie
 ===========
 
-.. TODO Not sure if Vertalingen ingeschakeld is the correct literal, as it isn't translated yet
+.. todo:: Not sure if Vertalingen ingeschakeld is the correct literal, as it isn't translated yet
 
 Open Formulieren biedt de mogelijkheid om formulieren aan te bieden in meerdere talen (momenteel alleen Nederlands en Engels).
 Om dit mogelijk te maken is het van belang dat de Nederlandse termen in het formulier vertaald worden naar de gekozen taal
 en in deze handleiding wordt uitgelegd hoe deze vertalingen in te voeren zijn via de beheerinterface.
 
-Globale configuratie vertalingen
-================================
+Globale configuratievertalingen
+===============================
 
-.. TODO Several labels mentioned in the enumeration not yet translated
+.. todo:: Several labels mentioned in the enumeration not yet translated
 
 Allereerst zijn er een aantal globaal gebruikte woorden en zinnen waarvan de vertalingen ingevoerd moeten worden,
 dit kan door naar **Configuratie > Algemene configuratie** te navigeren. Op die pagina zijn een aantal velden te zien
@@ -39,8 +39,8 @@ met een **[nl]** en een **[en]** versie. Op deze manier is het mogelijk om voor 
     .. image:: _assets/translations_global_config.png
         :width: 100%
 
-Formulier vertalingen
-=====================
+Formuliervertalingen
+====================
 
 Formulierdetails
 ----------------
@@ -57,30 +57,30 @@ Stappen en velden
 -----------------
 
 Bij de stapgegevens zijn er een aantal vertalingen die ingevoerd moeten worden, zoals te zien hieronder. Wisselen tussen talen
-gebeurt wederom met de tabjes. Indien deze niet ingevuld zijn, worden de standaardvertalingen uit de algemene configuratie gebruikt
+gebeurt wederom met de tabjes. Indien deze niet ingevuld zijn, worden de standaardvertalingen uit de algemene configuratie gebruikt.
 
     .. image:: _assets/translations_formstep.png
         :width: 100%
 
-.. TODO UI in these images might be subject to change, in the future they will probably be prefilled
+.. todo:: UI in these images might be subject to change, in the future they will probably be prefilled
 
-De vertalingen voor de velden van het formulier worden ingevoerd per veld, door te klikken op het tandwiel-icoontje
+De vertalingen voor de velden van het formulier worden ingevoerd per veld door te klikken op het tandwiel-icoontje
 van het veld. Vervolgens kunnen vertalingen ingevoerd worden bij de tab **Vertalingen**:
 
     .. image:: _assets/translations_formio.png
         :width: 100%
 
-Vertalingen worden hergebruikt per stap, dus als twee velden hetzelfde label hebben, zullen ze ook dezelfde vertaling krijgen.
-Dit kan voorkomen worden door placeholders te gebruiken, door bijv. **_veld1_label** als label in te voeren voor een veld
-en bij de vertalingen deze placeholder te vertalen voor elke taal:
+.. note:: Vertalingen worden hergebruikt per stap, dus als twee velden hetzelfde label hebben, zullen ze ook dezelfde vertaling krijgen.
+    Dit kan voorkomen worden door placeholders te gebruiken, door bijv. **_veld1_label** als label in te voeren voor een veld
+    en bij de vertalingen deze placeholder te vertalen voor elke taal:
 
     .. image:: _assets/translations_formio_placeholders.png
         :width: 100%
 
 .. warning::
 
-    In de Formulier definities beheerinterface is het op dit moment niet mogelijk om vertalingen van velden in te zien.
-    Het is daarom raadzaam om de Formulieren beheerinterface hiervoor te gebruiken
+    In de beheerinterface voor Formulierdefinities is het op dit moment niet mogelijk om vertalingen van velden in te zien.
+    Het is daarom raadzaam om hier de Formulieren beheerinterface voor te gebruiken.
 
 Bevestiging
 -----------
@@ -104,4 +104,4 @@ Meertaligheid activeren
 
 Nu alle vertalingen ingevoerd zijn, kan meertaligheid op het formulier geactiveerd worden.
 Om dit te doen dient de optie **Vertalingen ingeschakeld** onder de **Formulier** tab aangevinkt te worden.
-Zodra dit aanstaat, zullen gebruikers in het formulier een keuzemenu hebben, waarin ze uit verschillende talen kunnen kiezen.
+Zodra dit ingeschakeld is, zullen gebruikers in het formulier een keuzemenu hebben, waarin ze uit de ondersteunde talen kunnen kiezen.
