@@ -2,6 +2,8 @@ from dataclasses import dataclass
 
 from django.db import models
 
+from modeltranslation.utils import fallbacks
+
 from openforms.config.models import GlobalConfiguration
 
 
@@ -20,7 +22,8 @@ class literal_getter:
         assert GlobalConfiguration._meta.get_field(self.config_field)
 
         def getter(instance: models.Model) -> str:
-            value = getattr(instance, self.model_field)
+            with fallbacks(False):
+                value = getattr(instance, self.model_field)
             if value:
                 return value
 
