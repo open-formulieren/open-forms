@@ -1,14 +1,14 @@
 import React from 'react';
-import {TabList, TabPanel, Tabs} from 'react-tabs';
 import {FormattedMessage} from 'react-intl';
+import {TabList, TabPanel, Tabs} from 'react-tabs';
 
-import Fieldset from 'components/admin/forms/Fieldset';
 import Tab from 'components/admin/form_design/Tab';
+import Fieldset from 'components/admin/forms/Fieldset';
 
-import {VARIABLE_SOURCES} from './constants';
+import StaticData from './StaticData';
 import UserDefinedVariables from './UserDefinedVariables';
 import VariablesTable from './VariablesTable';
-import StaticData from './StaticData';
+import {VARIABLE_SOURCES} from './constants';
 import {variableHasErrors} from './utils';
 
 const VariablesEditor = ({variables, onAdd, onChange, onDelete}) => {

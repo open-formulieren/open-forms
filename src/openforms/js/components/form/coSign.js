@@ -1,7 +1,8 @@
 import {Formio} from 'react-formio';
 
-import {getFullyQualifiedUrl} from 'utils/urls';
 import {DESCRIPTION, LABEL_REQUIRED} from 'components/form/edit/options';
+import {getFullyQualifiedUrl} from 'utils/urls';
+
 import {TRANSLATIONS} from './edit/tabs';
 
 const FieldComponent = Formio.Components.components.field;

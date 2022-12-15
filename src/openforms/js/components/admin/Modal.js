@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import ReactModal from 'react-modal';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
+import React from 'react';
+import ReactModal from 'react-modal';
 
 import FAIcon from './FAIcon';
 

@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
 const FormObjectTools = ({isLoading, formUrl, historyUrl}) => {

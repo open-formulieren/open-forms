@@ -1,15 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import {produce} from 'immer';
-import {useImmerReducer} from 'use-immer';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
+import {useImmerReducer} from 'use-immer';
 
 import FormModal from 'components/admin/FormModal';
 import {SubmitAction} from 'components/admin/forms/ActionButton';
-import {TextInput} from 'components/admin/forms/Inputs';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
+import {TextInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 import SubmitRow from 'components/admin/forms/SubmitRow';
 import {ComplexVariable, EditPanel, TypeSelector} from 'components/admin/json_editor';

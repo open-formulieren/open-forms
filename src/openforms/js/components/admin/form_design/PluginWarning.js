@@ -1,9 +1,10 @@
-import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import {FormContext} from './Context';
 import MessageList from 'components/admin/MessageList';
+
+import {FormContext} from './Context';
 
 const PluginWarning = ({loginRequired, configuration}) => {
   const formContext = useContext(FormContext);

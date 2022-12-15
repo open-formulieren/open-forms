@@ -3,8 +3,8 @@ import {
   PREFILL,
   REGISTRATION,
   SENSITIVE_READ_ONLY,
-  VALIDATION,
   TRANSLATIONS,
+  VALIDATION,
 } from './edit/tabs';
 import TextField from './textfield';
 

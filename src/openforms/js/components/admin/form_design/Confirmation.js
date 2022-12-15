@@ -1,15 +1,15 @@
-import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
-import {defineMessage, FormattedMessage, useIntl} from 'react-intl';
+import React, {useContext} from 'react';
+import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
 
-import FormRow from 'components/admin/forms/FormRow';
+import ErrorList from 'components/admin/forms/ErrorList';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
+import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
-import {getTranslatedChoices} from 'utils/i18n';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
-import ErrorList from 'components/admin/forms/ErrorList';
+import {getTranslatedChoices} from 'utils/i18n';
 
 import {FormContext} from './Context';
 import TinyMCEEditor from './Editor';

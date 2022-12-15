@@ -1,9 +1,10 @@
 /**
  * A form widget to select a location on a Leaflet map.
  */
-import {Formio} from 'react-formio';
-import {DEFAULT_SENSITIVE_TABS} from './edit/tabs';
 import * as L from 'leaflet';
+import {Formio} from 'react-formio';
+
+import {DEFAULT_SENSITIVE_TABS} from './edit/tabs';
 import {RD_CRS} from './rd';
 
 const TextFieldComponent = Formio.Components.components.textfield;

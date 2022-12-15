@@ -1,7 +1,7 @@
-import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
-import {useImmerReducer} from 'use-immer';
+import React, {useEffect} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
+import {useImmerReducer} from 'use-immer';
 
 import {SubmitAction} from 'components/admin/forms/ActionButton';
 import SubmitRow from 'components/admin/forms/SubmitRow';

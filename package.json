@@ -31,6 +31,7 @@
     "@open-formulieren/design-tokens": "^0.13.0",
     "@rjsf/core": "^3.2.1",
     "@tinymce/tinymce-react": "^3.12.6",
+    "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "bem.js": "^1.0.10",
     "classnames": "^2.3.1",
     "copy-to-clipboard": "^3.3.1",

@@ -1,6 +1,6 @@
-import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
-import {Tabs, TabList, TabPanel} from 'react-tabs';
+import React, {useContext} from 'react';
+import {TabList, TabPanel, Tabs} from 'react-tabs';
 
 import {FormContext} from './Context';
 import Tab from './Tab';

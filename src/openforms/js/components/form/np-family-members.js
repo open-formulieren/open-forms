@@ -2,7 +2,8 @@
  * A form widget to select family members.
  */
 import {Formio} from 'formiojs';
-import {ADVANCED, REGISTRATION, SENSITIVE_BASIC, VALIDATION, TRANSLATIONS} from './edit/tabs';
+
+import {ADVANCED, REGISTRATION, SENSITIVE_BASIC, TRANSLATIONS, VALIDATION} from './edit/tabs';
 
 const SelectBoxes = Formio.Components.components.selectboxes;
 

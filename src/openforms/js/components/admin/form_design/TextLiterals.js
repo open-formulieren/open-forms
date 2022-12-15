@@ -1,5 +1,5 @@
-import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';

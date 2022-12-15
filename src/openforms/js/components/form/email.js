@@ -1,10 +1,11 @@
 import {Formio} from 'formiojs';
+
 import DEFAULT_TABS, {
   ADVANCED,
-  SENSITIVE_BASIC,
   REGISTRATION,
-  VALIDATION,
+  SENSITIVE_BASIC,
   TRANSLATIONS,
+  VALIDATION,
 } from './edit/tabs';
 
 const FormioEmail = Formio.Components.components.email;

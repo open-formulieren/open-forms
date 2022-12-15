@@ -1,12 +1,13 @@
 import {Formio} from 'formiojs';
+
 import {
-  DEFAULT_TABS,
   ADVANCED,
+  DEFAULT_TABS,
+  PREFILL,
   REGISTRATION,
   SENSITIVE_READ_ONLY,
-  VALIDATION,
-  PREFILL,
   TRANSLATIONS,
+  VALIDATION,
 } from './edit/tabs';
 
 const DateTimeField = Formio.Components.components.datetime;

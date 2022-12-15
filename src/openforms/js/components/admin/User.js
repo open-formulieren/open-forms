@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
 const User = ({fullName, username, firstName, lastName, fullFirstName = false}) => {
   if (fullFirstName && fullName) return fullName;

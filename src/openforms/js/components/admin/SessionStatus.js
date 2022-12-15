@@ -1,9 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import PropTypes from 'prop-types';
-import {useGlobalState} from 'state-pool';
 import classNames from 'classnames';
-import useTimeout from 'react-use/esm/useTimeout';
-import useTimeoutFn from 'react-use/esm/useTimeoutFn';
+import PropTypes from 'prop-types';
+import React, {useEffect, useState} from 'react';
 import {
   FormattedDate,
   FormattedMessage,
@@ -11,9 +8,12 @@ import {
   FormattedTime,
   useIntl,
 } from 'react-intl';
+import useTimeout from 'react-use/esm/useTimeout';
+import useTimeoutFn from 'react-use/esm/useTimeoutFn';
+import {useGlobalState} from 'state-pool';
 
-import {sessionExpiresAt} from 'utils/session-expiry';
 import {apiCall} from 'utils/fetch';
+import {sessionExpiresAt} from 'utils/session-expiry';
 
 import FormModal from './FormModal';
 import ActionButton, {SubmitAction} from './forms/ActionButton';

@@ -1,14 +1,14 @@
 import {Formio} from 'formiojs';
 
+import {REGEX_VALIDATION} from './edit/options';
 import {
   ADVANCED,
   DEFAULT_SENSITIVE_TABS,
   REGISTRATION,
   SENSITIVE_BASIC,
-  VALIDATION,
   TRANSLATIONS,
+  VALIDATION,
 } from './edit/tabs';
-import {REGEX_VALIDATION} from './edit/options';
 
 const PhoneNumber = Formio.Components.components.phoneNumber;
 

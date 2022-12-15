@@ -1,6 +1,5 @@
-import {onLoaded} from 'utils/dom';
-
 import 'components/auth-mode';
+import {onLoaded} from 'utils/dom';
 
 // connect the "Print this page" link element to a handler
 const registerPrintHandler = () => {

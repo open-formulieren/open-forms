@@ -2,12 +2,12 @@ import {Formio} from 'react-formio';
 
 import {DEFAULT_VALUE} from './edit/options';
 import {
-  DEFAULT_SENSITIVE_TABS,
-  SENSITIVE_BASIC,
   ADVANCED,
-  VALIDATION,
+  DEFAULT_SENSITIVE_TABS,
   REGISTRATION,
+  SENSITIVE_BASIC,
   TRANSLATIONS,
+  VALIDATION,
 } from './edit/tabs';
 
 class PasswordField extends Formio.Components.components.password {

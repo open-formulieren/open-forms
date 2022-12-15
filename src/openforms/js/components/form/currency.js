@@ -1,9 +1,9 @@
 import {Formio} from 'formiojs';
+import CurrencyEditData from 'formiojs/components/currency/editForm/Currency.edit.data';
 import _ from 'lodash';
 
-import CurrencyEditData from 'formiojs/components/currency/editForm/Currency.edit.data';
-import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION, TRANSLATIONS} from './edit/tabs';
 import {ALLOW_NEGATIVE, DECIMAL_PLACES} from './edit/components';
+import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, TRANSLATIONS, VALIDATION} from './edit/tabs';
 
 const FormioCurrency = Formio.Components.components.currency;
 

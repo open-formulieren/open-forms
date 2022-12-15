@@ -1,25 +1,40 @@
-import zip from 'lodash/zip';
-import getObjectValue from 'lodash/get';
-import set from 'lodash/set';
-import groupBy from 'lodash/groupBy';
-import sortBy from 'lodash/sortBy';
-import React, {useContext} from 'react';
 import {produce} from 'immer';
-import {useImmerReducer} from 'use-immer';
+import getObjectValue from 'lodash/get';
+import groupBy from 'lodash/groupBy';
+import set from 'lodash/set';
+import sortBy from 'lodash/sortBy';
+import zip from 'lodash/zip';
 import PropTypes from 'prop-types';
-import useAsync from 'react-use/esm/useAsync';
-import {Tabs, TabList, TabPanel} from 'react-tabs';
+import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
+import {TabList, TabPanel, Tabs} from 'react-tabs';
+import useAsync from 'react-use/esm/useAsync';
+import {useImmerReducer} from 'use-immer';
 
+import Loader from 'components/admin/Loader';
 import Fieldset from 'components/admin/forms/Fieldset';
 import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
-import Loader from 'components/admin/Loader';
-import {post} from 'utils/fetch';
 import {APIError, NotAuthenticatedError} from 'utils/exception';
+import {post} from 'utils/fetch';
 import {getUniqueRandomString} from 'utils/random';
 
+import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
+import Confirmation from './Confirmation';
 import {FormContext} from './Context';
+import DataRemoval from './DataRemoval';
+import FormConfigurationFields from './FormConfigurationFields';
+import FormDetailFields from './FormDetailFields';
+import {EMPTY_RULE, FormLogic} from './FormLogic';
+import FormObjectTools from './FormObjectTools';
 import FormSteps from './FormSteps';
+import FormSubmit from './FormSubmit';
+import {DEFAULT_LANGUAGE} from './LanguageTabs';
+import PaymentFields from './PaymentFields';
+import {EMPTY_PRICE_RULE, PriceLogic} from './PriceLogic';
+import ProductFields from './ProductFields';
+import RegistrationFields from './RegistrationFields';
+import Tab from './Tab';
+import TextLiterals from './TextLiterals';
 import {
   AUTH_PLUGINS_ENDPOINT,
   CATEGORIES_ENDPOINT,
@@ -30,50 +45,35 @@ import {
   REGISTRATION_BACKENDS_ENDPOINT,
   STATIC_VARIABLES_ENDPOINT,
 } from './constants';
-import {loadPlugins, loadForm, saveCompleteForm} from './data';
-import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
-import FormDetailFields from './FormDetailFields';
-import FormConfigurationFields from './FormConfigurationFields';
-import FormObjectTools from './FormObjectTools';
-import FormSubmit from './FormSubmit';
-import {DEFAULT_LANGUAGE} from './LanguageTabs';
-import RegistrationFields from './RegistrationFields';
-import PaymentFields from './PaymentFields';
-import ProductFields from './ProductFields';
-import TextLiterals from './TextLiterals';
-import DataRemoval from './DataRemoval';
-import Confirmation from './Confirmation';
-import {FormLogic, EMPTY_RULE} from './FormLogic';
-import {PriceLogic, EMPTY_PRICE_RULE} from './PriceLogic';
+import {loadForm, loadPlugins, saveCompleteForm} from './data';
+import {updateWarningsValidationError} from './logic/utils';
 import {BACKEND_OPTIONS_FORMS} from './registrations';
 import {
-  getFormComponents,
-  findComponent,
+  assignInitialTranslations,
+  initialConfirmationEmailTranslations,
+  initialFormTranslations,
+  initialStepTranslations,
+} from './translations';
+import {
   checkKeyChange,
-  updateKeyReferencesInLogic,
-  getUniqueKey,
+  findComponent,
+  getFormComponents,
   getFormStep,
   getPathToComponent,
-  parseValidationErrors,
+  getUniqueKey,
   mergeComponentTranslations,
+  parseValidationErrors,
   rewriteComponentTranslations,
+  updateKeyReferencesInLogic,
 } from './utils';
+import VariablesEditor from './variables/VariablesEditor';
+import {EMPTY_VARIABLE} from './variables/constants';
 import {
   checkForDuplicateKeys,
   getFormVariables,
   updateFormVariables,
   variableHasErrors,
 } from './variables/utils';
-import VariablesEditor from './variables/VariablesEditor';
-import {EMPTY_VARIABLE} from './variables/constants';
-import Tab from './Tab';
-import {updateWarningsValidationError} from './logic/utils';
-import {
-  assignInitialTranslations,
-  initialFormTranslations,
-  initialConfirmationEmailTranslations,
-  initialStepTranslations,
-} from './translations';
 
 const initialFormState = {
   form: {

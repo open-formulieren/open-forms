@@ -1,13 +1,13 @@
 /*
 global URLify;
  */
-import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
-import FormRow from 'components/admin/forms/FormRow';
 import Fieldset from 'components/admin/forms/Fieldset';
+import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
 
 import {FormContext} from './Context';

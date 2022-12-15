@@ -1,14 +1,14 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
-import {TextInput, NumberInput} from 'components/admin/forms/Inputs';
+import {NumberInput, TextInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 
-import Types from '../types';
 import TypeSelector from '../TypeSelector';
+import Types from '../types';
 
 const PrimitiveManualVariable = ({type = '', definition = null, onChange}) => {
   let variableInput = null;

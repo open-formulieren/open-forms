@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {IntlProvider} from 'react-intl';
 
+import {getIntlProviderProps} from 'components/admin/i18n';
 import {onLoaded} from 'utils/dom';
 import jsonScriptToVar from 'utils/json-script';
-import {getIntlProviderProps} from 'components/admin/i18n';
 
 import PluginConfiguration from './PluginConfiguration';
 

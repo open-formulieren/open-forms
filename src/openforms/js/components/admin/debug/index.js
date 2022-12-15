@@ -1,10 +1,10 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import ReactModal from 'react-modal';
+import React from 'react';
 import {IntlProvider} from 'react-intl';
+import ReactModal from 'react-modal';
 
-import {ComponentsContext} from 'components/admin/forms/Context';
 import ComplexProcessVariable from 'components/admin/form_design/registrations/camunda/ComplexProcessVariable';
+import {ComponentsContext} from 'components/admin/forms/Context';
 
 const allComponents = {
   comp1: {

@@ -1,20 +1,20 @@
-import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
-import {defineMessage, FormattedMessage, useIntl} from 'react-intl';
+import React, {useContext} from 'react';
+import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
 
+import DeleteIcon from 'components/admin/DeleteIcon';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Field from 'components/admin/forms/Field';
-import {NumberInput} from 'components/admin/forms/Inputs';
-import FormRow from 'components/admin/forms/FormRow';
 import Fieldset from 'components/admin/forms/Fieldset';
+import FormRow from 'components/admin/forms/FormRow';
+import {NumberInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
-import DeleteIcon from 'components/admin/DeleteIcon';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import {getTranslatedChoices} from 'utils/i18n';
 
+import DSLEditorNode from './logic/DSLEditorNode';
 import Trigger from './logic/Trigger';
 import {parseValidationErrors} from './utils';
-import DSLEditorNode from './logic/DSLEditorNode';
 
 export const EMPTY_PRICE_RULE = {
   uuid: '',

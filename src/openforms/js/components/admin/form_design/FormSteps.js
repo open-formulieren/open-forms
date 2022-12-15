@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
+import React, {useState} from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
 import Loader from 'components/admin/Loader';
+import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
 
 import {FormStepContext} from './Context';
 import FormStep from './FormStep';

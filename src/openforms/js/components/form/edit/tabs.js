@@ -1,18 +1,19 @@
 import {Utils} from 'formiojs';
+
 import jsonScriptToVar from 'utils/json-script';
 
 import {getFullyQualifiedUrl} from '../../../utils/urls';
 import {
-  LABEL_REQUIRED,
-  LABEL,
-  KEY,
-  DESCRIPTION,
-  PRESENTATION,
-  MULTIPLE,
-  HIDDEN,
   CLEAR_ON_HIDE,
-  IS_SENSITIVE_DATA,
   DEFAULT_VALUE,
+  DESCRIPTION,
+  HIDDEN,
+  IS_SENSITIVE_DATA,
+  KEY,
+  LABEL,
+  LABEL_REQUIRED,
+  MULTIPLE,
+  PRESENTATION,
   READ_ONLY,
   REGEX_VALIDATION,
   REQUIRED,

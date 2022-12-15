@@ -1,15 +1,15 @@
-import isEqual from 'lodash/isEqual';
-import React, {useState, useEffect} from 'react';
-import PropTypes from 'prop-types';
 import {produce} from 'immer';
+import isEqual from 'lodash/isEqual';
+import PropTypes from 'prop-types';
+import React, {useEffect, useState} from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import {TextInput} from 'components/admin/forms/Inputs';
 
 import TypeRepresentation from '../TypeRepresentation';
-import Types from '../types';
 import ValueRepresentation from '../ValueRepresentation';
+import Types from '../types';
 
 const ObjectKeyValuePair = ({name = '', definition = {}, onNameChange, onEditDefinition}) => {
   const onEditClick = event => {

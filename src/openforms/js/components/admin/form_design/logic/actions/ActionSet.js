@@ -1,11 +1,11 @@
-import React from 'react';
-import {useImmerReducer} from 'use-immer';
-import PropTypes from 'prop-types';
-import {FormattedMessage} from 'react-intl';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
+import {FormattedMessage} from 'react-intl';
+import {useImmerReducer} from 'use-immer';
 
-import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import {useOnChanged} from 'components/admin/form_design/logic/hooks';
+import ButtonContainer from 'components/admin/forms/ButtonContainer';
 
 import Action from './Action';
 import {ActionError} from './types';

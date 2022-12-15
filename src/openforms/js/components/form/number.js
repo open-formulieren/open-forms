@@ -1,7 +1,7 @@
 import {Formio} from 'formiojs';
 
 import {ALLOW_NEGATIVE, DECIMAL_PLACES, MAX_VALUE, MIN_VALUE} from './edit/components';
-import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION, TRANSLATIONS} from './edit/tabs';
+import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, TRANSLATIONS, VALIDATION} from './edit/tabs';
 
 const FormioNumber = Formio.Components.components.number;
 

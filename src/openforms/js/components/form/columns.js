@@ -1,6 +1,6 @@
 import {Formio} from 'formiojs';
 
-import {LABEL, KEY, HIDDEN, CLEAR_ON_HIDE} from 'components/form/edit/options';
+import {CLEAR_ON_HIDE, HIDDEN, KEY, LABEL} from 'components/form/edit/options';
 
 const FormioColumnField = Formio.Components.components.columns;
 

@@ -1,8 +1,8 @@
 import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 import {FormContext} from 'components/admin/form_design/Context';
+import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
 
 const StaticData = () => {
   const formContext = useContext(FormContext);

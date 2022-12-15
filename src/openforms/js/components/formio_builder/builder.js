@@ -1,12 +1,12 @@
 import cloneDeep from 'lodash/cloneDeep';
-import React, {useRef, useEffect, useState, useContext} from 'react';
 import PropTypes from 'prop-types';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {FormBuilder, Templates} from 'react-formio';
-import {FormStepContext} from '../admin/form_design/Context';
 
 import jsonScriptToVar from '../../utils/json-script';
-import nlStrings from './translation';
+import {FormStepContext} from '../admin/form_design/Context';
 import customTemplates from './customTemplates';
+import nlStrings from './translation';
 
 Templates.current = customTemplates;
 

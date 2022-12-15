@@ -1,14 +1,14 @@
-import React, {useState} from 'react';
 import PropTypes from 'prop-types';
+import React, {useState} from 'react';
+import {FormattedDate, FormattedMessage, FormattedTime, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
-import {useIntl, FormattedDate, FormattedMessage, FormattedTime} from 'react-intl';
-import semverValid from 'semver/functions/valid';
 import semverDiff from 'semver/functions/diff';
+import semverValid from 'semver/functions/valid';
 
-import {FORM_ENDPOINT} from 'components/admin/form_design/constants';
 import FAIcon from 'components/admin/FAIcon';
 import Loader from 'components/admin/Loader';
 import User from 'components/admin/User';
+import {FORM_ENDPOINT} from 'components/admin/form_design/constants';
 import {get, post} from 'utils/fetch';
 
 const checkVersionsCompatible = (version1, version2) => {

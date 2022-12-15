@@ -1,11 +1,11 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import FormioComponentRepresentation from 'components/admin/FormioComponentRepresentation';
 
-import Types from './types';
 import {displayInterpolateExpression} from './edit_panel/InterpolatedVariable';
+import Types from './types';
 
 const ValueRepresentation = ({definition = null}) => {
   let valueRepresentation = null;

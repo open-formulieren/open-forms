@@ -1,7 +1,7 @@
 import {Formio} from 'formiojs';
 
+import {CLEAR_ON_HIDE, HIDDEN, KEY, LABEL} from 'components/form/edit/options';
 import {ADVANCED, TRANSLATIONS} from 'components/form/edit/tabs';
-import {LABEL, KEY, HIDDEN, CLEAR_ON_HIDE} from 'components/form/edit/options';
 
 const FormioFieldSet = Formio.Components.components.fieldset;
 

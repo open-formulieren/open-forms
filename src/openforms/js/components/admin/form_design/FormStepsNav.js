@@ -1,10 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import {useIntl, FormattedMessage} from 'react-intl';
+import PropTypes from 'prop-types';
+import React from 'react';
+import {FormattedMessage, useIntl} from 'react-intl';
 
-import FAIcon from 'components/admin/FAIcon';
 import DeleteIcon from 'components/admin/DeleteIcon';
+import FAIcon from 'components/admin/FAIcon';
 
 const FormStepNavItem = ({
   name,

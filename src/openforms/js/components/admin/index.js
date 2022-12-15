@@ -1,21 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ReactModal from 'react-modal';
 import {IntlProvider} from 'react-intl';
+import ReactModal from 'react-modal';
 
 import jsonScriptToVar from 'utils/json-script';
 
-import {FormCreationForm} from './form_design/form-creation-form';
-import {TinyMceContext, FeatureFlagsContext} from './form_design/Context';
-import FormVersionsTable from './form_versions/FormVersionsTable';
-import './plugin_configuration';
-import './form-category';
-import './submissions/filter';
-
-import Debug from './debug';
 import SessionStatus from './SessionStatus';
+import Debug from './debug';
+import './form-category';
+import {FeatureFlagsContext, TinyMceContext} from './form_design/Context';
+import {FormCreationForm} from './form_design/form-creation-form';
+import FormVersionsTable from './form_versions/FormVersionsTable';
 import {getIntlProviderProps} from './i18n';
+import './plugin_configuration';
 import setSeleniumMarker from './selenium';
+import './submissions/filter';
 
 const mountForm = intlProps => {
   const formCreationFormNodes = document.getElementsByClassName('react-form-create');

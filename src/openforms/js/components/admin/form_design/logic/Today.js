@@ -1,14 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {FormattedMessage, useIntl} from 'react-intl';
 import jsonLogic from 'json-logic-js';
+import PropTypes from 'prop-types';
+import React from 'react';
+import {FormattedMessage, useIntl} from 'react-intl';
 
-import Select from 'components/admin/forms/Select';
 import {NumberInput} from 'components/admin/forms/Inputs';
+import Select from 'components/admin/forms/Select';
 import {getTranslatedChoices} from 'utils/i18n';
 
-import {OPERATORS} from './constants';
 import DSLEditorNode from './DSLEditorNode';
+import {OPERATORS} from './constants';
 
 const EMPTY_RELATIVE_DELTA = [0, 0, 0];
 

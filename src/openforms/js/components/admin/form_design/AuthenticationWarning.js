@@ -1,7 +1,7 @@
-import React from 'react';
-import {FormattedMessage} from 'react-intl';
 import FormioUtils from 'formiojs/utils';
 import PropTypes from 'prop-types';
+import React from 'react';
+import {FormattedMessage} from 'react-intl';
 
 import MessageList from 'components/admin/MessageList';
 

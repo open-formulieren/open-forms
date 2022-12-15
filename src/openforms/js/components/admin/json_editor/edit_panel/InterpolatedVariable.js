@@ -1,17 +1,17 @@
 // TODO: this could probably be built nicer using Draft.js, if we get time to
 // look into that :-)
-import React from 'react';
-import PropTypes from 'prop-types';
 import {produce} from 'immer';
+import PropTypes from 'prop-types';
+import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import DeleteIcon from 'components/admin/DeleteIcon';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import ComponentSelection from 'components/admin/forms/ComponentSelection';
 import Field from 'components/admin/forms/Field';
-import {TextInput} from 'components/admin/forms/Inputs';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
+import {TextInput} from 'components/admin/forms/Inputs';
 
 import Types from '../types';
 

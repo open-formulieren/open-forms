@@ -1,4 +1,5 @@
 import {Formio} from 'formiojs';
+
 import {
   CLEAR_ON_HIDE,
   DESCRIPTION,

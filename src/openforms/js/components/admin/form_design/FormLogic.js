@@ -1,7 +1,7 @@
 import sortBy from 'lodash/sortBy';
-import React, {useContext, useState} from 'react';
 import PropTypes from 'prop-types';
-import {useIntl, FormattedMessage} from 'react-intl';
+import React, {useContext, useState} from 'react';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import DeleteIcon from 'components/admin/DeleteIcon';
 import FAIcon from 'components/admin/FAIcon';
@@ -9,13 +9,13 @@ import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 
+import StepSelection, {useFormStep} from './StepSelection';
+import AdvancedTrigger from './logic/AdvancedTrigger';
+import DSLEditorNode from './logic/DSLEditorNode';
+import DataPreview from './logic/DataPreview';
+import LogicTypeSelection from './logic/LogicTypeSelection';
 import Trigger from './logic/Trigger';
 import ActionSet from './logic/actions/ActionSet';
-import AdvancedTrigger from './logic/AdvancedTrigger';
-import DataPreview from './logic/DataPreview';
-import DSLEditorNode from './logic/DSLEditorNode';
-import LogicTypeSelection from './logic/LogicTypeSelection';
-import StepSelection, {useFormStep} from './StepSelection';
 import {parseValidationErrors} from './utils';
 
 const EMPTY_RULE = {

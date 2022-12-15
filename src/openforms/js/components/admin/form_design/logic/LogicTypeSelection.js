@@ -1,6 +1,6 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import {useIntl, FormattedMessage} from 'react-intl';
+import React from 'react';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import FAIcon from 'components/admin/FAIcon';
 

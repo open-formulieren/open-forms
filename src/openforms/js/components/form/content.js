@@ -1,4 +1,5 @@
 import {Formio} from 'formiojs';
+
 import {HIDDEN, KEY, LABEL, PRESENTATION, SHOW_IN_EMAIL, SHOW_IN_PDF} from './edit/options';
 import {ADVANCED, TRANSLATIONS} from './edit/tabs';
 

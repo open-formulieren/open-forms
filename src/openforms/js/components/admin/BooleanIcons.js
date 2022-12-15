@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
 const BooleanIcon = ({icon, ...props}) => {
   const fullUrl = `${STATIC_URL}admin/img/icon-${icon}.svg`;

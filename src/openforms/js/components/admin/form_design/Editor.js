@@ -1,6 +1,6 @@
+import {Editor} from '@tinymce/tinymce-react';
 import React, {useContext, useRef} from 'react';
 import {useIntl} from 'react-intl';
-import {Editor} from '@tinymce/tinymce-react';
 
 import tinyMceConfig from '../../../../conf/tinymce_config.json';
 import {TinyMceContext} from './Context';
