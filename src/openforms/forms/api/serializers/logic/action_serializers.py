@@ -1,9 +1,11 @@
 import warnings
 
+from django.urls import resolve
 from django.utils.translation import ugettext_lazy as _
 
 from drf_polymorphic.serializers import PolymorphicSerializer
 from drf_spectacular.utils import extend_schema_serializer
+from furl import furl
 from rest_framework import serializers
 
 from openforms.submissions.api.fields import URLRelatedField
@@ -148,7 +150,8 @@ class LogicComponentActionSerializer(serializers.Serializer):
                 DeprecationWarning,
             )
             # normalize to UUID following deprecation of URL reference
-            data["form_step_uuid"] = form_step.uuid
+            match = resolve(furl(form_step).path)
+            data["form_step_uuid"] = match.kwargs["uuid"]
 
         form_step_uuid = data.get("form_step_uuid")
         variable = data.get("variable")
