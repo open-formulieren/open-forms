@@ -15,11 +15,7 @@ from openforms.formio.utils import get_component_empty_value, is_visible_in_fron
 from openforms.forms.models import FormVariable
 from openforms.logging import logevent
 from openforms.typing import DataMapping, JSONValue
-from openforms.variables.models import (
-    DataMappingTypes,
-    ServiceFetchConfiguration,
-    ServiceFetchMethods,
-)
+from openforms.variables.models import DataMappingTypes, ServiceFetchConfiguration
 
 from .logic.actions import PropertyAction
 from .logic.datastructures import DataContainer

@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("variables", "0001_add_service_fetch_configuration"),
-        ("forms", "0057_alter_formvariable_data_type"),
+        ("forms", "0066_merge_20230119_1618"),
     ]
 
     operations = [
