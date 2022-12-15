@@ -47,6 +47,7 @@ paths:
         302:
           description: A redirection.
           content: {}
+      operationId: getAbsoluteRedirectN
   /anything:
     get:
       tags:
@@ -56,6 +57,7 @@ paths:
         200:
           description: Anything passed in request
           content: {}
+      operationId: getAnything
     put:
       tags:
       - Anything
@@ -64,6 +66,7 @@ paths:
         200:
           description: Anything passed in request
           content: {}
+      operationId: putAnything
     post:
       tags:
       - Anything
@@ -72,6 +75,7 @@ paths:
         200:
           description: Anything passed in request
           content: {}
+      operationId: postAnything
     delete:
       tags:
       - Anything
@@ -80,6 +84,7 @@ paths:
         200:
           description: Anything passed in request
           content: {}
+      operationId: deleteAnything
     patch:
       tags:
       - Anything
@@ -88,6 +93,7 @@ paths:
         200:
           description: Anything passed in request
           content: {}
+      operationId: patchAnything
   /anything/{anything}:
     parameters:
     - name: anything
@@ -103,6 +109,7 @@ paths:
         200:
           description: Anything passed in request
           content: {}
+      operationId: getAnythingAnything
     put:
       tags:
       - Anything
@@ -111,6 +118,7 @@ paths:
         200:
           description: Anything passed in request
           content: {}
+      operationId: putAnythingAnything
     post:
       tags:
       - Anything
@@ -119,6 +127,7 @@ paths:
         200:
           description: Anything passed in request
           content: {}
+      operationId: postAnythingAnything
     delete:
       tags:
       - Anything
@@ -127,6 +136,7 @@ paths:
         200:
           description: Anything passed in request
           content: {}
+      operationId: deleteAnythingAnything
     patch:
       tags:
       - Anything
@@ -135,6 +145,7 @@ paths:
         200:
           description: Anything passed in request
           content: {}
+      operationId: patchAnythingAnything
   /base64/{value}:
     get:
       tags:
@@ -151,6 +162,7 @@ paths:
         200:
           description: Decoded base64 content.
           content: {}
+      operationId: getBase64Value
   /basic-auth/{user}/{passwd}:
     get:
       tags:
@@ -174,6 +186,7 @@ paths:
         401:
           description: Unsuccessful authentication.
           content: {}
+      operationId: getBasicAuthUserPasswd
   /bearer:
     get:
       tags:
@@ -190,6 +203,7 @@ paths:
         401:
           description: Unsuccessful authentication.
           content: {}
+      operationId: getBearer
   /brotli:
     get:
       tags:
@@ -199,6 +213,7 @@ paths:
         200:
           description: Brotli-encoded data.
           content: {}
+      operationId: getBrotli
   /bytes/{n}:
     get:
       tags:
@@ -213,6 +228,7 @@ paths:
         200:
           description: Bytes.
           content: {}
+      operationId: getBytesN
   /cache:
     get:
       tags:
@@ -233,6 +249,7 @@ paths:
         304:
           description: Modified
           content: {}
+      operationId: getCache
   /cache/{value}:
     get:
       tags:
@@ -248,6 +265,7 @@ paths:
         200:
           description: Cache control set
           content: {}
+      operationId: getCacheValue
   /cookies:
     get:
       tags:
@@ -257,6 +275,7 @@ paths:
         200:
           description: Set cookies.
           content: {}
+      operationId: getCookies
   /cookies/delete:
     get:
       tags:
@@ -272,6 +291,7 @@ paths:
         200:
           description: Redirect to cookie list
           content: {}
+      operationId: getCookiesDelete
   /cookies/set:
     get:
       tags:
@@ -287,6 +307,7 @@ paths:
         200:
           description: Redirect to cookie list
           content: {}
+      operationId: getCookiesSet
   /cookies/set/{name}/{value}:
     get:
       tags:
@@ -307,6 +328,7 @@ paths:
         200:
           description: Set cookies and redirects to cookie list.
           content: {}
+      operationId: getCookiesSetNameValue
   /deflate:
     get:
       tags:
@@ -316,6 +338,7 @@ paths:
         200:
           description: Defalte-encoded data.
           content: {}
+      operationId: getDeflate
   /delay/{delay}:
     get:
       tags:
@@ -330,6 +353,7 @@ paths:
         200:
           description: A delayed response.
           content: {}
+      operationId: getDelayDelay
     put:
       tags:
       - Dynamic data
@@ -343,6 +367,7 @@ paths:
         200:
           description: A delayed response.
           content: {}
+      operationId: putDelayDelay
     post:
       tags:
       - Dynamic data
@@ -356,6 +381,7 @@ paths:
         200:
           description: A delayed response.
           content: {}
+      operationId: postDelayDelay
     delete:
       tags:
       - Dynamic data
@@ -369,6 +395,7 @@ paths:
         200:
           description: A delayed response.
           content: {}
+      operationId: deleteDelayDelay
     patch:
       tags:
       - Dynamic data
@@ -382,6 +409,7 @@ paths:
         200:
           description: A delayed response.
           content: {}
+      operationId: patchDelayDelay
   /delete:
     delete:
       tags:
@@ -391,6 +419,7 @@ paths:
         200:
           description: The request's DELETE parameters.
           content: {}
+      operationId: deleteDelete
   /deny:
     get:
       tags:
@@ -400,6 +429,7 @@ paths:
         200:
           description: Denied message
           content: {}
+      operationId: getDeny
   /digest-auth/{qop}/{user}/{passwd}:
     get:
       tags:
@@ -429,6 +459,7 @@ paths:
         401:
           description: Unsuccessful authentication.
           content: {}
+      operationId: getDigestAuthQopUserPasswd
   /digest-auth/{qop}/{user}/{passwd}/{algorithm}:
     get:
       tags:
@@ -465,6 +496,7 @@ paths:
         401:
           description: Unsuccessful authentication.
           content: {}
+      operationId: getDigestAuthQopUserPasswdAlgorithm
   /digest-auth/{qop}/{user}/{passwd}/{algorithm}/{stale_after}:
     get:
       tags:
@@ -509,6 +541,7 @@ paths:
         401:
           description: Unsuccessful authentication.
           content: {}
+      operationId: getDigestAuthQopUserPasswdAlgorithmStale_After
   /drip:
     get:
       tags:
@@ -543,6 +576,7 @@ paths:
         200:
           description: A dripped response.
           content: {}
+      operationId: getDrip
   /encoding/utf8:
     get:
       tags:
@@ -552,6 +586,7 @@ paths:
         200:
           description: Encoded UTF-8 content.
           content: {}
+      operationId: getEncodingUtf8
   /etag/{etag}:
     get:
       tags:
@@ -577,6 +612,7 @@ paths:
         412:
           description: match
           content: {}
+      operationId: getEtagEtag
   /get:
     get:
       tags:
@@ -586,6 +622,7 @@ paths:
         200:
           description: The request's query parameters.
           content: {}
+      operationId: getGet
   /gzip:
     get:
       tags:
@@ -595,6 +632,7 @@ paths:
         200:
           description: GZip-encoded data.
           content: {}
+      operationId: getGzip
   /headers:
     get:
       tags:
@@ -604,6 +642,7 @@ paths:
         200:
           description: The request's headers.
           content: {}
+      operationId: getHeaders
   /hidden-basic-auth/{user}/{passwd}:
     get:
       tags:
@@ -627,6 +666,7 @@ paths:
         404:
           description: Unsuccessful authentication.
           content: {}
+      operationId: getHiddenBasicAuthUserPasswd
   /html:
     get:
       tags:
@@ -636,6 +676,7 @@ paths:
         200:
           description: An HTML page.
           content: {}
+      operationId: getHtml
   /image:
     get:
       tags:
@@ -645,6 +686,7 @@ paths:
         200:
           description: An image.
           content: {}
+      operationId: getImage
   /image/jpeg:
     get:
       tags:
@@ -654,6 +696,7 @@ paths:
         200:
           description: A JPEG image.
           content: {}
+      operationId: getImageJpeg
   /image/png:
     get:
       tags:
@@ -663,6 +706,7 @@ paths:
         200:
           description: A PNG image.
           content: {}
+      operationId: getImagePng
   /image/svg:
     get:
       tags:
@@ -672,6 +716,7 @@ paths:
         200:
           description: An SVG image.
           content: {}
+      operationId: getImageSvg
   /image/webp:
     get:
       tags:
@@ -681,6 +726,7 @@ paths:
         200:
           description: A WEBP image.
           content: {}
+      operationId: getImageWebp
   /ip:
     get:
       tags:
@@ -690,6 +736,7 @@ paths:
         200:
           description: The Requester's IP Address.
           content: {}
+      operationId: getIp
   /json:
     get:
       tags:
@@ -699,6 +746,7 @@ paths:
         200:
           description: An JSON document.
           content: {}
+      operationId: getJson
   /links/{n}/{offset}:
     get:
       tags:
@@ -717,6 +765,7 @@ paths:
         200:
           description: HTML links.
           content: {}
+      operationId: getLinksNOffset
   /patch:
     patch:
       tags:
@@ -726,6 +775,7 @@ paths:
         200:
           description: The request's PATCH parameters.
           content: {}
+      operationId: patchPatch
   /post:
     post:
       tags:
@@ -735,6 +785,7 @@ paths:
         200:
           description: The request's POST parameters.
           content: {}
+      operationId: postPost
   /put:
     put:
       tags:
@@ -744,6 +795,7 @@ paths:
         200:
           description: The request's PUT parameters.
           content: {}
+      operationId: putPut
   /range/{numbytes}:
     get:
       tags:
@@ -759,6 +811,7 @@ paths:
         200:
           description: Bytes.
           content: {}
+      operationId: getRangeNumbytes
   /redirect-to:
     get:
       tags:
@@ -777,6 +830,7 @@ paths:
         302:
           description: A redirection.
           content: {}
+      operationId: getRedirectTo
     put:
       tags:
       - Redirects
@@ -796,6 +850,7 @@ paths:
         302:
           description: A redirection.
           content: {}
+      operationId: putRedirectTo
     post:
       tags:
       - Redirects
@@ -815,6 +870,7 @@ paths:
         302:
           description: A redirection.
           content: {}
+      operationId: postRedirectTo
     delete:
       tags:
       - Redirects
@@ -823,6 +879,7 @@ paths:
         302:
           description: A redirection.
           content: {}
+      operationId: deleteRedirectTo
     patch:
       tags:
       - Redirects
@@ -831,6 +888,7 @@ paths:
         302:
           description: A redirection.
           content: {}
+      operationId: patchRedirectTo
   /redirect/{n}:
     get:
       tags:
@@ -845,6 +903,7 @@ paths:
         302:
           description: A redirection.
           content: {}
+      operationId: getRedirectN
   /relative-redirect/{n}:
     get:
       tags:
@@ -859,6 +918,7 @@ paths:
         302:
           description: A redirection.
           content: {}
+      operationId: getRelativeRedirectN
   /response-headers:
     get:
       tags:
@@ -873,6 +933,7 @@ paths:
         200:
           description: Response headers
           content: {}
+      operationId: getResponseHeaders
     post:
       tags:
       - Response inspection
@@ -886,6 +947,7 @@ paths:
         200:
           description: Response headers
           content: {}
+      operationId: postResponseHeaders
   /robots.txt:
     get:
       tags:
@@ -895,6 +957,7 @@ paths:
         200:
           description: Robots file
           content: {}
+      operationId: getRobotsTxt
   /status/{codes}:
     get:
       tags:
@@ -921,6 +984,7 @@ paths:
         500:
           description: Server Errors
           content: {}
+      operationId: getStatusCodes
     put:
       tags:
       - Status codes
@@ -946,6 +1010,7 @@ paths:
         500:
           description: Server Errors
           content: {}
+      operationId: putStatusCodes
     post:
       tags:
       - Status codes
@@ -971,6 +1036,7 @@ paths:
         500:
           description: Server Errors
           content: {}
+      operationId: postStatusCodes
     delete:
       tags:
       - Status codes
@@ -996,6 +1062,7 @@ paths:
         500:
           description: Server Errors
           content: {}
+      operationId: deleteStatusCodes
     patch:
       tags:
       - Status codes
@@ -1021,6 +1088,7 @@ paths:
         500:
           description: Server Errors
           content: {}
+      operationId: patchStatusCodes
   /stream-bytes/{n}:
     get:
       tags:
@@ -1036,6 +1104,7 @@ paths:
         200:
           description: Bytes.
           content: {}
+      operationId: getStreamBytesN
   /stream/{n}:
     get:
       tags:
@@ -1050,6 +1119,7 @@ paths:
         200:
           description: Streamed JSON responses.
           content: {}
+      operationId: getStreamN
   /user-agent:
     get:
       tags:
@@ -1059,6 +1129,7 @@ paths:
         200:
           description: The request's User-Agent header.
           content: {}
+      operationId: getUserAgent
   /uuid:
     get:
       tags:
@@ -1068,6 +1139,7 @@ paths:
         200:
           description: A UUID4.
           content: {}
+      operationId: getUuid
   /xml:
     get:
       tags:
@@ -1077,4 +1149,5 @@ paths:
         200:
           description: An XML document.
           content: {}
+      operationId: getXml
 components: {}
