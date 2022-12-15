@@ -32,9 +32,19 @@ class Command(BaseCommand):
                     f"Invalid plugin: {plugin}. Choices are: {available_plugins.keys()}"
                 )
             config_class = import_string(available_plugins[plugin])
-            self.client = config_class.get_solo().get_client()
+            try:
+                self.client = config_class.get_solo().get_client()
+                # Sanity check:
+                self.client.get_available_products()
+            except Exception as e:
+                raise CommandError(f"Plugin is not properly configured: {e}")
         else:
-            self.client = get_client()
+            try:
+                self.client = get_client()
+            except ValueError:
+                raise CommandError(
+                    "No plugin is configured. Use --plugin PLUGIN to use a specific plugin."
+                )
 
         self.stdout.write(f"Using plugin: {plugin}")
 
