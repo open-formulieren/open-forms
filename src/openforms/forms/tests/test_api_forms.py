@@ -1144,6 +1144,38 @@ class FormsAPITranslationTests(APITestCase):
         self.assertEqual(literal_value("changeText"), "change")
         self.assertEqual(literal_value("confirmText"), "confirm")
 
+    @patch(
+        "openforms.forms.models.utils.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            form_begin_text_en="Begin form",
+            form_begin_text_nl="Dutch",
+            form_previous_text_en="English",
+            form_previous_text_nl="Dutch",
+        ),
+    )
+    def test_detail_shows_translated_literals_use_global_defaults(self, *m):
+        form = TranslatedFormFactory.create(
+            _language="en",
+            translation_enabled=True,
+            begin_text="",
+            previous_text="",
+            change_text="",
+            confirm_text="",
+        )
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.get(url, HTTP_ACCEPT_LANGUAGE="en")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers["Content-Language"], "en")
+        data = response.json()
+
+        self.assertTrue(data["name"])  # it has a name from the factory
+
+        self.assertEqual(data["literals"]["beginText"]["resolved"], "Begin form")
+        self.assertEqual(data["literals"]["previousText"]["resolved"], "English")
+
     def test_detail_shows_translated_values_based_on_cookie(self):
         # request the api for Dutch, with a browser that negotiates English
         lang_url = reverse("api:i18n:language")
