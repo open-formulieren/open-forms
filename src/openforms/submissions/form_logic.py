@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from django.utils.functional import empty
 
 import elasticapm
+import jq
+from json_logic import jsonLogic
 
 from openforms.formio.service import (
     get_dynamic_configuration,
@@ -10,7 +12,14 @@ from openforms.formio.service import (
     translate_function,
 )
 from openforms.formio.utils import get_component_empty_value, is_visible_in_frontend
+from openforms.forms.models import FormVariable
 from openforms.logging import logevent
+from openforms.typing import DataMapping, JSONValue
+from openforms.variables.models import (
+    DataMappingTypes,
+    ServiceFetchConfiguration,
+    ServiceFetchMethods,
+)
 
 from .logic.actions import PropertyAction
 from .logic.datastructures import DataContainer
@@ -248,3 +257,42 @@ def check_submission_logic(
         mutation.apply(step, {})
 
     submission._form_logic_evaluated = True
+
+
+def bind(var: FormVariable, values: DataMapping) -> JSONValue:
+    """Bind a value to a variable `var`
+
+    :raises: :class:`requests.HTTPException` for internal server errors
+    :raises: :class:`zds_client.client.ClientError` for HTTP 4xx status codes
+    :raises: :class:`NotImplementedError` for FormVariable
+    """
+    fetch_config: ServiceFetchConfiguration
+
+    match var:
+        case FormVariable(service_fetch_configuration=fetch_config) if fetch_config:
+            client = fetch_config.service.build_client()
+
+            request_args = dict(
+                path=fetch_config.path,
+                params=fetch_config.query_params,
+                method=fetch_config.method,
+                headers=fetch_config.headers,
+                # XXX required parameter to zds-client...
+                # Maybe offer as alternative to path and method?
+                operation="",
+            )
+            if fetch_config.body is not None:
+                request_args["json"] = fetch_config.body
+
+            raw_value = client.request(**request_args)
+
+            match fetch_config.data_mapping_type, fetch_config.mapping_expression:
+                case DataMappingTypes.jq, expression:
+                    # XXX raise warning if len(result) > 1 ?
+                    return jq.compile(expression).input(raw_value).first()
+                case DataMappingTypes.json_logic, expression:
+                    return jsonLogic(expression, raw_value)
+                case _:
+                    return raw_value
+        case _:
+            raise NotImplementedError()
