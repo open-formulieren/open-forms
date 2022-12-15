@@ -250,7 +250,7 @@
   "Auto Expand": "Maak automatisch groter",
   "Number of rows": "Aantal rijen",
   "submitError": "Controleer en los alle fouten op voordat u het formulier verstuurt.",
-  "required": "Dit veld is verplicht.",
+  "required": "Dit verplichte veld is niet ingevuld.",
   "valueIsNotAvailable": "De waarde is niet beschikbaar.",
   "unique": "De opgegeven waarde is niet uniek.",
   "select": "Er is geen geldige keuze gemaakt.",
