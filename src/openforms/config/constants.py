@@ -59,6 +59,7 @@ class CSPDirective(DjangoChoices):
 
 class UploadFileType(DjangoChoices):
     all = ChoiceItem("*", label=_("any filetype"))
+    heic = ChoiceItem("image/heic", label=(".heic"))
     png = ChoiceItem("image/png", label=_(".png"))
     jpg = ChoiceItem("image/jpeg", label=_(".jpg"))
     pdf = ChoiceItem("application/pdf", label=_(".pdf"))
@@ -68,6 +69,7 @@ class UploadFileType(DjangoChoices):
         label=_(".xlsx"),
     )
     csv = ChoiceItem("text/csv", label=_(".csv"))
+    txt = ChoiceItem("text/plain", label=(".txt"))
     doc = ChoiceItem("application/msword", label=_(".doc"))
     docx = ChoiceItem(
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
