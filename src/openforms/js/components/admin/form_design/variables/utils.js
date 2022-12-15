@@ -1,5 +1,5 @@
-import _ from 'lodash';
 import {Utils as FormioUtils} from 'formiojs';
+import _ from 'lodash';
 import {defineMessage} from 'react-intl';
 
 import {getComponentEmptyValue} from 'components/utils';

@@ -1,12 +1,12 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import Field from 'components/admin/forms/Field';
-import FormRow from 'components/admin/forms/FormRow';
-import Fieldset from 'components/admin/forms/Fieldset';
-import Select from 'components/admin/forms/Select';
 import FormRjsfWrapper from 'components/admin/RJSFWrapper';
+import Field from 'components/admin/forms/Field';
+import Fieldset from 'components/admin/forms/Fieldset';
+import FormRow from 'components/admin/forms/FormRow';
+import Select from 'components/admin/forms/Select';
 
 const PaymentFields = ({backends = [], selectedBackend = '', backendOptions = {}, onChange}) => {
   const backendChoices = backends.map(backend => [backend.id, backend.label]);

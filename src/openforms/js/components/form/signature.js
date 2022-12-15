@@ -1,7 +1,7 @@
 import {Formio} from 'react-formio';
 
 import {DEFAULT_VALUE, MULTIPLE} from './edit/options';
-import {SENSITIVE_BASIC, DEFAULT_SENSITIVE_TABS} from './edit/tabs';
+import {DEFAULT_SENSITIVE_TABS, SENSITIVE_BASIC} from './edit/tabs';
 
 class SignatureField extends Formio.Components.components.signature {
   static editForm() {

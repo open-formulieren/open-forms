@@ -1,22 +1,22 @@
+import classNames from 'classnames';
+import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
-import classNames from 'classnames';
-import PropTypes from 'prop-types';
 
-import FAIcon from 'components/admin/FAIcon';
 import DeleteIcon from 'components/admin/DeleteIcon';
+import FAIcon from 'components/admin/FAIcon';
+import {FormContext} from 'components/admin/form_design/Context';
+import LiteralValueInput from 'components/admin/form_design/logic/LiteralValueInput';
+import Field from 'components/admin/forms/Field';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 import {ChangelistTableWrapper, HeadColumn} from 'components/admin/tables';
-import {FormContext} from 'components/admin/form_design/Context';
 import {get} from 'utils/fetch';
-import Field from 'components/admin/forms/Field';
-import LiteralValueInput from 'components/admin/form_design/logic/LiteralValueInput';
 
 import {DATATYPES_CHOICES} from './constants';
-import {variableHasErrors} from './utils';
 import Variable from './types';
+import {variableHasErrors} from './utils';
 
 const SensitiveData = ({isSensitive}) => {
   const intl = useIntl();

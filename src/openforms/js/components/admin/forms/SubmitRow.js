@@ -1,7 +1,7 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
-import {SubmitAction, AddAnotherAction, ContinueEditingAction} from './ActionButton';
+import {AddAnotherAction, ContinueEditingAction, SubmitAction} from './ActionButton';
 
 const SubmitRow = ({
   onSubmit,

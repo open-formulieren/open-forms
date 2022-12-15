@@ -1,6 +1,6 @@
 import FormioUtils from 'formiojs/utils';
-import set from 'lodash/set';
 import merge from 'lodash/merge';
+import set from 'lodash/set';
 
 const stripIdFromComponents = obj => {
   const {id, ...objWithoutId} = obj;

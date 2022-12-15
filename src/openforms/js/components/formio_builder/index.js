@@ -1,13 +1,13 @@
 import BEM from 'bem.js';
+import flatpickr from 'flatpickr';
+import {Dutch} from 'flatpickr/dist/l10n/nl.js';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
 import {onLoaded} from 'utils/dom';
 
-import {BLOCK_FORM_BUILDER, ELEMENT_CONTAINER, INPUT_ELEMENT} from './constants';
 import FormIOBuilder from './builder';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import flatpickr from 'flatpickr';
-import {Dutch} from 'flatpickr/dist/l10n/nl.js';
+import {BLOCK_FORM_BUILDER, ELEMENT_CONTAINER, INPUT_ELEMENT} from './constants';
 
 onLoaded(() => {
   const FORM_BUILDERS = BEM.getBEMNodes(BLOCK_FORM_BUILDER);

@@ -1,7 +1,7 @@
 import {Formio} from 'formiojs';
+import FormioUtils from 'formiojs/utils';
 import BuilderUtils from 'formiojs/utils/builder';
 import cloneDeep from 'lodash/cloneDeep';
-import FormioUtils from 'formiojs/utils';
 
 import {getComponentEmptyValue} from 'components/utils';
 

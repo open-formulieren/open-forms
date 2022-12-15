@@ -1,5 +1,5 @@
+import {APIError, NotAuthenticatedError, ValidationErrors} from './exception';
 import {onResponseHook} from './session-expiry';
-import {APIError, ValidationErrors, NotAuthenticatedError} from './exception';
 
 const fetchDefaults = {
   credentials: 'same-origin', // required for Firefox 60, which is used in werkplekken

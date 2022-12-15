@@ -1,7 +1,7 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import {useIntl} from 'react-intl';
 import {Tab as ReactTab} from 'react-tabs';
-import PropTypes from 'prop-types';
 
 import FAIcon from 'components/admin/FAIcon';
 

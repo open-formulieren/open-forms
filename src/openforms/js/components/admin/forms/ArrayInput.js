@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
 import PropTypes from 'prop-types';
+import React, {useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import DeleteIcon from 'components/admin/DeleteIcon';

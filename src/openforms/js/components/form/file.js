@@ -1,8 +1,10 @@
 import {Formio} from 'formiojs';
-import {ADVANCED, SENSITIVE_BASIC, VALIDATION_BASIC, TRANSLATIONS} from './edit/tabs';
-import {DEFAULT_VALUE} from './edit/options';
-import {getFullyQualifiedUrl} from '../../utils/urls';
+
 import jsonScriptToVar from 'utils/json-script';
+
+import {getFullyQualifiedUrl} from '../../utils/urls';
+import {DEFAULT_VALUE} from './edit/options';
+import {ADVANCED, SENSITIVE_BASIC, TRANSLATIONS, VALIDATION_BASIC} from './edit/tabs';
 
 const BaseFileField = Formio.Components.components.file;
 

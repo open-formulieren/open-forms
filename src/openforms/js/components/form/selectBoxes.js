@@ -1,6 +1,6 @@
 import {Formio} from 'formiojs';
 
-import {DEFAULT_CHOICES_TABS, CHOICES_BASIC, TRANSLATIONS} from './edit/tabs';
+import {CHOICES_BASIC, DEFAULT_CHOICES_TABS, TRANSLATIONS} from './edit/tabs';
 
 class SelectBoxesField extends Formio.Components.components.selectboxes {
   static editForm() {

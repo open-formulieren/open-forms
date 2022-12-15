@@ -1,14 +1,14 @@
-import React, {useState, useEffect} from 'react';
-import PropTypes from 'prop-types';
 import {produce} from 'immer';
+import PropTypes from 'prop-types';
+import React, {useEffect, useState} from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import {ChangelistTableWrapper, HeadColumn, TableRow} from 'components/admin/tables';
 
 import TypeRepresentation from '../TypeRepresentation';
-import Types from '../types';
 import ValueRepresentation from '../ValueRepresentation';
+import Types from '../types';
 
 const ArrayItem = ({index, definition = null, onEditDefinition}) => (
   <TableRow index={index}>

@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import {defineMessage, useIntl} from 'react-intl';
 
 import Select from 'components/admin/forms/Select';

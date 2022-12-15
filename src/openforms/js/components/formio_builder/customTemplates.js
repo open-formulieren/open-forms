@@ -1,8 +1,8 @@
 import builderSidebar from './templates/builderSidebar';
 import coSign from './templates/coSign';
-import fieldTemplate from './templates/field.ejs';
 import columnsTemplate from './templates/columns.ejs';
 import componentTemplate from './templates/component.ejs';
+import fieldTemplate from './templates/field.ejs';
 import fieldsetTemplate from './templates/fieldset.ejs';
 
 const TEMPLATES = {

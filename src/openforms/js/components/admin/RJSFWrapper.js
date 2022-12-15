@@ -1,11 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import Form from '@rjsf/core';
 import Widgets from '@rjsf/core/lib/components/widgets';
 import {isSelect, optionsList} from '@rjsf/core/lib/utils';
+import PropTypes from 'prop-types';
+import React from 'react';
 
-import Field from './forms/Field';
 import FAIcon from './FAIcon';
+import Field from './forms/Field';
 
 /*
  Adapted from:

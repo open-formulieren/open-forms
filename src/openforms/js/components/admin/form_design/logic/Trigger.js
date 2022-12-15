@@ -1,23 +1,23 @@
-import React, {useContext} from 'react';
-import PropTypes from 'prop-types';
-import {useIntl, FormattedMessage} from 'react-intl';
-import {useImmerReducer} from 'use-immer';
 import jsonLogic from 'json-logic-js';
+import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
+import {FormattedMessage, useIntl} from 'react-intl';
+import {useImmerReducer} from 'use-immer';
 
-import {getTranslatedChoices} from 'utils/i18n';
+import {FormContext} from 'components/admin/form_design/Context';
+import {VARIABLE_SOURCES} from 'components/admin/form_design/variables/constants';
 import ArrayInput from 'components/admin/forms/ArrayInput';
 import Select from 'components/admin/forms/Select';
-import {FormContext} from 'components/admin/form_design/Context';
 import VariableSelection from 'components/admin/forms/VariableSelection';
-import {VARIABLE_SOURCES} from 'components/admin/form_design/variables/constants';
+import {getTranslatedChoices} from 'utils/i18n';
 
-import {OPERATORS, TYPE_TO_OPERATORS, TYPE_TO_OPERAND_TYPE} from './constants';
+import DSLEditorNode from './DSLEditorNode';
+import DataPreview from './DataPreview';
 import LiteralValueInput from './LiteralValueInput';
 import OperandTypeSelection from './OperandTypeSelection';
-import DataPreview from './DataPreview';
-import DSLEditorNode from './DSLEditorNode';
-import {useOnChanged} from './hooks';
 import Today from './Today';
+import {OPERATORS, TYPE_TO_OPERAND_TYPE, TYPE_TO_OPERATORS} from './constants';
+import {useOnChanged} from './hooks';
 
 const OperatorSelection = ({name, selectedVariableType, operator, onChange}) => {
   const intl = useIntl();

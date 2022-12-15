@@ -1,19 +1,19 @@
 /*
 global URLify;
  */
-import React from 'react';
 import PropTypes from 'prop-types';
-import {defineMessage, FormattedMessage, useIntl} from 'react-intl';
+import React from 'react';
+import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
-import FormRow from 'components/admin/forms/FormRow';
 import Fieldset from 'components/admin/forms/Fieldset';
-import {TextInput, Checkbox} from 'components/admin/forms/Inputs';
+import FormRow from 'components/admin/forms/FormRow';
+import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
 import Select from 'components/admin/forms/Select';
 import {getTranslatedChoices} from 'utils/i18n';
 
-import AuthPluginField from './AuthPluginField';
 import AuthPluginAutoLoginField from './AuthPluginAutoLoginField';
+import AuthPluginField from './AuthPluginField';
 
 export const SUMBISSION_ALLOWED_CHOICES = [
   [

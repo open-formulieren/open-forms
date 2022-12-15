@@ -1,10 +1,10 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
-import {TextInput, NumberInput, DateInput, DateTimeInput} from 'components/admin/forms/Inputs';
-import Select from 'components/admin/forms/Select';
 import ArrayInput from 'components/admin/forms/ArrayInput';
+import {DateInput, DateTimeInput, NumberInput, TextInput} from 'components/admin/forms/Inputs';
 import JsonWidget from 'components/admin/forms/JsonWidget';
+import Select from 'components/admin/forms/Select';
 
 import {BOOL_OPTIONS} from './constants';
 

@@ -1,12 +1,12 @@
 import get from 'lodash/get';
-import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import ComponentSelection from 'components/admin/forms/ComponentSelection';
 import Field from 'components/admin/forms/Field';
-import FormRow from 'components/admin/forms/FormRow';
 import Fieldset from 'components/admin/forms/Fieldset';
+import FormRow from 'components/admin/forms/FormRow';
 
 import {FormContext} from './Context';
 

@@ -1,4 +1,5 @@
 import {Formio} from 'formiojs';
+
 import {DEFAULT_SENSITIVE_TABS} from './edit/tabs';
 
 const TextField = Formio.Components.components.textfield;

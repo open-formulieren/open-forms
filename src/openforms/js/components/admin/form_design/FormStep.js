@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import usePrevious from 'react-use/esm/usePrevious';
 
 import FormStepDefinition from './FormStepDefinition';

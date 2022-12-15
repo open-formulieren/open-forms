@@ -1,17 +1,17 @@
-import React, {useState} from 'react';
-import PropTypes from 'prop-types';
-import {FormattedMessage, useIntl} from 'react-intl';
 import produce from 'immer';
+import PropTypes from 'prop-types';
+import React, {useState} from 'react';
+import {FormattedMessage, useIntl} from 'react-intl';
 
+import FormModal from 'components/admin/FormModal';
+import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
 import ActionButton, {SubmitAction} from 'components/admin/forms/ActionButton';
 import Select from 'components/admin/forms/Select';
 import SubmitRow from 'components/admin/forms/SubmitRow';
-import FormModal from 'components/admin/FormModal';
 import {jsonComplex as COMPLEX_JSON_TYPES} from 'components/admin/json_editor/types';
-import {CustomFieldTemplate} from 'components/admin/RJSFWrapper';
 
-import SelectProcessVariables from './SelectProcessVariables';
 import ComplexProcessVariables from './ComplexProcessVariables';
+import SelectProcessVariables from './SelectProcessVariables';
 
 // use rjsf wrapper to keep consistent markup/styling
 const Wrapper = ({children}) => (

@@ -1,8 +1,8 @@
-import React, {useContext, useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
+import React, {useContext, useEffect, useRef} from 'react';
+import {defineMessage, useIntl} from 'react-intl';
 
 import {PrefixContext} from './Context';
-import {defineMessage, useIntl} from 'react-intl';
 
 const Input = ({type = 'text', name, ...extraProps}) => {
   const prefix = useContext(PrefixContext);

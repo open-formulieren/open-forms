@@ -2,14 +2,14 @@
 global URLify;
  */
 import get from 'lodash/get';
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
-import Field, {normalizeErrors} from 'components/admin/forms/Field';
 import MessageList from 'components/admin/MessageList';
+import Field, {normalizeErrors} from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
+import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
 import FormIOBuilder from 'components/formio_builder/builder';
 
 import AuthenticationWarning from './AuthenticationWarning';

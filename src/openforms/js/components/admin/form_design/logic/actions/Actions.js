@@ -1,19 +1,19 @@
-import React, {useContext} from 'react';
 import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
 
-import ComponentSelection from 'components/admin/forms/ComponentSelection';
-import Select from 'components/admin/forms/Select';
-import JsonWidget from 'components/admin/forms/JsonWidget';
 import {FormContext} from 'components/admin/form_design/Context';
 import StepSelection from 'components/admin/form_design/StepSelection';
+import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 import {
   MODIFIABLE_PROPERTIES,
   STRING_TO_TYPE,
   TYPE_TO_STRING,
 } from 'components/admin/form_design/logic/constants';
-import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
+import ComponentSelection from 'components/admin/forms/ComponentSelection';
+import JsonWidget from 'components/admin/forms/JsonWidget';
+import Select from 'components/admin/forms/Select';
 
-import {Action as ActionType, ActionError} from './types';
+import {ActionError, Action as ActionType} from './types';
 
 const ActionProperty = ({action, errors, onChange}) => {
   const modifiablePropertyChoices = Object.entries(MODIFIABLE_PROPERTIES).map(([key, info]) => [

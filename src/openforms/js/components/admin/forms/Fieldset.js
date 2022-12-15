@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
 const Fieldset = ({title = '', children, extraClassName, ...extra}) => {
   const titleNode = title ? <h2>{title}</h2> : null;

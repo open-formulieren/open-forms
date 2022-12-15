@@ -1,12 +1,12 @@
-import React, {useContext, useState} from 'react';
 import PropTypes from 'prop-types';
+import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import FAIcon from 'components/admin/FAIcon';
 import FormModal from 'components/admin/FormModal';
+import {SubmitAction} from 'components/admin/forms/ActionButton';
 import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
-import {SubmitAction} from 'components/admin/forms/ActionButton';
 import Select from 'components/admin/forms/Select';
 import SubmitRow from 'components/admin/forms/SubmitRow';
 

@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import {produce} from 'immer';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import PluginConfig from './PluginConfig';
 

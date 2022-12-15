@@ -4,8 +4,8 @@ import DEFAULT_TABS, {
   ADVANCED,
   REGISTRATION,
   SENSITIVE_BASIC,
-  VALIDATION,
   TRANSLATIONS,
+  VALIDATION,
 } from './edit/tabs';
 
 const Time = Formio.Components.components.time;

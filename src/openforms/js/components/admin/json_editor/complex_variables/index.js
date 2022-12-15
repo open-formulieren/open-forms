@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
 import Types, {jsonComplex as COMPLEX_TYPES} from '../types';
 import ArrayVariable from './ArrayVariable';

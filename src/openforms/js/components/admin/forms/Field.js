@@ -1,10 +1,10 @@
-import React, {useContext} from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
+import React, {useContext} from 'react';
+import {useIntl} from 'react-intl';
 
 import {PrefixContext} from './Context';
 import ErrorList from './ErrorList';
-import {useIntl} from 'react-intl';
 
 export const normalizeErrors = (errors = [], intl) => {
   if (!Array.isArray(errors)) {

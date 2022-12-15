@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
-import PropTypes from 'prop-types';
 import {produce} from 'immer';
+import PropTypes from 'prop-types';
+import React, {useState} from 'react';
 
 import ModulePlugins from './ModulePlugins';
 

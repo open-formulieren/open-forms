@@ -1,4 +1,4 @@
-import DEFAULT_TABS, {BASIC, ADVANCED, VALIDATION, REGISTRATION} from './edit/tabs';
+import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION} from './edit/tabs';
 
 export const defineEditFormTabs = (ComponentClass, tabs) => {
   ComponentClass.editForm = function () {

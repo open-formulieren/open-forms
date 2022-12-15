@@ -1,9 +1,9 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import {useIntl} from 'react-intl';
 
-import SubmitRow from 'components/admin/forms/SubmitRow';
 import ActionButton from 'components/admin/forms/ActionButton';
+import SubmitRow from 'components/admin/forms/SubmitRow';
 
 const CopyAction = () => {
   const intl = useIntl();
