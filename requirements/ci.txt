@@ -46,7 +46,7 @@ billiard==3.6.4.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   celery
-black==21.8b0
+black==22.12.0
     # via -r requirements/test-tools.in
 bleach[css]==5.0.1
     # via
@@ -418,7 +418,7 @@ faker==7.0.1
     #   -r requirements/base.txt
     #   factory-boy
     #   zgw-consumers
-flake8==3.9.2
+flake8==6.0.0
     # via -r requirements/test-tools.in
 flower==1.2.0
     # via
@@ -546,7 +546,7 @@ maykin-python3-saml==1.14.0.post0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-digid-eherkenning
-mccabe==0.6.1
+mccabe==0.7.0
     # via flake8
 mozilla-django-oidc==1.2.4
     # via
@@ -628,14 +628,14 @@ psycopg2==2.8.6
     #   -r requirements/base.txt
 py==1.11.0
     # via pytest
-pycodestyle==2.7.0
+pycodestyle==2.10.0
     # via flake8
 pycparser==2.20
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   cffi
-pyflakes==2.3.1
+pyflakes==3.0.1
     # via flake8
 pygments==2.9.0
     # via
@@ -726,8 +726,6 @@ redis==3.5.3
     #   celery-once
     #   django-redis
     #   portalocker
-regex==2020.11.13
-    # via black
 requests==2.26.0
     # via
     #   -c requirements/base.txt
@@ -901,8 +899,6 @@ trio==0.21.0
     #   trio-websocket
 trio-websocket==0.9.2
     # via selenium
-typing-extensions==3.10.0.2
-    # via black
 tzlocal==2.1
     # via
     #   -c requirements/base.txt
