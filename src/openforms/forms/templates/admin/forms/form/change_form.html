@@ -18,6 +18,7 @@
 {% block field_sets %}
 {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
 
+{% get_available_languages as languages %}
 {{ languages|json_script:'languages' }}  {# Used to determine languages for FormIO translations #}
 
 <div

@@ -76,7 +76,7 @@ class FormDefinition(models.Model):
         verbose_name=_("Component translations"),
         help_text=_("Translations for literals used in components"),
         blank=True,
-        null=True,
+        default=dict,
     )
 
     def __str__(self):

@@ -1,6 +1,6 @@
 import FormioUtils from 'formiojs/utils';
 import set from 'lodash/set';
-import cloneDeep from 'lodash/cloneDeep';
+import merge from 'lodash/merge';
 
 const stripIdFromComponents = obj => {
   const {id, ...objWithoutId} = obj;
@@ -161,14 +161,12 @@ const getPathToComponent = (configuration, key) => {
 // Determine the translations for a configuration, and transform them into the proper shape
 const extractTranslationsFromConfiguration = configuration => {
   let componentTranslations = {};
-  if (configuration.components) {
-    configuration.components.forEach(component => {
-      componentTranslations = mergeComponentTranslations(
-        componentTranslations,
-        extractTranslationsFromConfiguration(component)
-      );
-    });
-  }
+  FormioUtils.eachComponent(configuration.components, component => {
+    componentTranslations = mergeComponentTranslations(
+      componentTranslations,
+      extractTranslationsFromConfiguration(component)
+    );
+  });
 
   if (configuration['of-translations']) {
     componentTranslations = mergeComponentTranslations(
@@ -180,11 +178,9 @@ const extractTranslationsFromConfiguration = configuration => {
 };
 
 const removeTranslationsFromConfiguration = configuration => {
-  if (configuration.components) {
-    configuration.components.forEach(component => {
-      removeTranslationsFromConfiguration(component);
-    });
-  }
+  FormioUtils.eachComponent(configuration.components, component => {
+    removeTranslationsFromConfiguration(component);
+  });
 
   delete configuration['of-translations'];
   return configuration;
@@ -201,19 +197,11 @@ const rewriteComponentTranslations = allTranslations => {
 };
 
 const mergeComponentTranslations = (currentTranslations, newTranslations) => {
-  let merged = {};
-
-  for (const languageCode of Object.keys({...currentTranslations, ...newTranslations})) {
-    // Ignore empty keys
-    if (currentTranslations[languageCode]) delete currentTranslations[languageCode][''];
-    if (newTranslations[languageCode]) delete newTranslations[languageCode][''];
-
-    merged[languageCode] = {
-      ...(currentTranslations[languageCode] || {}),
-      ...(newTranslations[languageCode] || {}),
-    };
+  let merged = merge(currentTranslations, newTranslations);
+  // Ignore empty entries
+  for (const key of Object.keys(merged)) {
+    delete merged[key][''];
   }
-
   return merged;
 };
 

@@ -345,7 +345,7 @@ const tabComponents = LANGUAGES.map(([languageCode, _label]) => {
             type: 'textfield',
           },
           {
-            label: 'Vertaling',
+            label: 'Translation',
             key: 'translation',
             input: true,
             type: 'textfield',

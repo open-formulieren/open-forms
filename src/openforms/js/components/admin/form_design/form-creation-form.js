@@ -1,5 +1,4 @@
 import zip from 'lodash/zip';
-import cloneDeep from 'lodash/cloneDeep';
 import getObjectValue from 'lodash/get';
 import set from 'lodash/set';
 import groupBy from 'lodash/groupBy';
@@ -416,7 +415,7 @@ function reducer(draft, action) {
       const step = getFormStep(formDefinition, draft.formSteps, true);
 
       if (mutationType === 'changed' && schema['of-translations']) {
-        // Story the componentTranslations on the formStep, this is relevant when form
+        // Store the componentTranslations on the formStep, this is relevant when form
         // submission fails, because we do want to keep track of changed translations
         step.componentTranslations = mergeComponentTranslations(
           step.componentTranslations || {},

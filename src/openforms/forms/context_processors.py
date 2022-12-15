@@ -20,9 +20,3 @@ def sdk_urls(request):
         "sdk_sentry_dsn": settings.SDK_SENTRY_DSN,
         "sdk_sentry_env": settings.SDK_SENTRY_ENVIRONMENT,
     }
-
-
-def language_info(request):
-    return {
-        "languages": settings.LANGUAGES,
-    }

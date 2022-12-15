@@ -2,11 +2,11 @@ import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import {FormattedMessage} from 'react-intl';
-import {FormStepContext} from './Context';
 
 import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
 import Loader from 'components/admin/Loader';
 
+import {FormStepContext} from './Context';
 import FormStep from './FormStep';
 import FormStepsNav from './FormStepsNav';
 

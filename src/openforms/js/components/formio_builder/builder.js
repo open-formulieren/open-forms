@@ -37,13 +37,9 @@ const getValuesOfField = (component, fieldName) => {
 };
 
 const injectTranslationsIntoConfiguration = (configuration, componentTranslations) => {
-  let translationMapping = {};
-
-  if (configuration.components) {
-    configuration.components.forEach(component => {
-      injectTranslationsIntoConfiguration(component, componentTranslations);
-    });
-  }
+  FormioUtils.eachComponent(configuration.components, component => {
+    injectTranslationsIntoConfiguration(component, componentTranslations);
+  });
 
   if (configuration.display !== 'form') {
     let values = [];
