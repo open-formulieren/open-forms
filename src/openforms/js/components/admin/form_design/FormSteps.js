@@ -6,6 +6,7 @@ import {FormattedMessage} from 'react-intl';
 import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
 import Loader from 'components/admin/Loader';
 
+import {FormStepContext} from './Context';
 import FormStep from './FormStep';
 import FormStepsNav from './FormStepsNav';
 
@@ -44,15 +45,19 @@ const FormSteps = ({
       </div>
       <div className="edit-panel__edit-area">
         {activeStep ? (
-          <ValidationErrorsProvider errors={activeStep.validationErrors}>
-            <FormStep
-              data={activeStep}
-              onEdit={onEdit.bind(null, activeStepIndex)}
-              onComponentMutated={onComponentMutated}
-              onFieldChange={onFieldChange.bind(null, activeStepIndex)}
-              onReplace={onReplace.bind(null, activeStepIndex)}
-            />
-          </ValidationErrorsProvider>
+          <FormStepContext.Provider
+            value={{componentTranslations: activeStep.componentTranslations || {}}}
+          >
+            <ValidationErrorsProvider errors={activeStep.validationErrors}>
+              <FormStep
+                data={activeStep}
+                onEdit={onEdit.bind(null, activeStepIndex)}
+                onComponentMutated={onComponentMutated}
+                onFieldChange={onFieldChange.bind(null, activeStepIndex)}
+                onReplace={onReplace.bind(null, activeStepIndex)}
+              />
+            </ValidationErrorsProvider>
+          </FormStepContext.Provider>
         ) : (
           <FormattedMessage
             defaultMessage="Select a step to view or modify."

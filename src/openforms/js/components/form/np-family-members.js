@@ -2,7 +2,7 @@
  * A form widget to select family members.
  */
 import {Formio} from 'formiojs';
-import {ADVANCED, REGISTRATION, SENSITIVE_BASIC, VALIDATION} from './edit/tabs';
+import {ADVANCED, REGISTRATION, SENSITIVE_BASIC, VALIDATION, TRANSLATIONS} from './edit/tabs';
 
 const SelectBoxes = Formio.Components.components.selectboxes;
 
@@ -42,7 +42,7 @@ class NpFamilyMembers extends SelectBoxes {
     const sensitiveBasicTabs = {
       type: 'tabs',
       key: 'tabs',
-      components: [basicFieldsNoDefault, ADVANCED, VALIDATION, REGISTRATION],
+      components: [basicFieldsNoDefault, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
     };
     return {components: [sensitiveBasicTabs]};
   }

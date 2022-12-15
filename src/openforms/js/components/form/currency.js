@@ -2,7 +2,7 @@ import {Formio} from 'formiojs';
 import _ from 'lodash';
 
 import CurrencyEditData from 'formiojs/components/currency/editForm/Currency.edit.data';
-import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION} from './edit/tabs';
+import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION, TRANSLATIONS} from './edit/tabs';
 import {ALLOW_NEGATIVE, DECIMAL_PLACES} from './edit/components';
 
 const FormioCurrency = Formio.Components.components.currency;
@@ -28,7 +28,7 @@ class CurrencyField extends FormioCurrency {
     };
     const TABS = {
       ...DEFAULT_TABS,
-      components: [BASIC_TAB, ADVANCED, VALIDATION, REGISTRATION],
+      components: [BASIC_TAB, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
     };
     return {components: [TABS]};
   }

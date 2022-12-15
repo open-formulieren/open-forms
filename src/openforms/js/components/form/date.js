@@ -6,6 +6,7 @@ import {
   SENSITIVE_READ_ONLY,
   VALIDATION,
   PREFILL,
+  TRANSLATIONS,
 } from './edit/tabs';
 
 const DateTimeField = Formio.Components.components.datetime;
@@ -268,7 +269,14 @@ class DateField extends DateTimeField {
     };
     const TABS = {
       ...DEFAULT_TABS,
-      components: [SENSITIVE_READ_ONLY, ADVANCED, VALIDATION_TAB, REGISTRATION, PREFILL],
+      components: [
+        SENSITIVE_READ_ONLY,
+        ADVANCED,
+        VALIDATION_TAB,
+        REGISTRATION,
+        PREFILL,
+        TRANSLATIONS,
+      ],
     };
     return {components: [TABS]};
   }

@@ -88,6 +88,7 @@ class FormStepViewSet(
     """
 
     serializer_class = FormStepSerializer
+    renderer_classes = (IgnoreConfigurationFieldCamelCaseJSONRenderer,)
     queryset = FormStep.objects.all().order_by("order")
     permission_classes = [FormAPIPermissions]
     lookup_field = "uuid"

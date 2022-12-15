@@ -1,5 +1,4 @@
 import zip from 'lodash/zip';
-import cloneDeep from 'lodash/cloneDeep';
 import getObjectValue from 'lodash/get';
 import set from 'lodash/set';
 import groupBy from 'lodash/groupBy';
@@ -56,6 +55,8 @@ import {
   getFormStep,
   getPathToComponent,
   parseValidationErrors,
+  mergeComponentTranslations,
+  rewriteComponentTranslations,
 } from './utils';
 import {
   checkForDuplicateKeys,
@@ -412,6 +413,15 @@ function reducer(draft, action) {
 
       // TODO: This could break if a reusable definition is used multiple times in a form
       const step = getFormStep(formDefinition, draft.formSteps, true);
+
+      if (mutationType === 'changed' && schema['of-translations']) {
+        // Store the componentTranslations on the formStep, this is relevant when form
+        // submission fails, because we do want to keep track of changed translations
+        step.componentTranslations = mergeComponentTranslations(
+          step.componentTranslations || {},
+          rewriteComponentTranslations(schema['of-translations'])
+        );
+      }
 
       if (!isNew) {
         // In the case the component was removed, originalComp is null

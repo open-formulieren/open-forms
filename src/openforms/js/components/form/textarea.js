@@ -1,6 +1,6 @@
 import {Formio} from 'react-formio';
 
-import {ADVANCED, TEXT_BASIC, TEXT_VALIDATION} from './edit/tabs';
+import {ADVANCED, TEXT_BASIC, TEXT_VALIDATION, TRANSLATIONS} from './edit/tabs';
 
 const textareaBasicTab = {
   key: 'basic',
@@ -35,7 +35,7 @@ const textareaBasicTab = {
 const textareaTabs = {
   type: 'tabs',
   key: 'tabs',
-  components: [textareaBasicTab, ADVANCED, TEXT_VALIDATION],
+  components: [textareaBasicTab, ADVANCED, TEXT_VALIDATION, TRANSLATIONS],
 };
 
 const FormioTextarea = Formio.Components.components.textarea;

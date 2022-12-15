@@ -1,7 +1,14 @@
 import {Formio} from 'formiojs';
 
 import {MULTIPLE} from './edit/options';
-import {DEFAULT_CHOICES_TABS, CHOICES_BASIC, ADVANCED, VALIDATION, REGISTRATION} from './edit/tabs';
+import {
+  DEFAULT_CHOICES_TABS,
+  CHOICES_BASIC,
+  ADVANCED,
+  VALIDATION,
+  REGISTRATION,
+  TRANSLATIONS,
+} from './edit/tabs';
 
 class RadioField extends Formio.Components.components.radio {
   static editForm() {
@@ -17,6 +24,7 @@ class RadioField extends Formio.Components.components.radio {
             ADVANCED,
             VALIDATION,
             REGISTRATION,
+            TRANSLATIONS,
           ],
         },
       ],

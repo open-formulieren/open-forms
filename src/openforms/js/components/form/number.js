@@ -1,7 +1,7 @@
 import {Formio} from 'formiojs';
 
 import {ALLOW_NEGATIVE, DECIMAL_PLACES, MAX_VALUE, MIN_VALUE} from './edit/components';
-import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION} from './edit/tabs';
+import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, VALIDATION, TRANSLATIONS} from './edit/tabs';
 
 const FormioNumber = Formio.Components.components.number;
 
@@ -35,7 +35,7 @@ class NumberField extends FormioNumber {
     };
     const TABS = {
       ...DEFAULT_TABS,
-      components: [BASIC_TAB, ADVANCED, VALIDATION, REGISTRATION],
+      components: [BASIC_TAB, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
     };
     return {components: [TABS]};
   }

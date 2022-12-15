@@ -1,4 +1,5 @@
 import {Utils} from 'formiojs';
+import jsonScriptToVar from 'utils/json-script';
 
 import {getFullyQualifiedUrl} from '../../../utils/urls';
 import {
@@ -321,28 +322,82 @@ const PREFILL = {
   ],
 };
 
+const LANGUAGES = jsonScriptToVar('languages', {default: []});
+const tabComponents = LANGUAGES.map(([languageCode, _label]) => {
+  return {
+    key: languageCode,
+    label: languageCode.toUpperCase(),
+    components: [
+      {
+        type: 'datagrid',
+        input: true,
+        label: 'Translations',
+        key: `of-translations.${languageCode}`,
+        tooltip: 'Translations for literals used for this field',
+        weight: 10,
+        reorder: false,
+        components: [
+          {
+            label: 'Literal',
+            key: 'literal',
+            input: true,
+            unique: true,
+            type: 'textfield',
+          },
+          {
+            label: 'Translation',
+            key: 'translation',
+            input: true,
+            type: 'textfield',
+          },
+        ],
+      },
+    ],
+  };
+});
+
+const TRANSLATIONS = {
+  key: 'translations',
+  label: 'Translations',
+  components: [
+    {
+      key: 'languages',
+      type: 'tabs',
+      components: tabComponents,
+    },
+  ],
+};
+
 const DEFAULT_TABS = {
   type: 'tabs',
   key: 'tabs',
-  components: [BASIC, ADVANCED, VALIDATION, REGISTRATION],
+  components: [BASIC, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
 };
 
 const DEFAULT_SENSITIVE_TABS = {
   type: 'tabs',
   key: 'tabs',
-  components: [SENSITIVE_BASIC, ADVANCED, VALIDATION, REGISTRATION],
+  components: [SENSITIVE_BASIC, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
 };
 
 const DEFAULT_TEXT_TABS = {
   type: 'tabs',
   key: 'tabs',
-  components: [TEXT_BASIC, LOCATION, ADVANCED, TEXT_VALIDATION, REGISTRATION, PREFILL],
+  components: [
+    TEXT_BASIC,
+    LOCATION,
+    ADVANCED,
+    TEXT_VALIDATION,
+    REGISTRATION,
+    PREFILL,
+    TRANSLATIONS,
+  ],
 };
 
 const DEFAULT_CHOICES_TABS = {
   type: 'tabs',
   key: 'tabs',
-  components: [CHOICES_BASIC, ADVANCED, VALIDATION, REGISTRATION],
+  components: [CHOICES_BASIC, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
 };
 
 export {
@@ -362,5 +417,6 @@ export {
   REGISTRATION,
   VALIDATION_BASIC,
   SENSITIVE_READ_ONLY,
+  TRANSLATIONS,
 };
 export default DEFAULT_TABS;

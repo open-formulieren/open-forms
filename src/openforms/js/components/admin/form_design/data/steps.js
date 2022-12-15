@@ -1,7 +1,11 @@
+import cloneDeep from 'lodash/cloneDeep';
+
 import {FORM_DEFINITIONS_ENDPOINT} from 'components/admin/form_design/constants';
 import {DEFAULT_LANGUAGE} from 'components/admin/form_design/LanguageTabs';
 import {FormException} from 'utils/exception';
 import {post, put, ValidationErrors} from 'utils/fetch';
+
+import {extractTranslationsFromConfiguration, removeTranslationsFromConfiguration} from '../utils';
 
 const updateOrCreateSingleFormStep = async (
   csrftoken,
@@ -30,10 +34,13 @@ const updateOrCreateSingleFormStep = async (
     name: step.translations?.[DEFAULT_LANGUAGE]?.name,
     internalName: step.internalName,
     slug: step.slug,
-    configuration: step.configuration,
+    // Remove any references to the custom translations key in the configuration
+    configuration: removeTranslationsFromConfiguration(cloneDeep(step.configuration)),
     loginRequired: step.loginRequired,
     isReusable: step.isReusable,
     translations: formDefinitionTranslations,
+    // Extract the translations for this FormDefinition from the configuration
+    componentTranslations: extractTranslationsFromConfiguration(step.configuration),
   };
 
   try {

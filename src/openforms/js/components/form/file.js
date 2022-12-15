@@ -1,5 +1,5 @@
 import {Formio} from 'formiojs';
-import {ADVANCED, SENSITIVE_BASIC, VALIDATION_BASIC} from './edit/tabs';
+import {ADVANCED, SENSITIVE_BASIC, VALIDATION_BASIC, TRANSLATIONS} from './edit/tabs';
 import {DEFAULT_VALUE} from './edit/options';
 import {getFullyQualifiedUrl} from '../../utils/urls';
 import jsonScriptToVar from 'utils/json-script';
@@ -260,6 +260,7 @@ class FileField extends BaseFileField {
             VALIDATION_BASIC,
             FILE_TAB,
             REGISTRATION,
+            TRANSLATIONS,
           ],
         },
       ],

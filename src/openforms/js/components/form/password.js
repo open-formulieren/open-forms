@@ -7,6 +7,7 @@ import {
   ADVANCED,
   VALIDATION,
   REGISTRATION,
+  TRANSLATIONS,
 } from './edit/tabs';
 
 class PasswordField extends Formio.Components.components.password {
@@ -25,6 +26,7 @@ class PasswordField extends Formio.Components.components.password {
             ADVANCED,
             VALIDATION,
             REGISTRATION,
+            TRANSLATIONS,
           ],
         },
       ],
