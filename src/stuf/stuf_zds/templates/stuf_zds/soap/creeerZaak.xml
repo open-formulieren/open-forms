@@ -54,7 +54,7 @@
                 <ZKN:ingangsdatumObject>{{ datum_vandaag }}</ZKN:ingangsdatumObject>
             </ZKN:gerelateerde>
         </ZKN:isVan>
-        {% if initiator.bsn or initiator.kvk %}
+        {% if initiator %}
             <ZKN:heeftAlsInitiator StUF:verwerkingssoort="T" StUF:entiteittype="ZAKBTRINI">
                 <ZKN:gerelateerde>
                     {% comment SUPPORT FOR EMPLOYEES AS INITIATOR %}
@@ -67,10 +67,14 @@
                         </ZKN:medewerker>
                     {% endif %}
                     {% endcomment %}
-                    {% if initiator.bsn %}
+                    {% if initiator.bsn or initiator.geslachtsnaam %}
                         <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
-                            <BG:inp.bsn>{{ initiator.bsn }}</BG:inp.bsn>
-                            <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
+                            {% if initiator.bsn %}
+                                <BG:inp.bsn>{{ initiator.bsn }}</BG:inp.bsn>
+                                <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
+                            {% else %}
+                                <BG:authentiek StUF:metagegeven="true">N</BG:authentiek>
+                            {% endif %}
                             {% if initiator.geslachtsnaam %}<BG:geslachtsnaam>{{ initiator.geslachtsnaam }}</BG:geslachtsnaam>{% endif %}
                             {% if initiator.voorvoegselGeslachtsnaam %}<BG:voorvoegselGeslachtsnaam>{{ initiator.voorvoegselGeslachtsnaam }}</BG:voorvoegselGeslachtsnaam>{% endif %}
                             {% if initiator.voorletters %}<BG:voorletters>{{ initiator.voorletters }}</BG:voorletters>{% endif %}
@@ -100,6 +104,11 @@
                                 {% include "stuf_zds/soap/includes/bezoekadres.xml" %}
                             {% endif %}
                         </ZKN:nietNatuurlijkPersoon>
+                    {% elif not global_config.allow_empty_initiator %}
+                        <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
+                            <BG:inp.bsn>111222333</BG:inp.bsn>
+                            <BG:authentiek StUF:metagegeven="true">N</BG:authentiek>
+                        </ZKN:natuurlijkPersoon>
                     {% endif %}
                 </ZKN:gerelateerde>
                 <StUF:tijdstipRegistratie>{{ tijdstip_registratie }}</StUF:tijdstipRegistratie>
