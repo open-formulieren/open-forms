@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, {useContext, useEffect, useRef} from 'react';
 import {defineMessage, useIntl} from 'react-intl';
@@ -78,11 +79,12 @@ DateTimeInput.propTypes = {
 };
 
 const Checkbox = ({name, label, helpText, ...extraProps}) => {
+  const {disabled = false} = extraProps;
   const prefix = useContext(PrefixContext);
   name = prefix ? `${prefix}-${name}` : name;
-  const idFor = `id_${name}`;
+  const idFor = disabled ? undefined : `id_${name}`;
   return (
-    <div className="checkbox-row">
+    <div className={classNames('checkbox-row', {'checkbox-row--disabled': disabled})}>
       <input type="checkbox" name={name} id={idFor} {...extraProps} />
       <label className="vCheckboxLabel inline" htmlFor={idFor}>
         {label}
@@ -99,9 +101,13 @@ Checkbox.propTypes = {
 };
 
 const Radio = ({name, idFor, label, helpText, ...extraProps}) => {
+  const {disabled = false} = extraProps;
   const prefix = useContext(PrefixContext);
   name = prefix ? `${prefix}-${name}` : name;
   idFor = idFor ? idFor : `id_${name}`;
+  if (disabled) {
+    idFor = undefined;
+  }
   extraProps.id = idFor; // Override possibly propagated id
   return (
     <label htmlFor={idFor}>
