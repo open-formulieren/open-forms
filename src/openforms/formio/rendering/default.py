@@ -254,6 +254,7 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
                 configuration_path=Path(
                     self.configuration_path, Path(self.group_index)
                 ),
+                parent_node=self,
             )
 
     @property

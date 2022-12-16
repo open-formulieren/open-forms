@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Iterator, Literal, Optional, Union
 
-from glom import Path, glom
+from glom import Assign, Path, glom
 
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
@@ -38,6 +38,7 @@ class ComponentNode(Node):
     is_layout = False
     path: Path = None  # Path in the data (#TODO rename to data_path?)
     configuration_path: Path = None  # Path in the configuration tree
+    parent_node: Node = None
 
     @staticmethod
     def build_node(
@@ -47,6 +48,7 @@ class ComponentNode(Node):
         path: Path = None,  # Path in the data
         configuration_path: Path = None,
         depth: int = 0,
+        parent_node: Node = None,
     ) -> "ComponentNode":
         """
         Instantiate the most specific node type for a given component type.
@@ -61,6 +63,7 @@ class ComponentNode(Node):
             depth=depth,
             path=path,
             configuration_path=configuration_path,
+            parent_node=parent_node,
         )
         return nested_node
 
@@ -95,6 +98,7 @@ class ComponentNode(Node):
         branches again, see :mod:`openforms.formio.rendering.default`.
         """
         from .conf import RENDER_CONFIGURATION  # circular import
+        from .default import EditGridGroupNode
 
         # everything is emitted in export mode to get consistent columns
         if self.mode == RenderModes.export:
@@ -103,7 +107,18 @@ class ComponentNode(Node):
         # explicitly hidden components never show up. Note that this property can be set
         # by logic rules or by frontend logic!
         # We only pass the step data, since frontend logic only has access to the current step data.
-        if not is_visible_in_frontend(self.component, self.step.data):
+        if self.parent_node and isinstance(self.parent_node, EditGridGroupNode):
+            # Frontend logic for repeating group does not specify the index of the iteration. So we need to look at
+            # the data for a specific iteration to figure out if a field within the iteration is visible
+            current_iteration_data = glom(self.step.data, self.path, default=None)
+            artificial_repeating_group_data = glom(
+                {}, Assign(self.parent_node.path, current_iteration_data, missing=dict)
+            )
+            if not is_visible_in_frontend(
+                self.component, {**self.step.data, **artificial_repeating_group_data}
+            ):
+                return False
+        elif not is_visible_in_frontend(self.component, self.step.data):
             return False
 
         render_configuration = RENDER_CONFIGURATION[self.mode]
