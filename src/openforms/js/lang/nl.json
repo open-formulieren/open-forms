@@ -40,7 +40,7 @@
     "originalDefault": "Are you sure you want to delete the step {step}?"
   },
   "0c0WcI": {
-    "defaultMessage": "Form configuration",
+    "defaultMessage": "Instellingen",
     "description": "Form configuration fieldset title",
     "originalDefault": "Form configuration"
   },
@@ -290,7 +290,7 @@
     "originalDefault": "is greater than"
   },
   "APOVFs": {
-    "defaultMessage": "Form details",
+    "defaultMessage": "Formuliergegevens",
     "description": "Form details fieldset title",
     "originalDefault": "Form details"
   },
@@ -645,7 +645,7 @@
     "originalDefault": "Variable definition"
   },
   "LMCo4N": {
-    "defaultMessage": "Select date/time...",
+    "defaultMessage": "Kies een datum/tijd...",
     "description": "datetime input widget placeholder",
     "originalDefault": "Select date/time..."
   },
@@ -910,7 +910,7 @@
     "originalDefault": "required"
   },
   "Vi0+dd": {
-    "defaultMessage": "Indicates whether translations are enabled for this form.",
+    "defaultMessage": "Schakel taalkeuze in of uit voor dit formulier.",
     "description": "Form translation enabled field help text",
     "originalDefault": "Indicates whether translations are enabled for this form."
   },
@@ -1570,7 +1570,7 @@
     "originalDefault": "Appointments"
   },
   "xTfMk5": {
-    "defaultMessage": "Translation enabled",
+    "defaultMessage": "Vertalingen ingeschakeld",
     "description": "Form translation enabled field label",
     "originalDefault": "Translation enabled"
   },
