@@ -202,6 +202,66 @@ class SubmissionSummaryRendererTests(TestCase):
         self.assertIsNone(first_item["value"])
         self.assertIsNone(second_item["value"])
 
+    def test_editgrid_summary_with_conditions_within_iteration(self):
+        form_step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "repeatingGroup",
+                        "type": "editgrid",
+                        "label": "Repeating Group",
+                        "components": [
+                            {
+                                "key": "radioCondition",
+                                "type": "radio",
+                                "label": "Radio Condition",
+                                "values": [
+                                    {"label": "A", "value": "a"},
+                                    {"label": "B", "value": "b"},
+                                ],
+                            },
+                            {
+                                "key": "conditionallyVisible",
+                                "type": "textfield",
+                                "label": "Conditionally visible field",
+                                "conditional": {
+                                    "eq": "a",
+                                    "show": True,
+                                    "when": "repeatingGroup.radioCondition",
+                                },
+                            },
+                        ],
+                    }
+                ]
+            },
+            form_definition__slug="fd-0",
+            form_definition__name="Form Definition 0",
+        )
+
+        submission = SubmissionFactory.create(form=form_step.form)
+
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={
+                "repeatingGroup": [
+                    {"radioCondition": "a", "conditionallyVisible": "Some data"},
+                    {"radioCondition": "b"},
+                ],
+            },
+        )
+
+        data = submission.render_summary_page()
+        step_data = data[0]["data"]
+
+        # 1 Header for the whole repeating group + (1 Header for the single group + 2 nodes for the radio/textfield)
+        # + (1 Header for the single group + 1 nodes for the radio)
+        self.assertEqual(6, len(step_data))
+
+        conditional_textfield = step_data[3]
+
+        self.assertEqual(conditional_textfield["value"], "Some data")
+
 
 class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
     def test_summary_page_endpoint(self):
