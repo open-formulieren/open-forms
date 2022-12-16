@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def iter_components(
     configuration: JSONObject, recursive=True, _is_root=True, _mark_root=False
 ) -> Iterator[Component]:
-    components = configuration.get("components")
+    components = configuration.get("components", [])
     if configuration.get("type") == "columns" and recursive:
         assert not components, "Both nested components and columns found"
         for column in configuration["columns"]:
@@ -25,15 +25,14 @@ def iter_components(
                 configuration=column, recursive=recursive, _is_root=False
             )
 
-    if components:
-        for component in components:
-            if _mark_root:
-                component["_is_root"] = _is_root
-            yield component
-            if recursive:
-                yield from iter_components(
-                    configuration=component, recursive=recursive, _is_root=False
-                )
+    for component in components:
+        if _mark_root:
+            component["_is_root"] = _is_root
+        yield component
+        if recursive:
+            yield from iter_components(
+                configuration=component, recursive=recursive, _is_root=False
+            )
 
 
 @elasticapm.capture_span(span_type="app.formio.configuration")
