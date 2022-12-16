@@ -56,6 +56,15 @@ class ComponentNode(Node):
         """
         from .registry import register
 
+        if (
+            (label := component.get("label"))
+            and step.form_step is not None
+            and step.form_step.form.translation_enabled
+            and (lang := step.submission.language_code)
+        ):
+            translations = step.form_step.form_definition.component_translations
+            component["label"] = translations.get(lang, {}).get(label, label)
+
         node_cls = register[component["type"]]
         nested_node = node_cls(
             step=step,

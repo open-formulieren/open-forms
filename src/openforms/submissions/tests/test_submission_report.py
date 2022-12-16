@@ -13,7 +13,7 @@ from rest_framework.test import APITestCase
 from ..models import SubmissionReport
 from ..tasks import generate_submission_report
 from ..tokens import submission_report_token_generator
-from .factories import SubmissionFactory, SubmissionReportFactory
+from .factories import SubmissionFactory, SubmissionReportFactory, SubmissionStepFactory
 
 
 @temp_private_root()
@@ -98,31 +98,87 @@ class DownloadSubmissionReportTests(APITestCase):
         self.assertTrue(report.content.name.endswith("Test_Form.pdf"))
 
     def test_report_is_generated_in_same_language_as_submission(self):
+        # fixture_data
+        fields = [
+            # Component.type, user_input
+            ("bsn", "111222333"),
+            ("date", "1911-06-29"),
+            ("email", "hostmaster@example.org"),
+            # ("file", ""),
+            ("iban", "NL56 INGB 0705 0051 00"),
+            ("licenseplate", "AA-00-13"),
+            ("number", "1"),
+            ("password", "Panda1911!"),
+            ("phoneNumber", "+49 1234 567 890"),
+            ("postcode", "3744 AA"),
+            # ("radio", ""),
+            # ("select", ""),
+            # ("selectboxes", ""),
+            ("textarea", "Predetermined largish ASCII"),
+            ("textfield", "Short predetermined ASCII"),
+            ("time", "23:50"),
+        ]
+        submission_data = {}
+        component_translations = {"en": {}}
+        components = []
+
+        # carthesian products are big, let's loop to fill these
+        for i, (component_type, user_input) in enumerate(fields):
+            components.append(
+                {
+                    "type": component_type,
+                    "key": f"key{i}",
+                    "label": f"Untranslated {component_type.title()} label",
+                    "showInPDF": True,
+                    "hidden": False,
+                }
+            )
+            submission_data[f"key{i}"] = user_input
+            component_translations["en"][
+                f"Untranslated {component_type.title()} label"
+            ] = f"Translated {component_type.title()} label"
+
         report = SubmissionReportFactory(
             submission__language_code="en",
             submission__completed=True,
             submission__form__generate_minimal_setup=True,
             submission__form__translation_enabled=True,
             submission__form__name_en="Translated form name",
+            # One form step for mankind…
             submission__form__formstep__form_definition__name_nl="Walsje",
             submission__form__formstep__form_definition__name_en="A Quickstep",
+            submission__form__formstep__form_definition__component_translations=component_translations,
             submission__form__formstep__form_definition__configuration={
-                "components": [
-                    {
-                        "key": "foo",
-                        "type": "textfield",
-                        "label": "Foo",
-                        "showInEmail": True,
-                    }
-                ],
+                "components": components,
             },
         )
+        SubmissionStepFactory.create(
+            submission=report.submission,
+            form_step=report.submission.form.formstep_set.get(),
+            data=submission_data,
+        )
 
+        # create report
         html_report = report.generate_submission_report_pdf()
 
         self.assertIn("Translated form name", html_report)
         self.assertIn("A Quickstep", html_report)
         self.assertNotIn("Walsje", html_report)
+
+        # localized date and time
+        self.assertIn("June 29, 1911", html_report)
+        self.assertIn("11:50 p.m.", html_report)
+
+        for component_type, value in fields:
+            with self.subTest(f"FormIO label for {component_type}"):
+                if component_type in ["date", "time"]:
+                    pass  # these are localized
+                else:
+                    self.assertIn(value, html_report)
+                self.assertNotIn(
+                    f"Untranslated {component_type.title()} label", html_report
+                )
+                self.assertIn(f"Translated {component_type.title()} label", html_report)
 
     @patch(
         "celery.result.AsyncResult._get_task_meta", return_value={"status": "SUCCESS"}
