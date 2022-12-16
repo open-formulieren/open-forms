@@ -123,7 +123,7 @@ class EditGrid extends EditGridFormio {
         label: 'Repeating Group',
         key: 'repeatingGroup',
         hideLabel: false,
-        inlineEdit: true,
+        inlineEdit: false,
       },
       ...extend
     );
