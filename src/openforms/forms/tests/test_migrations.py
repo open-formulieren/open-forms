@@ -211,8 +211,8 @@ class FixBrokenConvertedLogicTests(TestMigrations):
 
 
 class TestChangeInlineEditSetting(TestMigrations):
-    migrate_from = "0047_fix_broken_converted_rules"
-    migrate_to = "0048_update_formio_default_setting"
+    migrate_from = "0058_formdefinition_component_translations"
+    migrate_to = "0059_editgrid_inline_false"
     app = "forms"
 
     def setUpBeforeMigration(self, apps):
@@ -226,7 +226,7 @@ class TestChangeInlineEditSetting(TestMigrations):
                         "key": "repeatingGroup",
                         "type": "editgrid",
                         "label": "Repeating Group",
-                        "inlineEdit": False,
+                        "inlineEdit": True,
                         "components": [],
                     }
                 ]
@@ -236,7 +236,7 @@ class TestChangeInlineEditSetting(TestMigrations):
     def test_inline_edit_is_true(self):
         self.form_definition.refresh_from_db()
 
-        self.assertTrue(
+        self.assertFalse(
             self.form_definition.configuration["components"][0]["inlineEdit"]
         )
 
