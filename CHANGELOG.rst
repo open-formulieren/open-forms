@@ -2,6 +2,79 @@
 Changelog
 =========
 
+2.1.0-alpha.1 (2022-12-20)
+==========================
+
+Second alpha version of the 2.1.0 release.
+
+**New features**
+
+* [#2332] Added ``ServiceFetchConfiguration`` data model
+* [#2348] Added audit logging for empty prefill plugin values
+* [#2313] Added ``translations`` keys to API endpoints to store/read field translations
+* [#2402] Updated JSON-structure of "ProductAanvraag" registration
+* [#2314] Added UI in form designer to manage form/form step translations
+* [#2287] Confirmed support for multi-language forms in import/export
+* [#1862] Include "rol" metadata when an employee registers a case on behalf of a customer
+* [#2389] Add submission language code to submission exports
+* [#2390] Render documents in submission language: PDF report and confirmation email
+* [#2463] Improved repeating groups error messages
+* [#2447] Expose meta-information if an authentication plugin is for 'machtigen'
+* [#2458] Added option to extract OIDC user information from ID-token instead of
+  info endpoint
+* [#2430] Added HEIC and TXT to filetypes for upload
+* [#2428] Added organization name configuration option, displayed in various
+  labels/titles.
+* [#2315] Implementing UI for entering and storing formio.js component translations
+
+**Bugfixes**
+
+* [#2367] Fixed upgrade/migration crash when dealing with selectboxes frontend logic
+* [#2251] Fixed broken logic when comparing to dates
+* [#2385] Fixed a crash when processing incomplete frontend logic
+* [#2219] Updated fix for CSS-unit issue with design tokens in email header logo
+* [#2400] Clean up cached execution state
+* [#2340] Added bandaid fix to clear data that isn't visible if the parent component is
+  hidden
+* [#2397] Fixed some duplicate labels in admin
+* [#2413] Fixed fields made visible by selectboxes type components not showing up in
+  summary/pdf/email
+* [#1302] Fixed family members component crash when no BSN is known
+* [#2422] remove spaces from postcodes in StUF messages
+* [#2250] Fixed broken analytics scripts not loading/executing
+* [#2436] Fixed broken default value of copied fields inside fieldsets
+* [#2445] Ensure that removing a fieldset in the form designer also removes the variables
+* [#2398] Fixed upgrade/migration crash when formio logic references non-existing
+  component keys
+* [#2432] Fixed backwards-compatibility layer for pre-2.0 form exports with actions
+  targetting form steps
+* [#2484] Fixed unexpected fallbacks to NL for form literals instead of using the
+  global configuration
+* [#2488] Disable inline edit for repeating groups again
+* [#2449] Fixed server-side logic interpretation inside repeating groups
+* Fixed import crash due to performance optimization
+* [#1790] Fixed broken "form definition used in forms" modal in production builds
+* [#2373] Remove (unintended) multiple option for map component
+
+**Documentation**
+
+* Updated examples and example form exports to 2.0
+* Provide best-practices for securing OF installations
+* [#2394] Removed digid/eherkenning envvars config from docs
+* [#2477] Added new page for multi-language configuration to the manual
+* Removed ambiguity about staff/non-staff fields in certain API endpoints
+
+**Project maintenance**
+
+* Upgraded Pillow to the latest version
+* [#1068] Finalized refactor for formio integration in the backend
+* removed unused UI template tags/options
+* [#2312] Upgraded base docker images to Debian bullseye
+* [#2487] Add import sorting plugin for prettier
+* Catch invalid appointment configs in management command
+* Bumped frontend/build dependency versions
+
+
 2.0.1 (2022-11-23)
 ==================
 
@@ -813,7 +886,7 @@ Fixed some more reported issues
 
 * [#1492] Fixed crashes when using file upload components with either a maximum filesize
   specified as empty string/value or a value containing spaces.
-* [#1550] Fixed form desinger partial crash when adding a currency/number component
+* [#1550] Fixed form designer partial crash when adding a currency/number component
 * Bump uwsgi version
 * Ensure uwsgi runs in master process mode
 * [#1453] Fixed user feedback for upload handler validation errors
