@@ -179,6 +179,32 @@ When updating an existing installation:
        $ python src/manage.py migrate
 
 
+Documentation build
+===================
+
+The documentation lives in the ``docs`` folder.
+
+The documentation build includes the SDK changelog, which requires you to set up a
+symlink (or a dummy file). The preferred approach is using the real symlink.
+
+1. Ensure you have a clone of the SDK repository, e.g. in ``/path/to/open-forms-sdk``.
+
+2. Set up the symlink from the changelog file:
+
+   .. code-block:: bash
+
+       $ ln -s /path/to/open-forms-sdk/CHANGELOG.rst docs/changelog-sdk.rst
+
+3. Build the docs to verify it's all correct:
+
+   .. code-block:: bash
+
+       $ cd docs
+       $ make html
+
+Alternatively, instead of symlinking you can also just create the file
+``docs/changelog-sdk.rst`` with some dummy content.
+
 Testsuite
 =========
 

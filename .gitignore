@@ -17,6 +17,8 @@ __pycache__
 # Generated files
 /docs/_build
 /certifi_ca_bundle
+# must be symlinked as the source file is in another repository
+/docs/changelog-sdk.rst
 
 # tests & coverage reports
 /reports/
