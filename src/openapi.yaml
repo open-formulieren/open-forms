@@ -5217,6 +5217,11 @@ components:
         Note that every subsequent API call resets the expiry.
       required: true
   schemas:
+    AppearanceEnum:
+      enum:
+      - dark
+      - light
+      type: string
     AppointmentProduct:
       type: object
       properties:
@@ -6697,8 +6702,8 @@ components:
           title: Click URL
           description: Information link to the authentication provider
         appearance:
-          type: string
-          format: uri
+          allOf:
+          - $ref: '#/components/schemas/AppearanceEnum'
           readOnly: true
           title: Login logo appearance
           description: The appearance of the login logo (dark/light)

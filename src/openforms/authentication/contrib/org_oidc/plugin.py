@@ -7,7 +7,7 @@ from openforms.forms.models import Form
 from openforms.utils.urls import reverse_plus
 
 from ...base import BasePlugin, LoginLogo
-from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from ...constants import FORM_AUTH_SESSION_KEY, AuthAttribute, LogoAppearance
 from ...registry import register
 
 
@@ -86,5 +86,5 @@ class OIDCAuthentication(BasePlugin):
             title=self.get_label(),
             image_src=request.build_absolute_uri(static("img/openid.png")),
             href="https://openid.net/",
-            appearance="light",
+            appearance=LogoAppearance.light,
         )
