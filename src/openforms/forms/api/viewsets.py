@@ -198,8 +198,9 @@ _FORM_ADMIN_FIELDS_MARKDOWN = get_admin_fields_markdown(FormSerializer)
             "List the active forms, including the pointers to the form steps. "
             "Form steps are included in order as they should appear.\n\n"
             "**Warning: the response data depends on user permissions**\n\n"
-            "Non-staff users receive a subset of the documented fields which are used "
-            "for internal form configuration. These fields are:\n\n{admin_fields}"
+            "Non-staff users receive a subset of all the documented fields. The fields "
+            "reserved for staff users are used for internal form configuration. These "
+            "are: \n\n{admin_fields}"
         ).format(admin_fields=_FORM_ADMIN_FIELDS_MARKDOWN),
     ),
     retrieve=extend_schema(
@@ -212,9 +213,9 @@ _FORM_ADMIN_FIELDS_MARKDOWN = get_admin_fields_markdown(FormSerializer)
             "steps to build a multi-step/page form for end-users to fill out. Form "
             "definitions can be (and are) re-used among different forms.\n\n"
             "**Warning: the response data depends on user permissions**\n\n"
-            "Non-staff users receive a subset of the documented fields which are used"
-            "for internal form configuration. These fields are:\n\n"
-            "{admin_fields}\n\n"
+            "Non-staff users receive a subset of all the documented fields. The fields "
+            "reserved for staff users are used for internal form configuration. These "
+            "are: \n\n{admin_fields}\n\n"
             "If the form doesn't have translations enabled, its default language is "
             "forced by setting a language cookie and reflected in the Content-Language "
             "response header. Normal HTTP Content Negotiation rules apply."
