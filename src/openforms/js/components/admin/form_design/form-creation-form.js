@@ -885,7 +885,11 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
   const backendDataToLoad = [
     {endpoint: LANGUAGE_INFO_ENDPOINT, stateVar: 'languageInfo'},
     {endpoint: PAYMENT_PLUGINS_ENDPOINT, stateVar: 'availablePaymentBackends'},
-    {endpoint: FORM_DEFINITIONS_ENDPOINT, stateVar: 'formDefinitions'},
+    {
+      endpoint: FORM_DEFINITIONS_ENDPOINT,
+      query: {is_reusable: true, used_in: formUuid || ''},
+      stateVar: 'formDefinitions',
+    },
     {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},
     {endpoint: AUTH_PLUGINS_ENDPOINT, stateVar: 'availableAuthPlugins'},
     {endpoint: CATEGORIES_ENDPOINT, stateVar: 'availableCategories'},

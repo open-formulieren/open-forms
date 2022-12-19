@@ -12,7 +12,8 @@ class BackendLoadingError extends Error {
 // boundaries in the component tree.
 const loadFromBackend = async (specifications = []) => {
   const promises = specifications.map(async specification => {
-    let response = await get(specification.endpoint);
+    const {endpoint, query = {}} = specification;
+    let response = await get(endpoint, query);
     if (!response.ok) {
       throw new BackendLoadingError('Failed to load specifications', specification, response);
     }
