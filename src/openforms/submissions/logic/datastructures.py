@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any, Tuple
 
-from glom import Assign, assign, glom
+from glom import assign
 
 from openforms.typing import DataMapping
 
@@ -67,5 +67,5 @@ class DataContainer:
                 not variable.form_variable
                 or variable.value != variable.form_variable.initial_value
             ):
-                glom(updated_data, Assign(key, variable.value, missing=dict))
+                assign(updated_data, key, variable.value, missing=dict)
         return updated_data

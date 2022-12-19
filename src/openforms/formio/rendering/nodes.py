@@ -1,7 +1,8 @@
+import copy
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Iterator, Literal, Optional, Union
 
-from glom import Assign, Path, glom
+from glom import Path, assign, glom
 
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
@@ -45,10 +46,10 @@ class ComponentNode(Node):
         step: SubmissionStep,
         component: Component,
         renderer: "Renderer",
-        path: Path = None,  # Path in the data
-        configuration_path: Path = None,
+        path: Path | None = None,  # Path in the data
+        configuration_path: Path | None = None,
         depth: int = 0,
-        parent_node: Node = None,
+        parent_node: Node | None = None,
     ) -> "ComponentNode":
         """
         Instantiate the most specific node type for a given component type.
@@ -107,15 +108,16 @@ class ComponentNode(Node):
         # explicitly hidden components never show up. Note that this property can be set
         # by logic rules or by frontend logic!
         # We only pass the step data, since frontend logic only has access to the current step data.
-        if self.parent_node and isinstance(self.parent_node, EditGridGroupNode):
+        if isinstance(self.parent_node, EditGridGroupNode):
             # Frontend logic for repeating group does not specify the index of the iteration. So we need to look at
             # the data for a specific iteration to figure out if a field within the iteration is visible
-            current_iteration_data = glom(self.step.data, self.path, default=None)
-            artificial_repeating_group_data = glom(
-                {}, Assign(self.parent_node.path, current_iteration_data, missing=dict)
+            step_data = copy.deepcopy(self.step.data)
+            current_iteration_data = glom(step_data, self.path, default=None)
+            artificial_repeating_group_data = assign(
+                step_data, self.parent_node.path, current_iteration_data, missing=dict
             )
             if not is_visible_in_frontend(
-                self.component, {**self.step.data, **artificial_repeating_group_data}
+                self.component, artificial_repeating_group_data
             ):
                 return False
         elif not is_visible_in_frontend(self.component, self.step.data):
