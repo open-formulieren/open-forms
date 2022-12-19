@@ -6,6 +6,8 @@ const ChangelistColumn = ({objProp, isBool = false, children}) => {
   return null;
 };
 
+ChangelistColumn.tableRole = 'column';
+
 ChangelistColumn.propTypes = {
   objProp: PropTypes.string.isRequired,
   isBool: PropTypes.bool,
