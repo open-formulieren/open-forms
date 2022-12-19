@@ -58,9 +58,10 @@ const ChangelistTable = ({linkColumn = 0, linkProp = '', data = [], rowKey = '',
 
   // process the configuration of the columns
   React.Children.map(children, child => {
-    if (child.type.name !== 'ChangelistColumn') {
+    if (child.type.tableRole !== 'column') {
       throw new Error(
-        `ChangelistTable only takes ChangelistColumn children, but got ${child.type.name} instead.`
+        `ChangelistTable only takes ChangelistColumn (tableRole='column') children,
+        but got ${child.type.tableRole} instead.`
       );
     }
     tableColumns.push({
