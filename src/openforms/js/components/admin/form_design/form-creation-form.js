@@ -45,7 +45,7 @@ import {
   REGISTRATION_BACKENDS_ENDPOINT,
   STATIC_VARIABLES_ENDPOINT,
 } from './constants';
-import {loadForm, loadPlugins, saveCompleteForm} from './data';
+import {loadForm, loadFromBackend, saveCompleteForm} from './data';
 import {updateWarningsValidationError} from './logic/utils';
 import {BACKEND_OPTIONS_FORMS} from './registrations';
 import {
@@ -881,10 +881,8 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
   };
   const [state, dispatch] = useImmerReducer(reducer, initialState);
 
-  // load all these plugin registries in parallel
-  // TODO: 'plugin' is no longer the best name, it's more loading the data that's dynamic
-  // but not dependent on the form itself.
-  const pluginsToLoad = [
+  // load all the plugin registries & other supporting data in parallel
+  const backendDataToLoad = [
     {endpoint: LANGUAGE_INFO_ENDPOINT, stateVar: 'languageInfo'},
     {endpoint: PAYMENT_PLUGINS_ENDPOINT, stateVar: 'availablePaymentBackends'},
     {endpoint: FORM_DEFINITIONS_ENDPOINT, stateVar: 'formDefinitions'},
@@ -896,17 +894,13 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
   ];
 
   const {loading} = useAsync(async () => {
-    const promises = [
-      // TODO: this is a bad function name, refactor
-      loadPlugins(pluginsToLoad),
-      loadForm(formUuid),
-    ];
+    const promises = [loadFromBackend(backendDataToLoad), loadForm(formUuid)];
 
     // TODO: API error handling - this should be done using ErrorBoundary instead of
     // state-changes.
-    const [pluginsData, formData] = await Promise.all(promises);
+    const [backendData, formData] = await Promise.all(promises);
     const supportingData = Object.fromEntries(
-      zip(pluginsToLoad, pluginsData).map(([plugin, data]) => [plugin.stateVar, data])
+      zip(backendDataToLoad, backendData).map(([plugin, data]) => [plugin.stateVar, data])
     );
     dispatch({
       type: 'BACKEND_DATA_LOADED',
