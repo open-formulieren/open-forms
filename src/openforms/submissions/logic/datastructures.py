@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any, Tuple
 
-from glom import assign
+from glom import Assign, assign, glom
 
 from openforms.typing import DataMapping
 
@@ -60,9 +60,12 @@ class DataContainer:
         relevant_variables = self.state.get_variables_in_submission_step(
             step, include_unsaved=True
         )
-        return {
-            key: variable.value
-            for key, variable in relevant_variables.items()
-            if not variable.form_variable
-            or variable.value != variable.form_variable.initial_value
-        }
+
+        updated_data = {}
+        for key, variable in relevant_variables.items():
+            if (
+                not variable.form_variable
+                or variable.value != variable.form_variable.initial_value
+            ):
+                glom(updated_data, Assign(key, variable.value, missing=dict))
+        return updated_data

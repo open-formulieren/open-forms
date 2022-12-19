@@ -145,8 +145,7 @@ class ComponentNode(Node):
 
         TODO: build and use the type conversion for Formio components.
         """
-        key = self.component["key"]
-        path = Path(self.path, Path(key)) if self.path else Path(key)
+        path = Path(self.path, self.key_as_path) if self.path else self.key_as_path
 
         value = glom(self.step.data, path, default=None)
         return value
@@ -164,9 +163,9 @@ class ComponentNode(Node):
                 renderer=self.renderer,
                 depth=self.depth + 1,
                 path=self.path,
-                configuration_path=Path(self.configuration_path, self.component["key"])
+                configuration_path=Path(self.configuration_path, self.key_as_path)
                 if self.configuration_path
-                else Path(self.component["key"]),
+                else Path(self.key_as_path),
             )
 
     def __iter__(self) -> Iterator["ComponentNode"]:
@@ -234,6 +233,14 @@ class ComponentNode(Node):
     @property
     def key(self):
         return self.component["key"]
+
+    @property
+    def key_as_path(self) -> Path:
+        """
+        See https://glom.readthedocs.io/en/latest/api.html?highlight=Path#glom.Path
+        Using Path("a.b") in glom will not use the nested path, but will look for a key "a.b"
+        """
+        return Path(*(self.component["key"].split(".")))
 
 
 @dataclass
