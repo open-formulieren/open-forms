@@ -16,6 +16,7 @@ class PDFRenderer(renderers.BaseRenderer):
 
 class FileRenderer(renderers.BaseRenderer):
     media_type = "application/octet-stream"
+    format = "octet"
     charset = None
     render_style = "binary"
 

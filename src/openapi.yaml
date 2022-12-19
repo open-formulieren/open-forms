@@ -4285,6 +4285,13 @@ paths:
         Toegang tot dit endpoint vereist een actieve formulier inzending. Niet gekoppelde bestanden worden automatisch verwijderd na 2 dag(en)
       summary: Retrieve temporary file upload
       parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - octet
       - in: path
         name: uuid
         schema:
@@ -4320,6 +4327,13 @@ paths:
         \ after {expire_days} day(s). "
       summary: Delete temporary file upload
       parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - octet
       - in: path
         name: uuid
         schema:
