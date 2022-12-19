@@ -86,4 +86,5 @@ class OIDCAuthentication(BasePlugin):
             title=self.get_label(),
             image_src=request.build_absolute_uri(static("img/openid.png")),
             href="https://openid.net/",
+            appearance="light",
         )

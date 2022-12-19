@@ -19,7 +19,7 @@ from openforms.translations.tests.utils import make_translated
 from ..api.serializers import FormSerializer
 from ..constants import ConfirmationEmailOptions
 from ..models import Form
-from .factories import FormFactory, FormStepFactory
+from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
 TranslatedFormFactory = make_translated(FormFactory)
 
@@ -119,6 +119,23 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # show all forms excl deleted
         self.assertEqual(len(response.json()), 3)
+
+    def test_logo_details(self):
+        form = FormFactory.create(authentication_backends=["digid"])
+        form_definition = FormDefinitionFactory.create()
+        FormStepFactory.create(form=form, form_definition=form_definition)
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        logo = response.data["login_options"][0]["logo"]
+        self.assertEqual(logo["title"], "DigiD")
+        self.assertEqual(
+            logo["image_src"], "http://testserver/static/img/digid-46x46.png"
+        )
+        self.assertEqual(logo["href"], "https://www.digid.nl/")
+        self.assertEqual(logo["appearance"], "dark")
 
     def test_non_staff_cant_access_deleted_form(self):
         form = FormFactory.create(deleted_=True)

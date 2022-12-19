@@ -29,6 +29,11 @@ class LoginLogoSerializer(serializers.Serializer):
         help_text=_("Information link to the authentication provider"),
         read_only=True,
     )
+    appearance = serializers.URLField(
+        label=_("Login logo appearance"),
+        help_text=_("The appearance of the login logo (dark/light)"),
+        read_only=True,
+    )
 
     class Meta:
         label = _("...")

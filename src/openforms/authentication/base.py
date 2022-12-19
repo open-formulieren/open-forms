@@ -14,6 +14,7 @@ from openforms.plugins.plugin import AbstractBasePlugin
 class LoginLogo:
     title: str
     image_src: str
+    appearance: str
     href: str = ""
 
 

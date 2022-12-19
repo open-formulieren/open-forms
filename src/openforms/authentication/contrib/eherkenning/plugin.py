@@ -120,4 +120,5 @@ class EIDASAuthentication(AuthenticationBasePlugin):
             title=self.get_label(),
             image_src=request.build_absolute_uri(static("img/eidas.png")),
             href="https://digital-strategy.ec.europa.eu/en/policies/eu-trust-mark",
+            appearance="light",
         )

@@ -6696,7 +6696,14 @@ components:
           readOnly: true
           title: Click URL
           description: Information link to the authentication provider
+        appearance:
+          type: string
+          format: uri
+          readOnly: true
+          title: Login logo appearance
+          description: The appearance of the login logo (dark/light)
       required:
+      - appearance
       - href
       - imageSrc
       - title
