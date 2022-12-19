@@ -138,7 +138,14 @@ class ImportExportTests(TestCase):
             form=form, user_defined=True, key="test-user-defined"
         )
         form_logic = FormLogicFactory.create(
-            form=form, json_logic_trigger={"==": [{"var": "test-user-defined"}, 1]}
+            form=form,
+            json_logic_trigger={"==": [{"var": "test-user-defined"}, 1]},
+            actions=[
+                {
+                    "action": {"type": "step-not-applicable"},
+                    "form_step_uuid": str(form_step.uuid),
+                }
+            ],
         )
 
         form_pk, form_definition_pk, form_step_pk, form_logic_pk = (
