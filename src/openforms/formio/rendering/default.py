@@ -102,10 +102,10 @@ class ColumnsNode(ContainerMixin, ComponentNode):
                     depth=self.depth + 1,
                     path=self.path,
                     configuration_path=Path(
-                        self.configuration_path, self.component["key"], index
+                        self.configuration_path, self.key_as_path, index
                     )
                     if self.configuration_path
-                    else Path(self.component["key"], index),
+                    else Path(self.key_as_path, index),
                 )
 
 
@@ -218,9 +218,10 @@ class EditGridNode(ContainerMixin, ComponentNode):
         repeats = len(self._value) if self._value else 0
 
         for node_index in range(repeats):
-            path = Path(self.component["key"])
             configuration_path = (
-                Path(self.configuration_path, path) if self.configuration_path else path
+                Path(self.configuration_path, self.key_as_path)
+                if self.configuration_path
+                else self.key_as_path
             )
 
             yield EditGridGroupNode(
@@ -229,7 +230,7 @@ class EditGridNode(ContainerMixin, ComponentNode):
                 renderer=self.renderer,
                 depth=self.depth + 1,
                 group_index=node_index,
-                path=path,
+                path=self.key_as_path,
                 configuration_path=configuration_path,
             )
 
@@ -254,6 +255,7 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
                 configuration_path=Path(
                     self.configuration_path, Path(self.group_index)
                 ),
+                parent_node=self,
             )
 
     @property

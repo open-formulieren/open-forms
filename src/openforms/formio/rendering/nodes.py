@@ -1,7 +1,8 @@
+import copy
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Iterator, Literal, Optional, Union
 
-from glom import Path, glom
+from glom import Path, assign, glom
 
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
@@ -38,15 +39,17 @@ class ComponentNode(Node):
     is_layout = False
     path: Path = None  # Path in the data (#TODO rename to data_path?)
     configuration_path: Path = None  # Path in the configuration tree
+    parent_node: Node = None
 
     @staticmethod
     def build_node(
         step: SubmissionStep,
         component: Component,
         renderer: "Renderer",
-        path: Path = None,  # Path in the data
-        configuration_path: Path = None,
+        path: Path | None = None,  # Path in the data
+        configuration_path: Path | None = None,
         depth: int = 0,
+        parent_node: Node | None = None,
     ) -> "ComponentNode":
         """
         Instantiate the most specific node type for a given component type.
@@ -61,6 +64,7 @@ class ComponentNode(Node):
             depth=depth,
             path=path,
             configuration_path=configuration_path,
+            parent_node=parent_node,
         )
         return nested_node
 
@@ -95,6 +99,7 @@ class ComponentNode(Node):
         branches again, see :mod:`openforms.formio.rendering.default`.
         """
         from .conf import RENDER_CONFIGURATION  # circular import
+        from .default import EditGridGroupNode
 
         # everything is emitted in export mode to get consistent columns
         if self.mode == RenderModes.export:
@@ -103,7 +108,19 @@ class ComponentNode(Node):
         # explicitly hidden components never show up. Note that this property can be set
         # by logic rules or by frontend logic!
         # We only pass the step data, since frontend logic only has access to the current step data.
-        if not is_visible_in_frontend(self.component, self.step.data):
+        if isinstance(self.parent_node, EditGridGroupNode):
+            # Frontend logic for repeating group does not specify the index of the iteration. So we need to look at
+            # the data for a specific iteration to figure out if a field within the iteration is visible
+            step_data = copy.deepcopy(self.step.data)
+            current_iteration_data = glom(step_data, self.path, default=None)
+            artificial_repeating_group_data = assign(
+                step_data, self.parent_node.path, current_iteration_data, missing=dict
+            )
+            if not is_visible_in_frontend(
+                self.component, artificial_repeating_group_data
+            ):
+                return False
+        elif not is_visible_in_frontend(self.component, self.step.data):
             return False
 
         render_configuration = RENDER_CONFIGURATION[self.mode]
@@ -130,8 +147,7 @@ class ComponentNode(Node):
 
         TODO: build and use the type conversion for Formio components.
         """
-        key = self.component["key"]
-        path = Path(self.path, Path(key)) if self.path else Path(key)
+        path = Path(self.path, self.key_as_path) if self.path else self.key_as_path
 
         value = glom(self.step.data, path, default=None)
         return value
@@ -149,9 +165,9 @@ class ComponentNode(Node):
                 renderer=self.renderer,
                 depth=self.depth + 1,
                 path=self.path,
-                configuration_path=Path(self.configuration_path, self.component["key"])
+                configuration_path=Path(self.configuration_path, self.key_as_path)
                 if self.configuration_path
-                else Path(self.component["key"]),
+                else Path(self.key_as_path),
             )
 
     def __iter__(self) -> Iterator["ComponentNode"]:
@@ -219,6 +235,14 @@ class ComponentNode(Node):
     @property
     def key(self):
         return self.component["key"]
+
+    @property
+    def key_as_path(self) -> Path:
+        """
+        See https://glom.readthedocs.io/en/latest/api.html?highlight=Path#glom.Path
+        Using Path("a.b") in glom will not use the nested path, but will look for a key "a.b"
+        """
+        return Path(*(self.component["key"].split(".")))
 
 
 @dataclass
