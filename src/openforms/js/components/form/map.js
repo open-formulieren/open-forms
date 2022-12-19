@@ -4,7 +4,17 @@
 import * as L from 'leaflet';
 import {Formio} from 'react-formio';
 
-import {DEFAULT_SENSITIVE_TABS} from './edit/tabs';
+import {
+  CLEAR_ON_HIDE,
+  DEFAULT_VALUE,
+  DESCRIPTION,
+  HIDDEN,
+  IS_SENSITIVE_DATA,
+  KEY,
+  LABEL_REQUIRED,
+  PRESENTATION,
+} from './edit/options';
+import {ADVANCED, REGISTRATION, TRANSLATIONS, VALIDATION} from './edit/tabs';
 import {RD_CRS} from './rd';
 
 const TextFieldComponent = Formio.Components.components.textfield;
@@ -33,6 +43,33 @@ const MAP_DEFAULTS = {
   center: [52.1326332, 5.291266],
   zoom: 3,
 };
+
+const EDIT_FORM_TABS = [
+  {
+    type: 'tabs',
+    key: 'tabs',
+    components: [
+      {
+        key: 'basic',
+        label: 'Basic',
+        components: [
+          LABEL_REQUIRED,
+          KEY,
+          DESCRIPTION,
+          PRESENTATION,
+          HIDDEN,
+          CLEAR_ON_HIDE,
+          {...IS_SENSITIVE_DATA, defaultValue: true},
+          DEFAULT_VALUE,
+        ],
+      },
+      ADVANCED,
+      VALIDATION,
+      REGISTRATION,
+      TRANSLATIONS,
+    ],
+  },
+];
 
 export default class Map extends TextFieldComponent {
   static schema(...extend) {
@@ -100,6 +137,6 @@ export default class Map extends TextFieldComponent {
   }
 
   static editForm() {
-    return {components: [DEFAULT_SENSITIVE_TABS]};
+    return {components: [EDIT_FORM_TABS]};
   }
 }
