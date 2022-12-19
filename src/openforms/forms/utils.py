@@ -218,6 +218,10 @@ def import_form_data(
                 serializer_kwargs["context"].update(
                     {
                         "form_variables": FormVariableWrapper(_form),
+                        "form_steps": {
+                            form_step.uuid: form_step
+                            for form_step in _form.formstep_set.all()
+                        },
                     }
                 )
 
