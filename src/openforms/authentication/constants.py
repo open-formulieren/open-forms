@@ -19,6 +19,11 @@ class AuthAttribute(DjangoChoices):
     employee_id = ChoiceItem("employee_id", _("Employee ID"))
 
 
+class LogoAppearance(DjangoChoices):
+    dark = ChoiceItem("dark", _("Dark"))
+    light = ChoiceItem("light", _("Light"))
+
+
 class ModeChoices(DjangoChoices):
     citizen = ChoiceItem("citizen", _("Citizen"))
     company = ChoiceItem("company", _("Company"))

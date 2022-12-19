@@ -4,6 +4,8 @@ from rest_framework import serializers
 
 from openforms.plugins.api.serializers import PluginBaseSerializer
 
+from ..constants import LogoAppearance
+
 
 class AuthPluginSerializer(PluginBaseSerializer):
     # serializer for form builder
@@ -27,6 +29,12 @@ class LoginLogoSerializer(serializers.Serializer):
     href = serializers.URLField(
         label=_("Click URL"),
         help_text=_("Information link to the authentication provider"),
+        read_only=True,
+    )
+    appearance = serializers.ChoiceField(
+        choices=LogoAppearance.choices,
+        label=_("Login logo appearance"),
+        help_text=_("The appearance of the login logo (dark/light)"),
         read_only=True,
     )
 

@@ -12,7 +12,12 @@ from openforms.contrib.digid_eherkenning.utils import get_eherkenning_logo
 from openforms.forms.models import Form
 
 from ...base import BasePlugin, LoginLogo
-from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
+from ...constants import (
+    CO_SIGN_PARAMETER,
+    FORM_AUTH_SESSION_KEY,
+    AuthAttribute,
+    LogoAppearance,
+)
 from ...exceptions import InvalidCoSignData
 from ...registry import register
 from .constants import EHERKENNING_AUTH_SESSION_KEY, EIDAS_AUTH_SESSION_KEY  # noqa
@@ -120,4 +125,5 @@ class EIDASAuthentication(AuthenticationBasePlugin):
             title=self.get_label(),
             image_src=request.build_absolute_uri(static("img/eidas.png")),
             href="https://digital-strategy.ec.europa.eu/en/policies/eu-trust-mark",
+            appearance=LogoAppearance.light,
         )
