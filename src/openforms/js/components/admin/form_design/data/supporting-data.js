@@ -1,20 +1,21 @@
 import {get} from 'utils/fetch';
 
-class PluginLoadingError extends Error {
-  constructor(message, plugin, response) {
+class BackendLoadingError extends Error {
+  constructor(message, specification, response) {
     super(message);
-    this.plugin = plugin;
+    this.specification = specification;
     this.response = response;
   }
 }
 
 // TODO: add error handling in the fetch wrappers to throw exceptions + add error
 // boundaries in the component tree.
-const loadPlugins = async (plugins = []) => {
-  const promises = plugins.map(async plugin => {
-    let response = await get(plugin.endpoint);
+const loadFromBackend = async (specifications = []) => {
+  const promises = specifications.map(async specification => {
+    const {endpoint, query = {}} = specification;
+    let response = await get(endpoint, query);
     if (!response.ok) {
-      throw new PluginLoadingError('Failed to load plugins', plugin, response);
+      throw new BackendLoadingError('Failed to load specifications', specification, response);
     }
     let responseData = response.data;
 
@@ -32,7 +33,7 @@ const loadPlugins = async (plugins = []) => {
     while (responseData.next) {
       response = await get(responseData.next);
       if (!response.ok) {
-        throw new PluginLoadingError('Failed to load plugins', plugin, response);
+        throw new BackendLoadingError('Failed to load specifications', specification, response);
       }
       responseData = response.data;
       allResults = [...allResults, ...responseData.results];
@@ -43,4 +44,4 @@ const loadPlugins = async (plugins = []) => {
   return results;
 };
 
-export {loadPlugins, PluginLoadingError};
+export {loadFromBackend, BackendLoadingError};

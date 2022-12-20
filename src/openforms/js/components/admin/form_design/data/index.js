@@ -7,5 +7,5 @@
  */
 
 export {saveCompleteForm} from './complete-form';
-export {loadPlugins, PluginLoadingError} from './plugins';
+export {loadFromBackend, BackendLoadingError} from './supporting-data';
 export {default as loadForm} from './read-form';

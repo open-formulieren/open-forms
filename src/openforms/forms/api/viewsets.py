@@ -30,7 +30,7 @@ from ..tasks import recouple_submission_variables_to_form_variables
 from ..utils import export_form, import_form
 from .datastructures import FormVariableWrapper
 from .documentation import get_admin_fields_markdown
-from .filters import FormVariableFilter
+from .filters import FormDefinitionFilter, FormVariableFilter
 from .parsers import (
     FormCamelCaseJSONParser,
     IgnoreConfigurationFieldCamelCaseJSONParser,
@@ -105,9 +105,27 @@ FormStepViewSet.__doc__ = inspect.getdoc(FormStepViewSet).format(
 )
 
 
+_FORMDEFINITION_ADMIN_FIELDS_MARKDOWN = get_admin_fields_markdown(
+    FormDefinitionSerializer
+)
+
+
 @extend_schema_view(
     list=extend_schema(
         summary=_("List form step definitions"),
+        description=_(
+            "Get a list of existing form definitions, where a single item may be a "
+            "re-usable or single-use definition. This includes form definitions not "
+            "currently used in any form(s) at all.\n\n"
+            "You can filter this list down to only re-usable definitions or "
+            "definitions used in a particular form.\n\n"
+            "**Note**: filtering on both `is_reusable` and `used_in` at the same time "
+            "is implemented as an OR-filter.\n\n"
+            "**Warning: the response data depends on user permissions**\n\n"
+            "Non-staff users receive a subset of all the documented fields. The fields "
+            "reserved for staff users are used for internal form configuration. These "
+            "are: \n\n{admin_fields}"
+        ).format(admin_fields=_FORMDEFINITION_ADMIN_FIELDS_MARKDOWN),
         tags=["forms", "form-definitions"],
     ),
     retrieve=extend_schema(
@@ -150,6 +168,7 @@ class FormDefinitionViewSet(viewsets.ModelViewSet):
     # anonymous clients must be able to get the form definitions in the browser
     # The DRF settings apply some default throttling to mitigate abuse
     permission_classes = [FormAPIPermissions]
+    filterset_class = FormDefinitionFilter
 
     def get_serializer_class(self):
         if self.action == "retrieve":
@@ -174,9 +193,6 @@ class FormDefinitionViewSet(viewsets.ModelViewSet):
         return Response(data=definition.configuration, status=status.HTTP_200_OK)
 
 
-_FORMDEFINITION_ADMIN_FIELDS_MARKDOWN = get_admin_fields_markdown(
-    FormDefinitionSerializer
-)
 FormDefinitionViewSet.__doc__ = inspect.getdoc(FormDefinitionViewSet).format(
     admin_fields=_FORMDEFINITION_ADMIN_FIELDS_MARKDOWN
 )

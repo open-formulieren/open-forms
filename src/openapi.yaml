@@ -663,21 +663,33 @@ paths:
   /api/v2/form-definitions:
     get:
       operationId: form_definitions_list
-      description: |-
-        **Warning: the response data depends on user permissions**
-
-        Non-staff users receive a subset of the documented fields which are used
-        for internal form configuration. These fields are:
-
-        - `translations`
+      description: "Get a list of existing form definitions, where a single item may\
+        \ be a re-usable or single-use definition. This includes form definitions\
+        \ not currently used in any form(s) at all.\n\nYou can filter this list down\
+        \ to only re-usable definitions or definitions used in a particular form.\n\
+        \n**Note**: filtering on both `is_reusable` and `used_in` at the same time\
+        \ is implemented as an OR-filter.\n\n**Warning: the response data depends\
+        \ on user permissions**\n\nNon-staff users receive a subset of all the documented\
+        \ fields. The fields reserved for staff users are used for internal form configuration.\
+        \ These are: \n\n- `translations`"
       summary: List form step definitions
       parameters:
+      - in: query
+        name: is_reusable
+        schema:
+          type: boolean
       - name: page
         required: false
         in: query
         description: A page number within the paginated result set.
         schema:
           type: integer
+      - in: query
+        name: used_in
+        schema:
+          type: string
+          format: uuid
+        description: UUID of the form the definition is used in.
       tags:
       - forms
       - form-definitions
