@@ -55,11 +55,30 @@ const SHOW_IN_PDF = {
 };
 
 const AUTOCOMPLETE = {
-  type: 'textfield',
+  type: 'select',
   key: 'autocomplete',
   label: 'Autocomplete',
   placeholder: 'on',
   tooltip: 'Display options to fill in the field, based on earlier typed values.',
+  defaultValue: 'given-name',
+  data: {
+    values: [
+      {label: 'Voornaam (1 of meerdere)', value: 'given-name'},
+      {label: 'Achternaam', value: 'family-name'},
+      {label: 'Adresregel 1', value: 'address-line1'},
+      {label: 'Adresregel 2', value: 'address-line2'},
+      {label: 'Adresregel 3', value: 'address-line3'},
+      {label: 'Postcode', value: 'postal-code'},
+      {label: 'E-mailadres', value: 'email'},
+      {label: 'Website', value: 'url'},
+      {label: 'Wachtwoord', value: 'password'},
+      {label: 'Nieuw wachtwoord', value: 'new-password'},
+      {label: 'Huidige wachtwoord', value: 'current-password'},
+      {label: 'Geboortedatum', value: 'bday'},
+      {label: 'Aan', value: 'on'},
+      {label: 'Uit', value: 'off'},
+    ],
+  },
 };
 
 const PRESENTATION = {

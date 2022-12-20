@@ -4,6 +4,7 @@ import jsonScriptToVar from 'utils/json-script';
 import {getFullyQualifiedUrl} from 'utils/urls';
 
 import {
+  AUTOCOMPLETE,
   CLEAR_ON_HIDE,
   DEFAULT_VALUE,
   DESCRIPTION,
@@ -16,7 +17,6 @@ import {
   READ_ONLY,
   REGEX_VALIDATION,
   REQUIRED,
-  AUTOCOMPLETE,
 } from './options';
 import {getValidationEditForm} from './validationEditFormUtils';
 
@@ -53,7 +53,27 @@ const SENSITIVE_BASIC = {
 
 const SENSITIVE_READ_ONLY = {
   ...SENSITIVE_BASIC,
-  components: [...SENSITIVE_BASIC.components, AUTOCOMPLETE, READ_ONLY],
+  components: [
+    ...SENSITIVE_BASIC.components,
+    READ_ONLY,
+    {
+      weight: 700,
+      type: 'select',
+      input: true,
+      key: 'autocomplete',
+      label: 'Autocomplete',
+      placeholder: 'on',
+      tooltip: 'Display options to fill in the field, based on earlier typed values.',
+      defaultValue: 'on',
+      data: {
+        values: [
+          {label: 'Aan', value: 'on'},
+          {label: 'Uit', value: 'off'},
+          {label: 'Postcode', value: 'postal-code'},
+        ],
+      },
+    },
+  ],
 };
 
 const TEXT_BASIC = {

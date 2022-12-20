@@ -8,24 +8,6 @@ import {
 } from './edit/tabs';
 import TextField from './textfield';
 
-// const postcodeBasicTab = {
-//   key: 'basic',
-//   label: 'Basic',
-//   components: [
-//     {
-//       title: 'Postcode Field',
-//       icon: 'home',
-//       group: 'basic',
-//       weight: 10,
-//     },
-//     {
-//       key: 'basic',
-//       label: 'Basic',
-//       components: [AUTOCOMPLETE],
-//     },
-//   ],
-// };
-
 class PostcodeField extends TextField {
   static schema(...extend) {
     return TextField.schema(
@@ -42,6 +24,7 @@ class PostcodeField extends TextField {
           // See https://stackoverflow.com/a/17898538/7146757 and https://nl.wikipedia.org/wiki/Postcodes_in_Nederland
           pattern: '^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$',
         },
+        autocomplete: 'on',
       },
       ...extend
     );
