@@ -815,24 +815,6 @@ class StufZDSPluginTests(StufTestBase):
             },
         )
 
-        # even on success, the intermediate results must be recorded:
-        submission.refresh_from_db()
-        self.assertEqual(
-            submission.registration_result["intermediate"],
-            {
-                "zaaknummer": "foo-zaak",
-                "zaak_created": True,
-                "document_nummers": {
-                    "pdf-report": "bar-document",
-                    str(attachment.id): "bar-document",
-                },
-                "documents_created": {
-                    "pdf-report": True,
-                    str(attachment.id): True,
-                },
-            },
-        )
-
     @patch("celery.app.task.Task.request")
     def test_plugin_nietNatuurlijkPersoon_without_auth(self, m, mock_task):
         """Assert that the values of Zaak fields coupled to StUF-ZDS/ZGW are sent to the
@@ -930,24 +912,6 @@ class StufZDSPluginTests(StufTestBase):
                 "//zkn:object/zkn:identificatie": "foo-zaak",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:nietNatuurlijkPersoon/bg:statutaireNaam": "Foo",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:nietNatuurlijkPersoon/bg:authentiek": "N",
-            },
-        )
-
-        # even on success, the intermediate results must be recorded:
-        submission.refresh_from_db()
-        self.assertEqual(
-            submission.registration_result["intermediate"],
-            {
-                "zaaknummer": "foo-zaak",
-                "zaak_created": True,
-                "document_nummers": {
-                    "pdf-report": "bar-document",
-                    str(attachment.id): "bar-document",
-                },
-                "documents_created": {
-                    "pdf-report": True,
-                    str(attachment.id): True,
-                },
             },
         )
 
@@ -1425,24 +1389,6 @@ class StufZDSPluginTests(StufTestBase):
                 "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
                 "//zkn:object/zkn:identificatie": "foo-zaak",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:medewerker/zkn:identificatie": "007",
-            },
-        )
-
-        # even on success, the intermediate results must be recorded:
-        submission.refresh_from_db()
-        self.assertEqual(
-            submission.registration_result["intermediate"],
-            {
-                "zaaknummer": "foo-zaak",
-                "zaak_created": True,
-                "document_nummers": {
-                    "pdf-report": "bar-document",
-                    str(attachment.id): "bar-document",
-                },
-                "documents_created": {
-                    "pdf-report": True,
-                    str(attachment.id): True,
-                },
             },
         )
 
