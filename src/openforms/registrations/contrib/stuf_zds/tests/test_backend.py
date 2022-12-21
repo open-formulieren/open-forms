@@ -1247,7 +1247,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:isVan/zkn:gerelateerde/zkn:omschrijving": "zt-omschrijving",
                 "//zkn:heeft/zkn:gerelateerde/zkn:code": "123",
                 "//zkn:heeft/zkn:gerelateerde/zkn:omschrijving": "aaabbc",
-                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:vestiging/bg:handelsnaam": "ACME",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:nietNatuurlijkPersoon/bg:inn.nnpId": "12345678",
             },
         )
 
