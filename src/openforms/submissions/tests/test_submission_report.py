@@ -294,12 +294,12 @@ class DownloadSubmissionReportTests(APITestCase):
         self.assertIn("11:50 p.m.", html_report)
         self.assertIn("1,100,000.00", html_report)
 
-        for component_type, value in fields:
+        for component_type, user_input in fields:
             with self.subTest(f"FormIO label for {component_type}"):
                 if component_type in ["date", "time", "currency"]:
                     pass  # these are localized
                 else:
-                    self.assertIn(value, html_report)
+                    self.assertIn(user_input, html_report)
                 self.assertNotIn(
                     f"Untranslated {component_type.title()} label", html_report
                 )
@@ -317,17 +317,20 @@ class DownloadSubmissionReportTests(APITestCase):
         self.assertNotIn("Untranslated Repeating Group label", html_report)
         self.assertNotIn("Untranslated Repeating Group Item label", html_report)
 
-        # assert we've tested everything
-        plugins = set(key for key, _ in register.items())
-        plugins.difference_update(
+        # assert we've tested every component_type ct in register
+        plugins = set(ct for ct, _ in register.items())
+        plugins.remove("content")  # WYSIWIG seems untranslated in SDK
+
+        tested_plugins = set(ct for ct, _ in fields if ct in plugins)
+        # add checked structural "layout" components that don't require
+        # user_input and are therefore not in fields
+        tested_plugins.update(
             (
-                "content",  # Seems untranslated in SDK
-                "fieldset",  # Checked ✓
-                "columns",  # Checked ✓
-                "editgrid",  # Checked ✓
+                "fieldset",
+                "columns",
+                "editgrid",
             )
         )
-        tested_plugins = set(key for key, _ in fields if key in plugins)
         self.assertEqual(tested_plugins, plugins, "Untested component plugins!")
 
         # For the lolz, check this again. Fine™ :ok_hand:
