@@ -131,86 +131,86 @@ class DownloadSubmissionReportTests(APITestCase):
 
         # carthesian products are big, let's loop to fill these
         for component_type, user_input in fields:
-            components.append(
-                {
-                    "type": component_type,
-                    "key": f"{component_type}-key",
-                    "label": f"Untranslated {component_type.title()} label",
-                    "showInPDF": True,
-                    "hidden": False,
-                }
-            )
+            # common base
+            component = {
+                "type": component_type,
+                "key": f"{component_type}-key",
+                "label": f"Untranslated {component_type.title()} label",
+                "showInPDF": True,
+                "hidden": False,
+            }
             submission_data[f"{component_type}-key"] = user_input
             translations[
                 f"Untranslated {component_type.title()} label"
             ] = f"Translated {component_type.title()} label"
 
-        # add radio component options
-        radio_component = next(c for c in components if c["type"] == "radio")
-        radio_component["values"] = [
-            {"label": "Untranslated Radio option one", "value": "radioOne"},
-            {"label": "Untranslated Radio option two", "value": "radioTwo"},
-        ]
-        submission_data[
-            radio_component["key"]
-        ] = "radioOne"  # value of the selected label
-        translations["Untranslated Radio option one"] = "Radio number one"
-        translations["Untranslated Radio option two"] = "Translated Radio option two"
+            # add the component
+            components.append(component)
 
-        # add select options
-        select_component = next(c for c in components if c["type"] == "select")
-        select_component["data"] = {
-            "values": [
-                {"label": "Untranslated Select option one", "value": "selectOne"},
-                {"label": "Untranslated Select option two", "value": "selectTwo"},
-            ]
-        }
-        submission_data[
-            select_component["key"]
-        ] = "selectOne"  # value of the selected label
-        translations["Untranslated Select option one"] = "A fine selection"
-        translations["Untranslated Select option two"] = "Translated Select option two"
-
-        # add selectbox options
-        selectboxes_component = next(
-            c for c in components if c["type"] == "selectboxes"
-        )
-        selectboxes_component["values"] = [
-            {
-                "label": "Untranslated Selectboxes option one",
-                "value": "selectboxesOne",
-            },
-            {
-                "label": "Untranslated Selectboxes option two",
-                "value": "selectboxesTwo",
-            },
-            {
-                "label": "Untranslated Selectboxes option three",
-                "value": "selectboxesThree",
-            },
-            {
-                "label": "Untranslated Selectboxes option four",
-                "value": "selectboxesFour",
-            },
-        ]
-        submission_data[selectboxes_component["key"]] = {
-            "selectboxesOne": False,
-            "selectboxesTwo": True,
-            "selectboxesThree": True,
-            "selectboxesFour": True,
-        }
-        translations["Untranslated Selectboxes option one"] = "The Deal"
-        translations["Untranslated Selectboxes option two"] = "This"
-        translations["Untranslated Selectboxes option three"] = "That"
-        translations["Untranslated Selectboxes option four"] = "The Other"
-
-        # attach file upload
-        file_component = next(c for c in components if c["type"] == "file")
-        submission_data[file_component["key"]] = [{"originalName": "download(2).pdf"}]
-
-        # fix map coordinates
-        map_component = next(c for c in components if c["type"] == "map")
-        submission_data[map_component["key"]] = [52.193459, 5.279538]
+            # but massage the weirder components into shape
+            match component:
+                case {"type": "file", "key": key}:
+                    submission_data[key] = [{"originalName": "download(2).pdf"}]
+                case {"type": "radio", "key": key}:
+                    component["values"] = [
+                        {"label": "Untranslated Radio option one", "value": "radioOne"},
+                        {"label": "Untranslated Radio option two", "value": "radioTwo"},
+                    ]
+                    submission_data[key] = "radioOne"  # value of the selected label
+                    translations["Untranslated Radio option one"] = "Radio number one"
+                    translations[
+                        "Untranslated Radio option two"
+                    ] = "Translated Radio option two"
+                case {"type": "select", "key": key}:
+                    component["data"] = {
+                        "values": [
+                            {
+                                "label": "Untranslated Select option one",
+                                "value": "selectOne",
+                            },
+                            {
+                                "label": "Untranslated Select option two",
+                                "value": "selectTwo",
+                            },
+                        ]
+                    }
+                    submission_data[key] = "selectOne"  # value of the selected label
+                    translations["Untranslated Select option one"] = "A fine selection"
+                    translations[
+                        "Untranslated Select option two"
+                    ] = "Translated Select option two"
+                case {"type": "selectboxes", "key": key}:
+                    component["values"] = [
+                        {
+                            "label": "Untranslated Selectboxes option one",
+                            "value": "selectboxesOne",
+                        },
+                        {
+                            "label": "Untranslated Selectboxes option two",
+                            "value": "selectboxesTwo",
+                        },
+                        {
+                            "label": "Untranslated Selectboxes option three",
+                            "value": "selectboxesThree",
+                        },
+                        {
+                            "label": "Untranslated Selectboxes option four",
+                            "value": "selectboxesFour",
+                        },
+                    ]
+                    submission_data[key] = {
+                        "selectboxesOne": False,
+                        "selectboxesTwo": True,
+                        "selectboxesThree": True,
+                        "selectboxesFour": True,
+                    }
+                    translations["Untranslated Selectboxes option one"] = "The Deal"
+                    translations["Untranslated Selectboxes option two"] = "This"
+                    translations["Untranslated Selectboxes option three"] = "That"
+                    translations["Untranslated Selectboxes option four"] = "The Other"
+                case {"type": "map", "key": key}:
+                    # map needs an list as data
+                    submission_data[key] = [52.193459, 5.279538]
 
         # pop the last few components into structural components
         components.extend(
