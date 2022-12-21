@@ -893,9 +893,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
                 "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
                 "//zkn:object/zkn:identificatie": "foo-zaak",
-                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:vestiging/bg:handelsnaam": "Foo",
-                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:vestiging/bg:vestigingsNummer": "0815",
-                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:vestiging/bg:authentiek": "N",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:nietNatuurlijkPersoon/bg:statutaireNaam": "Foo",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:nietNatuurlijkPersoon/bg:authentiek": "N",
             },
         )
 
@@ -1803,8 +1802,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
                 "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
                 "//zkn:object/zkn:identificatie": "foo-zaak",
-                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:medewerker/bg:medewerker_nummer": "007",
-                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:medewerker/zkn:identificatie": "foo-zaak",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:medewerker/zkn:identificatie": "007",
             },
         )
 
