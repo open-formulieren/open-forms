@@ -260,7 +260,9 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
 
     @property
     def label(self) -> str:
-        group_label = self.component.get("groupLabel", self.default_label)
+        group_label = self._localise(
+            self.component.get("groupLabel", self.default_label)
+        )
         return f"{group_label} {self.group_index + 1}"
 
     def render(self) -> str:

@@ -57,13 +57,18 @@ class ComponentNode(Node):
         from .registry import register
 
         if (
-            (label := component.get("label"))
-            and step.form_step is not None
+            step.form_step is not None
             and step.form_step.form.translation_enabled
             and (lang := step.submission.language_code)
         ):
+            # Value Formatters have no access to the translations
+            # adjust value labels (for radio, checkbox etc)
             translations = step.form_step.form_definition.component_translations
-            component["label"] = translations.get(lang, {}).get(label, label)
+            for value in component.get("data", component).get("values", []):
+                if value_label := value.get("label"):
+                    value["label"] = translations.get(lang, {}).get(
+                        value_label, value_label
+                    )
 
         node_cls = register[component["type"]]
         nested_node = node_cls(
@@ -216,7 +221,13 @@ class ComponentNode(Node):
         """
         if self.mode == RenderModes.export:
             return self.component.get("key") or "KEY_MISSING"
-        return self.component.get("label") or self.component.get("key", "")
+        label = self.component.get("label") or self.component.get("key", "")
+        return self._localise(label)
+
+    def _localise(self, string):
+        translations = self.step.form_step.form_definition.component_translations
+        lang = self.step.submission.language_code
+        return translations.get(lang, {}).get(string, string)
 
     @property
     def display_value(self) -> Union[str, Any]:

@@ -560,6 +560,11 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         self.assertEqual(message.subject, f"Confirmation mail {_('(updated)')}")
 
     def test_template_is_rendered_in_submission_language(self):
+        """A subset of the components, with particularly weird APIs.
+        Translations on all FormIO components are exercised (until exorcised) in
+        .test_submission_report.DownloadSubmissionReportTests:test_report_is_generated_in_same_language_as_submission
+        """
+
         language = "en"
         with override_language(language):
             submission = SubmissionFactory.from_components(
@@ -573,19 +578,88 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                         "confirmationRecipient": True,
                     },
                 ],
-                submitted_data={"email": "abuse@example.com"},
+                submitted_data={
+                    "email": "abuse@example.com",
+                    "fubar": "Haveibeenpwned.com123!@#",
+                    "editgrid1": [
+                        {
+                            "radio1": "radiov2",
+                        },
+                        {
+                            "radio1": "radiov1",
+                            "select1": "selectv2",
+                        },
+                    ],
+                },
                 form__generate_minimal_setup=True,
                 form__translation_enabled=True,
                 form__name="Translated form name",
                 form__formstep__form_definition__name="A Quickstep",
+                form__formstep__form_definition__component_translations={
+                    "en": {
+                        "Untranslated Repeating Group label": "Translated Repeating Group label",
+                        "Untranslated Repeating Group Item label": "Translated Repeating Group Item label",
+                        "Untranslated Radio option 1": "Translated Radio option 1",
+                        "Untranslated Radio option 2": "Translated Radio option 2",
+                        "Untranslated Select option 2": "Translated Select option 2",
+                    },
+                },
                 form__formstep__form_definition__configuration={
                     "components": [
                         {
                             "key": "foo",
                             "type": "textfield",
-                            "label": "Foo",
+                            "label": "Label with no translation",
                             "showInEmail": True,
-                        }
+                        },
+                        {
+                            "key": "fubar",
+                            "type": "password",
+                            "label": "Label with no translation",
+                            # TODO add a constraint, I don't want this state in my db!
+                            "showInEmail": True,
+                        },
+                        {
+                            "type": "editgrid",
+                            "key": "editgrid1",
+                            "hidden": False,
+                            "label": "Untranslated Repeating Group label",
+                            "groupLabel": "Untranslated Repeating Group Item label",
+                            "components": [
+                                {
+                                    "key": "radio1",
+                                    "type": "radio",
+                                    "showInEmail": True,
+                                    "values": [
+                                        {
+                                            "label": "Untranslated Radio option 1",
+                                            "value": "radiov1",
+                                        },
+                                        {
+                                            "label": "Untranslated Radio option 2",
+                                            "value": "radiov2",
+                                        },
+                                    ],
+                                },
+                                {
+                                    "key": "select1",
+                                    "type": "select",
+                                    "showInEmail": True,
+                                    "data": {
+                                        "values": [
+                                            {
+                                                "label": "Untranslated Select option 1",
+                                                "value": "selectv1",
+                                            },
+                                            {
+                                                "label": "Untranslated Select option 2",
+                                                "value": "selectv2",
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
                     ],
                 },
             )
@@ -597,8 +671,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                 {% summary %}
                 """,
             )
-            # TODO after form IO add steps
-            # dropdown, radio, checkbox
 
         # "execute" the celery task
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
@@ -615,6 +687,16 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         self.assertIn("Translated content", html_message)
         self.assertIn("Translated form name", html_message)
         self.assertIn("A Quickstep", html_message)
+
+        self.assertNotIn("Untranslated", html_message)
+        self.assertIn("Label with no translation", html_message)
+        self.assertIn("Translated Repeating Group label", html_message)
+        self.assertIn("Translated Repeating Group Item label 1", html_message)
+        self.assertIn("Translated Radio option 2", html_message)
+        self.assertIn("Translated Repeating Group Item label 2", html_message)
+        self.assertIn("Translated Radio option 1", html_message)
+        self.assertIn("Translated Select option 2", html_message)
+        self.assertIn("Haveibeenpwned.com123!@#", html_message)
 
 
 class RaceConditionTests(TransactionTestCase):

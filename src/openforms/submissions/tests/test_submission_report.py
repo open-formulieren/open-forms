@@ -10,6 +10,8 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.formio.rendering.registry import register
+
 from ..models import SubmissionReport
 from ..tasks import generate_submission_report
 from ..tokens import submission_report_token_generator
@@ -102,41 +104,162 @@ class DownloadSubmissionReportTests(APITestCase):
         fields = [
             # Component.type, user_input
             ("bsn", "111222333"),
+            ("checkbox", "yes"),
+            ("currency", "1100000"),
             ("date", "1911-06-29"),
             ("email", "hostmaster@example.org"),
-            # ("file", ""),
+            ("file", "download(2).pdf"),
             ("iban", "NL56 INGB 0705 0051 00"),
             ("licenseplate", "AA-00-13"),
+            ("map", "52.193459, 5.279538"),
             ("number", "1"),
-            ("password", "Panda1911!"),
-            ("phoneNumber", "+49 1234 567 890"),
+            ("password", "Panda1911!"),  # XXX Why is this widget even an option?
+            ("phonenumber", "+49 1234 567 890"),
             ("postcode", "3744 AA"),
-            # ("radio", ""),
-            # ("select", ""),
-            # ("selectboxes", ""),
-            ("textarea", "Predetermined largish ASCII"),
+            ("radio", "Radio number one"),
+            ("select", "A fine selection"),
+            ("selectboxes", "This; That; The Other"),
+            ("signature", SIGNATURE),
+            ("textarea", "Largish predetermined ASCII"),
             ("textfield", "Short predetermined ASCII"),
             ("time", "23:50"),
+            ("updatenote", "C#"),
         ]
         submission_data = {}
-        component_translations = {"en": {}}
+        translations = {}
         components = []
 
         # carthesian products are big, let's loop to fill these
-        for i, (component_type, user_input) in enumerate(fields):
+        for component_type, user_input in fields:
             components.append(
                 {
                     "type": component_type,
-                    "key": f"key{i}",
+                    "key": f"{component_type}-key",
                     "label": f"Untranslated {component_type.title()} label",
                     "showInPDF": True,
                     "hidden": False,
                 }
             )
-            submission_data[f"key{i}"] = user_input
-            component_translations["en"][
+            submission_data[f"{component_type}-key"] = user_input
+            translations[
                 f"Untranslated {component_type.title()} label"
             ] = f"Translated {component_type.title()} label"
+
+        # add radio component options
+        radio_component = next(c for c in components if c["type"] == "radio")
+        radio_component["values"] = [
+            {"label": "Untranslated Radio option one", "value": "radioOne"},
+            {"label": "Untranslated Radio option two", "value": "radioTwo"},
+        ]
+        submission_data[
+            radio_component["key"]
+        ] = "radioOne"  # value of the selected label
+        translations["Untranslated Radio option one"] = "Radio number one"
+        translations["Untranslated Radio option two"] = "Translated Radio option two"
+
+        # add select options
+        select_component = next(c for c in components if c["type"] == "select")
+        select_component["data"] = {
+            "values": [
+                {"label": "Untranslated Select option one", "value": "selectOne"},
+                {"label": "Untranslated Select option two", "value": "selectTwo"},
+            ]
+        }
+        submission_data[
+            select_component["key"]
+        ] = "selectOne"  # value of the selected label
+        translations["Untranslated Select option one"] = "A fine selection"
+        translations["Untranslated Select option two"] = "Translated Select option two"
+
+        # add selectbox options
+        selectboxes_component = next(
+            c for c in components if c["type"] == "selectboxes"
+        )
+        selectboxes_component["values"] = [
+            {
+                "label": "Untranslated Selectboxes option one",
+                "value": "selectboxesOne",
+            },
+            {
+                "label": "Untranslated Selectboxes option two",
+                "value": "selectboxesTwo",
+            },
+            {
+                "label": "Untranslated Selectboxes option three",
+                "value": "selectboxesThree",
+            },
+            {
+                "label": "Untranslated Selectboxes option four",
+                "value": "selectboxesFour",
+            },
+        ]
+        submission_data[selectboxes_component["key"]] = {
+            "selectboxesOne": False,
+            "selectboxesTwo": True,
+            "selectboxesThree": True,
+            "selectboxesFour": True,
+        }
+        translations["Untranslated Selectboxes option one"] = "The Deal"
+        translations["Untranslated Selectboxes option two"] = "This"
+        translations["Untranslated Selectboxes option three"] = "That"
+        translations["Untranslated Selectboxes option four"] = "The Other"
+
+        # attach file upload
+        file_component = next(c for c in components if c["type"] == "file")
+        submission_data[file_component["key"]] = [{"originalName": "download(2).pdf"}]
+
+        # fix map coordinates
+        map_component = next(c for c in components if c["type"] == "map")
+        submission_data[map_component["key"]] = [52.193459, 5.279538]
+
+        # pop the last few components into structural components
+        components.extend(
+            [
+                {
+                    "type": "fieldset",
+                    "key": "fieldset1",
+                    "hidden": False,
+                    "label": "Untranslated Field Set label",
+                    "components": [components.pop()],
+                },
+                {
+                    "type": "columns",
+                    "key": "columns1",
+                    "hidden": False,
+                    "label": "Untranslated Columns label",
+                    "columns": [
+                        {
+                            "size": 6,
+                            "components": [components.pop()],
+                        },
+                        {
+                            "size": 6,
+                            "components": [components.pop()],
+                        },
+                    ],
+                },
+                {
+                    "type": "editgrid",
+                    "key": "editgrid1",
+                    "hidden": False,
+                    "label": "Untranslated Repeating Group label",
+                    "groupLabel": "Untranslated Repeating Group Item label",
+                    "components": [(grid_child := components.pop())],
+                },
+            ]
+        )
+        # adjust path of repeating group
+        submission_data["editgrid1"] = [
+            {f"{grid_child['type']}-key": submission_data[f"{grid_child['type']}-key"]}
+        ]
+
+        translations["Untranslated Field Set label"] = "Translated Field Set label"
+        translations[
+            "Untranslated Repeating Group label"
+        ] = "Translated Repeating Group label"
+        translations[
+            "Untranslated Repeating Group Item label"
+        ] = "Translated Repeating Group Item label"
 
         report = SubmissionReportFactory(
             submission__language_code="en",
@@ -144,10 +267,11 @@ class DownloadSubmissionReportTests(APITestCase):
             submission__form__generate_minimal_setup=True,
             submission__form__translation_enabled=True,
             submission__form__name_en="Translated form name",
-            # One form step for mankind…
             submission__form__formstep__form_definition__name_nl="Walsje",
             submission__form__formstep__form_definition__name_en="A Quickstep",
-            submission__form__formstep__form_definition__component_translations=component_translations,
+            submission__form__formstep__form_definition__component_translations={
+                "en": translations
+            },
             submission__form__formstep__form_definition__configuration={
                 "components": components,
             },
@@ -165,13 +289,14 @@ class DownloadSubmissionReportTests(APITestCase):
         self.assertIn("A Quickstep", html_report)
         self.assertNotIn("Walsje", html_report)
 
-        # localized date and time
+        # localized date, time and decimal point
         self.assertIn("June 29, 1911", html_report)
         self.assertIn("11:50 p.m.", html_report)
+        self.assertIn("1,100,000.00", html_report)
 
         for component_type, value in fields:
             with self.subTest(f"FormIO label for {component_type}"):
-                if component_type in ["date", "time"]:
+                if component_type in ["date", "time", "currency"]:
                     pass  # these are localized
                 else:
                     self.assertIn(value, html_report)
@@ -179,6 +304,34 @@ class DownloadSubmissionReportTests(APITestCase):
                     f"Untranslated {component_type.title()} label", html_report
                 )
                 self.assertIn(f"Translated {component_type.title()} label", html_report)
+
+        # assert structural labels
+        self.assertIn("Translated Field Set label", html_report)
+        self.assertNotIn(
+            "Translated Columns label", html_report
+        )  # 1451 -> never output a label
+        self.assertIn("Translated Repeating Group label", html_report)
+        self.assertIn("Translated Repeating Group Item label", html_report)
+        self.assertNotIn("Untranslated Field Set label", html_report)
+        self.assertNotIn("Untranslated Columns label", html_report)
+        self.assertNotIn("Untranslated Repeating Group label", html_report)
+        self.assertNotIn("Untranslated Repeating Group Item label", html_report)
+
+        # assert we've tested everything
+        plugins = set(key for key, _ in register.items())
+        plugins.difference_update(
+            (
+                "content",  # Seems untranslated in SDK
+                "fieldset",  # Checked ✓
+                "columns",  # Checked ✓
+                "editgrid",  # Checked ✓
+            )
+        )
+        tested_plugins = set(key for key, _ in fields if key in plugins)
+        self.assertEqual(tested_plugins, plugins, "Untested component plugins!")
+
+        # For the lolz, check this again. Fine™ :ok_hand:
+        self.assertIn("Panda1911!", html_report)
 
     @patch(
         "celery.result.AsyncResult._get_task_meta", return_value={"status": "SUCCESS"}
@@ -243,3 +396,22 @@ class DeleteReportTests(TestCase):
         submission_report.submission.delete()
 
         self.assertFalse(os.path.exists(file_path))
+
+
+SIGNATURE = (
+    "data:image/png;base64,"
+    "iVBORw0KGgoAAAANSUhEUgAAADkAAAAlCAAAAADdZx65AAAABGdBTUEAALGPC/xhBQAAACBjSFJN"
+    "AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElN"
+    "RQfmDBQODDcI1Lj/AAACGElEQVRIx52VIY/jMBCF988eOGmlI4sXLFipIKSqFBCWEBOTSJaJSUCA"
+    "pYCQSCYBIQY2MBsNejrQdtU2btOuWSJ9HvvN85s3/Ha9vUwwx9+Q0fVN6V4iGTz3yoyTtXz8fo6M"
+    "Y6+sTwyn/Al8TDIARNsqG9PxR3pGIQZ4sUp2gZ/TNpy2Jadk01OOSXmymwBe2kKM6d5pdkOWPCjV"
+    "lNo/uv63XGvLs/wo5g2h067lq5ocTNv2qRu3WhQO+oIkJ1UXAUAsW6SrFAN440GKstbLWfqatshZ"
+    "mKNCIRFR/OnZYdNQg+qutHUnYcpNB4sy3HSFiQEcMOQ8eLHqeuUEDyBV8bYtszvvDCbL6U9Ye2gh"
+    "THoJ4posAsDBoy25lztX7nO+HUi5iAYA+fMx078EjO+V04VwaCRXnCHJNBQhAHQWXQDA0PtPK75M"
+    "NDwRwOAy+1b8Xw4QAB1clJU1ulnMYme+EGuu86+s6D0q9u4Tkj8GEfZ6ZaEiT4qCULOqv4RnCyBe"
+    "9YQJCDVzhuS2niHZ0xzvPpUxWzPZUUHzhov8OE0rhcQyO/2AoskOk6d1zbBjdN29c07K2J88uyUH"
+    "QPfZxDWdvUrBTGq6mq/snhbdtHaVnRkyVZdCCiGGCH5qltHJ0hxVq3PZyXmSllQDwCKliQ+GxsoJ"
+    "ZmA07HSp0kuTN9oE6t9Fzy/O7Fh1vVazeYK7rZnSzajjbBIBAP4DMPDZ6TwbC+0AAAAldEVYdGRh"
+    "dGU6Y3JlYXRlADIwMjItMTItMjBUMTQ6MDE6MDUrMDA6MDAHb817AAAAJXRFWHRkYXRlOm1vZGlm"
+    "eQAyMDIyLTEyLTIwVDE0OjAwOjU2KzAwOjAw4PgKAAAAAABJRU5ErkJggg=="
+)
