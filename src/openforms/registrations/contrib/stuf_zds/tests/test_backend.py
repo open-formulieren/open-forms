@@ -625,6 +625,297 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
     @patch("celery.app.task.Task.request")
+    def test_plugin_natuurlijk_persoon_without_auth(self, m, mock_task):
+        """Assert that the values of Zaak fields coupled to StUF-ZDS/ZGW are sent to the
+        backend even if the client (a natural person) is not authenticated"""
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voorletters",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voorletters,
+                    },
+                },
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+                {
+                    "key": "tussenvoegsel",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    },
+                },
+                {
+                    "key": "geboortedatum",
+                    "type": "date",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geboortedatum,
+                    },
+                },
+                {
+                    "key": "geslachtsaanduiding",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsaanduiding,
+                    },
+                },
+                {
+                    "key": "postcode",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_postcode,
+                    },
+                },
+                {
+                    "key": "coordinaat",
+                    "type": "map",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+            ],
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "tussenvoegsel": "de",
+                "postcode": "1000 AA",
+                "geboortedatum": "2000-12-31",
+                "coordinaat": [52.36673378967122, 4.893164274470299],
+                "voorletters": "J.W.",
+                "geslachtsaanduiding": "mannelijk",
+            },
+        )
+
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            file_name="my-attachment.doc",
+            content_type="application/msword",
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerZaakIdentificatie.xml",
+                {
+                    "zaak_identificatie": "foo-zaak",
+                },
+            ),
+            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "zds_documenttype_omschrijving_inzending": "aaabbc",
+        }
+
+        self.assertFalse(submission.is_authenticated)
+
+        plugin = StufZDSRegistration("stuf")
+        serializer = plugin.configuration_options(data=form_options)
+        self.assertTrue(serializer.is_valid())
+
+        result = plugin.register_submission(submission, serializer.validated_data)
+        self.assertEqual(
+            result,
+            {
+                "zaak": "foo-zaak",
+                "document": "bar-document",
+            },
+        )
+
+        xml_doc = xml_from_request_history(m, 0)
+        self.assertSoapXMLCommon(xml_doc)
+
+        xml_doc = xml_from_request_history(m, 1)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
+                "//zkn:object/zkn:identificatie": "foo-zaak",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:authentiek": "N",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voornamen": "Foo",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsnaam": "Bar",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorvoegselGeslachtsnaam": "de",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geboortedatum": "20001231",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:voorletters": "J.W.",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:natuurlijkPersoon/bg:geslachtsaanduiding": "M",
+                "//zkn:object/zkn:anderZaakObject/zkn:omschrijving": "coordinaat",
+                "//zkn:object/zkn:anderZaakObject/zkn:lokatie/gml:Point/gml:pos": "52.36673378967122 4.893164274470299",
+            },
+        )
+
+        # even on success, the intermediate results must be recorded:
+        submission.refresh_from_db()
+        self.assertEqual(
+            submission.registration_result["intermediate"],
+            {
+                "zaaknummer": "foo-zaak",
+                "zaak_created": True,
+                "document_nummers": {
+                    "pdf-report": "bar-document",
+                    str(attachment.id): "bar-document",
+                },
+                "documents_created": {
+                    "pdf-report": True,
+                    str(attachment.id): True,
+                },
+            },
+        )
+
+    @patch("celery.app.task.Task.request")
+    def test_plugin_nietNatuurlijkPersoon_without_auth(self, m, mock_task):
+        """Assert that the values of Zaak fields coupled to StUF-ZDS/ZGW are sent to the
+        backend even if the client (a company) is not authenticated"""
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "handelsnaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_handelsnaam,
+                    },
+                },
+                {
+                    "key": "vestigingsnummer",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_vestigingsnummer,
+                    },
+                },
+            ],
+            submitted_data={
+                "handelsnaam": "Foo",
+                "vestigingsnummer": "0815",
+            },
+        )
+
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            file_name="my-attachment.doc",
+            content_type="application/msword",
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerZaakIdentificatie.xml",
+                {
+                    "zaak_identificatie": "foo-zaak",
+                },
+            ),
+            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "zds_documenttype_omschrijving_inzending": "aaabbc",
+        }
+
+        self.assertFalse(submission.is_authenticated)
+
+        plugin = StufZDSRegistration("stuf")
+        serializer = plugin.configuration_options(data=form_options)
+        self.assertTrue(serializer.is_valid())
+
+        result = plugin.register_submission(submission, serializer.validated_data)
+        self.assertEqual(
+            result,
+            {
+                "zaak": "foo-zaak",
+                "document": "bar-document",
+            },
+        )
+
+        xml_doc = xml_from_request_history(m, 0)
+        self.assertSoapXMLCommon(xml_doc)
+
+        xml_doc = xml_from_request_history(m, 1)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
+                "//zkn:object/zkn:identificatie": "foo-zaak",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:nietNatuurlijkPersoon/bg:statutaireNaam": "Foo",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:nietNatuurlijkPersoon/bg:authentiek": "N",
+            },
+        )
+
+        # even on success, the intermediate results must be recorded:
+        submission.refresh_from_db()
+        self.assertEqual(
+            submission.registration_result["intermediate"],
+            {
+                "zaaknummer": "foo-zaak",
+                "zaak_created": True,
+                "document_nummers": {
+                    "pdf-report": "bar-document",
+                    str(attachment.id): "bar-document",
+                },
+                "documents_created": {
+                    "pdf-report": True,
+                    str(attachment.id): True,
+                },
+            },
+        )
+
+    @patch("celery.app.task.Task.request")
     def test_plugin_vestiging_initiator(self, m, mock_task):
         submission = SubmissionFactory.from_components(
             [
@@ -1019,6 +1310,122 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 template="logging/events/stuf_zds_success_response.txt"
             ).count(),
             6,
+        )
+
+        # even on success, the intermediate results must be recorded:
+        submission.refresh_from_db()
+        self.assertEqual(
+            submission.registration_result["intermediate"],
+            {
+                "zaaknummer": "foo-zaak",
+                "zaak_created": True,
+                "document_nummers": {
+                    "pdf-report": "bar-document",
+                    str(attachment.id): "bar-document",
+                },
+                "documents_created": {
+                    "pdf-report": True,
+                    str(attachment.id): True,
+                },
+            },
+        )
+
+    @patch("celery.app.task.Task.request")
+    def test_plugin_medewerker_without_auth(self, m, mock_task):
+        """Assert that the values of Zaak fields coupled to StUF-ZDS/ZGW are sent to the
+        backend if the Zaak is initiated by a non-authenticated employee"""
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "medewerker_nummer",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_medewerker_nummer,
+                    },
+                },
+                {
+                    "key": "voornamen",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+            ],
+            submitted_data={
+                "medewerker_nummer": "007",
+            },
+        )
+
+        attachment = SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+            file_name="my-attachment.doc",
+            content_type="application/msword",
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerZaakIdentificatie.xml",
+                {
+                    "zaak_identificatie": "foo-zaak",
+                },
+            ),
+            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+            additional_matcher=match_text("zakLk01"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerDocumentIdentificatie.xml",
+                {"document_identificatie": "bar-document"},
+            ),
+            additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
+        )
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("voegZaakdocumentToe.xml"),
+            additional_matcher=match_text("edcLk01"),
+        )
+
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "zds_documenttype_omschrijving_inzending": "aaabbc",
+        }
+
+        self.assertFalse(submission.is_authenticated)
+
+        plugin = StufZDSRegistration("stuf")
+        serializer = plugin.configuration_options(data=form_options)
+        self.assertTrue(serializer.is_valid())
+
+        result = plugin.register_submission(submission, serializer.validated_data)
+        self.assertEqual(
+            result,
+            {
+                "zaak": "foo-zaak",
+                "document": "bar-document",
+            },
+        )
+
+        xml_doc = xml_from_request_history(m, 0)
+        self.assertSoapXMLCommon(xml_doc)
+
+        xml_doc = xml_from_request_history(m, 1)
+        self.assertSoapXMLCommon(xml_doc)
+        self.assertXPathEqualDict(
+            xml_doc,
+            {
+                "//zkn:stuurgegevens/stuf:berichtcode": "Lk01",
+                "//zkn:stuurgegevens/stuf:entiteittype": "ZAK",
+                "//zkn:object/zkn:identificatie": "foo-zaak",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:medewerker/zkn:identificatie": "007",
+            },
         )
 
         # even on success, the intermediate results must be recorded:
