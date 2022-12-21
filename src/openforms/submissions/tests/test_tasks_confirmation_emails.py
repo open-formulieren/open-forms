@@ -560,9 +560,12 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         self.assertEqual(message.subject, f"Confirmation mail {_('(updated)')}")
 
     def test_template_is_rendered_in_submission_language(self):
-        """A subset of the components, with particularly weird APIs.
+        """
+        Assert a subset of the components with particularly weird APIs is translated correctly.
+        
         Translations on all FormIO components are exercised (until exorcised) in
-        .test_submission_report.DownloadSubmissionReportTests:test_report_is_generated_in_same_language_as_submission
+        ``DownloadSubmissionReportTests.test_report_is_generated_in_same_language_as_submission``
+        (in the ``.test_submission_report`` module).
         """
 
         language = "en"
