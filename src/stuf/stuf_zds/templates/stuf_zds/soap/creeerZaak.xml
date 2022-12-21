@@ -57,17 +57,12 @@
         {% if initiator %}
             <ZKN:heeftAlsInitiator StUF:verwerkingssoort="T" StUF:entiteittype="ZAKBTRINI">
                 <ZKN:gerelateerde>
-                    {% comment SUPPORT FOR EMPLOYEES AS INITIATOR %}
-                    {% if initiator.TODO %}
+                    {% if initiator.medewerker_nummer %}
                         <ZKN:medewerker StUF:entiteittype="MDW" StUF:verwerkingssoort="T">
-                            <ZKN:identificatie>?</ZKN:identificatie>
-                            <ZKN:achternaam>?</ZKN:achternaam>
-                            <ZKN:voorletters>?</ZKN:voorletters>
-                            <ZKN:voorvoegselAchternaam>?</ZKN:voorvoegselAchternaam>
+                            <BG:medewerker_nummer>{{ initiator.medewerker_nummer }}</BG:medewerker_nummer>
+                            <ZKN:identificatie>{{ zaak_identificatie }}</ZKN:identificatie>
                         </ZKN:medewerker>
-                    {% endif %}
-                    {% endcomment %}
-                    {% if initiator.bsn or initiator.geslachtsnaam %}
+                    {% elif initiator.bsn or initiator.geslachtsnaam %}
                         <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
                             {% if initiator.bsn %}
                                 <BG:inp.bsn>{{ initiator.bsn }}</BG:inp.bsn>
@@ -86,7 +81,7 @@
                                 {% include "stuf_zds/soap/includes/verblijfsadres.xml" %}
                             {% endif %}
                         </ZKN:natuurlijkPersoon>
-                    {% elif initiator.kvk and initiator.vestigingsNummer %}
+                    {% elif initiator.kvk and initiator.vestigingsNummer or initiator.handelsnaam and initiator.vestigingsNummer %}
                         <ZKN:vestiging StUF:entiteittype="VES" StUF:verwerkingssoort="T">
                             <BG:vestigingsNummer>{{ initiator.vestigingsNummer }}</BG:vestigingsNummer>
                             <BG:authentiek>N</BG:authentiek>
