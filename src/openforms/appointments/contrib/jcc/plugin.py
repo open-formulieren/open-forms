@@ -6,7 +6,6 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from requests.exceptions import RequestException
-from zeep import Client
 from zeep.exceptions import Error as ZeepError
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
@@ -24,6 +23,7 @@ from ...exceptions import (
     AppointmentException,
 )
 from ...utils import create_base64_qrcode
+from .client import get_client
 
 logger = logging.getLogger(__name__)
 
@@ -42,20 +42,19 @@ class Plugin(BasePlugin):
     identifier = "JCC-Plugin"
     verbose_name = "JCC-Plugin"
 
-    def __init__(self, wsdl):
-        self.client = Client(wsdl)
-
     def get_available_products(
         self, current_products: Optional[List[AppointmentProduct]] = None
     ) -> List[AppointmentProduct]:
+
+        client = get_client()
         try:
             if current_products:
                 current_product_ids = squash_ids(current_products)
-                result = self.client.service.getGovAvailableProductsByProduct(
+                result = client.service.getGovAvailableProductsByProduct(
                     ProductNr=current_product_ids
                 )
             else:
-                result = self.client.service.getGovAvailableProducts()
+                result = client.service.getGovAvailableProducts()
         except (ZeepError, RequestException) as e:
             logger.exception("Could not retrieve available products", exc_info=e)
             return []
@@ -74,10 +73,9 @@ class Plugin(BasePlugin):
     ) -> List[AppointmentLocation]:
         product_ids = squash_ids(products)
 
+        client = get_client()
         try:
-            result = self.client.service.getGovLocationsForProduct(
-                productID=product_ids
-            )
+            result = client.service.getGovLocationsForProduct(productID=product_ids)
         except (ZeepError, RequestException) as e:
             logger.exception(
                 "Could not retrieve locations for products '%s'",
@@ -100,19 +98,18 @@ class Plugin(BasePlugin):
         start_at: Optional[date] = None,
         end_at: Optional[date] = None,
     ) -> List[date]:
+        client = get_client()
         product_ids = squash_ids(products)
 
         start_at = start_at or date.today()
         end_at = end_at or (start_at + timedelta(days=14))
 
         try:
-            max_end_date = self.client.service.getGovLatestPlanDate(
-                productId=product_ids
-            )
+            max_end_date = client.service.getGovLatestPlanDate(productId=product_ids)
             if end_at > max_end_date:
                 end_at = max_end_date
 
-            days = self.client.service.getGovAvailableDays(
+            days = client.service.getGovAvailableDays(
                 locationID=location.identifier,
                 productID=product_ids,
                 startDate=start_at,
@@ -141,8 +138,9 @@ class Plugin(BasePlugin):
     ) -> List[datetime]:
         product_ids = squash_ids(products)
 
+        client = get_client()
         try:
-            times = self.client.service.getGovAvailableTimesPerDay(
+            times = client.service.getGovAvailableTimesPerDay(
                 date=day,
                 productID=product_ids,
                 locationID=location.identifier,
@@ -171,8 +169,9 @@ class Plugin(BasePlugin):
     ) -> str:
         product_ids = squash_ids(products)
 
+        jcc_client = get_client()
         try:
-            factory = self.client.type_factory("http://www.genericCBS.org/GenericCBS/")
+            factory = jcc_client.type_factory("http://www.genericCBS.org/GenericCBS/")
             appointment_details = factory.AppointmentDetailsType(
                 locationID=location.identifier,
                 productID=product_ids,
@@ -200,7 +199,7 @@ class Plugin(BasePlugin):
                 # caseID": "",
             )
 
-            result = self.client.service.bookGovAppointment(
+            result = jcc_client.service.bookGovAppointment(
                 appDetail=appointment_details, fields=[]
             )
 
@@ -218,8 +217,9 @@ class Plugin(BasePlugin):
             raise AppointmentCreateFailed(e)
 
     def delete_appointment(self, identifier: str) -> None:
+        client = get_client()
         try:
-            result = self.client.service.deleteGovAppointment(appID=identifier)
+            result = client.service.deleteGovAppointment(appID=identifier)
 
             if result != 0:
                 raise AppointmentDeleteFailed(
@@ -230,23 +230,24 @@ class Plugin(BasePlugin):
         except (ZeepError, RequestException) as e:
             raise AppointmentDeleteFailed(e)
 
-    def get_appointment_details(self, identifier: str) -> str:
+    def get_appointment_details(self, identifier: str) -> AppointmentDetails:
+        client = get_client()
         try:
             # NOTE: The operation `getGovAppointmentExtendedDetails` seems
             # missing. This would include the product descriptions but now we
             # need to make an additional call to get those.
-            details = self.client.service.getGovAppointmentDetails(appID=identifier)
+            details = client.service.getGovAppointmentDetails(appID=identifier)
             if details is None:
                 raise AppointmentException("No appointment details could be retrieved.")
 
-            location = self.client.service.getGovLocationDetails(
+            location = client.service.getGovLocationDetails(
                 locationID=details.locationID
             )
-            qrcode = self.client.service.GetAppointmentQRCodeText(appID=identifier)
+            qrcode = client.service.GetAppointmentQRCodeText(appID=identifier)
 
             app_products = []
             for pid in details.productID.split(","):
-                product = self.client.service.getGovProductDetails(productID=pid)
+                product = client.service.getGovProductDetails(productID=pid)
 
                 app_products.append(
                     AppointmentProduct(identifier=pid, name=product.description)
@@ -283,8 +284,9 @@ class Plugin(BasePlugin):
             raise AppointmentException(e)
 
     def check_config(self):
+        client = get_client()
         try:
-            self.client.service.getGovAvailableProducts()
+            client.service.getGovAvailableProducts()
         except (ZeepError, RequestException) as e:
             raise InvalidPluginConfiguration(
                 _("Invalid response: {exception}").format(exception=e)
