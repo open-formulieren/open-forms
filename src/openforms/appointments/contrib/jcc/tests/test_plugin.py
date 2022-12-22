@@ -121,32 +121,6 @@ class PluginTests(TestCase):
             self.assertEqual(times[0], datetime(2021, 8, 23, 8, 0, 0))
 
     @requests_mock.Mocker()
-    def test_get_calendar(self, m):
-        product = AppointmentProduct(
-            identifier="1", code="PASAAN", name="Paspoort aanvraag"
-        )
-        location = AppointmentLocation(identifier="1", name="Maykin Media")
-
-        m.post(
-            "http://example.com/soap11",
-            [
-                {"text": mock_response("getGovLatestPlanDateResponse.xml")},
-                {"text": mock_response("getGovAvailableDaysResponse.xml")},
-                {"text": mock_response("getGovAvailableTimesPerDayResponse.xml")},
-            ],
-        )
-
-        calendar = self.plugin.get_calendar([product], location)
-
-        self.assertEqual(len(calendar), 3)
-        self.assertEqual(
-            list(calendar.keys()),
-            [date(2021, 8, 19), date(2021, 8, 20), date(2021, 8, 23)],
-        )
-        self.assertEqual(len(calendar[date(2021, 8, 23)]), 106)
-        self.assertEqual(calendar[date(2021, 8, 23)][0], datetime(2021, 8, 23, 8, 0, 0))
-
-    @requests_mock.Mocker()
     def test_create_appointment(self, m):
         product = AppointmentProduct(
             identifier="1", code="PASAAN", name="Paspoort aanvraag"

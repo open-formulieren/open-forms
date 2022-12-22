@@ -144,36 +144,6 @@ class BasePlugin(ABC, AbstractBasePlugin):
         """
         raise NotImplementedError()
 
-    def get_calendar(
-        self,
-        products: List[AppointmentProduct],
-        location: AppointmentLocation,
-        start_at: Optional[date] = None,
-        end_at: Optional[date] = None,
-    ) -> Dict[date, List[datetime]]:
-        """
-        Retrieve a calendar.
-
-        WARNING: This default implementation has significant performance issues.
-        You can override this function with a more efficient implementation if
-        the service supports it.
-
-        :param products: List of :class:`AppointmentProduct`, as obtained from :meth:`get_available_products`.
-        :param location: An :class:`AppointmentLocation`, as obtained from :meth:`get_locations`.
-        :param start_at: The start :class:`date` to retrieve available dates for. Default: ``date.today()``.
-        :param end_at: The end :class:`date` to retrieve available dates for. Default: 14 days after ``start_date``.
-        :returns: Dict where each key represents a date and the values is a list of times.
-        """
-        days = self.get_dates(products, location, start_at, end_at)
-
-        result = {}
-
-        for day in days:
-            times = self.get_times(products, location, day)
-            result[day] = times
-
-        return result
-
     @abstractmethod
     def create_appointment(
         self,
@@ -188,7 +158,7 @@ class BasePlugin(ABC, AbstractBasePlugin):
 
         :param products: List of :class:`AppointmentProduct`, as obtained from :meth:`get_available_products`.
         :param location: An :class:`AppointmentLocation`, as obtained from :meth:`get_locations`.
-        :param start_at: A `datetime` to start the appointment, as obtained from :meth:`get_calendar`.
+        :param start_at: A `datetime` to start the appointment, as obtained from :meth:`get_dates`.
         :param client: A :class:`AppointmentClient` that holds client details.
         :param remarks: A ``str`` for additional remarks, added to the appointment.
         :returns: An appointment identifier as ``str``.

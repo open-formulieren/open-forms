@@ -109,39 +109,6 @@ class PluginTests(TestCase):
         self.assertEqual(times[0], datetime(2016, 12, 6, 9, 0, 0))
 
     @requests_mock.Mocker()
-    def test_get_calendar(self, m):
-        product = AppointmentProduct(
-            identifier="54b3482204c11bedc8b0a7acbffa308", name="Service 01"
-        )
-        location = AppointmentLocation(
-            identifier="f364d92b7fa07a48c4ecc862de30c47", name="Branch 1"
-        )
-        day = date(2016, 12, 6)
-
-        m.get(
-            f"{self.api_root}branches/{location.identifier}/services/{product.identifier}/dates",
-            text=mock_response("dates.json"),
-        )
-
-        matcher = re.compile(
-            f"^{self.api_root}branches/{location.identifier}/services/{product.identifier}/dates/[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]/times$"
-        )
-        m.get(
-            matcher,
-            text=mock_response("times.json"),
-        )
-
-        calendar = self.plugin.get_calendar([product], location)
-
-        self.assertEqual(len(calendar), 21)
-        self.assertEqual(
-            [list(calendar.keys())[-1], list(calendar.keys())[0]],
-            [day, date(2016, 11, 8)],
-        )
-        self.assertEqual(len(calendar[day]), 16)
-        self.assertEqual(calendar[day][0], datetime(2016, 12, 6, 9, 0, 0))
-
-    @requests_mock.Mocker()
     def test_create_appointment(self, m):
         product = AppointmentProduct(
             identifier="54b3482204c11bedc8b0a7acbffa308", name="Service 01"
