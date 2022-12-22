@@ -90,7 +90,6 @@ const getBuilderOptions = () => {
           date: true,
           time: true,
           phoneNumber: true,
-          postcode: true,
           file: true,
           password: true,
         },
@@ -116,6 +115,13 @@ const getBuilderOptions = () => {
           content: true,
           fieldset: true,
           columns: true,
+        },
+      },
+      custom_deprecated: {
+        title: 'Verouderd',
+        weight: 5,
+        components: {
+          postcode: true,
         },
       },
     },
