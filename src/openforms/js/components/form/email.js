@@ -1,5 +1,6 @@
 import {Formio} from 'formiojs';
 
+import {AUTOCOMPLETE} from './edit/options';
 import DEFAULT_TABS, {
   ADVANCED,
   REGISTRATION,
@@ -42,7 +43,8 @@ class EmailField extends FormioEmail {
     ];
     const BASIC_TAB = {
       ...SENSITIVE_BASIC,
-      components: [...SENSITIVE_BASIC.components, ...extra],
+      AUTOCOMPLETE,
+      components: [...SENSITIVE_BASIC.components, AUTOCOMPLETE, ...extra],
     };
     const TABS = {
       ...DEFAULT_TABS,

@@ -65,13 +65,6 @@ const SENSITIVE_READ_ONLY = {
       placeholder: 'on',
       tooltip: 'Display options to fill in the field, based on earlier typed values.',
       defaultValue: 'on',
-      data: {
-        values: [
-          {label: 'Aan', value: 'on'},
-          {label: 'Uit', value: 'off'},
-          {label: 'Postcode', value: 'postal-code'},
-        ],
-      },
     },
   ],
 };
