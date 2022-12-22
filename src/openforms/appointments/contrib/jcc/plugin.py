@@ -22,6 +22,7 @@ from ...exceptions import (
     AppointmentDeleteFailed,
     AppointmentException,
 )
+from ...registry import register
 from ...utils import create_base64_qrcode
 from .client import get_client
 
@@ -32,15 +33,15 @@ def squash_ids(lst):
     return ",".join([i.identifier for i in lst])
 
 
-class Plugin(BasePlugin):
+@register("jcc")
+class JccAppointment(BasePlugin):
     """
     Plugin for JCC-Afspraken internetafsprakenadapter GGS2 (april 2020)
 
     Website: https://www.jccsoftware.nl/
     """
 
-    identifier = "JCC-Plugin"
-    verbose_name = "JCC-Plugin"
+    verbose_name = _("JCC")
 
     def get_available_products(
         self, current_products: Optional[List[AppointmentProduct]] = None

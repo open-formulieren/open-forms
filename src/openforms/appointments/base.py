@@ -1,4 +1,5 @@
 import logging
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Dict, List, Optional
@@ -72,21 +73,14 @@ class AppointmentDetails:
         return self.identifier
 
 
-class BasePlugin(AbstractBasePlugin):
+class BasePlugin(ABC, AbstractBasePlugin):
     """
     Base Appointment plugin.
     """
 
     configuration_options = EmptyOptions
 
-    @property
-    def is_enabled(self):
-        # TODO currently not configurable,
-        # see https://github.com/open-formulieren/open-forms/issues/1103
-        # https://github.com/open-formulieren/open-forms/issues/623 should be
-        # implemented to properly set up generic plugin enable/disable behaviour
-        return True
-
+    @abstractmethod
     def get_available_products(
         self, current_products: Optional[List[AppointmentProduct]] = None
     ) -> List[AppointmentProduct]:
@@ -102,6 +96,7 @@ class BasePlugin(AbstractBasePlugin):
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def get_locations(
         self, products: List[AppointmentProduct]
     ) -> List[AppointmentLocation]:
@@ -113,6 +108,7 @@ class BasePlugin(AbstractBasePlugin):
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def get_dates(
         self,
         products: List[AppointmentProduct],
@@ -131,6 +127,7 @@ class BasePlugin(AbstractBasePlugin):
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def get_times(
         self,
         products: List[AppointmentProduct],
@@ -177,6 +174,7 @@ class BasePlugin(AbstractBasePlugin):
 
         return result
 
+    @abstractmethod
     def create_appointment(
         self,
         products: List[AppointmentProduct],
@@ -198,6 +196,7 @@ class BasePlugin(AbstractBasePlugin):
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def delete_appointment(self, identifier: str) -> None:
         """
         Delete an appointment.
@@ -207,6 +206,7 @@ class BasePlugin(AbstractBasePlugin):
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def get_appointment_details(self, identifier: str) -> str:
         """
         Get appointment details.

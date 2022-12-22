@@ -23,20 +23,21 @@ from ...exceptions import (
     AppointmentDeleteFailed,
     AppointmentException,
 )
+from ...registry import register
 from .client import QmaticException, get_client
 
 logger = logging.getLogger(__name__)
 
 
-class Plugin(BasePlugin):
+@register("qmatic")
+class QmaticAppointment(BasePlugin):
     """
     Plugin for Qmatic Orchestra Calendar Public Appointment API (july 2017)
 
     Website: https://www.qmatic.com/
     """
 
-    identifier = "Qmatic-Plugin"
-    verbose_name = "Qmatic-Plugin"
+    verbose_name = _("Qmatic")
 
     def get_available_products(
         self, current_products: Optional[List[AppointmentProduct]] = None
