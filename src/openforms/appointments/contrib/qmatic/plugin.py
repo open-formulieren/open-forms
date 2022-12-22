@@ -23,7 +23,7 @@ from ...exceptions import (
     AppointmentDeleteFailed,
     AppointmentException,
 )
-from .client import QmaticClient, QmaticException
+from .client import QmaticException, get_client
 
 logger = logging.getLogger(__name__)
 
@@ -38,9 +38,6 @@ class Plugin(BasePlugin):
     identifier = "Qmatic-Plugin"
     verbose_name = "Qmatic-Plugin"
 
-    def __init__(self):
-        self.client = QmaticClient()
-
     def get_available_products(
         self, current_products: Optional[List[AppointmentProduct]] = None
     ) -> List[AppointmentProduct]:
@@ -50,8 +47,9 @@ class Plugin(BasePlugin):
         NOTE: The API does not support making an appointment for multiple
         products. The ``current_products`` argument is ignored.
         """
+        client = get_client()
         try:
-            response = self.client.get("services")
+            response = client.get("services")
             response.raise_for_status()
         except (QmaticException, RequestException) as e:
             logger.exception("Could not retrieve available products", exc_info=e)
@@ -73,10 +71,11 @@ class Plugin(BasePlugin):
         if len(products) > 1:
             logger.warning("Attempt to retrieve locations for more than one product.")
 
+        client = get_client()
         product_id = products[0].identifier
 
         try:
-            response = self.client.get(f"services/{product_id}/branches")
+            response = client.get(f"services/{product_id}/branches")
             response.raise_for_status()
         except (QmaticException, RequestException) as e:
             logger.exception(
@@ -111,10 +110,11 @@ class Plugin(BasePlugin):
         if len(products) != 1:
             return []
 
+        client = get_client()
         product_id = products[0].identifier
 
         try:
-            response = self.client.get(
+            response = client.get(
                 f"branches/{location.identifier}/services/{product_id}/dates"
             )
             response.raise_for_status()
@@ -140,10 +140,11 @@ class Plugin(BasePlugin):
         if len(products) != 1:
             return []
 
+        client = get_client()
         product_id = products[0].identifier
 
         try:
-            response = self.client.get(
+            response = client.get(
                 f"branches/{location.identifier}/services/{product_id}/dates/{day.strftime('%Y-%m-%d')}/times"
             )
             response.raise_for_status()
@@ -171,9 +172,11 @@ class Plugin(BasePlugin):
         start_at: datetime,
         client: AppointmentClient,
         remarks: str = "",
-    ) -> str:
+    ) -> Optional[str]:
+
+        qmatic_client = get_client()
         if len(products) != 1:
-            return []
+            return
 
         product_id = products[0].identifier
         product_name = products[0].name
@@ -203,7 +206,7 @@ class Plugin(BasePlugin):
             f"dates/{start_date}/times/{start_time}/book"
         )
         try:
-            response = self.client.post(url, json.dumps(data, cls=DjangoJSONEncoder))
+            response = qmatic_client.post(url, json.dumps(data, cls=DjangoJSONEncoder))
             response.raise_for_status()
             return response.json()["publicId"]
         except (QmaticException, RequestException, KeyError) as exc:
@@ -218,8 +221,9 @@ class Plugin(BasePlugin):
             raise AppointmentException from exc
 
     def delete_appointment(self, identifier: str) -> None:
+        client = get_client()
         try:
-            response = self.client.delete(f"appointments/{identifier}")
+            response = client.delete(f"appointments/{identifier}")
             if response.status_code == 404:
                 raise AppointmentDeleteFailed(
                     "Could not delete appointment: %s", identifier
@@ -229,9 +233,10 @@ class Plugin(BasePlugin):
         except (QmaticException, RequestException) as e:
             raise AppointmentDeleteFailed(e)
 
-    def get_appointment_details(self, identifier: str) -> str:
+    def get_appointment_details(self, identifier: str) -> AppointmentDetails:
+        client = get_client()
         try:
-            response = self.client.get(f"appointments/{identifier}")
+            response = client.get(f"appointments/{identifier}")
             response.raise_for_status()
 
             details = response.json()["appointment"]
@@ -266,8 +271,9 @@ class Plugin(BasePlugin):
             raise AppointmentException(e)
 
     def check_config(self):
+        client = get_client()
         try:
-            response = self.client.get("services")
+            response = client.get("services")
             response.raise_for_status()
         except (QmaticException, RequestException) as e:
             raise InvalidPluginConfiguration(

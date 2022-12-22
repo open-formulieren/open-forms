@@ -37,3 +37,7 @@ class QmaticClient(Session):
             )
 
         return response
+
+
+def get_client():
+    return QmaticClient()
