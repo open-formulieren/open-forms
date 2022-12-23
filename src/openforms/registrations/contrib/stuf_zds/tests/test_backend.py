@@ -813,16 +813,16 @@ class StufZDSPluginTests(StUFZDSTestBase):
                     },
                 },
                 {
-                    "key": "vestigingsnummer",
+                    "key": "postcode",
                     "type": "textfield",
                     "registration": {
-                        "attribute": RegistrationAttribute.initiator_vestigingsnummer,
+                        "attribute": RegistrationAttribute.initiator_postcode,
                     },
                 },
             ],
             submitted_data={
                 "handelsnaam": "Foo",
-                "vestigingsnummer": "0815",
+                "postcode": "2022XY",
             },
         )
 
@@ -895,6 +895,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:object/zkn:identificatie": "foo-zaak",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:nietNatuurlijkPersoon/bg:statutaireNaam": "Foo",
                 "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:nietNatuurlijkPersoon/bg:authentiek": "N",
+                "//zkn:object/zkn:heeftAlsInitiator/zkn:gerelateerde/zkn:nietNatuurlijkPersoon/bg:bezoekadres/bg:aoa.postcode": "2022XY",
             },
         )
 

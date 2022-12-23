@@ -81,7 +81,7 @@
                                 {% include "stuf_zds/soap/includes/verblijfsadres.xml" %}
                             {% endif %}
                         </ZKN:natuurlijkPersoon>
-                    {% elif initiator.kvk and initiator.vestigingsNummer %}
+                    {% elif initiator.vestigingsNummer %}
                         <ZKN:vestiging StUF:entiteittype="VES" StUF:verwerkingssoort="T">
                             <BG:vestigingsNummer>{{ initiator.vestigingsNummer }}</BG:vestigingsNummer>
                             <BG:authentiek>N</BG:authentiek>
@@ -91,20 +91,19 @@
                                 {% include "stuf_zds/soap/includes/verblijfsadres.xml" %}
                             {% endif %}
                         </ZKN:vestiging>
-                    {% elif initiator.kvk %}
+                    {% elif initiator.kvk or initiator.handelsnaam %}
                         <ZKN:nietNatuurlijkPersoon StUF:entiteittype="NNP" StUF:verwerkingssoort="T">
-                            <BG:inn.nnpId>{{ initiator.kvk }}</BG:inn.nnpId>
-                            <BG:authentiek>J</BG:authentiek>
+                            {% if initiator.kvk %}
+                                <BG:inn.nnpId>{{ initiator.kvk }}</BG:inn.nnpId>
+                                <BG:authentiek StUF:metagegeven="true">J</BG:authentiek>
+                            {% else %}
+                                <BG:authentiek StUF:metagegeven="true">N</BG:authentiek>
+                            {% endif %}
+                            {% if initiator.handelsnaam %}<BG:statutaireNaam>{{ initiator.handelsnaam }}</BG:statutaireNaam>{% endif %}
                             {% if initiator.verblijfsadres.postcode or initiator.verblijfsadres.woonplaatsNaam %}
                                 {% include "stuf_zds/soap/includes/bezoekadres.xml" %}
                             {% endif %}
                         </ZKN:nietNatuurlijkPersoon>
-                    {% elif initiator.handelsnaam %}
-                        <ZKN:nietNatuurlijkPersoon StUF:entiteittype="NNP" StUF:verwerkingssoort="T">
-                            <BG:statutaireNaam>{{ initiator.handelsnaam }}</BG:statutaireNaam>
-                            <BG:authentiek>N</BG:authentiek>
-                        </ZKN:nietNatuurlijkPersoon>
-
                     {% elif not global_config.allow_empty_initiator %}
                         <ZKN:natuurlijkPersoon StUF:entiteittype="NPS" StUF:verwerkingssoort="T">
                             <BG:inp.bsn>111222333</BG:inp.bsn>
