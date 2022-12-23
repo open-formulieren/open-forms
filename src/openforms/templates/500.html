@@ -5,206 +5,139 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-
-    <title> - Server Error</title>
-
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-
-    <style type="text/css">
-/*
- * Globals
- */
-
-/* Links */
-a,
-a:focus,
-a:hover {
-  color: #fff;
+    <title>Server Error</title>
+    <style type="text/css" nonce="{{ request.csp_nonce  }}">
+:root {
+  --background-color: #fff;
+  --foreground-color: #333;
+  --button-background-color: #fff;
+  --button-border-color: #ccc;
 }
 
-/* Custom default button */
-.btn-default,
-.btn-default:hover,
-.btn-default:focus {
-  color: #333;
-  text-shadow: none; /* Prevent inheritence from `body` */
+* {
+  box-sizing: border-box;
 }
 
-
-/*
- * Base structure
- */
-
-html,
+/* Vertically and horizontally center content */
 body {
-  height: 100%;
-  background-color: #fff;
-}
-body {
-  color: #333;
+  background-color: var(--background-color);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: var(--foreground-color);
   text-align: center;
   text-shadow: 0 1px 1px rgba(0,0,0,.3);
-}
 
-/* Extra markup and styles for table-esque vertical and horizontal centering */
-.site-wrapper {
-  display: table;
-  width: 100%;
-  height: 100%; /* For at least Firefox */
-  min-height: 100%;
-}
-.site-wrapper-inner {
-  display: table-cell;
-  vertical-align: top;
-}
-.cover-container {
-  margin-right: auto;
-  margin-left: auto;
-}
-
-/* Padding for spacing */
-.inner {
-  padding: 30px;
-}
-
-
-/*
- * Header
- */
-.masthead-brand {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.masthead-nav > li {
-  display: inline-block;
-}
-.masthead-nav > li + li {
-  margin-left: 20px;
-}
-.masthead-nav > li > a {
-  padding-right: 0;
-  padding-left: 0;
-  font-size: 16px;
-  font-weight: bold;
-  color: #fff; /* IE8 proofing */
-  color: rgba(255,255,255,.75);
-  border-bottom: 2px solid transparent;
-}
-.masthead-nav > li > a:hover,
-.masthead-nav > li > a:focus {
-  background-color: transparent;
-  border-bottom-color: #a9a9a9;
-  border-bottom-color: rgba(255,255,255,.25);
-}
-.masthead-nav > .active > a,
-.masthead-nav > .active > a:hover,
-.masthead-nav > .active > a:focus {
-  color: #fff;
-  border-bottom-color: #fff;
-}
-
-@media (min-width: 768px) {
-  .masthead-brand {
-    float: left;
-  }
-  .masthead-nav {
-    float: right;
-  }
-}
-
-
-/*
- * Cover
- */
-
-.cover {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
   padding: 0 20px;
 }
-.cover .btn-lg {
+
+body > * {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+h1 {
+  font-size: 36px;
+  font-family: inherit;
+  font-weight: 500;
+  line-height: 1.1;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+}
+
+p {
+  font-size: 16px;
+  margin: 0 0 10px;
+}
+
+p.lead {
+  margin-bottom: 20px;
+  font-weight: 300;
+  line-height: 1.4;
+}
+
+.button {
+  display: inline-block;
+  margin: 0;
   padding: 10px 20px;
+
+  background-color: var(--button-background-color);
+  background-image: linear-gradient(to bottom, #fff 0, #e0e0e0 100%);
+  background-repeat: repeat-x;
+
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 15%), 0 1px 1px rgb(0 0 0 / 8%);
+  border: 1px solid transparent;
+  border-color: var(--button-border-color);
+  border-radius: 6px;
+
+  color: var(--foreground-color);
+  font-size: 18px;
   font-weight: bold;
+  line-height: 1.3333333;
+  text-decoration: none;
+  text-shadow: none;
 }
 
-
-/*
- * Footer
- */
-
-.mastfoot {
-  color: #999; /* IE8 proofing */
-  color: rgba(255,255,255,.5);
+.button:hover {
+  background-color: #e0e0e0;
+  background-position: 0 -15px;
+  border-color: #adadad;
 }
 
+.button:active {
+  box-shadow: inset 0 3px 5px rgb(0 0 0 / 13%);
+}
 
-/*
- * Affix and center
- */
+.button:focus,
+.button:focus-visible {
+  background-color: #e0e0e0;
+  background-position: 0 -15px;
+  border-color: #8c8c8c;
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
 
 @media (min-width: 768px) {
-  /* Pull out the header and footer */
-  .masthead {
-    position: fixed;
-    top: 0;
+  body > * {
+    max-width: 660px;
+    width: 100%;
   }
-  .mastfoot {
-    position: fixed;
-    bottom: 0;
-  }
-  /* Start the vertical centering */
-  .site-wrapper-inner {
-    vertical-align: middle;
-  }
-  /* Handle the widths */
-  .masthead,
-  .mastfoot,
-  .cover-container {
-    width: 100%; /* Must be percentage or pixels for horizontal alignment */
+
+  p.lead {
+    font-size: 21px;
   }
 }
 
-@media (min-width: 992px) {
-  .masthead,
-  .mastfoot,
-  .cover-container {
-    width: 700px;
+@media (max-width: 768px) {
+  body {
+    justify-content: flex-start;
   }
 }
+
     </style>
 
 </head>
 
 <body>
-  <div class="site-wrapper">
-
-    <div class="site-wrapper-inner">
-
-      <div class="cover-container">
-
-        <div class="inner cover">
-          <h1 class="cover-heading">Sorry, a server error has occurred (500)</h1>
-          <p class="lead">We have been automatically notified about the problem and will investigate as soon as possible.</p>
-          {% if request.sentry.id %}
-            <p>If you need assistance, you may reference this error as
-            <strong>{{ request.sentry.id }}</strong>.</p>
-          {% endif %}
-          <p class="lead">
-            <a href="/" class="btn btn-lg btn-default">Back to home</a>
-          </p>
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
+  <h1 >Sorry, a server error has occurred (500)</h1>
+  <p class="lead">We have been automatically notified about the problem and will investigate as soon as possible.</p>
+  {% if request.sentry.id %}
+    <p>If you need assistance, you may reference this error as
+    <strong>{{ request.sentry.id }}</strong>.</p>
+  {% endif %}
+  <p class="lead">
+    <a href="/" class="button">Back to home</a>
+  </p>
 </body>
 
 </html>
