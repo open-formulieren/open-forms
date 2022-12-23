@@ -2,6 +2,20 @@
 Changelog
 =========
 
+1.1.9 (2023-12-23)
+==================
+
+Periodic bugfix release, addressing some blocking defects and upgrade issues.
+
+* [#2331] Fixed incorrect key validation problem which would block upgrades to 2.0+
+* [#2385] Fixed incomplete logic handling which would block upgrades to 2.0+
+* [#2413] Fixed fields being made visible by selectboxes in frontend logic not being
+  visible in summary/pdf/emails
+* [#2422] Fixed invalid postcode format being sent to StUF-ZDS
+* [#2494] Fixed person details not being sent to StUF-ZDS if the submitter was not
+  authenticated but instead filled out details manually.
+* Fix docs build due to legacy renegotiation being disabled in openssl 3
+
 1.1.8 (2022-11-07)
 ==================
 
