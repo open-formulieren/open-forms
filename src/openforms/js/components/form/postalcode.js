@@ -8,16 +8,13 @@ import {
 } from './edit/tabs';
 import TextField from './textfield';
 
-// NB: this component will become deprecated due to preset autocomplete components
-// see issue: https://github.com/open-formulieren/open-forms/issues/2268
-
-class PostcodeField extends TextField {
+class PostalcodeField extends TextField {
   static schema(...extend) {
     return TextField.schema(
       {
-        type: 'postcode',
+        type: 'textfield',
         label: 'Postcode',
-        key: 'postcode',
+        key: 'postalcode',
         inputMask: '9999 AA',
         validateOn: 'blur',
         validate: {
@@ -37,9 +34,9 @@ class PostcodeField extends TextField {
     return {
       title: 'Postcode Field',
       icon: 'home',
-      group: 'deprecated',
+      group: 'preset',
       weight: 10,
-      schema: PostcodeField.schema(),
+      schema: PostalcodeField.schema(),
     };
   }
 
@@ -53,8 +50,8 @@ class PostcodeField extends TextField {
   }
 
   get defaultSchema() {
-    return PostcodeField.schema();
+    return PostalcodeField.schema();
   }
 }
 
-export default PostcodeField;
+export default PostalcodeField;

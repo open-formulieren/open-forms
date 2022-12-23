@@ -9,6 +9,7 @@ import Datamap from './components/form/datamap';
 import DateField from './components/form/date';
 import EditGrid from './components/form/editGrid';
 import EmailField from './components/form/email';
+import EmailaddressField from './components/form/emailAddress';
 import FieldSet from './components/form/fieldset';
 import FileField from './components/form/file';
 import IbanField from './components/form/iban';
@@ -18,7 +19,9 @@ import Map from './components/form/map';
 import NpFamilyMembers from './components/form/np-family-members';
 import NumberField from './components/form/number';
 import PasswordField from './components/form/password';
+import PasswordinputField from './components/form/passwordField';
 import PhoneNumberField from './components/form/phoneNumber';
+import PostalcodeField from './components/form/postalcode';
 import PostcodeField from './components/form/postcode';
 import RadioField from './components/form/radio';
 import SelectField from './components/form/select';
@@ -43,14 +46,17 @@ const FormIOModule = {
     phoneNumber: PhoneNumberField,
     bsn: BsnField,
     postcode: PostcodeField,
+    postalcode: PostalcodeField,
     file: FileField,
     select: SelectField,
     iotypeSelect: InformatieObjectTypeSelectField,
     radio: RadioField,
     selectboxes: SelectBoxesField,
     email: EmailField,
+    emailAddress: EmailaddressField,
     map: Map,
     password: PasswordField,
+    passwordField: PasswordinputField,
     fieldset: FieldSet,
     licenseplate: LicensePlate,
     coSign: CoSignField,

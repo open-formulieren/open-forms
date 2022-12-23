@@ -9,11 +9,31 @@ import {
   TRANSLATIONS,
   VALIDATION,
 } from './edit/tabs';
+import TextField from './textfield';
 
-// NB: this component will become deprecated due to preset autocomplete components
-// see issue: https://github.com/open-formulieren/open-forms/issues/2268
+class PasswordinputField extends TextField {
+  static schema(...extend) {
+    return TextField.schema(
+      {
+        type: 'textfield',
+        label: 'Password',
+        key: 'passwordField',
+        autocomplete: 'password',
+      },
+      ...extend
+    );
+  }
 
-class PasswordField extends Formio.Components.components.password {
+  static get builderInfo() {
+    return {
+      title: 'Password',
+      icon: 'asterisk',
+      group: 'preset',
+      weight: 10,
+      schema: PasswordinputField.schema(),
+    };
+  }
+
   static editForm() {
     return {
       components: [
@@ -35,6 +55,10 @@ class PasswordField extends Formio.Components.components.password {
       ],
     };
   }
+
+  get defaultSchema() {
+    return PasswordinputField.schema();
+  }
 }
 
-export default PasswordField;
+export default PasswordinputField;

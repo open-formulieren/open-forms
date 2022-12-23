@@ -90,7 +90,6 @@ const getBuilderOptions = () => {
           time: true,
           phoneNumber: true,
           file: true,
-          password: true,
         },
       },
       custom_special: {
@@ -121,11 +120,11 @@ const getBuilderOptions = () => {
         weight: 10,
         components: {
           firstName: {
-            title: 'First Name',
+            title: 'Voornaam',
             key: 'firstName',
             icon: 'terminal',
             schema: {
-              label: 'First Name',
+              label: 'Voornaam',
               type: 'textfield',
               key: 'firstName',
               input: true,
@@ -133,11 +132,11 @@ const getBuilderOptions = () => {
             },
           },
           lastName: {
-            title: 'Last Name',
+            title: 'Achternaam',
             key: 'lastName',
             icon: 'terminal',
             schema: {
-              label: 'Last Name',
+              label: 'Achternaam',
               type: 'textfield',
               key: 'lastName',
               input: true,
@@ -180,40 +179,31 @@ const getBuilderOptions = () => {
               autocomplete: 'address-line3',
             },
           },
-          postalcode: {
-            title: 'Postcode',
-            key: 'postalcode',
-            icon: 'home',
-            schema: {
-              label: 'Postcode',
-              type: 'textfield',
-              key: 'postalcode',
-              input: true,
-              autocomplete: 'postal-code',
-            },
-          },
-          email: {
-            title: 'Email',
-            key: 'email',
-            icon: 'at',
-            schema: {
-              label: 'Email',
-              type: 'email',
-              key: 'email',
-              input: true,
-              autocomplete: 'email',
-            },
-          },
+          postalcode: true,
+          emailAddress: true,
+          passwordField: true,
           bday: {
             title: 'Geboortedatum',
             key: 'bday',
             icon: 'calendar',
             schema: {
               label: 'Geboortedatum',
-              type: 'bday',
+              type: 'textfield',
               key: 'bday',
               input: true,
               autocomplete: 'bday',
+            },
+          },
+          url: {
+            title: 'Website',
+            key: 'url',
+            icon: 'link',
+            schema: {
+              label: 'Website',
+              type: 'textfield',
+              key: 'url',
+              input: true,
+              autocomplete: 'url',
             },
           },
         },
@@ -224,6 +214,7 @@ const getBuilderOptions = () => {
         components: {
           email: true,
           postcode: true,
+          password: true,
         },
       },
     },

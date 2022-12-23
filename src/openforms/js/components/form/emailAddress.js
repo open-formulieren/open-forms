@@ -1,6 +1,5 @@
 import {Formio} from 'formiojs';
 
-import {AUTOCOMPLETE} from './edit/options';
 import DEFAULT_TABS, {
   ADVANCED,
   REGISTRATION,
@@ -9,12 +8,9 @@ import DEFAULT_TABS, {
   VALIDATION,
 } from './edit/tabs';
 
-// NB: this component will become deprecated due to preset autocomplete components
-// see issue: https://github.com/open-formulieren/open-forms/issues/2268
-
 const FormioEmail = Formio.Components.components.email;
 
-class EmailField extends FormioEmail {
+class EmailaddressField extends FormioEmail {
   static schema(...extend) {
     return FormioEmail.schema(
       {
@@ -27,11 +23,12 @@ class EmailField extends FormioEmail {
   static get builderInfo() {
     return {
       title: 'Email',
-      group: 'advanced',
+      group: 'preset',
       icon: 'at',
       documentation: '/userguide/#email',
       weight: 10,
-      schema: EmailField.schema(),
+      autocomplete: 'email',
+      schema: EmailaddressField.schema(),
     };
   }
 
@@ -46,8 +43,7 @@ class EmailField extends FormioEmail {
     ];
     const BASIC_TAB = {
       ...SENSITIVE_BASIC,
-      AUTOCOMPLETE,
-      components: [...SENSITIVE_BASIC.components, AUTOCOMPLETE, ...extra],
+      components: [...SENSITIVE_BASIC.components, ...extra],
     };
     const TABS = {
       ...DEFAULT_TABS,
@@ -57,4 +53,4 @@ class EmailField extends FormioEmail {
   }
 }
 
-export default EmailField;
+export default EmailaddressField;
