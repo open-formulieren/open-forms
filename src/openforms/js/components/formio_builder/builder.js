@@ -79,6 +79,7 @@ const getBuilderOptions = () => {
         weight: 0,
         components: {
           textfield: true,
+          email: true,
           textarea: true,
           checkbox: true,
           selectboxes: true,
@@ -90,6 +91,7 @@ const getBuilderOptions = () => {
           time: true,
           phoneNumber: true,
           file: true,
+          password: true,
         },
       },
       custom_special: {
@@ -179,16 +181,46 @@ const getBuilderOptions = () => {
               autocomplete: 'address-line3',
             },
           },
-          postalcode: true,
-          emailAddress: true,
-          passwordField: true,
+          postalcode: {
+            title: 'Postcode',
+            key: 'postalcode',
+            icon: 'home',
+            schema: {
+              label: 'Postcode',
+              type: 'textfield',
+              key: 'postalcode',
+              input: true,
+              autocomplete: 'postal-code',
+              inputMask: '9999 AA',
+              validateOn: 'blur',
+              validate: {
+                customMessage: 'Invalid Postcode',
+                // Dutch postcode has 4 numbers and 2 letters (case insensitive). Letter combinations SS, SD and SA
+                // are not used due to the Nazi-association.
+                // See https://stackoverflow.com/a/17898538/7146757 and https://nl.wikipedia.org/wiki/Postcodes_in_Nederland
+                pattern: '^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$',
+              },
+            },
+          },
+          email: {
+            title: 'E-mailadres',
+            key: 'email',
+            icon: 'at',
+            schema: {
+              label: 'E-mailadres',
+              type: 'email',
+              key: 'email',
+              input: true,
+              autocomplete: 'email',
+            },
+          },
           bday: {
             title: 'Geboortedatum',
             key: 'bday',
             icon: 'calendar',
             schema: {
               label: 'Geboortedatum',
-              type: 'textfield',
+              type: 'date',
               key: 'bday',
               input: true,
               autocomplete: 'bday',
@@ -206,15 +238,36 @@ const getBuilderOptions = () => {
               autocomplete: 'url',
             },
           },
+          password: {
+            title: 'Wachtwoord',
+            key: 'password',
+            icon: 'asterisk',
+            schema: {
+              label: 'Wachtwoord',
+              type: 'password',
+              key: 'password',
+              input: true,
+              autocomplete: {
+                type: 'select',
+                key: 'autocomplete',
+                label: 'Autocomplete',
+                placeholder: 'on',
+                tooltip: 'Display options to fill in the field, based on earlier typed values.',
+                values: [
+                  {label: 'Wachtwoord', value: 'password'},
+                  {label: 'Nieuw wachtwoord', value: 'new-password'},
+                  {label: 'Huidige wachtwoord', value: 'current-password'},
+                ],
+              },
+            },
+          },
         },
       },
       custom_deprecated: {
         title: 'Verouderd',
         weight: 10,
         components: {
-          email: true,
           postcode: true,
-          password: true,
         },
       },
     },

@@ -3,6 +3,7 @@ import {Formio} from 'react-formio';
 import {DEFAULT_VALUE} from './edit/options';
 import {
   ADVANCED,
+  AUTOCOMPLETE_PASSWORD,
   DEFAULT_SENSITIVE_TABS,
   REGISTRATION,
   SENSITIVE_BASIC,
@@ -10,15 +11,13 @@ import {
   VALIDATION,
 } from './edit/tabs';
 
-// NB: this component will become deprecated due to preset autocomplete components
-// see issue: https://github.com/open-formulieren/open-forms/issues/2268
-
 class PasswordField extends Formio.Components.components.password {
   static editForm() {
     return {
       components: [
         {
           ...DEFAULT_SENSITIVE_TABS,
+          AUTOCOMPLETE_PASSWORD,
           components: [
             {
               ...SENSITIVE_BASIC,

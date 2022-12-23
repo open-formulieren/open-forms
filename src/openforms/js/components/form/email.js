@@ -9,9 +9,6 @@ import DEFAULT_TABS, {
   VALIDATION,
 } from './edit/tabs';
 
-// NB: this component will become deprecated due to preset autocomplete components
-// see issue: https://github.com/open-formulieren/open-forms/issues/2268
-
 const FormioEmail = Formio.Components.components.email;
 
 class EmailField extends FormioEmail {
@@ -27,7 +24,7 @@ class EmailField extends FormioEmail {
   static get builderInfo() {
     return {
       title: 'Email',
-      group: 'advanced',
+      group: 'basic',
       icon: 'at',
       documentation: '/userguide/#email',
       weight: 10,
