@@ -2,6 +2,38 @@
 Changelog
 =========
 
+2.0.2 (2022-12-23)
+==================
+
+Periodic bugfix release, addressing some blocking defects and upgrade issues.
+
+* [#2331] Fixed incorrect key validation problem which would block upgrades to 2.0+
+* [#2385] Fixed incomplete logic handling which would block upgrades to 2.0+
+* [#2398] Fixed logic trigger processing which could crash upgrades to 2.0+
+* [#2413] Fixed fields being made visible by selectboxes in frontend logic not being
+  visible in summary/pdf/emails
+* [#2422] Fixed invalid postcode format being sent to StUF-ZDS
+* [#2289] Fixed StUF-ZDS: now a ``Vestiging`` is created if vestigingsnummer is present,
+  falling back to ``NietNatuurlijkPersoon`` otherwise.
+* [#2494] Fixed person details not being sent to StUF-ZDS if the submitter was not
+  authenticated but instead filled out details manually.
+* [#2432] Fixed importing pre-2.0 forms with legacy form step references in actions
+* Fix docs build due to legacy renegotiation being disabled in openssl 3
+
+1.1.9 (2023-12-23)
+==================
+
+Periodic bugfix release, addressing some blocking defects and upgrade issues.
+
+* [#2331] Fixed incorrect key validation problem which would block upgrades to 2.0+
+* [#2385] Fixed incomplete logic handling which would block upgrades to 2.0+
+* [#2413] Fixed fields being made visible by selectboxes in frontend logic not being
+  visible in summary/pdf/emails
+* [#2422] Fixed invalid postcode format being sent to StUF-ZDS
+* [#2494] Fixed person details not being sent to StUF-ZDS if the submitter was not
+  authenticated but instead filled out details manually.
+* Fix docs build due to legacy renegotiation being disabled in openssl 3
+
 2.1.0-alpha.1 (2022-12-20)
 ==========================
 
