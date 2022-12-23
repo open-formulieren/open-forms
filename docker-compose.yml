@@ -26,8 +26,11 @@ services:
 
   redis:
     image: redis:6
+    command: ["redis-server", "--appendonly", "yes"]
     networks:
       - open-forms-dev
+    volumes:
+      - data:/data
 
   smtp:
     image: namshi/smtp
@@ -137,6 +140,7 @@ volumes:
   private_media:
   log:
   certifi_ca_bundle:
+  data:
 
 networks:
   open-forms-dev:

@@ -6,7 +6,7 @@ Installation
 You can install Open Forms in several ways, depending on your intended purpose
 and expertise.
 
-1. Deploy using :ref:`Ansible <installation_ansible>` for public testing and 
+1. Deploy using :ref:`Ansible <installation_ansible>` for public testing and
    production purposes
 2. Run with :ref:`Docker-Compose <installation_docker_compose>` on your computer for private testing purposes
 3. Run from `Python code`_ on your computer for development purposes
@@ -29,4 +29,5 @@ and expertise.
    file_uploads
    self_signed
    form_hosting
+   redis
    issues/index
