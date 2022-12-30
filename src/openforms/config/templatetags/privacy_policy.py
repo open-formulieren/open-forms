@@ -10,11 +10,9 @@ register = template.Library()
 def privacy_policy():
     conf = GlobalConfiguration.get_solo()
     if conf.privacy_policy_url:
-        template_string = """
-        {% load i18n %}<a href="{{ privacy_policy }}" target="_blank" rel="noreferrer noopener">
-            {% trans "privacy policy" %}
-        </a>
-        """
+        template_string = """{% load i18n %}
+        <a href="{{ privacy_policy }}" target="_blank" rel="noreferrer noopener">{% trans "privacy policy" %}</a>"""
+
         return Template(template_string).render(
             Context({"privacy_policy": conf.privacy_policy_url})
         )
