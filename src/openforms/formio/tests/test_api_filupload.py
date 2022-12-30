@@ -1,5 +1,7 @@
+from pathlib import Path
+
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import override_settings
+from django.test import override_settings, tag
 from django.utils.translation import gettext as _
 
 from privates.test import temp_private_root
@@ -11,6 +13,8 @@ from openforms.submissions.attachments import temporary_upload_from_url
 from openforms.submissions.constants import UPLOADS_SESSION_KEY
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
+
+TEST_FILES = Path(__file__).parent.resolve() / "files"
 
 
 @temp_private_root()
@@ -145,3 +149,22 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
 
         # the limited stream causes no file to be present (can't be properly parsed)
         self.assertTrue(400 <= response.status_code < 500)
+
+    @tag("gh-2520")
+    def test_doc_files_can_be_uploaded(self):
+        self._add_submission_to_session(self.submission)
+
+        url = reverse("api:formio:temporary-file-upload")
+
+        with open(Path(TEST_FILES, "test.doc"), "rb") as f:
+            file = SimpleUploadedFile(
+                "test.doc", f.read(), content_type="application/msword"
+            )
+
+        response = self.client.post(
+            url,
+            {"file": file},
+            format="multipart",
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
