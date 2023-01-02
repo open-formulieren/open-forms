@@ -37,8 +37,12 @@ class MimeTypeValidator:
                 ),
             )
 
-        # Contents is allowed. Do extension or submitted content_type agree?
+        # gh #2520
+        if mime_type == "application/CDFV2":
+            whole_file = head + value.read()
+            mime_type = magic.from_buffer(whole_file, mime=True)
 
+        # Contents is allowed. Do extension or submitted content_type agree?
         if value.content_type == "application/octet-stream":
             m = magic.Magic(extension=True)
             extensions = m.from_buffer(head).split("/")
