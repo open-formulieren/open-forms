@@ -144,7 +144,13 @@ def validate_uploads(submission_step: SubmissionStep, data: Optional[dict]) -> N
         # perform content type validation
         with upload.content.open("rb") as infile:
             # 2048 bytes per recommendation of python-magic
-            file_mime_type = magic.from_buffer(infile.read(2048), mime=True)
+            head = infile.read(2048)
+            file_mime_type = magic.from_buffer(head, mime=True)
+
+            # gh #2520
+            if file_mime_type == "application/CDFV2":
+                whole_file = head + infile.read()
+                file_mime_type = magic.from_buffer(whole_file, mime=True)
 
         invalid_file_type_error = ErrorDetail(
             _("The file '{filename}' is not a valid file type.").format(
