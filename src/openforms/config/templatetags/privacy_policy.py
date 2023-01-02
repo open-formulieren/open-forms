@@ -1,5 +1,6 @@
 from django import template
-from django.template import Context, Template
+from django.utils.html import format_html
+from django.utils.translation import gettext as _
 
 from ..models import GlobalConfiguration
 
@@ -10,11 +11,12 @@ register = template.Library()
 def privacy_policy():
     conf = GlobalConfiguration.get_solo()
     if conf.privacy_policy_url:
-        template_string = """{% load i18n %}
-        <a href="{{ privacy_policy }}" target="_blank" rel="noreferrer noopener">{% trans "privacy policy" %}</a>"""
+        template_string = (
+            """<a href="{}" target="_blank" rel="noreferrer noopener">{}</a>"""
+        )
 
-        return Template(template_string).render(
-            Context({"privacy_policy": conf.privacy_policy_url})
+        return format_html(
+            template_string, conf.privacy_policy_url, _("privacy policy")
         )
 
     return ""
