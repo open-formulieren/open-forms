@@ -8,7 +8,7 @@ from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
 
-from ..service import format_value
+from ..service import format_value, translate_function
 from ..typing import Component
 from ..utils import is_layout_component, is_visible_in_frontend, iter_components
 
@@ -73,15 +73,9 @@ class ComponentNode(Node):
         # labels through the translations, before further processing of logic
         # etc.
         if self.renderer.form.translation_enabled and self.step.form_step:
-            lang = self.renderer.submission.language_code
-            translations = (
-                self.step.form_step.form_definition.component_translations.get(lang, {})
+            self.apply_to_labels(
+                translate_function(self.renderer.submission, self.step)
             )
-
-            def translate(string: str) -> str:
-                return translations.get(string) or string
-
-            self.apply_to_labels(translate)
 
     @property
     def is_visible(self) -> bool:

@@ -4,7 +4,11 @@ from django.utils.functional import empty
 
 import elasticapm
 
-from openforms.formio.service import get_dynamic_configuration, inject_variables
+from openforms.formio.service import (
+    get_dynamic_configuration,
+    inject_variables,
+    translate_function,
+)
 from openforms.formio.utils import get_component_empty_value, is_visible_in_frontend
 from openforms.logging import logevent
 
@@ -159,7 +163,13 @@ def evaluate_form_logic(
         data_diff[key] = empty_value
 
     # 7.2 Interpolate the component configuration with the variables.
-    inject_variables(config_wrapper, data_container.data)
+    translate = (
+        # We need to interpolate the translated string
+        translate_function(submission, step)
+        if (submission.form.translation_enabled and step.form_step)
+        else str  # a noop when translation is not enabled
+    )
+    inject_variables(config_wrapper, data_container.data, translate)
 
     # 7.3 Handle custom formio types - TODO: this needs to be lifted out of
     # :func:`get_dynamic_configuration` so that it can use variables.

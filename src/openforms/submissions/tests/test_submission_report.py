@@ -143,12 +143,12 @@ class DownloadSubmissionReportTests(APITestCase):
 
             # but massage the weirder components into shape
             match component:
-                case {"type": "radio", "key": key}:
+                case {"type": "radio"}:
                     component["values"] = [
                         {"label": "Untranslated Radio option one", "value": "radioOne"},
                         {"label": "Untranslated Radio option two", "value": "radioTwo"},
                     ]
-                case {"type": "select", "key": key}:
+                case {"type": "select"}:
                     component["data"] = {
                         "values": [
                             {
@@ -161,7 +161,7 @@ class DownloadSubmissionReportTests(APITestCase):
                             },
                         ]
                     }
-                case {"type": "selectboxes", "key": key}:
+                case {"type": "selectboxes"}:
                     component["values"] = [
                         {
                             "label": "Untranslated Selectboxes option one",
@@ -213,7 +213,13 @@ class DownloadSubmissionReportTests(APITestCase):
                     "hidden": False,
                     "label": "Untranslated Repeating Group label",
                     "groupLabel": "Untranslated Repeating Group Item label",
-                    "components": [(grid_child := components.pop())],
+                    "components": [components.pop()],
+                },
+                {
+                    "type": "checkbox",
+                    "key": "interpolkey",
+                    "hidden": False,
+                    "label": "Untranslated label using {{textfieldkey}} interpolation",
                 },
             ]
         )
@@ -262,6 +268,7 @@ class DownloadSubmissionReportTests(APITestCase):
                     "Untranslated Textfield label": "Translated Textfield label",
                     "Untranslated Time label": "Translated Time label",
                     "Untranslated Updatenote label": "Translated Updatenote label",
+                    "Untranslated label using {{textfieldkey}} interpolation": "Interpolated {{textfieldkey}} label",
                 }
             },
             submission__form__formstep__form_definition__configuration={
@@ -299,6 +306,7 @@ class DownloadSubmissionReportTests(APITestCase):
                 "textfieldkey": "Short predetermined ASCII",
                 "timekey": "23:50",
                 "updatenotekey": "C#",
+                "interpolkey": True,
             },
         )
 
@@ -320,10 +328,10 @@ class DownloadSubmissionReportTests(APITestCase):
         self.assertIn("Translated Field Set label", html_report)
         self.assertIn("Translated Repeating Group label", html_report)
         self.assertIn("Translated Repeating Group Item label", html_report)
-        self.assertNotIn(
-            "Translated Columns label", html_report
-        )  # 1451 -> never output a label
+        # 1451 -> never output a label
+        self.assertNotIn("Translated Columns label", html_report)
 
+        self.assertIn("Interpolated Short predetermined ASCII label", html_report)
         # Assert nothing was left untranslated
         self.assertNotIn("Untranslated", html_report)
 

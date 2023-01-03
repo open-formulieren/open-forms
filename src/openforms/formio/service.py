@@ -8,13 +8,13 @@ apps/packages:
 * Keep it small! The actual implementation should be done in specialized subpackages or
   submodules and only their 'public' API should be imported and used.
 """
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 import elasticapm
 from rest_framework.request import Request
 
 from openforms.prefill import inject_prefill
-from openforms.submissions.models import Submission
+from openforms.submissions.models import Submission, SubmissionStep
 from openforms.typing import DataMapping
 
 from .datastructures import FormioConfigurationWrapper
@@ -50,6 +50,20 @@ def normalize_value_for_component(component: Component, value: Any) -> Any:
     specific normalization.
     """
     return register.normalize(component, value)
+
+
+def translate_function(
+    submission: Submission,
+    step: SubmissionStep,
+) -> Callable[[str], str]:
+    "Return a translate function for FormIO strings"
+
+    assert step.form_step  # nosec: intended use of B101
+    lang = submission.language_code
+
+    translations = step.form_step.form_definition.component_translations.get(lang, {})
+
+    return lambda s: translations.get(s) or s
 
 
 @elasticapm.capture_span(span_type="app.formio")
