@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Iterator, Union
+from typing import Callable, Iterator, Union
 
 from django.urls import reverse
 from django.utils.html import format_html_join
@@ -45,6 +45,23 @@ class ContainerMixin:
             return False
 
         return True
+
+
+@register("selectboxes")
+@register("radio")
+class ChoicesNode(ComponentNode):
+    def apply_to_labels(self, f: Callable[[str], str]) -> None:
+        super().apply_to_labels(f)
+        for choice in self.component["values"]:
+            choice["label"] = f(choice["label"])
+
+
+@register("select")
+class SelectNode(ComponentNode):
+    def apply_to_labels(self, f: Callable[[str], str]) -> None:
+        super().apply_to_labels(f)
+        for choice in self.component["data"]["values"]:
+            choice["label"] = f(choice["label"])
 
 
 @register("fieldset")
@@ -258,12 +275,17 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
                 parent_node=self,
             )
 
+    def __post_init__(self):
+        self._base_label = self.component.get("groupLabel", self.default_label)
+        super().__post_init__()
+
+    def apply_to_labels(self, f: Callable[[str], str]) -> None:
+        super().apply_to_labels(f)
+        self._base_label = f(self._base_label)
+
     @property
     def label(self) -> str:
-        group_label = self._localise(
-            self.component.get("groupLabel", self.default_label)
-        )
-        return f"{group_label} {self.group_index + 1}"
+        return f"{self._base_label} {self.group_index + 1}"
 
     def render(self) -> str:
         return f"{self.indent}{self.label}"

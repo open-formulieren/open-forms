@@ -1,6 +1,6 @@
 import copy
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Iterator, Literal, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Iterator, Literal, Optional, Union
 
 from glom import Path, assign, glom
 
@@ -56,20 +56,6 @@ class ComponentNode(Node):
         """
         from .registry import register
 
-        if (
-            step.form_step is not None
-            and step.form_step.form.translation_enabled
-            and (lang := step.submission.language_code)
-        ):
-            # Value Formatters have no access to the translations
-            # adjust value labels (for radio, checkbox etc)
-            translations = step.form_step.form_definition.component_translations
-            for value in component.get("data", component).get("values", []):
-                if value_label := value.get("label"):
-                    value["label"] = translations.get(lang, {}).get(
-                        value_label, value_label
-                    )
-
         node_cls = register[component["type"]]
         nested_node = node_cls(
             step=step,
@@ -81,6 +67,21 @@ class ComponentNode(Node):
             parent_node=parent_node,
         )
         return nested_node
+
+    def __post_init__(self):
+        # Value Formatters have no access to the translations; run all our
+        # labels through the translations, before further processing of logic
+        # etc.
+        if self.renderer.form.translation_enabled and self.step.form_step:
+            lang = self.renderer.submission.language_code
+            translations = (
+                self.step.form_step.form_definition.component_translations.get(lang, {})
+            )
+
+            def translate(string: str) -> str:
+                return translations.get(string) or string
+
+            self.apply_to_labels(translate)
 
     @property
     def is_visible(self) -> bool:
@@ -221,13 +222,14 @@ class ComponentNode(Node):
         """
         if self.mode == RenderModes.export:
             return self.component.get("key") or "KEY_MISSING"
-        label = self.component.get("label") or self.component.get("key", "")
-        return self._localise(label)
+        return self.component.get("label") or self.component.get("key", "")
 
-    def _localise(self, string):
-        translations = self.step.form_step.form_definition.component_translations
-        lang = self.step.submission.language_code
-        return translations.get(lang, {}).get(string, string)
+    def apply_to_labels(self, f: Callable[[str], str]) -> None:
+        """
+        Apply a function f to all labels.
+        """
+        if "label" in self.component:
+            self.component["label"] = f(self.component["label"])
 
     @property
     def display_value(self) -> Union[str, Any]:

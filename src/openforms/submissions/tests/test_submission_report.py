@@ -102,11 +102,11 @@ class DownloadSubmissionReportTests(APITestCase):
     def test_report_is_generated_in_same_language_as_submission(self):
         # fixture_data
         fields = [
-            # Component.type, user_input
+            # Component.type, localised submitted values
             ("bsn", "111222333"),
             ("checkbox", "yes"),
-            ("currency", "1100000"),
-            ("date", "1911-06-29"),
+            ("currency", "1,100,000"),  # 1100000
+            ("date", "June 29, 1911"),  # 1922-06-29
             ("email", "hostmaster@example.org"),
             ("file", "download(2).pdf"),
             ("iban", "NL56 INGB 0705 0051 00"),
@@ -122,45 +122,32 @@ class DownloadSubmissionReportTests(APITestCase):
             ("signature", SIGNATURE),
             ("textarea", "Largish predetermined ASCII"),
             ("textfield", "Short predetermined ASCII"),
-            ("time", "23:50"),
+            ("time", "11:50 p.m."),  # 23:50
             ("updatenote", "C#"),
         ]
-        submission_data = {}
-        translations = {}
-        components = []
 
-        # carthesian products are big, let's loop to fill these
-        for component_type, user_input in fields:
+        components = []  # FormDefiniton
+
+        for component_type, _ in fields:
             # common base
             component = {
                 "type": component_type,
-                "key": f"{component_type}-key",
+                "key": f"{component_type}key",
                 "label": f"Untranslated {component_type.title()} label",
                 "showInPDF": True,
                 "hidden": False,
             }
-            submission_data[f"{component_type}-key"] = user_input
-            translations[
-                f"Untranslated {component_type.title()} label"
-            ] = f"Translated {component_type.title()} label"
 
-            # add the component
+            # add the component to the FormDefintion
             components.append(component)
 
             # but massage the weirder components into shape
             match component:
-                case {"type": "file", "key": key}:
-                    submission_data[key] = [{"originalName": "download(2).pdf"}]
                 case {"type": "radio", "key": key}:
                     component["values"] = [
                         {"label": "Untranslated Radio option one", "value": "radioOne"},
                         {"label": "Untranslated Radio option two", "value": "radioTwo"},
                     ]
-                    submission_data[key] = "radioOne"  # value of the selected label
-                    translations["Untranslated Radio option one"] = "Radio number one"
-                    translations[
-                        "Untranslated Radio option two"
-                    ] = "Translated Radio option two"
                 case {"type": "select", "key": key}:
                     component["data"] = {
                         "values": [
@@ -174,11 +161,6 @@ class DownloadSubmissionReportTests(APITestCase):
                             },
                         ]
                     }
-                    submission_data[key] = "selectOne"  # value of the selected label
-                    translations["Untranslated Select option one"] = "A fine selection"
-                    translations[
-                        "Untranslated Select option two"
-                    ] = "Translated Select option two"
                 case {"type": "selectboxes", "key": key}:
                     component["values"] = [
                         {
@@ -198,19 +180,6 @@ class DownloadSubmissionReportTests(APITestCase):
                             "value": "selectboxesFour",
                         },
                     ]
-                    submission_data[key] = {
-                        "selectboxesOne": False,
-                        "selectboxesTwo": True,
-                        "selectboxesThree": True,
-                        "selectboxesFour": True,
-                    }
-                    translations["Untranslated Selectboxes option one"] = "The Deal"
-                    translations["Untranslated Selectboxes option two"] = "This"
-                    translations["Untranslated Selectboxes option three"] = "That"
-                    translations["Untranslated Selectboxes option four"] = "The Other"
-                case {"type": "map", "key": key}:
-                    # map needs an list as data
-                    submission_data[key] = [52.193459, 5.279538]
 
         # pop the last few components into structural components
         components.extend(
@@ -248,29 +217,52 @@ class DownloadSubmissionReportTests(APITestCase):
                 },
             ]
         )
-        # adjust path of repeating group
-        submission_data["editgrid1"] = [
-            {f"{grid_child['type']}-key": submission_data[f"{grid_child['type']}-key"]}
-        ]
-
-        translations["Untranslated Field Set label"] = "Translated Field Set label"
-        translations[
-            "Untranslated Repeating Group label"
-        ] = "Translated Repeating Group label"
-        translations[
-            "Untranslated Repeating Group Item label"
-        ] = "Translated Repeating Group Item label"
-
         report = SubmissionReportFactory(
             submission__language_code="en",
             submission__completed=True,
             submission__form__generate_minimal_setup=True,
             submission__form__translation_enabled=True,
-            submission__form__name_en="Translated form name",
-            submission__form__formstep__form_definition__name_nl="Walsje",
+            submission__form__name_nl="Untranslated Form name",
+            submission__form__name_en="Translated Form name",
+            submission__form__formstep__form_definition__name_nl="Untranslated Form Step name",
             submission__form__formstep__form_definition__name_en="A Quickstep",
             submission__form__formstep__form_definition__component_translations={
-                "en": translations
+                "en": {
+                    "Untranslated Bsn label": "Translated Bsn label",
+                    "Untranslated Checkbox label": "Translated Checkbox label",
+                    "Untranslated Currency label": "Translated Currency label",
+                    "Untranslated Date label": "Translated Date label",
+                    "Untranslated Email label": "Translated Email label",
+                    "Untranslated Field Set label": "Translated Field Set label",
+                    "Untranslated File label": "Translated File label",
+                    "Untranslated Iban label": "Translated Iban label",
+                    "Untranslated Licenseplate label": "Translated Licenseplate label",
+                    "Untranslated Map label": "Translated Map label",
+                    "Untranslated Number label": "Translated Number label",
+                    "Untranslated Password label": "Translated Password label",
+                    "Untranslated Phonenumber label": "Translated Phonenumber label",
+                    "Untranslated Postcode label": "Translated Postcode label",
+                    "Untranslated Radio label": "Translated Radio label",
+                    "Untranslated Radio option one": "Radio number one",
+                    "Untranslated Radio option two": "Translated Radio option two",
+                    "Untranslated Repeating Group Item label": "Translated Repeating Gr"
+                    "oup Item label",
+                    "Untranslated Repeating Group label": "Translated Repeating Group l"
+                    "abel",
+                    "Untranslated Select label": "Translated Select label",
+                    "Untranslated Select option one": "A fine selection",
+                    "Untranslated Select option two": "Translated Select option two",
+                    "Untranslated Selectboxes label": "Translated Selectboxes label",
+                    "Untranslated Selectboxes option four": "The Other",
+                    "Untranslated Selectboxes option one": "The Deal",
+                    "Untranslated Selectboxes option three": "That",
+                    "Untranslated Selectboxes option two": "This",
+                    "Untranslated Signature label": "Translated Signature label",
+                    "Untranslated Textarea label": "Translated Textarea label",
+                    "Untranslated Textfield label": "Translated Textfield label",
+                    "Untranslated Time label": "Translated Time label",
+                    "Untranslated Updatenote label": "Translated Updatenote label",
+                }
             },
             submission__form__formstep__form_definition__configuration={
                 "components": components,
@@ -279,27 +271,46 @@ class DownloadSubmissionReportTests(APITestCase):
         SubmissionStepFactory.create(
             submission=report.submission,
             form_step=report.submission.form.formstep_set.get(),
-            data=submission_data,
+            data={
+                "bsnkey": "111222333",
+                "checkboxkey": True,
+                "currencykey": "1100000",
+                "datekey": "1911-06-29",
+                "editgrid1": [{"textareakey": "Largish predetermined ASCII"}],
+                "emailkey": "hostmaster@example.org",
+                "filekey": [{"originalName": "download(2).pdf"}],
+                "ibankey": "NL56 INGB 0705 0051 00",
+                "licenseplatekey": "AA-00-13",
+                "mapkey": [52.193459, 5.279538],
+                "numberkey": "1",
+                "passwordkey": "Panda1911!",
+                "phonenumberkey": "+49 1234 567 890",
+                "postcodekey": "3744 AA",
+                "radiokey": "radioOne",
+                "selectkey": "selectOne",
+                "selectboxeskey": {
+                    "selectboxesFour": True,
+                    "selectboxesOne": False,
+                    "selectboxesThree": True,
+                    "selectboxesTwo": True,
+                },
+                "signaturekey": SIGNATURE,
+                "textareakey": "Largish predetermined ASCII",
+                "textfieldkey": "Short predetermined ASCII",
+                "timekey": "23:50",
+                "updatenotekey": "C#",
+            },
         )
 
         # create report
         html_report = report.generate_submission_report_pdf()
 
-        self.assertIn("Translated form name", html_report)
+        self.assertIn("Translated Form name", html_report)
         self.assertIn("A Quickstep", html_report)
-        self.assertNotIn("Walsje", html_report)
 
-        # localized date, time and decimal point
-        self.assertIn("June 29, 1911", html_report)
-        self.assertIn("11:50 p.m.", html_report)
-        self.assertIn("1,100,000.00", html_report)
-
-        for component_type, user_input in fields:
+        for component_type, localised_input in fields:
             with self.subTest(f"FormIO label for {component_type}"):
-                if component_type in ["date", "time", "currency"]:
-                    pass  # these are localized
-                else:
-                    self.assertIn(user_input, html_report)
+                self.assertIn(localised_input, html_report)
                 self.assertNotIn(
                     f"Untranslated {component_type.title()} label", html_report
                 )
@@ -307,23 +318,23 @@ class DownloadSubmissionReportTests(APITestCase):
 
         # assert structural labels
         self.assertIn("Translated Field Set label", html_report)
+        self.assertIn("Translated Repeating Group label", html_report)
+        self.assertIn("Translated Repeating Group Item label", html_report)
         self.assertNotIn(
             "Translated Columns label", html_report
         )  # 1451 -> never output a label
-        self.assertIn("Translated Repeating Group label", html_report)
-        self.assertIn("Translated Repeating Group Item label", html_report)
-        self.assertNotIn("Untranslated Field Set label", html_report)
-        self.assertNotIn("Untranslated Columns label", html_report)
-        self.assertNotIn("Untranslated Repeating Group label", html_report)
-        self.assertNotIn("Untranslated Repeating Group Item label", html_report)
+
+        # Assert nothing was left untranslated
+        self.assertNotIn("Untranslated", html_report)
 
         # assert we've tested every component_type ct in register
         plugins = set(ct for ct, _ in register.items())
-        plugins.remove("content")  # WYSIWIG seems untranslated in SDK
+        # WYSIWIG seems untranslated in SDK TODO after/in issue #2475
+        plugins.remove("content")
 
         tested_plugins = set(ct for ct, _ in fields if ct in plugins)
         # add checked structural "layout" components that don't require
-        # user_input and are therefore not in fields
+        # user input and are therefore not in fields
         tested_plugins.update(
             (
                 "fieldset",
