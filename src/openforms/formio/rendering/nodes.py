@@ -1,6 +1,6 @@
 import copy
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Iterator, Literal, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Iterator, Literal, Optional, Union
 
 from glom import Path, assign, glom
 
@@ -8,7 +8,7 @@ from openforms.submissions.models import SubmissionStep
 from openforms.submissions.rendering.base import Node
 from openforms.submissions.rendering.constants import RenderModes
 
-from ..service import format_value
+from ..service import format_value, translate_function
 from ..typing import Component
 from ..utils import is_layout_component, is_visible_in_frontend, iter_components
 
@@ -67,6 +67,15 @@ class ComponentNode(Node):
             parent_node=parent_node,
         )
         return nested_node
+
+    def __post_init__(self):
+        # Value Formatters have no access to the translations; run all our
+        # labels through the translations, before further processing of logic
+        # etc.
+        if self.renderer.form.translation_enabled and self.step.form_step:
+            self.apply_to_labels(
+                translate_function(self.renderer.submission, self.step)
+            )
 
     @property
     def is_visible(self) -> bool:
@@ -208,6 +217,13 @@ class ComponentNode(Node):
         if self.mode == RenderModes.export:
             return self.component.get("key") or "KEY_MISSING"
         return self.component.get("label") or self.component.get("key", "")
+
+    def apply_to_labels(self, f: Callable[[str], str]) -> None:
+        """
+        Apply a function f to all labels.
+        """
+        if "label" in self.component:
+            self.component["label"] = f(self.component["label"])
 
     @property
     def display_value(self) -> Union[str, Any]:

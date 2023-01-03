@@ -92,7 +92,9 @@ def validate_configuration(configuration: JSONObject) -> Dict[str, str]:
 
 
 def inject_variables(
-    configuration: FormioConfigurationWrapper, values: DataMapping
+    configuration: FormioConfigurationWrapper,
+    values: DataMapping,
+    translate: Callable[[str], str] = str,
 ) -> None:
     """
     Inject the variable values into the Formio configuration.
@@ -116,6 +118,14 @@ def inject_variables(
                 continue
 
             try:
+                # XXX should translation only occur on labels?
+                if isinstance(property_value, str):
+                    property_value = translate(property_value)
+                elif isinstance(property_value, list) and isinstance(
+                    property_value[0], str
+                ):
+                    property_value = [translate(s) for s in property_value]
+
                 templated_value = render(property_value, values)
             except TemplateSyntaxError as exc:
                 logger.debug(
@@ -124,4 +134,5 @@ def inject_variables(
                 )
                 # keep the original value on error
                 continue
+
             component[property_name] = templated_value
