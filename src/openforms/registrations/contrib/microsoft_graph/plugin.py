@@ -1,6 +1,8 @@
-from typing import NoReturn
+from pathlib import Path
+from typing import NoReturn, Union
 
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
@@ -16,14 +18,38 @@ from openforms.submissions.tasks.registration import set_submission_reference
 from ...base import BasePlugin
 from ...exceptions import NoSubmissionReference, RegistrationFailed
 from ...registry import register
+from .config import MicrosoftGraphOptionsSerializer
 
 
 @register("microsoft-graph")
 class MSGraphRegistration(BasePlugin):
     verbose_name = _("Microsoft Graph (OneDrive/SharePoint)")
+    configuration_options = MicrosoftGraphOptionsSerializer
 
-    def _get_folder_name(self, submission: Submission):
-        return f"open-forms/{slugify(submission.form.admin_name)}/{submission.public_registration_reference}"
+    def _get_folder_name(self, submission: Submission, options: dict) -> "Path":
+        folder_path = Path(options["base_path"])
+        if "additional_path" in options:
+            additional_path_template = options["additional_path"].format(
+                year="{date:%Y}", month="{date:%m}", day="{date:%d}"
+            )
+
+            folder_path = folder_path / Path(
+                additional_path_template.format(date=timezone.now().date())
+            )
+
+        folder_path = (
+            folder_path
+            / Path(slugify(submission.form.admin_name))
+            / Path(submission.public_registration_reference)
+        )
+        return folder_path
+
+    def _get_filename(self, *args: Union[str, "Path"]) -> "Path":
+        filename = Path("/")
+        for arg in args:
+            part = Path(arg) if not isinstance(arg, Path) else arg
+            filename = filename / part
+        return filename
 
     def register_submission(self, submission: Submission, options: dict) -> None:
         # explicitly get a reference before registering
@@ -36,19 +62,20 @@ class MSGraphRegistration(BasePlugin):
         client = MSGraphClient(config.service)
         uploader = MSGraphUploadHelper(client)
 
-        folder_name = self._get_folder_name(submission)
+        folder_name = self._get_folder_name(submission, options)
 
         submission_report = SubmissionReport.objects.get(submission=submission)
         uploader.upload_django_file(
-            submission_report.content, f"{folder_name}/report.pdf"
+            submission_report.content, self._get_filename(folder_name, "report.pdf")
         )
 
         data = submission.get_merged_data()
-        uploader.upload_json(data, f"{folder_name}/data.json")
+        uploader.upload_json(data, self._get_filename(folder_name, "data.json"))
 
         for attachment in submission.attachments.all():
             uploader.upload_django_file(
-                attachment.content, f"{folder_name}/attachments/{attachment.file_name}"
+                attachment.content,
+                self._get_filename(folder_name, "attachments", attachment.file_name),
             )
 
         self._set_payment(uploader, submission, folder_name)
@@ -61,7 +88,7 @@ class MSGraphRegistration(BasePlugin):
         client = MSGraphClient(config.service)
         uploader = MSGraphUploadHelper(client)
 
-        folder_name = self._get_folder_name(submission)
+        folder_name = self._get_folder_name(submission, options)
         self._set_payment(uploader, submission, folder_name)
 
     def _set_payment(self, uploader, submission, folder_name):
@@ -70,7 +97,9 @@ class MSGraphRegistration(BasePlugin):
                 content = f"{_('payment received')}: € {submission.price}"
             else:
                 content = f"{_('payment required')}: € {submission.price}"
-            uploader.upload_string(content, f"{folder_name}/payment_status.txt")
+            uploader.upload_string(
+                content, self._get_filename(folder_name, "payment_status.txt")
+            )
 
     def check_config(self):
         config = MSGraphRegistrationConfig.get_solo()
