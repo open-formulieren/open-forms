@@ -1,5 +1,7 @@
 """
-Utilities to parse/process jsonLogic expressions.
+Utilities to parse/process sonLogic expressions.
+
+This module is being refactored to the json_logic.meta utilities.
 """
 from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Any, Dict, List, Union
@@ -10,10 +12,11 @@ if TYPE_CHECKING:
     from openforms.formio.typing import Component
     from openforms.forms.models import FormStep
 
-__all__ = ["JsonLogicTest"]
+
+__all__ = ["JsonLogicTest", "ComponentMeta", "introspect_json_logic"]
 
 JSONLogicValue = Union[str, int, "JsonLogicTest"]
-JsonLogicExpression = Dict[str, Any]
+JsonLogicExpressionType = Dict[str, Any]
 JsonLogicNode = Union["JsonLogicLeaf", "JsonLogicOperation"]
 
 
@@ -72,7 +75,7 @@ class IntrospectionResult:
     def as_string(self) -> str:
         return stringify_json_tree(self.rule_tree)
 
-    def get_input_components(self) -> List[JsonLogicExpression]:
+    def get_input_components(self) -> List[JsonLogicExpressionType]:
         return get_leaves(self.rule_tree)
 
 
@@ -92,9 +95,9 @@ class JsonLogicOperation:
 
 
 def introspect_json_logic(
-    expression: JsonLogicExpression,
+    expression: JsonLogicExpressionType,
     components_map: Dict[str, ComponentMeta],
-    input_data: JsonLogicExpression,
+    input_data: JsonLogicExpressionType,
 ) -> IntrospectionResult:
     logic_expression = JsonLogicTest.from_expression(expression)
     rule_tree = convert_json_logic_in_json_tree(
@@ -203,7 +206,7 @@ def stringify_json_tree(node: JsonLogicNode) -> str:
     return output
 
 
-def get_leaves(node: JsonLogicNode) -> List[JsonLogicExpression]:
+def get_leaves(node: JsonLogicNode) -> List[JsonLogicExpressionType]:
 
     if isinstance(node, JsonLogicLeaf):
         return [asdict(node)]
