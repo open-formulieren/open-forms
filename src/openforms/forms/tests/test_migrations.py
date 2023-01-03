@@ -492,3 +492,96 @@ class TestLogicParsing(TestMigrations):
         FormLogic = self.apps.get_model("forms", "FormLogic")
         logic_records = FormLogic.objects.all()
         self.assertFalse(logic_records)
+
+
+class GenerateLogicDescriptions(TestMigrations):
+    app = "forms"
+    migrate_from = "0060_formlogic_description"
+    migrate_to = "0061_generate_logic_rule_descriptions"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        Form = apps.get_model("forms", "Form")
+        FormLogic = apps.get_model("forms", "FormLogic")
+        FormStep = apps.get_model("forms", "FormStep")
+
+        form = Form.objects.create(slug="form")
+        form_def = FormDefinition.objects.create(
+            slug="form_def",
+            configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "textfield",
+                    },
+                    {
+                        "type": "editgrid",
+                        "key": "items",
+                        "components": [
+                            {
+                                "type": "textfield",
+                                "key": "name",
+                            },
+                        ],
+                    },
+                ]
+            },
+        )
+        FormStep.objects.create(form=form, form_definition=form_def, order=0)
+        # simple rule
+        fl1 = FormLogic.objects.create(
+            form=form,
+            order=0,
+            json_logic_trigger={"!=": [{"var": "textfield"}, "foo"]},
+            actions=[
+                {
+                    "action": {
+                        "type": "property",
+                        "state": False,
+                        "property": {"type": "bool", "value": "hidden"},
+                    },
+                    "component": "items",
+                }
+            ],
+        )
+        self.fl1_pk = fl1.pk
+        # complex rule
+        fl2 = FormLogic.objects.create(
+            form=form,
+            order=1,
+            json_logic_trigger={
+                ">": [
+                    {
+                        "reduce": [
+                            {"var": "items"},
+                            {"+": [{"var": "accumulator"}, 1]},
+                            0,
+                        ]
+                    },
+                    1,
+                ]
+            },
+            actions=[
+                {
+                    "action": {
+                        "type": "property",
+                        "state": False,
+                        "property": {"type": "bool", "value": "hidden"},
+                    },
+                    "component": "textfield",
+                }
+            ],
+        )
+        self.fl2_pk = fl2.pk
+
+    def test_description_filled_simple_rule(self):
+        FormLogic = self.apps.get_model("forms", "FormLogic")
+        instance = FormLogic.objects.get(pk=self.fl1_pk)
+
+        self.assertNotEqual(instance.description, "")
+
+    def test_description_filled_complex_rule(self):
+        FormLogic = self.apps.get_model("forms", "FormLogic")
+        instance = FormLogic.objects.get(pk=self.fl2_pk)
+
+        self.assertNotEqual(instance.description, "")
