@@ -13,7 +13,7 @@ Prerequisites
 
 You need the following libraries and/or programs:
 
-* `Python`_ 3.8
+* `Python`_ 3.10
 * Python `Virtualenv`_ and `Pip`_
 * `PostgreSQL`_ 10 or above
 * `Redis`_ for `Celery`_ to work
