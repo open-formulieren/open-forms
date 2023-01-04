@@ -4,7 +4,7 @@ import React from 'react';
 
 import JsonWidget from 'components/admin/forms/JsonWidget';
 
-const AdvancedTrigger = ({name, logic, onChange, error}) => {
+const AdvancedTrigger = ({name, description = '', logic, onChange, error}) => {
   return (
     <div className="logic-trigger">
       <div

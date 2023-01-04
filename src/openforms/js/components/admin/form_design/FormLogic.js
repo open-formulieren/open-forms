@@ -7,6 +7,7 @@ import DeleteIcon from 'components/admin/DeleteIcon';
 import FAIcon from 'components/admin/FAIcon';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Fieldset from 'components/admin/forms/Fieldset';
+import {TextInput} from 'components/admin/forms/Inputs';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 
 import StepSelection, {useFormStep} from './StepSelection';
@@ -23,6 +24,7 @@ const EMPTY_RULE = {
   _generatedId: '', // consumers should generate this, as it's used for the React key prop if no uuid exists
   _logicType: '',
   form: '',
+  description: '',
   order: null,
   jsonLogicTrigger: {'': [{var: ''}, null]},
   isAdvanced: false,
@@ -103,6 +105,7 @@ FormLogicRules.propTypes = {
 
 const Rule = ({
   _logicType,
+  description,
   order,
   jsonLogicTrigger,
   triggerFromStep: triggerFromStepIdentifier,
@@ -223,6 +226,20 @@ const Rule = ({
         )}
 
         <div className="logic-trigger-container">
+          {isAdvanced ? (
+            <TextInput
+              name="description"
+              value={description}
+              onChange={onChange}
+              size={100}
+              error={errors.description}
+              placeholder={intl.formatMessage({
+                description: 'Logic rule description placeholder',
+                defaultMessage: 'Easy to understand description',
+              })}
+            />
+          ) : null}
+
           <TriggerComponent
             name="jsonLogicTrigger"
             logic={jsonLogicTrigger}
@@ -249,6 +266,7 @@ const Rule = ({
 
 Rule.propTypes = {
   _logicType: PropTypes.oneOf(['', 'simple', 'advanced']), // TODO: dmn in the future
+  description: PropTypes.string,
   order: PropTypes.number.isRequired,
   jsonLogicTrigger: PropTypes.object,
   triggerFromStep: PropTypes.string,
