@@ -1,7 +1,9 @@
-from typing import Type
+from typing import TypeVar
 
 import factory
 from modeltranslation.translator import translator
+
+_F = TypeVar("_F", bound=type[factory.django.DjangoModelFactory])
 
 
 class TranslatedMixin(factory.base.Factory):
@@ -26,9 +28,7 @@ class TranslatedMixin(factory.base.Factory):
         return kwargs
 
 
-def make_translated(
-    factory_class: Type[factory.django.DjangoModelFactory],
-) -> Type[factory.django.DjangoModelFactory]:
+def make_translated(factory_class: _F) -> _F:
     """
     Make a Factory that creates translated instances.
 
