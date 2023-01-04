@@ -75,7 +75,9 @@ class MSGraphRegistration(BasePlugin):
         for attachment in submission.attachments.all():
             uploader.upload_django_file(
                 attachment.content,
-                self._get_filename(folder_name, "attachments", attachment.file_name),
+                self._get_filename(
+                    folder_name, "attachments", attachment.get_display_name()
+                ),
             )
 
         self._set_payment(uploader, submission, folder_name)
