@@ -1,5 +1,4 @@
 from decimal import Decimal
-from pathlib import Path
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -100,27 +99,27 @@ class MSGraphRegistrationBackendTests(TestCase):
 
         with self.subTest("report"):
             call = calls[0]
-            path = Path(f"{folder}/report.pdf")
+            path = f"{folder}/report.pdf"
             self.assertEqual(call.args[1], path)
 
         with self.subTest("data"):
             call = calls[1]
-            path = Path(f"{folder}/data.json")
+            path = f"{folder}/data.json"
             self.assertEqual(call.args[1], path)
 
         with self.subTest("attachment 1"):
             call = calls[2]
-            path = Path(f"{folder}/attachments/my-foo.bin")
+            path = f"{folder}/attachments/my-foo.bin"
             self.assertEqual(call.args[1], path)
 
         with self.subTest("attachment 2"):
             call = calls[3]
-            path = Path(f"{folder}/attachments/my-bar.txt")
+            path = f"{folder}/attachments/my-bar.txt"
             self.assertEqual(call.args[1], path)
 
         with self.subTest("payment status"):
             call = calls[4]
-            path = Path(f"{folder}/payment_status.txt")
+            path = f"{folder}/payment_status.txt"
             self.assertEqual(call.args[1], path)
             content = call.kwargs["stream"].read().decode("utf8")
             self.assertEqual(content, f"{_('payment required')}: € 11.35")
@@ -164,7 +163,7 @@ class MSGraphRegistrationBackendTests(TestCase):
 
         with self.subTest("payment status"):
             call = calls[0]
-            path = Path(f"{folder}/payment_status.txt")
+            path = f"{folder}/payment_status.txt"
             self.assertEqual(call.args[1], path)
             content = call.kwargs["stream"].read().decode("utf8")
             self.assertEqual(content, f"{_('payment received')}: € 11.35")
@@ -209,19 +208,17 @@ class MSGraphRegistrationOptionsTests(TestCase):
         # made the calls
         self.assertEqual(upload_mock.call_count, 2)
 
-        folder = Path("/sites/my-site/open-forms/internal-test-form-with-extra") / Path(
-            submission.public_registration_reference
-        )
+        folder = f"/sites/my-site/open-forms/internal-test-form-with-extra/{submission.public_registration_reference}"
         calls = upload_mock.call_args_list
 
         with self.subTest("report"):
             call = calls[0]
-            path = folder / Path("report.pdf")
+            path = f"{folder}/report.pdf"
             self.assertEqual(call.args[1], path)
 
         with self.subTest("data"):
             call = calls[1]
-            path = folder / Path("data.json")
+            path = f"{folder}/data.json"
             self.assertEqual(call.args[1], path)
 
     def test_additional_path(self, upload_mock):
@@ -263,24 +260,22 @@ class MSGraphRegistrationOptionsTests(TestCase):
         # made the calls
         self.assertEqual(upload_mock.call_count, 3)
 
-        folder = Path("/open-forms/2021-07-16/internal-test-form-with-extra/") / Path(
-            submission.public_registration_reference
-        )
+        folder = f"/open-forms/2021-07-16/internal-test-form-with-extra/{submission.public_registration_reference}"
         calls = upload_mock.call_args_list
 
         with self.subTest("report"):
             call = calls[0]
-            path = folder / Path("report.pdf")
+            path = f"{folder}/report.pdf"
             self.assertEqual(call.args[1], path)
 
         with self.subTest("data"):
             call = calls[1]
-            path = folder / Path("data.json")
+            path = f"{folder}/data.json"
             self.assertEqual(call.args[1], path)
 
         with self.subTest("attachment"):
             call = calls[2]
-            path = folder / Path("attachments") / Path("my-foo.bin")
+            path = f"{folder}/attachments/my-foo.bin"
             self.assertEqual(call.args[1], path)
 
 
