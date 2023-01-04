@@ -6115,6 +6115,10 @@ components:
           description: The trigger expression to determine if the actions should execute
             or not. Note that this must be a valid JsonLogic expression, and the first
             operand must be a reference to a variable in the form.
+        description:
+          type: string
+          description: Logic rule description in natural language.
+          maxLength: 100
         order:
           type: integer
           description: Order of the rule relative to the form it belongs to. Logic

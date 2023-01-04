@@ -91,6 +91,7 @@ class FormLogicSerializer(FormLogicBaseSerializer, OrderedModelSerializer):
         model = FormLogic
         list_serializer_class = FormLogicListSerializer
         fields = FormLogicBaseSerializer.Meta.fields + (
+            "description",
             "order",
             "trigger_from_step",
             "actions",
