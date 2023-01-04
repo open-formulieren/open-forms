@@ -47,11 +47,16 @@ class MSGraphUploadHelper:
 
     # TODO wrap upload_()-variations in single function and auto-detect object type
 
-    def __init__(self, client: MSGraphClient):
+    def __init__(self, client: MSGraphClient, options: dict):
         self.client = client
 
         self.storage = self.client.account.storage()
-        self.drive = self.storage.get_default_drive()
+
+        if drive_id := options.get("drive_id"):
+            self.drive = self.storage.get_drive(drive_id)
+        else:
+            self.drive = self.storage.get_default_drive()
+
         self.root_folder = self.drive.get_root_folder()
 
         # lets start from root and use subfolders in the remote_path so we don't have to manage folders
@@ -83,7 +88,9 @@ class MSGraphUploadHelper:
     def upload_stream(self, stream, stream_size: int, remote_path: Union[str, Path]):
         return self.target_folder.upload_file(
             None,
-            remote_path,
+            # upload_file says it accepts strings or Path objects
+            # (https://github.com/O365/python-o365/blob/master/O365/drive.py#L1239), but Path objects give errors
+            remote_path if isinstance(remote_path, str) else str(remote_path),
             stream=stream,
             stream_size=stream_size,
             conflict_handling=ConflictHandling.replace,

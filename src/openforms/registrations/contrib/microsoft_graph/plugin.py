@@ -60,7 +60,7 @@ class MSGraphRegistration(BasePlugin):
             raise RegistrationFailed("No service configured.")
 
         client = MSGraphClient(config.service)
-        uploader = MSGraphUploadHelper(client)
+        uploader = MSGraphUploadHelper(client, options)
 
         folder_name = self._get_folder_name(submission, options)
 
@@ -86,7 +86,7 @@ class MSGraphRegistration(BasePlugin):
     def update_payment_status(self, submission: "Submission", options: dict):
         config = MSGraphRegistrationConfig.get_solo()
         client = MSGraphClient(config.service)
-        uploader = MSGraphUploadHelper(client)
+        uploader = MSGraphUploadHelper(client, options)
 
         folder_name = self._get_folder_name(submission, options)
         self._set_payment(uploader, submission, folder_name)

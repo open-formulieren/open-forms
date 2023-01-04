@@ -46,3 +46,10 @@ class MicrosoftGraphOptionsSerializer(
         required=False,
         validators=[is_relative],
     )
+    drive_id = serializers.CharField(
+        label=_("drive ID"),
+        help_text=_(
+            "ID of the drive to use. If left empty, the default drive will be used."
+        ),
+        required=False,
+    )
