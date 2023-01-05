@@ -84,7 +84,7 @@ class FormDetailViewTests(WebTest):
 
     def test_design_tokens_rendered(self):
         self.config.design_token_values = {
-            "layout": {"background": {"value": "#ffffff"}}
+            "of": {"layout": {"background": {"value": "#ffffff"}}}
         }
         self.config.save()
 
