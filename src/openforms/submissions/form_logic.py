@@ -194,8 +194,9 @@ def evaluate_form_logic(
             new_value = updated_step_data.get(key, empty)
             original_value = initial_data.get(key, empty)
             # Reset the value of any field that may have become hidden again after evaluating the logic
-            component_empty_value = get_component_empty_value(component)
-            if original_value is not empty and original_value != component_empty_value:
+            if original_value is not empty and original_value != (
+                component_empty_value := get_component_empty_value(component)
+            ):
                 if (
                     component
                     and not is_visible_in_frontend(component, data_container.data)
