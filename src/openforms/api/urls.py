@@ -93,7 +93,7 @@ urlpatterns = [
                 path(
                     "logic/description",
                     GenerateLogicDescriptionView.as_view(),
-                    name="logic-description",
+                    name="generate-logic-description",
                 ),
                 path("authentication/", include("openforms.authentication.api.urls")),
                 path("registration/", include("openforms.registrations.api.urls")),
