@@ -243,7 +243,7 @@ class MSGraphRegistrationOptionsTests(TestCase):
         )
 
         registration_options = dict(
-            folder_path="/open-forms/{year}-{month}-{day}",
+            folder_path="/open-forms/{{ year }}-{{ month }}-{{ day }}",
         )
 
         with freeze_time("2021-07-16"):

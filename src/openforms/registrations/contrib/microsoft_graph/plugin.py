@@ -14,6 +14,7 @@ from openforms.registrations.contrib.microsoft_graph.models import (
 )
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.submissions.tasks.registration import set_submission_reference
+from openforms.template import render_from_string
 
 from ...base import BasePlugin
 from ...exceptions import NoSubmissionReference, RegistrationFailed
@@ -27,15 +28,21 @@ class MSGraphRegistration(BasePlugin):
     configuration_options = MicrosoftGraphOptionsSerializer
 
     def _get_folder_name(self, submission: Submission, options: dict) -> "Path":
-        folder_path = options["folder_path"].format(
-            year="{date:%Y}", month="{date:%m}", day="{date:%d}"
+        date = timezone.now().date()
+        folder_path = render_from_string(
+            options["folder_path"],
+            {
+                "year": "{date:%Y}".format(date=date),
+                "month": "{date:%m}".format(date=date),
+                "day": "{date:%d}".format(date=date),
+            },
         )
-        folder_path = (
-            Path(folder_path.format(date=timezone.now().date()))
+
+        return (
+            Path(folder_path)
             / Path(slugify(submission.form.admin_name))
             / Path(submission.public_registration_reference)
         )
-        return folder_path
 
     def _get_filename(self, *args: Union[str, "Path"]) -> "Path":
         filename = Path("/")

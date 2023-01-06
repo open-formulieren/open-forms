@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 DEFAULT_FOLDER_PATH = "/open-forms/"
@@ -24,10 +25,11 @@ class MicrosoftGraphOptionsSerializer(
         label=_("folder path"),
         help_text=_(
             "The path of the folder where folders containing Open-Forms related documents will be created. "
+            "You can use the expressions {{ year }}, {{ month }} and {{ day }}. "
             "It should be an absolute path - i.e. it should start with /"
         ),
         default=DEFAULT_FOLDER_PATH,
-        validators=[is_absolute],
+        validators=[is_absolute, DjangoTemplateValidator()],
     )
     drive_id = serializers.CharField(
         label=_("drive ID"),
