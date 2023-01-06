@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {FormattedDate, FormattedMessage, FormattedTime, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
 import semverDiff from 'semver/functions/diff';
@@ -8,6 +8,7 @@ import semverValid from 'semver/functions/valid';
 import FAIcon from 'components/admin/FAIcon';
 import Loader from 'components/admin/Loader';
 import User from 'components/admin/User';
+import {APIContext} from 'components/admin/form_design/Context';
 import {FORM_ENDPOINT} from 'components/admin/form_design/constants';
 import {get, post} from 'utils/fetch';
 
@@ -21,7 +22,8 @@ const checkVersionsCompatible = (version1, version2) => {
   return diffLevel === 'patch';
 };
 
-const FormVersionsTable = ({csrftoken, formUuid, currentRelease}) => {
+const FormVersionsTable = ({formUuid, currentRelease}) => {
+  const {csrftoken} = useContext(APIContext);
   const intl = useIntl();
   const [formVersions, setFormVersions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -145,7 +147,6 @@ const FormVersionsTable = ({csrftoken, formUuid, currentRelease}) => {
 };
 
 FormVersionsTable.propTypes = {
-  csrftoken: PropTypes.string.isRequired,
   formUuid: PropTypes.string.isRequired,
   currentRelease: PropTypes.string.isRequired,
 };

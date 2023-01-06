@@ -20,7 +20,7 @@ import {getUniqueRandomString} from 'utils/random';
 
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import Confirmation from './Confirmation';
-import {FormContext} from './Context';
+import {APIContext, FormContext} from './Context';
 import DataRemoval from './DataRemoval';
 import FormConfigurationFields from './FormConfigurationFields';
 import FormDetailFields from './FormDetailFields';
@@ -870,7 +870,8 @@ StepsFieldSet.propTypes = {
 /**
  * Component to render the form edit page.
  */
-const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
+const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
+  const {csrftoken} = useContext(APIContext);
   const initialState = {
     ...initialFormState,
     form: {
@@ -1286,7 +1287,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
 };
 
 FormCreationForm.propTypes = {
-  csrftoken: PropTypes.string.isRequired,
   formUuid: PropTypes.string.isRequired,
   formUrl: PropTypes.string.isRequired,
   formHistoryUrl: PropTypes.string.isRequired,

@@ -8,7 +8,7 @@ import jsonScriptToVar from 'utils/json-script';
 import SessionStatus from './SessionStatus';
 import Debug from './debug';
 import './form-category';
-import {FeatureFlagsContext, TinyMceContext} from './form_design/Context';
+import {APIContext, FeatureFlagsContext, TinyMceContext} from './form_design/Context';
 import {FormCreationForm} from './form_design/form-creation-form';
 import FormVersionsTable from './form_versions/FormVersionsTable';
 import {getIntlProviderProps} from './i18n';
@@ -31,12 +31,13 @@ const mountForm = intlProps => {
       <IntlProvider {...intlProps}>
         <TinyMceContext.Provider value={tinymceUrl}>
           <FeatureFlagsContext.Provider value={featureFlags}>
-            <FormCreationForm
-              csrftoken={csrftoken}
-              formUuid={formUuid}
-              formUrl={formUrl}
-              formHistoryUrl={formHistoryUrl}
-            />
+            <APIContext.Provider value={{csrftoken}}>
+              <FormCreationForm
+                formUuid={formUuid}
+                formUrl={formUrl}
+                formHistoryUrl={formHistoryUrl}
+              />
+            </APIContext.Provider>
           </FeatureFlagsContext.Provider>
         </TinyMceContext.Provider>
       </IntlProvider>,
@@ -54,11 +55,9 @@ const mountFormVersions = intlProps => {
 
     ReactDOM.render(
       <IntlProvider {...intlProps}>
-        <FormVersionsTable
-          csrftoken={csrftoken}
-          formUuid={formUuid}
-          currentRelease={currentRelease}
-        />
+        <APIContext.Provider value={{csrftoken}}>
+          <FormVersionsTable formUuid={formUuid} currentRelease={currentRelease} />
+        </APIContext.Provider>
       </IntlProvider>,
       formVersionsNode
     );
