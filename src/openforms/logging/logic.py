@@ -3,7 +3,10 @@ Process the logic evaluation logging information.
 
 This relies on the datastructures used in :mod:`openforms.submissions.form_logic`.
 """
+from dataclasses import asdict
 from typing import TYPE_CHECKING, List, Optional
+
+from json_logic.typing import JSON
 
 from openforms.submissions.logic.log_utils import get_targeted_components
 from openforms.submissions.logic.rules import EvaluatedRule
@@ -20,7 +23,7 @@ if TYPE_CHECKING:  # pragma: nocover
 def log_logic_evaluation(
     submission: Submission,
     evaluated_rules: List["EvaluatedRule"],
-    initial_data: JSONObject,
+    initial_data: dict[str, JSON],
     resolved_data: JSONObject,
 ) -> Optional["TimelineLogProxy"]:
     if not evaluated_rules:
@@ -35,8 +38,11 @@ def log_logic_evaluation(
     # form_step and component definition
     components_map = {}
     for form_step in form_steps:
-        for component in form_step.form_definition.iter_components():
-            components_map[component["key"]] = ComponentMeta(form_step, component)
+        for (
+            key,
+            component,
+        ) in form_step.form_definition.configuration_wrapper.component_map.items():
+            components_map[key] = ComponentMeta(form_step, component)
 
     input_data = []
     all_variables = submission.form.formvariable_set.distinct("key").in_bulk(
@@ -44,46 +50,26 @@ def log_logic_evaluation(
     )
     for evaluated_rule in evaluated_rules:
         rule = evaluated_rule.rule
-
         trigger = rule.json_logic_trigger
-        if not isinstance(trigger, (dict, list)):
-            # The trigger was a primitive, no need to introspect
-            evaluated_rule_data = {
-                "raw_logic_expression": trigger,
-                "readable_rule": str(trigger),
-                "targeted_components": get_targeted_components(
-                    rule,
-                    components_map,
-                    all_variables,
-                    initial_data,
-                ),
-                "trigger": evaluated_rule.triggered,
-            }
 
-            evaluated_rules_list.append(evaluated_rule_data)
-            continue
-
-        rule_introspection = introspect_json_logic(
-            trigger, components_map, initial_data
-        )
-
+        rule_introspection = introspect_json_logic(trigger)
         # Gathering all the input component of each evaluated rule
-        input_data.extend(rule_introspection.get_input_components())
-
+        input_data += rule_introspection.get_input_components(
+            components_map, initial_data
+        )
         targeted_components = get_targeted_components(
             rule, components_map, all_variables, initial_data
         )
         evaluated_rule_data = {
-            "raw_logic_expression": rule_introspection.expression,
-            "readable_rule": rule_introspection.as_string(),
+            "raw_logic_expression": trigger,
+            "readable_rule": rule.description or rule_introspection.description,
             "targeted_components": targeted_components,
             "trigger": evaluated_rule.triggered,
         }
-
         evaluated_rules_list.append(evaluated_rule_data)
 
     # de-duplication of input data
-    deduplicated_input_data = {node["key"]: node for node in input_data}
+    deduplicated_input_data = {node.key: asdict(node) for node in input_data}
 
     return _create_log(
         submission,

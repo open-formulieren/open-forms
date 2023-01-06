@@ -1,6 +1,6 @@
 from typing import cast
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils.translation import gettext as _
 
 from openforms.forms.models import FormLogic
@@ -42,6 +42,7 @@ class EventTests(TestCase):
             log = TimelineLogProxy.objects.last()
             self.assertEqual(_("Anonymous user"), log.fmt_user)
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_submission_logic_evaluated(self):
 
         submission = SubmissionFactory.from_data(
@@ -88,7 +89,7 @@ class EventTests(TestCase):
             {
                 "raw_logic_expression": json_logic_trigger,
                 "trigger": True,
-                "readable_rule": "birthdate > 2022-06-20",
+                "readable_rule": r"date({{birthdate}}) is greater than date('2022-06-20')",
                 "targeted_components": rule.actions,
             },
             logged_rules[0],
@@ -97,7 +98,7 @@ class EventTests(TestCase):
             {
                 "raw_logic_expression": json_logic_trigger_2,
                 "trigger": False,
-                "readable_rule": "firstname == bar",
+                "readable_rule": r"{{firstname}} is equal to 'bar'",
                 "targeted_components": rule_2.actions,
             },
             logged_rules[1],

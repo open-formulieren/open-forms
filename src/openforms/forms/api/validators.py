@@ -1,9 +1,10 @@
-from typing import Any, Union
+from typing import Any, Union, cast
 
 from django.utils.translation import gettext as _
 
 from glom import assign
 from json_logic import jsonLogic
+from json_logic.meta import JSONLogicExpression, Operation
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
@@ -11,7 +12,6 @@ from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.formio.utils import iter_components
 from openforms.formio.variables import validate_configuration
 from openforms.typing import JSONObject
-from openforms.utils.json_logic import JsonLogicTest
 from openforms.variables.service import get_static_variables
 
 from ..validation.registry import register as formio_validators_registry
@@ -40,9 +40,10 @@ class JsonLogicActionValueValidator(JsonLogicValidator):
         # ensure that the expression itself is valid
         super().__call__(value)
 
-        expression = JsonLogicTest.from_expression(value)
-
-        if expression.values[0] == "":
+        expression = JSONLogicExpression.from_expression(value)
+        tree = expression.as_tree()
+        assert isinstance(tree, Operation)
+        if tree.arguments[0] == "":
             raise serializers.ValidationError(self.message, code=self.code)
 
 
@@ -82,12 +83,13 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
 
         # at first instance, we don't support nested logic. Once we do, this will need
         # to be adapted so that we only check primitives.
-        logic_test = JsonLogicTest.from_expression(expression)
+        tree = JSONLogicExpression.from_expression(expression).as_tree()
+        assert isinstance(tree, Operation)
 
         # Check that the first operator includes a 'var'
-        first_operand = logic_test.values[0]
+        first_operand = tree.arguments[0]
         is_date_operand = self._is_date_operand(first_operand)
-        if not isinstance(first_operand, JsonLogicTest) or (
+        if not isinstance(first_operand, Operation) or (
             first_operand.operator != "var" and not is_date_operand
         ):
             raise serializers.ValidationError(
@@ -96,7 +98,7 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
                 }
             )
 
-        self.validate_trigger_values(logic_test, data, serializer)
+        self.validate_trigger_values(tree, data, serializer)
 
     def _is_advanced_logic(
         self, data: dict, serializer: serializers.Serializer
@@ -112,13 +114,13 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
 
     def _is_date_operand(self, operand: Any) -> bool:
         return (
-            isinstance(operand, JsonLogicTest)
+            isinstance(operand, Operation)
             and operand.operator == "date"
-            and isinstance(operand.values[0], JsonLogicTest)
-            and operand.values[0].operator == "var"
+            and isinstance(operand.arguments[0], Operation)
+            and operand.arguments[0].operator == "var"
         )
 
-    def validate_trigger_values(self, logic_test, data, serializer):
+    def validate_trigger_values(self, logic_test: Operation, data, serializer):
         """
         Validate that any operand with {"var": "<component name>"} points to a valid component in the form
         """
@@ -128,16 +130,18 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
         if not form:
             return
 
-        for index, operand in enumerate(logic_test.values):
-            if not isinstance(operand, JsonLogicTest):
+        for index, operand in enumerate(logic_test.arguments):
+            if not isinstance(operand, Operation):
                 continue
 
             if operand.operator == "var":
-                needle = operand.values[0]
+                needle = operand.arguments[0]
             elif self._is_date_operand(operand):
-                needle = operand.values[0].values[0]
+                needle = cast(Operation, operand.arguments[0]).arguments[0]
             else:
                 continue
+
+            needle = cast(str, needle)
 
             if needle == "":
                 raise serializers.ValidationError(
