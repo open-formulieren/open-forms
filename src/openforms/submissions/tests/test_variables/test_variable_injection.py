@@ -16,7 +16,7 @@ from openforms.formio.tests.assertions import FormioMixin
 from openforms.forms.tests.factories import FormFactory, FormVariableFactory
 from openforms.variables.constants import FormVariableDataTypes
 
-from ..factories import SubmissionStepFactory
+from ..factories import SubmissionFactory, SubmissionStepFactory
 from ..mixins import SubmissionsMixin
 
 CONFIGURATION = {
@@ -221,3 +221,122 @@ class VariableInjectionTests(SubmissionsMixin, FormioMixin, APITestCase):
                 "content1",
                 {"html": "<p>some input enabled: no</p>"},
             )
+
+
+class VariableInjectionI18NTests(SubmissionsMixin, FormioMixin, APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.submission = SubmissionFactory.from_components(
+            language_code="en",
+            components_list=[
+                {
+                    "key": "naam",
+                    "type": "textfield",
+                    "label": "Naam",
+                },
+                {
+                    "key": "geboortedatum",
+                    "type": "date",
+                    "label": "Geboortedatum",
+                    "format": "dd-MM-yyyy",
+                },
+                {
+                    "key": "ww",
+                    "type": "password",
+                    "label": "Wachtwoord",
+                    "description": 'Suggestie: #{{naam|title}}{{geboortedatum|date:"Y"}}',
+                },
+                {
+                    "key": "ww_check",
+                    "type": "checkbox",
+                    "label": "Bevestig uw wachtwoord: {{ww}}",
+                    "description": "Mooi hè? We laten u niet 2 maal hetzelfde "
+                    "typen. Gemak > veiligheid.",
+                },
+            ],
+            submitted_data={
+                "naam": "Alice",
+                "geboortedatum": "1865-01-01",
+                "ww": "L3GyL4V5Maus2Jg",
+            },
+        )
+        cls.form_step = cls.submission.steps[0].form_step
+        cls.form_step.form_definition.component_translations = {
+            "en": {
+                'Suggestie: #{{naam|title}}{{geboortedatum|date:"Y"}}': 'Suggestion: #{{naam|title}}{{geboortedatum|date:"Y"}}',
+                "Naam": "Name",
+                "Geboortedatum": "Birthdate",
+                "Bevestig uw wachtwoord: {{ww}}": "Confirm your password: {{ww}}",
+                # Actually en-ca, eh?
+                "Mooi hè? We laten u niet 2 maal hetzelfde typen. Gemak > veiligheid.": "Nice, eh? We won't make you type the same thing twice. Convenience over safety.",
+            }
+        }
+        cls.form_step.form_definition.save()
+
+    def test_variable_interpolates_on_translated_definitions(self):
+        self._add_submission_to_session(self.submission)
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": self.submission.uuid,
+                "step_uuid": self.form_step.uuid,
+            },
+        )
+
+        step_json = self.client.get(endpoint).json()
+        components_by_key = {
+            c["key"]: c for c in step_json["formStep"]["configuration"]["components"]
+        }
+
+        c = components_by_key.get
+
+        self.assertEqual(c("naam")["label"], "Name")
+        self.assertEqual(c("geboortedatum")["label"], "Birthdate")
+        self.assertEqual(c("ww")["label"], "Wachtwoord")  # no translation provided
+        self.assertEqual(c("ww")["description"], "Suggestion: #Alice1865")
+        self.assertEqual(
+            c("ww_check")["label"], "Confirm your password: L3GyL4V5Maus2Jg"
+        )
+        self.assertEqual(
+            c("ww_check")["description"],
+            "Nice, eh? We won't make you type the same thing twice. Convenience over safety.",
+        )
+
+    def test_interpolates_dirty_data_on_translated_definitions(self):
+        self._add_submission_to_session(self.submission)
+
+        endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={
+                "submission_uuid": self.submission.uuid,
+                "step_uuid": self.form_step.uuid,
+            },
+        )
+
+        check_json = self.client.post(
+            endpoint,
+            {
+                "data": {
+                    "naam": "Bob",
+                    "geboortedatum": "1999-05-01",
+                    "ww": "PatrickBFF",
+                }
+            },
+        ).json()
+
+        components_by_key = {
+            c["key"]: c
+            for c in check_json["step"]["formStep"]["configuration"]["components"]
+        }
+
+        c = components_by_key.get
+
+        self.assertEqual(c("naam")["label"], "Name")
+        self.assertEqual(c("geboortedatum")["label"], "Birthdate")
+        self.assertEqual(c("ww")["label"], "Wachtwoord")  # no translation provided
+        self.assertEqual(c("ww")["description"], "Suggestion: #Bob1999")
+        self.assertEqual(c("ww_check")["label"], "Confirm your password: PatrickBFF")
+        self.assertEqual(
+            c("ww_check")["description"],
+            "Nice, eh? We won't make you type the same thing twice. Convenience over safety.",
+        )

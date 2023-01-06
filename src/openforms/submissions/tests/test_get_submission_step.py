@@ -394,6 +394,32 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
     Integration tests where various subsystems come together.
     """
 
+    def test_it_only_translates_appropriate_string_properties(self):
+        submission = SubmissionFactory.from_data(
+            {"bar": "Korova Milk Bar"},
+            language_code="de",
+        )
+        form_step = submission.steps[0].form_step
+        form_step.form_definition.component_translations = {
+            "de": {"bar": "Kneipe", "Bar": "Kneipe"},
+        }
+        form_step.form_definition.save()
+        self._add_submission_to_session(submission)
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
+            },
+        )
+
+        textfield = self.client.get(endpoint).json()["formStep"]["configuration"][
+            "components"
+        ][0]
+
+        self.assertEqual(textfield["key"], "bar")
+        self.assertEqual(textfield["label"], "Kneipe")
+
     def test_dynamic_date_component_config_based_on_variables(self):
         form = FormFactory.create(
             generate_minimal_setup=True,

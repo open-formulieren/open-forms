@@ -118,7 +118,6 @@ def inject_variables(
                 continue
 
             try:
-                # XXX should translation only occur on labels?
                 if isinstance(property_value, str):
                     property_value = translate(property_value)
                 elif isinstance(property_value, list) and isinstance(
