@@ -27,18 +27,11 @@ class MSGraphRegistration(BasePlugin):
     configuration_options = MicrosoftGraphOptionsSerializer
 
     def _get_folder_name(self, submission: Submission, options: dict) -> "Path":
-        folder_path = Path(options["base_path"])
-        if "additional_path" in options:
-            additional_path_template = options["additional_path"].format(
-                year="{date:%Y}", month="{date:%m}", day="{date:%d}"
-            )
-
-            folder_path = folder_path / Path(
-                additional_path_template.format(date=timezone.now().date())
-            )
-
+        folder_path = options["folder_path"].format(
+            year="{date:%Y}", month="{date:%m}", day="{date:%d}"
+        )
         folder_path = (
-            folder_path
+            Path(folder_path.format(date=timezone.now().date()))
             / Path(slugify(submission.form.admin_name))
             / Path(submission.public_registration_reference)
         )

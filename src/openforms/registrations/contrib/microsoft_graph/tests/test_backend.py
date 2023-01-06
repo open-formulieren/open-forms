@@ -42,7 +42,7 @@ class MSGraphRegistrationBackendTests(TestCase):
         config.service = MSGraphServiceFactory.create()
         config.save()
 
-        cls.options = dict(base_path="/open-forms/")
+        cls.options = dict(folder_path="/open-forms/")
 
     @patch.object(MockFolder, "upload_file", return_value=None)
     def test_submission(self, upload_mock):
@@ -178,7 +178,7 @@ class MSGraphRegistrationOptionsTests(TestCase):
         config.service = MSGraphServiceFactory.create()
         config.save()
 
-    def test_base_path(self, upload_mock):
+    def test_folder_path(self, upload_mock):
         submission = SubmissionFactory.from_components(
             components_list=[
                 {
@@ -194,7 +194,7 @@ class MSGraphRegistrationOptionsTests(TestCase):
             form__registration_backend="microsoft-graph",
         )
 
-        registration_options = dict(base_path="/sites/my-site/open-forms/")
+        registration_options = dict(folder_path="/sites/my-site/open-forms/")
 
         with patch.object(Account, "is_authenticated", True), patch.object(
             Drive, "get_root_folder", return_value=MockFolder()
@@ -221,7 +221,7 @@ class MSGraphRegistrationOptionsTests(TestCase):
             path = f"{folder}/data.json"
             self.assertEqual(call.args[1], path)
 
-    def test_additional_path(self, upload_mock):
+    def test_folder_path_with_date(self, upload_mock):
         submission = SubmissionFactory.from_components(
             components_list=[
                 {
@@ -243,8 +243,7 @@ class MSGraphRegistrationOptionsTests(TestCase):
         )
 
         registration_options = dict(
-            base_path="/open-forms/",
-            additional_path="{year}-{month}-{day}",
+            folder_path="/open-forms/{year}-{month}-{day}",
         )
 
         with freeze_time("2021-07-16"):
