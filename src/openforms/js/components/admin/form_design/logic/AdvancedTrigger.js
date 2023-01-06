@@ -4,7 +4,7 @@ import React from 'react';
 
 import JsonWidget from 'components/admin/forms/JsonWidget';
 
-const AdvancedTrigger = ({name, description = '', logic, onChange, error}) => {
+const AdvancedTrigger = ({expandExpression, name, logic, onChange, error}) => {
   return (
     <div className="logic-trigger">
       <div
@@ -12,7 +12,7 @@ const AdvancedTrigger = ({name, description = '', logic, onChange, error}) => {
           'logic-trigger__json-editor--error': error,
         })}
       >
-        <JsonWidget name={name} logic={logic} onChange={onChange} />
+        <JsonWidget name={name} logic={logic} onChange={onChange} isExpanded={expandExpression} />
         {error ? <div className="logic-trigger__error">{error}</div> : null}
       </div>
     </div>
@@ -20,6 +20,7 @@ const AdvancedTrigger = ({name, description = '', logic, onChange, error}) => {
 };
 
 AdvancedTrigger.propTypes = {
+  expandExpression: PropTypes.bool.isRequired,
   name: PropTypes.string.isRequired,
   logic: PropTypes.object.isRequired,
   onChange: PropTypes.func.isRequired,

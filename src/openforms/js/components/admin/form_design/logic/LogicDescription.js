@@ -1,6 +1,6 @@
 import isEmpty from 'lodash/isEmpty';
 import PropTypes from 'prop-types';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 
 import {APIContext} from 'components/admin/form_design/Context';
 import {LOGIC_DESCRIPTION_ENDPOINT} from 'components/admin/form_design/constants';
@@ -22,6 +22,7 @@ const generateDescription = async (csrftoken, expression) => {
 
 const LogicDescriptionInput = ({
   generationAllowed,
+  generationRequest,
   onChange: _onChange,
   onDescriptionGenerated,
   logicExpression = null,
@@ -39,16 +40,21 @@ const LogicDescriptionInput = ({
     setModifiedByHuman(value !== '');
   };
 
+  const mustBail = isEmpty(logicExpression) || !generationAllowed || modifiedByHuman || hasFocus;
+
   useEffect(async () => {
-    if (hasFocus) {
-      return;
-    }
-    if (modifiedByHuman || isEmpty(logicExpression) || !generationAllowed) {
+    if (mustBail) {
       return;
     }
     const description = await generateDescription(csrftoken, logicExpression);
     description && onDescriptionGenerated(description);
-  }, [generationAllowed, modifiedByHuman, hasFocus, logicExpression]);
+    // generationRequest is incremented by the parent to force the hook to execute.
+    // Running the hook without dependencies causes it to render indefinitely and fire
+    // network requests in an infinite loop.
+    //
+    // Running this without the generationRequest causes multiple clicks to reset the
+    // description to empty string without it actually being re-populated from the backend.
+  }, [mustBail, generationRequest, logicExpression]);
 
   return (
     <TextInput
@@ -62,6 +68,7 @@ const LogicDescriptionInput = ({
 
 LogicDescriptionInput.propTypes = {
   generationAllowed: PropTypes.bool.isRequired,
+  generationRequest: PropTypes.number.isRequired,
   onChange: PropTypes.func.isRequired,
   onDescriptionGenerated: PropTypes.func.isRequired,
   logicExpression: PropTypes.object,

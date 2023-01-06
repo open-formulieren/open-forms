@@ -1,3 +1,5 @@
+@use 'microscope-sass/lib/bem';
+
 @import '~microscope-sass/lib/color';
 
 .json-widget {
@@ -5,7 +7,11 @@
     width: $input-field-size;
   }
 
-  &__error {
+  @include bem.modifier('collapsed') {
+    display: none;
+  }
+
+  @include bem.element('error') {
     @include color-danger;
     padding-top: 0.5em;
   }

@@ -701,6 +701,12 @@
       "value": "Whether the step progression should be displayed in the UI or not."
     }
   ],
+  "G5q9GH": [
+    {
+      "type": 0,
+      "value": "Reset to default description"
+    }
+  ],
   "GFXEAX": [
     {
       "type": 0,
@@ -871,6 +877,12 @@
     {
       "type": 0,
       "value": "Authentication failure"
+    }
+  ],
+  "JRGs/Q": [
+    {
+      "type": 0,
+      "value": "Expand/collapse JsonLogic"
     }
   ],
   "JZRX+C": [
