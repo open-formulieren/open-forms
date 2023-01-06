@@ -3,7 +3,6 @@ from typing import Any, Union, cast
 from django.utils.translation import gettext as _
 
 from glom import assign
-from json_logic import jsonLogic
 from json_logic.meta import JSONLogicExpression, Operation
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
@@ -12,21 +11,10 @@ from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.formio.utils import iter_components
 from openforms.formio.variables import validate_configuration
 from openforms.typing import JSONObject
+from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.variables.service import get_static_variables
 
 from ..validation.registry import register as formio_validators_registry
-
-
-class JsonLogicValidator:
-    """Validate that a json object is a valid jsonLogic expression"""
-
-    def __call__(self, value: dict):
-        try:
-            jsonLogic(value)
-        except Exception as exc:
-            raise serializers.ValidationError(
-                _("Invalid JSON logic."), code="invalid"
-            ) from exc
 
 
 class JsonLogicActionValueValidator(JsonLogicValidator):
