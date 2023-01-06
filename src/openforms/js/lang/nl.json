@@ -89,6 +89,11 @@
     "description": "Form confirmation email label",
     "originalDefault": "Email option"
   },
+  "3FxzLm": {
+    "defaultMessage": "When {desc}",
+    "description": "Logic expression generated description",
+    "originalDefault": "When {desc}"
+  },
   "3W3Px9": {
     "defaultMessage": "Nog één toevoegen",
     "description": "Button text to add extra item",
@@ -1333,6 +1338,11 @@
     "defaultMessage": "Stappen en velden",
     "description": "Form design tab title",
     "originalDefault": "Steps and fields"
+  },
+  "mXJbc8": {
+    "defaultMessage": "Easy to understand description",
+    "description": "Logic rule description placeholder",
+    "originalDefault": "Easy to understand description"
   },
   "mYYxJE": {
     "defaultMessage": "maanden",

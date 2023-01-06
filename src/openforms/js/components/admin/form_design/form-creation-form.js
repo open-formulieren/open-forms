@@ -186,6 +186,8 @@ function reducer(draft, action) {
         draft.logicRules = logicRules.map(rule => ({
           ...rule,
           _logicType: rule.isAdvanced ? 'simple' : 'advanced',
+          // if there's a description set already, it may not be mutated
+          _mayGenerateDescription: !rule.description,
         }));
       if (priceRules) draft.priceRules = priceRules;
 
@@ -626,6 +628,14 @@ function reducer(draft, action) {
           // identities to look up rules in the collection, since re-arranging or even
           // deleting them doesn't play nice with validation errors by index either.
           draft.logicRules = sortBy(draft.logicRules, ['order']);
+        }
+        case 'description': {
+          // if the description field is emptied, we may now generate descriptions from
+          // the backend
+          if (value === '') {
+            draft.logicRules[index]._mayGenerateDescription = true;
+          }
+          break;
         }
       }
 

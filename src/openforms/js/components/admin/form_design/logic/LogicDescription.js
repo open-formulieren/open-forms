@@ -1,0 +1,70 @@
+import isEmpty from 'lodash/isEmpty';
+import PropTypes from 'prop-types';
+import React, {useContext, useEffect, useState} from 'react';
+
+import {APIContext} from 'components/admin/form_design/Context';
+import {LOGIC_DESCRIPTION_ENDPOINT} from 'components/admin/form_design/constants';
+import {TextInput} from 'components/admin/forms/Inputs';
+import {post} from 'utils/fetch';
+
+const generateDescription = async (csrftoken, expression) => {
+  let response;
+  try {
+    response = await post(LOGIC_DESCRIPTION_ENDPOINT, csrftoken, {expression});
+  } catch (error) {
+    // we deliberately ignore backend errors here - validation errors for bad logic
+    // expressions should already show up in that field itself.
+    console.debug(error);
+    return null;
+  }
+  return response.data.description;
+};
+
+const LogicDescriptionInput = ({
+  generationAllowed,
+  onChange: _onChange,
+  onDescriptionGenerated,
+  logicExpression = null,
+  ...textInputProps
+}) => {
+  const {csrftoken} = useContext(APIContext);
+  const [modifiedByHuman, setModifiedByHuman] = useState(false);
+  const [hasFocus, setHasFocus] = useState(false);
+
+  const onChange = event => {
+    const {
+      target: {value},
+    } = event;
+    _onChange(event);
+    setModifiedByHuman(value !== '');
+  };
+
+  useEffect(async () => {
+    if (hasFocus) {
+      return;
+    }
+    if (modifiedByHuman || isEmpty(logicExpression) || !generationAllowed) {
+      return;
+    }
+    const description = await generateDescription(csrftoken, logicExpression);
+    description && onDescriptionGenerated(description);
+  }, [generationAllowed, modifiedByHuman, hasFocus, logicExpression]);
+
+  return (
+    <TextInput
+      onChange={onChange}
+      onFocus={() => setHasFocus(true)}
+      onBlur={() => setHasFocus(false)}
+      {...textInputProps}
+    />
+  );
+};
+
+LogicDescriptionInput.propTypes = {
+  generationAllowed: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onDescriptionGenerated: PropTypes.func.isRequired,
+  logicExpression: PropTypes.object,
+};
+
+export default LogicDescriptionInput;

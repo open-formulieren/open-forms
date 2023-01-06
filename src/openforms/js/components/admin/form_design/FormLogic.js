@@ -7,13 +7,13 @@ import DeleteIcon from 'components/admin/DeleteIcon';
 import FAIcon from 'components/admin/FAIcon';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Fieldset from 'components/admin/forms/Fieldset';
-import {TextInput} from 'components/admin/forms/Inputs';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 
 import StepSelection, {useFormStep} from './StepSelection';
 import AdvancedTrigger from './logic/AdvancedTrigger';
 import DSLEditorNode from './logic/DSLEditorNode';
 import DataPreview from './logic/DataPreview';
+import LogicDescriptionInput from './logic/LogicDescription';
 import LogicTypeSelection from './logic/LogicTypeSelection';
 import Trigger from './logic/Trigger';
 import ActionSet from './logic/actions/ActionSet';
@@ -25,6 +25,7 @@ const EMPTY_RULE = {
   _logicType: '',
   form: '',
   description: '',
+  _mayGenerateDescription: true,
   order: null,
   jsonLogicTrigger: {'': [{var: ''}, null]},
   isAdvanced: false,
@@ -106,6 +107,7 @@ FormLogicRules.propTypes = {
 const Rule = ({
   _logicType,
   description,
+  _mayGenerateDescription,
   order,
   jsonLogicTrigger,
   triggerFromStep: triggerFromStepIdentifier,
@@ -134,6 +136,17 @@ const Rule = ({
       />
     );
   }
+
+  const onDescriptionGenerated = generatedDescription => {
+    const newDescription = intl.formatMessage(
+      {
+        description: 'Logic expression generated description',
+        defaultMessage: 'When {desc}',
+      },
+      {desc: generatedDescription}
+    );
+    onChange({target: {name: 'description', value: newDescription}});
+  };
 
   const TriggerComponent = isAdvanced ? AdvancedTrigger : Trigger;
 
@@ -227,10 +240,13 @@ const Rule = ({
 
         <div className="logic-trigger-container">
           {isAdvanced ? (
-            <TextInput
+            <LogicDescriptionInput
               name="description"
+              generationAllowed={_mayGenerateDescription}
+              logicExpression={jsonLogicTrigger}
               value={description}
               onChange={onChange}
+              onDescriptionGenerated={onDescriptionGenerated}
               size={100}
               error={errors.description}
               placeholder={intl.formatMessage({
@@ -267,6 +283,7 @@ const Rule = ({
 Rule.propTypes = {
   _logicType: PropTypes.oneOf(['', 'simple', 'advanced']), // TODO: dmn in the future
   description: PropTypes.string,
+  _mayGenerateDescription: PropTypes.bool.isRequired,
   order: PropTypes.number.isRequired,
   jsonLogicTrigger: PropTypes.object,
   triggerFromStep: PropTypes.string,
