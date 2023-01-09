@@ -98,9 +98,11 @@
             </section>
             {% endif %}
 
-            <section>
-                {{ report.confirmation_page_content }}
-            </section>
+            {% if report.submission.form.include_confirmation_page_content_in_pdf %}
+                <section>
+                    {{ report.confirmation_page_content }}
+                </section>
+            {% endif %}
 
         </section>
     </body>

@@ -118,6 +118,11 @@ class Form(models.Model):
             "Display the link to the main website on the submission confirmation page."
         ),
     )
+    include_confirmation_page_content_in_pdf = models.BooleanField(
+        _("include confirmation page content in PDF"),
+        default=True,
+        help_text=_("Display the instruction from the confirmation page in the PDF."),
+    )
     confirmation_email_option = models.CharField(
         _("confirmation email option"),
         choices=ConfirmationEmailOptions,

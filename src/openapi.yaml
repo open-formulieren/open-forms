@@ -1035,6 +1035,7 @@ paths:
         - `confirmationEmailTemplate`
         - `confirmationEmailOption`
         - `displayMainWebsiteLink`
+        - `includeConfirmationPageContentInPdf`
         - `translations`
       summary: List forms
       parameters:
@@ -1099,6 +1100,7 @@ paths:
         - `confirmationEmailTemplate`
         - `confirmationEmailOption`
         - `displayMainWebsiteLink`
+        - `includeConfirmationPageContentInPdf`
         - `translations`
       summary: Create form
       parameters:
@@ -1607,6 +1609,7 @@ paths:
         - `confirmationEmailTemplate`
         - `confirmationEmailOption`
         - `displayMainWebsiteLink`
+        - `includeConfirmationPageContentInPdf`
         - `translations`
 
         Wanneer meertaligheid niet ingeschakeld is voor het formulier, dan wordt de standaardtaal (`settings.LANGUAGE_CODE`) geforceerd gezet in een language cookie. De actieve taal wordt gecommuniceerd in de Content-Language response header. De gebruikelijke HTTP Content Negotiation principes zijn van toepassing.
@@ -1677,6 +1680,7 @@ paths:
         - `confirmationEmailTemplate`
         - `confirmationEmailOption`
         - `displayMainWebsiteLink`
+        - `includeConfirmationPageContentInPdf`
         - `translations`
       summary: Update all details of a form
       parameters:
@@ -1751,6 +1755,7 @@ paths:
         - `confirmationEmailTemplate`
         - `confirmationEmailOption`
         - `displayMainWebsiteLink`
+        - `includeConfirmationPageContentInPdf`
         - `translations`
       summary: Update given details of a form
       parameters:
@@ -5762,7 +5767,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `translations`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -5882,6 +5887,9 @@ components:
           type: boolean
           description: Display the link to the main website on the submission confirmation
             page.
+        includeConfirmationPageContentInPdf:
+          type: boolean
+          description: Display the instruction from the confirmation page in the PDF.
         requiredFieldsWithAsterisk:
           type: boolean
           readOnly: true
@@ -6128,7 +6136,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `translations`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -6295,7 +6303,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `translations`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -7048,7 +7056,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `translations`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -7168,6 +7176,9 @@ components:
           type: boolean
           description: Display the link to the main website on the submission confirmation
             page.
+        includeConfirmationPageContentInPdf:
+          type: boolean
+          description: Display the instruction from the confirmation page in the PDF.
         requiredFieldsWithAsterisk:
           type: boolean
           readOnly: true
