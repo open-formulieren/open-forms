@@ -6,8 +6,6 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 ALLOWLIST = [
-    "maykinmedia/json-logic-py",
-    "maykinmedia/python3-saml",
     "maykinmedia/drf_jsonschema",
     "maykinmedia/drf-polymorphic",
 ]

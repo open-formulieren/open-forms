@@ -11,6 +11,7 @@ class FormLogicAdmin(OrderedModelAdmin):
     list_display = (
         "uuid",
         "form_admin_name",
+        "description",
         "trigger_from_step",
         "is_advanced",
         "move_up_down_links",
@@ -20,7 +21,7 @@ class FormLogicAdmin(OrderedModelAdmin):
         "is_advanced",
         "form",
     )
-    search_fields = ("uuid", "json_logic_trigger")
+    search_fields = ("uuid", "description", "json_logic_trigger")
     raw_id_fields = ("form", "trigger_from_step")
 
     @admin.display(description=_("form"))

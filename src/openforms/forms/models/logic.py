@@ -9,6 +9,11 @@ from ordered_model.models import OrderedModel
 
 class FormLogic(OrderedModel):
     uuid = models.UUIDField(_("UUID"), unique=True, default=_uuid.uuid4)
+    description = models.CharField(
+        _("description"),
+        max_length=100,
+        help_text=_("Logic rule description in natural language."),
+    )
     form = models.ForeignKey(
         to="forms.Form",
         on_delete=models.CASCADE,
