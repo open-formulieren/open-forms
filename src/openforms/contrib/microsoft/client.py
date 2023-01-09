@@ -1,8 +1,8 @@
 import json
 import os
 from io import BytesIO
-from pathlib import Path
-from typing import Union
+from pathlib import PurePosixPath
+from typing import TypedDict
 
 from O365 import Account
 
@@ -38,6 +38,11 @@ class MSGraphClient:
         return self.account.is_authenticated
 
 
+class MSGraphOptions(TypedDict):
+    folder_path: str
+    drive_id: str | None
+
+
 class MSGraphUploadHelper:
     """
     helper for uploading
@@ -47,43 +52,52 @@ class MSGraphUploadHelper:
 
     # TODO wrap upload_()-variations in single function and auto-detect object type
 
-    def __init__(self, client: MSGraphClient):
+    def __init__(self, client: MSGraphClient, options: MSGraphOptions):
         self.client = client
 
         self.storage = self.client.account.storage()
-        self.drive = self.storage.get_default_drive()
+
+        if drive_id := options.get("drive_id"):
+            self.drive = self.storage.get_drive(drive_id)
+        else:
+            self.drive = self.storage.get_default_drive()
+
         self.root_folder = self.drive.get_root_folder()
 
         # lets start from root and use subfolders in the remote_path so we don't have to manage folders
         self.target_folder = self.root_folder
 
-    def upload_disk_file(self, input_path: str, remote_path: Union[str, Path]):
+    def upload_disk_file(self, input_path: str, remote_path: PurePosixPath | None):
         stream_size = os.path.getsize(input_path)
         with open(input_path, "rb") as stream:
             return self.upload_stream(stream, stream_size, remote_path)
 
-    def upload_django_file(self, input_field, remote_path: Union[str, Path]):
+    def upload_django_file(self, input_field, remote_path: PurePosixPath | None):
         stream_size = input_field.size
         with input_field.open("rb") as stream:
             return self.upload_stream(stream, stream_size, remote_path)
 
-    def upload_json(self, json_data: dict, remote_path: Union[str, Path]):
+    def upload_json(self, json_data: dict, remote_path: PurePosixPath | None):
         json_str = json.dumps(json_data)
         return self.upload_string(json_str, remote_path)
 
-    def upload_string(self, string: str, remote_path: Union[str, Path]):
+    def upload_string(self, string: str, remote_path: PurePosixPath | None):
         bytes_str = string.encode("utf8")
         return self.upload_bytes(bytes_str, remote_path)
 
-    def upload_bytes(self, bytes_: bytes, remote_path: Union[str, Path]):
+    def upload_bytes(self, bytes_: bytes, remote_path: PurePosixPath | None):
         stream_size = len(bytes_)
         stream = BytesIO(bytes_)
         return self.upload_stream(stream, stream_size, remote_path)
 
-    def upload_stream(self, stream, stream_size: int, remote_path: Union[str, Path]):
+    def upload_stream(
+        self, stream, stream_size: int, remote_path: PurePosixPath | None
+    ):
         return self.target_folder.upload_file(
             None,
-            remote_path,
+            # upload_file says it accepts strings or Path objects
+            # (https://github.com/O365/python-o365/blob/master/O365/drive.py#L1239), but Path objects give errors
+            str(remote_path),
             stream=stream,
             stream_size=stream_size,
             conflict_handling=ConflictHandling.replace,

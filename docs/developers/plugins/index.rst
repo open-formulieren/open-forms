@@ -61,3 +61,4 @@ Available plugin components
    appointment_plugins
    payment_plugins
 
+
