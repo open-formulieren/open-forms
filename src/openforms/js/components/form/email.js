@@ -1,6 +1,5 @@
 import {Formio} from 'formiojs';
 
-import {AUTOCOMPLETE} from './edit/options';
 import DEFAULT_TABS, {
   ADVANCED,
   REGISTRATION,
@@ -28,9 +27,6 @@ class EmailField extends FormioEmail {
       icon: 'at',
       documentation: '/userguide/#email',
       weight: 10,
-      schema: EmailField.schema({
-        autocomplete: 'tel',
-      }),
     };
   }
 
@@ -43,10 +39,22 @@ class EmailField extends FormioEmail {
         tooltip: 'Email-address in this field will receive the confirmation email.',
       },
     ];
+
     const BASIC_TAB = {
       ...SENSITIVE_BASIC,
-      components: [...SENSITIVE_BASIC.components, ...extra],
+      components: [
+        ...SENSITIVE_BASIC.components,
+        {
+          type: 'textfield',
+          key: 'autocomplete',
+          label: 'Autocomplete',
+          placeholder: 'email',
+          tooltip: 'Display options to fill in the field, based on earlier typed values.',
+        },
+        ...extra,
+      ],
     };
+
     const TABS = {
       ...DEFAULT_TABS,
       components: [BASIC_TAB, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],

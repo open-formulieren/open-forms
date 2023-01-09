@@ -127,10 +127,10 @@ const getBuilderOptions = () => {
             icon: 'terminal',
             schema: {
               label: 'Volledige naam',
+              autocomplete: 'name',
               type: 'textfield',
               key: 'fullName',
               input: true,
-              autocomplete: 'name',
             },
           },
           firstName: {
@@ -139,10 +139,10 @@ const getBuilderOptions = () => {
             icon: 'terminal',
             schema: {
               label: 'Voornaam',
+              autocomplete: 'given-name',
               type: 'textfield',
               key: 'firstName',
               input: true,
-              autocomplete: 'given-name',
             },
           },
           lastName: {
@@ -151,10 +151,10 @@ const getBuilderOptions = () => {
             icon: 'terminal',
             schema: {
               label: 'Achternaam',
+              autocomplete: 'family-name',
               type: 'textfield',
               key: 'lastName',
               input: true,
-              autocomplete: 'family-name',
             },
           },
           addressLine1: {
@@ -163,10 +163,10 @@ const getBuilderOptions = () => {
             icon: 'home',
             schema: {
               label: 'Adresregel 1',
+              autocomplete: 'address-line1',
               type: 'textfield',
               key: 'addressLine1',
               input: true,
-              autocomplete: 'address-line1',
             },
           },
           addressLine2: {
@@ -175,10 +175,10 @@ const getBuilderOptions = () => {
             icon: 'home',
             schema: {
               label: 'Adresregel 2',
+              autocomplete: 'address-line2',
               type: 'textfield',
               key: 'addressLine2',
               input: true,
-              autocomplete: 'address-line2',
             },
           },
           addressLine3: {
@@ -187,10 +187,10 @@ const getBuilderOptions = () => {
             icon: 'home',
             schema: {
               label: 'Adresregel 3',
+              autocomplete: 'address-line3',
               type: 'textfield',
               key: 'addressLine3',
               input: true,
-              autocomplete: 'address-line3',
             },
           },
           postalcode: {
@@ -199,10 +199,10 @@ const getBuilderOptions = () => {
             icon: 'home',
             schema: {
               label: 'Postcode',
+              autocomplete: 'postal-code',
               type: 'textfield',
               key: 'postalcode',
               input: true,
-              autocomplete: 'postal-code',
               inputMask: '9999 AA',
               validateOn: 'blur',
               validate: {
@@ -227,9 +227,21 @@ const getBuilderOptions = () => {
               input: true,
             },
           },
-          phoneNumber: true,
+          phoneNumber: {
+            title: 'Telefoonnummer',
+            key: 'phoneNumber',
+            icon: 'phone-square',
+            schema: {
+              label: 'Telefoonnummer',
+              autocomplete: 'tel-national',
+              tableView: true,
+              key: 'phoneNumber',
+              type: 'phoneNumber',
+              input: true,
+            },
+          },
           password: {
-            title: 'Wachtwoord',
+            title: 'Huidig wachtwoord',
             key: 'password',
             icon: 'asterisk',
             schema: {
@@ -260,11 +272,10 @@ const getBuilderOptions = () => {
             icon: 'link',
             schema: {
               label: 'Website',
-              autocomplete: 'tel',
+              autocomplete: 'url',
               type: 'textfield',
               key: 'url',
               input: true,
-              autocomplete: 'url',
             },
           },
         },

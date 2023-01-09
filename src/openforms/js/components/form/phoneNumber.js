@@ -11,7 +11,6 @@ class PhoneNumberField extends PhoneNumber {
     return PhoneNumber.schema(
       {
         inputMask: null,
-        autocomplete: 'tel',
       },
       ...extend
     );
@@ -33,10 +32,25 @@ class PhoneNumberField extends PhoneNumber {
       components: [...VALIDATION.components, REGEX_VALIDATION],
     });
 
+    const BASIC_TAB = {
+      ...SENSITIVE_BASIC,
+      components: [
+        ...SENSITIVE_BASIC.components,
+        {
+          type: 'textfield',
+          key: 'autocomplete',
+          label: 'Autocomplete',
+          placeholder: 'telinvul',
+          tooltip: 'Display options to fill in the field, based on earlier typed values.',
+        },
+        ...extra,
+      ],
+    };
+
     const extendedDefaults = {
       type: 'tabs',
       key: 'tabs',
-      components: [SENSITIVE_BASIC, ADVANCED, validationTab, REGISTRATION, TRANSLATIONS],
+      components: [BASIC_TAB, ADVANCED, validationTab, REGISTRATION, TRANSLATIONS],
     };
 
     return {components: [extendedDefaults]};
