@@ -44,6 +44,34 @@ def add_prefix_to_design_tokens_and_replace_link_colours(apps, _):
         config.save()
 
 
+def remove_prefixes_and_replace_link_colours(apps, _):
+    GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
+    config = GlobalConfiguration.objects.first()
+
+    if not config or not config.design_token_values:
+        return
+
+    link_colour = glom(config.design_token_values, "utrecht.link.color", default=None)
+    link_hover_colour = glom(
+        config.design_token_values, "utrecht.link.hover.color", default=None
+    )
+
+    if config.design_token_values:
+        config.design_token_values = config.design_token_values["of"]
+
+    if link_colour:
+        assign(config.design_token_values, "link.color", link_colour, missing=dict)
+    if link_hover_colour:
+        assign(
+            config.design_token_values,
+            "link.hover.color",
+            link_hover_colour,
+            missing=dict,
+        )
+
+    config.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -53,6 +81,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(
             add_prefix_to_design_tokens_and_replace_link_colours,
-            migrations.RunPython.noop,
+            remove_prefixes_and_replace_link_colours,
         ),
     ]
