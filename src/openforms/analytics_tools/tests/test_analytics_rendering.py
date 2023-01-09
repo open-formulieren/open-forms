@@ -24,7 +24,7 @@ class AnalyticsToolsRenderingTest(WebTest):
         form = FormFactory.create()
         cls.url = reverse("forms:form-detail", kwargs={"slug": form.slug})
         config = AnalyticsToolsConfiguration.get_solo()
-        config.analytics_cookie_consent_group = CookieGroup.objects.get(
+        config.analytics_cookie_consent_group, _ = CookieGroup.objects.get_or_create(
             varname="analytical"
         )
         config.save()
