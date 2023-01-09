@@ -13,38 +13,26 @@ import {
 class PasswordField extends Formio.Components.components.password {
   static editForm() {
     const BASIC_TAB = {
-      ...DEFAULT_SENSITIVE_TABS,
+      ...SENSITIVE_BASIC,
       components: [
-        ...DEFAULT_SENSITIVE_TABS.components,
+        ...SENSITIVE_BASIC.components.filter(option => option.key !== DEFAULT_VALUE.key),
         {
           type: 'textfield',
           key: 'autocomplete',
           label: 'Autocomplete',
-          placeholder: 'currentpassword',
+          placeholder: 'password',
           tooltip: 'Display options to fill in the field, based on earlier typed values.',
         },
-        ...extra,
+        ,
       ],
     };
 
+    const extendedPasswordDefaults = {
+      components: [BASIC_TAB, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
+    };
+
     return {
-      components: [
-        {
-          ...BASIC_TAB,
-          components: [
-            {
-              ...SENSITIVE_BASIC,
-              components: SENSITIVE_BASIC.components.filter(
-                option => option.key !== DEFAULT_VALUE.key
-              ),
-            },
-            ADVANCED,
-            VALIDATION,
-            REGISTRATION,
-            TRANSLATIONS,
-          ],
-        },
-      ],
+      components: [extendedPasswordDefaults],
     };
   }
 }

@@ -233,7 +233,7 @@ const getBuilderOptions = () => {
             icon: 'phone-square',
             schema: {
               label: 'Telefoonnummer',
-              autocomplete: 'tel-national',
+              autocomplete: 'tel',
               tableView: true,
               key: 'phoneNumber',
               type: 'phoneNumber',

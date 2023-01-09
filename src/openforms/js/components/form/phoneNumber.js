@@ -40,10 +40,9 @@ class PhoneNumberField extends PhoneNumber {
           type: 'textfield',
           key: 'autocomplete',
           label: 'Autocomplete',
-          placeholder: 'telinvul',
+          placeholder: 'tel',
           tooltip: 'Display options to fill in the field, based on earlier typed values.',
         },
-        ...extra,
       ],
     };
 
