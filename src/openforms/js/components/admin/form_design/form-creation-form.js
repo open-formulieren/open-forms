@@ -18,6 +18,7 @@ import {APIError, NotAuthenticatedError} from 'utils/exception';
 import {post} from 'utils/fetch';
 import {getUniqueRandomString} from 'utils/random';
 
+import {TRANSLATABLE_FIELDS, getValuesOfField} from '../../../utils/translation';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import Confirmation from './Confirmation';
 import {FormContext} from './Context';
@@ -415,6 +416,21 @@ function reducer(draft, action) {
       const step = getFormStep(formDefinition, draft.formSteps, true);
 
       if (mutationType === 'changed' && schema['of-translations']) {
+        // Ensure that if any literals change, the literals used in translations are
+        // updated as well
+        for (const field of TRANSLATABLE_FIELDS) {
+          let oldValue = getValuesOfField(originalComp, field)[0];
+          let newValue = getValuesOfField(schema, field)[0];
+
+          if (oldValue !== newValue) {
+            for (const [languageCode, translations] of Object.entries(schema['of-translations'])) {
+              for (const translation of translations) {
+                if (translation.literal === oldValue) translation.literal = newValue;
+              }
+            }
+          }
+        }
+
         // Store the componentTranslations on the formStep, this is relevant when form
         // submission fails, because we do want to keep track of changed translations
         step.componentTranslations = mergeComponentTranslations(

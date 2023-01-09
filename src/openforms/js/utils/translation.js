@@ -1,3 +1,5 @@
+import merge from 'lodash/merge';
+
 const TRANSLATABLE_FIELDS = [
   'label',
   'description',
@@ -24,6 +26,36 @@ const getValuesOfField = (component, fieldName) => {
   return values;
 };
 
+const generateComponentTranslations = (configuration, componentTranslations) => {
+  let finalTranslations = {};
+  FormioUtils.eachComponent(configuration.components, component => {
+    finalTranslations = merge(
+      finalTranslations,
+      generateComponentTranslations(component, componentTranslations)
+    );
+  });
+
+  if (configuration.display !== 'form') {
+    let values = [];
+    for (const field of TRANSLATABLE_FIELDS) {
+      values = values.concat(getValuesOfField(configuration, field));
+    }
+
+    let mutatedTranslations = {};
+    for (const [languageCode, translations] of Object.entries(componentTranslations)) {
+      let additionalTranslations = {};
+      for (const value of values) {
+        if (!translations[value]) {
+          additionalTranslations[value] = '';
+        }
+      }
+      mutatedTranslations[languageCode] = {...translations, ...additionalTranslations};
+    }
+    finalTranslations = merge(finalTranslations, mutatedTranslations);
+  }
+  return finalTranslations;
+};
+
 const mutateTranslations = (component, componentTranslations) => {
   let values = [];
   for (const field of TRANSLATABLE_FIELDS) {
@@ -39,8 +71,32 @@ const mutateTranslations = (component, componentTranslations) => {
         ]);
       }
     }
+
+    // Sort the translations to ensure a consistent ordering for all languages
+    if (mutatedTranslations[languageCode]) {
+      mutatedTranslations[languageCode] = mutatedTranslations[languageCode].sort((a, b) =>
+        a.literal > b.literal ? 1 : -1
+      );
+    }
   }
   return mutatedTranslations;
 };
 
-export {mutateTranslations, getValuesOfField};
+const removeEmptyTranslations = componentTranslations => {
+  let cleanedTranslations = {};
+  for (const [languageCode, translations] of Object.entries(componentTranslations)) {
+    cleanedTranslations[languageCode] = {};
+    for (const [literal, translation] of Object.entries(translations)) {
+      if (!!translation) cleanedTranslations[languageCode][literal] = translation;
+    }
+  }
+  return cleanedTranslations;
+};
+
+export {
+  mutateTranslations,
+  getValuesOfField,
+  TRANSLATABLE_FIELDS,
+  generateComponentTranslations,
+  removeEmptyTranslations,
+};

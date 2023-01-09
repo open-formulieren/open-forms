@@ -21,5 +21,6 @@ class FormDefinitionForm(forms.ModelForm):
             "login_required",
             "is_reusable",
             "configuration",
+            "component_translations",
         )
         widgets = {"uuid": forms.TextInput(attrs={"readonly": True})}

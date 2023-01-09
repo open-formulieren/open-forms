@@ -4,6 +4,7 @@ import React, {useContext, useEffect, useRef, useState} from 'react';
 import {FormBuilder, Templates} from 'react-formio';
 
 import jsonScriptToVar from '../../utils/json-script';
+import {generateComponentTranslations} from '../../utils/translation';
 import {FormStepContext} from '../admin/form_design/Context';
 import customTemplates from './customTemplates';
 import nlStrings from './translation';
@@ -151,8 +152,9 @@ const FormIOBuilder = ({configuration, onChange, onComponentMutated, forceUpdate
   // props need to be immutable to not end up in infinite loops
   const [builderOptions] = useState(getBuilderOptions());
 
-  const translationsRef = useRef(componentTranslations);
-  translationsRef.current = componentTranslations;
+  const mutatedTranslations = generateComponentTranslations(configuration, componentTranslations);
+  const translationsRef = useRef(mutatedTranslations);
+  translationsRef.current = mutatedTranslations;
   builderOptions.componentTranslations = translationsRef;
 
   // if an update must be forced, we mutate the ref state to point to the new
