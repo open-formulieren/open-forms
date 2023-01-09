@@ -60,7 +60,7 @@ celery-once==3.0.1
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-certifi==2022.9.14
+certifi==2022.12.7
     # via
     #   -r requirements/base.txt
     #   django-simple-certmanager
