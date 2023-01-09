@@ -27,3 +27,8 @@
 body {
   @include body(auto);
 }
+
+a {
+  color: var(--utrecht-link-color);
+  cursor: pointer;
+}

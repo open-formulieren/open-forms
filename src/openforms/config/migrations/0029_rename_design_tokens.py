@@ -5,6 +5,8 @@ from django.db import migrations
 
 from glom import PathAccessError, assign, delete, glom
 
+from ..utils import remove_empty_design_tokens
+
 MAPPING_FORWARDS = {
     # link colors
     "color.link": "link.color",
@@ -29,24 +31,6 @@ MAPPING_FORWARDS = {
 MAPPING_BACKWARDS = {v: k for k, v in MAPPING_FORWARDS.items()}
 
 
-def remove_empty_tokens(obj: dict) -> dict:
-    if "value" in obj:
-        return obj
-
-    result = {}
-    for key, value in obj.items():
-        if not isinstance(value, dict):
-            continue
-        updated_value = remove_empty_tokens(value)
-        # empty object -> remove it by not including it anymore
-        if not updated_value:
-            continue
-
-        result[key] = updated_value
-
-    return result
-
-
 def get_operation(mapping: dict):
     def operation(apps, _):
         GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
@@ -67,7 +51,7 @@ def get_operation(mapping: dict):
 
         # clean up and remove nonsense token specs
         if new_value:
-            new_value = remove_empty_tokens(new_value)
+            new_value = remove_empty_design_tokens(new_value)
         config.design_token_values = new_value
         config.save(update_fields=["design_token_values"])
 

@@ -11,7 +11,7 @@ class InvalidInput(Exception):
     pass
 
 
-def extract_tokens(prefix: str, node: dict) -> Dict[str, JSONPrimitive]:
+def extract_tokens(node: dict, prefix: str | None = None) -> Dict[str, JSONPrimitive]:
     if not isinstance(node, dict):
         raise InvalidInput(
             "The node is not a dict, can't extract a value or nested keys."
@@ -27,9 +27,9 @@ def extract_tokens(prefix: str, node: dict) -> Dict[str, JSONPrimitive]:
 
     # if nothing is found, we need to recurse and a node could contain multiple keys
     for key, value in node.items():
-        new_prefix = f"{prefix}-{key}"
+        new_prefix = f"{prefix}-{key}" if prefix else f"--{key}"
         try:
-            tokens.update(extract_tokens(new_prefix, value))
+            tokens.update(extract_tokens(value, new_prefix))
         except InvalidInput:
             continue  # just ignore invalid input and prevent infinite recursion
 
@@ -37,9 +37,9 @@ def extract_tokens(prefix: str, node: dict) -> Dict[str, JSONPrimitive]:
 
 
 @register.simple_tag()
-def style_dictionary(styles: dict, prefix: str = "of") -> Dict[str, JSONPrimitive]:
+def style_dictionary(styles: dict) -> Dict[str, JSONPrimitive]:
     """
     Transform a style dictionary into a mapping of resolved design tokens.
     """
-    tokens = extract_tokens(f"--{prefix}", styles)
+    tokens = extract_tokens(styles)
     return tokens

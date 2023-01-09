@@ -9,10 +9,10 @@ class StyleDictionaryTests(SimpleTestCase):
             "foo": {"value": "bar"},
         }
 
-        tokens = style_dictionary(style_dict, prefix="test")
+        tokens = style_dictionary(style_dict)
 
         expected = {
-            "--test-foo": "bar",
+            "--foo": "bar",
         }
         self.assertEqual(tokens, expected)
 
@@ -22,11 +22,11 @@ class StyleDictionaryTests(SimpleTestCase):
             "baz": {"value": "quux"},
         }
 
-        tokens = style_dictionary(style_dict, prefix="test")
+        tokens = style_dictionary(style_dict)
 
         expected = {
-            "--test-foo": "bar",
-            "--test-baz": "quux",
+            "--foo": "bar",
+            "--baz": "quux",
         }
         self.assertEqual(tokens, expected)
 
@@ -36,11 +36,11 @@ class StyleDictionaryTests(SimpleTestCase):
             "baz": {"quux": {"value": "nested"}},
         }
 
-        tokens = style_dictionary(style_dict, prefix="test")
+        tokens = style_dictionary(style_dict)
 
         expected = {
-            "--test-foo": "bar",
-            "--test-baz-quux": "nested",
+            "--foo": "bar",
+            "--baz-quux": "nested",
         }
         self.assertEqual(tokens, expected)
 
@@ -50,19 +50,12 @@ class StyleDictionaryTests(SimpleTestCase):
         """
         style_dict = {"some": {"value": "foo", "token": {"value": "bar"}}}
 
-        tokens = style_dictionary(style_dict, prefix="test")
+        tokens = style_dictionary(style_dict)
 
         expected = {
-            "--test-some": "foo",
+            "--some": "foo",
         }
         self.assertEqual(tokens, expected)
-
-    def test_prefix(self):
-        style_dict = {"foo": {"value": "bar"}}
-
-        tokens = style_dictionary(style_dict, prefix="of")
-
-        self.assertEqual(tokens, {"--of-foo": "bar"})
 
     def test_missing_value(self):
         style_dict = {"foo": {"bar": "baz"}}

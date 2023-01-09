@@ -65,8 +65,8 @@ The following design tokens are currently available:
 .. code-block:: text
 
     // anchors
-    --of-link-color
-    --of-link-hover-color
+    --utrecht-link-color
+    --utrecht-link-hover-color
 
     // page header
     --of-page-header-bg
@@ -93,42 +93,47 @@ The configuration in the admin requires this to be provided as JSON, for example
 .. code-block:: json
 
     {
-        "page-header": {
-            "fg": {
-                "value": "#000"
+        "of": {
+            "page-header": {
+                "fg": {
+                    "value": "#000"
+                },
+                "bg": {
+                    "value": "#2980b9"
+                }
             },
-            "bg": {
-                "value": "#2980b9"
-            }
-        },
-        "page-footer": {
-            "fg": {
-                "value": "#000"
+            "page-footer": {
+                "fg": {
+                    "value": "#000"
+                },
+                "bg": {
+                    "value": "#2980b9"
+                }
             },
-            "bg": {
-                "value": "#2980b9"
-            }
-        },
-        "header-logo": {
-            "width": {
-                "value": "200px"
+            "header-logo": {
+                "width": {
+                    "value": "200px"
+                },
+                "height": {
+                    "value": "75px"
+                }
             },
-            "height": {
-                "value": "75px"
-            }
-        },
-        "layout": {
-            "bg": {
-                "value": "#e6e6e6"
-            }
-        },
-        "link": {
-            "color": {
-                "value": "#000"
+            "layout": {
+                "bg": {
+                    "value": "#e6e6e6"
+                }
             },
-            "hover": {
+
+        },
+        "utrecht": {
+            "link": {
                 "color": {
-                    "value": "fuchsia"
+                    "value": "#000"
+                },
+                "hover": {
+                    "color": {
+                        "value": "fuchsia"
+                    }
                 }
             }
         }
@@ -160,9 +165,11 @@ set to:
 .. code-block:: json
 
     {
-      "page-header": {
-        "bg": {
-          "value": "#35a7cc"
+      "of": {
+        "page-header": {
+          "bg": {
+            "value": "#35a7cc"
+          }
         }
       }
     }
@@ -176,12 +183,14 @@ For wider logos, it is possible to increase the size with the following design t
 .. code-block:: json
 
     {
-      "header-logo": {
-        "width": {
-          "value": "400px"
-        },
-        "height": {
-          "value": "75px"
+      "of": {
+        "header-logo": {
+          "width": {
+            "value": "400px"
+          },
+          "height": {
+            "value": "75px"
+          }
         }
       }
     }

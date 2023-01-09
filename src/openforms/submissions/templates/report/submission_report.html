@@ -13,7 +13,7 @@
         {% if config.theme_stylesheet %}<link href="{{ config.theme_stylesheet }}" media="all" rel="stylesheet" />{% endif %}
 
         {# Inject design tokens for theming #}
-        {% style_dictionary config.design_token_values prefix="of" as design_tokens %}
+        {% style_dictionary config.design_token_values as design_tokens %}
         {# This goes through WeasyPrint normally, so excluded from CSP #}
         <style>
         :root {{% for token, value in design_tokens.items %}
