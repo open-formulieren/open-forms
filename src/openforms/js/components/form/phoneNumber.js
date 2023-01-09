@@ -11,6 +11,7 @@ class PhoneNumberField extends PhoneNumber {
     return PhoneNumber.schema(
       {
         inputMask: null,
+        autocomplete: 'tel',
       },
       ...extend
     );

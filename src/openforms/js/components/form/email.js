@@ -28,7 +28,9 @@ class EmailField extends FormioEmail {
       icon: 'at',
       documentation: '/userguide/#email',
       weight: 10,
-      schema: EmailField.schema(),
+      schema: EmailField.schema({
+        autocomplete: 'tel',
+      }),
     };
   }
 
@@ -43,8 +45,7 @@ class EmailField extends FormioEmail {
     ];
     const BASIC_TAB = {
       ...SENSITIVE_BASIC,
-      AUTOCOMPLETE,
-      components: [...SENSITIVE_BASIC.components, AUTOCOMPLETE, ...extra],
+      components: [...SENSITIVE_BASIC.components, ...extra],
     };
     const TABS = {
       ...DEFAULT_TABS,

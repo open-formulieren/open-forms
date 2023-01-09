@@ -53,20 +53,7 @@ const SENSITIVE_BASIC = {
 
 const SENSITIVE_READ_ONLY = {
   ...SENSITIVE_BASIC,
-  components: [
-    ...SENSITIVE_BASIC.components,
-    READ_ONLY,
-    {
-      weight: 700,
-      type: 'textfield',
-      input: true,
-      key: 'autocomplete',
-      label: 'Autocomplete',
-      placeholder: 'on',
-      tooltip: 'Display options to fill in the field, based on earlier typed values.',
-      defaultValue: 'on',
-    },
-  ],
+  components: [...SENSITIVE_BASIC.components, READ_ONLY],
 };
 
 const TEXT_BASIC = {
@@ -416,22 +403,6 @@ const DEFAULT_CHOICES_TABS = {
   components: [CHOICES_BASIC, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
 };
 
-const AUTOCOMPLETE_PASSWORD = {
-  type: 'select',
-  key: 'autocomplete',
-  label: 'Autocomplete',
-  placeholder: 'password',
-  tooltip: 'Display options to fill in the field, based on earlier typed values.',
-  defaultValue: 'password',
-  data: {
-    values: [
-      {label: 'Wachtwoord', value: 'password'},
-      {label: 'Nieuw wachtwoord', value: 'new-password'},
-      {label: 'Huidige wachtwoord', value: 'current-password'},
-    ],
-  },
-};
-
 export {
   DEFAULT_TABS,
   DEFAULT_TEXT_TABS,
@@ -450,6 +421,5 @@ export {
   VALIDATION_BASIC,
   SENSITIVE_READ_ONLY,
   TRANSLATIONS,
-  AUTOCOMPLETE_PASSWORD,
 };
 export default DEFAULT_TABS;

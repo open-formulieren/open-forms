@@ -17,6 +17,7 @@ class PostcodeField extends TextField {
       {
         type: 'postcode',
         label: 'Postcode',
+        autocomplete: 'postal-code',
         key: 'postcode',
         inputMask: '9999 AA',
         validateOn: 'blur',
@@ -27,7 +28,6 @@ class PostcodeField extends TextField {
           // See https://stackoverflow.com/a/17898538/7146757 and https://nl.wikipedia.org/wiki/Postcodes_in_Nederland
           pattern: '^[1-9][0-9]{3} ?(?!sa|sd|ss|SA|SD|SS)[a-zA-Z]{2}$',
         },
-        autocomplete: 'postal-code',
       },
       ...extend
     );

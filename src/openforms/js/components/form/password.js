@@ -1,9 +1,8 @@
 import {Formio} from 'react-formio';
 
-import {DEFAULT_VALUE} from './edit/options';
+import {AUTOCOMPLETE, DEFAULT_VALUE} from './edit/options';
 import {
   ADVANCED,
-  AUTOCOMPLETE_PASSWORD,
   DEFAULT_SENSITIVE_TABS,
   REGISTRATION,
   SENSITIVE_BASIC,
@@ -17,7 +16,6 @@ class PasswordField extends Formio.Components.components.password {
       components: [
         {
           ...DEFAULT_SENSITIVE_TABS,
-          AUTOCOMPLETE_PASSWORD,
           components: [
             {
               ...SENSITIVE_BASIC,
