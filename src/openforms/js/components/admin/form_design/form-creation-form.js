@@ -421,6 +421,7 @@ function reducer(draft, action) {
           step.componentTranslations || {},
           rewriteComponentTranslations(schema['of-translations'])
         );
+        delete schema['of-translations'];
       }
 
       if (!isNew) {

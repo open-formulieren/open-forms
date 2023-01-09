@@ -10,57 +10,6 @@ import nlStrings from './translation';
 
 Templates.current = customTemplates;
 
-const TRANSLATABLE_FIELDS = [
-  'label',
-  'description',
-  'placeholder',
-  'defaultValue',
-  'tooltip',
-  'values.label',
-];
-
-const getValuesOfField = (component, fieldName) => {
-  let values = [];
-  if (fieldName.includes('.')) {
-    const [prefix, inner] = fieldName.split('.');
-    for (const entry of component[prefix] || []) {
-      values.push(entry[inner]);
-    }
-  } else {
-    let value = component[fieldName];
-    if (!value) return [];
-    else if (typeof value === 'object' && !Array.isArray(value)) return [];
-
-    values.push(component[fieldName]);
-  }
-  return values;
-};
-
-const injectTranslationsIntoConfiguration = (configuration, componentTranslations) => {
-  FormioUtils.eachComponent(configuration.components, component => {
-    injectTranslationsIntoConfiguration(component, componentTranslations);
-  });
-
-  if (configuration.display !== 'form') {
-    let values = [];
-    for (const field of TRANSLATABLE_FIELDS) {
-      values = values.concat(getValuesOfField(configuration, field));
-    }
-
-    let mutatedTranslations = {};
-    for (const [languageCode, translations] of Object.entries(componentTranslations)) {
-      for (const [literal, translation] of Object.entries(translations)) {
-        if (values.includes(literal)) {
-          mutatedTranslations[languageCode] = (mutatedTranslations[languageCode] || []).concat([
-            {literal: literal, translation: translation},
-          ]);
-        }
-      }
-    }
-    configuration['of-translations'] = mutatedTranslations;
-  }
-};
-
 const getBuilderOptions = () => {
   const maxFileUploadSize = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE');
   const formFieldsRequiredDefault = jsonScriptToVar('config-REQUIRED_DEFAULT');
@@ -195,19 +144,16 @@ const FormIOBuilder = ({configuration, onChange, onComponentMutated, forceUpdate
   const formRef = useRef(clone);
   const {componentTranslations} = useContext(FormStepContext);
 
-  // TODO instead of injecting this into the configuration, the componentTranslations
-  // should be passed to the components, and each component should then determine which
-  // translations are relevant. Additionally, there should be an onChange event that
-  // mutates these componentTranslations when changing labels/translations, such that
-  // the displayed translations are always up to date
-  injectTranslationsIntoConfiguration(clone, componentTranslations);
-
   // track some state to force re-renders, and we can also keep track of the amount of
   // re-renders that way for debugging purposes.
   const [rerenders, setRerenders] = useState(0);
 
   // props need to be immutable to not end up in infinite loops
   const [builderOptions] = useState(getBuilderOptions());
+
+  const translationsRef = useRef(componentTranslations);
+  translationsRef.current = componentTranslations;
+  builderOptions.componentTranslations = translationsRef;
 
   // if an update must be forced, we mutate the ref state to point to the new
   // configuration, which causes the form builder to re-render the new configuration.

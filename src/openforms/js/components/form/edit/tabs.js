@@ -2,6 +2,7 @@ import {Utils} from 'formiojs';
 
 import jsonScriptToVar from 'utils/json-script';
 
+import {mutateTranslations} from '../../../utils/translation';
 import {getFullyQualifiedUrl} from '../../../utils/urls';
 import {
   CLEAR_ON_HIDE,
@@ -337,6 +338,11 @@ const tabComponents = LANGUAGES.map(([languageCode, _label]) => {
         tooltip: 'Translations for literals used for this field',
         weight: 10,
         reorder: false,
+        customDefaultValue: ({instance, data}) => {
+          return mutateTranslations(data, instance.options.componentTranslations.current)[
+            languageCode
+          ];
+        },
         components: [
           {
             label: 'Literal',
