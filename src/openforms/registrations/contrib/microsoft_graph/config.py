@@ -1,4 +1,4 @@
-from pathlib import Path
+from pathlib import PurePosixPath
 
 from django.utils.translation import gettext_lazy as _
 
@@ -11,7 +11,7 @@ DEFAULT_FOLDER_PATH = "/open-forms/"
 
 
 def is_absolute(value: str) -> None:
-    path = Path(value)
+    path = PurePosixPath(value)
     if not path.is_absolute():
         raise serializers.ValidationError(
             _("The path needs to be absolute - i.e. it needs to start with a /")
