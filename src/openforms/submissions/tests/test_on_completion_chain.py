@@ -5,7 +5,7 @@ from django.test import TestCase, override_settings
 
 from privates.test import temp_private_root
 
-from openforms.appointments.service import AppointmentRegistrationFailed
+from openforms.appointments.exceptions import AppointmentRegistrationFailed
 from openforms.appointments.tests.utils import setup_jcc
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.tests.factories import FormDefinitionFactory

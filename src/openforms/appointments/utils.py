@@ -16,10 +16,13 @@ from openforms.submissions.models import Submission
 
 from .base import AppointmentClient, AppointmentLocation, AppointmentProduct, BasePlugin
 from .constants import AppointmentDetailsStatus
-from .exceptions import AppointmentCreateFailed, AppointmentDeleteFailed
+from .exceptions import (
+    AppointmentCreateFailed,
+    AppointmentDeleteFailed,
+    AppointmentRegistrationFailed,
+)
 from .models import AppointmentInfo, AppointmentsConfig
 from .registry import register
-from .service import AppointmentRegistrationFailed
 
 logger = logging.getLogger()
 

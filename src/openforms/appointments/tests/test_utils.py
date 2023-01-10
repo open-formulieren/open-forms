@@ -20,9 +20,8 @@ from openforms.submissions.tests.factories import (
 
 from ..constants import AppointmentDetailsStatus
 from ..contrib.jcc.tests.test_plugin import mock_response
-from ..exceptions import AppointmentCreateFailed
+from ..exceptions import AppointmentCreateFailed, AppointmentRegistrationFailed
 from ..models import AppointmentInfo
-from ..service import AppointmentRegistrationFailed
 from ..utils import (
     book_appointment_for_submission,
     cancel_previous_submission_appointment,
