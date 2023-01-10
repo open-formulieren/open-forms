@@ -4,8 +4,8 @@
 Appointment configurations
 ==========================
 
-Appointments can be made using two separate services.  JCC and Qmatic.
-Open Forms can be configured to make use of one of these services.
+Unlike most of other plugins, appointments are configured on the application
+level and their settings are the same for all the forms.
 
 Regardless of which service you decide to use, navigate to
 **Configuration** > **Appointments config** and select which service you

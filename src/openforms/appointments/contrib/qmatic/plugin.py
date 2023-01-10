@@ -4,6 +4,7 @@ from datetime import date, datetime, time
 from typing import List, Optional
 
 from django.core.serializers.json import DjangoJSONEncoder
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from dateutil.parser import isoparse
@@ -25,6 +26,7 @@ from ...exceptions import (
 )
 from ...registry import register
 from .client import QmaticException, get_client
+from .models import QmaticConfig
 
 logger = logging.getLogger(__name__)
 
@@ -280,3 +282,14 @@ class QmaticAppointment(BasePlugin):
             raise InvalidPluginConfiguration(
                 _("Invalid response: {exception}").format(exception=e)
             )
+
+    def get_config_actions(self):
+        return [
+            (
+                _("Configuration"),
+                reverse(
+                    "admin:qmatic_qmaticconfig_change",
+                    args=(QmaticConfig.singleton_instance_id,),
+                ),
+            ),
+        ]

@@ -2,6 +2,7 @@ import logging
 from datetime import date, datetime, timedelta
 from typing import List, Optional
 
+from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
@@ -25,6 +26,7 @@ from ...exceptions import (
 from ...registry import register
 from ...utils import create_base64_qrcode
 from .client import get_client
+from .models import JccConfig
 
 logger = logging.getLogger(__name__)
 
@@ -292,3 +294,14 @@ class JccAppointment(BasePlugin):
             raise InvalidPluginConfiguration(
                 _("Invalid response: {exception}").format(exception=e)
             )
+
+    def get_config_actions(self):
+        return [
+            (
+                _("Configuration"),
+                reverse(
+                    "admin:jcc_jccconfig_change",
+                    args=(JccConfig.singleton_instance_id,),
+                ),
+            ),
+        ]

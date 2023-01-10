@@ -58,3 +58,9 @@ class DemoAppointment(BasePlugin):
             remarks="Remarks",
             other={"Some": "<h1>Data</h1>"},
         )
+
+    def check_config(self):
+        """
+        Demo config is always valid.
+        """
+        pass
