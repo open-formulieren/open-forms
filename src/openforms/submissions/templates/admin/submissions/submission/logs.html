@@ -46,7 +46,7 @@
                                 {% for key, value in log.extra_data.input_data.items  %}
                                 <tr>
                                     <td>{{ value.step_name }}: <code>{{ key }}</code> &#40;{{ value.label }}&#41;</td>
-                                    <td>{{ value.actual_value }}</td>
+                                    <td>{% firstof value.value value.actual_value %}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -66,26 +66,26 @@
                             </thead>
                             <tbody>
                                 {% for rule in log.extra_data.evaluated_rules %}
-                                        <tr class="logic-logs__row-body logic-logs__row-body--hidden">
-                                            <td>
-                                                {{ rule.readable_rule }}
-                                            </td>
-                                            <td class="logic-logs__col-body logic-logs__col-body--trigger-{% if rule.trigger %}yes{% else %}no{% endif %}">{{ rule.trigger|yesno|capfirst }} </td>
-                                            <td>
-                                            {% for action in rule.targeted_components %}
-                                                {% if action.key %}
-                                                    <b>{{ action.type_display }}</b>: {{ action.step_name }}: <code>{{ action.key }}</code> ({{ action.label }}):
-                                                        {% if not 'state' in action %}
-                                                            <i>{{ action.value }}</i>
-                                                        {% else %}
-                                                            <i>{{ action.value }} = {{ action.state|yesno|capfirst }}</i>
-                                                        {% endif %}
-                                                {% else %}
-                                                    <b>{{ action.type_display }}</b>
-                                                {% endif %}
-                                            {% endfor %}
-                                            </td>
-                                        </tr>
+                                    <tr class="logic-logs__row-body logic-logs__row-body--hidden">
+                                        <td>
+                                            {{ rule.readable_rule }}
+                                        </td>
+                                        <td class="logic-logs__col-body logic-logs__col-body--trigger-{% if rule.trigger %}yes{% else %}no{% endif %}">{{ rule.trigger|yesno|capfirst }} </td>
+                                        <td>
+                                        {% for action in rule.targeted_components %}
+                                            {% if action.key %}
+                                                <b>{{ action.type_display }}</b>: {{ action.step_name }}: <code>{{ action.key }}</code> ({{ action.label }}):
+                                                    {% if not 'state' in action %}
+                                                        <i>{{ action.value }}</i>
+                                                    {% else %}
+                                                        <i>{{ action.value }} = {{ action.state|yesno|capfirst }}</i>
+                                                    {% endif %}
+                                            {% else %}
+                                                <b>{{ action.type_display }}</b>
+                                            {% endif %}
+                                        {% endfor %}
+                                        </td>
+                                    </tr>
                                 {% endfor %}
                             </tbody>
                         </table>

@@ -1141,7 +1141,7 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
 
         self.assertTrue(log_rule["trigger"])
         self.assertTrue(log_rule["raw_logic_expression"])
-        self.assertEqual("True", log_rule["readable_rule"])
+        self.assertEqual("true", log_rule["readable_rule"])
         self.assertEqual("test", log_rule["targeted_components"][0]["key"])
 
     def test_json_logic_in_trigger_doesnt_raise_error(self):

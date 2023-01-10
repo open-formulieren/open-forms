@@ -4,9 +4,9 @@ Introspection of sonLogic expression, based on our json_logic.meta extension.
 from json_logic.meta import JSONLogicExpression
 from json_logic.typing import JSON
 
+from .datastructures import ExpressionIntrospection
 from .descriptions import (
     DescriptionGeneratorProtocol,
-    _generate_description,
     op_and,
     op_bool,
     op_cat,
@@ -38,7 +38,11 @@ from .descriptions import (
     op_var,
 )
 
-__all__ = ["OPERATION_DESCRIPTION_BUILDERS", "generate_rule_description"]
+__all__ = [
+    "OPERATION_DESCRIPTION_BUILDERS",
+    "introspect_json_logic",
+    "generate_rule_description",
+]
 
 
 OPERATION_DESCRIPTION_BUILDERS: dict[str, DescriptionGeneratorProtocol] = {
@@ -78,6 +82,11 @@ OPERATION_DESCRIPTION_BUILDERS: dict[str, DescriptionGeneratorProtocol] = {
 }
 
 
-def generate_rule_description(expression: JSON) -> str:
+def introspect_json_logic(expression: JSON) -> ExpressionIntrospection:
     tree = JSONLogicExpression.from_expression(expression).as_tree()
-    return _generate_description(tree, root=True)
+    return ExpressionIntrospection(expression=expression, tree=tree)
+
+
+def generate_rule_description(expression: JSON) -> str:
+    introspection = introspect_json_logic(expression)
+    return introspection.description
