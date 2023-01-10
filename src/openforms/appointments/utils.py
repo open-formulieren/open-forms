@@ -15,22 +15,23 @@ from openforms.forms.models import Form, FormStep
 from openforms.logging import logevent
 from openforms.submissions.models import Submission
 
-from .base import AppointmentClient, AppointmentLocation, AppointmentProduct
+from .base import AppointmentClient, AppointmentLocation, AppointmentProduct, BasePlugin
 from .constants import AppointmentDetailsStatus
 from .exceptions import AppointmentCreateFailed, AppointmentDeleteFailed
 from .models import AppointmentInfo, AppointmentsConfig
+from .registry import register
 from .service import AppointmentRegistrationFailed
 
 logger = logging.getLogger()
 
 
-def get_client():
+def get_plugin() -> BasePlugin:
+    """returns plugin selected in AppointmentsConfig"""
     config_path = AppointmentsConfig.get_solo().config_path
     if not config_path:
         raise ValueError("No config_path is specified in AppointmentsConfig")
-    config_class = import_string(config_path)
-    client = config_class.get_solo().get_client()
-    return client
+
+    return register[config_path]
 
 
 def get_missing_fields_labels(
@@ -213,14 +214,14 @@ def cancel_previous_submission_appointment(submission: Submission) -> None:
 
 
 @elasticapm.capture_span(span_type="app.appointments.delete")
-def delete_appointment_for_submission(submission: Submission, client=None) -> None:
+def delete_appointment_for_submission(submission: Submission, plugin=None) -> None:
     """
     Delete/cancels the appointment for a given submission.
 
     :raises CancelAppointmentFailed: if the plugin errored or there was no relevant
       appointment information.
     """
-    client = client or get_client()
+    plugin = plugin or get_plugin()
     try:
         appointment_info = submission.appointment_info
     except AppointmentInfo.DoesNotExist:
@@ -231,13 +232,13 @@ def delete_appointment_for_submission(submission: Submission, client=None) -> No
         return
 
     try:
-        client.delete_appointment(appointment_info.appointment_id)
+        plugin.delete_appointment(appointment_info.appointment_id)
         appointment_info.cancel()
     except AppointmentDeleteFailed as e:
-        logevent.appointment_cancel_failure(appointment_info, client, e)
+        logevent.appointment_cancel_failure(appointment_info, plugin, e)
         raise
 
-    logevent.appointment_cancel_success(appointment_info, client)
+    logevent.appointment_cancel_success(appointment_info, plugin)
 
 
 def create_base64_qrcode(text):
