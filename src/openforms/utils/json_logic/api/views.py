@@ -29,7 +29,7 @@ from .serializers import LogicDescriptionSerializer
           "==": [
             {"var": "foo"},
             {
-                "+": [{"var": "a", "var": "b"}],
+                "+": [{"var": "a"}, {"var": "b"}],
                 "_meta": {"description": "a + b"},
             },
           ]

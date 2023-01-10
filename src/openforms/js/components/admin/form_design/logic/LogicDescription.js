@@ -1,6 +1,6 @@
 import isEmpty from 'lodash/isEmpty';
 import PropTypes from 'prop-types';
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 
 import {APIContext} from 'components/admin/form_design/Context';
 import {LOGIC_DESCRIPTION_ENDPOINT} from 'components/admin/form_design/constants';
