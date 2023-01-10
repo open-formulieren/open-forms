@@ -1,7 +1,7 @@
 import inspect
 import re
 from copy import deepcopy
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from unittest.mock import patch
 
@@ -238,10 +238,10 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         )
 
     @patch(
-        "openforms.emails.templatetags.appointments.get_client",
+        "openforms.emails.templatetags.appointments.get_plugin",
         return_value=FixedCancelAndChangeLinkPlugin("email"),
     )
-    def test_appointment_information(self, get_client_mock):
+    def test_appointment_information(self, get_plugin_mock):
         config = GlobalConfiguration.get_solo()
         config.email_template_netloc_allowlist = ["fake.nl"]
         config.save()
@@ -401,6 +401,27 @@ class PaymentConfirmationEmailTests(TestCase):
 
 
 class TestAppointmentPlugin(BasePlugin):
+    def get_available_products(self, current_products=None):
+        return [
+            AppointmentProduct(identifier="1", name="Test product 1"),
+            AppointmentProduct(identifier="2", name="Test product 2"),
+        ]
+
+    def get_locations(self, products):
+        return [AppointmentLocation(identifier="1", name="Test location")]
+
+    def get_dates(self, products, location, start_at=None, end_at=None):
+        return [date(2021, 1, 1)]
+
+    def get_times(self, products, location, day):
+        return [datetime(2021, 1, 1, 12, 0)]
+
+    def create_appointment(self, products, location, start_at, client, remarks=None):
+        return "1"
+
+    def delete_appointment(self, identifier: str) -> None:
+        return
+
     def get_appointment_details(self, identifier: str):
         return AppointmentDetails(
             identifier=identifier,
@@ -445,10 +466,10 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
     maxDiff = None
 
     @patch(
-        "openforms.emails.templatetags.appointments.get_client",
+        "openforms.emails.templatetags.appointments.get_plugin",
         return_value=TestAppointmentPlugin("test"),
     )
-    def test_send_confirmation_mail_text_kitchensink(self, appointment_client_mock):
+    def test_send_confirmation_mail_text_kitchensink(self, appointment_plugin_mock):
         config = GlobalConfiguration.get_solo()
         config.email_template_netloc_allowlist = ["gemeente.nl"]
         config.save()

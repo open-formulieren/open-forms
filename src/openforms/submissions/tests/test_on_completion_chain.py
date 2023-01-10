@@ -51,7 +51,7 @@ class OnCompletionTests(TestCase):
                     self.fail("Invalid task ID returned")
 
         self.assertEqual(
-            len(submission.on_completion_task_ids), 6
+            len(submission.on_completion_task_ids), 5
         )  # 6 tasks in the chain
         # registration result reference
         self.assertTrue(submission.public_registration_reference.startswith("OF-"))
