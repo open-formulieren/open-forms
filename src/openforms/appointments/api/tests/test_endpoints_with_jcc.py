@@ -26,9 +26,7 @@ class ProductsListTests(SubmissionsMixin, TestCase):
         cls.endpoint = reverse("api:appointments-products-list")
 
         appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.config_path = (
-            "openforms.appointments.contrib.jcc.models.JccConfig"
-        )
+        appointments_config.config_path = "jcc"
         appointments_config.save()
 
         config = JccConfig.get_solo()
@@ -70,9 +68,7 @@ class LocationsListTests(SubmissionsMixin, TestCase):
         cls.endpoint = reverse("api:appointments-locations-list")
 
         appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.config_path = (
-            "openforms.appointments.contrib.jcc.models.JccConfig"
-        )
+        appointments_config.config_path = "jcc"
         appointments_config.save()
 
         config = JccConfig.get_solo()
@@ -123,9 +119,7 @@ class DatesListTests(SubmissionsMixin, TestCase):
         cls.endpoint = reverse("api:appointments-dates-list")
 
         appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.config_path = (
-            "openforms.appointments.contrib.jcc.models.JccConfig"
-        )
+        appointments_config.config_path = "jcc"
         appointments_config.save()
 
         config = JccConfig.get_solo()
@@ -180,9 +174,7 @@ class TimesListTests(SubmissionsMixin, TestCase):
         cls.endpoint = reverse("api:appointments-times-list")
 
         appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.config_path = (
-            "openforms.appointments.contrib.jcc.models.JccConfig"
-        )
+        appointments_config.config_path = "jcc"
         appointments_config.save()
 
         config = JccConfig.get_solo()
@@ -241,9 +233,7 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.config_path = (
-            "openforms.appointments.contrib.jcc.models.JccConfig"
-        )
+        appointments_config.config_path = "jcc"
         appointments_config.save()
 
         config = JccConfig.get_solo()

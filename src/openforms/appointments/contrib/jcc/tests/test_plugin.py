@@ -6,13 +6,16 @@ from django.utils.translation import ugettext_lazy as _
 
 import requests_mock
 
+from stuf.tests.factories import SoapServiceFactory
+
 from ....base import (
     AppointmentClient,
     AppointmentDetails,
     AppointmentLocation,
     AppointmentProduct,
 )
-from ..plugin import Plugin
+from ..models import JccConfig
+from ..plugin import JccAppointment
 
 
 def mock_response(filename):
@@ -31,7 +34,11 @@ class PluginTests(TestCase):
         wsdl = os.path.abspath(
             os.path.join(os.path.dirname(__file__), "mock/GenericGuidanceSystem2.wsdl")
         )
-        cls.plugin = Plugin(wsdl)
+        config = JccConfig.get_solo()
+        config.service = SoapServiceFactory.create(url=wsdl)
+        config.save()
+
+        cls.plugin = JccAppointment("jcc")
 
     @requests_mock.Mocker()
     def test_get_available_products(self, m):

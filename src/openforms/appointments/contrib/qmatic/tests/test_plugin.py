@@ -1,5 +1,4 @@
 import os
-import re
 from datetime import date, datetime, timezone
 
 from django.test import TestCase
@@ -12,7 +11,7 @@ from ....base import (
     AppointmentLocation,
     AppointmentProduct,
 )
-from ..plugin import Plugin
+from ..plugin import QmaticAppointment
 from .factories import QmaticConfigFactory
 
 
@@ -31,7 +30,7 @@ class PluginTests(TestCase):
     def setUpTestData(cls):
         config = QmaticConfigFactory.create()
 
-        cls.plugin = Plugin()
+        cls.plugin = QmaticAppointment("qmatic")
         cls.api_root = config.service.api_root
 
     @requests_mock.Mocker()
