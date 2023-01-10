@@ -2,13 +2,11 @@ import logging
 
 from celery_once import QueueOnce
 
-from openforms.appointments.service import (
-    AppointmentRegistrationFailed,
-    register_appointment,
-)
 from openforms.celery import app
+from openforms.submissions.models import Submission
 
-from ..models import Submission
+from .exceptions import AppointmentRegistrationFailed
+from .service import register_appointment
 
 __all__ = ["maybe_register_appointment"]
 
@@ -27,7 +25,7 @@ def maybe_register_appointment(submission_id: int) -> None:
     If the submission is for a form which is configured to create appointments,
     ensure that the appointment is registered in the configured backend.
 
-    This can either not be needed, be succesful or fail. Either way, the result should
+    This can either not be needed, be successful or fail. Either way, the result should
     be stored in the database. If appointment registration fails, this feedback
     should find its way back to the end-user.
     """
@@ -37,7 +35,7 @@ def maybe_register_appointment(submission_id: int) -> None:
         register_appointment(submission)
     except AppointmentRegistrationFailed as exc:
         logger.info(
-            "Appoinment registration failed, aborting workflow.",
+            "Appointment registration failed, aborting workflow.",
             exc_info=exc,
             extra={"submission": submission_id},
         )

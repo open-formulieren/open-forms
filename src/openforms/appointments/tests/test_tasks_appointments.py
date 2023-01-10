@@ -2,10 +2,8 @@ from unittest.mock import patch
 
 from django.test import TestCase
 
-from ..tasks.appointments import (
-    AppointmentRegistrationFailed,
-    maybe_register_appointment,
-)
+from ..exceptions import AppointmentRegistrationFailed
+from ..tasks import maybe_register_appointment
 from .factories import SubmissionFactory
 
 
@@ -14,7 +12,7 @@ class AppointmentRegistrationTaskTests(TestCase):
         submission = SubmissionFactory.create(completed=True)
 
         with patch(
-            "openforms.submissions.tasks.appointments.register_appointment"
+            "openforms.appointments.tasks.register_appointment"
         ) as mock_register:
             maybe_register_appointment(submission.id)
 
@@ -27,7 +25,7 @@ class AppointmentRegistrationTaskTests(TestCase):
         submission = SubmissionFactory.create(completed=True)
 
         with patch(
-            "openforms.submissions.tasks.appointments.register_appointment"
+            "openforms.appointments.tasks.register_appointment"
         ) as mock_register:
             mock_register.side_effect = AppointmentRegistrationFailed("Failed")
             with self.assertRaises(AppointmentRegistrationFailed):

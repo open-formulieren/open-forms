@@ -7,10 +7,10 @@ from django.utils import timezone
 from celery import chain
 from celery.result import AsyncResult
 
+from openforms.appointments.tasks import maybe_register_appointment
 from openforms.celery import app
 
 from ..models import Submission
-from .appointments import *  # noqa
 from .cleanup import *  # noqa
 from .emails import *  # noqa
 from .payments import *  # noqa
