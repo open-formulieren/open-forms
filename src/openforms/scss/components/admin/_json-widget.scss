@@ -1,7 +1,17 @@
+@use 'microscope-sass/lib/bem';
+
 @import '~microscope-sass/lib/color';
 
 .json-widget {
-  &__error {
+  textarea {
+    width: $input-field-size;
+  }
+
+  @include bem.modifier('collapsed') {
+    display: none;
+  }
+
+  @include bem.element('error') {
     @include color-danger;
     padding-top: 0.5em;
   }

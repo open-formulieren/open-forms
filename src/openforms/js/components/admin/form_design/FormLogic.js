@@ -13,6 +13,7 @@ import StepSelection, {useFormStep} from './StepSelection';
 import AdvancedTrigger from './logic/AdvancedTrigger';
 import DSLEditorNode from './logic/DSLEditorNode';
 import DataPreview from './logic/DataPreview';
+import LogicDescriptionInput from './logic/LogicDescription';
 import LogicTypeSelection from './logic/LogicTypeSelection';
 import Trigger from './logic/Trigger';
 import ActionSet from './logic/actions/ActionSet';
@@ -23,6 +24,8 @@ const EMPTY_RULE = {
   _generatedId: '', // consumers should generate this, as it's used for the React key prop if no uuid exists
   _logicType: '',
   form: '',
+  description: '',
+  _mayGenerateDescription: true,
   order: null,
   jsonLogicTrigger: {'': [{var: ''}, null]},
   isAdvanced: false,
@@ -80,6 +83,7 @@ const FormLogicRules = ({rules, onAdd, onChange, onDelete}) => {
         return (
           <Rule
             key={rule.uuid || rule._generatedId}
+            isCreate={!rule.uuid}
             {...rule}
             onChange={onChange.bind(null, index)}
             onDelete={onDelete.bind(null, index)}
@@ -102,7 +106,10 @@ FormLogicRules.propTypes = {
 };
 
 const Rule = ({
+  isCreate,
   _logicType,
+  description,
+  _mayGenerateDescription,
   order,
   jsonLogicTrigger,
   triggerFromStep: triggerFromStepIdentifier,
@@ -114,6 +121,8 @@ const Rule = ({
 }) => {
   const intl = useIntl();
   const [displayAdvancedOptions, setDisplayAdvancedOptions] = useState(false);
+  const [expandExpression, setExpandExpression] = useState(isCreate);
+  const [resetRequest, setResetRequest] = useState(0);
   const triggerFromStep = useFormStep(triggerFromStepIdentifier);
 
   const deleteConfirmMessage = intl.formatMessage({
@@ -131,6 +140,17 @@ const Rule = ({
       />
     );
   }
+
+  const onDescriptionGenerated = generatedDescription => {
+    const newDescription = intl.formatMessage(
+      {
+        description: 'Logic expression generated description',
+        defaultMessage: 'When {desc}',
+      },
+      {desc: generatedDescription}
+    );
+    onChange({target: {name: 'description', value: newDescription}});
+  };
 
   const TriggerComponent = isAdvanced ? AdvancedTrigger : Trigger;
 
@@ -223,11 +243,56 @@ const Rule = ({
         )}
 
         <div className="logic-trigger-container">
+          {isAdvanced ? (
+            <div className="logic-trigger-container__description">
+              <LogicDescriptionInput
+                name="description"
+                generationRequest={resetRequest}
+                generationAllowed={_mayGenerateDescription}
+                logicExpression={jsonLogicTrigger}
+                value={description}
+                onChange={onChange}
+                onDescriptionGenerated={onDescriptionGenerated}
+                size={100}
+                error={errors.description}
+                placeholder={intl.formatMessage({
+                  description: 'Logic rule description placeholder',
+                  defaultMessage: 'Easy to understand description',
+                })}
+              />
+
+              <div className="actions actions--horizontal">
+                <FAIcon
+                  icon={expandExpression ? 'chevron-up' : 'chevron-down'}
+                  title={intl.formatMessage({
+                    description: 'Expand/collapse logic expression icon title',
+                    defaultMessage: 'Expand/collapse JsonLogic',
+                  })}
+                  extraClassname="actions__action"
+                  onClick={() => setExpandExpression(!expandExpression)}
+                />
+                <FAIcon
+                  icon="arrows-rotate"
+                  title={intl.formatMessage({
+                    description: 'Reset logic expression icon title',
+                    defaultMessage: 'Reset to default description',
+                  })}
+                  extraClassname="actions__action"
+                  onClick={() => {
+                    onChange({target: {name: 'description', value: ''}});
+                    setResetRequest(resetRequest + 1);
+                  }}
+                />
+              </div>
+            </div>
+          ) : null}
+
           <TriggerComponent
             name="jsonLogicTrigger"
             logic={jsonLogicTrigger}
             onChange={onChange}
             error={errors.jsonLogicTrigger}
+            expandExpression={expandExpression}
           />
 
           {triggerFromStep && (
@@ -248,7 +313,10 @@ const Rule = ({
 };
 
 Rule.propTypes = {
+  isCreate: PropTypes.bool.isRequired,
   _logicType: PropTypes.oneOf(['', 'simple', 'advanced']), // TODO: dmn in the future
+  description: PropTypes.string,
+  _mayGenerateDescription: PropTypes.bool.isRequired,
   order: PropTypes.number.isRequired,
   jsonLogicTrigger: PropTypes.object,
   triggerFromStep: PropTypes.string,

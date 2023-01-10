@@ -2863,6 +2863,112 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/logic/description:
+    post:
+      operationId: logic_description_create
+      description: |-
+        Generate a more human-readable description of a given JsonLogic expression.
+
+        This endpoint takes into account (optionally) client-provided sub-expression
+        descriptions via the ``_meta.description`` path. E.g. an input like:
+
+        ```json
+        {
+          "==": [
+            {"var": "foo"},
+            {
+                "+": [{"var": "a"}, {"var": "b"}],
+                "_meta": {"description": "a + b"},
+            },
+          ]
+        }
+        ```
+
+        would result in a description like:
+
+            {{foo}} is equal to a + b
+
+        The input expression must be a valid JsonLogic expression, otherwise the endpoint
+        returns HTTP 400 validation errors.
+      summary: Generate JsonLogic description
+      tags:
+      - logic
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogicDescription'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LogicDescription'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LogicDescription'
+        required: true
+      security:
+      - tokenAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogicDescription'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        4XX:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+        5XX:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/payment/plugins:
     get:
       operationId: payment_plugins_list
@@ -6115,6 +6221,10 @@ components:
           description: The trigger expression to determine if the actions should execute
             or not. Note that this must be a valid JsonLogic expression, and the first
             operand must be a reference to a variable in the form.
+        description:
+          type: string
+          description: Logic rule description in natural language.
+          maxLength: 100
         order:
           type: integer
           description: Order of the rule relative to the form it belongs to. Logic
@@ -6691,6 +6801,22 @@ components:
           $ref: '#/components/schemas/LogicActionPolymorphic'
       required:
       - action
+    LogicDescription:
+      type: object
+      properties:
+        expression:
+          type: object
+          additionalProperties: {}
+          writeOnly: true
+          title: JsonLogic expression
+        description:
+          type: string
+          readOnly: true
+          title: generated description
+          description: Description derived from the input expression
+      required:
+      - description
+      - expression
     LogicPropertyAction:
       type: object
       properties:

@@ -89,6 +89,11 @@
     "description": "Form confirmation email label",
     "originalDefault": "Email option"
   },
+  "3FxzLm": {
+    "defaultMessage": "When {desc}",
+    "description": "Logic expression generated description",
+    "originalDefault": "When {desc}"
+  },
   "3W3Px9": {
     "defaultMessage": "Nog één toevoegen",
     "description": "Button text to add extra item",
@@ -459,6 +464,11 @@
     "description": "Progress indicator help text",
     "originalDefault": "Whether the step progression should be displayed in the UI or not."
   },
+  "G5q9GH": {
+    "defaultMessage": "Reset to default description",
+    "description": "Reset logic expression icon title",
+    "originalDefault": "Reset to default description"
+  },
   "GFXEAX": {
     "defaultMessage": "Interne naam",
     "description": "Form step internal name label",
@@ -588,6 +598,11 @@
     "defaultMessage": "Authenticatiefout",
     "description": "Modal title API call failed with HTTP 401",
     "originalDefault": "Authentication failure"
+  },
+  "JRGs/Q": {
+    "defaultMessage": "Expand/collapse JsonLogic",
+    "description": "Expand/collapse logic expression icon title",
+    "originalDefault": "Expand/collapse JsonLogic"
   },
   "JZRX+C": {
     "defaultMessage": "bewaartermijn voor voltooide inzendingen.",
@@ -1333,6 +1348,11 @@
     "defaultMessage": "Stappen en velden",
     "description": "Form design tab title",
     "originalDefault": "Steps and fields"
+  },
+  "mXJbc8": {
+    "defaultMessage": "Easy to understand description",
+    "description": "Logic rule description placeholder",
+    "originalDefault": "Easy to understand description"
   },
   "mYYxJE": {
     "defaultMessage": "maanden",

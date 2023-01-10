@@ -22,4 +22,9 @@ const FormContext = React.createContext({
 });
 FormContext.displayName = 'FormContext';
 
-export {FormContext, TinyMceContext, FeatureFlagsContext, FormStepContext};
+const APIContext = React.createContext({
+  crsftoken: '',
+});
+APIContext.displayName = 'APIContext';
+
+export {APIContext, FormContext, TinyMceContext, FeatureFlagsContext, FormStepContext};

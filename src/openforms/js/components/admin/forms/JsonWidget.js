@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import jsonLogic from 'json-logic-js';
 import PropTypes from 'prop-types';
 import React, {useEffect, useState} from 'react';
@@ -34,7 +35,7 @@ const isJsonLogic = jsonExpression => {
   return jsonLogic.is_logic(jsonExpression);
 };
 
-const JsonWidget = ({name, logic, onChange, cols = 60}) => {
+const JsonWidget = ({name, logic, onChange, cols = 60, isExpanded = true}) => {
   const intl = useIntl();
   const [jsonError, setJsonError] = useState('');
   const [editorValue, setEditorValue] = useState(jsonFormat(logic));
@@ -80,9 +81,15 @@ const JsonWidget = ({name, logic, onChange, cols = 60}) => {
   };
 
   return (
-    <div className="json-widget">
+    <div className={classNames('json-widget', {'json-widget--collapsed': !isExpanded})}>
       <div className="json-widget__input">
-        <TextArea name={name} value={editorValue} onChange={onJsonChange} cols={cols} />
+        <TextArea
+          name={name}
+          value={editorValue}
+          onChange={onJsonChange}
+          cols={cols}
+          rows={isExpanded ? Math.min(20, editorValue.split('\n').length) : 1}
+        />
       </div>
       {jsonError.length ? <div className="json-widget__error">{jsonError}</div> : null}
     </div>
@@ -94,6 +101,7 @@ JsonWidget.propTypes = {
   logic: jsonPropTypeValidator,
   onChange: PropTypes.func.isRequired,
   cols: PropTypes.number,
+  isExpanded: PropTypes.bool,
 };
 
 export default JsonWidget;

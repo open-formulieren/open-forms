@@ -12,6 +12,7 @@ class FormLogic(OrderedModel):
     description = models.CharField(
         _("description"),
         max_length=100,
+        blank=True,
         help_text=_("Logic rule description in natural language."),
     )
     form = models.ForeignKey(

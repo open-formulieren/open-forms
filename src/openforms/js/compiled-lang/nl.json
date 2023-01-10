@@ -115,6 +115,16 @@
       "value": "E-mailsjabloon"
     }
   ],
+  "3FxzLm": [
+    {
+      "type": 0,
+      "value": "When "
+    },
+    {
+      "type": 1,
+      "value": "desc"
+    }
+  ],
   "3W3Px9": [
     {
       "type": 0,
@@ -695,6 +705,12 @@
       "value": "Geef de voortgang in de formulierstappen wel of niet weer."
     }
   ],
+  "G5q9GH": [
+    {
+      "type": 0,
+      "value": "Reset to default description"
+    }
+  ],
   "GFXEAX": [
     {
       "type": 0,
@@ -865,6 +881,12 @@
     {
       "type": 0,
       "value": "Authenticatiefout"
+    }
+  ],
+  "JRGs/Q": [
+    {
+      "type": 0,
+      "value": "Expand/collapse JsonLogic"
     }
   ],
   "JZRX+C": [
@@ -1873,6 +1895,12 @@
     {
       "type": 0,
       "value": "Stappen en velden"
+    }
+  ],
+  "mXJbc8": [
+    {
+      "type": 0,
+      "value": "Easy to understand description"
     }
   ],
   "mYYxJE": [

@@ -20,7 +20,7 @@ import {getUniqueRandomString} from 'utils/random';
 
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import Confirmation from './Confirmation';
-import {FormContext} from './Context';
+import {APIContext, FormContext} from './Context';
 import DataRemoval from './DataRemoval';
 import FormConfigurationFields from './FormConfigurationFields';
 import FormDetailFields from './FormDetailFields';
@@ -186,6 +186,8 @@ function reducer(draft, action) {
         draft.logicRules = logicRules.map(rule => ({
           ...rule,
           _logicType: rule.isAdvanced ? 'simple' : 'advanced',
+          // if there's a description set already, it may not be mutated
+          _mayGenerateDescription: !rule.description,
         }));
       if (priceRules) draft.priceRules = priceRules;
 
@@ -627,6 +629,14 @@ function reducer(draft, action) {
           // deleting them doesn't play nice with validation errors by index either.
           draft.logicRules = sortBy(draft.logicRules, ['order']);
         }
+        case 'description': {
+          // if the description field is emptied, we may now generate descriptions from
+          // the backend
+          if (value === '') {
+            draft.logicRules[index]._mayGenerateDescription = true;
+          }
+          break;
+        }
       }
 
       // Remove the validation error for the updated field
@@ -870,7 +880,8 @@ StepsFieldSet.propTypes = {
 /**
  * Component to render the form edit page.
  */
-const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
+const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
+  const {csrftoken} = useContext(APIContext);
   const initialState = {
     ...initialFormState,
     form: {
@@ -1286,7 +1297,6 @@ const FormCreationForm = ({csrftoken, formUuid, formUrl, formHistoryUrl}) => {
 };
 
 FormCreationForm.propTypes = {
-  csrftoken: PropTypes.string.isRequired,
   formUuid: PropTypes.string.isRequired,
   formUrl: PropTypes.string.isRequired,
   formHistoryUrl: PropTypes.string.isRequired,

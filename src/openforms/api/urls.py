@@ -21,6 +21,7 @@ from openforms.forms.api.viewsets import (
 from openforms.products.api.viewsets import ProductViewSet
 from openforms.submissions.api.viewsets import SubmissionStepViewSet, SubmissionViewSet
 from openforms.utils.decorators import never_cache
+from openforms.utils.json_logic.api.views import GenerateLogicDescriptionView
 
 from .views import PingView
 
@@ -89,6 +90,11 @@ urlpatterns = [
                 path("prefill/", include("openforms.prefill.api.urls")),
                 path("validation/", include("openforms.validations.api.urls")),
                 path("location/", include("openforms.locations.api.urls")),
+                path(
+                    "logic/description",
+                    GenerateLogicDescriptionView.as_view(),
+                    name="generate-logic-description",
+                ),
                 path("authentication/", include("openforms.authentication.api.urls")),
                 path("registration/", include("openforms.registrations.api.urls")),
                 path("payment/", include("openforms.payments.api.urls")),
