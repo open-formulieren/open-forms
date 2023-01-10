@@ -2,7 +2,6 @@ from datetime import date
 
 from django.core.management import BaseCommand
 from django.core.management.base import CommandError
-from django.utils.module_loading import import_string
 
 from openforms.appointments.base import AppointmentClient
 from openforms.appointments.registry import register
