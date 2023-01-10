@@ -5,7 +5,6 @@ import re
 from datetime import datetime
 from typing import List, Optional
 
-from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
@@ -135,10 +134,10 @@ def book_appointment_for_submission(submission: Submission) -> None:
         appointment_data["appStartTime"]["value"], "%Y-%m-%dT%H:%M:%S%z"
     )
 
-    client = get_client()
+    plugin = get_plugin()
     try:
-        logevent.appointment_register_start(submission, client)
-        appointment_id = client.create_appointment(
+        logevent.appointment_register_start(submission, plugin)
+        appointment_id = plugin.create_appointment(
             [product], location, start_at, appointment_client
         )
         appointment_info = AppointmentInfo.objects.create(
@@ -147,7 +146,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
             submission=submission,
             start_time=start_at,
         )
-        logevent.appointment_register_success(appointment_info, client)
+        logevent.appointment_register_success(appointment_info, plugin)
     except AppointmentCreateFailed as e:
         # This is displayed to the end-user!
         error_information = _(
@@ -159,7 +158,7 @@ def book_appointment_for_submission(submission: Submission) -> None:
             error_information=error_information,
             submission=submission,
         )
-        logevent.appointment_register_failure(appointment_info, client, e)
+        logevent.appointment_register_failure(appointment_info, plugin, e)
         raise AppointmentRegistrationFailed("Unable to create appointment") from e
 
     cancel_previous_submission_appointment(submission)
@@ -194,14 +193,14 @@ def cancel_previous_submission_appointment(submission: Submission) -> None:
         )
         return
 
-    client = get_client()
+    plugin = get_plugin()
 
     logger.debug(
         "Attempting to cancel appointment %s of submission %s",
         appointment_info.appointment_id,
         submission.uuid,
     )
-    logevent.appointment_cancel_start(appointment_info, client)
+    logevent.appointment_cancel_start(appointment_info, plugin)
 
     try:
         delete_appointment_for_submission(submission.previous_submission)

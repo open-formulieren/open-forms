@@ -2,7 +2,7 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from django.urls import reverse
 
@@ -177,7 +177,7 @@ class BasePlugin(ABC, AbstractBasePlugin):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_appointment_details(self, identifier: str) -> str:
+    def get_appointment_details(self, identifier: str) -> AppointmentDetails:
         """
         Get appointment details.
 
