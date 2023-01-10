@@ -5,8 +5,8 @@ from django.core.management.base import CommandError
 from django.utils.module_loading import import_string
 
 from openforms.appointments.base import AppointmentClient
-from openforms.appointments.constants import AppointmentsConfigPaths
-from openforms.appointments.utils import get_client
+from openforms.appointments.registry import register
+from openforms.appointments.utils import get_plugin
 
 TIME_PARSE_FORMAT = "%H:%M"
 DATE_PARSE_FORMAT = "%Y-%m-%d"
@@ -24,29 +24,28 @@ class Command(BaseCommand):
         )
 
     def handle(self, **options):
-        plugin = options.get("plugin", None)
-        if plugin:
-            available_plugins = {c[1]: c[0] for c in AppointmentsConfigPaths.choices}
-            if plugin not in available_plugins:
+        plugin_name = options.get("plugin", None)
+        if plugin_name:
+            if plugin_name not in register:
                 raise CommandError(
-                    f"Invalid plugin: {plugin}. Choices are: {available_plugins.keys()}"
+                    f"Invalid plugin: {plugin_name}. Choices are: {list(dict(register.get_choices()).keys())}"
                 )
-            config_class = import_string(available_plugins[plugin])
+
             try:
-                self.client = config_class.get_solo().get_client()
+                self.plugin = register[plugin_name]
                 # Sanity check:
-                self.client.get_available_products()
+                self.plugin.get_available_products()
             except Exception as e:
                 raise CommandError(f"Plugin is not properly configured: {e}")
         else:
             try:
-                self.client = get_client()
+                self.plugin = get_plugin()
             except ValueError:
                 raise CommandError(
                     "No plugin is configured. Use --plugin PLUGIN to use a specific plugin."
                 )
 
-        self.stdout.write(f"Using plugin: {plugin}")
+        self.stdout.write(f"Using plugin: {self.plugin.get_label()}")
 
         available_actions = [
             ("Create booking", "create_booking"),
@@ -93,8 +92,7 @@ class Command(BaseCommand):
     def create_booking(self):
 
         # Products
-
-        available_products = self.client.get_available_products()
+        available_products = self.plugin.get_available_products()
 
         if not available_products:
             self.stderr.write("No products found.")
@@ -106,7 +104,7 @@ class Command(BaseCommand):
 
         # Locations
 
-        available_locations = self.client.get_locations(selected_products)
+        available_locations = self.plugin.get_locations(selected_products)
 
         selected_location = self._show_options(
             available_locations, lambda x: x.name, "location"
@@ -114,7 +112,7 @@ class Command(BaseCommand):
 
         # Dates
 
-        available_dates = self.client.get_dates(selected_products, selected_location)
+        available_dates = self.plugin.get_dates(selected_products, selected_location)
 
         selected_date = self._show_options(
             available_dates, lambda x: x.strftime(DATE_PARSE_FORMAT), "date"
@@ -122,7 +120,7 @@ class Command(BaseCommand):
 
         # Times
 
-        available_times = self.client.get_times(
+        available_times = self.plugin.get_times(
             selected_products, selected_location, selected_date
         )
 
@@ -136,8 +134,6 @@ class Command(BaseCommand):
 
         # Book
 
-        booking_id = None
-
         self.stdout.write(
             "Concept appointment\n"
             + f"Product(s)   : {', '.join([p.name for p in selected_products])}\n"
@@ -148,7 +144,7 @@ class Command(BaseCommand):
             do_book = input("Do you want to book this appointment [y/n]: ")
             if do_book == "y":
                 try:
-                    booking_id = self.client.create_appointment(
+                    booking_id = self.plugin.create_appointment(
                         selected_products,
                         selected_location,
                         selected_datetime,
@@ -172,7 +168,7 @@ class Command(BaseCommand):
 
         self.stdout.write("Appointment details (retrieved):")
         try:
-            details = self.client.get_appointment_details(booking_id)
+            details = self.plugin.get_appointment_details(booking_id)
         except Exception as exc:
             self.stderr.write(f"Failed to get appointment details: {exc}")
             return
@@ -191,7 +187,7 @@ class Command(BaseCommand):
             do_cancel = input("Do you want to cancel this appointment [y/n]? ")
             if do_cancel == "y":
                 try:
-                    self.client.delete_appointment(booking_id)
+                    self.plugin.delete_appointment(booking_id)
                     self.stdout.write("Appointment cancelled succesfully.")
                 except Exception as exc:
                     self.stderr.write(f"Failed to cancel appointment: {exc}")
