@@ -83,7 +83,7 @@ class BasePlugin(ABC, AbstractBasePlugin):
     @abstractmethod
     def get_available_products(
         self, current_products: Optional[List[AppointmentProduct]] = None
-    ) -> List[AppointmentProduct]:
+    ) -> List[AppointmentProduct]:  # pragma: no cover
         """
         Retrieve all available products and services to create an appointment for.
 
@@ -99,7 +99,7 @@ class BasePlugin(ABC, AbstractBasePlugin):
     @abstractmethod
     def get_locations(
         self, products: List[AppointmentProduct]
-    ) -> List[AppointmentLocation]:
+    ) -> List[AppointmentLocation]:  # pragma: no cover
         """
         Retrieve all available locations for given ``products``.
 
@@ -115,7 +115,7 @@ class BasePlugin(ABC, AbstractBasePlugin):
         location: AppointmentLocation,
         start_at: Optional[date] = None,
         end_at: Optional[date] = None,
-    ) -> List[date]:
+    ) -> List[date]:  # pragma: no cover
         """
         Retrieve all available dates for given ``products`` and ``location``.
 
@@ -133,7 +133,7 @@ class BasePlugin(ABC, AbstractBasePlugin):
         products: List[AppointmentProduct],
         location: AppointmentLocation,
         day: date,
-    ) -> List[datetime]:
+    ) -> List[datetime]:  # pragma: no cover
         """
         Retrieve all available times for given ``products``, ``location`` and ``day``.
 
@@ -152,7 +152,7 @@ class BasePlugin(ABC, AbstractBasePlugin):
         start_at: datetime,
         client: AppointmentClient,
         remarks: str = None,
-    ) -> str:
+    ) -> str:  # pragma: no cover
         """
         Create an appointment.
 
@@ -167,7 +167,7 @@ class BasePlugin(ABC, AbstractBasePlugin):
         raise NotImplementedError()
 
     @abstractmethod
-    def delete_appointment(self, identifier: str) -> None:
+    def delete_appointment(self, identifier: str) -> None:  # pragma: no cover
         """
         Delete an appointment.
 
@@ -177,7 +177,9 @@ class BasePlugin(ABC, AbstractBasePlugin):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_appointment_details(self, identifier: str) -> AppointmentDetails:
+    def get_appointment_details(
+        self, identifier: str
+    ) -> AppointmentDetails:  # pragma: no cover
         """
         Get appointment details.
 

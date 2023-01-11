@@ -22,7 +22,7 @@ class ProductsListTests(SubmissionsMixin, TestCase):
         cls.endpoint = reverse("api:appointments-products-list")
 
         appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.config_path = "qmatic"
+        appointments_config.plugin = "qmatic"
         appointments_config.save()
 
         config = QmaticConfigFactory.create()
@@ -57,7 +57,7 @@ class LocationsListTests(SubmissionsMixin, TestCase):
         cls.endpoint = reverse("api:appointments-locations-list")
 
         appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.config_path = "qmatic"
+        appointments_config.plugin = "qmatic"
         appointments_config.save()
 
         config = QmaticConfigFactory.create()
@@ -105,7 +105,7 @@ class DatesListTests(SubmissionsMixin, TestCase):
         cls.endpoint = reverse("api:appointments-dates-list")
 
         appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.config_path = "qmatic"
+        appointments_config.plugin = "qmatic"
         appointments_config.save()
 
         config = QmaticConfigFactory.create()
@@ -152,7 +152,7 @@ class TimesListTests(SubmissionsMixin, TestCase):
         cls.endpoint = reverse("api:appointments-times-list")
 
         appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.config_path = "qmatic"
+        appointments_config.plugin = "qmatic"
         appointments_config.save()
 
         config = QmaticConfigFactory.create()
@@ -204,7 +204,7 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.config_path = "qmatic"
+        appointments_config.plugin = "qmatic"
         appointments_config.save()
 
         config = QmaticConfigFactory.create()

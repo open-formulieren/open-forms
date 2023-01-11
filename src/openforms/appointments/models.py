@@ -8,7 +8,7 @@ from .fields import AppointmentBackendChoiceField
 
 
 class AppointmentsConfig(SingletonModel):
-    config_path = AppointmentBackendChoiceField(_("appointment plugin"), blank=True)
+    plugin = AppointmentBackendChoiceField(_("appointment plugin"), blank=True)
 
     class Meta:
         verbose_name = _("Appointment configuration")

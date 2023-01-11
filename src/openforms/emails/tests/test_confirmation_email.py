@@ -20,8 +20,8 @@ from openforms.appointments.base import (
     BasePlugin,
 )
 from openforms.appointments.constants import AppointmentDetailsStatus
+from openforms.appointments.contrib.demo.plugin import DemoAppointment
 from openforms.appointments.tests.factories import AppointmentInfoFactory
-from openforms.appointments.tests.test_base import TestPlugin
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.payments.constants import PaymentStatus
@@ -98,7 +98,7 @@ NESTED_COMPONENT_CONF = {
 }
 
 
-class FixedCancelAndChangeLinkPlugin(TestPlugin):
+class FixedCancelAndChangeLinkPlugin(DemoAppointment):
     def get_cancel_link(self, submission) -> str:
         return "http://fake.nl/api/v2/submission-uuid/token/verify/"
 

@@ -3,9 +3,9 @@ from datetime import date
 from django.core.management import BaseCommand
 from django.core.management.base import CommandError
 
-from openforms.appointments.base import AppointmentClient
-from openforms.appointments.registry import register
-from openforms.appointments.utils import get_plugin
+from ...base import AppointmentClient
+from ...registry import register
+from ...utils import get_plugin
 
 TIME_PARSE_FORMAT = "%H:%M"
 DATE_PARSE_FORMAT = "%Y-%m-%d"
@@ -15,36 +15,23 @@ class Command(BaseCommand):
     help = "Perform various appointment plugin calls."
 
     def add_arguments(self, parser):
-        super().add_arguments(parser)
-
         parser.add_argument(
             "--plugin",
+            default=get_plugin().identifier,
+            choices=list(dict(register.get_choices()).keys()),
             help="Enforce a specific plugin to be used. Defaults to the configured plugin.",
         )
 
     def handle(self, **options):
-        plugin_name = options.get("plugin", None)
-        if plugin_name:
-            if plugin_name not in register:
-                raise CommandError(
-                    f"Invalid plugin: {plugin_name}. Choices are: {list(dict(register.get_choices()).keys())}"
-                )
+        plugin_name = options["plugin"]
+        self.stdout.write(f"Using plugin: {plugin_name}")
 
-            try:
-                self.plugin = register[plugin_name]
-                # Sanity check:
-                self.plugin.get_available_products()
-            except Exception as e:
-                raise CommandError(f"Plugin is not properly configured: {e}")
-        else:
-            try:
-                self.plugin = get_plugin()
-            except ValueError:
-                raise CommandError(
-                    "No plugin is configured. Use --plugin PLUGIN to use a specific plugin."
-                )
-
-        self.stdout.write(f"Using plugin: {self.plugin.get_label()}")
+        try:
+            self.plugin = register[plugin_name]
+            # Sanity check:
+            self.plugin.get_available_products()
+        except Exception as e:
+            raise CommandError(f"Plugin is not properly configured: {e}")
 
         available_actions = [
             ("Create booking", "create_booking"),

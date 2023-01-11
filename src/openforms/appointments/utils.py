@@ -29,11 +29,11 @@ logger = logging.getLogger()
 
 def get_plugin() -> BasePlugin:
     """returns plugin selected in AppointmentsConfig"""
-    config_path = AppointmentsConfig.get_solo().config_path
-    if not config_path:
-        raise ValueError("No config_path is specified in AppointmentsConfig")
+    plugin = AppointmentsConfig.get_solo().plugin
+    if not plugin:
+        raise ValueError("No plugin is specified in AppointmentsConfig")
 
-    return register[config_path]
+    return register[plugin]
 
 
 def get_missing_fields_labels(

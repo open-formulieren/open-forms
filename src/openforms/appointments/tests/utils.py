@@ -10,7 +10,7 @@ from ..models import AppointmentsConfig
 
 def setup_jcc() -> None:
     appointments_config = AppointmentsConfig.get_solo()
-    appointments_config.config_path = "jcc"
+    appointments_config.plugin = "jcc"
     appointments_config.save()
 
     config = JccConfig.get_solo()

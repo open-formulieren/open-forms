@@ -1,7 +1,8 @@
 from django.db.models.fields import CharField
 
-from ..plugins.constants import UNIQUE_ID_MAX_LENGTH
-from ..plugins.validators import PluginExistsValidator
+from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
+from openforms.plugins.validators import PluginExistsValidator
+
 from .registry import register
 
 
