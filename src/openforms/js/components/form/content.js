@@ -1,7 +1,7 @@
 import {Formio} from 'formiojs';
 
 import {HIDDEN, KEY, LABEL, PRESENTATION, SHOW_IN_EMAIL, SHOW_IN_PDF} from './edit/options';
-import {ADVANCED, TRANSLATIONS} from './edit/tabs';
+import {ADVANCED, LANGUAGES, TRANSLATIONS} from './edit/tabs';
 
 const FormioContentField = Formio.Components.components.content;
 
@@ -26,19 +26,80 @@ const CONTENT_PRESENTATION = {
   components: [SHOW_IN_EMAIL, SHOW_IN_PDF],
 };
 
+const CONTENT_EDITOR = {
+  weight: 0,
+  type: 'textarea',
+  editor: 'ckeditor',
+  label: 'Content',
+  hideLabel: true,
+  input: true,
+  key: 'html',
+  as: 'html',
+  rows: 3,
+  tooltip: 'The HTML template for the result data items.',
+};
+
 const CONTENT_EDIT_TABS = {
   components: [
     {
-      weight: 0,
-      type: 'textarea',
-      editor: 'ckeditor',
-      label: 'Content',
-      hideLabel: true,
-      input: true,
-      key: 'html',
-      as: 'html',
-      rows: 3,
-      tooltip: 'The HTML template for the result data items.',
+      type: 'columns',
+      key: 'content',
+      columns: [
+        {
+          components: [
+            {
+              type: 'tabs',
+              components: [{label: 'Content', components: [CONTENT_EDITOR]}],
+            },
+          ],
+        },
+        {
+          components: [
+            {
+              ...TRANSLATIONS,
+              hideLabel: true,
+              components: [
+                {
+                  key: 'languages',
+                  type: 'tabs',
+                  components: LANGUAGES.map(([languageCode, _label]) => {
+                    return {
+                      key: languageCode,
+                      label: languageCode.toUpperCase(),
+                      components: [
+                        {
+                          label: 'Literal',
+                          hideLabel: true,
+                          key: `of-translations.${languageCode}[0].literal`,
+                          input: true,
+                          unique: true,
+                          type: 'hidden',
+                          customDefaultValue: ({instance, data}) =>
+                            instance.options.editComponent.html,
+                        },
+                        {
+                          label: 'Translation',
+                          hideLabel: true,
+                          key: `of-translations.${languageCode}[0].translation`,
+                          customDefaultValue: ({instance, data}) =>
+                            instance.options.componentTranslations.current[languageCode][
+                              instance.options.editComponent.html
+                            ],
+                          input: true,
+                          type: 'textarea',
+                          editor: 'ckeditor',
+                          as: 'html',
+                          rows: 3,
+                        },
+                      ],
+                    };
+                  }),
+                },
+              ],
+            },
+          ],
+        },
+      ],
     },
     {
       type: 'tabs',
@@ -51,7 +112,6 @@ const CONTENT_EDIT_TABS = {
           components: [LABEL, KEY, HIDDEN, CONTENT_PRESENTATION, CUSTOM_CSS_CLASS],
         },
         ADVANCED,
-        TRANSLATIONS,
       ],
     },
   ],

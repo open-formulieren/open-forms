@@ -7,6 +7,7 @@ const TRANSLATABLE_FIELDS = [
   'defaultValue',
   'tooltip',
   'values.label',
+  'html',
 ];
 
 const getValuesOfField = (component, fieldName) => {
