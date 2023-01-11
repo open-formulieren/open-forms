@@ -5,6 +5,7 @@ import ColumnField from './components/form/columns';
 import Component from './components/form/component';
 import ContentField from './components/form/content';
 import CurrencyField from './components/form/currency';
+import Datamap from './components/form/datamap';
 import DateField from './components/form/date';
 import EditGrid from './components/form/editGrid';
 import EmailField from './components/form/email';
@@ -58,6 +59,7 @@ const FormIOModule = {
     content: ContentField,
     currency: CurrencyField,
     editgrid: EditGrid,
+    datamap: Datamap,
   },
   builders: {
     webform: WebformBuilder,

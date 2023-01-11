@@ -1,10 +1,35 @@
 import {Formio} from 'react-formio';
 
-import {DEFAULT_TEXT_TABS} from './edit/tabs';
+import {
+  ADVANCED,
+  LOCATION,
+  PREFILL,
+  REGISTRATION,
+  TEXT_BASIC,
+  TEXT_VALIDATION,
+  TRANSLATIONS,
+  getValidationEditForm,
+} from './edit/tabs';
 
 class TextField extends Formio.Components.components.textfield {
   static editForm() {
-    return {components: [DEFAULT_TEXT_TABS]};
+    return {
+      components: [
+        {
+          type: 'tabs',
+          key: 'tabs',
+          components: [
+            TEXT_BASIC,
+            LOCATION,
+            ADVANCED,
+            getValidationEditForm(TEXT_VALIDATION),
+            REGISTRATION,
+            PREFILL,
+            TRANSLATIONS,
+          ],
+        },
+      ],
+    };
   }
 }
 
