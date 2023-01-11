@@ -59,6 +59,9 @@ div.flatpickr-calendar.open {
   .tab-pane.active {
     min-height: 50vh;
   }
+  .formio-component-content .tab-pane.active {
+    min-height: 0;
+  }
 
   // the select dropdowns are overflowing, which is hidden by the modal. this is the
   // easiest way to enforce they're always visible.
