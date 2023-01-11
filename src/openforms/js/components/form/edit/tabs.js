@@ -331,7 +331,7 @@ const tabComponents = LANGUAGES.map(([languageCode, _label]) => {
     label: languageCode.toUpperCase(),
     components: [
       {
-        type: 'datagrid',
+        type: 'translationsDataGrid',
         input: true,
         label: 'Translations',
         key: `of-translations.${languageCode}`,

@@ -26,6 +26,7 @@ import SignatureField from './components/form/signature';
 import TextArea from './components/form/textarea';
 import TextField from './components/form/textfield';
 import TimeField from './components/form/time';
+import TranslationsDataGrid from './components/form/translations';
 import WebformBuilder from './components/formio_builder/WebformBuilder';
 
 const FormIOModule = {
@@ -58,6 +59,7 @@ const FormIOModule = {
     content: ContentField,
     currency: CurrencyField,
     editgrid: EditGrid,
+    translationsDataGrid: TranslationsDataGrid,
   },
   builders: {
     webform: WebformBuilder,
