@@ -1,5 +1,5 @@
-@import "~@fortawesome/fontawesome-free/scss/fontawesome";
-@import "~@fortawesome/fontawesome-free/scss/solid";
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+@import '~@fortawesome/fontawesome-free/scss/solid';
 @import '~microscope-sass/lib/color';
 @import '~microscope-sass/lib/responsive';
 @import '~microscope-sass/lib/transform';
@@ -126,7 +126,7 @@
     // Anchor
     //
 
-    .anchor {
+    .utrecht-link {
       @include body;
       @include body--big;
       @include color-background(color);
@@ -138,7 +138,7 @@
       padding: 0 $grid-margin-3;
     }
 
-    &__list-item &__list .anchor {
+    &__list-item &__list .utrecht-link {
       @include color-primary;
       height: $nav-height-secondary-mobile;
     }
@@ -170,7 +170,7 @@
       &:before {
         @include center-hv;
         @include color-primary(background-color);
-        content: "";
+        content: '';
         z-index: -1;
         width: 100vw;
         height: 100%;
@@ -204,7 +204,7 @@
     // Anchor
     //
 
-    .anchor {
+    .utrecht-link {
       @include anchor(true);
       @include body;
       @include color-background(color);
@@ -215,18 +215,18 @@
       padding: 0 $grid-margin-3;
     }
 
-    &__body > &__list > &__list-item > .anchor {
+    &__body > &__list > &__list-item > .utrecht-link {
       @include body--big;
       height: $nav-height-primary-tablet;
     }
 
-    &__list-item:hover .anchor,
-    &__list-item--active .anchor {
+    &__list-item:hover .utrecht-link,
+    &__list-item--active .utrecht-link {
       @include color-secondary(background-color);
       @include color-primary(color);
     }
 
-    &__list-item--active > .anchor {
+    &__list-item--active > .utrecht-link {
       font-weight: bold;
     }
   }

@@ -1,37 +1,69 @@
-@import '~microscope-sass/lib/color';
-@import '~microscope-sass/lib/typography';
+/**
+ * The OpenForms Anchor component wraps around and extends the .utrecht-link component.
+ *
+ * Our own .openforms-anchor is being phased out in favour of
+ * .utrecht-link--openforms-<foo> extensions.
+ *
+ * TODO: there are probably some gains in implementing/overriding :visited, :hover and/or
+ * :active states for some variants.
+ */
+@use 'microscope-sass/lib/bem';
 
-@import './vars';
-@import './mixins';
+@import '@utrecht/components/dist/link-button/css/index.css';
+@import '@utrecht/components/dist/link/css/index'; // emits the .utrecht-link {...} styles
 
-.anchor {
-  @include text;
+/**
+ * Extensions of the utrecht-link component with OF-specific styles.
+ *
+ * Taken from open-forms-sdk styles and stripped down to what is actually used.
+ */
+.utrecht-link {
+  @include bem.modifier('openforms') {
+    font-family: var(
+      --of-utrecht-link-font-family,
+      var(--of-typography-sans-serif-font-family, var(--utrecht-document-font-family))
+    );
+    margin: 0;
+    cursor: pointer;
 
-  &:not(#{&}--hover) {
-    @include of-anchor;
+    // workaround for CSS issue in upstream component
+    &:visited {
+      &:hover {
+        color: var(--utrecht-link-hover-color);
+      }
+    }
   }
-  &--hover {
-    @include of-anchor(true);
+
+  // swap the hover/no-hover text decoration rules compared to the non-modified variant
+  @include bem.modifier('openforms-hover') {
+    text-decoration: var(--utrecht-link-hover-text-decoration);
+
+    &:hover {
+      text-decoration: var(--utrecht-link-text-decoration);
+    }
   }
 
-  &--active {
+  @include bem.modifier('openforms-active') {
     font-weight: bold;
   }
 
-  &--inherit {
-    color: inherit!important;
-  }
+  @include bem.modifier('openforms-inherit') {
+    color: inherit;
 
-  &--muted {
-    color: $color-gray-darker!important;
+    &:visited:hover,
+    &:hover {
+      color: inherit;
+    }
   }
+}
 
-  &--active#{&}--muted,
-  &--muted:hover {
-    color: $typography-color-text!important;
-  }
+/**
+ * Apply the standard link styles (without modifiers) to the anchor tags.
 
-  &--indent {
-    padding-left: 0.6em;
+ * For WYSIWYG-like content where classnames cannot be controlled.
+ */
+@mixin extend-utrecht-link() {
+  a {
+    @extend .utrecht-link, .utrecht-link--openforms;
   }
 }

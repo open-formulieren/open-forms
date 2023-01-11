@@ -94,6 +94,6 @@ def anchor(context, **kwargs):
         "label": get_required_config_value(config, "label", "anchor"),
         "active": get_is_active(request, config),
         "hover": config.get("hover", False),
-        "style": config.get("style", "normal"),
+        "style": config.get("style", ""),
         "target": config.get("target", "_self"),
     }
