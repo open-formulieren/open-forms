@@ -854,7 +854,10 @@ class FormsAPITests(APITestCase):
         self.user.save()
 
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        data = {"confirmation_email_template": None}
+        data = {
+            "confirmation_email_template": None,
+            "confirmation_email_option": ConfirmationEmailOptions.global_email,
+        }
 
         response = self.client.patch(url, data=data)
 

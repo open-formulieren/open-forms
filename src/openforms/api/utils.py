@@ -23,9 +23,8 @@ def underscore_to_camel(input_: Union[str, int]) -> str:
 def get_from_serializer_data_or_instance(
     field: str, data: dict, serializer: Serializer
 ) -> Any:
-    data_value = data.get(field)
-    if data_value:
-        return data_value
+    if field in data:
+        return data[field]
 
     instance = serializer.instance
     if not instance:
