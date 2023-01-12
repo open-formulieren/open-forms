@@ -319,7 +319,19 @@ def op_today(*args, **kwargs) -> str:
 
 op_date = FunctionLike(_("date({args})"))
 op_datetime = FunctionLike(_("datetime({args})"))
-op_rdelta = TemplatedArgs(
-    _("{years} year(s), {months} month(s), {days} day(s)"),
-    arg_names=["years", "months", "days"],
-)
+
+
+@add_boilerplate()
+def op_rdelta(*args) -> str:
+    if len(args) == 1:
+        return gettext("{years} year(s)").format(years=args[0])
+    elif len(args) == 2:
+        return gettext("{years} year(s), {months} month(s)").format(
+            years=args[0],
+            months=args[1],
+        )
+    return gettext("{years} year(s), {months} month(s), {days} day(s)").format(
+        years=args[0],
+        months=args[1],
+        days=args[2],
+    )

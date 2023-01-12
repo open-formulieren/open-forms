@@ -130,3 +130,27 @@ class RuleDescriptionTests(SimpleTestCase):
                 output = generate_rule_description(cast(JSON, rule))
 
                 self.assertEqual(output, expected_description)
+
+    def test_formatting_var_args(self):
+        """Assert that formatting of descriptions involving `rdelta` operations work
+        with different numbers of arguments"""
+
+        rule_descriptions = (
+            (
+                {"rdelta": [7]},
+                "7 year(s)",
+            ),
+            (
+                {"rdelta": [7, 5]},
+                "7 year(s), 5 month(s)",
+            ),
+            (
+                {"rdelta": [7, 5, 12]},
+                "7 year(s), 5 month(s), 12 day(s)",
+            ),
+        )
+        for rule, expected_description in rule_descriptions:
+            with self.subTest(rule=rule):
+                output = generate_rule_description(cast(JSON, rule))
+
+                self.assertEqual(output, expected_description)
