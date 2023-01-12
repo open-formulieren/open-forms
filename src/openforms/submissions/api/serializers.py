@@ -21,6 +21,7 @@ from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import FormStep
 from openforms.forms.validators import validate_not_deleted
 
+from ...formio.dynamic_config import get_translated_custom_error_messages
 from ...utils.urls import build_absolute_uri
 from ..attachments import validate_uploads
 from ..constants import ProcessingResults, ProcessingStatuses
@@ -246,6 +247,12 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             instance.submission.data,
             **self.context,
         )
+
+        # Add to each component the custom errors in the current locale
+        new_configuration = get_translated_custom_error_messages(
+            new_configuration, instance.submission
+        )
+
         # update the config for serialization
         instance.form_step.form_definition.configuration = new_configuration
         return super().to_representation(instance)

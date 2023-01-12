@@ -6,7 +6,7 @@ from typing import Optional
 from rest_framework.request import Request
 
 from openforms.submissions.models import Submission
-from openforms.typing import DataMapping
+from openforms.typing import DataMapping, JSONObject
 
 from ..datastructures import FormioConfigurationWrapper
 from ..registry import register
@@ -46,3 +46,21 @@ def rewrite_formio_components_for_request(
     for component in configuration_wrapper:
         register.update_config_for_request(component, request=request)
     return configuration_wrapper
+
+
+def get_translated_custom_error_messages(
+    config: JSONObject, submission: Submission
+) -> JSONObject:
+    config_wrapper = FormioConfigurationWrapper(configuration=config)
+
+    for component in config_wrapper:
+        if (
+            not (custom_error_messages := component.get("translatedErrors"))
+            or "errors" in component
+        ):
+            continue
+
+        language = submission.language_code
+        component["errors"] = custom_error_messages[language]
+
+    return config_wrapper.configuration
