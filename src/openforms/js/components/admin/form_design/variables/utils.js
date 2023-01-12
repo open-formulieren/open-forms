@@ -1,4 +1,4 @@
-import {Utils as FormioUtils} from 'formiojs';
+import FormioUtils from 'formiojs/utils';
 import _ from 'lodash';
 import {defineMessage} from 'react-intl';
 
@@ -11,10 +11,6 @@ const getComponentDatatype = component => {
     return 'array';
   }
   return COMPONENT_DATATYPES[component.type] || 'string';
-};
-
-const isLayoutComponent = component => {
-  return FormioUtils.isLayoutComponent(component);
 };
 
 const isInEditGrid = (component, configuration) => {
@@ -58,7 +54,7 @@ const shouldNotUpdateVariables = (newComponent, oldComponent, mutationType, step
   // Issue #1695: content components are not considered layout components
   if (newComponent.type === 'content') return true;
 
-  const isLayout = isLayoutComponent(newComponent);
+  const isLayout = FormioUtils.isLayoutComponent(newComponent);
 
   // When deleting a layout component, all child components need to be removed
   if (isLayout && mutationType === 'removed') return false;
@@ -107,7 +103,7 @@ const updateFormVariables = (
   if (isNew) {
     // This is the case where a Layout component has been pasted, so the variables for the components INSIDE
     // the layout component need to be generated.
-    if (isLayoutComponent(newComponent) && newComponent.type !== 'editgrid') {
+    if (FormioUtils.isLayoutComponent(newComponent) && newComponent.type !== 'editgrid') {
       FormioUtils.eachComponent([newComponent], component =>
         updatedFormVariables.push(makeNewVariableFromComponent(component, formDefinition))
       );
@@ -163,7 +159,7 @@ const updateFormVariables = (
 
     // Case where a layout component is being removed,
     // so the variables for the nested components have to be removed too
-    if (isLayoutComponent(newComponent)) {
+    if (FormioUtils.isLayoutComponent(newComponent)) {
       FormioUtils.eachComponent([newComponent], component => {
         keysToRemove.push(component.key);
       });
