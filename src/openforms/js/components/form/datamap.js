@@ -23,6 +23,23 @@ class Datamap extends DatamapFormio {
       disabled: this.component.disableKey,
     };
   }
+
+  setRowComponentsData(rowIndex, rowData) {
+    _.each(this.rows[rowIndex], component => {
+      // Fix to prevent keys not matching the data
+      if (component.key === '__key' && !!component.data.__key) {
+        return;
+      }
+
+      if (component.key === '__key') {
+        component.data = {
+          __key: Object.keys(rowData)[rowIndex],
+        };
+      } else {
+        component.data = rowData;
+      }
+    });
+  }
 }
 
 export default Datamap;
