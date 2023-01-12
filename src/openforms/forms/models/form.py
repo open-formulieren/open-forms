@@ -263,6 +263,11 @@ class Form(models.Model):
             "Leave blank to use value in General Configuration."
         ),
     )
+    appointment_enabled = models.BooleanField(
+        _("appointment enabled"),
+        default=False,
+        help_text=_("This is experimental mode for appointments"),
+    )
 
     objects = FormManager()
 
