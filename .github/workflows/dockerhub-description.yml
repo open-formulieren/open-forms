@@ -11,6 +11,11 @@ on:
       image_name:
         required: true
         type: string
+    secrets:
+      DOCKER_USERNAME:
+        required: true
+      DOCKER_TOKEN:
+        required: true
 
 jobs:
   update-docker-readme:
