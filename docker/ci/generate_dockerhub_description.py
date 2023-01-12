@@ -77,10 +77,12 @@ def get_supported_tags(
         is_stable = git_ref.startswith(STABLE_PREFIX)
         inferred_tag = git_ref.replace(STABLE_PREFIX, "", 1) if is_stable else git_ref
         tag = config["tag"] or inferred_tag
+        explicit_supported_tag = SupportedTag(
+            tag=tag, git_ref=git_ref, has_extensions=False
+        )
 
         if not is_stable:
-            yield SupportedTag(tag=tag, git_ref=git_ref, has_extensions=False)
-
+            yield explicit_supported_tag
             if has_extensions:
                 yield SupportedTag(
                     tag=f"{EXTENSIONS_PREFIX}-{tag}",
@@ -101,6 +103,7 @@ def get_supported_tags(
             matching_tags, key=lambda tag: int(tag.split(".")[-1]), reverse=True
         )[0]
         yield SupportedTag(tag=most_recent, git_ref=most_recent, has_extensions=False)
+        yield explicit_supported_tag
 
         if has_extensions:
             yield SupportedTag(
