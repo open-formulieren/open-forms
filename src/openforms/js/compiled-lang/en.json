@@ -1093,6 +1093,12 @@
       "value": "Enabled"
     }
   ],
+  "PRNizF": [
+    {
+      "type": 0,
+      "value": "Include confirmation page content in PDF"
+    }
+  ],
   "PaEo2j": [
     {
       "type": 0,
@@ -1945,6 +1951,12 @@
     {
       "type": 0,
       "value": "String"
+    }
+  ],
+  "oYmpN5": [
+    {
+      "type": 0,
+      "value": "Whether to include the content of the confirmation page in the PDF."
     }
   ],
   "ow5AAO": [

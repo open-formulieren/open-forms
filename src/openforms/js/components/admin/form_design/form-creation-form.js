@@ -82,6 +82,8 @@ const initialFormState = {
     url: '',
     slug: '',
     showProgressIndicator: true,
+    displayMainWebsiteLink: true,
+    includeConfirmationPageContentInPdf: true,
     active: true,
     category: '',
     isDeleted: false,
@@ -1212,6 +1214,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
           <TabPanel>
             <Confirmation
               displayMainWebsiteLink={state.form.displayMainWebsiteLink}
+              includeConfirmationPageContentInPdf={state.form.includeConfirmationPageContentInPdf}
               emailOption={state.form.confirmationEmailOption}
               emailTemplate={state.form.confirmationEmailTemplate || {}}
               onChange={onFieldChange}
@@ -1300,6 +1303,7 @@ FormCreationForm.propTypes = {
   formUuid: PropTypes.string.isRequired,
   formUrl: PropTypes.string.isRequired,
   formHistoryUrl: PropTypes.string.isRequired,
+  includeConfirmationPageContentInPdf: PropTypes.bool,
 };
 
 export {FormCreationForm};

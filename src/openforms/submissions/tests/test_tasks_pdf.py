@@ -5,6 +5,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from privates.test import temp_private_root
+from pyquery import PyQuery as pq
 from testfixtures import LogCapture
 
 from ..models import SubmissionReport
@@ -154,6 +155,62 @@ class SubmissionReportGenerationTests(TestCase):
         self.assertIn("Money money money", html)
         self.assertIn("1.234,56", html)
         self.assertInHTML("<p>Some markup</p>", html)
+
+    def test_confirmation_page_content_included_in_pdf(self):
+        """Assert that confirmation page content is included in PDF if option is
+        True"""
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "input",
+                    "label": "Input",
+                    "type": "textfield",
+                },
+            ],
+            with_report=True,
+        )
+        submission.form.submission_confirmation_template = (
+            "<p class='inclusive'>Include me!</p>"
+        )
+
+        # include confirmation page content
+        submission.form.include_confirmation_page_content_in_pdf = True
+
+        html = submission.report.generate_submission_report_pdf()
+
+        doc = pq(html)
+        inclusive_tag = doc(".inclusive")
+
+        self.assertEqual(inclusive_tag.text(), "Include me!")
+
+    def test_confirmation_page_content_not_included_in_pdf(self):
+        """Assert that confirmation page content is not included in PDF if option is
+        False"""
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "input",
+                    "label": "Input",
+                    "type": "textfield",
+                },
+            ],
+            with_report=True,
+        )
+        submission.form.submission_confirmation_template = (
+            "<p class='inclusive'>Include me!</p>"
+        )
+
+        # don't include confirmation_page_content
+        submission.form.include_confirmation_page_content_in_pdf = False
+
+        html = submission.report.generate_submission_report_pdf()
+
+        doc = pq(html)
+        inclusive_tag = doc(".inclusive")
+
+        self.assertEqual(inclusive_tag.text(), "")
 
 
 @temp_private_root()

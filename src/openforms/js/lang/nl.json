@@ -764,6 +764,11 @@
     "description": "Manage process vars enabled checkbox column title",
     "originalDefault": "Enabled"
   },
+  "PRNizF": {
+    "defaultMessage": "Include confirmation page content in PDF",
+    "description": "Include confirmation page content in PDF",
+    "originalDefault": "Include confirmation page content in PDF"
+  },
   "PaEo2j": {
     "defaultMessage": "Proces",
     "description": "Camunda 'process definition' label",
@@ -1393,6 +1398,11 @@
     "defaultMessage": "Tekst (string)",
     "description": "JSON variable type \"string\" representation",
     "originalDefault": "String"
+  },
+  "oYmpN5": {
+    "defaultMessage": "Whether to include the content of the confirmation page in the PDF.",
+    "description": "Include confirmation page content in PDF",
+    "originalDefault": "Whether to include the content of the confirmation page in the PDF."
   },
   "ow5AAO": {
     "defaultMessage": "De gegevens zijn ongeldig. Los de problemen hieronder op.",

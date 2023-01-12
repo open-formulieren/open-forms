@@ -42,6 +42,7 @@ const EMAIL_OPTIONS = [
 
 const Confirmation = ({
   displayMainWebsiteLink = false,
+  includeConfirmationPageContentInPdf = false,
   emailOption = 'global_email',
   emailTemplate = {},
   onChange,
@@ -66,7 +67,11 @@ const Confirmation = ({
     {
       key: 'submission',
       container: formValidationErrors?.translations,
-      fieldList: ['submissionConfirmationTemplate', 'displayMainWebsiteLink'],
+      fieldList: [
+        'submissionConfirmationTemplate',
+        'displayMainWebsiteLink',
+        'includeConfirmationPageContentInPDF',
+      ],
     },
     {
       key: 'email',
@@ -149,6 +154,25 @@ const Confirmation = ({
                   checked={displayMainWebsiteLink}
                   onChange={event => onCheckboxChange(event, displayMainWebsiteLink)}
                   disabled={langCode !== defaultLang}
+                />
+              </FormRow>
+              <FormRow>
+                <Checkbox
+                  name="form.includeConfirmationPageContentInPdf"
+                  label={
+                    <FormattedMessage
+                      defaultMessage="Include confirmation page content in PDF"
+                      description="Include confirmation page content in PDF"
+                    />
+                  }
+                  helpText={
+                    <FormattedMessage
+                      defaultMessage="Whether to include the content of the confirmation page in the PDF."
+                      description="Include confirmation page content in PDF"
+                    />
+                  }
+                  checked={includeConfirmationPageContentInPdf}
+                  onChange={event => onCheckboxChange(event, includeConfirmationPageContentInPdf)}
                 />
               </FormRow>
             </>
@@ -249,6 +273,7 @@ Confirmation.propTypes = {
   displayMainPage: PropTypes.bool,
   emailOption: PropTypes.string,
   emailTemplate: PropTypes.object,
+  includeConfirmationPageContentInPdf: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
   translations: PropTypes.objectOf(
     PropTypes.shape({

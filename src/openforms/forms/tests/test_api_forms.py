@@ -137,6 +137,32 @@ class FormsAPITests(APITestCase):
         self.assertEqual(logo["href"], "https://www.digid.nl/")
         self.assertEqual(logo["appearance"], "dark")
 
+    def test_include_confirmation_page_content_in_pdf_exposed(self):
+        """Assert that the option to include the confirmation page content in the
+        submission PDF is exposed via the API if and only if the client is staff"""
+        form = FormFactory.create(
+            include_confirmation_page_content_in_pdf=False,
+        )
+        form_definition = FormDefinitionFactory.create()
+        FormStepFactory.create(form=form, form_definition=form_definition)
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        # non-staff users don't have access to the relevant info
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertNotIn("includeConfirmationPageContentInPdf", response.json())
+
+        # staff users have access to the relevant info
+        self.user.is_staff = True
+        self.user.save()
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertIn("includeConfirmationPageContentInPdf", response.json())
+
     def test_non_staff_cant_access_deleted_form(self):
         form = FormFactory.create(deleted_=True)
 

@@ -146,6 +146,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "confirmation_email_template",
             "confirmation_email_option",
             "display_main_website_link",
+            "include_confirmation_page_content_in_pdf",
             "required_fields_with_asterisk",
             "translations",
         )
