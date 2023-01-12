@@ -25,7 +25,7 @@ from ...exceptions import (
     AppointmentException,
 )
 from ...registry import register
-from .client import QmaticException, get_client
+from .client import QmaticClient, QmaticException
 from .models import QmaticConfig
 
 logger = logging.getLogger(__name__)
@@ -50,7 +50,7 @@ class QmaticAppointment(BasePlugin):
         NOTE: The API does not support making an appointment for multiple
         products. The ``current_products`` argument is ignored.
         """
-        client = get_client()
+        client = QmaticClient()
         try:
             response = client.get("services")
             response.raise_for_status()
@@ -74,7 +74,7 @@ class QmaticAppointment(BasePlugin):
         if len(products) > 1:
             logger.warning("Attempt to retrieve locations for more than one product.")
 
-        client = get_client()
+        client = QmaticClient()
         product_id = products[0].identifier
 
         try:
@@ -113,7 +113,7 @@ class QmaticAppointment(BasePlugin):
         if len(products) != 1:
             return []
 
-        client = get_client()
+        client = QmaticClient()
         product_id = products[0].identifier
 
         try:
@@ -143,7 +143,7 @@ class QmaticAppointment(BasePlugin):
         if len(products) != 1:
             return []
 
-        client = get_client()
+        client = QmaticClient()
         product_id = products[0].identifier
 
         try:
@@ -177,7 +177,7 @@ class QmaticAppointment(BasePlugin):
         remarks: str = "",
     ) -> Optional[str]:
 
-        qmatic_client = get_client()
+        qmatic_client = QmaticClient()
         if len(products) != 1:
             return
 
@@ -224,7 +224,7 @@ class QmaticAppointment(BasePlugin):
             raise AppointmentException from exc
 
     def delete_appointment(self, identifier: str) -> None:
-        client = get_client()
+        client = QmaticClient()
         try:
             response = client.delete(f"appointments/{identifier}")
             if response.status_code == 404:
@@ -237,7 +237,7 @@ class QmaticAppointment(BasePlugin):
             raise AppointmentDeleteFailed(e)
 
     def get_appointment_details(self, identifier: str) -> AppointmentDetails:
-        client = get_client()
+        client = QmaticClient()
         try:
             response = client.get(f"appointments/{identifier}")
             response.raise_for_status()
@@ -274,7 +274,7 @@ class QmaticAppointment(BasePlugin):
             raise AppointmentException(e)
 
     def check_config(self):
-        client = get_client()
+        client = QmaticClient()
         try:
             response = client.get("services")
             response.raise_for_status()
