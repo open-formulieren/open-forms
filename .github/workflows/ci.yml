@@ -377,5 +377,9 @@ jobs:
           TAG: ${{ matrix.target.image_tag_prefix }}${{ steps.vars.outputs.version }}
 
   update-docker-readme:
-    needs: docker_push
+    needs:
+      - docker_build_setup
+      - docker_push
     uses: ./.github/workflows/dockerhub-description.yml
+    with:
+      image_name: ${{ needs.docker_build_setup.outputs.image-name }}
