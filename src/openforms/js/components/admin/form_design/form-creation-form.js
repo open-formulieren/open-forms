@@ -267,6 +267,9 @@ function reducer(draft, action) {
       const pluginId = action.payload;
       if (draft.selectedAuthPlugins.includes(pluginId)) {
         draft.selectedAuthPlugins = draft.selectedAuthPlugins.filter(id => id !== pluginId);
+        if (draft.form.autoLoginAuthenticationBackend === pluginId) {
+          draft.form.autoLoginAuthenticationBackend = '';
+        }
       } else {
         draft.selectedAuthPlugins = [...draft.selectedAuthPlugins, pluginId];
       }
