@@ -1,0 +1,30 @@
+{
+    "supportedTags": [
+        {
+            "gitRef": "master",
+            "tag": "latest",
+            "hasExtensionsVariant": true
+        },
+        {
+            "gitRef": "stable/2.0.x",
+            "tag": null,
+            "hasExtensionsVariant": true
+        },
+        {
+            "gitRef": "stable/1.1.x",
+            "tag": null,
+            "hasExtensionsVariant": true
+        },
+        {
+            "gitRef": "master",
+            "tag": "test",
+            "hasExtensionsVariant": false
+        }
+    ],
+    "availableExtensions": [
+        {
+            "name": "Token Exchange",
+            "repo": "open-forms-ext-token-exchange"
+        }
+    ]
+}
