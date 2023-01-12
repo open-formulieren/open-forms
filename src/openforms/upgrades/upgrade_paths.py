@@ -131,6 +131,7 @@ def check_upgrade_path(from_version: str, to_version: str) -> bool:
     except ValueError as exc:
         raise VersionParseError(to_version) from exc
 
+    target_version = None
     for target_version, upgrade_constraint in UPGRADE_PATHS.items():
         # 1. start by trying an exact match, which always wins
         if target_version == to_version:
@@ -151,6 +152,13 @@ def check_upgrade_path(from_version: str, to_version: str) -> bool:
         in_version = Version(from_version)
     except ValueError as exc:
         raise VersionParseError(from_version) from exc
+
+    # handles the case where there's a check for 2.0 coming from < 2.0, but skip the
+    # checks if you're on 2.0.1 or something like that.
+    if target_version:
+        compare_spec = SimpleSpec(f"~={target_version}")
+        if in_version in compare_spec:
+            return True
 
     if not any(
         (
