@@ -1,5 +1,8 @@
 {% load ui %}{% spaceless %}
-    <a class="utrecht-link anchor anchor--{{ style }}{% if active %} anchor--active{% endif %}{% if hover %} anchor--hover{% endif %}" href="{{ href }}" target="{{ target }}">{% spaceless %}
+    <a
+        class="utrecht-link utrecht-link--openforms{% if style %} utrecht-link--openforms-{{ style }}{% endif %}{% if active %} utrecht-link--openforms-active{% endif %}{% if hover %} utrecht-link--openforms-hover{% endif %}"
+        href="{{ href }}"
+        target="{{ target }}">{% spaceless %}
         {{ label }}
     {% endspaceless %}</a>
 {% endspaceless %}

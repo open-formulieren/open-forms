@@ -1,3 +1,5 @@
+@use 'microscope-sass/lib/bem';
+
 @import '~microscope-sass/lib/color';
 @import '~microscope-sass/lib/grid';
 @import '~microscope-sass/lib/responsive';
@@ -5,50 +7,22 @@
 
 @import '../nav/constants';
 @import '../footer/constants';
-@import './vars';
 
 .layout {
-  background-color: $layout-color-background;
+  background-color: var(--of-layout-background, $color-gray);
   display: flex;
   flex-direction: column;
 
-  &--container {
-    @include margin(true, $properties: padding, $value-mobile: 0, $value-tablet: $typography-margin-text);
+  @include bem.modifier('container') {
+    @include margin(
+      true,
+      $properties: padding,
+      $value-mobile: 0,
+      $value-tablet: $typography-margin-text
+    );
   }
 
-  &__row {
-    @include container(flex);
-    @include responsive(flex-direction, column, row);
-
-    @include mobile-only {
-      padding: 0;
-    }
-  }
-
-
-  &__column {
-    display: flex;
-    flex-direction: column;
-  }
-
-  &__column:first-child:last-child {
-    @include columns-responsive(4, 9, 12, 12);
-  }
-
-  &__column:first-child:not(last-child) {
-    @include columns-responsive(4, 5, 8, 8);
-  }
-
-  &__column:not(:first-child):last-child {
-    @include columns-responsive(4, 4, 4, 4);
-  }
-
-  &__row--secondary,
-  &__column--secondary {
-    @include hide-on-mobile(flex);
-
-    @media print {
-      display: none;
-    }
+  @include bem.element('container') {
+    @include container(false);
   }
 }

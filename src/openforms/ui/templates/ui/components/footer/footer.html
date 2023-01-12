@@ -1,17 +1,30 @@
-{% load ui solo_tags %}
+{% load i18n solo_tags %}
 
-{% url 'cookie_consent_cookie_group_list' as manage_cookies_url %}
 {% get_solo 'config.GlobalConfiguration' as config %}
 
 <footer class="footer">
     <nav class="footer__nav">
         <ul class="list list--compact">
             <li class="list__item">
-                {% anchor href=config.privacy_policy_url hover=True style='inherit' label=_('Privacy policy') %}
+                <a
+                    href="{{ config.privacy_policy_url }}"
+                    class="utrecht-link utrecht-link--openforms utrecht-link--openforms-hover utrecht-link--openforms-inherit"
+                >{% trans "Privacy policy" %}</a>
             </li>
             <li class="list__item">
-                {% anchor href=manage_cookies_url hover=True style='inherit' label=_('Manage cookies') %}
+                <a
+                    href="{% url 'cookie_consent_cookie_group_list' %}"
+                    class="utrecht-link utrecht-link--openforms utrecht-link--openforms-hover utrecht-link--openforms-inherit"
+                >{% trans "Manage cookies" %}</a>
             </li>
+            {% if user.is_staff %}
+                <li class="list__item">
+                    <a
+                        href="{% url 'api:api-docs' %}"
+                        class="utrecht-link utrecht-link--openforms utrecht-link--openforms-hover utrecht-link--openforms-inherit"
+                    >{% trans "API docs" %}</a>
+                </li>
+            {% endif %}
         </ul>
     </nav>
 </footer>

@@ -20,7 +20,7 @@ include the SDK snippet directly.
 <header class="page-header {% if config.logo %}page-header--has-logo{% endif %}">
     {# if there's a logo, output a design token that the CSS can pick up to set as background #}
     <a
-        class="anchor page-header__return-url"
+        class="utrecht-link utrecht-link--openforms page-header__return-url"
         href="{% firstof config.main_website '#' %}"
         title="{{ logo_alt }}"
         aria-label="{{ logo_alt }}"
