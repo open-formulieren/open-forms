@@ -103,6 +103,15 @@ Publishing a release
 Once the PR has been reviewed and approved, merge it to the ``master`` branch, then
 proceed to tagging the release.
 
+**Maintenance + Docker Hub preparation (new minor versions)**
+
+When a new minor version is released, the matching ``stable/<major>.<minor>.x`` needs
+to be created and pushed to Github. Any bugfixes that require backporting are done to
+these stable branches.
+
+Additionally, you need to register the stable branch in ``docker/ci/config.json`` under
+the ``supportedTags`` key, which is used as input for the Docker Hub README generation.
+
 **Tag the release**
 
 Git tags are crucial to the release and build process - any pushed git tag results in

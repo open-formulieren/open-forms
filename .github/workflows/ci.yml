@@ -375,3 +375,7 @@ jobs:
         run: docker push $IMAGE_NAME:$TAG
         env:
           TAG: ${{ matrix.target.image_tag_prefix }}${{ steps.vars.outputs.version }}
+
+  update-docker-readme:
+    needs: docker_push
+    uses: ./.github/workflows/dockerhub-description.yml

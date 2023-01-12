@@ -1,0 +1,71 @@
+# Open Forms - official Docker image
+
+## Quick reference
+
+- **Documentation**: https://open-forms.readthedocs.io/en/latest/
+- **Maintained by**: [the Open Forms maintainers]({{ github_org }})
+- **Where to get help**: [the Open Forms Github]({{ github_org }}/open-forms/issues)
+
+## Supported tags and respective `Dockerfile` links
+
+{% for supported_tag in supported_tags %}{% if not supported_tag.has_extensions -%}
+- [`{{ supported_tag.tag }}`]({{ supported_tag.dockerfile_url }})
+{% endif %}{% endfor %}
+
+## Quick reference (cont.)
+
+- **Supported architectures**: `amd64`
+
+## What is Open Forms?
+
+Using Open Forms, administrators can quickly create powerful and smart forms that are exposed via an
+API. With the Open Forms JavaScript [SDK][sdk], personalized forms can be retrieved and shown to the
+user. The form blends in with an existing website using various styling options. Form fields are
+pre-filled whenever possible and personalized choices are shown depending on the user, if
+authenticated.
+
+Using a plugin-based architecture, Open Forms allows for flexible submission backends (ie. [Open
+Zaak][open zaak]), authentication schemes, payment providers, calendar apps and pre-fill services.
+
+Open Forms is developed in line with the [Common Ground][common ground] principles, with many
+plugins for government usage and with a strong focus on usability for both end users and
+administrators.
+
+[sdk]: {{ github_org }}/open-forms-sdk/
+[open zaak]: https://open-zaak.readthedocs.io/
+[common ground]: https://commonground.nl/
+
+## Usage
+
+See: https://open-forms.readthedocs.io/en/latest/installation/docker_compose.html
+
+## Extensions
+
+The Open Forms maintainers also maintain a number of official extensions, which are
+distributed in a separate build, including all available extensions _at the time_.
+
+### Supported tags with extensions
+
+{% for supported_tag in supported_tags %}{% if supported_tag.has_extensions -%}
+- [`{{ supported_tag.tag }}`]({{ supported_tag.dockerfile_url }})
+{% endif %}{% endfor %}
+
+**Included extensions**
+
+The extensions bundled in the `latest` build are:
+
+{% for extension in extensions -%}
+- [{{ extension.name }}]({{ extension.repository }})
+{% endfor %}
+
+Note that _versioned_ tags may include fewer extensions than `latest`, depending on
+which extensions were available during that release cycle.
+
+## `test` image tag
+
+This image tag is aimed at
+[extension developers](https://open-forms.readthedocs.io/en/latest/developers/extending.html) for
+their CI needs.
+
+The `test` tag is based on the `latest` image, but includes all the CI dependencies on top of the
+regular production dependencies.
