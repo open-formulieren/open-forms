@@ -81,6 +81,26 @@ class UpgradePathTests(TestCase):
             with self.assertRaises(VersionParseError):
                 check_upgrade_path("0b5b0c04ff322bf098872081319decfe558c9f73", "2.0")
 
+    def test_already_on_target(self):
+        """
+        Assert that the checks are skipped if you are already on a version that matches
+        the target version (2.0.1 matches ~2.0).
+        """
+        UPGRADE_PATHS = {
+            "2.0": UpgradeConstraint(
+                valid_ranges={
+                    VersionRange(minimum="1.1"),
+                },
+                # throws exception if checks _are_ being executed
+                scripts=["i-do-not-exist"],
+            ),
+        }
+        with mock_upgrade_paths(UPGRADE_PATHS):
+            with self.subTest(from_version="2.0.1", to="2.0.2"):
+                self.assertTrue(check_upgrade_path("2.0.1", "2.0.2"))
+            with self.subTest(from_version="2.0.1", to="2.1.2"):
+                self.assertTrue(check_upgrade_path("2.0.1", "2.1.2"))
+
 
 class DjangoScriptTests(SimpleTestCase):
     def test_check_management_commands(self):
