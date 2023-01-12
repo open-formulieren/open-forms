@@ -6,8 +6,7 @@ from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 
-# from openforms.appointments.registry import register as appointments_register
-from openforms.appointments.checks import check_configs as check_appointment_configs
+from openforms.appointments.registry import register as appointments_register
 from openforms.contrib.kvk.checks import check_kvk_remote_validator
 from openforms.dmn.registry import register as dmn_register
 from openforms.payments.registry import register as payments_register
@@ -38,14 +37,6 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
         module = self.request.GET.get("module")
 
         # add custom non-generic
-        if _subset_match(module, "appointments"):
-            sections += [
-                {
-                    "name": _("Appointment plugins"),
-                    "entries": check_appointment_configs(),
-                }
-            ]
-
         if _subset_match(module, "address_lookup"):
             sections += [
                 {
@@ -64,7 +55,7 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
 
         # Iterate over all plugin registries.
         plugin_registries = [
-            # (_("Appointment plugins"), appointments_register),
+            ("appointments", _("Appointment plugins"), appointments_register),
             ("registrations", _("Registration plugins"), registrations_register),
             ("prefill", _("Prefill plugins"), prefill_register),
             ("payments", _("Payment plugins"), payments_register),

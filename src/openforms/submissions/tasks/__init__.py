@@ -4,13 +4,13 @@ from datetime import timedelta
 from django.conf import settings
 from django.utils import timezone
 
-from celery import chain, group
+from celery import chain
 from celery.result import AsyncResult
 
+from openforms.appointments.tasks import maybe_register_appointment
 from openforms.celery import app
 
 from ..models import Submission
-from .appointments import *  # noqa
 from .cleanup import *  # noqa
 from .emails import *  # noqa
 from .payments import *  # noqa
@@ -31,7 +31,6 @@ def on_completion(submission_id: int) -> None:
     # use immutable signatures so that the result of previous tasks is not passed
     # in as an argument to chained tasks
     register_appointment_task = maybe_register_appointment.si(submission_id)
-    update_appointment_task = maybe_update_appointment.si(submission_id)
     generate_report_task = generate_submission_report.si(submission_id)
     register_submission_task = register_submission.si(submission_id)
     obtain_submission_reference_task = obtain_submission_reference.si(submission_id)
@@ -56,7 +55,6 @@ def on_completion(submission_id: int) -> None:
         # TODO: ensure that any images that need resizing are done so before this is attempted
         register_submission_task,
         obtain_submission_reference_task,
-        update_appointment_task,
         # we schedule the finalization so that the ``async_result`` below is marked
         # as done, which is the "signal" to show the confirmation page. Actual payment
         # flow & confirmation e-mail follow later.
@@ -125,9 +123,6 @@ def on_completion_retry(submission_id: int) -> chain:
     register_submission_task = register_submission.si(submission_id).set(
         ignore_result=True
     )
-    update_appointment_task = maybe_update_appointment.si(submission_id).set(
-        ignore_result=True
-    )
     update_payments_task = update_submission_payment_status.si(submission_id).set(
         ignore_result=True
     )
@@ -137,10 +132,7 @@ def on_completion_retry(submission_id: int) -> chain:
 
     retry_chain = chain(
         register_submission_task,
-        group(
-            update_appointment_task,
-            update_payments_task,
-        ),
+        update_payments_task,
         finalize_completion_retry_task,
     )
 

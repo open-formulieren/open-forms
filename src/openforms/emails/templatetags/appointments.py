@@ -1,7 +1,7 @@
 from django import template
 from django.template.loader import render_to_string
 
-from openforms.appointments.utils import get_client
+from openforms.appointments.utils import get_plugin
 
 register = template.Library()
 
@@ -18,11 +18,11 @@ def appointment_information(context):
     else:
         template_name = "emails/templatetags/appointment_information.html"
 
-    client = get_client()
+    plugin = get_plugin()
 
     tag_context = {
-        "appointment": client.get_appointment_details(appointment_id),
-        "appointment_cancel_link": client.get_cancel_link(context["_submission"]),
-        "appointment_change_link": client.get_change_link(context["_submission"]),
+        "appointment": plugin.get_appointment_details(appointment_id),
+        "appointment_cancel_link": plugin.get_cancel_link(context["_submission"]),
+        "appointment_change_link": plugin.get_change_link(context["_submission"]),
     }
     return render_to_string(template_name, tag_context)

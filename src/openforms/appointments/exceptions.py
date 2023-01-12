@@ -24,10 +24,6 @@ class AppointmentRegistrationFailed(AppointmentInteractionFailed):
     pass
 
 
-class AppointmentUpdateFailed(AppointmentInteractionFailed):
-    pass
-
-
 class CancelAppointmentFailed(APIException):
     status_code = status.HTTP_502_BAD_GATEWAY
     default_detail = _("Unable to cancel appointment.")

@@ -33,7 +33,7 @@ from ..api.serializers import (
 )
 from ..base import AppointmentLocation, AppointmentProduct
 from ..exceptions import AppointmentDeleteFailed, CancelAppointmentFailed
-from ..utils import delete_appointment_for_submission, get_client
+from ..utils import delete_appointment_for_submission, get_plugin
 
 logger = logging.getLogger(__name__)
 
@@ -51,11 +51,11 @@ class ProductsListView(ListMixin, APIView):
     serializer_class = ProductSerializer
 
     def get_objects(self):
-        client = get_client()
+        plugin = get_plugin()
         with elasticapm.capture_span(
             name="get-available-products", span_type="app.appointments.get_products"
         ):
-            return client.get_available_products()
+            return plugin.get_available_products()
 
 
 # The serializer + @extend_schema approach for querystring params is not ideal, the
@@ -98,11 +98,11 @@ class LocationsListView(ListMixin, APIView):
             identifier=serializer.validated_data["product_id"], code="", name=""
         )
 
-        client = get_client()
+        plugin = get_plugin()
         with elasticapm.capture_span(
             name="get-available-locations", span_type="app.appointments.get_locations"
         ):
-            return client.get_locations([product])
+            return plugin.get_locations([product])
 
 
 @extend_schema(
@@ -153,11 +153,11 @@ class DatesListView(ListMixin, APIView):
             identifier=serializer.validated_data["location_id"], name=""
         )
 
-        client = get_client()
+        plugin = get_plugin()
         with elasticapm.capture_span(
             name="get-available-dates", span_type="app.appointments.get_dates"
         ):
-            dates = client.get_dates([product], location)
+            dates = plugin.get_dates([product], location)
         return [{"date": date} for date in dates]
 
 
@@ -216,11 +216,11 @@ class TimesListView(ListMixin, APIView):
             identifier=serializer.validated_data["location_id"], name=""
         )
 
-        client = get_client()
+        plugin = get_plugin()
         with elasticapm.capture_span(
             name="get-available-times", span_type="app.appointments.get_times"
         ):
-            times = client.get_times(
+            times = plugin.get_times(
                 [product], location, serializer.validated_data["date"]
             )
         return [{"time": time} for time in times]
@@ -250,15 +250,15 @@ class CancelAppointmentView(GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         submission = self.get_object()
-        client = get_client()
+        plugin = get_plugin()
 
-        logevent.appointment_cancel_start(submission.appointment_info, client)
+        logevent.appointment_cancel_start(submission.appointment_info, plugin)
 
         serializer = CancelAppointmentInputSerializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
         except ValidationError as e:
-            logevent.appointment_cancel_failure(submission.appointment_info, client, e)
+            logevent.appointment_cancel_failure(submission.appointment_info, plugin, e)
             raise e
 
         emails = submission.get_email_confirmation_recipients(submission.data)
@@ -267,11 +267,11 @@ class CancelAppointmentView(GenericAPIView):
         # the appointment which we validate here
         if serializer.validated_data["email"] not in emails:
             e = PermissionDenied
-            logevent.appointment_cancel_failure(submission.appointment_info, client, e)
+            logevent.appointment_cancel_failure(submission.appointment_info, plugin, e)
             raise e
 
         try:
-            delete_appointment_for_submission(submission)
+            delete_appointment_for_submission(submission, plugin)
         except AppointmentDeleteFailed as exc:
             raise CancelAppointmentFailed() from exc
 

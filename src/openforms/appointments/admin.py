@@ -7,12 +7,23 @@ from solo.admin import SingletonModelAdmin
 
 from .base import BasePlugin
 from .constants import AppointmentDetailsStatus
+from .fields import AppointmentBackendChoiceField
 from .models import AppointmentInfo, AppointmentsConfig
+from .registry import register
 
 
 @admin.register(AppointmentsConfig)
 class AppointmentsConfigAdmin(SingletonModelAdmin):
-    pass
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if isinstance(db_field, AppointmentBackendChoiceField):
+            assert not db_field.choices
+            _old = db_field.choices
+            db_field.choices = register.get_choices()
+            field = super().formfield_for_dbfield(db_field, request, **kwargs)
+            db_field.choices = _old
+            return field
+
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
 
 @admin.register(AppointmentInfo)

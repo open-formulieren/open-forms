@@ -1,7 +1,8 @@
 import logging
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from django.urls import reverse
 
@@ -72,24 +73,17 @@ class AppointmentDetails:
         return self.identifier
 
 
-class BasePlugin(AbstractBasePlugin):
+class BasePlugin(ABC, AbstractBasePlugin):
     """
     Base Appointment plugin.
     """
 
     configuration_options = EmptyOptions
 
-    @property
-    def is_enabled(self):
-        # TODO currently not configurable,
-        # see https://github.com/open-formulieren/open-forms/issues/1103
-        # https://github.com/open-formulieren/open-forms/issues/623 should be
-        # implemented to properly set up generic plugin enable/disable behaviour
-        return True
-
+    @abstractmethod
     def get_available_products(
         self, current_products: Optional[List[AppointmentProduct]] = None
-    ) -> List[AppointmentProduct]:
+    ) -> List[AppointmentProduct]:  # pragma: no cover
         """
         Retrieve all available products and services to create an appointment for.
 
@@ -102,9 +96,10 @@ class BasePlugin(AbstractBasePlugin):
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def get_locations(
         self, products: List[AppointmentProduct]
-    ) -> List[AppointmentLocation]:
+    ) -> List[AppointmentLocation]:  # pragma: no cover
         """
         Retrieve all available locations for given ``products``.
 
@@ -113,13 +108,14 @@ class BasePlugin(AbstractBasePlugin):
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def get_dates(
         self,
         products: List[AppointmentProduct],
         location: AppointmentLocation,
         start_at: Optional[date] = None,
         end_at: Optional[date] = None,
-    ) -> List[date]:
+    ) -> List[date]:  # pragma: no cover
         """
         Retrieve all available dates for given ``products`` and ``location``.
 
@@ -131,12 +127,13 @@ class BasePlugin(AbstractBasePlugin):
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def get_times(
         self,
         products: List[AppointmentProduct],
         location: AppointmentLocation,
         day: date,
-    ) -> List[datetime]:
+    ) -> List[datetime]:  # pragma: no cover
         """
         Retrieve all available times for given ``products``, ``location`` and ``day``.
 
@@ -147,36 +144,7 @@ class BasePlugin(AbstractBasePlugin):
         """
         raise NotImplementedError()
 
-    def get_calendar(
-        self,
-        products: List[AppointmentProduct],
-        location: AppointmentLocation,
-        start_at: Optional[date] = None,
-        end_at: Optional[date] = None,
-    ) -> Dict[date, List[datetime]]:
-        """
-        Retrieve a calendar.
-
-        WARNING: This default implementation has significant performance issues.
-        You can override this function with a more efficient implementation if
-        the service supports it.
-
-        :param products: List of :class:`AppointmentProduct`, as obtained from :meth:`get_available_products`.
-        :param location: An :class:`AppointmentLocation`, as obtained from :meth:`get_locations`.
-        :param start_at: The start :class:`date` to retrieve available dates for. Default: ``date.today()``.
-        :param end_at: The end :class:`date` to retrieve available dates for. Default: 14 days after ``start_date``.
-        :returns: Dict where each key represents a date and the values is a list of times.
-        """
-        days = self.get_dates(products, location, start_at, end_at)
-
-        result = {}
-
-        for day in days:
-            times = self.get_times(products, location, day)
-            result[day] = times
-
-        return result
-
+    @abstractmethod
     def create_appointment(
         self,
         products: List[AppointmentProduct],
@@ -184,13 +152,13 @@ class BasePlugin(AbstractBasePlugin):
         start_at: datetime,
         client: AppointmentClient,
         remarks: str = None,
-    ) -> str:
+    ) -> str:  # pragma: no cover
         """
         Create an appointment.
 
         :param products: List of :class:`AppointmentProduct`, as obtained from :meth:`get_available_products`.
         :param location: An :class:`AppointmentLocation`, as obtained from :meth:`get_locations`.
-        :param start_at: A `datetime` to start the appointment, as obtained from :meth:`get_calendar`.
+        :param start_at: A `datetime` to start the appointment, as obtained from :meth:`get_dates`.
         :param client: A :class:`AppointmentClient` that holds client details.
         :param remarks: A ``str`` for additional remarks, added to the appointment.
         :returns: An appointment identifier as ``str``.
@@ -198,7 +166,8 @@ class BasePlugin(AbstractBasePlugin):
         """
         raise NotImplementedError()
 
-    def delete_appointment(self, identifier: str) -> None:
+    @abstractmethod
+    def delete_appointment(self, identifier: str) -> None:  # pragma: no cover
         """
         Delete an appointment.
 
@@ -207,7 +176,10 @@ class BasePlugin(AbstractBasePlugin):
         """
         raise NotImplementedError()
 
-    def get_appointment_details(self, identifier: str) -> str:
+    @abstractmethod
+    def get_appointment_details(
+        self, identifier: str
+    ) -> AppointmentDetails:  # pragma: no cover
         """
         Get appointment details.
 

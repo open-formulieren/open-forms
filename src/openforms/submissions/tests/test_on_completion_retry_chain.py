@@ -7,7 +7,6 @@ from django.utils import timezone
 
 from privates.test import temp_private_root
 
-from openforms.appointments.service import AppointmentUpdateFailed
 from openforms.appointments.tests.factories import AppointmentInfoFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
@@ -16,78 +15,6 @@ from openforms.registrations.exceptions import RegistrationFailed
 from ..constants import RegistrationStatuses
 from ..tasks import on_completion_retry, retry_processing_submissions
 from .factories import SubmissionFactory
-
-
-@temp_private_root()
-@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-class OnCompletionRetryFailedUpdateAppointmentTests(TestCase):
-    """
-    Test the various retry branches if the appointment update failed.
-
-    In this scenario, initial backend registration succeeded, but updating the
-    appointment with those results failed.
-
-    The retry workflow may not register the submission with the backend again,
-    it may not register the appoinment again but it must try to update the appointment.
-    """
-
-    @patch("openforms.submissions.tasks.appointments.update_appointment")
-    def test_update_succeeds(self, mock_update_appointment):
-        submission = SubmissionFactory.create(
-            completed=True,
-            needs_on_completion_retry=True,
-            registration_success=True,
-            form__registration_backend="zgw-create-zaak",
-            registration_result={
-                "zaak": {
-                    "identificatie": "ZAAK-123",
-                }
-            },
-            public_registration_reference="ZAAK-123",
-        )
-        original_register_date = submission.last_register_date
-        AppointmentInfoFactory.create(submission=submission, registration_ok=True)
-
-        # invoke the chain
-        on_completion_retry(submission.id)()
-
-        mock_update_appointment.assert_called_once_with(submission)
-        submission.refresh_from_db()
-        # check that the registration did not run again (idemptotent, a side effect is
-        # that last_register_date is updated if it runs)
-        self.assertEqual(submission.last_register_date, original_register_date)
-        self.assertFalse(submission.needs_on_completion_retry)
-
-    @patch("openforms.submissions.tasks.appointments.update_appointment")
-    def test_update_fails_again(self, mock_update_appointment):
-        submission = SubmissionFactory.create(
-            completed=True,
-            needs_on_completion_retry=True,
-            registration_success=True,
-            form__registration_backend="zgw-create-zaak",
-            registration_result={
-                "zaak": {
-                    "identificatie": "ZAAK-123",
-                }
-            },
-            public_registration_reference="ZAAK-123",
-        )
-        original_register_date = submission.last_register_date
-        AppointmentInfoFactory.create(submission=submission, registration_ok=True)
-        mock_update_appointment.side_effect = AppointmentUpdateFailed("nope")
-
-        # invoke the chain
-        chain = on_completion_retry(submission.id)
-        with self.assertRaises(AppointmentUpdateFailed):
-            chain()
-
-        mock_update_appointment.assert_called_once_with(submission)
-        submission.refresh_from_db()
-        # check that the registration did not run again (idemptotent, a side effect is
-        # that last_register_date is updated if it runs)
-        self.assertEqual(submission.last_register_date, original_register_date)
-        # it failed again, so we must keep re-trying
-        self.assertTrue(submission.needs_on_completion_retry)
 
 
 @temp_private_root()
@@ -141,7 +68,6 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
         ) as mock_set_zaak_payment:
             on_completion_retry(submission.id)()
 
-        # mock_update_appointment.assert_called_once_with(submission)
         submission.refresh_from_db()
         appointment_info.refresh_from_db()
         # assert that we now no longer have to retry
@@ -192,7 +118,6 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
         with patcher as mock_set_zaak_payment, self.assertRaises(Exception):
             on_completion_retry(submission.id)()
 
-        # mock_update_appointment.assert_called_once_with(submission)
         submission.refresh_from_db()
         appointment_info.refresh_from_db()
         # assert that we now no longer have to retry
@@ -212,10 +137,7 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
     """
 
     @patch("openforms.payments.tasks.update_submission_payment_registration")
-    @patch("openforms.submissions.tasks.appointments.update_appointment")
-    def test_backend_registration_still_fails(
-        self, mock_update_payment, mock_update_appointment
-    ):
+    def test_backend_registration_still_fails(self, mock_update_payment):
         submission = SubmissionFactory.create(
             completed=True,
             needs_on_completion_retry=True,
@@ -239,58 +161,12 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
         mock_register.assert_called_once()
         # downstream tasks should not have been called - chain should abort
         mock_update_payment.assert_not_called()
-        mock_update_appointment.assert_not_called()
         self.assertNotEqual(submission.last_register_date, original_register_date)
         self.assertEqual(submission.public_registration_reference, "OF-1234")
         self.assertTrue(submission.needs_on_completion_retry)
 
     @patch("openforms.payments.tasks.update_submission_payment_registration")
-    def test_backend_registration_succeeds_appointment_update_still_fails(
-        self, mock_update_payment
-    ):
-        submission = SubmissionFactory.create(
-            completed=True,
-            needs_on_completion_retry=True,
-            registration_failed=True,
-            form__registration_backend="zgw-create-zaak",
-            # registration failed, so an internal reference was created
-            public_registration_reference="OF-1234",
-        )
-        AppointmentInfoFactory.create(submission=submission, registration_ok=True)
-        original_register_date = submission.last_register_date
-        registration_patcher = patch(
-            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.register_submission",
-            return_value={
-                "zaak": {
-                    "url": "https://example.com",
-                    "identificatie": "ZAAK-123",
-                }
-            },
-        )
-        update_appointment_patcher = patch(
-            "openforms.submissions.tasks.appointments.update_appointment",
-            side_effect=AppointmentUpdateFailed("broken"),
-        )
-
-        with registration_patcher as mock_register, update_appointment_patcher as mock_update_appointment:
-            with self.assertRaises(AppointmentUpdateFailed):
-                # invoke the chain
-                on_completion_retry(submission.id)()
-
-        submission.refresh_from_db()
-        mock_register.assert_called_once()
-        # downstream tasks should not have been called - chain should abort
-        mock_update_payment.assert_called_once_with(submission)
-        mock_update_appointment.assert_called_once_with(submission)
-        self.assertNotEqual(submission.last_register_date, original_register_date)
-        self.assertEqual(submission.public_registration_reference, "OF-1234")
-        self.assertTrue(submission.needs_on_completion_retry)
-
-    @patch("openforms.submissions.tasks.appointments.update_appointment")
-    @patch("openforms.payments.tasks.update_submission_payment_registration")
-    def test_backend_registration_succeeds_update_appointment_succeeds_too(
-        self, mock_update_payment, mock_update_appointment
-    ):
+    def test_backend_registration_succeeds(self, mock_update_payment):
         submission = SubmissionFactory.create(
             completed=True,
             needs_on_completion_retry=True,
@@ -319,7 +195,6 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
         mock_register.assert_called_once()
         # downstream tasks should not have been called - chain should abort
         mock_update_payment.assert_called_once_with(submission)
-        mock_update_appointment.assert_called_once_with(submission)
         self.assertNotEqual(submission.last_register_date, original_register_date)
         self.assertEqual(submission.public_registration_reference, "OF-1234")
         self.assertFalse(submission.needs_on_completion_retry)

@@ -6,13 +6,16 @@ from django.utils.translation import ugettext_lazy as _
 
 import requests_mock
 
+from stuf.tests.factories import SoapServiceFactory
+
 from ....base import (
     AppointmentClient,
     AppointmentDetails,
     AppointmentLocation,
     AppointmentProduct,
 )
-from ..plugin import Plugin
+from ..models import JccConfig
+from ..plugin import JccAppointment
 
 
 def mock_response(filename):
@@ -31,7 +34,11 @@ class PluginTests(TestCase):
         wsdl = os.path.abspath(
             os.path.join(os.path.dirname(__file__), "mock/GenericGuidanceSystem2.wsdl")
         )
-        cls.plugin = Plugin(wsdl)
+        config = JccConfig.get_solo()
+        config.service = SoapServiceFactory.create(url=wsdl)
+        config.save()
+
+        cls.plugin = JccAppointment("jcc")
 
     @requests_mock.Mocker()
     def test_get_available_products(self, m):
@@ -119,32 +126,6 @@ class PluginTests(TestCase):
             times = self.plugin.get_times([product], location, test_date)
             self.assertEqual(len(times), 106)
             self.assertEqual(times[0], datetime(2021, 8, 23, 8, 0, 0))
-
-    @requests_mock.Mocker()
-    def test_get_calendar(self, m):
-        product = AppointmentProduct(
-            identifier="1", code="PASAAN", name="Paspoort aanvraag"
-        )
-        location = AppointmentLocation(identifier="1", name="Maykin Media")
-
-        m.post(
-            "http://example.com/soap11",
-            [
-                {"text": mock_response("getGovLatestPlanDateResponse.xml")},
-                {"text": mock_response("getGovAvailableDaysResponse.xml")},
-                {"text": mock_response("getGovAvailableTimesPerDayResponse.xml")},
-            ],
-        )
-
-        calendar = self.plugin.get_calendar([product], location)
-
-        self.assertEqual(len(calendar), 3)
-        self.assertEqual(
-            list(calendar.keys()),
-            [date(2021, 8, 19), date(2021, 8, 20), date(2021, 8, 23)],
-        )
-        self.assertEqual(len(calendar[date(2021, 8, 23)]), 106)
-        self.assertEqual(calendar[date(2021, 8, 23)][0], datetime(2021, 8, 23, 8, 0, 0))
 
     @requests_mock.Mocker()
     def test_create_appointment(self, m):

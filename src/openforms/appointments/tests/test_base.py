@@ -1,34 +1,11 @@
-from datetime import datetime
-
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ..base import (
-    AppointmentDetails,
-    AppointmentLocation,
-    AppointmentProduct,
-    BasePlugin,
-)
+from ..registry import register
 from ..tokens import submission_appointment_token_generator
 from .factories import AppointmentInfoFactory
-
-
-class TestPlugin(BasePlugin):
-    def get_appointment_details(self, identifier: str) -> str:
-        return AppointmentDetails(
-            identifier=identifier,
-            products=[
-                AppointmentProduct(identifier="1", name="Test product 1"),
-                AppointmentProduct(identifier="2", name="Test product 2"),
-            ],
-            location=AppointmentLocation(identifier="1", name="Test location"),
-            start_at=datetime(2021, 1, 1, 12, 0),
-            end_at=datetime(2021, 1, 1, 12, 15),
-            remarks="Remarks",
-            other={"Some": "<h1>Data</h1>"},
-        )
 
 
 class BasePluginTests(TestCase):
@@ -36,7 +13,8 @@ class BasePluginTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.plugin = TestPlugin("base")
+        # use demo plugin for tests
+        cls.plugin = register["demo"]
 
     @override_settings(BASE_URL="https://example.com/")
     def test_get_cancel_link(self):

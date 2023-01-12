@@ -9,7 +9,7 @@ from django.utils import translation
 from rest_framework.permissions import SAFE_METHODS
 from rest_framework.request import Request
 
-from openforms.appointments.service import get_confirmation_mail_suffix
+from openforms.appointments.utils import get_confirmation_mail_suffix
 from openforms.emails.confirmation_emails import (
     SkipConfirmationEmail,
     get_confirmation_email_context_data,

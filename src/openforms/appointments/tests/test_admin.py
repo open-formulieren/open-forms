@@ -1,4 +1,7 @@
+from unittest.mock import patch
+
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from django_webtest import WebTest
 from freezegun import freeze_time
@@ -9,7 +12,15 @@ from openforms.accounts.tests.factories import (
     UserFactory,
 )
 
+from ..contrib.demo.plugin import DemoAppointment
+from ..models import AppointmentsConfig
+from ..registry import Registry
 from .factories import AppointmentInfoFactory
+
+
+class TestPlugin(DemoAppointment):
+    verbose_name = _("Test plugin")
+    is_demo_plugin = False
 
 
 class AppointmentInfoAdminTests(WebTest):
@@ -71,3 +82,33 @@ class AppointmentInfoAdminTests(WebTest):
         # past appointment
         app2_links = object_actions_col.eq(1).find("a")
         self.assertEqual(len(app2_links), 0)
+
+
+class AppointmentsConfigAdminTests(WebTest):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.user = SuperUserFactory.create()
+
+    def test_plugin_choices(self):
+        """
+        show available plugins from registry as field choices
+        """
+        test_register = Registry()
+        test_register("test1")(TestPlugin)
+        test_register("test2")(TestPlugin)
+
+        url = reverse(
+            "admin:appointments_appointmentsconfig_change",
+            args=(AppointmentsConfig.singleton_instance_id,),
+        )
+
+        with patch("openforms.appointments.admin.register", test_register):
+            response = self.app.get(url, user=self.user)
+
+        self.assertEqual(response.status_code, 200)
+
+        form = response.form
+        plugin_options = form["plugin"].options
+
+        self.assertEqual([p[0] for p in plugin_options], ["", "test1", "test2"])

@@ -2,6 +2,7 @@ from typing import Any, Dict
 
 from django.forms import Textarea
 
+from openforms.appointments.registry import register as appointments_register
 from openforms.authentication.registry import register as auth_register
 from openforms.payments.registry import register as payments_register
 from openforms.prefill.registry import register as prefill_register
@@ -14,6 +15,7 @@ PLUGIN_REGISTERS = [
     payments_register,
     registrations_register,
     prefill_register,
+    appointments_register,
 ]
 
 

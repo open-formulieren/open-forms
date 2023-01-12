@@ -5,7 +5,7 @@ from django.test import TestCase, override_settings
 
 from privates.test import temp_private_root
 
-from openforms.appointments.service import AppointmentRegistrationFailed
+from openforms.appointments.exceptions import AppointmentRegistrationFailed
 from openforms.appointments.tests.utils import setup_jcc
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.tests.factories import FormDefinitionFactory
@@ -51,7 +51,7 @@ class OnCompletionTests(TestCase):
                     self.fail("Invalid task ID returned")
 
         self.assertEqual(
-            len(submission.on_completion_task_ids), 6
+            len(submission.on_completion_task_ids), 5
         )  # 6 tasks in the chain
         # registration result reference
         self.assertTrue(submission.public_registration_reference.startswith("OF-"))

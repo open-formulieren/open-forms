@@ -20,13 +20,5 @@ class JccConfig(SingletonModel):
 
     objects = ConfigManager()
 
-    def get_client(self):
-        from .plugin import Plugin
-
-        if not self.service:
-            raise RuntimeError("You must configure a service!")
-
-        return Plugin(self.service.url)
-
     class Meta:
         verbose_name = _("JCC configuration")
