@@ -383,3 +383,6 @@ jobs:
     uses: ./.github/workflows/dockerhub-description.yml
     with:
       image_name: ${{ needs.docker_build_setup.outputs.image-name }}
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
