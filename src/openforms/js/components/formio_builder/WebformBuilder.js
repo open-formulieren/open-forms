@@ -33,11 +33,12 @@ class WebformBuilder extends WebformBuilderFormio {
     for (const componentSchema in this.schemas) {
       let value = defaultRequiredValue;
       // Issue #1724 - Content components shouldn't be marked as required, since they take no input.
-      if (changedComponentSchema[componentSchema].type === 'content') {
+      const component = changedComponentSchema[componentSchema];
+      if (component.type === 'content' || FormioUtils.isLayoutComponent(component)) {
         value = false;
       }
 
-      changedComponentSchema[componentSchema].validate = {
+      component.validate = {
         ...componentSchema.validate,
         required: value,
       };
