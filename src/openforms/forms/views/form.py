@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class FormListView(ListView):
-    template_name = "core/views/form/form_list.html"
+    template_name = "forms/form_list.html"
     queryset = Form.objects.live()
     extra_context = {
         "title": Form._meta.verbose_name_plural,
@@ -38,5 +38,5 @@ class FormListView(ListView):
     name="dispatch",
 )
 class FormDetailView(DetailView):
-    template_name = "core/views/form/form_detail.html"
+    template_name = "forms/form_detail.html"
     queryset = Form.objects.live()

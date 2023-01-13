@@ -51,7 +51,7 @@ class FormListViewTests(WebTest):
 
         list_page = self.app.get(self.url, user=user)
 
-        self.assertTemplateUsed(list_page, "core/views/form/form_list.html")
+        self.assertTemplateUsed(list_page, "forms/form_list.html")
 
     def test_forbidden_no_main_website_configured(self):
         self.config.main_website = ""
