@@ -1,15 +1,15 @@
 {% extends "master.html" %}
-{% load ui solo_tags style_dictionary %}
+{% load i18n solo_tags style_dictionary %}
 
 {% block content %}
     {% block header %}
         {% include "ui/includes/header.html" %}
-        {% skiplink target="main-content" %}
+        <a class="skiplink" href="#main-content">{% translate "Show content." %}</a>
     {% endblock %}
 
     {% block layout %}
         <main class="layout layout--container">
-            {% skiplink_target id="main-content" %}
+            <span class="skiplink-target" id="main-content"></span>
             {% block layout_inner %}
             {% endblock %}
         </main>
