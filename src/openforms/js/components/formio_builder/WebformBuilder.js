@@ -32,12 +32,10 @@ class WebformBuilder extends WebformBuilderFormio {
     let changedComponentSchema = cloneDeep(this.schemas);
     for (const componentSchema in this.schemas) {
       let value = defaultRequiredValue;
-      // Issue #1724 - Content components shouldn't be marked as required, since they take no input.
       const component = changedComponentSchema[componentSchema];
-      if (component.type === 'content' || FormioUtils.isLayoutComponent(component)) {
+      if (_mayNeverBeRequired(component)) {
         value = false;
       }
-
       component.validate = {
         ...componentSchema.validate,
         required: value,
@@ -231,5 +229,31 @@ class WebformBuilder extends WebformBuilderFormio {
     return updatedSchema;
   }
 }
+
+/**
+ * Check if a given component schema should never be 'required' in the validation aspect.
+ *
+ * Global configuration can mark components as required by default, but this does not
+ * apply to all component types.
+ *
+ * @param  {Object} component The Component schema to check the type for.
+ * @return {Boolean}          True if the component may never be required.
+ */
+const _mayNeverBeRequired = component => {
+  // Issue #1724 - Content components shouldn't be marked as required, since they take no input.
+  if (component.type === 'content') {
+    return true;
+  }
+
+  // Special case for #2548 - an editgrid ('repeating group') itself _can_ be marked
+  // required.
+  if (component.type === 'editgrid') {
+    return false;
+  }
+
+  // Issue #2548 - (most) Layout components should never be marked as required since
+  // they just group nested components.
+  return FormioUtils.isLayoutComponent(component);
+};
 
 export default WebformBuilder;
