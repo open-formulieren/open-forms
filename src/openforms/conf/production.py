@@ -22,12 +22,6 @@ for db_config in DATABASES.values():
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 
-# Caching templates.
-# TODO: supposedly django does this automatically now
-TEMPLATES[0]["OPTIONS"]["loaders"] = [
-    ("django.template.loaders.cached.Loader", TEMPLATE_LOADERS)
-]
-
 # The file storage engine to use when collecting static files with the
 # collectstatic management command.
 STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
