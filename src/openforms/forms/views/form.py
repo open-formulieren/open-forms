@@ -3,9 +3,9 @@ import logging
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.utils.decorators import method_decorator
+from django.views.generic import DetailView, ListView
 
 from openforms.config.models import GlobalConfiguration
-from openforms.ui.views.generic import UIDetailView, UIListView
 from openforms.utils.decorators import conditional_search_engine_index
 
 from ..models import Form
@@ -13,9 +13,12 @@ from ..models import Form
 logger = logging.getLogger(__name__)
 
 
-class FormListView(UIListView):
+class FormListView(ListView):
     template_name = "core/views/form/form_list.html"
     queryset = Form.objects.live()
+    extra_context = {
+        "title": Form._meta.verbose_name_plural,
+    }
 
     def get(self, request, *args, **kwargs):
         config = GlobalConfiguration.get_solo()
@@ -34,6 +37,6 @@ class FormListView(UIListView):
     conditional_search_engine_index(config_attr="allow_indexing_form_detail"),
     name="dispatch",
 )
-class FormDetailView(UIDetailView):
+class FormDetailView(DetailView):
     template_name = "core/views/form/form_detail.html"
     queryset = Form.objects.live()
