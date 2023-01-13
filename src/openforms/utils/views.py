@@ -19,7 +19,7 @@ from ..api import exceptions
 
 
 @requires_csrf_token
-def server_error(request, template_name=ERROR_500_TEMPLATE_NAME):
+def server_error(request, template_name=ERROR_500_TEMPLATE_NAME):  # pragma: no cover
     """
     500 error handler.
 
