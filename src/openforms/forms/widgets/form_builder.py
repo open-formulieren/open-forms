@@ -2,7 +2,7 @@ from django.forms import Widget
 
 
 class FormBuilderWidget(Widget):
-    template_name = "core/widgets/form_builder.html"
+    template_name = "forms/widgets/form_builder.html"
 
     class Media:
         css = {

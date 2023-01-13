@@ -1,7 +1,6 @@
 import shutil
 from pathlib import Path
 from unittest import TestCase
-from unittest.mock import patch
 
 from django.conf import settings
 from django.test import SimpleTestCase
@@ -12,13 +11,9 @@ from ..upgrade_paths import (
     VersionRange,
     check_upgrade_path,
 )
+from .utils import mock_upgrade_paths
 
 FILES_DIR = (Path(__file__).parent / "files").resolve()
-
-
-def mock_upgrade_paths(new: dict):
-    python_path = "openforms.upgrades.upgrade_paths.UPGRADE_PATHS"
-    return patch(python_path, new=new)
 
 
 class UpgradePathTests(TestCase):

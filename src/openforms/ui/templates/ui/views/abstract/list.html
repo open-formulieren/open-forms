@@ -1,5 +1,4 @@
 {% extends './base.html' %}
-{% load ui %}
 
 {% block layout_inner %}
     {{ block.super }}
@@ -16,7 +15,10 @@
                         <ul class="list">
                             {% for object in object_list %}
                                 <li class="list__item">
-                                    {% anchor href=object.get_absolute_url label=object %}
+                                    <a
+                                        href="{{ object.get_absolute_url }}"
+                                        class="utrecht-link utrecht-link--openforms"
+                                    >{{ object }}</a>
                                 </li>
                             {% endfor %}
                         </ul>
@@ -25,6 +27,6 @@
             {% endblock %}
         </div>
 
-        {% a11y_toolbar user=user %}
+        {% include "includes/a11y_toolbar.html" only %}
     </section>
 {% endblock %}

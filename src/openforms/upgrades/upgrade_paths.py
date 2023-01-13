@@ -83,31 +83,7 @@ UPGRADE_PATHS = {
     ),
     "2.1": UpgradeConstraint(
         valid_ranges={
-            VersionRange(minimum="2.0.0"),
-        }
-    ),
-    "2.0": UpgradeConstraint(
-        valid_ranges={
-            VersionRange(minimum="1.0.14", maximum="1.1.5"),
-            VersionRange(minimum="1.1.6", maximum="1.2.0"),
-            VersionRange(minimum="2.0.0-beta.0"),
-        },
-        management_commands=[
-            "check_duplicate_component_keys",
-            "check_invalid_field_keys",
-        ],
-        scripts=[
-            "detect_advanced_logic_usage",
-        ],
-    ),
-    "1.1.6": UpgradeConstraint(
-        valid_ranges={
-            VersionRange(minimum="1.1.0", maximum="1.1.5"),
-        }
-    ),
-    "1.0.16": UpgradeConstraint(
-        valid_ranges={
-            VersionRange(minimum="1.0.0", maximum="1.0.15"),
+            VersionRange(minimum="2.0.2"),
         }
     ),
 }

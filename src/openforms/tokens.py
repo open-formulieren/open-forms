@@ -103,7 +103,7 @@ class BaseTokenGenerator(ABC):
         return self.token_timeout_days
 
     @abstractmethod
-    def get_hash_value_parts(self, obj: models.Model) -> List[str]:
+    def get_hash_value_parts(self, obj: models.Model) -> List[str]:  # pragma: no cover
         """
         Obtain a list of strings reflecting object state.
 
