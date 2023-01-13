@@ -6,6 +6,8 @@ from django.test import TestCase, override_settings
 
 from ..checks import check_upgrade_possible
 from ..models import VersionInfo
+from ..upgrade_paths import UpgradeConstraint, VersionRange
+from .utils import mock_upgrade_paths
 
 
 def mock_version_info(**kwargs):
@@ -90,8 +92,14 @@ class UpgradeCheckTests(TestCase):
 
     @override_settings(RELEASE="2.0.0-beta.1")
     def test_cannot_parse_current_version(self):
+        UPGRADE_PATHS = {
+            "2.0": UpgradeConstraint(valid_ranges={VersionRange(minimum="1.1")}),
+        }
         version_info = VersionInfo(current="68952f07ae778ae0f6879c9e1b290dc33f4b1aad")
-        with mock_version_info(return_value=version_info):
+
+        with mock_upgrade_paths(UPGRADE_PATHS), mock_version_info(
+            return_value=version_info
+        ):
             errors_and_warnings = check_upgrade_possible(None)
 
             warning = Warning(
