@@ -30,18 +30,19 @@ class MimeTypeValidator:
         head = value.read(2048)
         ext = value.name.split(".")[-1]
         mime_type = magic.from_buffer(head, mime=True)
-        if not (self._allowed is None or mimetype_allowed(mime_type, self._allowed)):
-            raise serializers.ValidationError(
-                _("The file '{filename}' is not a valid file type.").format(
-                    filename=value.name
-                ),
-            )
 
         # gh #2520
         # application/x-ole-storage on Arch with shared-mime-info 2.0+155+gf4e7cbc-1
         if mime_type in ["application/CDFV2", "application/x-ole-storage"]:
             whole_file = head + value.read()
             mime_type = magic.from_buffer(whole_file, mime=True)
+
+        if not (self._allowed is None or mimetype_allowed(mime_type, self._allowed)):
+            raise serializers.ValidationError(
+                _("The file '{filename}' is not a valid file type.").format(
+                    filename=value.name
+                ),
+            )
 
         # Contents is allowed. Do extension or submitted content_type agree?
         if value.content_type == "application/octet-stream":
