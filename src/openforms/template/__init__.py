@@ -12,9 +12,9 @@ Possible future features:
 * Caching for string-based templates
 * ...
 """
-from .backends.sandboxed_django import backend as sandbox_backend
+from .backends.sandboxed_django import backend as sandbox_backend, openforms_backend
 
-__all__ = ["render_from_string", "parse", "sandbox_backend"]
+__all__ = ["render_from_string", "parse", "sandbox_backend", "openforms_backend"]
 
 
 def parse(source: str, backend=sandbox_backend):

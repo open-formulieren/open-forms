@@ -22,6 +22,8 @@ Module functionality
 
 .. autoattribute:: openforms.template.sandbox_backend
 
+.. autoattribute:: openforms.template.openforms_backend
+
 Validators
 ----------
 

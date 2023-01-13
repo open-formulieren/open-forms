@@ -4,7 +4,6 @@ from typing import Any, List, Optional, Sequence, Tuple
 from urllib.parse import urlsplit
 
 from django.conf import settings
-from django.template import Context, Template
 from django.template.loader import get_template
 
 from mail_cleaner.mail import send_mail_plus
@@ -12,6 +11,7 @@ from mail_cleaner.sanitizer import sanitize_content as _sanitize_content
 from mail_cleaner.text import strip_tags_plus
 
 from openforms.config.models import GlobalConfiguration
+from openforms.template import openforms_backend, render_from_string
 
 from .context import get_wrapper_context
 
@@ -87,4 +87,4 @@ def send_mail_html(
 
 def render_email_template(template: str, context: dict, **extra_context: Any) -> str:
     render_context = {**context, **extra_context}
-    return Template(template).render(Context(render_context))
+    return render_from_string(template, render_context, backend=openforms_backend)
