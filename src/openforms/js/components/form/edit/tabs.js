@@ -1,9 +1,8 @@
 import {Utils} from 'formiojs';
-import cloneDeep from 'lodash/cloneDeep';
 
 import jsonScriptToVar from 'utils/json-script';
+import {getFullyQualifiedUrl} from 'utils/urls';
 
-import {getFullyQualifiedUrl} from '../../../utils/urls';
 import {
   CLEAR_ON_HIDE,
   DEFAULT_VALUE,
@@ -18,6 +17,7 @@ import {
   REGEX_VALIDATION,
   REQUIRED,
 } from './options';
+import {getValidationEditForm} from './validationEditFormUtils';
 
 /**
  * Define the tabs available when editing components in the form builder.
@@ -238,13 +238,13 @@ const REGISTRATION = {
   ],
 };
 
-const VALIDATION_BASIC = {
+const VALIDATION_BASIC = getValidationEditForm({
   key: 'validation',
   label: 'Validation',
   components: [REQUIRED],
-};
+});
 
-const VALIDATION = {
+const VALIDATION = getValidationEditForm({
   key: 'validation',
   label: 'Validation',
   components: [
@@ -266,9 +266,9 @@ const VALIDATION = {
       template: '<span>{{ item.label }}</span>',
     },
   ],
-};
+});
 
-const TEXT_VALIDATION = {
+const TEXT_VALIDATION = getValidationEditForm({
   key: 'validation',
   label: 'Validation',
   components: [
@@ -285,78 +285,7 @@ const TEXT_VALIDATION = {
     },
     REGEX_VALIDATION,
   ],
-};
-
-const getCustomValidationErrorMessagesEditForm = validators => {
-  const defaultValues = Object.assign(
-    {},
-    ...validators.map(validator => ({
-      [validator.key.split('.')[1]]: '',
-    }))
-  );
-
-  const customErrorMessages = LANGUAGES.map(([languageCode, _label]) => {
-    return {
-      key: languageCode,
-      label: languageCode.toUpperCase(),
-      components: [
-        {
-          type: 'datamap',
-          input: true,
-          key: `translatedErrors.${languageCode}`,
-          tooltip: 'Custom errors and their translation.',
-          keyLabel: 'Error',
-          disableKey: true,
-          disableAddingRemovingRows: true,
-          hideLabel: true,
-          reorder: false,
-          defaultValue: defaultValues,
-          valueComponent: {
-            type: 'textfield',
-            key: 'message',
-            label: 'Message',
-            input: true,
-            hideLabel: true,
-            tableView: true,
-          },
-        },
-      ],
-    };
-  });
-
-  return {
-    type: 'panel',
-    legend: 'Custom error messages',
-    title: 'Custom error messages',
-    key: 'translatedErrors',
-    tooltip: 'Custom error messages for this component and their translations',
-    collapsible: true,
-    collapsed: true,
-    components: [
-      {
-        key: 'translations',
-        components: [
-          {
-            key: 'languages',
-            type: 'tabs',
-            components: customErrorMessages,
-          },
-        ],
-      },
-    ],
-  };
-};
-
-const getValidationEditForm = validationEditForm => {
-  let updatedEditForm = cloneDeep(validationEditForm);
-  updatedEditForm.components.push(
-    getCustomValidationErrorMessagesEditForm(
-      // TODO The plugins validators have error messages hardcoded in the backend. Ignoring them for now
-      validationEditForm.components.filter(validator => validator.key !== 'validate.plugins')
-    )
-  );
-  return updatedEditForm;
-};
+});
 
 const PREFILL = {
   key: 'prefill',
@@ -490,6 +419,5 @@ export {
   VALIDATION_BASIC,
   SENSITIVE_READ_ONLY,
   TRANSLATIONS,
-  getValidationEditForm,
 };
 export default DEFAULT_TABS;
