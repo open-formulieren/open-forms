@@ -83,7 +83,7 @@ UPGRADE_PATHS = {
     ),
     "2.1": UpgradeConstraint(
         valid_ranges={
-            VersionRange(minimum="2.0.0"),
+            VersionRange(minimum="2.0.2"),
         }
     ),
 }

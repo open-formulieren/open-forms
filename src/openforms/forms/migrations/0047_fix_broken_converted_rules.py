@@ -2,16 +2,6 @@
 
 from django.db import migrations
 
-from ..utils import fix_broken_rules
-
-
-def fix_broken_converted_rules(apps, schema_editor):
-    FormLogic = apps.get_model("forms", "FormLogic")
-
-    rules = FormLogic.objects.all()
-
-    fix_broken_rules(rules)
-
 
 class Migration(migrations.Migration):
 
@@ -19,6 +9,6 @@ class Migration(migrations.Migration):
         ("forms", "0046_convert_advanced_logic"),
     ]
 
-    operations = [
-        migrations.RunPython(fix_broken_converted_rules, migrations.RunPython.noop),
-    ]
+    # Similar to migration 0046, the original operations have been executed and been
+    # removed.
+    operations = []
