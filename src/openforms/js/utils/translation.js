@@ -1,4 +1,8 @@
+import FormioUtils from 'formiojs/utils';
+import mapValues from 'lodash/mapValues';
 import merge from 'lodash/merge';
+import pick from 'lodash/pick';
+import pickBy from 'lodash/pickBy';
 
 const TRANSLATABLE_FIELDS = [
   'label',
@@ -27,20 +31,41 @@ const getValuesOfField = (component, fieldName) => {
   return values;
 };
 
-const generateComponentTranslations = (configuration, componentTranslations) => {
+const generateComponentTranslations = (
+  configuration,
+  componentTranslations,
+  accumulatedLiterals
+) => {
+  // accumulatedLiterals is used in the recursion for collecting all literals used in the step.
+  // Consider a step where the same literal is used in different components,
+  // and then one of them gets changed.
+  //
+  // Only at the start and end (post/put) of editing a step is it safe to
+  // remove unused literals, not in the context of a single component.
+
   let finalTranslations = {};
-  FormioUtils.eachComponent(configuration.components, component => {
-    finalTranslations = merge(
-      finalTranslations,
-      generateComponentTranslations(component, componentTranslations)
-    );
-  });
+  let finalLiterals = [];
+
+  FormioUtils.eachComponent(
+    configuration.components,
+    component => {
+      let foundTranslations;
+      [foundTranslations, finalLiterals] = generateComponentTranslations(
+        component,
+        componentTranslations,
+        finalLiterals
+      );
+      merge(finalTranslations, foundTranslations);
+    },
+    true // content is considered a layoutComponent
+  );
 
   if (configuration.display !== 'form') {
     let values = [];
     for (const field of TRANSLATABLE_FIELDS) {
       values = values.concat(getValuesOfField(configuration, field));
     }
+    finalLiterals = finalLiterals.concat(values);
 
     let mutatedTranslations = {};
     for (const [languageCode, translations] of Object.entries(componentTranslations)) {
@@ -52,9 +77,12 @@ const generateComponentTranslations = (configuration, componentTranslations) => 
       }
       mutatedTranslations[languageCode] = {...translations, ...additionalTranslations};
     }
-    finalTranslations = merge(finalTranslations, mutatedTranslations);
+    merge(finalTranslations, mutatedTranslations);
   }
-  return finalTranslations;
+
+  return accumulatedLiterals !== undefined
+    ? [finalTranslations, accumulatedLiterals.concat(finalLiterals)] // recursing
+    : mapValues(finalTranslations, translations => pick(translations, finalLiterals)); // keep/"pick" only translations in finalLiterals
 };
 
 const mutateTranslations = (component, componentTranslations) => {
@@ -83,16 +111,8 @@ const mutateTranslations = (component, componentTranslations) => {
   return mutatedTranslations;
 };
 
-const removeEmptyTranslations = componentTranslations => {
-  let cleanedTranslations = {};
-  for (const [languageCode, translations] of Object.entries(componentTranslations)) {
-    cleanedTranslations[languageCode] = {};
-    for (const [literal, translation] of Object.entries(translations)) {
-      if (!!translation) cleanedTranslations[languageCode][literal] = translation;
-    }
-  }
-  return cleanedTranslations;
-};
+const removeEmptyTranslations = componentTranslations =>
+  mapValues(componentTranslations, translations => pickBy(translations)); // keep/"pick" truthy identity
 
 export {
   mutateTranslations,

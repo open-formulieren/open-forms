@@ -5,7 +5,10 @@ import {FORM_DEFINITIONS_ENDPOINT} from 'components/admin/form_design/constants'
 import {FormException} from 'utils/exception';
 import {ValidationErrors, post, put} from 'utils/fetch';
 
-import {removeEmptyTranslations} from '../../../../utils/translation';
+import {
+  generateComponentTranslations,
+  removeEmptyTranslations,
+} from '../../../../utils/translation';
 
 const updateOrCreateSingleFormStep = async (
   csrftoken,
@@ -40,7 +43,9 @@ const updateOrCreateSingleFormStep = async (
     isReusable: step.isReusable,
     translations: formDefinitionTranslations,
     // Extract the translations for this FormDefinition from the configuration
-    componentTranslations: removeEmptyTranslations(step.componentTranslations),
+    componentTranslations: removeEmptyTranslations(
+      generateComponentTranslations(step.configuration, step.componentTranslations)
+    ),
   };
 
   try {
