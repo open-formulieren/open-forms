@@ -16,13 +16,13 @@ from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import render_email_template, send_mail_html
+from openforms.formio.dynamic_config import get_translated_custom_error_messages
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import FormStep
 from openforms.forms.validators import validate_not_deleted
+from openforms.utils.urls import build_absolute_uri
 
-from ...formio.dynamic_config import get_translated_custom_error_messages
-from ...utils.urls import build_absolute_uri
 from ..attachments import validate_uploads
 from ..constants import ProcessingResults, ProcessingStatuses
 from ..form_logic import check_submission_logic, evaluate_form_logic
