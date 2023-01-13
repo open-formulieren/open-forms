@@ -338,5 +338,6 @@
   "Remove Row Text": "'Groep verwijderen'-tekst",
   "Set the text of the remove Row button.": "Geef de knoptekst om een groep te verwijderen op.",
   "maxFileSizeMessage": "De maximale bestandsgrootte is {{maxFileSize}}.",
+
   "": ""
 }
