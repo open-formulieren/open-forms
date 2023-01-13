@@ -184,8 +184,8 @@ class FormVariableViewsetTest(APITestCase):
         user = SuperUserFactory.create()
         form = FormFactory.create()
 
-        form_variable1 = FormVariableFactory.create(form=form)
-        form_variable2 = FormVariableFactory.create(form=form)
+        FormVariableFactory.create(form=form, key="vars.1")
+        FormVariableFactory.create(form=form, key="vars.2")
         FormVariableFactory.create()  # Not related to the same form!
 
         self.client.force_authenticate(user)
@@ -202,10 +202,8 @@ class FormVariableViewsetTest(APITestCase):
 
         self.assertEqual(2, len(response_data))
 
-        variables_keys = [variable["key"] for variable in response_data]
-
-        self.assertIn(form_variable1.key, variables_keys)
-        self.assertIn(form_variable2.key, variables_keys)
+        variables_keys = {variable["key"] for variable in response_data}
+        self.assertEqual(variables_keys, {"vars.1", "vars.2"})
 
     def test_list_form_variables_source_filter(self):
         user = SuperUserFactory.create()
