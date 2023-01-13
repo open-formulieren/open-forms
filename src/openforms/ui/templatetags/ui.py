@@ -1,9 +1,20 @@
 from django import template
 from django.utils.translation import gettext as _
 
-from .abstract import get_config, get_href, get_is_active, get_required_config_value
-
 register = template.Library()
+
+
+def get_config(kwargs):
+    """
+    Converts kwargs into a "config".
+    This pops "config" from kwargs (defaults to empty dict) and applies any other key/value in kwargs to it.
+    This allows for dicts to be passed to template tags via the "config" kwarg.
+    :param kwargs: dict
+    :return: dict
+    """
+    config = kwargs.pop("config", {})
+    config.update(kwargs)
+    return config
 
 
 # Large components
@@ -59,41 +70,3 @@ def skiplink_target(**kwargs):
 def a11y_toolbar(**kwargs):
     config = get_config(kwargs)
     return config
-
-
-# Small components
-
-
-@register.inclusion_tag("ui/components/anchor/anchor.html", takes_context=True)
-def anchor(context, **kwargs):
-    """
-    Renders an anchor (link).
-    :param kwargs:
-
-    Example:
-
-        {% anchor config=config %}
-        {% anchor option1='foo' option2='bar' %}
-
-    Available options:
-
-        - href (str): Creates an anchor to href, can be a url or a url name.
-        - label (str): The anchor label.
-
-        - active (bool) (optional): Whether the anchor should be marked as active, defaults to automatic behaviour.
-        - hover (bool) (optional): Whether the text-decoration (underline) should NOT be present until hovered.
-        - style (str) (optional): The anchor style, either "normal", "inherit" or "muted". Defaults to "normal".
-        - target (str) (optional): The anchor target. Defaults to "_self".
-
-    :return: dict
-    """
-    config = get_config(kwargs)
-    request = context.request
-    return {
-        "href": get_href(config, "href", "anchor"),
-        "label": get_required_config_value(config, "label", "anchor"),
-        "active": get_is_active(request, config),
-        "hover": config.get("hover", False),
-        "style": config.get("style", ""),
-        "target": config.get("target", "_self"),
-    }
