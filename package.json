@@ -7,7 +7,7 @@
     "doc": "doc"
   },
   "scripts": {
-    "test": "echo 'no tests set up yet'; exit 1",
+    "test": "jest",
     "build": "NODE_ENV=production webpack",
     "builddev": "NODE_ENV=development webpack",
     "watch": "webpack -w",
@@ -32,6 +32,7 @@
     "@rjsf/core": "^4.2.1",
     "@tinymce/tinymce-react": "^3.12.6",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
+    "babel-jest": "^29.3.1",
     "bem.js": "^1.0.10",
     "classnames": "^2.3.1",
     "copy-to-clipboard": "^3.3.1",
@@ -56,6 +57,9 @@
     "use-immer": "^0.5.2",
     "uuid": "^8.3.2"
   },
+  "jest": {
+    "testEnvironment": "jsdom"
+  },
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/polyfill": "^7.12.1",
@@ -69,6 +73,8 @@
     "css-loader": "^5.0.2",
     "cssnano": "^5.0.17",
     "ejs-loader": "^0.5.0",
+    "jest": "^29.3.1",
+    "jest-environment-jsdom": "^29.3.1",
     "mini-css-extract-plugin": "^0.11.1",
     "postcss": "^8.0.8",
     "postcss-loader": "^4.0.1",
