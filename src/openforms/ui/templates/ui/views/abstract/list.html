@@ -1,5 +1,4 @@
 {% extends './base.html' %}
-{% load ui %}
 
 {% block layout_inner %}
     {{ block.super }}
@@ -28,6 +27,6 @@
             {% endblock %}
         </div>
 
-        {% a11y_toolbar %}
+        {% include "includes/a11y_toolbar.html" only %}
     </section>
 {% endblock %}

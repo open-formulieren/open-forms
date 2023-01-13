@@ -64,9 +64,3 @@ def skiplink_target(**kwargs):
     return {
         "id": config.get("id", "skiplink_target"),
     }
-
-
-@register.inclusion_tag("ui/components/a11y_toolbar/a11y_toolbar.html")
-def a11y_toolbar(**kwargs):
-    config = get_config(kwargs)
-    return config
