@@ -33,6 +33,7 @@ wysiwyg_allowed_tags = [
     "strong",
     "ul",
     # -- added
+    "br",
     "p",
     "img",
     "figure",
