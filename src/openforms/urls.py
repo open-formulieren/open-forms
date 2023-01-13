@@ -120,7 +120,7 @@ urlpatterns += staticfiles_urlpatterns() + static(
     settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
 )
 
-if settings.DEBUG and apps.is_installed("debug_toolbar"):
+if settings.DEBUG and apps.is_installed("debug_toolbar"):  # pragma: no cover
     import debug_toolbar
 
     urlpatterns = [
@@ -161,10 +161,10 @@ if settings.DEBUG:  # pragma: nocover
         ),
     ]
 
-if apps.is_installed("rosetta"):
+if apps.is_installed("rosetta"):  # pragma: no cover
     urlpatterns = [path("admin/rosetta/", include("rosetta.urls"))] + urlpatterns
 
-if apps.is_installed("silk"):
+if apps.is_installed("silk"):  # pragma: no cover
     urlpatterns += [path("silk/", include("silk.urls", namespace="silk"))]
 
 # render a form detail page, as catch-all since it takes the slug of a form
