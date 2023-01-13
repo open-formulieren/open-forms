@@ -1,7 +1,10 @@
 from django.core.exceptions import ValidationError
-from django.template import Template, TemplateSyntaxError
+from django.template import TemplateSyntaxError
 from django.utils.deconstruct import deconstructible
+from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
+
+from . import parse
 
 
 @deconstructible
@@ -13,8 +16,13 @@ class DjangoTemplateValidator:
     it can enforce the presence of certain required template tags.
     """
 
-    def __init__(self, required_template_tags: list[str] | None = None):
+    def __init__(
+        self,
+        required_template_tags: list[str] | None = None,
+        backend: str = "openforms.template.sandbox_backend",
+    ):
         self.required_template_tags = required_template_tags
+        self.backend = backend
 
     def __call__(self, value: str) -> None:
         self.check_syntax_errors(value)
@@ -45,10 +53,8 @@ class DjangoTemplateValidator:
                 )
 
     def check_syntax_errors(self, value):
-        # code lifted from maykinmedia/mail-editor
-        # https://github.com/maykinmedia/mail-editor/blob/e9ea1762af9a5c7ec0826876cb647dea444b95ba/mail_editor/mail_template.py#L28
-
+        backend = import_string(self.backend)
         try:
-            return Template(value)
+            parse(value, backend=backend)
         except TemplateSyntaxError as exc:
             raise ValidationError(str(exc), code="syntax_error") from exc

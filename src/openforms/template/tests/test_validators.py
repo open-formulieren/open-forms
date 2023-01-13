@@ -1,13 +1,18 @@
 from django.core.exceptions import ValidationError
+from django.template import engines
+from django.template.backends.django import DjangoTemplates
 from django.test import SimpleTestCase, override_settings
 from django.utils.translation import gettext as _
 
 from ..validators import DjangoTemplateValidator
 
+django_backend = engines.all()[0]
+assert isinstance(django_backend, DjangoTemplates)
+
 
 class DjangoTemplateValidatorTest(SimpleTestCase):
     def test_template_syntax(self):
-        validator = DjangoTemplateValidator()
+        validator = DjangoTemplateValidator(backend=f"{__name__}.django_backend")
 
         valid = [
             "",
@@ -35,7 +40,10 @@ class DjangoTemplateValidatorTest(SimpleTestCase):
                     validator(text)
 
     def test_required_tags(self):
-        validator = DjangoTemplateValidator(required_template_tags=["csrf_token"])
+        validator = DjangoTemplateValidator(
+            required_template_tags=["csrf_token"],
+            backend=f"{__name__}.django_backend",
+        )
 
         valid = [
             "{% csrf_token %}",
@@ -78,7 +86,7 @@ class DjangoTemplateValidatorTest(SimpleTestCase):
         Additionally, it's hard to selectively allow HTML in the frontend code without
         increasing XSS risks.
         """
-        validator = DjangoTemplateValidator()
+        validator = DjangoTemplateValidator(backend=f"{__name__}.django_backend")
 
         with self.assertRaisesMessage(
             ValidationError,

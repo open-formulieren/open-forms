@@ -92,7 +92,9 @@ class Form(models.Model):
             "templated from the submitted form data. If not specified, the global template will be used."
         ),
         blank=True,
-        validators=[DjangoTemplateValidator()],
+        validators=[
+            DjangoTemplateValidator(backend="openforms.template.openforms_backend")
+        ],
     )
     submission_allowed = models.CharField(
         _("submission allowed"),

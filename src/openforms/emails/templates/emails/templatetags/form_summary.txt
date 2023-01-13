@@ -1,4 +1,4 @@
-{% load i18n %}{% autoescape off %}{% if renderer.has_children %}{% trans "Summary" %}
+{% load i18n form_summary %}{% autoescape off %}{% if renderer.has_children %}{% trans "Summary" %}
 
 {% for submission_step_node in renderer.get_children %}{% if submission_step_node.has_children %}
 {{ submission_step_node.render }}

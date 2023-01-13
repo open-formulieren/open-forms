@@ -292,13 +292,6 @@ TEMPLATES = [
                 "openforms.utils.context_processors.settings",
             ],
             "loaders": TEMPLATE_LOADERS,
-            "builtins": [
-                # TODO: these can be deleted once the validator is done via backend.
-                "openforms.emails.templatetags.appointments",
-                "openforms.emails.templatetags.form_summary",
-                "openforms.emails.templatetags.payment",
-                "openforms.emails.templatetags.products",
-            ],
         },
     },
 ]

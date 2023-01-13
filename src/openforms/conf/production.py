@@ -23,6 +23,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 
 # Caching templates.
+# TODO: supposedly django does this automatically now
 TEMPLATES[0]["OPTIONS"]["loaders"] = [
     ("django.template.loaders.cached.Loader", TEMPLATE_LOADERS)
 ]
