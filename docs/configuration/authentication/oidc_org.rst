@@ -41,6 +41,11 @@ The OpenID Connect configuration is shared with :ref:`the configuration of the m
 
   Note we set the ``employee_id`` to track the member on both the submission and the created user.
 
+- We recommend configuring the roles on the OIDC provider side together with the
+  ``Groups glob pattern`` to automatically assign the correct groups when an employee
+  authenticates via OIDC. More information about permissions and groups is available
+  in the :ref:`manual <manual_accounts>` (in Dutch).
+
 
 After completing these steps a form can be created with the authentication backend ``Organization via OpenID Connect``, see :ref:`manual_forms_basics`.
 

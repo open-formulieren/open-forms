@@ -24,11 +24,20 @@ Een standaard Open Formulieren installatie komt met een aantal standaardgroepen:
 **Beheerders**
     Leden van deze groep kunnen de globale configuratie beheren.
 
-**Functioneel beheerders**
+**Functioneel beheer**
     Leden van deze groep kunnen gebruikers beheren.
 
 **Redacteurs**
     Leden van deze groep kunnen alleen formulieren beheren.
+
+**Behandelaars**
+    Leden van deze groep kunnen inzendingen inzien.
+
+**Inzendingen beheren**
+    Leden van deze groep kunnen inzendingen lezen en schrijven.
+
+**Registreerders**
+    Leden van deze groep kunnen formulieren invullen voor burgers/bedrijven.
 
 
 .. note::
