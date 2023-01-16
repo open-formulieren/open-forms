@@ -43,6 +43,7 @@ const getBuilderOptions = () => {
           currency: true,
           email: true,
           date: true,
+          datetime: true,
           time: true,
           phoneNumber: true,
           postcode: true,
@@ -320,7 +321,7 @@ const FormIOBuilder = ({
   // never changes, the prop never changes, and re-renders of the form builder are
   // avoided. This prevents an infinite loop, reported here: https://github.com/formio/react/issues/386
   // The onChange events fires for every render. So, if the onChange event causes props
-  // to change (by reference, not by value!), you end up in an infite loop.
+  // to change (by reference, not by value!), you end up in an infinite loop.
   //
   // This approach effectively pins the FormBuilder.form prop reference.
   const formRef = useRef(clone);
