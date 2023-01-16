@@ -323,15 +323,21 @@ op_datetime = FunctionLike(_("datetime({args})"))
 
 @add_boilerplate()
 def op_rdelta(*args) -> str:
-    if len(args) == 1:
-        return gettext("{years} year(s)").format(years=args[0])
-    elif len(args) == 2:
-        return gettext("{years} year(s), {months} month(s)").format(
-            years=args[0],
-            months=args[1],
+    descriptions = [
+        {"text": "{years} year(s)", "placeholder": "years"},
+        {"text": "{months} month(s)", "placeholder": "months"},
+        {"text": "{days} day(s)", "placeholder": "days"},
+        {"text": "{hours} hour(s)", "placeholder": "hours"},
+        {"text": "{minutes} minute(s)", "placeholder": "minutes"},
+        {"text": "{seconds} second(s)", "placeholder": "seconds"},
+    ]
+
+    text_description_bits = []
+    for index, arg in enumerate(args):
+        text_description_bits.append(
+            gettext(descriptions[index]["text"]).format(
+                **{descriptions[index]["placeholder"]: arg}
+            )
         )
-    return gettext("{years} year(s), {months} month(s), {days} day(s)").format(
-        years=args[0],
-        months=args[1],
-        days=args[2],
-    )
+
+    return ", ".join(text_description_bits)
