@@ -102,6 +102,7 @@ const initialFormState = {
     confirmationEmailOption: 'global_email',
     autoLoginAuthenticationBackend: '',
     translations: {},
+    appointmentEnabled: false,
   },
   newForm: true,
   formSteps: [],
@@ -158,6 +159,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   logicRules: 'logic-rules',
   priceRules: 'product-payment',
   variables: 'variables',
+  appointmentEnabled: 'form',
 };
 
 const TRANSLATION_FIELD_TO_TAB_NAMES = {
