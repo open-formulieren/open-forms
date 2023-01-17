@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from openforms.submissions.tests.factories import SubmissionFactory
 
+from ...datastructures import FormioConfigurationWrapper
 from .. import get_translated_custom_error_messages
 
 
@@ -15,9 +16,11 @@ class ComponentWithCustomErrorsTests(TestCase):
 
         submission = SubmissionFactory.create(language_code="en")
 
-        new_config = get_translated_custom_error_messages(config, submission)
+        get_translated_custom_error_messages(
+            FormioConfigurationWrapper(config), submission
+        )
 
-        self.assertNotIn("errors", new_config["components"][0])
+        self.assertNotIn("errors", config["components"][0])
 
     def test_custom_errors_in_english(self):
         config = {
@@ -44,10 +47,12 @@ class ComponentWithCustomErrorsTests(TestCase):
 
         submission = SubmissionFactory.create(language_code="en")
 
-        new_config = get_translated_custom_error_messages(config, submission)
+        get_translated_custom_error_messages(
+            FormioConfigurationWrapper(config), submission
+        )
 
         self.assertEqual(
-            new_config["components"][0]["errors"],
+            config["components"][0]["errors"],
             {
                 "pattern": "{{ field }} has the wrong pattern!!!",
                 "required": "{{ field }} is required!!!",
@@ -81,10 +86,12 @@ class ComponentWithCustomErrorsTests(TestCase):
 
         submission = SubmissionFactory.create(language_code="en")
 
-        new_config = get_translated_custom_error_messages(config, submission)
+        get_translated_custom_error_messages(
+            FormioConfigurationWrapper(config), submission
+        )
 
         self.assertEqual(
-            new_config["components"][0]["errors"],
+            config["components"][0]["errors"],
             {
                 "test": "test",
             },
