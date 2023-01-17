@@ -440,3 +440,50 @@ class StepModificationTests(TestCase):
         evaluate_form_logic(
             submission, submission_step, submission_step.data, dirty=True
         )
+
+    def test_datetime_trigger(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "datetime",
+                        "key": "startOfConstructionWorks",
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            # Is the start datetime of the construction works more than 24h in the future?
+            json_logic_trigger={
+                ">": [
+                    {"datetime": {"var": "startOfConstructionWorks"}},
+                    {"+": [{"var": "now"}, {"rdelta": [0, 0, 0, 24]}]},
+                ]
+            },
+            actions=[
+                {
+                    "action": {
+                        "name": "Disable next",
+                        "type": "disable-next",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+            data={"startOfConstructionWorks": "2023-01-18T16:00:00+01:00"},
+        )
+
+        self.assertTrue(submission_step.can_submit)
+
+        with freeze_time(
+            "2023-01-16T16:00:00+01:00"
+        ):  # The start of construction is 48h in the future
+            evaluate_form_logic(submission, submission_step, submission.data)
+
+        self.assertFalse(submission_step.can_submit)
