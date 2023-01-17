@@ -110,7 +110,7 @@ jobs:
         run: |
           python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
-          coverage run src/manage.py test src
+          coverage run src/manage.py test src --parallel 2
         env:
           DJANGO_SETTINGS_MODULE: openforms.conf.ci
           SECRET_KEY: dummy
