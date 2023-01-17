@@ -1155,7 +1155,10 @@ webtest==2.0.35
     #   -r requirements/ci.txt
     #   django-webtest
 wheel==0.38.4
-    # via pip-tools
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   pip-tools
 wsproto==1.2.0
     # via
     #   -c requirements/ci.txt

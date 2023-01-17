@@ -19,3 +19,8 @@ hypothesis  # property-based testing
 black
 isort~=5.10.0
 flake8
+
+# Build tooling
+# setup.py install fallback is deprecated, building wheels locally and caching them
+# is the most performant way to install dependencies
+wheel
