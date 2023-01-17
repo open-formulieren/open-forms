@@ -85,7 +85,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements/setuptools.txt
           pip install -r requirements/ci.txt \
             --use-pep517 \
             --use-feature=no-binary-enable-wheel-cache
@@ -188,7 +187,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements/setuptools.txt
           pip install -r requirements/ci.txt \
             --use-pep517 \
             --use-feature=no-binary-enable-wheel-cache
