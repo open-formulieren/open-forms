@@ -16,7 +16,6 @@ from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import render_email_template, send_mail_html
-from openforms.formio.dynamic_config import get_translated_custom_error_messages
 from openforms.forms.api.serializers import FormDefinitionSerializer
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.models import FormStep
@@ -247,12 +246,6 @@ class SubmissionStepSerializer(NestedHyperlinkedModelSerializer):
             instance.submission.data,
             **self.context,
         )
-
-        # Add to each component the custom errors in the current locale
-        new_configuration = get_translated_custom_error_messages(
-            new_configuration, instance.submission
-        )
-
         # update the config for serialization
         instance.form_step.form_definition.configuration = new_configuration
         return super().to_representation(instance)

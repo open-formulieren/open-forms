@@ -19,6 +19,7 @@ from openforms.typing import DataMapping
 
 from .datastructures import FormioConfigurationWrapper
 from .dynamic_config import (
+    get_translated_custom_error_messages,
     rewrite_formio_components,
     rewrite_formio_components_for_request,
 )
@@ -80,6 +81,9 @@ def get_dynamic_configuration(
     parameter.
     """
     rewrite_formio_components(config_wrapper, submission=submission, data=data)
+
+    # Add to each component the custom errors in the current locale
+    get_translated_custom_error_messages(config_wrapper, submission)
 
     # prefill is still 'special' even though it uses variables, as we specifically
     # set the `defaultValue` key to the resulting variable.
