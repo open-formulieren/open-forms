@@ -82,3 +82,9 @@ class UploadFileType(DjangoChoices):
     zip = ChoiceItem("application/zip", label=_(".zip"))
     rar = ChoiceItem("application/vnd.rar", label=_(".rar"))
     tar = ChoiceItem("application/x-tar", label=_(".tar"))
+    msg = ChoiceItem("application/vnd.ms-outlook", label=_(".msg"))
+    dwg = ChoiceItem(
+        "application/acad.dwg,application/autocad_dwg.dwg,application/dwg.dwg,application/x-acad.dwg,"
+        "application/x-autocad.dwg,application/x-dwg.dwg,drawing/dwg.dwg,image/vnd.dwg,image/x-dwg.dwg",
+        label=_(".dwg"),
+    )

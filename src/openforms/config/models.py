@@ -193,7 +193,7 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
     form_upload_default_file_types = ArrayField(
-        models.CharField(max_length=128, choices=UploadFileType.choices),
+        models.CharField(max_length=256, choices=UploadFileType.choices),
         verbose_name=_("Default allowed file upload types"),
         help_text=_(
             "Provide a list of default allowed file upload types. If empty, all extensions are allowed."
