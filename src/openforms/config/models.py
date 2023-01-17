@@ -8,7 +8,6 @@ from django.core.validators import (
     RegexValidator,
 )
 from django.db import models
-from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
@@ -23,6 +22,7 @@ from tinymce.models import HTMLField
 from openforms.data_removal.constants import RemovalMethods
 from openforms.emails.validators import URLSanitationValidator
 from openforms.payments.validators import validate_payment_order_id_prefix
+from openforms.template import openforms_backend, render_from_string
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import ensure_default_language, runtime_gettext
@@ -483,11 +483,12 @@ class GlobalConfiguration(SingletonModel):
     def __str__(self):
         return force_str(self._meta.verbose_name)
 
-    def render_privacy_policy_label(self):
-        template = self.privacy_policy_label
-        rendered_content = Template(template).render(Context({}))
-
-        return rendered_content
+    def render_privacy_policy_label(self) -> str:
+        return render_from_string(
+            self.privacy_policy_label,
+            context={"global_configuration": self},
+            backend=openforms_backend,
+        )
 
     def plugin_enabled(self, module: str, plugin_identifier: str):
         enabled = glom(

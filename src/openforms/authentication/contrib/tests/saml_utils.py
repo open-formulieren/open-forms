@@ -1,11 +1,12 @@
 from base64 import b64encode
 from hashlib import sha1
+from pathlib import Path
 from typing import Optional
-
-from django.template import Context, Template
 
 from digid_eherkenning.models import EherkenningConfiguration
 from onelogin.saml2.utils import OneLogin_Saml2_Utils
+
+from openforms.template import render_from_string
 
 
 def create_test_artifact(service_entity_id: str = "") -> str:
@@ -18,11 +19,8 @@ def create_test_artifact(service_entity_id: str = "") -> str:
 
 
 def get_artifact_response(filepath: str, context: Optional[dict] = None) -> bytes:
-    with open(filepath, "r") as template_source_file:
-        template = Template(template_source_file.read())
-
-    rendered = template.render(Context(context or {}))
-    return rendered.encode("utf-8")
+    template_source = Path(filepath).read_text()
+    return render_from_string(template_source, context or {}).encode("utf-8")
 
 
 def get_encrypted_attribute(attr: str, identifier: str):

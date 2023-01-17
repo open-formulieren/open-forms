@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Union
 
 from django.conf import settings
 from django.db import models, transaction
-from django.template import Context, Template
 from django.utils.translation import get_language, gettext_lazy as _
 
 import elasticapm
@@ -17,6 +16,7 @@ from openforms.config.models import GlobalConfiguration
 from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
+from openforms.template import openforms_backend, render_from_string
 from openforms.typing import JSONObject
 from openforms.utils.validators import AllowedRedirectValidator, SerializerValidator
 
@@ -455,9 +455,7 @@ class Submission(models.Model):
             "public_reference": self.public_registration_reference,
             **self.data,
         }
-
-        rendered_content = Template(template).render(Context(context_data))
-        return rendered_content
+        return render_from_string(template, context_data, backend=openforms_backend)
 
     def render_summary_page(self) -> List[JSONObject]:
         """Use the renderer logic to decide what to display in the summary page.

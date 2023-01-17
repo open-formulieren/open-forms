@@ -1,4 +1,7 @@
+from typing import cast
+
 from django.template.backends.django import DjangoTemplates
+from django.utils.functional import SimpleLazyObject
 
 
 class SandboxedDjangoTemplates(DjangoTemplates):
@@ -46,4 +49,28 @@ class SandboxedDjangoTemplates(DjangoTemplates):
 backend = SandboxedDjangoTemplates({})
 """
 An instance of the 'sandboxed' Django templates backend.
+"""
+
+
+def get_openforms_backend():
+    return SandboxedDjangoTemplates(
+        {
+            "OPTIONS": {
+                "builtins": [
+                    "openforms.emails.templatetags.appointments",
+                    "openforms.emails.templatetags.form_summary",
+                    "openforms.emails.templatetags.payment",
+                    "openforms.emails.templatetags.products",
+                    "openforms.config.templatetags.privacy_policy",
+                ],
+            }
+        }
+    )
+
+
+openforms_backend = cast(
+    SandboxedDjangoTemplates, SimpleLazyObject(get_openforms_backend)
+)
+"""
+Sandbox instance supporting custom tags for form designers.
 """

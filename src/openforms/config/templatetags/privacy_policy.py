@@ -7,9 +7,9 @@ from ..models import GlobalConfiguration
 register = template.Library()
 
 
-@register.simple_tag()
-def privacy_policy():
-    conf = GlobalConfiguration.get_solo()
+@register.simple_tag(takes_context=True)
+def privacy_policy(context):
+    conf = context.get("global_configuration") or GlobalConfiguration.get_solo()
     if conf.privacy_policy_url:
         template_string = (
             """<a href="{}" target="_blank" rel="noreferrer noopener">{}</a>"""
