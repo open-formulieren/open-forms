@@ -142,13 +142,18 @@ const Rule = ({
   }
 
   const onDescriptionGenerated = generatedDescription => {
-    const newDescription = intl.formatMessage(
+    let newDescription = intl.formatMessage(
       {
         description: 'Logic expression generated description',
         defaultMessage: 'When {desc}',
       },
       {desc: generatedDescription}
     );
+
+    // backend allows 100 chars max
+    if (newDescription.length >= 100) {
+      newDescription = `${newDescription.substring(0, 99)}…`;
+    }
     onChange({target: {name: 'description', value: newDescription}});
   };
 
