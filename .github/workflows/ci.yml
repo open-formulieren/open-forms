@@ -73,6 +73,10 @@ jobs:
           cache: 'pip'
           cache-dependency-path: 'requirements/*.txt'
 
+      - run: |
+          pip --version
+          pip cache list
+
       - uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
@@ -89,6 +93,10 @@ jobs:
           pip install -r requirements/ci.txt \
             --use-pep517 \
             --use-feature=no-binary-enable-wheel-cache
+
+      - run: |
+          pip --version
+          pip cache list
 
       - name: Build frontend
         run: |
