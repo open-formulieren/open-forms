@@ -76,9 +76,9 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
 
         # Check that the first operator includes a 'var'
         first_operand = tree.arguments[0]
-        is_date_operand = self._is_date_operand(first_operand)
+        is_date_or_datetime_operand = self._is_date_or_datetime_operand(first_operand)
         if not isinstance(first_operand, Operation) or (
-            first_operand.operator != "var" and not is_date_operand
+            first_operand.operator != "var" and not is_date_or_datetime_operand
         ):
             raise serializers.ValidationError(
                 {
@@ -100,10 +100,10 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
                 return True
         return False
 
-    def _is_date_operand(self, operand: Any) -> bool:
+    def _is_date_or_datetime_operand(self, operand: Any) -> bool:
         return (
             isinstance(operand, Operation)
-            and operand.operator == "date"
+            and (operand.operator == "date" or operand.operator == "datetime")
             and isinstance(operand.arguments[0], Operation)
             and operand.arguments[0].operator == "var"
         )
@@ -124,7 +124,7 @@ class JsonLogicTriggerValidator(JsonLogicValidator):
 
             if operand.operator == "var":
                 needle = operand.arguments[0]
-            elif self._is_date_operand(operand):
+            elif self._is_date_or_datetime_operand(operand):
                 needle = cast(Operation, operand.arguments[0]).arguments[0]
             else:
                 continue
