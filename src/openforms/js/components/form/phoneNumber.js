@@ -1,14 +1,8 @@
 import {Formio} from 'formiojs';
 
 import {REGEX_VALIDATION} from './edit/options';
-import {
-  ADVANCED,
-  DEFAULT_SENSITIVE_TABS,
-  REGISTRATION,
-  SENSITIVE_BASIC,
-  TRANSLATIONS,
-  VALIDATION,
-} from './edit/tabs';
+import {ADVANCED, REGISTRATION, SENSITIVE_BASIC, TRANSLATIONS, VALIDATION} from './edit/tabs';
+import {getValidationEditForm} from './edit/validationEditFormUtils';
 
 const PhoneNumber = Formio.Components.components.phoneNumber;
 
@@ -33,10 +27,10 @@ class PhoneNumberField extends PhoneNumber {
   }
 
   static editForm() {
-    const validationTab = {
+    const validationTab = getValidationEditForm({
       ...VALIDATION,
       components: [...VALIDATION.components, REGEX_VALIDATION],
-    };
+    });
 
     const extendedDefaults = {
       type: 'tabs',

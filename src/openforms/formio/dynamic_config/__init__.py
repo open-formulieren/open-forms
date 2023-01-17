@@ -46,3 +46,19 @@ def rewrite_formio_components_for_request(
     for component in configuration_wrapper:
         register.update_config_for_request(component, request=request)
     return configuration_wrapper
+
+
+def get_translated_custom_error_messages(
+    config_wrapper: FormioConfigurationWrapper, submission: Submission
+) -> FormioConfigurationWrapper:
+    for component in config_wrapper:
+        if (
+            not (custom_error_messages := component.get("translatedErrors"))
+            or "errors" in component
+        ):
+            continue
+
+        language = submission.language_code
+        component["errors"] = custom_error_messages[language]
+
+    return config_wrapper

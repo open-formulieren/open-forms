@@ -1,8 +1,8 @@
 import {Utils} from 'formiojs';
 
 import jsonScriptToVar from 'utils/json-script';
+import {getFullyQualifiedUrl} from 'utils/urls';
 
-import {getFullyQualifiedUrl} from '../../../utils/urls';
 import {
   CLEAR_ON_HIDE,
   DEFAULT_VALUE,
@@ -10,7 +10,6 @@ import {
   HIDDEN,
   IS_SENSITIVE_DATA,
   KEY,
-  LABEL,
   LABEL_REQUIRED,
   MULTIPLE,
   PRESENTATION,
@@ -18,6 +17,7 @@ import {
   REGEX_VALIDATION,
   REQUIRED,
 } from './options';
+import {getValidationEditForm} from './validationEditFormUtils';
 
 /**
  * Define the tabs available when editing components in the form builder.
@@ -238,13 +238,13 @@ const REGISTRATION = {
   ],
 };
 
-const VALIDATION_BASIC = {
+const VALIDATION_BASIC = getValidationEditForm({
   key: 'validation',
   label: 'Validation',
   components: [REQUIRED],
-};
+});
 
-const VALIDATION = {
+const VALIDATION = getValidationEditForm({
   key: 'validation',
   label: 'Validation',
   components: [
@@ -266,9 +266,9 @@ const VALIDATION = {
       template: '<span>{{ item.label }}</span>',
     },
   ],
-};
+});
 
-const TEXT_VALIDATION = {
+const TEXT_VALIDATION = getValidationEditForm({
   key: 'validation',
   label: 'Validation',
   components: [
@@ -285,7 +285,7 @@ const TEXT_VALIDATION = {
     },
     REGEX_VALIDATION,
   ],
-};
+});
 
 const PREFILL = {
   key: 'prefill',
