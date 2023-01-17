@@ -62,6 +62,7 @@ const LogicDescriptionInput = ({
       onFocus={() => setHasFocus(true)}
       onBlur={() => setHasFocus(false)}
       {...textInputProps}
+      maxLength="100"
     />
   );
 };
