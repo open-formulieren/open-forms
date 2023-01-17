@@ -40,7 +40,6 @@ RUN mkdir /app/src
 # Ensure we use the latest version of pip
 RUN pip install pip -U
 COPY ./requirements /app/requirements
-RUN pip install -r requirements/setuptools.txt
 
 ARG TARGET_ENVIRONMENT=production
 RUN pip install -r requirements/${TARGET_ENVIRONMENT}.txt
