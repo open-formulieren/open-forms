@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase, override_settings
 
@@ -7,6 +9,8 @@ from ..api import validators
 
 PIXEL_GIF = b"GIF89a\x01\x00\x01\x00\x81\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00!\xf9\x04\x01\x00\x00\x00\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x08\x04\x00\x01\x04\x04\x00;"
 PIXEL_PNG = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc```\x00\x00\x00\x04\x00\x01\xf6\x178U\x00\x00\x00\x00IEND\xaeB`\x82"
+
+TEST_FILES = Path(__file__).parent.resolve() / "files"
 
 
 @override_settings(LANGUAGE_CODE="en")
@@ -103,3 +107,28 @@ class MimeTypeValidatorTests(SimpleTestCase):
             ValidationError, "The file 'pixel.gif' is not a valid file type."
         ):
             validator(self.CORRECT_GIF)
+
+    def test_validate_files_multiple_mime_types(self):
+        """Assert that validation of files associated with multiple mime types works
+
+        A refactoring of `MimeTypeValidator` broke validation for files where the
+        admissible types are specified in the form 'mime1,mime2,mime3'.
+
+        GH #2577"""
+
+        with open(Path(TEST_FILES, "test.odt"), "rb") as f:
+            file = SimpleUploadedFile(
+                "test.odt",
+                f.read(),
+                content_type="application/vnd.oasis.opendocument.text",
+            )
+
+        validator = validators.MimeTypeValidator(
+            [
+                "application/vnd.oasis.opendocument.*,"
+                "application/vnd.oasis.opendocument.text-template,",
+                "application/pdf",
+            ]
+        )
+
+        validator(file)
