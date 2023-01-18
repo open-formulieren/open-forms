@@ -6561,7 +6561,7 @@ components:
           type: string
           description: Which attribute from the prefill response should be used to
             fill this variable
-          maxLength: 50
+          maxLength: 200
         dataType:
           allOf:
           - $ref: '#/components/schemas/DataTypeEnum'
