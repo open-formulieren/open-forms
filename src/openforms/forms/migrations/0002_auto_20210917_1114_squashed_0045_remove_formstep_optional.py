@@ -1089,6 +1089,18 @@ class Migration(migrations.Migration):
                 ("objects", openforms.forms.models.form_variable.FormVariableManager()),
             ],
         ),
+        # this operation is taken from forms.0053_alter_formvariable_prefill_attribute as
+        # it is required for the data migration to succeed
+        migrations.SeparateDatabaseAndState(
+            state_operations=[],
+            database_operations=[
+                migrations.AlterField(
+                    model_name="formvariable",
+                    name="prefill_attribute",
+                    field=models.CharField(blank=True, max_length=200),
+                ),
+            ],
+        ),
         migrations.RunPython(
             code=create_form_variables_for_form,
             reverse_code=migrations.RunPython.noop,
