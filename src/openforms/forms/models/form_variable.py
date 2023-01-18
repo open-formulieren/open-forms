@@ -181,7 +181,7 @@ class FormVariable(models.Model):
             "Which attribute from the prefill response should be used to fill this variable"
         ),
         blank=True,
-        max_length=50,
+        max_length=200,
     )
     data_type = models.CharField(
         verbose_name=_("data type"),

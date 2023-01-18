@@ -580,3 +580,37 @@ class FormVariableMigrationTests(TestCase):
             with self.subTest(form_variable):
                 self.assertEqual(form_variable.prefill_plugin, "")
                 self.assertEqual(form_variable.prefill_attribute, "")
+
+    def test_migrate_with_very_long_prefill_attribute(self):
+        form_definition = FormDefinition.objects.create(
+            name="FormDefinition1",
+            configuration={
+                "components": [
+                    {
+                        "key": "tooLongPrefillAttribute",
+                        "type": "textfield",
+                        "prefill": {
+                            "plugin": "demo",
+                            "attribute": "NaN" * 30 + " Batman",
+                        },
+                    }
+                ]
+            },
+        )
+        form = Form.objects.create(name="Form1")
+        FormStep.objects.create(form=form, form_definition=form_definition)
+        test_func = import_string(
+            "openforms.forms.migrations."
+            "0033_formvariable_datamigration.create_form_variables_for_form"
+        )
+
+        test_func(apps, schema_editor=None)
+
+        form_variable = FormVariable.objects.get()
+
+        self.assertEqual(form_variable.prefill_plugin, "demo")
+        self.assertEqual(
+            form_variable.prefill_attribute,
+            "NaNNaNNaNNaNNaNNaNNaNNaNNaNNaNNaNNaNNaNNaNNaNNaNNaNNaNNaNNaNNaNNaNNaNNa"
+            "NNaNNaNNaNNaNNaNNaN Batman",
+        )
