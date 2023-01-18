@@ -52,7 +52,7 @@ def mutate(component: FormioDateComponent, data: DataMapping) -> None:
         if config is None:
             continue
 
-        if (mode := config.get("mode")) is None:
+        if (mode := config.get("mode")) in [None, ""]:
             continue
 
         # formio has set the datePicker.{key} value
