@@ -10,7 +10,31 @@ import {
   VALIDATION,
 } from './edit/tabs';
 
-class RadioField extends Formio.Components.components.radio {
+const RadioFormio = Formio.Components.components.radio;
+
+class RadioField extends RadioFormio {
+  static schema(...extend) {
+    return RadioFormio.schema(
+      {
+        // Issue #2538 - If the dataType is not specified, Formio will try to parse the values. This means that if the
+        // keys of the values are 1, true they will be added to the submission data as float/bool instead of string.
+        dataType: 'string',
+      },
+      ...extend
+    );
+  }
+
+  static get builderInfo() {
+    return {
+      title: 'Radio',
+      group: 'basic',
+      icon: 'dot-circle-o',
+      weight: 80,
+      documentation: '/userguide/forms/form-components#radio',
+      schema: RadioField.schema(),
+    };
+  }
+
   static editForm() {
     return {
       components: [
