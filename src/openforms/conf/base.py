@@ -269,19 +269,13 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "openforms.urls"
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    "django.template.loaders.filesystem.Loader",
-    "django.template.loaders.app_directories.Loader",
-)
-
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
             os.path.join(DJANGO_PROJECT_DIR, "templates"),
         ],
-        "APP_DIRS": False,  # conflicts with explicity specifying the loaders
+        "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -290,14 +284,6 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "openforms.forms.context_processors.sdk_urls",
                 "openforms.utils.context_processors.settings",
-            ],
-            "loaders": TEMPLATE_LOADERS,
-            "builtins": [
-                # TODO: these can be deleted once the validator is done via backend.
-                "openforms.emails.templatetags.appointments",
-                "openforms.emails.templatetags.form_summary",
-                "openforms.emails.templatetags.payment",
-                "openforms.emails.templatetags.products",
             ],
         },
     },

@@ -1,13 +1,25 @@
 from django.core.exceptions import ValidationError
+from django.template import engines
 from django.test import SimpleTestCase, override_settings
 from django.utils.translation import gettext as _
 
 from ..validators import DjangoTemplateValidator
 
+# Grab the first template backend from settings.TEMPLATES, which at the time of writing
+# is/should be the regular vanilla Django templates backend.
+#
+# If this assertion fails, it'll most likely be because of changing the template engine
+# to Jinja2 or something else - check your TEMPLATES setting and adapt the index below
+# as needed.
+django_backend = engines.all()[0]
+assert (
+    type(django_backend).__name__ == "DjangoTemplates"
+), "Expected the backend to be a plain (non-sandboxed) Django templates backend."
+
 
 class DjangoTemplateValidatorTest(SimpleTestCase):
     def test_template_syntax(self):
-        validator = DjangoTemplateValidator()
+        validator = DjangoTemplateValidator(backend=f"{__name__}.django_backend")
 
         valid = [
             "",
@@ -35,7 +47,10 @@ class DjangoTemplateValidatorTest(SimpleTestCase):
                     validator(text)
 
     def test_required_tags(self):
-        validator = DjangoTemplateValidator(required_template_tags=["csrf_token"])
+        validator = DjangoTemplateValidator(
+            required_template_tags=["csrf_token"],
+            backend=f"{__name__}.django_backend",
+        )
 
         valid = [
             "{% csrf_token %}",
@@ -78,7 +93,7 @@ class DjangoTemplateValidatorTest(SimpleTestCase):
         Additionally, it's hard to selectively allow HTML in the frontend code without
         increasing XSS risks.
         """
-        validator = DjangoTemplateValidator()
+        validator = DjangoTemplateValidator(backend=f"{__name__}.django_backend")
 
         with self.assertRaisesMessage(
             ValidationError,

@@ -82,7 +82,8 @@ class GlobalConfiguration(SingletonModel):
                 required_template_tags=[
                     "appointment_information",
                     "payment_information",
-                ]
+                ],
+                backend="openforms.template.openforms_backend",
             ),
             URLSanitationValidator(),
         ],
@@ -100,7 +101,7 @@ class GlobalConfiguration(SingletonModel):
         help_text=_("Content of the save form email message."),
         default=partial(_render, "emails/save_form/content.html"),
         validators=[
-            DjangoTemplateValidator(),
+            DjangoTemplateValidator(backend="openforms.template.openforms_backend"),
             URLSanitationValidator(),
         ],
     )
