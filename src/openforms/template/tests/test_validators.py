@@ -1,13 +1,20 @@
 from django.core.exceptions import ValidationError
 from django.template import engines
-from django.template.backends.django import DjangoTemplates
 from django.test import SimpleTestCase, override_settings
 from django.utils.translation import gettext as _
 
 from ..validators import DjangoTemplateValidator
 
+# Grab the first template backend from settings.TEMPLATES, which at the time of writing
+# is/should be the regular vanilla Django templates backend.
+#
+# If this assertion fails, it'll most likely be because of changing the template engine
+# to Jinja2 or something else - check your TEMPLATES setting and adapt the index below
+# as needed.
 django_backend = engines.all()[0]
-assert isinstance(django_backend, DjangoTemplates)
+assert (
+    type(django_backend).__name__ == "DjangoTemplates"
+), "Expected the backend to be a plain (non-sandboxed) Django templates backend."
 
 
 class DjangoTemplateValidatorTest(SimpleTestCase):
