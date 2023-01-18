@@ -37,7 +37,7 @@ const getMinMaxValidationEditForm = fieldName => {
         type: 'select',
         key: `openForms.${fieldName}.mode`,
         label: 'Mode preset',
-        defaultValue: 'fixedValue',
+        defaultValue: '',
         data: {
           values: [
             {
@@ -218,7 +218,7 @@ class DateField extends DateTimeField {
         // actual, calculated `minDate`/`maxDate` value dynamically.
         openForms: {
           minDate: {
-            mode: 'fixedValue',
+            mode: '',
             // options for future/past mode
             includeToday: null,
             // options for relativeToVariable mode
@@ -231,7 +231,7 @@ class DateField extends DateTimeField {
             },
           },
           maxDate: {
-            mode: 'fixedValue',
+            mode: '',
             // options for future/past mode
             includeToday: null,
             // options for relativeToVariable mode
