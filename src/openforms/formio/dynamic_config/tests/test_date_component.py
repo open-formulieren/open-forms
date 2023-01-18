@@ -2,7 +2,7 @@ from copy import deepcopy
 from datetime import datetime
 from typing import Any, Dict
 
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, tag
 from django.utils import timezone
 
 from freezegun import freeze_time
@@ -264,3 +264,17 @@ class DynamicDateConfigurationTests(SimpleTestCase):
         new_component = self._get_dynamic_config(component, {})
 
         self.assertEqual(new_component["datePicker"]["maxDate"], "2022-09-12T14:08:00Z")
+
+    @tag("gh-2525")
+    def test_configuration_after_delete_validation(self):
+        component = {
+            "type": "date",
+            "key": "aDate",
+            # This is the configuration that gets saved if the maxDate validation is removed in the editForm
+            "openForms": {"maxDate": {"mode": ""}},
+            "datePicker": {"maxDate": None},
+        }
+
+        new_component = self._get_dynamic_config(component, {})
+
+        self.assertIsNone(new_component["datePicker"]["maxDate"])
