@@ -520,7 +520,7 @@ lxml==4.9.1
     #   pyquery
     #   xmlsec
     #   zeep
-mail-cleaner==1.0.0
+mail-cleaner==1.1.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
