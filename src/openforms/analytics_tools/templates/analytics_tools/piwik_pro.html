@@ -7,7 +7,7 @@
   _paq.push(["trackPageView"]);
   _paq.push(["enableLinkTracking"]);
   (function() {
-    var u="{{ analytics_tools_config.piwik_pro_url|escapejs }}";
+    var u="{{ analytics_tools_config.piwik_pro_url|escapejs }}/";
     _paq.push(["setTrackerUrl", u+"ppms.php"]);
     _paq.push(["setSiteId", "{{ analytics_tools_config.piwik_pro_id|escapejs }}"]);
     var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0];

@@ -15,6 +15,7 @@ from .utils import (
     update_analytical_cookies,
     update_csp,
 )
+from .validators import validate_no_trailing_slash
 
 
 class AnalyticsToolsConfiguration(SingletonModel):
@@ -40,11 +41,14 @@ class AnalyticsToolsConfiguration(SingletonModel):
         default=False,
         help_text=_("Enabling this installs Google Analytics"),
     )
-    matomo_url = models.CharField(
+    matomo_url = models.URLField(
         _("Matomo server URL"),
         max_length=255,
         blank=True,
-        help_text=_("The base URL of your Matomo server, e.g. 'matomo.example.com'."),
+        validators=[validate_no_trailing_slash],
+        help_text=_(
+            "The base URL of your Matomo server, e.g. 'https://matomo.example.com'."
+        ),
     )
     matomo_site_id = models.PositiveIntegerField(
         _("Matomo site ID"),
@@ -57,11 +61,14 @@ class AnalyticsToolsConfiguration(SingletonModel):
         default=False,
         help_text=_("Enabling this installs Matomo"),
     )
-    piwik_url = models.CharField(
+    piwik_url = models.URLField(
         _("Piwik server URL"),
         max_length=255,
         blank=True,
-        help_text=_("The base URL of your Piwik server, e.g. 'piwik.example.com'."),
+        validators=[validate_no_trailing_slash],
+        help_text=_(
+            "The base URL of your Piwik server, e.g. 'https://piwik.example.com'."
+        ),
     )
     piwik_site_id = models.PositiveIntegerField(
         _("Piwik site ID"),
@@ -74,12 +81,13 @@ class AnalyticsToolsConfiguration(SingletonModel):
         default=False,
         help_text=_("Enabling this installs Piwik"),
     )
-    piwik_pro_url = models.CharField(
+    piwik_pro_url = models.URLField(
         _("Piwik PRO server URL"),
         max_length=255,
         blank=True,
+        validators=[validate_no_trailing_slash],
         help_text=_(
-            "The base URL of your Piwik PRO server, e.g. 'https://your-instance-name.piwik.pro/'."
+            "The base URL of your Piwik PRO server, e.g. 'https://your-instance-name.piwik.pro'."
         ),
     )
     piwik_pro_site_id = models.UUIDField(
