@@ -23,6 +23,7 @@ from openforms.submissions.tests.factories import (
     SubmissionReportFactory,
     SubmissionStepFactory,
 )
+from openforms.utils.tests.cache import clear_caches
 
 
 class MockFolder:
@@ -43,6 +44,11 @@ class MSGraphRegistrationBackendTests(TestCase):
         config.save()
 
         cls.options = dict(folder_path="/open-forms/")
+
+    @classmethod
+    def addClassCleanup(cls):
+        # clear the config from cache
+        clear_caches()
 
     @patch.object(MockFolder, "upload_file", return_value=None)
     def test_submission(self, upload_mock):
@@ -177,6 +183,11 @@ class MSGraphRegistrationOptionsTests(TestCase):
         config = MSGraphRegistrationConfig.get_solo()
         config.service = MSGraphServiceFactory.create()
         config.save()
+
+    @classmethod
+    def addClassCleanup(cls):
+        # clear the config from cache
+        clear_caches()
 
     def test_folder_path(self, upload_mock):
         submission = SubmissionFactory.from_components(
