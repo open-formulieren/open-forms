@@ -7,15 +7,18 @@
 
 {% if analytics_tools_config.piwik_enabled %}
 <!-- Piwik -->
-<script type="text/javascript" nonce="{{ request.csp_nonce }}">
-var pkBaseURL = "//{{ analytics_tools_config.piwik_url|escapejs }}";
-document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+<script id="piwik-analytics" type="text/javascript" nonce="{{ request.csp_nonce }}">
+var pkBaseURL = "{{ analytics_tools_config.piwik_url|escapejs }}";
+document.write(unescape("%3Cscript src='" + pkBaseURL + "/piwik.js' type='text/javascript'%3E%3C/script%3E"));
 </script><script type="text/javascript" nonce="{{ request.csp_nonce }}">
 try {
-var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", {{ analytics_tools_config.piwik_site_id|escapejs }});
+var piwikTracker = Piwik.getTracker(pkBaseURL + "/piwik.php", {{ analytics_tools_config.piwik_site_id|escapejs }});
 piwikTracker.trackPageView();
 piwikTracker.enableLinkTracking();
 } catch( err ) {}
-</script><noscript><p><img src="http://{{ analytics_url }}/piwik.php?idsite={{ analytics_tools_config.piwik_site_id }}" style="border:0" alt="" /></p></noscript>
+</script>
+<noscript><p>
+<img src="{{ analytics_tools_config.piwik_url|escapejs }}/piwik.php?idsite={{ analytics_tools_config.piwik_site_id|escapejs }}" style="border:0" alt="" />
+</p></noscript>
 <!-- End Piwik Tracking Code -->
 {% endif %}
