@@ -120,7 +120,7 @@ def send_confirmation_email(submission: Submission):
     # render the templates with the submission context
     with translation.override(submission.language_code):
         subject = render_email_template(
-            subject_template, context, rendering_text=True
+            subject_template, context, rendering_text=True, disable_autoescape=True
         ).strip()
 
         if subject_suffix := get_confirmation_mail_suffix(submission):

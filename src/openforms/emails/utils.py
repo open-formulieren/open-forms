@@ -87,6 +87,13 @@ def send_mail_html(
     )
 
 
-def render_email_template(template: str, context: dict, **extra_context: Any) -> str:
+def render_email_template(
+    template: str, context: dict, disable_autoescape: bool = False, **extra_context: Any
+) -> str:
     render_context = {**context, **extra_context}
-    return render_from_string(template, render_context, backend=openforms_backend)
+    return render_from_string(
+        template,
+        render_context,
+        backend=openforms_backend,
+        disable_autoescape=disable_autoescape,
+    )
