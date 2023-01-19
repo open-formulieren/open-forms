@@ -1,4 +1,4 @@
-from typing import Container, Optional
+from typing import Iterable, Optional
 
 from django.core.files.uploadedfile import UploadedFile
 from django.utils.translation import gettext_lazy as _
@@ -7,24 +7,46 @@ import magic
 from rest_framework import serializers
 
 
-def mimetype_allowed(mime_type: str, allowed_mime_types: Container[str]) -> bool:
+def mimetype_allowed(
+    mime_type: str,
+    allowed_regular_mime_types: Iterable[str],
+    allowed_wildcard_mime_types: Iterable[str],
+) -> bool:
     """
     Test if the file mime type passes the allowed_mime_types Formio configuration.
+
+    The test for `allowed_regular_mime_types` is list inclusion. The test for
+    `allowed_wildcard_mime_types` is string inclusion (is my string in
+    `allowed_regular_mime_types` a substring of `mime_type`?).
     """
     #  no allowlist specified -> everything is allowed
-    if not allowed_mime_types:
+    if not (allowed_regular_mime_types or allowed_wildcard_mime_types):
         return True
 
     # wildcard specified -> everything is allowed
-    if "*" in allowed_mime_types:
+    if "*" in allowed_wildcard_mime_types:
         return True
 
-    return mime_type in allowed_mime_types
+    # check1: is mimetype included in regular types?
+    if mime_type in allowed_regular_mime_types:
+        return True
+
+    # check2: is the string mimetype a substring of any string in wildcard_mime_types?
+    return any(
+        mime_type.startswith(pattern[:-1]) for pattern in allowed_wildcard_mime_types
+    )
 
 
 class MimeTypeValidator:
-    def __init__(self, allowed_mime_types: Optional[Container[str]] = None):
-        self._allowed = allowed_mime_types
+    def __init__(self, allowed_mime_types: Optional[Iterable[str]] = None):
+        self.any_allowed = allowed_mime_types is None
+
+        allowed_mime_types = allowed_mime_types or []
+        normalized = [
+            item for string in allowed_mime_types for item in string.split(",")
+        ]
+        self._regular_mimes = [item for item in normalized if not item.endswith("*")]
+        self._wildcard_mimes = [item for item in normalized if item.endswith("*")]
 
     def __call__(self, value: UploadedFile) -> None:
         head = value.read(2048)
@@ -37,7 +59,10 @@ class MimeTypeValidator:
             whole_file = head + value.read()
             mime_type = magic.from_buffer(whole_file, mime=True)
 
-        if not (self._allowed is None or mimetype_allowed(mime_type, self._allowed)):
+        if not (
+            self.any_allowed
+            or mimetype_allowed(mime_type, self._regular_mimes, self._wildcard_mimes)
+        ):
             raise serializers.ValidationError(
                 _("The file '{filename}' is not a valid file type.").format(
                     filename=value.name
