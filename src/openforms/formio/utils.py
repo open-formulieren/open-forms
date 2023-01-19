@@ -163,7 +163,18 @@ def mimetype_allowed(mime_type: str, allowed_mime_types: List[str]) -> bool:
     if "*" in allowed_mime_types:
         return True
 
-    return mime_type in allowed_mime_types
+    # Distinguish between regular and wildcard types and check accordingly
+    allowed = [item for string in allowed_mime_types for item in string.split(",")]
+    allowed_regular_mime_types = [item for item in allowed if not item.endswith("*")]
+    allowed_wildcard_mime_types = [item for item in allowed if item.endswith("*")]
+
+    if mime_type in allowed_regular_mime_types:
+        return True
+
+    # check if we match the pattern up until the wildcard char
+    return any(
+        mime_type.startswith(pattern[:-1]) for pattern in allowed_wildcard_mime_types
+    )
 
 
 # See https://help.form.io/userguide/forms/form-components#input-mask for the
