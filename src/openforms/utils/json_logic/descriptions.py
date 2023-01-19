@@ -323,21 +323,45 @@ op_datetime = FunctionLike(_("datetime({args})"))
 
 @add_boilerplate()
 def op_rdelta(*args) -> str:
-    descriptions = [
-        {"text": "{years} year(s)", "placeholder": "years"},
-        {"text": "{months} month(s)", "placeholder": "months"},
-        {"text": "{days} day(s)", "placeholder": "days"},
-        {"text": "{hours} hour(s)", "placeholder": "hours"},
-        {"text": "{minutes} minute(s)", "placeholder": "minutes"},
-        {"text": "{seconds} second(s)", "placeholder": "seconds"},
-    ]
-
-    text_description_bits = []
-    for index, arg in enumerate(args):
-        text_description_bits.append(
-            gettext(descriptions[index]["text"]).format(
-                **{descriptions[index]["placeholder"]: arg}
+    match len(args):
+        case [1]:
+            return gettext("{years} year(s)").format(years=args[0])
+        case [2]:
+            return gettext("{years} year(s), {months} month(s)").format(
+                years=args[0],
+                months=args[1],
             )
-        )
-
-    return ", ".join(text_description_bits)
+        case [3]:
+            return gettext("{years} year(s), {months} month(s), {days} day(s)").format(
+                years=args[0],
+                months=args[1],
+                days=args[2],
+            )
+        case [4]:
+            return gettext("{years}y, {months}m, {days}d, {hours}h").format(
+                years=args[0],
+                months=args[1],
+                days=args[2],
+                hours=args[3],
+            )
+        case [5]:
+            return gettext(
+                "{years}y, {months}m, {days}d, {hours}h, {minutes}min"
+            ).format(
+                years=args[0],
+                months=args[1],
+                days=args[2],
+                hours=args[3],
+                minutes=args[4],
+            )
+        case [6]:
+            return gettext(
+                "{years}y, {months}m, {days}d, {hours}h, {minutes}min, {seconds}s"
+            ).format(
+                years=args[0],
+                months=args[1],
+                days=args[2],
+                hours=args[3],
+                minutes=args[4],
+                seconds=args[5],
+            )
