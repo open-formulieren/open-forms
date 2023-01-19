@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import Any, List, Optional, Sequence, Tuple
+from typing import Any, Sequence
 from urllib.parse import urlsplit
 
 from django.conf import settings
@@ -22,7 +22,7 @@ MESSAGE_SIZE_LIMIT = 2 * 1024 * 1024
 RE_NON_WHITESPACE = re.compile(r"\S")
 
 
-def get_system_netloc_allowlist():
+def get_system_netloc_allowlist() -> list[str]:
     return [
         # add the BASE_URL to allow o.a. payments and appointments to link back
         urlsplit(settings.BASE_URL).netloc,
@@ -44,17 +44,18 @@ def sanitize_content(content: str) -> str:
     return _sanitize_content(content, allowlist)
 
 
-AttachmentsType = Optional[Sequence[Tuple[str, str, Any]]]
+AttachmentsType = Sequence[tuple[str, str, Any]] | None
 
 
 def send_mail_html(
     subject: str,
     html_body: str,
     from_email: str,
-    recipient_list: List[str],
+    recipient_list: list[str],
     attachment_tuples: AttachmentsType = None,
     fail_silently: bool = False,
-    text_message: Optional[str] = None,
+    text_message: str | None = None,
+    extra_headers: dict[str, str] | None = None,
 ) -> None:
     """
     Send outoing email with HTML content, wrapped in our scaffolding.
@@ -82,6 +83,7 @@ def send_mail_html(
         html_message=html_message,
         fail_silently=fail_silently,
         attachments=attachment_tuples,
+        headers=extra_headers,
     )
 
 

@@ -773,3 +773,19 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
 
         self.assertIn("User defined var 1: test1", message_text)
         self.assertIn("User defined var 2: test2", message_text)
+
+    def test_mime_body_parts_have_content_langauge(self):
+        submission = SubmissionFactory.create(
+            language_code="en",
+            completed=True,
+            form__generate_minimal_setup=True,
+            form__registration_backend="email",
+        )
+
+        email_submission = EmailRegistration("email")
+        email_submission.register_submission(
+            submission, {"to_emails": ["foo@example.com"]}
+        )
+
+        message = mail.outbox[0]
+        self.assertEqual(message.extra_headers["Content-Language"], "en")

@@ -1,6 +1,6 @@
 import html
 from mimetypes import types_map
-from typing import List, NoReturn, Optional, Tuple, TypedDict
+from typing import Any, List, NoReturn, Optional, Tuple, TypedDict
 
 from django.conf import settings
 from django.template.loader import get_template
@@ -110,12 +110,12 @@ class EmailRegistration(BasePlugin):
 
     def send_registration_email(
         self,
-        recipients,
-        subject,
+        recipients: list[str],
+        subject: str,
         submission: Submission,
         options: EmailOptions,
-        extra_context=None,
-    ):
+        extra_context: dict[str, Any] | None = None,
+    ) -> None:
         html_content, text_content = self.render_registration_email(
             submission, extra_context=extra_context
         )
@@ -159,7 +159,6 @@ class EmailRegistration(BasePlugin):
                     mime_type,
                 )
                 attachments.append(attachment)
-
         send_mail_html(
             subject,
             html_content,
@@ -168,6 +167,7 @@ class EmailRegistration(BasePlugin):
             fail_silently=False,
             attachment_tuples=attachments,
             text_message=text_content,
+            extra_headers={"Content-Language": submission.language_code},
         )
 
     def get_reference_from_result(self, result: None) -> NoReturn:
