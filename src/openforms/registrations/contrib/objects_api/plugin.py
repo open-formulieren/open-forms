@@ -15,6 +15,7 @@ from openforms.formio.rendering.structured import render_json
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
+from openforms.translations.utils import to_iso639_2b
 
 from ...base import BasePlugin
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
@@ -81,6 +82,8 @@ class ObjectsAPIRegistration(BasePlugin):
             get_drc=get_drc,
         )
 
+        language_code_2b = to_iso639_2b(submission.language_code)
+
         attachments = []
         for attachment in submission.attachments:
             attachment_options = build_options(
@@ -106,10 +109,11 @@ class ObjectsAPIRegistration(BasePlugin):
 
         objects_client = config.objects_service.build_client()
 
-        object_data = {
+        record_data = {
             "data": render_json(submission),
             "type": options["productaanvraag_type"],
             "submission_id": str(submission.uuid),
+            "language_code": submission.language_code,
             "attachments": attachments,
             "pdf_url": document["url"],
         }
@@ -135,17 +139,18 @@ class ObjectsAPIRegistration(BasePlugin):
                 submission_csv,
                 submission_csv_options,
                 get_drc=get_drc,
+                language=language_code_2b,
             )
-            object_data["csv_url"] = submission_csv_document["url"]
+            record_data["csv_url"] = submission_csv_document["url"]
 
         if submission.is_authenticated:
-            object_data[submission.auth_info.attribute] = submission.auth_info.value
+            record_data[submission.auth_info.attribute] = submission.auth_info.value
 
         object_data = {
             "type": options["objecttype"],
             "record": {
                 "typeVersion": options["objecttype_version"],
-                "data": object_data,
+                "data": record_data,
                 "startAt": date.today().isoformat(),
             },
         }
