@@ -345,3 +345,49 @@ class GenerateLogicDescriptions(TestMigrations):
         instance = FormLogic.objects.get(pk=self.fl2_pk)
 
         self.assertNotEqual(instance.description, "")
+
+
+class TestAddRadioType(TestMigrations):
+    migrate_from = "0064_auto_20230113_1641"
+    migrate_to = "0065_set_radio_data_type"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        self.form_definition = FormDefinition.objects.create(
+            name="Definition with radio",
+            slug="definition-with-radio",
+            configuration={
+                "components": [
+                    {
+                        "key": "someRadioString",
+                        "type": "radio",
+                        "label": "Radiooo Striiing",
+                    },
+                    {
+                        "key": "someRadioInt",
+                        "type": "radio",
+                        "label": "Radiooo Iiint",
+                        "dataType": "int",
+                    },
+                    {
+                        "key": "SomeTextField",
+                        "type": "textfield",
+                        "label": "Text Field",
+                    },
+                ]
+            },
+        )
+
+    def test_radio_has_datatype(self):
+        self.form_definition.refresh_from_db()
+
+        self.assertEqual(
+            self.form_definition.configuration["components"][0]["dataType"], "string"
+        )
+        self.assertEqual(
+            self.form_definition.configuration["components"][1]["dataType"], "int"
+        )
+        self.assertNotIn(
+            "dataType", self.form_definition.configuration["components"][2]
+        )
