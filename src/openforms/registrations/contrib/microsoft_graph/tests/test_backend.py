@@ -1,3 +1,4 @@
+import json
 from decimal import Decimal
 from unittest.mock import patch
 
@@ -112,6 +113,14 @@ class MSGraphRegistrationBackendTests(TestCase):
             call = calls[1]
             path = f"{folder}/data.json"
             self.assertEqual(call.args[1], path)
+
+        with self.subTest("data contains submission language code"):
+            call = calls[1]
+            data = json.load(call[1]["stream"])
+
+            self.assertEqual(
+                data["__metadata__"]["submission_language"], submission.language_code
+            )
 
         with self.subTest("attachment 1"):
             call = calls[2]
