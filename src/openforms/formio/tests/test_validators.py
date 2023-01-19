@@ -13,6 +13,38 @@ PIXEL_PNG = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x0
 TEST_FILES = Path(__file__).parent.resolve() / "files"
 
 
+class MimeTypeAllowedTests(SimpleTestCase):
+    def test_mimetype_allowed_wildcard_patterns(self):
+        patterns = (
+            ("image/*", ("image/png", "image/jpg")),
+            (
+                "application/vnd.oasis.opendocument.*",
+                ("application/vnd.oasis.opendocument.text",),
+            ),
+            ("application/foo-*", ("application/foo-bar",)),
+            ("image*", ("image/png",)),
+        )
+
+        for pattern, mime_types in patterns:
+            for mime_type in mime_types:
+                with self.subTest(pattern=pattern, mime_type=mime_type):
+                    allowed = validators.mimetype_allowed(mime_type, [], [pattern])
+
+                    self.assertTrue(allowed)
+
+    def test_mimetype_not_allowed_wildcard_patterns(self):
+        patterns = (
+            ("sub/match*", "pubsub/matchnotitshould"),
+            ("/nonsense*", "absolute/nonsense"),
+        )
+
+        for pattern, mime_type in patterns:
+            with self.subTest(pattern=pattern, mime_type=mime_type):
+                allowed = validators.mimetype_allowed(mime_type, [], [pattern])
+
+                self.assertFalse(allowed)
+
+
 @override_settings(LANGUAGE_CODE="en")
 class MimeTypeValidatorTests(SimpleTestCase):
     CORRECT_GIF = SimpleUploadedFile("pixel.gif", PIXEL_GIF, content_type="image/gif")
@@ -116,17 +148,17 @@ class MimeTypeValidatorTests(SimpleTestCase):
 
         GH #2577"""
 
-        with open(Path(TEST_FILES, "test.odt"), "rb") as f:
-            file = SimpleUploadedFile(
-                "test.odt",
-                f.read(),
-                content_type="application/vnd.oasis.opendocument.text",
-            )
+        odt_file = TEST_FILES / "test.odt"
+
+        file = SimpleUploadedFile(
+            "test.odt",
+            odt_file.read_bytes(),
+            content_type="application/vnd.oasis.opendocument.text",
+        )
 
         validator = validators.MimeTypeValidator(
             [
-                "application/vnd.oasis.opendocument.*,"
-                "application/vnd.oasis.opendocument.text-template,",
+                "application/vnd.oasis.opendocument.*,application/vnd.oasis.opendocument.text-template,",
                 "application/pdf",
             ]
         )
