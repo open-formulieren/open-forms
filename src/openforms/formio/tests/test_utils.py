@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ..utils import is_visible_in_frontend
+from ..utils import is_visible_in_frontend, mimetype_allowed
 
 
 class FormioUtilsTest(TestCase):
@@ -55,3 +55,19 @@ class FormioUtilsTest(TestCase):
         result = is_visible_in_frontend(component, data)
 
         self.assertTrue(result)
+
+    def test_validate_files_multiple_mime_types(self):
+        """Assert that validation of files associated with multiple mime types (e.g.
+         OpenOffice files works.
+
+        Regression test for GH #2577"""
+
+        mime_type = "application/vnd.oasis.opendocument.text"
+        allowed_mime_types = [
+            "application/vnd.oasis.opendocument.*,application/vnd.oasis.opendocument.text-template,",
+            "application/pdf",
+        ]
+
+        allowed = mimetype_allowed(mime_type, allowed_mime_types)
+
+        self.assertTrue(allowed)
