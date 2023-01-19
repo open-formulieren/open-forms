@@ -1,7 +1,6 @@
 import {Formio} from 'formiojs';
 
 import {getMinMaxValidationEditForm} from './edit/date-edit-form';
-import {MAXIMUM_TIME, MIMINUM_TIME} from './edit/options';
 import {
   ADVANCED,
   DEFAULT_TABS,
