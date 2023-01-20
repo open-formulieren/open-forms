@@ -8,6 +8,7 @@ from drf_spectacular.utils import extend_schema_serializer
 from furl import furl
 from rest_framework import serializers
 
+from openforms.api.serializers import DummySerializer
 from openforms.submissions.api.fields import URLRelatedField
 
 from ....constants import LogicActionTypes, PropertyTypes
@@ -68,9 +69,9 @@ class LogicActionPolymorphicSerializer(PolymorphicSerializer):
 
     discriminator_field = "type"
     serializer_mapping = {
-        LogicActionTypes.disable_next: serializers.Serializer,
+        LogicActionTypes.disable_next: DummySerializer,
         LogicActionTypes.property: LogicPropertyActionSerializer,
-        LogicActionTypes.step_not_applicable: serializers.Serializer,
+        LogicActionTypes.step_not_applicable: DummySerializer,
         LogicActionTypes.variable: LogicValueActionSerializer,
     }
 

@@ -10,7 +10,7 @@ from django.views.generic import DetailView
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
-from rest_framework import permissions, serializers
+from rest_framework import permissions
 from rest_framework.exceptions import MethodNotAllowed, NotFound, ParseError
 from rest_framework.generics import GenericAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -34,7 +34,6 @@ logger = logging.getLogger(__name__)
 class PaymentFlowBaseView(APIView):
     authentication_classes = ()
     permission_classes = (permissions.AllowAny,)
-    serializer_class = serializers.Serializer
 
 
 @extend_schema(
@@ -186,8 +185,8 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
     lookup_field = "uuid"
     lookup_url_kwarg = "uuid"
     queryset = SubmissionPayment.objects.all()
-
     parser_classes = (FormParser, MultiPartParser)
+    get_serializer = lambda *args, **kwargs: None
 
     def _handle_return(self, request, uuid: str):
         """
@@ -300,6 +299,7 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
 )
 class PaymentWebhookView(PaymentFlowBaseView):
     parser_classes = (FormParser, MultiPartParser)
+    get_serializer = lambda *args, **kwargs: None
 
     def _handle_webhook(self, request, *args, **kwargs):
         try:

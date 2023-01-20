@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema
-from rest_framework import permissions, serializers, status
+from rest_framework import permissions, status
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -14,8 +14,8 @@ from rest_framework.views import APIView
 class FormIOTranslationsView(APIView):
     authentication_classes = ()
     permission_classes = (permissions.AllowAny,)
-    serializer_class = serializers.Serializer
     renderer_classes = [JSONRenderer]
+    get_serializer = lambda *args, **kwargs: None
 
     @extend_schema(
         summary=_("Get FormIO translations"),
