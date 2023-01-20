@@ -20,8 +20,8 @@ class SiteImproveTests(AnalyticsMixin, TestCase):
         ]
 
         cls.json_csp = [
-            {"directive": "default-src", "value": "siteimproveanalytics.com"},
-            {"directive": "img-src", "value": "*.siteimproveanalytics.io"},
+            {"directive": "default-src", "value": "https://siteimproveanalytics.com"},
+            {"directive": "img-src", "value": "https://*.siteimproveanalytics.io"},
         ]
 
     def test_site_improve_properly_enabled(self):

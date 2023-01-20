@@ -1,10 +1,10 @@
 [
     {
         "directive" : "default-src",
-        "value": "siteimproveanalytics.com"
+        "value": "https://siteimproveanalytics.com"
     },
     {
         "directive" : "img-src",
-        "value": "*.siteimproveanalytics.io"
+        "value": "https://*.siteimproveanalytics.io"
     }
 ]
