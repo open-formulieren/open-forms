@@ -135,11 +135,83 @@ const REQUIRED = {
   key: 'validate.required',
 };
 
+const OPTIONS_PANEL = {
+  type: 'panel',
+  key: `openForms.options`,
+  title: 'Options',
+  components: [
+    {
+      type: 'select',
+      key: `openForms.options.dataSrc`,
+      label: 'Data source',
+      description: 'What data to use for the options of this field.',
+      defaultValue: 'manual',
+      data: {
+        values: [
+          {
+            label: 'Manually fill in',
+            value: 'manual',
+          },
+          {
+            label: 'Variable',
+            value: 'variable',
+          },
+        ],
+      },
+      validate: {
+        required: true,
+      },
+    },
+    {
+      type: 'datagrid',
+      input: true,
+      label: 'Values',
+      key: 'openForms.options.values',
+      tooltip:
+        'The values that can be picked for this field. Values are text submitted with the form data. Labels are text that appears next to the radio buttons on the form.',
+      weight: 10,
+      reorder: true,
+      defaultValue: [{label: '', value: ''}],
+      components: [
+        {
+          label: 'Label',
+          key: 'label',
+          input: true,
+          type: 'textfield',
+          // Needed to distinguish from the label of the component, since both have key 'label'.
+          // Issue #1422
+          isOptionLabel: true,
+        },
+        {
+          label: 'Value',
+          key: 'value',
+          input: true,
+          type: 'textfield',
+          allowCalculateOverride: true,
+          calculateValue: {_camelCase: [{var: 'row.label'}]},
+          validate: {
+            required: true,
+          },
+        },
+      ],
+      conditional: {
+        show: true,
+        when: `openForms.options.dataSrc`,
+        eq: 'manual',
+      },
+    },
+  ],
+  // TODO:
+  //  - Fix default value
+  //  - Add interface for variable path
+};
+
 export {
   LABEL_REQUIRED,
   LABEL,
   KEY,
   DESCRIPTION,
+  OPTIONS_PANEL,
   SHOW_IN_SUMMARY,
   SHOW_IN_EMAIL,
   SHOW_IN_PDF,
