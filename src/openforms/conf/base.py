@@ -764,6 +764,16 @@ throttle_rate_user = (
 throttle_rate_polling = (
     config("THROTTLE_RATE_POLLING", default="50000/hour") if ENABLE_THROTTLING else None
 )
+throttle_rate_pause = (
+    config("OPEN_FORMS_API_PAUSE_RATE_LIMIT", default="3/minute")
+    if ENABLE_THROTTLING
+    else None
+)
+throttle_rate_submit = (
+    config("OPEN_FORMS_API_SUBMIT_RATE_LIMIT", default="10/minute")
+    if ENABLE_THROTTLING
+    else None
+)
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -781,6 +791,7 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_CLASSES": (
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
+        "rest_framework.throttling.ScopedRateThrottle",
     ),
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     "DEFAULT_THROTTLE_RATES": {
@@ -789,6 +800,9 @@ REST_FRAMEWORK = {
         "user": throttle_rate_user,
         # used by custom throttle class
         "polling": throttle_rate_polling,
+        # restricted rates for pausing and submitting forms
+        "pause": throttle_rate_pause,
+        "submit": throttle_rate_submit,
     },
     # required to get the right IP addres for throttling depending on the amount of
     # reverse proxies (X-Forwarded-For).
