@@ -6,7 +6,7 @@ from django.conf import settings
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import get_language_info, ugettext, ugettext_lazy as _
 
 from openforms.emails.utils import send_mail_html, strip_tags_plus
 from openforms.submissions.exports import create_submission_export
@@ -79,6 +79,9 @@ class EmailRegistration(BasePlugin):
             "datetime": timezone.localtime(submission.completed_on).strftime(
                 "%H:%M:%S %d-%m-%Y"
             ),
+            "submission_language": get_language_info(submission.language_code)[
+                "name_translated"
+            ],
         }
 
         # HTML mode

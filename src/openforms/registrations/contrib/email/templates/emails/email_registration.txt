@@ -11,7 +11,9 @@ Payment order ID: {{payment_order_id}}
 {% else %}{% blocktrans trimmed %}
 Submission details for {{ form_name }} (submitted on {{ datetime }})
 {% endblocktrans %}
-{% endif %}
+{% endif %}{% blocktrans trimmed %}
+Submission language: {{ submission_language }}
+{% endblocktrans %}
 
 {% for submission_step_node in renderer.get_children %}{% if submission_step_node.has_children %}
 {{ submission_step_node.render }}

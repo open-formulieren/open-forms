@@ -789,3 +789,6 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
 
         message = mail.outbox[0]
         self.assertEqual(message.extra_headers["Content-Language"], "en")
+        self.assertIn("Engels", message.body)
+        html_message = message.alternatives[0][0]
+        self.assertIn("Engels", html_message)
