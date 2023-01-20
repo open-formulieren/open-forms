@@ -247,6 +247,8 @@ class StufZDSRegistration(BasePlugin):
                 }
             )
 
+        extra_data = {**{"language_code": submission.language_code}, **extra_data}
+
         execute_unless_result_exists(
             lambda: client.create_zaak(
                 zaak_id, zaak_data, extra_data, submission.payment_required
