@@ -21,6 +21,8 @@
 {% get_available_languages as languages %}
 {{ languages|json_script:'languages' }}  {# Used to determine languages for FormIO translations #}
 
+{{ label_mapping|json_script:'label-mapping' }}  {# Used for missing translations warning #}
+
 <div
     class="react-form-create"
     data-form-uuid="{{ original.uuid|default:'' }}"

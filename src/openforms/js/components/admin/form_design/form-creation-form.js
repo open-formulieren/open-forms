@@ -33,6 +33,7 @@ import FormObjectTools from './FormObjectTools';
 import FormSteps from './FormSteps';
 import FormSubmit from './FormSubmit';
 import {DEFAULT_LANGUAGE} from './LanguageTabs';
+import MissingTranslationsWarning from './MissingTranslationsWarning';
 import PaymentFields from './PaymentFields';
 import {EMPTY_PRICE_RULE, PriceLogic} from './PriceLogic';
 import ProductFields from './ProductFields';
@@ -1113,6 +1114,10 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             description="Generic error message"
           />
         </div>
+      ) : null}
+
+      {state.form.translationEnabled ? (
+        <MissingTranslationsWarning form={state.form} formSteps={state.formSteps} state={state} />
       ) : null}
 
       <FormContext.Provider
