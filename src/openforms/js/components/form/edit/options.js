@@ -106,6 +106,14 @@ const DEFAULT_VALUE = {
   input: true,
 };
 
+const AUTOCOMPLETE_PASSWORD = {
+  type: 'textfield',
+  key: 'autocomplete',
+  label: 'Autocomplete',
+  placeholder: 'password',
+  tooltip: 'Display options to fill in the field, based on earlier typed values.',
+};
+
 const READ_ONLY = {
   // This doesn't work as in native HTML forms. Marking a field as 'disabled' only makes it read-only in the
   // UI, but the data is still sent to the backend.
@@ -144,6 +152,7 @@ export {
   SHOW_IN_EMAIL,
   SHOW_IN_PDF,
   AUTOCOMPLETE,
+  AUTOCOMPLETE_PASSWORD,
   PRESENTATION,
   MULTIPLE,
   HIDDEN,

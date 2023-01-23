@@ -5,6 +5,7 @@ import {getFullyQualifiedUrl} from 'utils/urls';
 
 import {
   AUTOCOMPLETE,
+  AUTOCOMPLETE_PASSWORD,
   CLEAR_ON_HIDE,
   DEFAULT_VALUE,
   DESCRIPTION,
@@ -55,17 +56,8 @@ const SENSITIVE_PASSWORD = {
   key: 'basic',
   label: 'Basic',
   ...SENSITIVE_BASIC,
-  AUTOCOMPLETE,
-  components: [
-    ...SENSITIVE_BASIC.components,
-    {
-      type: 'textfield',
-      key: 'autocomplete',
-      label: 'Autocomplete',
-      placeholder: 'password',
-      tooltip: 'Display options to fill in the field, based on earlier typed values.',
-    },
-  ],
+  AUTOCOMPLETE_PASSWORD,
+  components: [...SENSITIVE_BASIC.components, AUTOCOMPLETE_PASSWORD],
 };
 
 const SENSITIVE_READ_ONLY = {
@@ -436,6 +428,7 @@ export {
   BASIC,
   TEXT_BASIC,
   SENSITIVE_BASIC,
+  SENSITIVE_PASSWORD,
   LOCATION,
   ADVANCED,
   VALIDATION,

@@ -5,7 +5,7 @@ import {
   ADVANCED,
   DEFAULT_PASSWORD_TABS,
   REGISTRATION,
-  SENSITIVE_BASIC,
+  SENSITIVE_PASSWORD,
   TRANSLATIONS,
   VALIDATION,
 } from './edit/tabs';
@@ -18,8 +18,8 @@ class PasswordField extends Formio.Components.components.password {
           ...DEFAULT_PASSWORD_TABS,
           components: [
             {
-              ...SENSITIVE_BASIC,
-              components: SENSITIVE_BASIC.components.filter(
+              ...SENSITIVE_PASSWORD,
+              components: SENSITIVE_PASSWORD.components.filter(
                 option => option.key !== DEFAULT_VALUE.key
               ),
             },
