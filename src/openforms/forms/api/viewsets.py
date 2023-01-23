@@ -95,7 +95,10 @@ class FormStepViewSet(
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context["form"] = get_object_or_404(Form, uuid=self.kwargs["form_uuid_or_slug"])
+        if not getattr(self, "swagger_fake_view", False):
+            context["form"] = get_object_or_404(
+                Form, uuid=self.kwargs["form_uuid_or_slug"]
+            )
         return context
 
 

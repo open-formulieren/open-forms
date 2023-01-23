@@ -62,6 +62,7 @@ def _get_serializer_class(view_cls: Type[APIView]):
     view.format_kwarg = None
     view.request = None
     view.action_map = getattr(callback, "actions", None)
+    view.swagger_fake_view = True
 
     actions = getattr(callback, "actions", None)
     if actions is not None:

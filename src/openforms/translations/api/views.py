@@ -20,21 +20,19 @@ from rest_framework.views import APIView
 from openforms.api.drf_spectacular.functional import lazy_enum
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.translations.utils import set_language_cookie
+from openforms.utils.api.views import SerializerContextMixin
 
 from .serializers import LanguageCodeSerializer, LanguageInfoSerializer
 from .utils import get_language_codes
 
 
-class LanguageInfoView(APIView):
+class LanguageInfoView(SerializerContextMixin, APIView):
     authentication_classes = ()
     permission_classes = ()
 
     def get_serializer(self, *args, **kwargs):
-        return LanguageInfoSerializer(
-            *args,
-            context={"request": self.request, "view": self},
-            **kwargs,
-        )
+        kwargs.setdefault("context", self.get_serializer_context())
+        return LanguageInfoSerializer(*args, **kwargs)
 
     @extend_schema(
         summary=_("List available languages and the currently active one."),
@@ -68,14 +66,13 @@ class LanguageInfoView(APIView):
         return Response(serializer.data)
 
 
-class SetLanguageView(APIView):
+class SetLanguageView(SerializerContextMixin, APIView):
     authentication_classes = ()
     permission_classes = ()
 
     def get_serializer(self, *args, **kwargs):
-        return LanguageCodeSerializer(
-            *args, context={"request": self.request, "view": self}, **kwargs
-        )
+        kwargs.setdefault("context", self.get_serializer_context())
+        return LanguageCodeSerializer(*args, **kwargs)
 
     @extend_schema(
         summary=_("Set the desired language"),

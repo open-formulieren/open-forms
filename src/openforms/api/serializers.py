@@ -8,6 +8,20 @@ from rest_framework import serializers
 from openforms.api.utils import underscore_to_camel
 
 
+class DummySerializer(serializers.Serializer):
+    """
+    Defines a valid-name-having empty serializer.
+
+    drf-spectacular does serializer name validation, and using plain
+    :class:`serializers.Serializer` in some places throws warnings because the schema
+    component name resolves to an empty string.
+
+    In some places we need to map something to an empty serializer (we can't just say
+    there is _no_ serializer), so there we can use the DummySerializer to avoid schema
+    generation warnings.
+    """
+
+
 class FieldValidationErrorSerializer(serializers.Serializer):
     """
     Validation error format, following the NL API Strategy.

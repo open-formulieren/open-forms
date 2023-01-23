@@ -4285,6 +4285,13 @@ paths:
         Toegang tot dit endpoint vereist een actieve formulier inzending. Niet gekoppelde bestanden worden automatisch verwijderd na 2 dag(en)
       summary: Retrieve temporary file upload
       parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - octet
       - in: path
         name: uuid
         schema:
@@ -4320,6 +4327,13 @@ paths:
         \ after {expire_days} day(s). "
       summary: Delete temporary file upload
       parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - octet
       - in: path
         name: uuid
         schema:
@@ -4389,7 +4403,18 @@ paths:
       deprecated: true
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nl:
+                    type: object
+                    additionalProperties:
+                      type: string
+                required:
+                - nl
+          description: ''
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'
@@ -5472,6 +5497,9 @@ components:
                 type: string
               uuid:
                 type: string
+            required:
+            - name
+            - uuid
           readOnly: true
       required:
       - ancestors
@@ -6378,7 +6406,7 @@ components:
         price:
           type: string
           format: decimal
-          pattern: ^\d{0,8}(?:\.\d{0,2})?$
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
       required:
       - form
       - jsonLogicTrigger
@@ -6951,7 +6979,7 @@ components:
         amount:
           type: string
           format: decimal
-          pattern: ^\d{0,8}(?:\.\d{0,2})?$
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
           readOnly: true
           nullable: true
           title: payment amount
@@ -7412,7 +7440,7 @@ components:
         price:
           type: string
           format: decimal
-          pattern: ^\d{0,8}(?:\.\d{0,2})?$
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
         information:
           type: string
           description: Information text to be displayed in the confirmation page and

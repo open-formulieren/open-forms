@@ -224,7 +224,7 @@ drf-nested-routers==0.93.4
     # via -r requirements/base.in
 drf-polymorphic @ git+https://github.com/maykinmedia/drf-polymorphic@3584f285b6fd87ac2adad46a6c6e9fca5475cbdb
     # via -r requirements/base.in
-drf-spectacular==0.20.2
+drf-spectacular==0.25.1
     # via -r requirements/base.in
 elastic-apm==6.7.2
     # via -r requirements/base.in

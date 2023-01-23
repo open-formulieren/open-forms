@@ -50,8 +50,8 @@ class ViewSetWithoutSerializer(GenericViewSet):
 class ListSerializerViewSet(ModelViewSet):
     queryset = Model.objects.none()
 
-    def get_serializer(self):
-        return PostProcessSerializer(many=True)
+    def get_serializer(self, *args, **kwargs):
+        return PostProcessSerializer(many=True, *args, **kwargs)
 
 
 urlpatterns = [
