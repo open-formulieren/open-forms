@@ -178,6 +178,9 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 {
                     "key": "extra",
                 },
+                {
+                    "key": "language_code",
+                },
             ],
             form__name="my-form",
             bsn="111222333",
@@ -294,8 +297,13 @@ class StufZDSPluginTests(StUFZDSTestBase):
         # first language_code contains the submission language
         self.assertXPathEquals(
             xml_doc,
-            "//stuf:extraElementen/stuf:extraElement[@naam='language_code']",
+            "//stuf:extraElementen/stuf:extraElement[@naam='language_code' and position()=1]",
             "en",
+        )
+        self.assertXPathEquals(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='language_code' and not(position()=1)]",
+            "Dothraki",
         )
 
         # don't expect registered data in extraElementen
