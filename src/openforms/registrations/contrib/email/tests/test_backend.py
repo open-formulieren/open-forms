@@ -222,6 +222,33 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertIn("https://allowed.com", message.body)
         self.assertIn("https://allowed.com", message_html)
 
+    def test_html_in_email_subject(self):
+        """Assert that HTML is not escaped in the subject of Emails"""
+
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[
+                {"key": "foo", "type": "textfield", "label": "foo"},
+            ],
+            form__internal_name="Foo's bar",
+            form__registration_backend="email",
+            public_registration_reference="XYZ",
+        )
+        email_form_options = dict(
+            to_emails=["foo@bar.nl", "bar@foo.nl"],
+            email_subject="Subject: {{ form_name }} - submission {{ submission_reference }}",
+        )
+        email_submission = EmailRegistration("email")
+
+        email_submission.register_submission(submission, email_form_options)
+
+        # Verify that email was sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+
+        self.assertEqual(message.subject, "Subject: Foo's bar - submission XYZ")
+
     def test_register_and_update_paid_product(self):
         """
         the update payment email is now based on the registration email and includes attachments

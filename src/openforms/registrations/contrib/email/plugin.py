@@ -56,6 +56,7 @@ class EmailRegistration(BasePlugin):
                 "form_name": submission.form.admin_name,
                 "submission_reference": submission.public_registration_reference,
             },
+            disable_autoescape=True,
         )
 
         self.send_registration_email(options["to_emails"], subject, submission, options)

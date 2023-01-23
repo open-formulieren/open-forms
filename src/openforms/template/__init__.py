@@ -28,7 +28,12 @@ def parse(source: str, backend=sandbox_backend):
     return backend.from_string(source)
 
 
-def render_from_string(source: str, context: dict, backend=sandbox_backend) -> str:
+def render_from_string(
+    source: str,
+    context: dict,
+    backend=sandbox_backend,
+    disable_autoescape: bool = False,
+) -> str:
     """
     Render a template source string using the provided context.
 
@@ -36,8 +41,12 @@ def render_from_string(source: str, context: dict, backend=sandbox_backend) -> s
     :arg context: The context data for the template to render
     :arg backend: An optional alternative Django template backend instance to use.
       Defaults to the sandboxed backend.
+    :arg disable_autoescape: Disable escaping of HTML in ``source``.
     :raises: :class:`django.template.TemplateSyntaxError` if the template source is
       invalid
     """
+    if disable_autoescape:
+        source = f"{{% autoescape off %}}{source}{{% endautoescape %}}"
     template = parse(source, backend=backend)
-    return template.render(context)
+    res = template.render(context)
+    return res

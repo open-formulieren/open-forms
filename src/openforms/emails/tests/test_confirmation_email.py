@@ -658,3 +658,36 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         with self.subTest("attachments"):
             # file uploads may not be added as attachments, see #1193
             self.assertEqual(message.attachments, [])
+
+    @patch(
+        "openforms.emails.templatetags.appointments.get_plugin",
+        return_value=TestAppointmentPlugin("test"),
+    )
+    def test_html_in_subject(self, appointment_plugin_mock):
+        """Assert that HTML is not escaped in Email subjects"""
+
+        conf = deepcopy(NESTED_COMPONENT_CONF)
+
+        submission = SubmissionFactory.from_components(
+            conf["components"],
+            {
+                "name": "John",
+                "lastName": "Doe",
+                "email": "foo@bar.baz",
+            },
+            registration_success=True,
+        )
+        submission.form.name = "Foo's bar"
+
+        template = inspect.cleandoc(self.template)
+
+        ConfirmationEmailTemplateFactory.create(
+            form=submission.form, subject="Subject: {{ form_name }}", content=template
+        )
+
+        send_confirmation_email(submission)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        self.assertEqual(message.subject, "Subject: Foo's bar")
