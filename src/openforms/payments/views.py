@@ -166,6 +166,7 @@ class PaymentStartView(PaymentFlowBaseView, GenericAPIView):
             required=True,
         ),
     ],
+    request=None,
     responses={
         302: OpenApiResponse(response=None, description=_("Tempomrary redirect")),
         (400, ERR_CONTENT_TYPE): OpenApiResponse(
@@ -186,7 +187,6 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
     lookup_url_kwarg = "uuid"
     queryset = SubmissionPayment.objects.all()
     parser_classes = (FormParser, MultiPartParser)
-    get_serializer = lambda *args, **kwargs: None
 
     def _handle_return(self, request, uuid: str):
         """
@@ -285,6 +285,7 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
             required=True,
         ),
     ],
+    request=None,
     responses={
         200: None,
         (400, ERR_CONTENT_TYPE): OpenApiResponse(
@@ -299,7 +300,6 @@ class PaymentReturnView(PaymentFlowBaseView, GenericAPIView):
 )
 class PaymentWebhookView(PaymentFlowBaseView):
     parser_classes = (FormParser, MultiPartParser)
-    get_serializer = lambda *args, **kwargs: None
 
     def _handle_webhook(self, request, *args, **kwargs):
         try:

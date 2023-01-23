@@ -4403,7 +4403,18 @@ paths:
       deprecated: true
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nl:
+                    type: object
+                    additionalProperties:
+                      type: string
+                required:
+                - nl
+          description: ''
           headers:
             X-Session-Expires-In:
               $ref: '#/components/headers/X-Session-Expires-In'

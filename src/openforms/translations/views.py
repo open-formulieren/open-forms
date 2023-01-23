@@ -4,6 +4,7 @@ import os
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
+from drf_spectacular.plumbing import build_object_type
 from drf_spectacular.utils import extend_schema
 from rest_framework import permissions, status
 from rest_framework.renderers import JSONRenderer
@@ -15,11 +16,19 @@ class FormIOTranslationsView(APIView):
     authentication_classes = ()
     permission_classes = (permissions.AllowAny,)
     renderer_classes = [JSONRenderer]
-    get_serializer = lambda *args, **kwargs: None
 
     @extend_schema(
         summary=_("Get FormIO translations"),
         description=_("Retrieve the translations for the strings used by FormIO"),
+        request=None,
+        responses={
+            200: build_object_type(
+                properties={
+                    "nl": build_object_type(additionalProperties={"type": "string"})
+                },
+                required=["nl"],
+            ),
+        },
         deprecated=True,
     )
     def get(self, request, *args, **kwargs):
