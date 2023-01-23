@@ -51,6 +51,23 @@ const SENSITIVE_BASIC = {
   }),
 };
 
+const SENSITIVE_PASSWORD = {
+  key: 'basic',
+  label: 'Basic',
+  ...SENSITIVE_BASIC,
+  AUTOCOMPLETE,
+  components: [
+    ...SENSITIVE_BASIC.components,
+    {
+      type: 'textfield',
+      key: 'autocomplete',
+      label: 'Autocomplete',
+      placeholder: 'password',
+      tooltip: 'Display options to fill in the field, based on earlier typed values.',
+    },
+  ],
+};
+
 const SENSITIVE_READ_ONLY = {
   ...SENSITIVE_BASIC,
   components: [...SENSITIVE_BASIC.components, READ_ONLY],
@@ -383,6 +400,12 @@ const DEFAULT_SENSITIVE_TABS = {
   components: [SENSITIVE_BASIC, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
 };
 
+const DEFAULT_PASSWORD_TABS = {
+  type: 'tabs',
+  key: 'tabs',
+  components: [SENSITIVE_PASSWORD, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
+};
+
 const DEFAULT_TEXT_TABS = {
   type: 'tabs',
   key: 'tabs',
@@ -408,6 +431,7 @@ export {
   DEFAULT_TEXT_TABS,
   DEFAULT_CHOICES_TABS,
   DEFAULT_SENSITIVE_TABS,
+  DEFAULT_PASSWORD_TABS,
   CHOICES_BASIC,
   BASIC,
   TEXT_BASIC,
