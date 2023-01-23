@@ -1,3 +1,4 @@
+import json
 from decimal import Decimal
 from unittest.mock import patch
 
@@ -23,6 +24,7 @@ from openforms.submissions.tests.factories import (
     SubmissionReportFactory,
     SubmissionStepFactory,
 )
+from openforms.utils.tests.cache import clear_caches
 
 
 class MockFolder:
@@ -43,6 +45,11 @@ class MSGraphRegistrationBackendTests(TestCase):
         config.save()
 
         cls.options = dict(folder_path="/open-forms/")
+
+    @classmethod
+    def addClassCleanup(cls):
+        # clear the config from cache
+        clear_caches()
 
     @patch.object(MockFolder, "upload_file", return_value=None)
     def test_submission(self, upload_mock):
@@ -106,6 +113,14 @@ class MSGraphRegistrationBackendTests(TestCase):
             call = calls[1]
             path = f"{folder}/data.json"
             self.assertEqual(call.args[1], path)
+
+        with self.subTest("data contains submission language code"):
+            call = calls[1]
+            data = json.load(call[1]["stream"])
+
+            self.assertEqual(
+                data["__metadata__"]["submission_language"], submission.language_code
+            )
 
         with self.subTest("attachment 1"):
             call = calls[2]
@@ -177,6 +192,11 @@ class MSGraphRegistrationOptionsTests(TestCase):
         config = MSGraphRegistrationConfig.get_solo()
         config.service = MSGraphServiceFactory.create()
         config.save()
+
+    @classmethod
+    def addClassCleanup(cls):
+        # clear the config from cache
+        clear_caches()
 
     def test_folder_path(self, upload_mock):
         submission = SubmissionFactory.from_components(

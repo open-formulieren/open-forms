@@ -9,6 +9,7 @@ from zgw_consumers.models import Service
 
 from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
+from openforms.translations.utils import to_iso639_2b
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +109,7 @@ def create_report_document(
 
     document_options = {
         "author": "open-forms",
-        "language": "nld",
+        "language": to_iso639_2b(submission_report.submission.language_code),
         "format": "application/pdf",
         "status": "definitief",
         "filename": f"open-forms-{name}.pdf",
@@ -125,12 +126,13 @@ def create_csv_document(
     csv_data: str,
     options: dict,
     get_drc=default_get_drc,
+    language: str = "nld",
 ) -> dict:
     base64_body = b64encode(csv_data.encode()).decode()
 
     document_options = {
         "author": "open-forms",
-        "language": "nld",
+        "language": language,
         "format": "text/csv",
         "status": "definitief",
         "filename": f"open-forms-{name}.csv",
@@ -153,7 +155,9 @@ def create_attachment_document(
 
     document_options = {
         "author": "open-forms",
-        "language": "nld",
+        "language": to_iso639_2b(
+            submission_attachment.submission_step.submission.language_code
+        ),  # assume same as submission
         "format": submission_attachment.content_type,
         "status": "definitief",
         "filename": submission_attachment.get_display_name(),

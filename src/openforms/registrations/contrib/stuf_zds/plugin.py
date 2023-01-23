@@ -247,9 +247,17 @@ class StufZDSRegistration(BasePlugin):
                 }
             )
 
+        class LangInjection:
+            """Ensures the first extra element is the submission language
+            and isn't shadowed by a form field with the same key"""
+
+            def items(self):
+                yield ("language_code", submission.language_code)
+                yield from extra_data.items()
+
         execute_unless_result_exists(
             lambda: client.create_zaak(
-                zaak_id, zaak_data, extra_data, submission.payment_required
+                zaak_id, zaak_data, LangInjection(), submission.payment_required
             ),
             submission,
             "intermediate.zaak_created",

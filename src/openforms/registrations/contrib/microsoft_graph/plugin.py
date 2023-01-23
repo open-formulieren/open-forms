@@ -70,6 +70,7 @@ class MSGraphRegistration(BasePlugin):
         )
 
         data = submission.get_merged_data()
+        data["__metadata__"] = {"submission_language": submission.language_code}
         uploader.upload_json(data, folder_name / "data.json")
 
         for attachment in submission.attachments.all():

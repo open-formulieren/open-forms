@@ -19,3 +19,18 @@ def set_language_cookie(response: ResponseType, language_code: str) -> None:
         samesite=settings.LANGUAGE_COOKIE_SAMESITE,
         secure=settings.LANGUAGE_COOKIE_SECURE,
     )
+
+
+def to_iso639_2b(language_code: str) -> str:
+    """
+    Return ISO 639-2/B code for ``language_code`` as it is defined in
+    settings.LANGUAGES.
+    """
+    mapping = {
+        "en": "eng",
+        "nl": "nld",
+    }
+    try:
+        return mapping[language_code]
+    except KeyError:
+        raise ValueError(f"Unknown language code '{language_code}'")

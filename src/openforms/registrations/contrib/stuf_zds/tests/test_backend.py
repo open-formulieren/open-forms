@@ -178,6 +178,9 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 {
                     "key": "extra",
                 },
+                {
+                    "key": "language_code",
+                },
             ],
             form__name="my-form",
             bsn="111222333",
@@ -188,7 +191,9 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "geboortedatum": "2000-12-31",
                 "coordinaat": [52.36673378967122, 4.893164274470299],
                 "extra": "BuzzBazz",
+                "language_code": "Dothraki",  # some form widget defined by form designer
             },
+            language_code="en",
         )
 
         attachment = SubmissionFileAttachmentFactory.create(
@@ -287,6 +292,18 @@ class StufZDSPluginTests(StUFZDSTestBase):
             xml_doc,
             "//stuf:extraElementen/stuf:extraElement[@naam='extra']",
             "BuzzBazz",
+        )
+
+        # first language_code contains the submission language
+        self.assertXPathEquals(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='language_code' and position()=1]",
+            "en",
+        )
+        self.assertXPathEquals(
+            xml_doc,
+            "//stuf:extraElementen/stuf:extraElement[@naam='language_code' and not(position()=1)]",
+            "Dothraki",
         )
 
         # don't expect registered data in extraElementen

@@ -92,6 +92,7 @@ class ObjectsAPIBackendTests(TestCase):
                 "geboortedatum": "2000-12-31",
                 "coordinaat": [52.36673378967122, 4.893164274470299],
             },
+            language_code="en",
         )
         submission_step = submission.steps[0]
         step_slug = submission_step.form_step.form_definition.slug
@@ -129,6 +130,7 @@ class ObjectsAPIBackendTests(TestCase):
                     },
                     "type": objects_form_options["productaanvraag_type"],
                     "submission_id": str(submission.uuid),
+                    "language_code": "en",
                     "attachments": [],
                     "pdf_url": "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
                 },
@@ -228,6 +230,7 @@ class ObjectsAPIBackendTests(TestCase):
             "https://catalogi.nl/api/v1/informatieobjecttypen/5",
         )
 
+        self.assertEqual(csv_document_create_body["taal"], "eng")
         self.assertEqual(objecten_oas_get.method, "GET")
         self.assertEqual(
             objecten_oas_get.url, "https://objecten.nl/api/v1/schema/openapi.yaml?v=3"
@@ -249,6 +252,7 @@ class ObjectsAPIBackendTests(TestCase):
                     },
                     "type": "testproduct",
                     "submission_id": str(submission.uuid),
+                    "language_code": "en",
                     "attachments": [],
                     "pdf_url": expected_document_result["url"],
                     "csv_url": expected_csv_document_result["url"],
@@ -424,6 +428,7 @@ class ObjectsAPIBackendTests(TestCase):
                     },
                     "type": "testproduct",
                     "submission_id": str(submission.uuid),
+                    "language_code": "nl",
                     "attachments": [],
                     "pdf_url": expected_document_result["url"],
                     "csv_url": expected_csv_document_result["url"],
@@ -564,6 +569,7 @@ class ObjectsAPIBackendTests(TestCase):
                     },
                     "type": "testproduct",
                     "submission_id": str(submission.uuid),
+                    "language_code": "nl",
                     "attachments": [],
                     "pdf_url": expected_document_result["url"],
                 },
@@ -610,6 +616,7 @@ class ObjectsAPIBackendTests(TestCase):
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
             },
+            language_code="en",
         )
         submission_step = submission.steps[0]
         step_slug = submission_step.form_step.form_definition.slug
@@ -690,6 +697,7 @@ class ObjectsAPIBackendTests(TestCase):
             document_create.url,
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
         )
+        self.assertEqual(document_create_body["taal"], "eng")
         self.assertEqual(document_create_body["bronorganisatie"], "000000000")
         self.assertEqual(
             document_create_body["informatieobjecttype"],
@@ -717,6 +725,7 @@ class ObjectsAPIBackendTests(TestCase):
                     },
                     "type": "terugbelnotitie",
                     "submission_id": str(submission.uuid),
+                    "language_code": "en",
                     "attachments": [],
                     "pdf_url": expected_document_result["url"],
                 },
@@ -872,6 +881,7 @@ class ObjectsAPIBackendTests(TestCase):
                     },
                     "type": "terugbelnotitie",
                     "submission_id": str(submission.uuid),
+                    "language_code": "nl",
                     "attachments": [],
                     "bsn": "111222333",
                     "pdf_url": expected_document_result["url"],
@@ -991,6 +1001,7 @@ class ObjectsAPIBackendTests(TestCase):
                     "data": {f"{step_slug}": {"voornaam": "Foo"}},
                     "type": "terugbelnotitie",
                     "submission_id": str(submission.uuid),
+                    "language_code": "nl",
                     "attachments": [],
                     "kvk": "11122233",
                     "pdf_url": expected_document_result["url"],
@@ -1038,6 +1049,7 @@ class ObjectsAPIBackendTests(TestCase):
                 "tussenvoegsel": "de",
                 "geboortedatum": "2000-12-31",
             },
+            language_code="en",
             completed=True,
         )
         submission_step = submission.steps[0]
@@ -1194,6 +1206,7 @@ class ObjectsAPIBackendTests(TestCase):
         self.assertEqual(
             document_create_attachment1_body["bronorganisatie"], "000000000"
         )
+        self.assertEqual(document_create_attachment1_body["taal"], "eng")
         self.assertEqual(
             document_create_attachment1_body["informatieobjecttype"],
             "https://catalogi.nl/api/v1/informatieobjecttypen/3",
@@ -1239,6 +1252,7 @@ class ObjectsAPIBackendTests(TestCase):
                     },
                     "type": "terugbelnotitie",
                     "submission_id": str(submission.uuid),
+                    "language_code": "en",
                     "attachments": [
                         "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
                         "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/3",
@@ -1284,6 +1298,7 @@ class ObjectsAPIBackendTests(TestCase):
             submitted_data={
                 "voornaam": "Foo",
             },
+            language_code="en",
         )
         submission_step = submission.steps[0]
         step_slug = submission_step.form_step.form_definition.slug
@@ -1474,6 +1489,7 @@ class ObjectsAPIBackendTests(TestCase):
                     },
                     "type": "terugbelnotitie",
                     "submission_id": str(submission.uuid),
+                    "language_code": "en",
                     "attachments": [
                         "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
                         "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/3",

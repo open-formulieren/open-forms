@@ -233,6 +233,7 @@ class ZGWBackendTests(TestCase):
             bsn="111222333",
             form__product__price=Decimal("0"),
             form__payment_backend="demo",
+            language_code="en",
         )
 
         attachment = SubmissionFileAttachmentFactory.create(
@@ -302,6 +303,7 @@ class ZGWBackendTests(TestCase):
             create_eio_body["informatieobjecttype"],
             "https://catalogi.nl/api/v1/informatieobjecttypen/1",
         )
+        self.assertEqual(create_eio_body["taal"], "eng")
 
         create_zio = m.request_history[4]
         create_zio_body = create_zio.json()
@@ -361,6 +363,7 @@ class ZGWBackendTests(TestCase):
         )
         self.assertEqual(create_attachment_body["bestandsnaam"], attachment.file_name)
         self.assertEqual(create_attachment_body["formaat"], attachment.content_type)
+        self.assertEqual(create_attachment_body["taal"], "eng")
 
         relate_attachment = m.request_history[11]
         relate_attachment_body = relate_attachment.json()
