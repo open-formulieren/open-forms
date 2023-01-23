@@ -14,7 +14,7 @@
 
   // center at bottom of page
   position: fixed;
-  bottom: 1rem;
+  bottom: 3rem;
   left: 0;
   right: 0;
   z-index: 1;
@@ -29,6 +29,7 @@
   align-items: center;
 
   @include mobile-only {
+    bottom: 7rem;
     left: 10px;
     right: 10px;
     width: auto;
