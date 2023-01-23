@@ -208,9 +208,23 @@ const OPTIONS_CHOICES = [
       eq: 'manual',
     },
   },
+  {
+    label: 'Path to component with items',
+    key: 'data.itemsPath',
+    type: 'textarea',
+    tooltip:
+      'A path to a variable (of array type) whose items should be used as the options for this component.',
+    editor: 'ace',
+    as: 'json',
+    // Documentation for editor settings: https://ajaxorg.github.io/ace-api-docs/interfaces/Ace.EditorOptions.html
+    // but most of the settings don't seem to work.
+    conditional: {
+      show: true,
+      when: `dataSrc`,
+      eq: 'variable',
+    },
+  },
 ];
-// TODO:
-//  - Add interface for variable path
 
 export {
   LABEL_REQUIRED,
