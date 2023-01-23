@@ -135,83 +135,89 @@ const REQUIRED = {
   key: 'validate.required',
 };
 
-const OPTIONS_PANEL = {
-  type: 'panel',
-  key: `openForms.options`,
-  title: 'Options',
-  components: [
-    {
-      type: 'select',
-      key: `openForms.options.dataSrc`,
-      label: 'Data source',
-      description: 'What data to use for the options of this field.',
-      defaultValue: 'manual',
-      data: {
-        values: [
-          {
-            label: 'Manually fill in',
-            value: 'manual',
-          },
-          {
-            label: 'Variable',
-            value: 'variable',
-          },
-        ],
-      },
-      validate: {
-        required: true,
-      },
-    },
-    {
-      type: 'datagrid',
-      input: true,
-      label: 'Values',
-      key: 'openForms.options.values',
-      tooltip:
-        'The values that can be picked for this field. Values are text submitted with the form data. Labels are text that appears next to the radio buttons on the form.',
-      weight: 10,
-      reorder: true,
-      defaultValue: [{label: '', value: ''}],
-      components: [
+const OPTIONS_CHOICES = [
+  {
+    type: 'select',
+    key: `dataSrc`,
+    label: 'Data source',
+    description: 'What data to use for the options of this field.',
+    defaultValue: 'manual',
+    data: {
+      values: [
         {
-          label: 'Label',
-          key: 'label',
-          input: true,
-          type: 'textfield',
-          // Needed to distinguish from the label of the component, since both have key 'label'.
-          // Issue #1422
-          isOptionLabel: true,
+          label: 'Manually fill in',
+          value: 'manual',
         },
         {
-          label: 'Value',
-          key: 'value',
-          input: true,
-          type: 'textfield',
-          allowCalculateOverride: true,
-          calculateValue: {_camelCase: [{var: 'row.label'}]},
-          validate: {
-            required: true,
-          },
+          label: 'Variable',
+          value: 'variable',
         },
       ],
-      conditional: {
-        show: true,
-        when: `openForms.options.dataSrc`,
-        eq: 'manual',
-      },
     },
-  ],
-  // TODO:
-  //  - Fix default value
-  //  - Add interface for variable path
-};
+    validate: {
+      required: true,
+    },
+  },
+  {
+    type: 'datagrid',
+    input: true,
+    label: 'Values',
+    key: 'values',
+    tooltip:
+      'The values that can be picked for this field. Values are text submitted with the form data. Labels are text that appears next to the radio buttons on the form.',
+    weight: 10,
+    reorder: true,
+    defaultValue: [{label: '', value: ''}],
+    components: [
+      {
+        label: 'Label',
+        key: 'label',
+        input: true,
+        type: 'textfield',
+        // Needed to distinguish from the label of the component, since both have key 'label'.
+        // Issue #1422
+        isOptionLabel: true,
+      },
+      {
+        label: 'Value',
+        key: 'value',
+        input: true,
+        type: 'textfield',
+        allowCalculateOverride: true,
+        calculateValue: {_camelCase: [{var: 'row.label'}]},
+        validate: {
+          required: true,
+        },
+      },
+    ],
+    conditional: {
+      show: true,
+      when: `dataSrc`,
+      eq: 'manual',
+    },
+  },
+  // We can't have the default value nested deeper, because Formio WebformBuilder expects it as a first child of a tab.
+  {
+    label: 'Default Value',
+    key: 'defaultValue',
+    tooltip: 'This will be the initial value for this field, before user interaction.',
+    input: true,
+    conditional: {
+      show: true,
+      when: `dataSrc`,
+      eq: 'manual',
+    },
+  },
+];
+// TODO:
+//  - Add interface for variable path
 
 export {
   LABEL_REQUIRED,
   LABEL,
   KEY,
   DESCRIPTION,
-  OPTIONS_PANEL,
+  OPTIONS_CHOICES,
   SHOW_IN_SUMMARY,
   SHOW_IN_EMAIL,
   SHOW_IN_PDF,

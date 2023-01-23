@@ -5,14 +5,37 @@ import {localiseSchema} from './i18n';
 
 const Select = Formio.Components.components.select;
 
-const values = [
+const optionsChoices = [
+  {
+    type: 'select',
+    key: `data.dataSrc`,
+    label: 'Data source',
+    description: 'What data to use for the options of this field.',
+    defaultValue: 'manual',
+    data: {
+      values: [
+        {
+          label: 'Manually fill in',
+          value: 'manual',
+        },
+        {
+          label: 'Variable',
+          value: 'variable',
+        },
+      ],
+    },
+    validate: {
+      required: true,
+    },
+  },
   {
     type: 'datagrid',
     input: true,
     label: 'Values',
     key: 'data.values',
     tooltip:
-      'The radio button values that can be picked for this field. Values are text submitted with the form data. Labels are text that appears next to the radio buttons on the form.',
+      'The values that can be picked for this field. Values are text submitted with the form data. ' +
+      'Labels are text that appears next to the radio buttons on the form.',
     weight: 10,
     reorder: true,
     defaultValue: [{label: '', value: ''}],
@@ -30,8 +53,27 @@ const values = [
         type: 'textfield',
         allowCalculateOverride: true,
         calculateValue: {_camelCase: [{var: 'row.label'}]},
+        validate: {
+          required: true,
+        },
       },
     ],
+    conditional: {
+      show: true,
+      when: `data.dataSrc`,
+      eq: 'manual',
+    },
+  },
+  {
+    label: 'Default Value',
+    key: 'defaultValue',
+    tooltip: 'This will be the initial value for this field, before user interaction.',
+    input: true,
+    conditional: {
+      show: true,
+      when: `data.dataSrc`,
+      eq: 'manual',
+    },
   },
 ];
 
@@ -50,7 +92,7 @@ class SelectField extends Select {
   static editForm() {
     const BASIC_TAB = {
       ...BASIC,
-      components: [...BASIC.components, ...values],
+      components: [...BASIC.components, ...optionsChoices],
     };
     const TABS = {
       ...DEFAULT_TABS,
