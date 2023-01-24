@@ -7,15 +7,22 @@ import Modal from 'components/admin/Modal';
 import {ChangelistColumn, ChangelistTable} from 'components/admin/tables';
 import jsonScriptToVar from 'utils/json-script';
 
-const extractMissingTranslations = (translations, tabName, fieldNames) => {
+const extractMissingTranslations = (translations, tabName, fieldNames, fallbackFields) => {
   const labelMapping = jsonScriptToVar('label-mapping');
   const languages = jsonScriptToVar('languages');
+  const defaultLangCode = languages[0][0];
   const languageCodeMapping = Object.fromEntries(languages);
+  let skipWarningsFor = [];
 
   let missingTranslations = [];
   for (const [languageCode, mapping] of Object.entries(translations)) {
     for (const [key, translation] of Object.entries(mapping)) {
-      if (!translation) {
+      // Ignore missing translations for fields that can have global defaults,
+      // if no value was entered for the default
+      if (!translation && languageCode === defaultLangCode && (fallbackFields || []).includes(key))
+        skipWarningsFor.push(key);
+
+      if (!translation && !skipWarningsFor.includes(key)) {
         if (fieldNames === undefined) {
           missingTranslations.push({
             fieldName: labelMapping[key],
@@ -62,7 +69,9 @@ const MissingTranslationsWarning = ({form, formSteps}) => {
     formStepTranslations = formStepTranslations.concat(
       extractMissingTranslations(
         formStep.translations,
-        <FormattedMessage defaultMessage="Steps and fields" description="Form design tab title" />
+        <FormattedMessage defaultMessage="Steps and fields" description="Form design tab title" />,
+        undefined,
+        ['previousText', 'saveText', 'nextText']
       )
     );
   }
@@ -79,11 +88,13 @@ const MissingTranslationsWarning = ({form, formSteps}) => {
         defaultMessage="Confirmation"
         description="Form confirmation options tab title"
       />,
+      ['submissionConfirmationTemplate'],
       ['submissionConfirmationTemplate']
     ),
     extractMissingTranslations(
       form.translations,
       <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />,
+      ['beginText', 'previousText', 'changeText', 'confirmText'],
       ['beginText', 'previousText', 'changeText', 'confirmText']
     ),
     extractMissingTranslations(
@@ -91,7 +102,9 @@ const MissingTranslationsWarning = ({form, formSteps}) => {
       <FormattedMessage
         defaultMessage="Confirmation"
         description="Form confirmation options tab title"
-      />
+      />,
+      undefined,
+      ['subject', 'content']
     ),
     formStepTranslations
   );
