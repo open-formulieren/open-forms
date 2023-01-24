@@ -106,13 +106,7 @@ const DEFAULT_VALUE = {
   input: true,
 };
 
-const AUTOCOMPLETE_PASSWORD = {
-  type: 'textfield',
-  key: 'autocomplete',
-  label: 'Autocomplete',
-  placeholder: 'password',
-  tooltip: 'Display options to fill in the field, based on earlier typed values.',
-};
+const AUTOCOMPLETE_PASSWORD = {...AUTOCOMPLETE, placeholder: 'password'};
 
 const READ_ONLY = {
   // This doesn't work as in native HTML forms. Marking a field as 'disabled' only makes it read-only in the
