@@ -75,6 +75,39 @@ const optionsChoices = [
       eq: 'manual',
     },
   },
+  {
+    label: 'Path to component with items',
+    key: 'data.itemsPath',
+    type: 'textarea',
+    tooltip:
+      'A path to a variable (of array type) whose items should be used as the options for this component.',
+    editor: 'ace',
+    as: 'json',
+    // Documentation for editor settings: https://ajaxorg.github.io/ace-api-docs/interfaces/Ace.EditorOptions.html
+    // but most of the settings don't seem to work.
+    conditional: {
+      show: true,
+      when: `data.dataSrc`,
+      eq: 'variable',
+    },
+    validate: {
+      required: true,
+    },
+  },
+  {
+    label: 'Path to the value within an item',
+    key: 'data.valuePath',
+    type: 'textarea',
+    tooltip:
+      'A path to a particular value within an item of the array. For example, for a field inside a repeating group.',
+    editor: 'ace',
+    as: 'json',
+    conditional: {
+      show: true,
+      when: `data.dataSrc`,
+      eq: 'variable',
+    },
+  },
 ];
 
 class SelectField extends Select {

@@ -223,6 +223,23 @@ const OPTIONS_CHOICES = [
       when: `dataSrc`,
       eq: 'variable',
     },
+    validate: {
+      required: true,
+    },
+  },
+  {
+    label: 'Path to the value within an item',
+    key: 'data.valuePath',
+    type: 'textarea',
+    tooltip:
+      'A path to a particular value within an item of the array. For example, for a field inside a repeating group.',
+    editor: 'ace',
+    as: 'json',
+    conditional: {
+      show: true,
+      when: `dataSrc`,
+      eq: 'variable',
+    },
   },
 ];
 
