@@ -4,12 +4,13 @@
 import {Formio} from 'formiojs';
 
 import {ADVANCED, REGISTRATION, SENSITIVE_BASIC, TRANSLATIONS, VALIDATION} from './edit/tabs';
+import {localiseSchema} from './i18n';
 
 const SelectBoxes = Formio.Components.components.selectboxes;
 
 class NpFamilyMembers extends SelectBoxes {
   static schema(...extend) {
-    return SelectBoxes.schema(
+    const schema = SelectBoxes.schema(
       {
         label: 'Select family members',
         key: 'npFamilyMembers',
@@ -17,6 +18,7 @@ class NpFamilyMembers extends SelectBoxes {
       },
       ...extend
     );
+    return localiseSchema(schema);
   }
 
   static get builderInfo() {

@@ -5,6 +5,7 @@ import jsonScriptToVar from 'utils/json-script';
 import {getFullyQualifiedUrl} from '../../utils/urls';
 import {DEFAULT_VALUE} from './edit/options';
 import {ADVANCED, SENSITIVE_BASIC, TRANSLATIONS, VALIDATION_BASIC} from './edit/tabs';
+import {localiseSchema} from './i18n';
 
 const BaseFileField = Formio.Components.components.file;
 
@@ -215,7 +216,7 @@ const FILE_TAB = {
 
 class FileField extends BaseFileField {
   static schema(...extend) {
-    return BaseFileField.schema(
+    const schema = BaseFileField.schema(
       {
         type: 'file',
         label: 'File Upload',
@@ -229,6 +230,7 @@ class FileField extends BaseFileField {
       },
       ...extend
     );
+    return localiseSchema(schema);
   }
 
   static get builderInfo() {

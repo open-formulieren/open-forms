@@ -2,10 +2,15 @@ import {Formio} from 'formiojs';
 
 import {ALLOW_NEGATIVE, DECIMAL_PLACES, MAX_VALUE, MIN_VALUE} from './edit/components';
 import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, TRANSLATIONS, VALIDATION} from './edit/tabs';
+import {localiseSchema} from './i18n';
 
 const FormioNumber = Formio.Components.components.number;
 
 class NumberField extends FormioNumber {
+  static schema(...extend) {
+    return localiseSchema(FormioNumber.schema(...extend));
+  }
+
   static get builderInfo() {
     return {
       title: 'Number',

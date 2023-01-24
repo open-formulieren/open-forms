@@ -3,6 +3,8 @@ import {Formio} from 'formiojs';
 import {CLEAR_ON_HIDE, HIDDEN, KEY, LABEL} from 'components/form/edit/options';
 import {ADVANCED, TRANSLATIONS} from 'components/form/edit/tabs';
 
+import {localiseSchema} from './i18n';
+
 const FormioFieldSet = Formio.Components.components.fieldset;
 
 const FIELDSET_BASIC = {
@@ -24,6 +26,17 @@ const FIELDSET_BASIC = {
 };
 
 class FieldSet extends FormioFieldSet {
+  static schema(...extend) {
+    return localiseSchema(FormioFieldSet.schema(...extend));
+  }
+
+  static get builderInfo() {
+    return {
+      ...FormioFieldSet.builderInfo,
+      schema: FieldSet.schema(),
+    };
+  }
+
   static editForm(...extend) {
     const parentEditForm = FormioFieldSet.editForm();
     parentEditForm.components[0].components = [

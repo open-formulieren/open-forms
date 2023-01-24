@@ -9,12 +9,13 @@ import {
   TRANSLATIONS,
   VALIDATION,
 } from './edit/tabs';
+import {localiseSchema} from './i18n';
 
 const RadioFormio = Formio.Components.components.radio;
 
 class RadioField extends RadioFormio {
   static schema(...extend) {
-    return RadioFormio.schema(
+    const schema = RadioFormio.schema(
       {
         // Issue #2538 - If the dataType is not specified, Formio will try to parse the values. This means that if the
         // keys of the values are 1, true they will be added to the submission data as float/bool instead of string.
@@ -22,6 +23,7 @@ class RadioField extends RadioFormio {
       },
       ...extend
     );
+    return localiseSchema(schema);
   }
 
   static get builderInfo() {

@@ -7,6 +7,7 @@ import DEFAULT_TABS, {
   TRANSLATIONS,
   VALIDATION,
 } from './edit/tabs';
+import {localiseSchema} from './i18n';
 
 const Time = Formio.Components.components.time;
 
@@ -17,7 +18,7 @@ const Time = Formio.Components.components.time;
  */
 class TimeField extends Time {
   static schema(...extend) {
-    return Time.schema(
+    const schema = Time.schema(
       {
         inputType: 'text',
         format: 'HH:mm',
@@ -27,6 +28,7 @@ class TimeField extends Time {
       },
       ...extend
     );
+    return localiseSchema(schema);
   }
 
   static get builderInfo() {

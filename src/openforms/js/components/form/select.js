@@ -1,6 +1,7 @@
 import {Formio} from 'formiojs';
 
 import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, TRANSLATIONS, VALIDATION} from './edit/tabs';
+import {localiseSchema} from './i18n';
 
 const Select = Formio.Components.components.select;
 
@@ -35,6 +36,17 @@ const values = [
 ];
 
 class SelectField extends Select {
+  static schema(...extend) {
+    return localiseSchema(Select.schema(...extend));
+  }
+
+  static get builderInfo() {
+    return {
+      ...Select.builderInfo,
+      schema: SelectField.schema(),
+    };
+  }
+
   static editForm() {
     const BASIC_TAB = {
       ...BASIC,

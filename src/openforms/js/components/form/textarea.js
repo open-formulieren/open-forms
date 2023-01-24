@@ -1,6 +1,7 @@
 import {Formio} from 'react-formio';
 
 import {ADVANCED, TEXT_BASIC, TEXT_VALIDATION, TRANSLATIONS} from './edit/tabs';
+import {localiseSchema} from './i18n';
 
 const textareaBasicTab = {
   key: 'basic',
@@ -42,7 +43,14 @@ const FormioTextarea = Formio.Components.components.textarea;
 
 class TextArea extends FormioTextarea {
   static schema(...extend) {
-    return FormioTextarea.schema({validate: {maxLength: 10000}}, ...extend);
+    return localiseSchema(FormioTextarea.schema({validate: {maxLength: 10000}}, ...extend));
+  }
+
+  static get builderInfo() {
+    return {
+      ...FormioTextarea.builderInfo,
+      schema: TextArea.schema(),
+    };
   }
 
   get defaultSchema() {

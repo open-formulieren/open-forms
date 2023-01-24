@@ -9,6 +9,7 @@ import {
   TRANSLATIONS,
   VALIDATION,
 } from './edit/tabs';
+import {localiseSchema} from './i18n';
 
 const DateTimeField = Formio.Components.components.datetime;
 
@@ -206,7 +207,7 @@ const getMinMaxValidationEditForm = fieldName => {
 
 class DateField extends DateTimeField {
   static schema(...extend) {
-    return DateTimeField.schema(
+    const schema = DateTimeField.schema(
       {
         type: 'date',
         label: 'Date',
@@ -247,6 +248,7 @@ class DateField extends DateTimeField {
       },
       ...extend
     );
+    return localiseSchema(schema);
   }
 
   static get builderInfo() {

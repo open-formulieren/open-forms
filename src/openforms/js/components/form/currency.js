@@ -4,12 +4,24 @@ import _ from 'lodash';
 
 import {ALLOW_NEGATIVE, DECIMAL_PLACES} from './edit/components';
 import DEFAULT_TABS, {ADVANCED, BASIC, REGISTRATION, TRANSLATIONS, VALIDATION} from './edit/tabs';
+import {localiseSchema} from './i18n';
 
 const FormioCurrency = Formio.Components.components.currency;
 
 CurrencyEditData[0].defaultValue = 'EUR';
 
 class CurrencyField extends FormioCurrency {
+  static schema(...extend) {
+    return localiseSchema(FormioCurrency.schema(...extend));
+  }
+
+  static get builderInfo() {
+    return {
+      ...FormioCurrency.builderInfo,
+      schema: CurrencyField.schema(),
+    };
+  }
+
   get defaultValue() {
     let defaultValue = super.defaultValue;
 

@@ -2,6 +2,8 @@ import {Formio} from 'formiojs';
 
 import {CLEAR_ON_HIDE, HIDDEN, KEY, LABEL} from 'components/form/edit/options';
 
+import {localiseSchema} from './i18n';
+
 const FormioColumnField = Formio.Components.components.columns;
 
 const COLUM_EDIT_TABS = {
@@ -75,7 +77,7 @@ const COLUM_EDIT_TABS = {
 
 class ColumnField extends FormioColumnField {
   static schema(...extend) {
-    return FormioColumnField.schema(
+    const schema = FormioColumnField.schema(
       {
         label: 'Columns',
         key: 'columns',
@@ -87,6 +89,7 @@ class ColumnField extends FormioColumnField {
       },
       ...extend
     );
+    return localiseSchema(schema);
   }
 
   static get builderInfo() {
