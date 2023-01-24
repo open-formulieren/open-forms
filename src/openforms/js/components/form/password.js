@@ -1,36 +1,38 @@
 import {Formio} from 'react-formio';
 
-import {DEFAULT_VALUE} from './edit/options';
+import {AUTOCOMPLETE, DEFAULT_VALUE} from './edit/options';
 import {
   ADVANCED,
-  DEFAULT_PASSWORD_TABS,
+  DEFAULT_SENSITIVE_TABS,
   REGISTRATION,
-  SENSITIVE_PASSWORD,
+  SENSITIVE_BASIC,
   TRANSLATIONS,
   VALIDATION,
 } from './edit/tabs';
 
 class PasswordField extends Formio.Components.components.password {
   static editForm() {
-    return {
+    // option
+    const extra = [{...AUTOCOMPLETE, placeholder: 'password'}];
+    // lowest tab, extend SENSITIVE_BASIC that is inside DEFAULT_SENSITIVE_TABS
+    const BASIC_PASSWORD_TAB = {
+      ...SENSITIVE_BASIC,
       components: [
         {
-          ...DEFAULT_PASSWORD_TABS,
-          components: [
-            {
-              ...SENSITIVE_PASSWORD,
-              components: SENSITIVE_PASSWORD.components.filter(
-                option => option.key !== DEFAULT_VALUE.key
-              ),
-            },
-            ADVANCED,
-            VALIDATION,
-            REGISTRATION,
-            TRANSLATIONS,
-          ],
+          ...SENSITIVE_BASIC,
+          components: SENSITIVE_BASIC.components.filter(option => option.key !== DEFAULT_VALUE.key),
         },
+        ...extra,
       ],
     };
+    // replace higher DEFAULT_SENSITIVE_TAB
+    const DEFAULT_SENSITIVE_TABS_EXTRA = {
+      type: 'tabs',
+      key: 'tabs',
+      components: [BASIC_PASSWORD_TAB, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
+    };
+
+    return {components: [DEFAULT_SENSITIVE_TABS_EXTRA]};
   }
 }
 

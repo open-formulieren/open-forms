@@ -1,6 +1,6 @@
 import {Formio} from 'formiojs';
 
-import {REGEX_VALIDATION} from './edit/options';
+import {AUTOCOMPLETE, REGEX_VALIDATION} from './edit/options';
 import {ADVANCED, REGISTRATION, SENSITIVE_BASIC, TRANSLATIONS, VALIDATION} from './edit/tabs';
 import {getValidationEditForm} from './edit/validationEditFormUtils';
 
@@ -34,16 +34,7 @@ class PhoneNumberField extends PhoneNumber {
 
     const BASIC_TAB = {
       ...SENSITIVE_BASIC,
-      components: [
-        ...SENSITIVE_BASIC.components,
-        {
-          type: 'textfield',
-          key: 'autocomplete',
-          label: 'Autocomplete',
-          placeholder: 'tel',
-          tooltip: 'Display options to fill in the field, based on earlier typed values.',
-        },
-      ],
+      components: [...SENSITIVE_BASIC.components, {...AUTOCOMPLETE, placeholder: 'email'}],
     };
 
     const extendedDefaults = {

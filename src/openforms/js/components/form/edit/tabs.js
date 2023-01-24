@@ -5,7 +5,6 @@ import {getFullyQualifiedUrl} from 'utils/urls';
 
 import {
   AUTOCOMPLETE,
-  AUTOCOMPLETE_PASSWORD,
   CLEAR_ON_HIDE,
   DEFAULT_VALUE,
   DESCRIPTION,
@@ -50,14 +49,6 @@ const SENSITIVE_BASIC = {
     }
     return option;
   }),
-};
-
-const SENSITIVE_PASSWORD = {
-  key: 'basic',
-  label: 'Basic',
-  ...SENSITIVE_BASIC,
-  AUTOCOMPLETE_PASSWORD,
-  components: [...SENSITIVE_BASIC.components, AUTOCOMPLETE_PASSWORD],
 };
 
 const SENSITIVE_READ_ONLY = {
@@ -392,12 +383,6 @@ const DEFAULT_SENSITIVE_TABS = {
   components: [SENSITIVE_BASIC, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
 };
 
-const DEFAULT_PASSWORD_TABS = {
-  type: 'tabs',
-  key: 'tabs',
-  components: [SENSITIVE_PASSWORD, ADVANCED, VALIDATION, REGISTRATION, TRANSLATIONS],
-};
-
 const DEFAULT_TEXT_TABS = {
   type: 'tabs',
   key: 'tabs',
@@ -423,12 +408,10 @@ export {
   DEFAULT_TEXT_TABS,
   DEFAULT_CHOICES_TABS,
   DEFAULT_SENSITIVE_TABS,
-  DEFAULT_PASSWORD_TABS,
   CHOICES_BASIC,
   BASIC,
   TEXT_BASIC,
   SENSITIVE_BASIC,
-  SENSITIVE_PASSWORD,
   LOCATION,
   ADVANCED,
   VALIDATION,
