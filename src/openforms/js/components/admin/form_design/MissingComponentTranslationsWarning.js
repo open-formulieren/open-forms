@@ -83,7 +83,7 @@ const MissingComponentTranslationsWarning = ({configuration, componentTranslatio
 
   const formattedWarning = (
     <FormattedMessage
-      description="Component translations are missing"
+      description="Warning message for missing component translations"
       defaultMessage="Form has translation enabled, but is missing <link>{count, plural,
         one {# component translation}
         other {# component translations}

@@ -118,7 +118,7 @@ const MissingTranslationsWarning = ({form, formSteps}) => {
 
   const formattedWarning = (
     <FormattedMessage
-      description="Translations are missing"
+      description="Warning message for missing translations"
       defaultMessage="Form has translation enabled, but is missing <link>{count, plural,
         one {# translation}
         other {# translations}

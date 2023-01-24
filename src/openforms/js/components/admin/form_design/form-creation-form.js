@@ -1117,7 +1117,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
       ) : null}
 
       {state.form.translationEnabled ? (
-        <MissingTranslationsWarning form={state.form} formSteps={state.formSteps} state={state} />
+        <MissingTranslationsWarning form={state.form} formSteps={state.formSteps} />
       ) : null}
 
       <FormContext.Provider
