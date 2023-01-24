@@ -55,27 +55,44 @@ MissingTranslationsTable.propTypes = {
   children: PropTypes.arrayOf(PropTypes.object),
 };
 
-const MissingTranslationsWarning = ({form, formSteps, ...args}) => {
+const MissingTranslationsWarning = ({form, formSteps}) => {
   let formStepTranslations = [];
 
   for (const [index, formStep] of formSteps.entries()) {
     formStepTranslations = formStepTranslations.concat(
-      extractMissingTranslations(formStep.translations, 'Steps and fields')
+      extractMissingTranslations(
+        formStep.translations,
+        <FormattedMessage defaultMessage="Steps and fields" description="Form design tab title" />
+      )
     );
   }
 
   const missingTranslations = [].concat(
-    extractMissingTranslations(form.translations, 'Form', ['name', 'explanationTemplate']),
-    extractMissingTranslations(form.translations, 'Confirmation', [
-      'submissionConfirmationTemplate',
-    ]),
-    extractMissingTranslations(form.translations, 'Literals', [
-      'beginText',
-      'previousText',
-      'changeText',
-      'confirmText',
-    ]),
-    extractMissingTranslations(form.confirmationEmailTemplate.translations, 'Confirmation'),
+    extractMissingTranslations(
+      form.translations,
+      <FormattedMessage defaultMessage="Form" description="Form fields tab title" />,
+      ['name', 'explanationTemplate']
+    ),
+    extractMissingTranslations(
+      form.translations,
+      <FormattedMessage
+        defaultMessage="Confirmation"
+        description="Form confirmation options tab title"
+      />,
+      ['submissionConfirmationTemplate']
+    ),
+    extractMissingTranslations(
+      form.translations,
+      <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />,
+      ['beginText', 'previousText', 'changeText', 'confirmText']
+    ),
+    extractMissingTranslations(
+      form.confirmationEmailTemplate.translations,
+      <FormattedMessage
+        defaultMessage="Confirmation"
+        description="Form confirmation options tab title"
+      />
+    ),
     formStepTranslations
   );
 
