@@ -391,3 +391,34 @@ class TestAddRadioType(TestMigrations):
         self.assertNotIn(
             "dataType", self.form_definition.configuration["components"][2]
         )
+
+
+class TestFixTypo(TestMigrations):
+    migrate_from = "0066_merge_20230119_1618"
+    migrate_to = "0067_fix_typo_20230124_1624"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        self.form_definition = FormDefinition.objects.create(
+            name="Definition with typo",
+            slug="definition-with-typo",
+            configuration={
+                "components": [
+                    {
+                        "key": "someString",
+                        "registration": {"attribute": "Strainitiator_straatat"},
+                    },
+                ]
+            },
+        )
+
+    def test_typo_is_fixed(self):
+        self.form_definition.refresh_from_db()
+
+        self.assertEqual(
+            self.form_definition.configuration["components"][0]["registration"][
+                "attribute"
+            ],
+            "initiator_straat",
+        )

@@ -34,7 +34,7 @@ class RegistrationAttribute(DjangoChoices):
     )
 
     # Verblijfsadres for both Natuurlijk Persoon and Vestiging
-    initiator_straat = ChoiceItem("Strainitiator_straatat", _("Initiator > Straat"))
+    initiator_straat = ChoiceItem("initiator_straat", _("Initiator > Straat"))
     initiator_huisnummer = ChoiceItem(
         "initiator_huisnummer", _("Initiator > Huisnummer")
     )
