@@ -1134,6 +1134,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             availablePrefillPlugins: state.availablePrefillPlugins,
           },
           languages: state.languageInfo.languages,
+          translationEnabled: state.form.translationEnabled,
         }}
       >
         <Tabs defaultIndex={activeTab ? parseInt(activeTab, 10) : null}>

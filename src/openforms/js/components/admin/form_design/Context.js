@@ -14,6 +14,7 @@ const FormContext = React.createContext({
   formVariables: {},
   plugins: {},
   languages: [],
+  translationEnabled: false,
 });
 FormContext.displayName = 'FormContext';
 

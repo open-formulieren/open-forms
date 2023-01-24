@@ -459,3 +459,4 @@ FormIOBuilder.propTypes = {
 };
 
 export default FormIOBuilder;
+export {TRANSLATABLE_FIELDS, getValuesOfField};

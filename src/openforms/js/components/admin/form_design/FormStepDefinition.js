@@ -3,7 +3,7 @@ global URLify;
  */
 import get from 'lodash/get';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useContext} from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import MessageList from 'components/admin/MessageList';
@@ -14,8 +14,10 @@ import FormIOBuilder from 'components/formio_builder/builder';
 
 import AuthenticationWarning from './AuthenticationWarning';
 import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
+import {FormContext, FormStepContext} from './Context';
 import LanguageTabs from './LanguageTabs';
 import LogicWarning from './LogicWarning';
+import MissingComponentTranslationsWarning from './MissingComponentTranslationsWarning';
 import PluginWarning from './PluginWarning';
 import useDetectConfigurationChanged from './useDetectConfigurationChanged';
 import useDetectSimpleLogicErrors from './useDetectSimpleLogicErrors';
@@ -66,6 +68,9 @@ const FormStepDefinition = ({
       },
     });
   };
+
+  const {translationEnabled} = useContext(FormContext);
+  const {componentTranslations} = useContext(FormStepContext);
 
   const {changed, affectedForms} = useDetectConfigurationChanged(url, configuration);
   const {warnings} = useDetectSimpleLogicErrors(configuration);
@@ -304,6 +309,13 @@ const FormStepDefinition = ({
           )}
         </LanguageTabs>
       </fieldset>
+
+      {translationEnabled ? (
+        <MissingComponentTranslationsWarning
+          configuration={configuration}
+          componentTranslations={componentTranslations}
+        />
+      ) : null}
 
       <h2>Velden</h2>
 
