@@ -2,6 +2,9 @@
 Changelog
 =========
 
+2.0.3 (2023-01-24)
+==================
+
 Bugfix release addressing some more upgrade issues
 
 * [#2520] Fixed bug in mimetype validation for ``application/ms-word`` (and similar) files
