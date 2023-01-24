@@ -2,6 +2,37 @@
 Changelog
 =========
 
+Bugfix release addressing some more upgrade issues
+
+* [#2520] Fixed bug in mimetype validation for ``application/ms-word`` (and similar) files
+* [#2519] Skip 2.0.x upgrade checks if we're already on 2.0.x
+* [#2576] Fix upgrade crash on components with prefill attribute names > 50 chars
+* [security#20] Fixed CSP configuration for Matomo, Piwik and Piwik PRO analytics
+* [#2012] Fixed CSP mechanisms in SiteImprove analytics provider snippet
+* [#2396] Fixed "auto login authentication" option not properly resetting
+* [#2541] Fixed a crash in the logic editor when changing the key of selectboxes components
+
+.. warning:: Manual intervention required for Matomo, Piwik and Piwik PRO users.
+
+   Before 2.0.3, the server URLs for these analytics providers were configured without
+   protocol (typically ``https://``), leading to an insufficiently strict CSP
+   configuration.
+
+   We can not automatically migrate this, but the configuration can be fixed easily in
+   the admin in two places:
+
+   1. Navigate to Admin > Configuratie > Analytics tools-configuratie
+   2. Add ``https://`` in front of your analytics provider server URL (or ``http://``,
+      depending on your environment)
+   3. Save the changes
+
+   Next, apply the same update to the CSP configuration:
+
+   1. Navigate to Admin > Configuratie > Csp settings
+   2. Find all occurrences of your analytics tool server URL (e.g. ``matomo.example.com``)
+   3. Update every record by prepending ``https://`` (or ``http://``, depending on your
+      environment) and save the changes
+
 2.0.2 (2022-12-23)
 ==================
 
