@@ -37,7 +37,14 @@ def add_options_to_config(
         return
 
     values = []
-    value_path = glom(component, "data.valuePath")
+    value_path = glom(component, "data.valuePath", default=None)
+
+    # Case in which the form designer didn't configure the valuePath by mistake.
+    # Catching this in validation on creation of the form definition is tricky, because the referenced component may
+    # be in another form definition.
+    if not value_path:
+        return
+
     for item in items_array:
         value = jsonLogic(value_path, item)
         values.append({"label": value, "value": value})
