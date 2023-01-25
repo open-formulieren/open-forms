@@ -1,5 +1,6 @@
 import {Formio} from 'formiojs';
 
+import {AUTOCOMPLETE} from './edit/options';
 import DEFAULT_TABS, {
   ADVANCED,
   REGISTRATION,
@@ -33,6 +34,7 @@ class EmailField extends FormioEmail {
 
   static editForm() {
     const extra = [
+      {...AUTOCOMPLETE, placeholder: 'email'},
       {
         type: 'checkbox',
         key: 'confirmationRecipient',

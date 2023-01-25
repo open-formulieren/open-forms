@@ -8,12 +8,16 @@ import {
 } from './edit/tabs';
 import TextField from './textfield';
 
+// NB: this component will become deprecated due to preset autocomplete components
+// see issue: https://github.com/open-formulieren/open-forms/issues/2268
+
 class PostcodeField extends TextField {
   static schema(...extend) {
     return TextField.schema(
       {
         type: 'postcode',
         label: 'Postcode',
+        autocomplete: 'postal-code',
         key: 'postcode',
         inputMask: '9999 AA',
         validateOn: 'blur',
@@ -33,7 +37,7 @@ class PostcodeField extends TextField {
     return {
       title: 'Postcode Field',
       icon: 'home',
-      group: 'basic',
+      group: 'deprecated',
       weight: 10,
       schema: PostcodeField.schema(),
     };

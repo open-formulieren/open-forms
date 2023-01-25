@@ -4,6 +4,7 @@ import jsonScriptToVar from 'utils/json-script';
 import {getFullyQualifiedUrl} from 'utils/urls';
 
 import {
+  AUTOCOMPLETE,
   CLEAR_ON_HIDE,
   DEFAULT_VALUE,
   DESCRIPTION,
@@ -60,6 +61,7 @@ const TEXT_BASIC = {
   label: 'Basic',
   components: [
     ...BASIC.components,
+    AUTOCOMPLETE,
     READ_ONLY,
     {
       weight: 100,
