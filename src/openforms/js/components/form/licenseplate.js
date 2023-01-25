@@ -1,12 +1,13 @@
 import {Formio} from 'formiojs';
 
 import {DEFAULT_SENSITIVE_TABS} from './edit/tabs';
+import {localiseSchema} from './i18n';
 
 const TextField = Formio.Components.components.textfield;
 
 class LicensePlate extends TextField {
   static schema(...extend) {
-    return TextField.schema(
+    const schema = TextField.schema(
       {
         type: 'licenseplate',
         label: 'License plate',
@@ -21,6 +22,7 @@ class LicensePlate extends TextField {
       },
       ...extend
     );
+    return localiseSchema(schema);
   }
 
   static get builderInfo() {

@@ -3,17 +3,19 @@ import {Formio} from 'formiojs';
 import {AUTOCOMPLETE, REGEX_VALIDATION} from './edit/options';
 import {ADVANCED, REGISTRATION, SENSITIVE_BASIC, TRANSLATIONS, VALIDATION} from './edit/tabs';
 import {getValidationEditForm} from './edit/validationEditFormUtils';
+import {localiseSchema} from './i18n';
 
 const PhoneNumber = Formio.Components.components.phoneNumber;
 
 class PhoneNumberField extends PhoneNumber {
   static schema(...extend) {
-    return PhoneNumber.schema(
+    const schema = PhoneNumber.schema(
       {
         inputMask: null,
       },
       ...extend
     );
+    return localiseSchema(schema);
   }
 
   static get builderInfo() {

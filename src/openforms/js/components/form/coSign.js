@@ -4,6 +4,7 @@ import {DESCRIPTION, LABEL_REQUIRED} from 'components/form/edit/options';
 import {getFullyQualifiedUrl} from 'utils/urls';
 
 import {TRANSLATIONS} from './edit/tabs';
+import {localiseSchema} from './i18n';
 
 const FieldComponent = Formio.Components.components.field;
 
@@ -57,7 +58,7 @@ class CoSignField extends FieldComponent {
   }
 
   static schema(...extend) {
-    return FieldComponent.schema(
+    const schema = FieldComponent.schema(
       {
         label: 'Co-sign',
         type: 'coSign',
@@ -66,6 +67,7 @@ class CoSignField extends FieldComponent {
       },
       ...extend
     );
+    return localiseSchema(schema);
   }
 
   static get builderInfo() {

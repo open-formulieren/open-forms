@@ -15,6 +15,7 @@ import {
   PRESENTATION,
 } from './edit/options';
 import {ADVANCED, REGISTRATION, TRANSLATIONS, VALIDATION} from './edit/tabs';
+import {localiseSchema} from './i18n';
 import {RD_CRS} from './rd';
 
 const TextFieldComponent = Formio.Components.components.textfield;
@@ -73,7 +74,7 @@ const EDIT_FORM_TABS = [
 
 export default class Map extends TextFieldComponent {
   static schema(...extend) {
-    return TextFieldComponent.schema(
+    const schema = TextFieldComponent.schema(
       {
         type: 'map',
         label: 'Map',
@@ -81,6 +82,7 @@ export default class Map extends TextFieldComponent {
       },
       ...extend
     );
+    return localiseSchema(schema);
   }
 
   static get builderInfo() {

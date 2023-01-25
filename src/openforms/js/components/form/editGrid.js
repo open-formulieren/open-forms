@@ -10,6 +10,7 @@ import {
   REQUIRED,
 } from './edit/options';
 import {TRANSLATIONS} from './edit/tabs';
+import {localiseSchema} from './i18n';
 
 const EditGridFormio = Formio.Components.components.editgrid;
 
@@ -118,7 +119,7 @@ const EDIT_FORM_TABS = [
 
 class EditGrid extends EditGridFormio {
   static schema(...extend) {
-    return EditGridFormio.schema(
+    const schema = EditGridFormio.schema(
       {
         label: 'Repeating Group',
         key: 'repeatingGroup',
@@ -127,6 +128,7 @@ class EditGrid extends EditGridFormio {
       },
       ...extend
     );
+    return localiseSchema(schema);
   }
   static get builderInfo() {
     return {

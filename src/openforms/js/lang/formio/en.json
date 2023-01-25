@@ -1,3 +1,4 @@
 {
-  "required": "The required field {{field}} must be filled in."
+  "required": "The required field {{field}} must be filled in.",
+  "select-key": "select"
 }

@@ -8,17 +8,19 @@ import DEFAULT_TABS, {
   TRANSLATIONS,
   VALIDATION,
 } from './edit/tabs';
+import {localiseSchema} from './i18n';
 
 const FormioEmail = Formio.Components.components.email;
 
 class EmailField extends FormioEmail {
   static schema(...extend) {
-    return FormioEmail.schema(
+    const schema = FormioEmail.schema(
       {
         validateOn: 'blur',
       },
       ...extend
     );
+    return localiseSchema(schema);
   }
 
   static get builderInfo() {
