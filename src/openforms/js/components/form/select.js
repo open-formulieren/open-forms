@@ -37,7 +37,7 @@ const values = [
 
 class SelectField extends Select {
   static schema(...extend) {
-    return localiseSchema(Select.schema(...extend));
+    return localiseSchema({...Select.schema(...extend), key: 'select-key'});
   }
 
   static get builderInfo() {

@@ -102,7 +102,7 @@
   "File Maximum Size": "Maximale bestandsgrootte",
   "Note that the server upload limit is {{serverUploadLimit}}.": "Merk op dat de maximale uploadgrootte op de server {{serverUploadLimit}} is.",
   "Select": "Keuzelijst",
-  "select": "keuzelijst",
+  "select-key": "keuzelijst",
   "Display": "Weergave",
   "Conditional": "Conditie",
   "Logic": "Logica",
