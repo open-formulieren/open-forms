@@ -8,7 +8,7 @@ const Select = Formio.Components.components.select;
 const optionsChoices = [
   {
     type: 'select',
-    key: `data.dataSrc`,
+    key: 'data.dataSrc',
     label: 'Data source',
     description: 'What data to use for the options of this field.',
     defaultValue: 'manual',
@@ -60,7 +60,7 @@ const optionsChoices = [
     ],
     conditional: {
       show: true,
-      when: `data.dataSrc`,
+      when: 'data.dataSrc',
       eq: 'manual',
     },
   },
@@ -71,7 +71,7 @@ const optionsChoices = [
     input: true,
     conditional: {
       show: true,
-      when: `data.dataSrc`,
+      when: 'data.dataSrc',
       eq: 'manual',
     },
   },
@@ -87,7 +87,7 @@ const optionsChoices = [
     // but most of the settings don't seem to work.
     conditional: {
       show: true,
-      when: `data.dataSrc`,
+      when: 'data.dataSrc',
       eq: 'variable',
     },
     validate: {

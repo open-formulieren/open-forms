@@ -138,7 +138,7 @@ const REQUIRED = {
 const OPTIONS_CHOICES = [
   {
     type: 'select',
-    key: `dataSrc`,
+    key: 'dataSrc',
     label: 'Data source',
     description: 'What data to use for the options of this field.',
     defaultValue: 'manual',
@@ -192,7 +192,7 @@ const OPTIONS_CHOICES = [
     ],
     conditional: {
       show: true,
-      when: `dataSrc`,
+      when: 'dataSrc',
       eq: 'manual',
     },
   },
