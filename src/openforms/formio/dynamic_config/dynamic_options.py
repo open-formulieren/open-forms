@@ -1,3 +1,5 @@
+from django.template.defaultfilters import escape_filter as escape
+
 from glom import assign, glom
 from json_logic import jsonLogic
 
@@ -15,7 +17,7 @@ def add_options_to_config(
     if glom(component, data_src_path, default=None) != "variable":
         return
 
-    items_path = glom(component, "data.itemsPath")
+    items_path = glom(component, "data.itemsExpression")
 
     # The array of items from which we need to get the values
     items_array = jsonLogic(items_path, data)
@@ -28,18 +30,24 @@ def add_options_to_config(
     is_obj = isinstance(items_array[0], dict)
 
     if not is_obj:
+        values = []
+        for value in items_array:
+            # value is user input!
+            escaped_value = escape(value)
+            values.append({"label": escaped_value, "value": escaped_value})
+
         assign(
             component,
             options_path,
-            [{"label": item, "value": item} for item in items_array],
+            values,
             missing=dict,
         )
         return
 
     values = []
-    value_path = glom(component, "data.valuePath", default=None)
+    value_path = glom(component, "data.valueExpression", default=None)
 
-    # Case in which the form designer didn't configure the valuePath by mistake.
+    # Case in which the form designer didn't configure the valueExpression by mistake.
     # Catching this in validation on creation of the form definition is tricky, because the referenced component may
     # be in another form definition.
     if not value_path:
@@ -47,6 +55,8 @@ def add_options_to_config(
 
     for item in items_array:
         value = jsonLogic(value_path, item)
-        values.append({"label": value, "value": value})
+        # value is user input!
+        escaped_value = escape(value)
+        values.append({"label": escaped_value, "value": escaped_value})
 
     assign(component, options_path, values, missing=dict)

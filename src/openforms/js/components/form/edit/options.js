@@ -209,11 +209,11 @@ const OPTIONS_CHOICES = [
     },
   },
   {
-    label: 'Path to component with items',
-    key: 'data.itemsPath',
+    label: 'Items',
+    key: 'data.itemsExpression',
     type: 'textarea',
     tooltip:
-      'A path to a variable (of array type) whose items should be used as the options for this component.',
+      'A JSON logic expression returning a variable (of array type) whose items should be used as the options for this component.',
     editor: 'ace',
     as: 'json',
     // Documentation for editor settings: https://ajaxorg.github.io/ace-api-docs/interfaces/Ace.EditorOptions.html
@@ -228,11 +228,12 @@ const OPTIONS_CHOICES = [
     },
   },
   {
-    label: 'Path to the value within an item',
-    key: 'data.valuePath',
+    label: 'Items value',
+    key: 'data.valueExpression',
     type: 'textarea',
     tooltip:
-      'A path to a particular value within an item of the array. For example, for a field inside a repeating group.',
+      'In case the items are objects, provide a JSON logic expression to construct the value to use from each item of the array. ' +
+      'For example, this is needed when referring to repeating groups.',
     editor: 'ace',
     as: 'json',
     conditional: {
