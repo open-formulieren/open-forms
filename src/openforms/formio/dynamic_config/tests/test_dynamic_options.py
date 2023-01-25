@@ -93,8 +93,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "dataSrc": "variable",
                     "data": {
-                        "itemsPath": {"var": "repeatingGroup"},
-                        "valuePath": {"var": "name"},
+                        "itemsExpression": {"var": "repeatingGroup"},
+                        "valueExpression": {"var": "name"},
                     },
                 },
                 {
@@ -105,8 +105,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                             {"label": "", "value": ""},
                         ],
                         "dataSrc": "variable",
-                        "itemsPath": {"var": "repeatingGroup"},
-                        "valuePath": {"var": "name"},
+                        "itemsExpression": {"var": "repeatingGroup"},
+                        "valueExpression": {"var": "name"},
                     },
                     "type": "select",
                 },
@@ -119,8 +119,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "dataSrc": "variable",
                     "data": {
-                        "itemsPath": {"var": "repeatingGroup"},
-                        "valuePath": {"var": "name"},
+                        "itemsExpression": {"var": "repeatingGroup"},
+                        "valueExpression": {"var": "name"},
                     },
                 },
             ]
@@ -173,8 +173,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "dataSrc": "variable",
                     "data": {
-                        "itemsPath": {"var": "repeatingGroup"},
-                        "valuePath": {"var": "name"},
+                        "itemsExpression": {"var": "repeatingGroup"},
+                        "valueExpression": {"var": "name"},
                     },
                 },
                 {
@@ -185,8 +185,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                             {"label": "", "value": ""},
                         ],
                         "dataSrc": "variable",
-                        "itemsPath": {"var": "repeatingGroup"},
-                        "valuePath": {"var": "name"},
+                        "itemsExpression": {"var": "repeatingGroup"},
+                        "valueExpression": {"var": "name"},
                     },
                     "type": "select",
                 },
@@ -199,8 +199,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "dataSrc": "variable",
                     "data": {
-                        "itemsPath": {"var": "repeatingGroup"},
-                        "valuePath": {"var": "name"},
+                        "itemsExpression": {"var": "repeatingGroup"},
+                        "valueExpression": {"var": "name"},
                     },
                 },
             ]
@@ -244,7 +244,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "dataSrc": "variable",
                     "data": {
-                        "itemsPath": {"var": "textField"},
+                        "itemsExpression": {"var": "textField"},
                     },
                 },
                 {
@@ -255,7 +255,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                             {"label": "", "value": ""},
                         ],
                         "dataSrc": "variable",
-                        "itemsPath": {"var": "textField"},
+                        "itemsExpression": {"var": "textField"},
                     },
                     "type": "select",
                 },
@@ -268,7 +268,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "dataSrc": "variable",
                     "data": {
-                        "itemsPath": {"var": "textField"},
+                        "itemsExpression": {"var": "textField"},
                     },
                 },
             ]
@@ -321,7 +321,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "dataSrc": "variable",
                     "data": {
-                        "itemsPath": {"var": "textField"},
+                        "itemsExpression": {"var": "textField"},
                     },
                 },
                 {
@@ -332,7 +332,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                             {"label": "", "value": ""},
                         ],
                         "dataSrc": "variable",
-                        "itemsPath": {"var": "textField"},
+                        "itemsExpression": {"var": "textField"},
                     },
                     "type": "select",
                 },
@@ -345,7 +345,7 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "dataSrc": "variable",
                     "data": {
-                        "itemsPath": {"var": "textField"},
+                        "itemsExpression": {"var": "textField"},
                     },
                 },
             ]
@@ -389,8 +389,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "dataSrc": "variable",
                     "data": {
-                        "itemsPath": {"var": "repeatingGroup"},
-                        # Missing valuePath
+                        "itemsExpression": {"var": "repeatingGroup"},
+                        # Missing valueExpression
                     },
                 },
                 {
@@ -401,8 +401,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                             {"label": "", "value": ""},
                         ],
                         "dataSrc": "variable",
-                        "itemsPath": {"var": "repeatingGroup"},
-                        # Missing valuePath
+                        "itemsExpression": {"var": "repeatingGroup"},
+                        # Missing valueExpression
                     },
                     "type": "select",
                 },
@@ -415,8 +415,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "dataSrc": "variable",
                     "data": {
-                        "itemsPath": {"var": "repeatingGroup"},
-                        # Missing valuePath
+                        "itemsExpression": {"var": "repeatingGroup"},
+                        # Missing valueExpression
                     },
                 },
             ]
@@ -441,4 +441,45 @@ class TestDynamicConfigAddingOptions(TestCase):
         self.assertEqual(
             configuration["components"][3]["values"],
             [{"label": "", "value": ""}],
+        )
+
+    def test_escaped_html(self):
+        configuration = {
+            "components": [
+                {
+                    "key": "textField",
+                    "type": "textfield",
+                    "multiple": True,
+                },
+                {
+                    "label": "Radio",
+                    "key": "radio",
+                    "type": "radio",
+                    "values": [
+                        {"label": "", "value": ""},
+                    ],
+                    "dataSrc": "variable",
+                    "data": {
+                        "itemsExpression": {"var": "textField"},
+                    },
+                },
+            ]
+        }
+
+        submission = SubmissionFactory.create()
+
+        rewrite_formio_components(
+            FormioConfigurationWrapper(configuration),
+            submission,
+            {"textField": ['Some data <IMG src="/test" />']},
+        )
+
+        self.assertEqual(
+            configuration["components"][1]["values"],
+            [
+                {
+                    "label": "Some data &lt;IMG src=&quot;/test&quot; /&gt;",
+                    "value": "Some data &lt;IMG src=&quot;/test&quot; /&gt;",
+                }
+            ],
         )
