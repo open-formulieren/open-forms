@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.formio.dynamic_config import rewrite_formio_components
+from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
@@ -442,6 +443,13 @@ class TestDynamicConfigAddingOptions(TestCase):
             configuration["components"][3]["values"],
             [{"label": "", "value": ""}],
         )
+
+        logs = TimelineLogProxy.objects.filter(
+            object_id=submission.form.id,
+            template="logging/events/form_configuration_error.txt",
+        )
+
+        self.assertEqual(len(logs), 3)
 
     def test_escaped_html(self):
         configuration = {

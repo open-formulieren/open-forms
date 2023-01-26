@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with label=log.extra_data.component.label key=log.extra_data.component.key lead=log.fmt_lead %}
+   {{ lead }}: The choices for component "{{ label }}" ({{ key }}) are improperly configured. The JSON logic expression to retrieve the items is configured, but no expression for the items values was configured.
+{% endblocktrans %}

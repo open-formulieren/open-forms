@@ -7,7 +7,7 @@ In dit voorbeeld maken we een deel-formulier bestaande uit 1 stap, waarbij
 de opties van een "radio" component dynamisch worden aangepast afhankelijk van de ingevulde antwoorden van een ander
 veld.
 
-Deze functionaliteit kan in hetzelfde manier worden gebruikt voor de "keuzelijst" component en de "selectievakjes"
+Deze functionaliteit kan op dezelfde manier worden gebruikt voor de "keuzelijst" component en de "selectievakjes"
 component.
 
 

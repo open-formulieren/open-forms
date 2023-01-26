@@ -118,7 +118,7 @@ class SelectBoxes(BasePlugin):
     def mutate_config_dynamically(
         self, component: Component, submission: "Submission", data: DataMapping
     ) -> None:
-        add_options_to_config(component, data)
+        add_options_to_config(component, data, submission)
 
 
 @register("select")
@@ -129,7 +129,11 @@ class Select(BasePlugin):
         self, component: Component, submission: "Submission", data: DataMapping
     ) -> None:
         add_options_to_config(
-            component, data, options_path="data.values", data_src_path="data.dataSrc"
+            component,
+            data,
+            submission,
+            options_path="data.values",
+            data_src_path="data.dataSrc",
         )
 
 
@@ -145,7 +149,7 @@ class Radio(BasePlugin):
     def mutate_config_dynamically(
         self, component: Component, submission: "Submission", data: DataMapping
     ) -> None:
-        add_options_to_config(component, data)
+        add_options_to_config(component, data, submission)
 
 
 @register("signature")
