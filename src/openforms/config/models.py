@@ -227,7 +227,7 @@ class GlobalConfiguration(SingletonModel):
         upload_to="logo/",
         blank=True,
         help_text=_(
-            "Allow the uploading of a favicon, .png .jpg .svg and .ico are compatible"
+            "Allow the uploading of a favicon, .png .jpg .svg and .ico are compatible."
         ),
     )
     main_website = models.URLField(
