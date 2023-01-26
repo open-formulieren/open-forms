@@ -36,7 +36,7 @@ class DateTimeField extends DateTimeFormio {
         // actual, calculated `minDate`/`maxDate` value dynamically.
         openForms: {
           minDate: {
-            mode: 'fixedValue',
+            mode: '',
             // options for future/past mode
             includeToday: null,
             // options for relativeToVariable mode
@@ -49,7 +49,7 @@ class DateTimeField extends DateTimeFormio {
             },
           },
           maxDate: {
-            mode: 'fixedValue',
+            mode: '',
             // options for future/past mode
             includeToday: null,
             // options for relativeToVariable mode
