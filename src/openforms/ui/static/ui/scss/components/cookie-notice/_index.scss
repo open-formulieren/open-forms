@@ -5,6 +5,21 @@
 @import '../../../../../../scss/components/form/button';
 @import './vars';
 
+// center at bottom of page
+.cookie-notice-wrapper {
+  position: sticky;
+  display: block;
+  // note: rootMargin for IntersectionObserver must be specified in pixels or percent, not REMs/EMs.
+  bottom: 30px;
+  width: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  padding: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .cookie-notice {
   @include margin(true, $properties: padding);
   @include body;
@@ -12,9 +27,6 @@
   width: 100%;
   @include responsive(max-width, 95vw, 95vw, 75vw, 75vw);
 
-  // center at bottom of page
-  position: fixed;
-  bottom: 3rem;
   left: 0;
   right: 0;
   z-index: 1;
@@ -24,12 +36,21 @@
   background: $cookie-notice-background;
   box-shadow: $cookie-notice-shadow;
 
+  // toggle-class for IntersectionObserver
+  &.stuck {
+    box-shadow: none;
+  }
+  // toggle-class for page where page height is less than the full device height
+  &.no-shadow {
+    box-shadow: none;
+  }
+
   @include responsive(display, block, block, flex, flex);
   justify-content: space-between;
   align-items: center;
+  max-width: 75vw;
 
   @include mobile-only {
-    bottom: 7rem;
     left: 10px;
     right: 10px;
     width: auto;
