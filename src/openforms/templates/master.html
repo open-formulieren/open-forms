@@ -8,12 +8,12 @@
 <html lang="nl" class="view {% firstof config.theme_classname 'openforms-theme' %} {% block view_class %}view--{{ request.resolver_match.namespaces|join:'-' }}-{{ request.resolver_match.url_name }}{% endblock %}">
 <head>
     <meta charset="utf-8">
-    <title>{% block title %}Openforms{% endblock %}</title>
+    <title>{% block title %}{% if config.organization_name %}{{ config.organization_name }} {% else %} Openforms {% endif %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% if request.indexing_options.block %}
     <meta name="robots" content="{{ request.indexing_options.content }}">
     {% endif %}
-    <link href="{% static 'ico/favicon.png' %}" rel="shortcut icon">
+    <link href="{% if config.favicon %}{{ config.favicon.url }}{% else %}{% static 'ico/favicon.svg' %}{% endif %}" rel="shortcut icon">
     <link href="{% static 'bundles/openforms-css.css' %}" media="all" rel="stylesheet"/>
     <link href="{% static 'bundles/core-css.css' %}" media="all" rel="stylesheet"/>
     {% block extra_css %}{% endblock %}
