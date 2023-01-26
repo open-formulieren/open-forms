@@ -14,11 +14,8 @@ def fix_typo(apps, schema_editor):
     for form_definition in form_definitions:
         updated_form_definition = False
         for comp in iter_components(configuration=form_definition.configuration):
-            registration = comp.get("registration")
-            if (
-                registration is not None
-                and registration["attribute"] == "Strainitiator_straatat"
-            ):
+            registration = comp.get("registration", {})
+            if registration.get("attribute") == "Strainitiator_straatat":
                 registration["attribute"] = "initiator_straat"
             updated_form_definition = True
 
