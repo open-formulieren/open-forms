@@ -223,6 +223,14 @@ class GlobalConfiguration(SingletonModel):
             "advise dimensions around 150px by 75px. SVG's are allowed."
         ),
     )
+    favicon = SVGOrImageField(
+        _("favicon"),
+        upload_to="logo/",
+        blank=True,
+        help_text=_(
+            "Allow the uploading of a favicon, .png .jpg .svg and .ico are compatible."
+        ),
+    )
     main_website = models.URLField(
         _("main website link"),
         blank=True,

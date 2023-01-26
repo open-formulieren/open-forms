@@ -76,6 +76,7 @@ class GlobalConfigurationAdmin(
                     "organization_name",
                     "logo",
                     "main_website",
+                    "favicon",
                     "theme_classname",
                     "theme_stylesheet",
                     "theme_stylesheet_file",
