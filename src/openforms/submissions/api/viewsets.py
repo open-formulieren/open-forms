@@ -126,6 +126,15 @@ class SubmissionViewSet(
     lookup_field = "uuid"
     pagination_class = pagination.PageNumberPagination
 
+    @property
+    def throttle_scope(self):
+        # called/checked by the DRF scoped throttle class
+        if self.action == "_complete":
+            return "submit"
+        if self.action == "_suspend":
+            return "pause"
+        return None
+
     def get_object(self):
         if not hasattr(self, "_get_object_cache"):
             submission = super().get_object()

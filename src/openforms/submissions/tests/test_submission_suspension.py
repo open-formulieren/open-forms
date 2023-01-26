@@ -24,6 +24,7 @@ from rest_framework.test import APITestCase
 
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
+from openforms.utils.tests.cache import clear_caches
 
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..tokens import submission_resume_token_generator
@@ -32,6 +33,12 @@ from .mixins import SubmissionsMixin
 
 
 class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
+    def setUp(self):
+        # clear caches to avoid problems with throttling; @override_settings not working
+        # see https://github.com/encode/django-rest-framework/issues/6030
+        self.addCleanup(clear_caches)
+        super().setUp()
+
     def test_invalid_submission_id(self):
         submission = SubmissionFactory.create()
         endpoint = reverse("api:submission-suspend", kwargs={"uuid": submission.uuid})
