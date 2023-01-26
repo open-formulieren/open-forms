@@ -35,7 +35,7 @@ def add_options_source(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("forms", "0066_merge_20230119_1618"),
+        ("forms", "0067_fix_typo_20230124_1624"),
     ]
 
     operations = [migrations.RunPython(add_options_source, migrations.RunPython.noop)]

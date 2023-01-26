@@ -442,8 +442,8 @@ class TestFixTypo(TestMigrations):
 
 
 class TestAddDataSourceToOptions(TestMigrations):
-    migrate_from = "0065_set_radio_data_type"
-    migrate_to = "0067_add_options_data_source"
+    migrate_from = "0067_fix_typo_20230124_1624"
+    migrate_to = "0068_add_options_data_source"
 
     app = "forms"
 
