@@ -400,7 +400,7 @@ class TestFixTypo(TestMigrations):
 
     def setUpBeforeMigration(self, apps):
         FormDefinition = apps.get_model("forms", "FormDefinition")
-        self.form_definition = FormDefinition.objects.create(
+        self.form_definition1 = FormDefinition.objects.create(
             name="Definition with typo",
             slug="definition-with-typo",
             configuration={
@@ -412,13 +412,30 @@ class TestFixTypo(TestMigrations):
                 ]
             },
         )
+        # dummy form_definition for testing KeyError
+        self.form_definition2 = FormDefinition.objects.create(
+            name="Definition with missing registration key",
+            slug="definition-with-missing-key",
+            configuration={
+                "components": [
+                    {
+                        "key": "someString",
+                    },
+                ]
+            },
+        )
 
     def test_typo_is_fixed(self):
-        self.form_definition.refresh_from_db()
+        self.form_definition1.refresh_from_db()
 
         self.assertEqual(
-            self.form_definition.configuration["components"][0]["registration"][
+            self.form_definition1.configuration["components"][0]["registration"][
                 "attribute"
             ],
             "initiator_straat",
         )
+
+    def test_missing_key(self):
+        """Check that missing key does not cause an error"""
+
+        self.form_definition2.refresh_from_db()
