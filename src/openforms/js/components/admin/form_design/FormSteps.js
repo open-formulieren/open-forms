@@ -45,19 +45,15 @@ const FormSteps = ({
       </div>
       <div className="edit-panel__edit-area">
         {activeStep ? (
-          <FormStepContext.Provider
-            value={{componentTranslations: activeStep.componentTranslations || {}}}
-          >
-            <ValidationErrorsProvider errors={activeStep.validationErrors}>
-              <FormStep
-                data={activeStep}
-                onEdit={onEdit.bind(null, activeStepIndex)}
-                onComponentMutated={onComponentMutated}
-                onFieldChange={onFieldChange.bind(null, activeStepIndex)}
-                onReplace={onReplace.bind(null, activeStepIndex)}
-              />
-            </ValidationErrorsProvider>
-          </FormStepContext.Provider>
+          <ValidationErrorsProvider errors={activeStep.validationErrors}>
+            <FormStep
+              data={activeStep}
+              onEdit={onEdit.bind(null, activeStepIndex)}
+              onComponentMutated={onComponentMutated}
+              onFieldChange={onFieldChange.bind(null, activeStepIndex)}
+              onReplace={onReplace.bind(null, activeStepIndex)}
+            />
+          </ValidationErrorsProvider>
         ) : (
           <FormattedMessage
             defaultMessage="Select a step to view or modify."
