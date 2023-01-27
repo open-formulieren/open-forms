@@ -147,6 +147,9 @@ jobs:
           DB_USER: postgres
           DB_PASSWORD: ''
 
+      - name: Run JS tests
+        run: npm test
+
       - name: Publish coverage report
         uses: codecov/codecov-action@v3
 
