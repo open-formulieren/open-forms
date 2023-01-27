@@ -323,45 +323,26 @@ op_datetime = FunctionLike(_("datetime({args})"))
 
 @add_boilerplate()
 def op_rdelta(*args) -> str:
-    match len(args):
-        case 1:
-            return gettext("{years} year(s)").format(years=args[0])
-        case 2:
-            return gettext("{years} year(s), {months} month(s)").format(
-                years=args[0],
-                months=args[1],
-            )
-        case 3:
+    match args:
+        case [years]:
+            return gettext("{years} year(s)").format(**locals())
+        case [years, months]:
+            return gettext("{years} year(s), {months} month(s)").format(**locals())
+        case [years, months, days]:
             return gettext("{years} year(s), {months} month(s), {days} day(s)").format(
-                years=args[0],
-                months=args[1],
-                days=args[2],
+                **locals()
             )
-        case 4:
-            return gettext("{years}y, {months}m, {days}d, {hours}h").format(
-                years=args[0],
-                months=args[1],
-                days=args[2],
-                hours=args[3],
-            )
-        case 5:
+        case [years, months, days, hours]:
+            return gettext("{years}y, {months}m, {days}d, {hours}h").format(**locals())
+        case [years, months, days, hours, minutes]:
             return gettext(
                 "{years}y, {months}m, {days}d, {hours}h, {minutes}min"
-            ).format(
-                years=args[0],
-                months=args[1],
-                days=args[2],
-                hours=args[3],
-                minutes=args[4],
-            )
-        case 6:
+            ).format(**locals())
+        case [years, months, days, hours, minutes, seconds]:
             return gettext(
                 "{years}y, {months}m, {days}d, {hours}h, {minutes}min, {seconds}s"
-            ).format(
-                years=args[0],
-                months=args[1],
-                days=args[2],
-                hours=args[3],
-                minutes=args[4],
-                seconds=args[5],
+            ).format(**locals())
+        case _:
+            raise ValueError(
+                "Unexpected amount of arguments. Expected 1-6 got {len(args)}: {args!r}"
             )

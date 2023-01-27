@@ -10,12 +10,13 @@ import {
   TRANSLATIONS,
   VALIDATION,
 } from './edit/tabs';
+import {localiseSchema} from './i18n';
 
 const DateTimeFormio = Formio.Components.components.datetime;
 
 class DateTimeField extends DateTimeFormio {
   static schema(...extend) {
-    return DateTimeFormio.schema(
+    const schema = DateTimeFormio.schema(
       {
         type: 'datetime',
         label: 'Date / Time',
@@ -65,6 +66,7 @@ class DateTimeField extends DateTimeFormio {
       },
       ...extend
     );
+    return localiseSchema(schema);
   }
 
   static get builderInfo() {
