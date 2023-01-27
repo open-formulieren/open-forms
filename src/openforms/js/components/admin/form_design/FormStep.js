@@ -4,6 +4,7 @@ import usePrevious from 'react-use/esm/usePrevious';
 
 import FormStepDefinition from './FormStepDefinition';
 import NewStepFormDefinitionPicker from './NewStepFormDefinitionPicker';
+import TYPES from './types';
 
 const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) => {
   const {
@@ -56,27 +57,7 @@ const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) 
 };
 
 FormStep.propTypes = {
-  data: PropTypes.shape({
-    configuration: PropTypes.object,
-    formDefinition: PropTypes.string,
-    index: PropTypes.number,
-    name: PropTypes.string,
-    internalName: PropTypes.string,
-    slug: PropTypes.string,
-    loginRequired: PropTypes.bool,
-    isReusable: PropTypes.bool,
-    url: PropTypes.string,
-    isNew: PropTypes.bool,
-    validationErrors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
-    translations: PropTypes.objectOf(
-      PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        saveText: PropTypes.string.isRequired,
-        previousText: PropTypes.string.isRequired,
-        nextText: PropTypes.string.isRequired,
-      })
-    ),
-  }).isRequired,
+  data: TYPES.FormStep.isRequired,
   onEdit: PropTypes.func.isRequired,
   onComponentMutated: PropTypes.func.isRequired,
   onFieldChange: PropTypes.func.isRequired,

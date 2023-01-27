@@ -6,9 +6,9 @@ import {FormattedMessage} from 'react-intl';
 import Loader from 'components/admin/Loader';
 import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
 
-import {FormStepContext} from './Context';
 import FormStep from './FormStep';
 import FormStepsNav from './FormStepsNav';
+import TYPES from './types';
 
 const FormSteps = ({
   steps = [],
@@ -66,18 +66,7 @@ const FormSteps = ({
 };
 
 FormSteps.propTypes = {
-  steps: PropTypes.arrayOf(
-    PropTypes.shape({
-      configuration: PropTypes.object,
-      formDefinition: PropTypes.string,
-      index: PropTypes.number,
-      name: PropTypes.string,
-      slug: PropTypes.string,
-      url: PropTypes.string,
-      isNew: PropTypes.bool,
-      validationErrors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
-    })
-  ),
+  steps: PropTypes.arrayOf(TYPES.FormStep),
   onEdit: PropTypes.func.isRequired,
   onComponentMutated: PropTypes.func.isRequired,
   onFieldChange: PropTypes.func.isRequired,
