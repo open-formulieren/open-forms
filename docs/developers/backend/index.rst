@@ -78,6 +78,7 @@ Development and debug tooling
 .. toctree::
     :maxdepth: 1
 
+    tests
     dev-rendering
     profiling
     file-uploads
