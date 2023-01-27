@@ -1,11 +1,17 @@
-import cloneDeep from 'lodash/cloneDeep';
-
+/**
+ * Implement backend API interaction from our (state) data.
+ *
+ * Functions in this module should only implement the async calls to the API endpoints
+ * and error handling/processing for the responses of these requests. They translate
+ * the client-side data structures to data structures understood by the API endpoints.
+ *
+ * Avoid adding more complex data processing - this should ideally have been done in
+ * the parent as you require a clean view of the data there anyway.
+ */
 import {DEFAULT_LANGUAGE} from 'components/admin/form_design/LanguageTabs';
 import {FORM_DEFINITIONS_ENDPOINT} from 'components/admin/form_design/constants';
 import {FormException} from 'utils/exception';
 import {ValidationErrors, post, put} from 'utils/fetch';
-
-import {extractTranslationsFromConfiguration, removeTranslationsFromConfiguration} from '../utils';
 
 const updateOrCreateSingleFormStep = async (
   csrftoken,
@@ -35,12 +41,13 @@ const updateOrCreateSingleFormStep = async (
     internalName: step.internalName,
     slug: step.slug,
     // Remove any references to the custom translations key in the configuration
-    configuration: removeTranslationsFromConfiguration(cloneDeep(step.configuration)),
+    configuration: step.configuration,
     loginRequired: step.loginRequired,
     isReusable: step.isReusable,
     translations: formDefinitionTranslations,
-    // Extract the translations for this FormDefinition from the configuration
-    componentTranslations: extractTranslationsFromConfiguration(step.configuration),
+    // the component translations need to be cleaned up and fully processed in the
+    // reducer/state management of the component calling the data functions.
+    componentTranslations: step.componentTranslations,
   };
 
   try {

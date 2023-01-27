@@ -1,6 +1,6 @@
 import {Utils} from 'formiojs';
 
-import jsonScriptToVar from 'utils/json-script';
+import {getSupportedLanguages} from 'components/formio_builder/translation';
 import {getFullyQualifiedUrl} from 'utils/urls';
 
 import {
@@ -325,7 +325,7 @@ const PREFILL = {
   ],
 };
 
-const LANGUAGES = jsonScriptToVar('languages', {default: []});
+const LANGUAGES = getSupportedLanguages();
 const tabComponents = LANGUAGES.map(([languageCode, _label]) => {
   return {
     key: languageCode,
@@ -335,17 +335,20 @@ const tabComponents = LANGUAGES.map(([languageCode, _label]) => {
         type: 'datagrid',
         input: true,
         label: 'Translations',
-        key: `of-translations.${languageCode}`,
-        tooltip: 'Translations for literals used for this field',
+        key: `openForms.translations.${languageCode}`,
+        tooltip: 'Translations for literals used in this component.',
         weight: 10,
         reorder: false,
+        noFirstRow: true,
+        disableAddingRemovingRows: true,
         components: [
           {
             label: 'Literal',
             key: 'literal',
-            input: true,
+            input: false,
             unique: true,
             type: 'textfield',
+            disabled: true,
           },
           {
             label: 'Translation',

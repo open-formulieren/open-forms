@@ -1,65 +1,20 @@
 import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
+import set from 'lodash/set';
 import PropTypes from 'prop-types';
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {FormBuilder, Templates} from 'react-formio';
 
-import jsonScriptToVar from '../../utils/json-script';
-import {FormStepContext} from '../admin/form_design/Context';
+import jsonScriptToVar from 'utils/json-script';
+
 import customTemplates from './customTemplates';
-import nlStrings from './translation';
+import nlStrings, {
+  addTranslationForLiteral,
+  handleComponentValueLiterals,
+  isTranslatableProperty,
+} from './translation';
 
 Templates.current = customTemplates;
-
-const TRANSLATABLE_FIELDS = [
-  'label',
-  'description',
-  'placeholder',
-  'defaultValue',
-  'tooltip',
-  'values.label',
-];
-
-const getValuesOfField = (component, fieldName) => {
-  let values = [];
-  if (fieldName.includes('.')) {
-    const [prefix, inner] = fieldName.split('.');
-    for (const entry of component[prefix] || []) {
-      values.push(entry[inner]);
-    }
-  } else {
-    let value = component[fieldName];
-    if (!value) return [];
-    else if (typeof value === 'object' && !Array.isArray(value)) return [];
-
-    values.push(component[fieldName]);
-  }
-  return values;
-};
-
-const injectTranslationsIntoConfiguration = (configuration, componentTranslations) => {
-  FormioUtils.eachComponent(configuration.components, component => {
-    injectTranslationsIntoConfiguration(component, componentTranslations);
-  });
-
-  if (configuration.display !== 'form') {
-    let values = [];
-    for (const field of TRANSLATABLE_FIELDS) {
-      values = values.concat(getValuesOfField(configuration, field));
-    }
-
-    let mutatedTranslations = {};
-    for (const [languageCode, translations] of Object.entries(componentTranslations)) {
-      for (const [literal, translation] of Object.entries(translations)) {
-        if (values.includes(literal)) {
-          mutatedTranslations[languageCode] = (mutatedTranslations[languageCode] || []).concat([
-            {literal: literal, translation: translation},
-          ]);
-        }
-      }
-    }
-    configuration['of-translations'] = mutatedTranslations;
-  }
-};
 
 const getBuilderOptions = () => {
   const maxFileUploadSize = jsonScriptToVar('setting-MAX_FILE_UPLOAD_SIZE');
@@ -350,7 +305,13 @@ const getBuilderOptions = () => {
   };
 };
 
-const FormIOBuilder = ({configuration, onChange, onComponentMutated, forceUpdate = false}) => {
+const FormIOBuilder = ({
+  configuration,
+  onChange,
+  onComponentMutated,
+  componentTranslations = {}, // mapping of language code to (mapping of literal -> translation)
+  forceUpdate = false,
+}) => {
   // the deep clone is needed to create a mutable object, as the FormBuilder
   // mutates this object when forms are edited.
   const clone = cloneDeep(configuration);
@@ -363,14 +324,21 @@ const FormIOBuilder = ({configuration, onChange, onComponentMutated, forceUpdate
   //
   // This approach effectively pins the FormBuilder.form prop reference.
   const formRef = useRef(clone);
-  const {componentTranslations} = useContext(FormStepContext);
+  const previousLiteralsRef = useRef({});
 
-  // TODO instead of injecting this into the configuration, the componentTranslations
-  // should be passed to the components, and each component should then determine which
-  // translations are relevant. Additionally, there should be an onChange event that
-  // mutates these componentTranslations when changing labels/translations, such that
-  // the displayed translations are always up to date
-  injectTranslationsIntoConfiguration(clone, componentTranslations);
+  const componentTranslationsRef = useRef(componentTranslations);
+
+  // ... The onChange event of the builder is only bound once, so while the
+  // onBuilderFormChange function identity changes with every render, the formio builder
+  // instance actually only knows about the very first one. This means our updated state/
+  // props that's checked in the callbacks is an outdated view, which we can fix by using
+  // mutable refs :-)
+  useEffect(() => {
+    const localComponentTranslations = componentTranslationsRef.current;
+    if (!isEqual(localComponentTranslations, componentTranslations)) {
+      componentTranslationsRef.current = componentTranslations;
+    }
+  });
 
   // track some state to force re-renders, and we can also keep track of the amount of
   // re-renders that way for debugging purposes.
@@ -378,6 +346,74 @@ const FormIOBuilder = ({configuration, onChange, onComponentMutated, forceUpdate
 
   // props need to be immutable to not end up in infinite loops
   const [builderOptions] = useState(getBuilderOptions());
+
+  // https://help.form.io/developers/form-renderer#form-events
+  const onBuilderFormChange = (changed, flags, modifiedByHuman) => {
+    const {instance, value: newLiteral} = flags;
+    // get the submission data of the form in the modal, which configures the component
+    // itself.
+    const newComponentConfiguration = instance.root.submission.data;
+    // check which translatable properties are relevant
+    const changedPropertyPath = instance.path;
+    const {type: componentType} = newComponentConfiguration;
+    const localComponentTranslations = componentTranslationsRef.current;
+
+    const exposeTranslations = translations => {
+      // update the component form submission data, so we have the updated translations
+      // in the component.
+      instance.root.submission = {
+        data: {
+          ...newComponentConfiguration,
+          openForms: {
+            ...(newComponentConfiguration?.openForms || {}),
+            translations: translations,
+          },
+        },
+      };
+    };
+
+    // the first builder load/iteration sets the values directly by data.values or values,
+    // depending on the component type. Subsequent edits of the literals are caught in the
+    // normal operation, they show up as data.values[<index>].label and for those the
+    // previous literal is properly tracked.
+    let newTranslations = handleComponentValueLiterals(
+      newComponentConfiguration,
+      localComponentTranslations,
+      changedPropertyPath,
+      newLiteral,
+      previousLiteralsRef
+    );
+    if (newTranslations !== null) {
+      exposeTranslations(newTranslations);
+      return;
+    }
+
+    if (!isTranslatableProperty(componentType, changedPropertyPath)) return;
+
+    // figure out the previous value of the translation literal for this specific
+    // component.
+    const prevLiteral = previousLiteralsRef.current?.[changedPropertyPath];
+
+    // prevent infinite event loops
+    if (newLiteral == prevLiteral) return;
+
+    // update the translations
+    newTranslations = addTranslationForLiteral(
+      newComponentConfiguration,
+      localComponentTranslations,
+      prevLiteral,
+      newLiteral
+    );
+    exposeTranslations(newTranslations);
+    // update the literal for the next change cycle
+    set(previousLiteralsRef.current, [changedPropertyPath], newLiteral);
+  };
+  // otherwise builder keeps refreshing/remounting
+  builderOptions.onChange = onBuilderFormChange;
+
+  const resetEditFormRefs = () => {
+    previousLiteralsRef.current = {};
+  };
 
   // if an update must be forced, we mutate the ref state to point to the new
   // configuration, which causes the form builder to re-render the new configuration.
@@ -391,8 +427,14 @@ const FormIOBuilder = ({configuration, onChange, onComponentMutated, forceUpdate
   const extraProps = {};
 
   if (onComponentMutated) {
-    extraProps.onSaveComponent = onComponentMutated.bind(null, 'changed');
-    extraProps.onDeleteComponent = onComponentMutated.bind(null, 'removed');
+    extraProps.onSaveComponent = (...args) => {
+      resetEditFormRefs();
+      onComponentMutated('changed', ...args);
+    };
+    extraProps.onDeleteComponent = (...args) => {
+      resetEditFormRefs();
+      onComponentMutated('removed', ...args);
+    };
   }
 
   return (
@@ -400,6 +442,8 @@ const FormIOBuilder = ({configuration, onChange, onComponentMutated, forceUpdate
       form={formRef.current}
       options={builderOptions}
       onChange={formSchema => onChange(cloneDeep(formSchema))}
+      onUpdateComponent={() => (previousLiteralsRef.current = {})}
+      onCancelComponent={resetEditFormRefs}
       {...extraProps}
     />
   );
@@ -409,6 +453,7 @@ FormIOBuilder.propTypes = {
   configuration: PropTypes.object,
   onChange: PropTypes.func,
   onComponentMutated: PropTypes.func,
+  componentTranslations: PropTypes.objectOf(PropTypes.objectOf(PropTypes.string)),
   forceUpdate: PropTypes.bool,
 };
 

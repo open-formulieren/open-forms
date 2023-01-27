@@ -14,6 +14,10 @@ import {useImmerReducer} from 'use-immer';
 import Loader from 'components/admin/Loader';
 import Fieldset from 'components/admin/forms/Fieldset';
 import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
+import {
+  clearObsoleteLiterals,
+  persistComponentTranslations,
+} from 'components/formio_builder/translation';
 import {APIError, NotAuthenticatedError} from 'utils/exception';
 import {post} from 'utils/fetch';
 import {getUniqueRandomString} from 'utils/random';
@@ -61,9 +65,7 @@ import {
   getFormStep,
   getPathToComponent,
   getUniqueKey,
-  mergeComponentTranslations,
   parseValidationErrors,
-  rewriteComponentTranslations,
   updateKeyReferencesInLogic,
 } from './utils';
 import VariablesEditor from './variables/VariablesEditor';
@@ -192,6 +194,10 @@ function reducer(draft, action) {
           _mayGenerateDescription: !rule.description,
         }));
       if (priceRules) draft.priceRules = priceRules;
+
+      if (!draft.form.confirmationEmailTemplate) {
+        draft.form.confirmationEmailTemplate = {translations: {}};
+      }
 
       // set initial translations if needed
       for (const {code} of draft.languageInfo.languages) {
@@ -382,14 +388,17 @@ function reducer(draft, action) {
 
       let originalComp;
       let isNew;
+      let configuration;
       switch (mutationType) {
         case 'changed': {
           originalComp = args[0];
+          configuration = args[1];
           isNew = args[4];
           break;
         }
         case 'removed': {
           originalComp = null;
+          configuration = args[0];
           isNew = false;
           break;
         }
@@ -421,14 +430,13 @@ function reducer(draft, action) {
       // TODO: This could break if a reusable definition is used multiple times in a form
       const step = getFormStep(formDefinition, draft.formSteps, true);
 
-      if (mutationType === 'changed' && schema['of-translations']) {
-        // Store the componentTranslations on the formStep, this is relevant when form
-        // submission fails, because we do want to keep track of changed translations
-        step.componentTranslations = mergeComponentTranslations(
-          step.componentTranslations || {},
-          rewriteComponentTranslations(schema['of-translations'])
-        );
-      }
+      // FormIOBuilder.onBuilderFormChange ensures that only the relevant translations
+      // are included. This means we can safely merge the component translations into
+      // the step component translations container, and then using the full form
+      // configuration, we can remove the translations for literals that are no longer
+      // present/used.
+      persistComponentTranslations(step.componentTranslations, schema);
+      step.componentTranslations = clearObsoleteLiterals(step.componentTranslations, configuration);
 
       if (!isNew) {
         // In the case the component was removed, originalComp is null
