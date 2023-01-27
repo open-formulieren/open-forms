@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Mapping, Optional
+from urllib.parse import quote
 
 from django.utils.functional import empty
 
@@ -262,14 +263,16 @@ def bind(var: FormVariable, values: DataMapping) -> JSONValue:
     :raises: :class:`zds_client.client.ClientError` for HTTP 4xx status codes
     :raises: :class:`NotImplementedError` for FormVariable
     """
-    fetch_config: ServiceFetchConfiguration
+    fetch_config: ServiceFetchConfiguration | None
 
     match var:
         case FormVariable(service_fetch_configuration=fetch_config) if fetch_config:
             client = fetch_config.service.build_client()
 
             request_args = dict(
-                path=fetch_config.path,
+                path=fetch_config.path.format(
+                    **{k: quote(str(v), safe="") for k, v in values.items()}  # O(n)
+                ),
                 params=fetch_config.query_params,
                 method=fetch_config.method,
                 headers=fetch_config.headers,
