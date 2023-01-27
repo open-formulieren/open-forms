@@ -1,5 +1,5 @@
 import operator
-from datetime import datetime, time
+from datetime import date, datetime, time
 from typing import Literal, Optional, TypedDict, Union, cast
 
 from django.utils import timezone
@@ -106,13 +106,16 @@ def calculate_delta(
     if not base_value:
         return None
 
-    # if it's not empty-ish, it's a datetime
-    base_value = cast(datetime, base_value)
+    # if it's not empty-ish, it's a datetime or a date
+    if isinstance(base_value, datetime):
+        base_value = cast(datetime, base_value)
 
-    assert (
-        base_value.tzinfo is not None
-    ), "Expected the input variable to be timezone aware!"
-    base_date = timezone.localtime(value=base_value).date()
+        assert (
+            base_value.tzinfo is not None
+        ), "Expected the input variable to be timezone aware!"
+        base_date = timezone.localtime(value=base_value).date()
+    else:
+        base_date = cast(date, base_value)
 
     delta = relativedelta(
         years=cast(int, glom(config, "delta.years", default=None) or 0),
