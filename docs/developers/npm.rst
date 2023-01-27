@@ -1,21 +1,24 @@
 .. _developers_npm:
 
-=========
-NPM usage
-=========
+===================
+Frontend toolchains
+===================
 
-NPM is the Node package manager, where Node is used in the frontend toolchain.
+NPM is the Node package manager, where Node is used in the frontend toolchains.
 
 Note that we have "two frontends":
 
 1. The frontend toolchain for Open Forms (= the backend)
 2. The toolchain for the Open Forms SDK (= the frontend)
 
-Backend toolchain
-=================
+Common tooling
+==============
 
-In the backend project, we use Node and NPM for the admin interface UI (React-based)
-and the stylesheets. You should use nvm_ to manage your local Node and npm versions.
+The common tooling applies to both Open Forms and the SDK.
+
+**NVM**
+
+You should use nvm_ (or similar tools) to manage your local Node and npm versions.
 
 From the root of the project:
 
@@ -24,12 +27,52 @@ From the root of the project:
     nvm install  # one time only
     nvm use  # to use the configured node version in .nvmrc
 
+**Prettier**
+
+We don't like endless discussions about code formatting. For that, we leverage Prettier_
+to perform the formatting for us. The CI pipelines run the ``checkformat`` scripts, and
+locally you can format the code using the ``format`` script.
+
+It is recommended to configure your editor or a pre-commit hook to run the prettier
+formatting when a ``.prettierrc.json`` config file is available.
+
+Currently, Prettier is configured to format ``.js`` and ``.scss`` files.
+
+**Managing translations**
+
+Translations are extracted from the code with the ``makemessages`` script, and after the
+translations have been edited in the JSON files, you can compile them via the
+``compilemessages`` script. We currently check both source and compiled messages into
+version control.
+
+There is also a ``bin/find_untranslated_js.py`` script to point out potentially missed
+translations, as the JSON file format is not too friendly to keep track of everything.
+
+**.editorconfig**
+
+Indent sizes and other code formatting rules are specified in the ``.editorconfig`` file,
+which should be supported by most editors. Possibly you need to install a plugin for it
+to be activated though.
+
 SDK toolchain
 =============
 
+See the `SDK Storybook`_ for more technical documentation.
+
+**Yarn**
+
 In the SDK we use yarn_ rather than NPM. There is no particular version pinned at the
-moment (since the lockfile format did not recently change). For the node version, it's
-probably safest to use the same Node version as the backend toolchain.
+moment (since the lockfile format did not recently change). The node version is pinned
+in ``.nvmrc`` though.
+
+The Yarn CLI is almost the same as NPM.
+
+**Storybook**
+
+We are shifting isolated/component development and interaction testing towards
+storybook. Make sure to check it out and fill the gaps in documentation!
 
 .. _nvm: https://github.com/nvm-sh/nvm
 .. _yarn: https://yarnpkg.com/
+.. _Prettier: https://prettier.io/
+.. _SDK Storybook: https://open-formulieren.github.io/open-forms-sdk/

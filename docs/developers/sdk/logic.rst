@@ -71,15 +71,3 @@ to as 'backend rules'. The key differences between the two are:
 
    It has been reported that using both frontend rules and backend rules can cause the focus of the form to jump
    in unexpected ways.
-
-Known issues
-============
-
-**Logic check callback rebuilds Formio form**
-
-Because of the logic check - even if nothing changed, often the Formio WebForm component
-(with all children) is rebuilt. This manifests as:
-
-- `appointment dropdowns flicker`_
-
-.. _appointment dropdowns flicker: https://github.com/open-formulieren/open-forms/issues/698

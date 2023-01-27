@@ -4,9 +4,17 @@ Installation
 
 This installation is meant for developers of Open Forms. If you are looking to
 install Open Forms to try it out, or to run it in production, please consult
-the documentation.
+the `documentation <https://open-forms.readthedocs.io/en/stable/installation/>`_ for
+alternative installation methods.
 
-The project is developed in `Python`_ using the `Django framework`_.
+.. note:: The `Developer documentation`_ on Read the Docs provides working internal
+   links, in case you are reading this on Github or elsewhere.
+
+The (backend) project is developed in `Python`_ using the `Django framework`_.
+
+For the SDK (frontend), see the `Storybook <https://open-formulieren.github.io/open-forms-sdk/>`_
+documentation. This covers *all* SDK related development and will include custom
+application development documentation in the future.
 
 Prerequisites
 =============
@@ -17,9 +25,9 @@ You need the following libraries and/or programs:
 * Python `Virtualenv`_ and `Pip`_
 * `PostgreSQL`_ 10 or above
 * `Redis`_ for `Celery`_ to work
-* `Node.js`_ (LTS version, see ``.nvmrc`` for version information)
+* `Node.js`_, see ``.nvmrc`` for the exact version. Using nvm_ is recommended.
 * `npm`_
-* `yarn`_
+* `yarn`_ (to build the SDK)
 * `gettext`_
 * `chromedriver`_
 
@@ -38,6 +46,7 @@ You will also need the following operating-system libraries:
 .. _Pip: https://packaging.python.org/tutorials/installing-packages/#ensure-pip-setuptools-and-wheel-are-up-to-date
 .. _PostgreSQL: https://www.postgresql.org
 .. _Node.js: http://nodejs.org/
+.. _nvm: https://github.com/nvm-sh/nvm
 .. _npm: https://www.npmjs.com/
 .. _yarn: https://yarnpkg.com/
 .. _Redis: https://redis.io/
@@ -103,15 +112,29 @@ development machine.
        $ python src/manage.py runserver
 
 
-**Note:** If you are making local, machine specific, changes, add them to
-``src/openforms/conf/local.py``. You can base this file on the
+**Note:** If you are making local (machine specific) changes, add them to your local
+``.env`` file or ``src/openforms/conf/local.py``. You can base this file on the
 example file included in the same directory.
 
-**Note:** You can run watch-tasks to compile `Sass`_ to CSS and `ECMA`_ to JS
-using ``npm run watch``.
 
-.. _ECMA: https://ecma-international.org/
-.. _Sass: https://sass-lang.com/
+Building and running the frontend code
+--------------------------------------
+
+The backend project (``open-forms``, as opposed to ``open-forms-sdk``) comes with its
+own SASS/Javascript build pipeline.
+
+For a one-off build:
+
+.. code-block:: bash
+
+    npm run build
+
+However, while developing on frontend code, it's recommended to start a watch process
+that performs incremental builds:
+
+.. code-block:: bash
+
+    npm start
 
 
 Using the SDK in the Open Forms backend
@@ -121,6 +144,10 @@ The Docker image build copies the build artifacts of the SDK into the backend co
 This is not available during local development, but can be mimicked by symlinking or
 fully copying a build of the SDK to Django's staticfiles. This enables you to use
 this particular SDK build for local backend dev and testing.
+
+.. note:: This only builds the SDK once so that you can use it from within the
+   backend project. For actual SDK development, please review the appropriate
+   `SDK documentation <https://open-formulieren.github.io/open-forms-sdk/>`_.
 
 1. First, ensure you have checked out the SDK repository and made a production build:
 
@@ -145,7 +172,7 @@ this particular SDK build for local backend dev and testing.
 
    .. code-block:: bash
 
-      $ python src/manage.py collectstatic --link
+      $ python src/manage.py collectstatic
 
 If you're using a tagged version with the SDK code in a subdirectory, you can set the
 ``SDK_RELEASE`` environment variable - it defaults to ``latest`` in dev settings.
@@ -168,7 +195,7 @@ When updating an existing installation:
 
        $ git pull
        $ pip install -r requirements/dev.txt
-       $ npm install
+       $ npm install --legacy-peer-deps
        $ npm run build
 
 3. Update the statics and database:
@@ -212,7 +239,9 @@ To run the test suite:
 
 .. code-block:: bash
 
-    $ python src/manage.py test openforms
+    $ python src/manage.py test src
+
+See the detailed developer documentation for more information and different strategies.
 
 Configuration via environment variables
 =======================================
@@ -417,3 +446,4 @@ for translation.
 
 
 .. _Celery: https://docs.celeryq.dev/en/stable/
+.. _Developer documentation: https://open-forms.readthedocs.io/en/latest/developers/
