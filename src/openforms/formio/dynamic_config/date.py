@@ -1,6 +1,6 @@
 import operator
 from datetime import date, datetime, time
-from typing import Literal, Optional, TypedDict, Union, cast
+from typing import Literal, Optional, TypedDict, cast
 
 from django.utils import timezone
 
@@ -98,24 +98,19 @@ def calculate_delta(
 ) -> Optional[datetime]:
     assert config["mode"] == "relativeToVariable"
 
-    base_value = cast(
-        Optional[Union[datetime, str]],
-        glom(data, config["variable"], default=None),
-    )
-    # can't do calculations on values that don't exist or are empty
-    if not base_value:
-        return None
-
-    # if it's not empty-ish, it's a datetime or a date
-    if isinstance(base_value, datetime):
-        base_value = cast(datetime, base_value)
-
-        assert (
-            base_value.tzinfo is not None
-        ), "Expected the input variable to be timezone aware!"
-        base_date = timezone.localtime(value=base_value).date()
-    else:
-        base_date = cast(date, base_value)
+    base_value = glom(data, config["variable"], default=None)
+    match base_value:
+        case datetime():
+            assert (
+                base_value.tzinfo is not None
+            ), "Expected the input variable to be timezone aware!"
+            base_date = timezone.localtime(value=base_value).date()
+        case date():
+            base_date = base_value
+        case None:
+            return
+        case _:
+            raise ValueError("Unexpected type encountered for base value")
 
     delta = relativedelta(
         years=cast(int, glom(config, "delta.years", default=None) or 0),
