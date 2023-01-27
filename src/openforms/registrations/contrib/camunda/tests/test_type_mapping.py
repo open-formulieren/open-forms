@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 
 from django.test import SimpleTestCase
@@ -35,6 +35,8 @@ class TypeMappingTests(SimpleTestCase):
         skip_keys = [
             "updateNote",
         ]
+
+        utc1_timezone = timezone.get_fixed_timezone(timedelta(hours=1))
         expected = {
             "bsn": "111222333",
             "bsnEmpty": "",
@@ -68,6 +70,15 @@ class TypeMappingTests(SimpleTestCase):
                 date(2022, 2, 14),
                 date(2022, 2, 15),
                 date(2022, 2, 16),
+            ],
+            "dateTime": datetime(2023, 1, 18, 16, tzinfo=utc1_timezone),
+            "dateTimeMultipleEmpty": [None],
+            "dateTimeEmpty": None,
+            "dateTimeHidden": datetime(2023, 1, 18, 16, tzinfo=utc1_timezone),
+            "dateTimeMultiple": [
+                datetime(2023, 1, 18, 16, tzinfo=utc1_timezone),
+                datetime(2023, 1, 19, 17, tzinfo=utc1_timezone),
+                datetime(2023, 1, 20, 18, tzinfo=utc1_timezone),
             ],
             "dateMultiEmpty": [None],
             "email": "test@example.com",
