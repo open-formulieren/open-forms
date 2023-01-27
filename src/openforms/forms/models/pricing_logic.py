@@ -6,6 +6,8 @@ from django.utils.translation import gettext_lazy as _
 
 class FormPriceLogic(models.Model):
     """
+    This class is deprecated in favor of form logic + variables.
+
     Express dynamic pricing using form logic.
 
     By default, prices are encapsulated in :class:`openforms.products.models.Product`,

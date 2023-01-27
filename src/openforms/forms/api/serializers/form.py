@@ -11,6 +11,7 @@ from openforms.authentication.registry import register as auth_register
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
+from openforms.forms.models import FormVariable
 from openforms.payments.api.fields import PaymentOptionsReadOnlyField
 from openforms.payments.registry import register as payment_register
 from openforms.products.models import Product
@@ -84,6 +85,15 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         lookup_field="uuid",
         help_text=_("URL to the category in the Open Forms API"),
     )
+    pricing_variable = serializers.SlugRelatedField(
+        label=_("pricing_variable"),
+        queryset=FormVariable.objects.all(),
+        # read_only=True,
+        # many=False,
+        required=False,
+        allow_null=True,
+        slug_field="name",
+    )
     product = serializers.HyperlinkedRelatedField(
         label=_("product"),
         queryset=Product.objects.all(),
@@ -130,6 +140,8 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "payment_backend_options",
             "payment_options",
             "literals",
+            "pricing_logic",
+            "pricing_variable",
             "product",
             "slug",
             "url",

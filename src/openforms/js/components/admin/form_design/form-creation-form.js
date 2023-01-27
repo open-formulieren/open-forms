@@ -33,7 +33,6 @@ import FormObjectTools from './FormObjectTools';
 import FormSteps from './FormSteps';
 import FormSubmit from './FormSubmit';
 import {DEFAULT_LANGUAGE} from './LanguageTabs';
-import MissingTranslationsWarning from './MissingTranslationsWarning';
 import PaymentFields from './PaymentFields';
 import {EMPTY_PRICE_RULE, PriceLogic} from './PriceLogic';
 import ProductFields from './ProductFields';
@@ -95,6 +94,8 @@ const initialFormState = {
     submissionAllowed: 'yes',
     registrationBackend: '',
     registrationBackendOptions: {},
+    pricingLogic: 'static',
+    pricingVariable: null,
     product: null,
     paymentBackend: '',
     paymentBackendOptions: {},
@@ -159,6 +160,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   submissionsRemovalOptions: 'submission-removal-options',
   logicRules: 'logic-rules',
   priceRules: 'product-payment',
+  pricingMode: 'product-payment',
   variables: 'variables',
   appointmentEnabled: 'form',
 };
@@ -239,7 +241,7 @@ function reducer(draft, action) {
       break;
     }
     case 'FIELD_CHANGED': {
-      const {name, value} = action.payload;
+      const {name, value, formVar} = action.payload;
       const nameBits = name.split('.');
 
       // assign new value to state draft
@@ -734,7 +736,7 @@ function reducer(draft, action) {
     }
 
     /**
-     * Price rules actions
+     * Price rule actions
      */
     case 'ADD_PRICE_RULE': {
       const {
@@ -1118,10 +1120,6 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
         </div>
       ) : null}
 
-      {state.form.translationEnabled ? (
-        <MissingTranslationsWarning form={state.form} formSteps={state.formSteps} />
-      ) : null}
-
       <FormContext.Provider
         value={{
           form: {url: state.form.url},
@@ -1136,7 +1134,6 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             availablePrefillPlugins: state.availablePrefillPlugins,
           },
           languages: state.languageInfo.languages,
-          translationEnabled: state.form.translationEnabled,
         }}
       >
         <Tabs defaultIndex={activeTab ? parseInt(activeTab, 10) : null}>
@@ -1263,8 +1260,29 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
               onChange={onFieldChange}
             />
             <PriceLogic
+              pricingLogic={state.form.pricingLogic}
+              formVariables={state.formVariables}
+              pricingVariable={state.form.pricingVariable}
               rules={state.priceRules}
-              onChange={onPriceRuleChange}
+              onChangePricingLogic={event =>
+                dispatch({
+                  type: 'FIELD_CHANGED',
+                  payload: {name: 'form.pricingLogic', value: event.target.value},
+                })
+              }
+              onChangePricingVariable={event =>
+                dispatch({
+                  type: 'FIELD_CHANGED',
+                  payload: {
+                    name: 'form.pricingVariable',
+                    value: event.target.value,
+                    formVar: state.formVariables.filter(
+                      formVar => formVar.name === event.target.value
+                    )[0],
+                  },
+                })
+              }
+              onChangePriceRule={onPriceRuleChange}
               onDelete={index => dispatch({type: 'DELETED_PRICE_RULE', payload: {index: index}})}
               onAdd={() => dispatch({type: 'ADD_PRICE_RULE'})}
             />

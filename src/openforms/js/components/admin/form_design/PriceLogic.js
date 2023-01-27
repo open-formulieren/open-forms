@@ -12,6 +12,7 @@ import Select from 'components/admin/forms/Select';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 import {getTranslatedChoices} from 'utils/i18n';
 
+// import UserDefinedVariables from 'components/admin/form_design/variables/UserDefinedVariables'
 import DSLEditorNode from './logic/DSLEditorNode';
 import Trigger from './logic/Trigger';
 import {parseValidationErrors} from './utils';
@@ -39,25 +40,67 @@ const PRICING_MODES = [
       defaultMessage: 'Use logic rules to determine the price',
     }),
   ],
+  [
+    'from_variable',
+    defineMessage({
+      description: 'variable pricing mode label',
+      defaultMessage: 'Determine the price based on user-defined variable',
+    }),
+  ],
 ];
 
-const PricingMode = ({hasDynamicPricing, onChange}) => {
+const PricingMode = ({pricingLogic, onChange}) => {
   const intl = useIntl();
   return (
-    <Select
-      choices={getTranslatedChoices(intl, PRICING_MODES)}
-      value={hasDynamicPricing ? 'dynamic' : 'static'}
-      onChange={onChange}
-    />
+    <Field name="form.pricingLogic">
+      <Select
+        choices={getTranslatedChoices(intl, PRICING_MODES)}
+        value={pricingLogic}
+        onChange={onChange}
+      />
+    </Field>
+  );
+};
+
+const PricingVariable = ({formVariables, pricingVariable, onChange}) => {
+  return (
+    <Field
+      name="form.pricingVariable"
+      label={
+        <FormattedMessage
+          description="Pricing variable label"
+          defaultMessage="Select pricing variable"
+        />
+      }
+    >
+      <Select
+        // testing
+        choices={[
+          [formVariables[0].name, formVariables[0].name],
+          [formVariables[1].name, formVariables[1].name],
+        ]}
+        value={pricingVariable}
+        onChange={onChange}
+      />
+    </Field>
   );
 };
 
 PricingMode.propTypes = {
-  hasDynamicPricing: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,
 };
 
-export const PriceLogic = ({rules = [], onChange, onDelete, onAdd}) => {
+export const PriceLogic = ({
+  rules = [],
+  formVariables,
+  pricingLogic,
+  pricingVariable,
+  onChangePricingLogic,
+  onChangePricingVariable,
+  onChangePriceRule,
+  onDelete,
+  onAdd,
+}) => {
   const hasDynamicPricing = rules.length > 0;
 
   const validationErrors = parseValidationErrors(useContext(ValidationErrorContext), 'priceRules');
@@ -65,12 +108,14 @@ export const PriceLogic = ({rules = [], onChange, onDelete, onAdd}) => {
   // TODO: de-duplicate/validate duplicate rules (identical triggers?)
 
   const onPricingModeChange = event => {
+    onChangePricingLogic(event); // dispatch to onPricingLogicChange in form-creation.js
     const {value} = event.target;
+
     // toggle from static to dynamic -> ensure at least one rule exists
     if (value === 'dynamic' && !hasDynamicPricing) {
       onAdd();
       // toggle from dynamic to static -> delete all the rules
-    } else if (value === 'static' && hasDynamicPricing) {
+    } else if ((value === 'static' || value === 'from_variable') && hasDynamicPricing) {
       // XXX: iterate in reverse so we delete all rules by removing the last one
       // every time.
       // State updates in event handlers are batched by React, so removing index 0, 1,...
@@ -83,6 +128,8 @@ export const PriceLogic = ({rules = [], onChange, onDelete, onAdd}) => {
         onDelete(maxIndex - offset);
       }
     }
+
+    pricingLogic = value;
   };
 
   return (
@@ -100,30 +147,44 @@ export const PriceLogic = ({rules = [], onChange, onDelete, onAdd}) => {
           name="pricing.mode"
           label={<FormattedMessage description="Pricing mode label" defaultMessage="Mode" />}
         >
-          <PricingMode hasDynamicPricing={hasDynamicPricing} onChange={onPricingModeChange} />
+          <PricingMode
+            pricingLogic={pricingLogic}
+            hasDynamicPricing={hasDynamicPricing}
+            onChange={onPricingModeChange}
+          />
         </Field>
       </FormRow>
+      {pricingLogic === 'from_variable' && (
+        <PricingVariable
+          formVariables={formVariables}
+          pricingVariable={pricingVariable}
+          onChange={onChangePricingVariable}
+        />
+      )}
 
       {rules.map((rule, index) => (
         <Rule
           key={rule.uuid || rule._generatedId}
           {...rule}
-          onChange={onChange.bind(null, index)}
+          onChange={onChangePriceRule.bind(null, index)}
           onDelete={onDelete.bind(null, index)}
           errors={validationErrors[index.toString()]}
         />
       ))}
-
-      <ButtonContainer onClick={onAdd}>
-        <FormattedMessage description="Add price logic rule button" defaultMessage="Add rule" />
-      </ButtonContainer>
+      {hasDynamicPricing && (
+        <ButtonContainer onClick={onAdd}>
+          <FormattedMessage description="Add price logic rule button" defaultMessage="Add rule" />
+        </ButtonContainer>
+      )}
     </Fieldset>
   );
 };
 
 PriceLogic.propTypes = {
   rules: PropTypes.arrayOf(PropTypes.object),
-  onChange: PropTypes.func.isRequired,
+  onChangePricingLogic: PropTypes.func.isRequired,
+  onChangePricingVariable: PropTypes.func.isRequired,
+  onChangePriceRule: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
 };

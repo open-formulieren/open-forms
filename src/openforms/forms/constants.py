@@ -34,3 +34,12 @@ class SubmissionAllowedChoices(DjangoChoices):
     no_without_overview = ChoiceItem(
         "no_without_overview", _("No (without overview page)")
     )
+
+
+class PricingLogicChoices(DjangoChoices):
+    static = ChoiceItem("static", _("Use linked product price"))
+    dynamic = ChoiceItem("dynamic", _("Use logic rules to determine the price"))
+    from_variable = ChoiceItem(
+        "from_variable",
+        _("Determine the price based on logic rules and user-defined variables"),
+    )

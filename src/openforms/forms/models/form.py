@@ -27,7 +27,11 @@ from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 from openforms.variables.constants import FormVariableSources
 
-from ..constants import ConfirmationEmailOptions, SubmissionAllowedChoices
+from ..constants import (
+    ConfirmationEmailOptions,
+    PricingLogicChoices,
+    SubmissionAllowedChoices,
+)
 from .utils import literal_getter
 
 User = get_user_model()
@@ -60,6 +64,19 @@ class Form(models.Model):
     )
     product = models.ForeignKey(
         "products.Product", null=True, blank=True, on_delete=models.CASCADE
+    )
+    pricing_logic = models.CharField(
+        _("pricing logic"),
+        choices=PricingLogicChoices,
+        default=PricingLogicChoices.static,
+        help_text=_("How the price of a product should be determined"),
+        max_length=24,
+    )
+    pricing_variable = models.ForeignKey(
+        "forms.FormVariable",
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="form_variable",
     )
     category = models.ForeignKey(
         "forms.Category", null=True, blank=True, on_delete=models.PROTECT

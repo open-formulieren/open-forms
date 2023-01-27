@@ -60,7 +60,10 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
                         "name": "Update variable",
                         "type": "variable",
                         "value": {
-                            "+": [{"var": "nGreenApples"}, {"var": "nRedApples"}]
+                            "+": [
+                                {"var": "nGreenasdfasdfsdfApples"},
+                                {"var": "nRedApples"},
+                            ]
                         },
                     },
                 }
