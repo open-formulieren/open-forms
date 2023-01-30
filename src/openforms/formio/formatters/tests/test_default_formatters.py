@@ -13,6 +13,7 @@ class DefaultFormatterTestCase(TestCase):
         expected = {
             "bsn": "123456782",
             "date": "24 december 2021",
+            "dateTime": "18 januari 2023 16:00",
             "file": "",
             "iban": "RO09 BCYP 0000 0012 3456 7890",
             "time": "16:26",

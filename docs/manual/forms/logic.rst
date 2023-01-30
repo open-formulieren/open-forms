@@ -245,7 +245,8 @@ waar de JSON-logic op werkt).
 .. _Python versie van JSON Logic: https://github.com/maykinmedia/json-logic-py
 
 
-**Voorbeeld formulier**
+Voorbeeld formulier
+^^^^^^^^^^^^^^^^^^^
 
 .. tabs::
 
@@ -360,3 +361,23 @@ partner is hoger dan of gelijk aan EUR 35.000: Waar
     downloaden.
 
 .. _`JSON-logic`: https://jsonlogic.com/
+
+Voorbeeld met vergelijking van datum en tijd
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Het is mogelijk om de datum / tijd component te vergelijken met de huidige datum / tijd.
+
+Bijvoorbeeld, deze trigger checkt of de datum / tijd van een evenement meer dan 24u in de toekomst is:
+
+.. code:: json
+
+    {
+        ">": [
+            {"datetime": {"var": "datumTijdEvenement"}},
+            {"+": [{"var": "now"}, {"rdelta": [0, 0, 0, 24]}]},
+        ]
+    }
+
+Met ``rdelta`` is het mogelijk om berekeningen met datums te doen. De ``rdelta`` operator mag tot 6 argumenten te hebben.
+Deze zijn dan de waarde van ``[jaren, maanden, dagen, uren, minuten, seconden]``. In de trigger hierboven, worden 0 jaren,
+0 maanden, 0 dagen en 24 uren toegevoegd aan de datum / tijd van nu (``{"var": "now"}``).

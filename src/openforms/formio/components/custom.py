@@ -10,7 +10,7 @@ from openforms.typing import DataMapping
 from openforms.utils.date import format_date_value
 
 from ..dynamic_config.date import FormioDateComponent, mutate as mutate_date
-from ..formatters.custom import DateFormatter, MapFormatter
+from ..formatters.custom import DateFormatter, DateTimeFormatter, MapFormatter
 from ..formatters.formio import DefaultFormatter, TextFieldFormatter
 from ..registry import BasePlugin, register
 from ..typing import Component
@@ -41,6 +41,11 @@ class Date(BasePlugin):
         ``src/openforms/js/components/form/date.js`` for the various configurable options.
         """
         mutate_date(component, data)
+
+
+@register("datetime")
+class Datetime(BasePlugin):
+    formatter = DateTimeFormatter
 
 
 @register("map")

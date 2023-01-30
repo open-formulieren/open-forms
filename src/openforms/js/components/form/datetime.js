@@ -12,18 +12,27 @@ import {
 } from './edit/tabs';
 import {localiseSchema} from './i18n';
 
-const DateTimeField = Formio.Components.components.datetime;
+const DateTimeFormio = Formio.Components.components.datetime;
 
-class DateField extends DateTimeField {
+class DateTimeField extends DateTimeFormio {
   static schema(...extend) {
-    const schema = DateTimeField.schema(
+    const schema = DateTimeFormio.schema(
       {
-        type: 'date',
-        label: 'Date',
-        key: 'date',
-        format: 'dd-MM-yyyy',
-        placeholder: 'dd-mm-yyyy',
-        enableTime: false,
+        type: 'datetime',
+        label: 'Date / Time',
+        key: 'dateTime',
+        format: 'dd-MM-yyyy HH:mm',
+        placeholder: 'dd-MM-yyyy HH:mm',
+        enableTime: true,
+        time_24hr: true,
+        timePicker: {
+          hourStep: 1,
+          minuteStep: 1,
+          showMeridian: false,
+          readonlyInput: false,
+          mousewheel: true,
+          arrowkeys: true,
+        },
         // Open Forms extension options - we process those on the backend to set an
         // actual, calculated `minDate`/`maxDate` value dynamically.
         openForms: {
@@ -62,11 +71,11 @@ class DateField extends DateTimeField {
 
   static get builderInfo() {
     return {
-      title: 'Date Field',
-      icon: 'calendar',
+      title: 'Date / Time',
+      icon: 'calendar-plus',
       group: 'basic',
       weight: 10,
-      schema: DateField.schema(),
+      schema: DateTimeField.schema(),
     };
   }
 
@@ -99,7 +108,7 @@ class DateField extends DateTimeField {
   }
 
   get defaultSchema() {
-    return DateField.schema();
+    return DateTimeField.schema();
   }
 
   constructor(component, options, data) {
@@ -123,4 +132,4 @@ class DateField extends DateTimeField {
   }
 }
 
-export default DateField;
+export default DateTimeField;

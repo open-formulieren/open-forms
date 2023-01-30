@@ -47,6 +47,7 @@ TYPE_MAP = {
     "textfield": to_str,
     "iban": to_str,
     "date": lambda c, value: parser.parse(value).date() if value else None,
+    "datetime": lambda c, value: parser.parse(value) if value else None,
     "signature": to_str,  # TODO: file like obj?
     "time": lambda c, value: parser.parse(value).time() if value else None,
     "number": noop,

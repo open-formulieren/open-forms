@@ -7,6 +7,7 @@ import ContentField from './components/form/content';
 import CurrencyField from './components/form/currency';
 import Datamap from './components/form/datamap';
 import DateField from './components/form/date';
+import DateTimeField from './components/form/datetime';
 import EditGrid from './components/form/editGrid';
 import EmailField from './components/form/email';
 import FieldSet from './components/form/fieldset';
@@ -37,6 +38,7 @@ const FormIOModule = {
     checkbox: CheckboxField,
     iban: IbanField,
     date: DateField,
+    datetime: DateTimeField,
     signature: SignatureField,
     time: TimeField,
     number: NumberField,

@@ -323,15 +323,26 @@ op_datetime = FunctionLike(_("datetime({args})"))
 
 @add_boilerplate()
 def op_rdelta(*args) -> str:
-    if len(args) == 1:
-        return gettext("{years} year(s)").format(years=args[0])
-    elif len(args) == 2:
-        return gettext("{years} year(s), {months} month(s)").format(
-            years=args[0],
-            months=args[1],
-        )
-    return gettext("{years} year(s), {months} month(s), {days} day(s)").format(
-        years=args[0],
-        months=args[1],
-        days=args[2],
-    )
+    match args:
+        case [years]:
+            return gettext("{years} year(s)").format(**locals())
+        case [years, months]:
+            return gettext("{years} year(s), {months} month(s)").format(**locals())
+        case [years, months, days]:
+            return gettext("{years} year(s), {months} month(s), {days} day(s)").format(
+                **locals()
+            )
+        case [years, months, days, hours]:
+            return gettext("{years}y, {months}m, {days}d, {hours}h").format(**locals())
+        case [years, months, days, hours, minutes]:
+            return gettext(
+                "{years}y, {months}m, {days}d, {hours}h, {minutes}min"
+            ).format(**locals())
+        case [years, months, days, hours, minutes, seconds]:
+            return gettext(
+                "{years}y, {months}m, {days}d, {hours}h, {minutes}min, {seconds}s"
+            ).format(**locals())
+        case _:
+            raise ValueError(
+                "Unexpected amount of arguments. Expected 1-6 got {len(args)}: {args!r}"
+            )

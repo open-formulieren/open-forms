@@ -1,5 +1,6 @@
 import {Formio} from 'formiojs';
 
+import {MAXIMUM_TIME, MIMINUM_TIME} from './edit/options';
 import DEFAULT_TABS, {
   ADVANCED,
   REGISTRATION,
@@ -42,28 +43,9 @@ class TimeField extends Time {
   }
 
   static editForm() {
-    const extra = [
-      {
-        type: 'time',
-        input: true,
-        key: 'minTime',
-        label: 'Minimum Time',
-        weight: 10,
-        tooltip: 'The minimum time that can be picked.',
-      },
-      {
-        type: 'time',
-        input: true,
-        key: 'maxTime',
-        label: 'Maximum Time',
-        weight: 10,
-        tooltip: 'The maximum time that can be picked.',
-      },
-    ];
-
     const BASIC_TAB = {
       ...SENSITIVE_BASIC,
-      components: [...SENSITIVE_BASIC.components, ...extra],
+      components: [...SENSITIVE_BASIC.components, MIMINUM_TIME, MAXIMUM_TIME],
     };
     const TABS = {
       ...DEFAULT_TABS,

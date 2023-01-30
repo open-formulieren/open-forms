@@ -116,6 +116,24 @@ const READ_ONLY = {
   input: true,
 };
 
+const MIMINUM_TIME = {
+  type: 'time',
+  input: true,
+  key: 'minTime',
+  label: 'Minimum Time',
+  weight: 10,
+  tooltip: 'The minimum time that can be picked.',
+};
+
+const MAXIMUM_TIME = {
+  type: 'time',
+  input: true,
+  key: 'maxTime',
+  label: 'Maximum Time',
+  weight: 10,
+  tooltip: 'The maximum time that can be picked.',
+};
+
 const REGEX_VALIDATION = {
   weight: 130,
   key: 'validate.pattern',
@@ -256,6 +274,8 @@ export {
   AUTOCOMPLETE,
   PRESENTATION,
   MULTIPLE,
+  MIMINUM_TIME,
+  MAXIMUM_TIME,
   HIDDEN,
   CLEAR_ON_HIDE,
   IS_SENSITIVE_DATA,
