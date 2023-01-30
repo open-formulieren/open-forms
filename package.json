@@ -16,8 +16,8 @@
     "makemessages-nl": "formatjs extract 'src/openforms/js/**/*.js' --format src/openforms/js/i18n-formatter.js --out-file src/openforms/js/lang/nl.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "makemessages": "npm run makemessages-nl && npm run makemessages-en",
     "compilemessages": "formatjs compile-folder --ast src/openforms/js/lang src/openforms/js/compiled-lang",
-    "format": "prettier --write 'src/openforms/{js,scss}/**/*.{js,scss}'",
-    "checkformat": "prettier --check 'src/openforms/{js,scss}/**/*.{js,scss}'",
+    "format": "prettier --write 'src/openforms/{js,scss}/**/*.{js,scss,mdx}'",
+    "checkformat": "prettier --check 'src/openforms/{js,scss}/**/*.{js,scss,mdx}'",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
