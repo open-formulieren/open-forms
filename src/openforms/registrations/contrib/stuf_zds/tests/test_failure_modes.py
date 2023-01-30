@@ -95,9 +95,8 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
             additional_matcher=match_text("zakLk01"),
         )
 
+        register_submission(self.submission.id)
         with self.subTest("Initial registration fails"):
-            register_submission(self.submission.id)
-
             self.submission.refresh_from_db()
             self.assertEqual(
                 self.submission.registration_status, RegistrationStatuses.failed
@@ -172,9 +171,8 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
             additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
         )
 
+        register_submission(self.submission.id)
         with self.subTest("Document id generation fails"):
-            register_submission(self.submission.id)
-
             self.submission.refresh_from_db()
             self.assertEqual(
                 self.submission.registration_status, RegistrationStatuses.failed
@@ -268,9 +266,8 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
             additional_matcher=match_text("edcLk01"),
         )
 
+        register_submission(self.submission.id)
         with self.subTest("Document id generation fails"):
-            register_submission(self.submission.id)
-
             self.submission.refresh_from_db()
             self.assertEqual(
                 self.submission.registration_status, RegistrationStatuses.failed
