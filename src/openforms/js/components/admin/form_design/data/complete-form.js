@@ -37,8 +37,14 @@ const getStepReference = (stepsByGeneratedId, stepIdentifier, stepAttribute = 'u
     // if it's a URL, return it - this was already set by the backend.
     return stepIdentifier;
   } catch {
+    // Return the temporary id (_generated id) of form_step if it has one
     const step = stepsByGeneratedId[stepIdentifier];
-    return step[stepAttribute];
+    if (step) {
+      return step[stepAttribute];
+    } else {
+      // form has been persisted to DB; stepIdentifier must be a uuid
+      return stepIdentifier;
+    }
   }
 };
 
