@@ -15,7 +15,7 @@ import FormIOBuilder from './builder';
 /** @const {string} The form builder block name. */
 export const BLOCK_FORM_BUILDER = 'form-builder';
 
-/** @const {string} The container element to render Formeo on. */
+/** @const {string} The container element to render Formio on. */
 export const ELEMENT_CONTAINER = 'container';
 
 onLoaded(() => {
