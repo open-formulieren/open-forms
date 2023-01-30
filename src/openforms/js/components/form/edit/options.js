@@ -138,7 +138,7 @@ const REQUIRED = {
 const OPTIONS_CHOICES = [
   {
     type: 'select',
-    key: 'dataSrc',
+    key: 'openForms.dataSrc',
     label: 'Data source',
     description: 'What data to use for the options of this field.',
     defaultValue: 'manual',
@@ -192,7 +192,7 @@ const OPTIONS_CHOICES = [
     ],
     conditional: {
       show: true,
-      when: 'dataSrc',
+      when: 'openForms.dataSrc',
       eq: 'manual',
     },
   },
@@ -204,13 +204,13 @@ const OPTIONS_CHOICES = [
     input: true,
     conditional: {
       show: true,
-      when: `dataSrc`,
+      when: 'openForms.dataSrc',
       eq: 'manual',
     },
   },
   {
     label: 'Items',
-    key: 'data.itemsExpression',
+    key: 'openForms.itemsExpression',
     type: 'textarea',
     tooltip:
       'A JSON logic expression returning a variable (of array type) whose items should be used as the options for this component.',
@@ -220,7 +220,7 @@ const OPTIONS_CHOICES = [
     // but most of the settings don't seem to work.
     conditional: {
       show: true,
-      when: `dataSrc`,
+      when: 'openForms.dataSrc',
       eq: 'variable',
     },
     validate: {
@@ -229,7 +229,7 @@ const OPTIONS_CHOICES = [
   },
   {
     label: 'Items value',
-    key: 'data.valueExpression',
+    key: 'openForms.valueExpression',
     type: 'textarea',
     tooltip:
       'In case the items are objects, provide a JSON logic expression to construct the value to use from each item of the array. ' +
@@ -238,7 +238,7 @@ const OPTIONS_CHOICES = [
     as: 'json',
     conditional: {
       show: true,
-      when: `dataSrc`,
+      when: 'openForms.dataSrc',
       eq: 'variable',
     },
   },

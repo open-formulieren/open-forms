@@ -16,11 +16,8 @@ def add_options_source(apps, schema_editor):
         updated_form_definition = False
 
         for comp in iter_components(configuration=form_definition.configuration):
-            if comp["type"] in ["radio", "selectboxes"]:
-                comp["dataSrc"] = "manual"
-                updated_form_definition = True
-            elif comp["type"] == "select":
-                assign(comp, "data.dataSrc", "manual", missing=dict)
+            if comp["type"] in ["radio", "selectboxes", "select"]:
+                assign(comp, "openForms.dataSrc", "manual", missing=dict)
                 updated_form_definition = True
 
         if updated_form_definition:

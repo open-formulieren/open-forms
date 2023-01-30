@@ -528,8 +528,13 @@ def logic_evaluation_failed(
 def form_configuration_error(
     form: "Form",
     component: JSONObject,
+    error_message: str,
 ):
-    _create_log(form, "form_configuration_error", extra_data={"component": component})
+    _create_log(
+        form,
+        "form_configuration_error",
+        extra_data={"component": component, "error": error_message},
+    )
 
 
 # - - -

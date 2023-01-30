@@ -133,7 +133,6 @@ class Select(BasePlugin):
             data,
             submission,
             options_path="data.values",
-            data_src_path="data.dataSrc",
         )
 
 

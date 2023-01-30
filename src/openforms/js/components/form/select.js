@@ -8,7 +8,7 @@ const Select = Formio.Components.components.select;
 const optionsChoices = [
   {
     type: 'select',
-    key: 'data.dataSrc',
+    key: 'openForms.dataSrc',
     label: 'Data source',
     description: 'What data to use for the options of this field.',
     defaultValue: 'manual',
@@ -60,7 +60,7 @@ const optionsChoices = [
     ],
     conditional: {
       show: true,
-      when: 'data.dataSrc',
+      when: 'openForms.dataSrc',
       eq: 'manual',
     },
   },
@@ -71,13 +71,13 @@ const optionsChoices = [
     input: true,
     conditional: {
       show: true,
-      when: 'data.dataSrc',
+      when: 'openForms.dataSrc',
       eq: 'manual',
     },
   },
   {
     label: 'Items',
-    key: 'data.itemsExpression',
+    key: 'openForms.itemsExpression',
     type: 'textarea',
     tooltip:
       'A JSON logic expression returning a variable (of array type) whose items should be used as the options for this component.',
@@ -87,7 +87,7 @@ const optionsChoices = [
     // but most of the settings don't seem to work.
     conditional: {
       show: true,
-      when: 'data.dataSrc',
+      when: 'openForms.dataSrc',
       eq: 'variable',
     },
     validate: {
@@ -96,7 +96,7 @@ const optionsChoices = [
   },
   {
     label: 'Items value',
-    key: 'data.valueExpression',
+    key: 'openForms.valueExpression',
     type: 'textarea',
     tooltip:
       'In case the items are objects, provide a JSON logic expression to construct the value to use from each item of the array. ' +
@@ -105,7 +105,7 @@ const optionsChoices = [
     as: 'json',
     conditional: {
       show: true,
-      when: `data.dataSrc`,
+      when: 'openForms.dataSrc',
       eq: 'variable',
     },
   },

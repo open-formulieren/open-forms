@@ -42,7 +42,7 @@ Formulier maken
    gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Waar ontvangt u graag post?
-   * **Data bron**: *variabel*
+   * **Data bron**: *variabele*
    * **Items**: ``{"var": "adressen"}``
    * **Item waarde**:
 
@@ -62,7 +62,7 @@ Formulier maken
    gegevens in en druk daarna op **Opslaan**:
 
    * **Label**: Waar wilt u de toeslag ontvangen?
-   * **Data bron**: *variabel*
+   * **Data bron**: *variabele*
    * **Items**: ``{"var": "iban"}``
 
 #. Klik onderaan op **Opslaan** om het formulier volledig op te slaan.

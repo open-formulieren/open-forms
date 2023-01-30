@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.formio.dynamic_config import rewrite_formio_components
@@ -6,6 +6,7 @@ from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
+@override_settings(LANGUAGE_CODE="en")
 class TestDynamicConfigAddingOptions(TestCase):
     def test_manual_options_not_updated(self):
         configuration = {
@@ -92,8 +93,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                     "values": [
                         {"label": "", "value": ""},
                     ],
-                    "dataSrc": "variable",
-                    "data": {
+                    "openForms": {
+                        "dataSrc": "variable",
                         "itemsExpression": {"var": "repeatingGroup"},
                         "valueExpression": {"var": "name"},
                     },
@@ -105,6 +106,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                         "values": [
                             {"label": "", "value": ""},
                         ],
+                    },
+                    "openForms": {
                         "dataSrc": "variable",
                         "itemsExpression": {"var": "repeatingGroup"},
                         "valueExpression": {"var": "name"},
@@ -118,10 +121,10 @@ class TestDynamicConfigAddingOptions(TestCase):
                     "values": [
                         {"label": "", "value": ""},
                     ],
-                    "dataSrc": "variable",
-                    "data": {
+                    "openForms": {
                         "itemsExpression": {"var": "repeatingGroup"},
                         "valueExpression": {"var": "name"},
+                        "dataSrc": "variable",
                     },
                 },
             ]
@@ -243,8 +246,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                     "values": [
                         {"label": "", "value": ""},
                     ],
-                    "dataSrc": "variable",
-                    "data": {
+                    "openForms": {
+                        "dataSrc": "variable",
                         "itemsExpression": {"var": "textField"},
                     },
                 },
@@ -255,6 +258,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                         "values": [
                             {"label": "", "value": ""},
                         ],
+                    },
+                    "openForms": {
                         "dataSrc": "variable",
                         "itemsExpression": {"var": "textField"},
                     },
@@ -267,8 +272,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                     "values": [
                         {"label": "", "value": ""},
                     ],
-                    "dataSrc": "variable",
-                    "data": {
+                    "openForms": {
+                        "dataSrc": "variable",
                         "itemsExpression": {"var": "textField"},
                     },
                 },
@@ -388,8 +393,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                     "values": [
                         {"label": "", "value": ""},
                     ],
-                    "dataSrc": "variable",
-                    "data": {
+                    "openForms": {
+                        "dataSrc": "variable",
                         "itemsExpression": {"var": "repeatingGroup"},
                         # Missing valueExpression
                     },
@@ -401,6 +406,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                         "values": [
                             {"label": "", "value": ""},
                         ],
+                    },
+                    "openForms": {
                         "dataSrc": "variable",
                         "itemsExpression": {"var": "repeatingGroup"},
                         # Missing valueExpression
@@ -414,9 +421,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                     "values": [
                         {"label": "", "value": ""},
                     ],
-                    "dataSrc": "variable",
-                    "data": {
+                    "openForms": {
                         "itemsExpression": {"var": "repeatingGroup"},
+                        "dataSrc": "variable",
                         # Missing valueExpression
                     },
                 },
@@ -450,6 +457,24 @@ class TestDynamicConfigAddingOptions(TestCase):
         )
 
         self.assertEqual(len(logs), 3)
+        self.assertEqual(
+            logs[0].extra_data["error"],
+            "The choices for component Select Boxes (selectBoxes) are improperly configured. "
+            "The JSON logic expression to retrieve the items is configured, but no expression for the items "
+            "values was configured.",
+        )
+        self.assertEqual(
+            logs[1].extra_data["error"],
+            "The choices for component Select (select) are improperly configured. "
+            "The JSON logic expression to retrieve the items is configured, but no expression for the items "
+            "values was configured.",
+        )
+        self.assertEqual(
+            logs[2].extra_data["error"],
+            "The choices for component Radio (radio) are improperly configured. "
+            "The JSON logic expression to retrieve the items is configured, but no expression for the items "
+            "values was configured.",
+        )
 
     def test_escaped_html(self):
         configuration = {
@@ -466,8 +491,8 @@ class TestDynamicConfigAddingOptions(TestCase):
                     "values": [
                         {"label": "", "value": ""},
                     ],
-                    "dataSrc": "variable",
-                    "data": {
+                    "openForms": {
+                        "dataSrc": "variable",
                         "itemsExpression": {"var": "textField"},
                     },
                 },
@@ -490,4 +515,50 @@ class TestDynamicConfigAddingOptions(TestCase):
                     "value": "Some data &lt;IMG src=&quot;/test&quot; /&gt;",
                 }
             ],
+        )
+
+    def test_wrong_type_variable(self):
+        configuration = {
+            "components": [
+                {
+                    "key": "textField",
+                    "type": "textfield",
+                    "multiple": False,  # Not an array!
+                },
+                {
+                    "label": "Radio",
+                    "key": "radio",
+                    "type": "radio",
+                    "values": [
+                        {"label": "", "value": ""},
+                    ],
+                    "openForms": {
+                        "dataSrc": "variable",
+                        "itemsExpression": {"var": "textField"},
+                    },
+                },
+            ]
+        }
+
+        submission = SubmissionFactory.create()
+
+        rewrite_formio_components(
+            FormioConfigurationWrapper(configuration),
+            submission,
+            {"textField": "Some test data!"},
+        )
+
+        self.assertEqual(
+            configuration["components"][1]["values"],
+            [{"label": "", "value": ""}],
+        )
+
+        logs = TimelineLogProxy.objects.filter(
+            object_id=submission.form.id,
+            template="logging/events/form_configuration_error.txt",
+        )
+        self.assertEqual(len(logs), 1)
+        self.assertEqual(
+            logs[0].extra_data["error"],
+            'Variable obtained with expression {"var": "textField"} for dynamic options is not an array.',
         )

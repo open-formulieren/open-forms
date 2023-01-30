@@ -512,16 +512,18 @@ class TestAddDataSourceToOptions(TestMigrations):
         self.form_definition.refresh_from_db()
 
         self.assertEqual(
-            self.form_definition.configuration["components"][0]["dataSrc"], "manual"
-        )
-        self.assertEqual(
-            self.form_definition.configuration["components"][1]["data"]["dataSrc"],
+            self.form_definition.configuration["components"][0]["openForms"]["dataSrc"],
             "manual",
         )
         self.assertEqual(
-            self.form_definition.configuration["components"][2]["data"]["dataSrc"],
+            self.form_definition.configuration["components"][1]["openForms"]["dataSrc"],
             "manual",
         )
         self.assertEqual(
-            self.form_definition.configuration["components"][3]["dataSrc"], "manual"
+            self.form_definition.configuration["components"][2]["openForms"]["dataSrc"],
+            "manual",
+        )
+        self.assertEqual(
+            self.form_definition.configuration["components"][3]["openForms"]["dataSrc"],
+            "manual",
         )
