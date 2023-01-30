@@ -1,0 +1,74 @@
+name: Build and publish storybook
+
+# Run this workflow every time a new commit pushed to your repository
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  storybook:
+    name: Create storybook build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+          cache-dependency-path: 'requirements/*.txt'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements/ci.txt \
+            --use-pep517 \
+            --use-feature=no-binary-enable-wheel-cache
+
+      - name: Build Storybook docs
+        env:
+          DJANGO_SETTINGS_MODULE: openforms.conf.ci
+        run: |
+          npm ci --legacy-peer-deps
+          python src/manage.py collectstatic --noinput
+          npm run build-storybook
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./storybook-static
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'  # Exclude PRs
+    needs: storybook
+    steps:
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v1
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
