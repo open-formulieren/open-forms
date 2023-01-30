@@ -439,3 +439,91 @@ class TestFixTypo(TestMigrations):
         """Check that missing key does not cause an error"""
 
         self.form_definition2.refresh_from_db()
+
+
+class TestAddDataSourceToOptions(TestMigrations):
+    migrate_from = "0067_fix_typo_20230124_1624"
+    migrate_to = "0068_add_options_data_source"
+
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+
+        self.form_definition = FormDefinition.objects.create(
+            name="Definition with radio",
+            slug="definition-with-radio",
+            configuration={
+                "components": [
+                    {
+                        "label": "Select Boxes",
+                        "key": "selectBoxes",
+                        "type": "selectboxes",
+                        "values": [
+                            {"label": "A", "value": "a"},
+                            {"label": "B", "value": "b"},
+                        ],
+                        "defaultValue": {"a": True, "b": False},
+                    },
+                    {
+                        "label": "Select",
+                        "key": "select",
+                        "data": {
+                            "values": [
+                                {"label": "A", "value": "a"},
+                                {"label": "B", "value": "b"},
+                            ],
+                            "json": "",
+                            "url": "",
+                            "resource": "",
+                            "custom": "",
+                        },
+                        "type": "select",
+                        "defaultValue": "a",
+                    },
+                    {
+                        "label": "Select",
+                        "key": "select1",
+                        "type": "select",
+                        "multiple": True,
+                        "data": {
+                            "values": [
+                                {"label": "A", "value": "a"},
+                                {"label": "B", "value": "b"},
+                            ]
+                        },
+                        "defaultValue": ["a", "b"],
+                    },
+                    {
+                        "label": "Radio",
+                        "key": "radio",
+                        "type": "radio",
+                        "values": [
+                            {"label": "A", "value": "a"},
+                            {"label": "B", "value": "b"},
+                        ],
+                        "defaultValue": "b",
+                    },
+                ]
+            },
+        )
+
+    def test_options_have_data_source(self):
+        self.form_definition.refresh_from_db()
+
+        self.assertEqual(
+            self.form_definition.configuration["components"][0]["openForms"]["dataSrc"],
+            "manual",
+        )
+        self.assertEqual(
+            self.form_definition.configuration["components"][1]["openForms"]["dataSrc"],
+            "manual",
+        )
+        self.assertEqual(
+            self.form_definition.configuration["components"][2]["openForms"]["dataSrc"],
+            "manual",
+        )
+        self.assertEqual(
+            self.form_definition.configuration["components"][3]["openForms"]["dataSrc"],
+            "manual",
+        )

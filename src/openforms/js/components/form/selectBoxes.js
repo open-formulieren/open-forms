@@ -29,6 +29,13 @@ class SelectBoxesField extends SelectBoxes {
 
     return {components: [defaultChoicesTabs]};
   }
+
+  setSelectedClasses() {
+    // In the case the source is a variable, the input.value can be null in the form editor for the default value component
+    if (this.dataValue === null) return;
+
+    return super.setSelectedClasses();
+  }
 }
 
 export default SelectBoxesField;

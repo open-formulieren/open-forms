@@ -4,15 +4,17 @@ Implement backend functionality for core Formio (built-in) component types.
 Custom component types (defined by us or third parties) need to be organized in the
 adjacent custom.py module.
 """
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
 
 from csp_post_processor import post_process_html
 from openforms.config.models import GlobalConfiguration
+from openforms.typing import DataMapping
 from openforms.utils.urls import build_absolute_uri
 
+from ..dynamic_config.dynamic_options import add_options_to_config
 from ..formatters.formio import (
     CheckboxFormatter,
     CurrencyFormatter,
@@ -32,6 +34,9 @@ from ..formatters.formio import (
 )
 from ..registry import BasePlugin, register
 from ..typing import Component
+
+if TYPE_CHECKING:  # pragma: nocover
+    from openforms.submissions.models import Submission
 
 
 @register("default")
@@ -110,10 +115,25 @@ class Checkbox(BasePlugin):
 class SelectBoxes(BasePlugin):
     formatter = SelectBoxesFormatter
 
+    def mutate_config_dynamically(
+        self, component: Component, submission: "Submission", data: DataMapping
+    ) -> None:
+        add_options_to_config(component, data, submission)
+
 
 @register("select")
 class Select(BasePlugin):
     formatter = SelectFormatter
+
+    def mutate_config_dynamically(
+        self, component: Component, submission: "Submission", data: DataMapping
+    ) -> None:
+        add_options_to_config(
+            component,
+            data,
+            submission,
+            options_path="data.values",
+        )
 
 
 @register("currency")
@@ -124,6 +144,11 @@ class Currency(BasePlugin):
 @register("radio")
 class Radio(BasePlugin):
     formatter = RadioFormatter
+
+    def mutate_config_dynamically(
+        self, component: Component, submission: "Submission", data: DataMapping
+    ) -> None:
+        add_options_to_config(component, data, submission)
 
 
 @register("signature")

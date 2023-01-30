@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with error=log.extra_data.error lead=log.fmt_lead %}
+   {{ lead }}: {{ error }}
+{% endblocktrans %}

@@ -13,6 +13,7 @@ import {
   KEY,
   LABEL_REQUIRED,
   MULTIPLE,
+  OPTIONS_CHOICES,
   PRESENTATION,
   READ_ONLY,
   REGEX_VALIDATION,
@@ -87,40 +88,15 @@ const CHOICES_BASIC = {
   key: 'basic',
   label: 'Basic',
   components: [
-    ...BASIC.components,
-    {
-      type: 'datagrid',
-      input: true,
-      label: 'Values',
-      key: 'values',
-      tooltip:
-        'The values that can be picked for this field. Values are text submitted with the form data. Labels are text that appears next to the radio buttons on the form.',
-      weight: 10,
-      reorder: true,
-      defaultValue: [{label: '', value: ''}],
-      components: [
-        {
-          label: 'Label',
-          key: 'label',
-          input: true,
-          type: 'textfield',
-          // Needed to distinguish from the label of the component, since both have key 'label'.
-          // Issue #1422
-          isOptionLabel: true,
-        },
-        {
-          label: 'Value',
-          key: 'value',
-          input: true,
-          type: 'textfield',
-          allowCalculateOverride: true,
-          calculateValue: {_camelCase: [{var: 'row.label'}]},
-          validate: {
-            required: true,
-          },
-        },
-      ],
-    },
+    LABEL_REQUIRED,
+    KEY,
+    DESCRIPTION,
+    PRESENTATION,
+    MULTIPLE,
+    HIDDEN,
+    CLEAR_ON_HIDE,
+    IS_SENSITIVE_DATA,
+    ...OPTIONS_CHOICES,
   ],
 };
 

@@ -135,11 +135,121 @@ const REQUIRED = {
   key: 'validate.required',
 };
 
+const OPTIONS_CHOICES = [
+  {
+    type: 'select',
+    key: 'openForms.dataSrc',
+    label: 'Data source',
+    description: 'What data to use for the options of this field.',
+    defaultValue: 'manual',
+    data: {
+      values: [
+        {
+          label: 'Manually fill in',
+          value: 'manual',
+        },
+        {
+          label: 'Variable',
+          value: 'variable',
+        },
+      ],
+    },
+    validate: {
+      required: true,
+    },
+  },
+  {
+    type: 'datagrid',
+    input: true,
+    label: 'Values',
+    key: 'values',
+    tooltip:
+      'The values that can be picked for this field. Values are text submitted with the form data. Labels are text that appears next to the radio buttons on the form.',
+    weight: 10,
+    reorder: true,
+    defaultValue: [{label: '', value: ''}],
+    components: [
+      {
+        label: 'Label',
+        key: 'label',
+        input: true,
+        type: 'textfield',
+        // Needed to distinguish from the label of the component, since both have key 'label'.
+        // Issue #1422
+        isOptionLabel: true,
+      },
+      {
+        label: 'Value',
+        key: 'value',
+        input: true,
+        type: 'textfield',
+        allowCalculateOverride: true,
+        calculateValue: {_camelCase: [{var: 'row.label'}]},
+        validate: {
+          required: true,
+        },
+      },
+    ],
+    conditional: {
+      show: true,
+      when: 'openForms.dataSrc',
+      eq: 'manual',
+    },
+  },
+  // We can't have the default value nested deeper, because Formio WebformBuilder expects it as a first child of a tab.
+  {
+    label: 'Default Value',
+    key: 'defaultValue',
+    tooltip: 'This will be the initial value for this field, before user interaction.',
+    input: true,
+    conditional: {
+      show: true,
+      when: 'openForms.dataSrc',
+      eq: 'manual',
+    },
+  },
+  {
+    label: 'Items',
+    key: 'openForms.itemsExpression',
+    type: 'textarea',
+    tooltip:
+      'A JSON logic expression returning a variable (of array type) whose items should be used as the options for this component.',
+    editor: 'ace',
+    as: 'json',
+    // Documentation for editor settings: https://ajaxorg.github.io/ace-api-docs/interfaces/Ace.EditorOptions.html
+    // but most of the settings don't seem to work.
+    conditional: {
+      show: true,
+      when: 'openForms.dataSrc',
+      eq: 'variable',
+    },
+    validate: {
+      required: true,
+    },
+  },
+  {
+    label: 'Items value',
+    key: 'openForms.valueExpression',
+    type: 'textarea',
+    tooltip:
+      'In case the items are objects, provide a JSON logic expression to construct the value to use from each item of the array. ' +
+      'For example, this is needed when referring to repeating groups.',
+    editor: 'ace',
+    as: 'json',
+    conditional: {
+      show: true,
+      when: 'openForms.dataSrc',
+      eq: 'variable',
+    },
+  },
+];
+
 export {
   LABEL_REQUIRED,
   LABEL,
   KEY,
   DESCRIPTION,
+  OPTIONS_CHOICES,
   SHOW_IN_SUMMARY,
   SHOW_IN_EMAIL,
   SHOW_IN_PDF,
