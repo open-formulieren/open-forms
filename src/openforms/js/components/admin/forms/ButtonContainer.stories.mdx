@@ -1,0 +1,30 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import ButtonContainer from './ButtonContainer';
+
+<Meta title="Django admin/ButtonContainer" component={ButtonContainer} />
+
+# Field
+
+Wrapper for admin add button
+
+export const Template = args => <ButtonContainer {...args}>Add</ButtonContainer>;
+
+## Presentation
+
+<Canvas>
+  <Story
+    name="Default"
+    args={{
+      onClick: (...args) => {
+        null;
+      },
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+### Props
+
+<ArgsTable story="Default" />

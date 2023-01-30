@@ -1,0 +1,29 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import {Radio} from './Inputs';
+import RadioList from './RadioList';
+
+<Meta title="Django admin/RadioList" component={RadioList} />
+
+# Field
+
+Unordered list component
+
+export const Template = args => <RadioList {...args} />;
+
+## Presentation
+
+<Canvas>
+  <Story
+    name="Default"
+    args={{
+      children: [<Radio name="foo" label="foo" />, <Radio name="bar" label="bar" />],
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+### Props
+
+<ArgsTable story="Default" />

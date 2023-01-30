@@ -1,0 +1,46 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import Field from './Field';
+import Fieldset from './Fieldset';
+import FormRow from './FormRow';
+import {TextInput} from './Inputs';
+
+<Meta title="Django admin/Fieldset" component={Fieldset} />
+
+# Field
+
+Wrapper for one or more FormRows
+
+export const Template = args => (
+  <Fieldset {...args}>
+    <FormRow {...args}>
+      <Field name="Field" label="Input field" helpText="Lorem ipsum">
+        <TextInput />
+      </Field>
+    </FormRow>
+    <FormRow {...args}>
+      <Field name="Field2" label="Input field2" helpText="Lorem ipsum">
+        <TextInput />
+      </Field>
+    </FormRow>
+  </Fieldset>
+);
+
+## Presentation
+
+<Canvas>
+  <Story
+    name="Default"
+    args={{
+      title: 'FieldSet',
+      extraClassName: 'admin-fieldset',
+      extra: {name: 'fieldset'},
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+### Props
+
+<ArgsTable story="Default" />

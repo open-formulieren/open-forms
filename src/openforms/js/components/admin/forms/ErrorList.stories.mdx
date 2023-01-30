@@ -1,0 +1,30 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import ErrorList from './ErrorList';
+
+<Meta title="Django admin/ErrorList" component={ErrorList} />
+
+# Field
+
+Wrapper for errors in the admin
+
+export const Template = args => <ErrorList {...args}></ErrorList>;
+
+## Presentation
+
+<Canvas>
+  <Story
+    name="Default"
+    args={{
+      classNamePrefix: 'prefix',
+      classNameModifier: 'custom',
+      children: ['Error #1', 'Error #2'],
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+### Props
+
+<ArgsTable story="Default" />

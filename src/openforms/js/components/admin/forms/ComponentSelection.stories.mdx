@@ -1,0 +1,40 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import {FormContext} from 'components/admin/form_design/Context';
+
+import ComponentSelection from './ComponentSelection';
+
+<Meta title="Django admin/ComponentSelection" component={ComponentSelection} />
+
+# Field
+
+Select widget with components as options
+
+export const Template = args => (
+  <FormContext.Provider value={{components: {foo: {label: 'Foo'}, bar: {label: 'Bar'}}}}>
+    <ComponentSelection {...args}>Add</ComponentSelection>
+  </FormContext.Provider>
+);
+
+## Presentation
+
+<!-- FIXME: onChange doesn't seem to work in canvas -->
+
+<Canvas>
+  <Story
+    name="Default"
+    args={{
+      name: 'componentSelect',
+      value: 'foo',
+      onChange: ({target}) => {
+        null;
+      },
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+### Props
+
+<ArgsTable story="Default" />

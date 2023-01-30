@@ -1,0 +1,60 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import {ActionButton, AddAnotherAction, ContinueEditingAction, SubmitAction} from './ActionButton';
+
+<Meta title="Django admin/ActionButton" component={ActionButton} />
+
+# Field
+
+The default Django admin action buttons
+
+export const Template = args => <args.component {...args} />;
+
+## Presentation
+
+<Canvas>
+  <Story
+    name="ActionButton default"
+    args={{
+      component: ActionButton,
+      name: 'ActionButton',
+      text: 'Save',
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+  <Story
+    name="SubmitAction"
+    args={{
+      component: SubmitAction,
+      name: 'ActionButton',
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+  <Story
+    name="AddAnotherAction"
+    args={{
+      component: AddAnotherAction,
+      name: 'ActionButton',
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+  <Story
+    name="ContinueEditingAction"
+    args={{
+      component: ContinueEditingAction,
+      name: 'ActionButton',
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+### Props
+
+<ArgsTable of={ActionButton} />
+<ArgsTable story="SubmitAction" />
+<ArgsTable story="AddAnotherAction" />
+<ArgsTable story="ContinueEditingAction" />

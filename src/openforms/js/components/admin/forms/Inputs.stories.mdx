@@ -1,0 +1,118 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+import flatpickr from 'flatpickr';
+
+import {
+  Checkbox,
+  DateInput,
+  DateTimeInput,
+  Input,
+  NumberInput,
+  Radio,
+  TextArea,
+  TextInput,
+} from './Inputs';
+
+<Meta title="Django admin/Inputs" component={Input} />
+
+# Field
+
+React components for several input types
+
+export const CheckboxTemplate = args => <Checkbox {...args} />;
+export const DateInputTemplate = args => <DateInput {...args} />;
+export const DateTimeInputTemplate = args => <DateTimeInput {...args} />;
+export const InputTemplate = args => <Input {...args} />;
+export const NumberInputTemplate = args => <NumberInput {...args} />;
+export const RadioTemplate = args => <Radio {...args} />;
+export const TextAreaTemplate = args => <TextArea {...args} />;
+export const TextInputTemplate = args => <TextInput {...args} />;
+
+## Presentation
+
+<Canvas>
+  <Story
+    name="Checkbox"
+    args={{
+      name: 'Checkbox',
+      label: 'Checkbox',
+      helpText: 'Foo bar baz',
+      disabled: false,
+    }}
+  >
+    {CheckboxTemplate.bind({})}
+  </Story>
+  <Story
+    name="DateInput"
+    args={{
+      name: 'DateInput',
+    }}
+  >
+    {DateInputTemplate.bind({})}
+  </Story>
+  <Story
+    name="DateTimeInput"
+    args={{
+      name: 'DateTimeInput',
+      value: '2022-01-01T12:00:00',
+    }}
+  >
+    {DateTimeInputTemplate.bind({})}
+  </Story>
+  <Story
+    name="Input"
+    args={{
+      name: 'Input',
+    }}
+  >
+    {InputTemplate.bind({})}
+  </Story>
+  <Story
+    name="NumberInput"
+    args={{
+      name: 'NumberInput',
+    }}
+  >
+    {NumberInputTemplate.bind({})}
+  </Story>
+  <Story
+    name="Radio"
+    args={{
+      name: 'Radio',
+      idFor: 'foo',
+      label: 'Radio',
+      helpText: 'Foo bar baz',
+    }}
+  >
+    {RadioTemplate.bind({})}
+  </Story>
+  <Story
+    name="TextArea"
+    args={{
+      name: 'TextArea',
+      rows: 5,
+      cols: 20,
+    }}
+  >
+    {TextAreaTemplate.bind({})}
+  </Story>
+  <Story
+    name="TextInput"
+    args={{
+      name: 'TextInput',
+      noVTextField: true,
+    }}
+  >
+    {TextInputTemplate.bind({})}
+  </Story>
+</Canvas>
+
+### Props
+
+<ArgsTable of={Checkbox} />
+<ArgsTable story="DateInput" />
+<ArgsTable of={DateTimeInput} />
+<ArgsTable of={Input} />
+<ArgsTable story="NumberInput" />
+<ArgsTable of={Radio} />
+<ArgsTable of={TextArea} />
+<ArgsTable story="TextInput" />
