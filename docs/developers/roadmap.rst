@@ -109,17 +109,7 @@ Frontend
 
 **Use of design tokens**
 
-Status: start made
+Status: well underway
 
-The SDK styling at the moment makes use of SASS variables for colors, widths, sizes…
-
-This provides flexibility at code- and build time, but not at runtime. Given that Open
-Forms is in essence a white-label product where the styling can be adapted to your own
-organization, we should only stick to SASS variables for default values and instead
-build out support for CSS variables/design tokens (``--foo: blue``).
-
-Organizations can then declare their own styles (to some degree) by including a
-stylesheet of their own without having to understand the SDK implementation details.
-
-This is a challenging task, as many variables are derived from other variables using
-SASS-functions not available in the CSS runtime (e.g. ``darken($foo, 10%)``).
+Components need to be adopted so we can lift on existing design tokens. Colors have
+almost all been converted and can be overridden by themes.
