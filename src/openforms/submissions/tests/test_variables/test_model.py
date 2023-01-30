@@ -1,4 +1,4 @@
-from datetime import datetime, time
+from datetime import date, datetime, time
 
 from django.db import IntegrityError
 from django.test import TestCase
@@ -136,7 +136,8 @@ class SubmissionValueVariableModelTests(TestCase):
 
             self.assertEqual(float_value, 4.20)
 
-        # as submitted by the SDK, the time part has been stripped off
+        # Dates submitted by the SDK have the time part stripped off
+        # User defined variables of type date also don't have the time part
         with self.subTest("date 1"):
             date_var1 = SubmissionValueVariableFactory.create(
                 form_variable__user_defined=True,
@@ -146,12 +147,11 @@ class SubmissionValueVariableModelTests(TestCase):
 
             date_value1 = date_var1.to_python()
 
-            self.assertIsInstance(date_value1, datetime)
+            self.assertIsInstance(date_value1, date)
             # datetimes must be made aware in our local timezone
-            self.assertIsNotNone(date_value1.tzinfo)
             self.assertEqual(
                 date_value1,
-                timezone.make_aware(datetime(2022, 9, 13, 0, 0)),
+                date(2022, 9, 13),
             )
 
         with self.subTest("date 2"):

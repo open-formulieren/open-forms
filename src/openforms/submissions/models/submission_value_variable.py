@@ -346,7 +346,7 @@ class SubmissionValueVariable(models.Model):
             naive_date = parse_date(date)
             if naive_date is not None:
                 aware_date = timezone.make_aware(datetime.combine(naive_date, time.min))
-                return aware_date
+                return aware_date.date()
 
             maybe_naive_datetime = parse_datetime(self.value)
             if maybe_naive_datetime is not None:

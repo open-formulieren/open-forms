@@ -1,13 +1,12 @@
-from datetime import date, datetime, time
+from datetime import datetime, time
 
 from openforms.typing import JSONObject
+from openforms.utils.date import parse_date
 
 
 def check_date(value: str) -> str:
-    try:
-        date.fromisoformat(value)
-    except ValueError:
-        datetime.fromisoformat(value)
+    # raises ValueError if it's not a date or datetime
+    parse_date(value)
     return value
 
 

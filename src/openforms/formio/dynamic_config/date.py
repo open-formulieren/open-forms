@@ -1,6 +1,6 @@
 import operator
-from datetime import datetime, time
-from typing import Literal, Optional, TypedDict, Union, cast
+from datetime import date, datetime, time
+from typing import Literal, Optional, TypedDict, cast
 
 from django.utils import timezone
 
@@ -8,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 from glom import assign, glom
 
 from openforms.typing import DataMapping
+from openforms.utils.date import parse_date
 
 from ..typing import Component
 
@@ -98,21 +99,24 @@ def calculate_delta(
 ) -> Optional[datetime]:
     assert config["mode"] == "relativeToVariable"
 
-    base_value = cast(
-        Optional[Union[datetime, str]],
-        glom(data, config["variable"], default=None),
-    )
-    # can't do calculations on values that don't exist or are empty
-    if not base_value:
-        return None
-
-    # if it's not empty-ish, it's a datetime
-    base_value = cast(datetime, base_value)
-
-    assert (
-        base_value.tzinfo is not None
-    ), "Expected the input variable to be timezone aware!"
-    base_date = timezone.localtime(value=base_value).date()
+    base_value = glom(data, config["variable"], default=None)
+    match base_value:
+        case datetime():
+            assert (
+                base_value.tzinfo is not None
+            ), "Expected the input variable to be timezone aware!"
+            base_date = timezone.localtime(value=base_value).date()
+        case date():
+            base_date = base_value
+        case None | "":
+            return
+        case str():
+            # attempt to parse it as a date/datetime - could be because the variable
+            # was not properly typed and type conversion didn't happen.
+            # This can raise ValueError if the string is gibberish.
+            base_date = parse_date(base_value)
+        case _:
+            raise ValueError("Unexpected type encountered for base value")
 
     delta = relativedelta(
         years=cast(int, glom(config, "delta.years", default=None) or 0),

@@ -477,6 +477,54 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
         self.assertEqual(date2["datePicker"]["minDate"], "2022-09-20T00:00:00+02:00")
         self.assertEqual(date2["datePicker"]["maxDate"], "2022-12-31T00:00:00+01:00")
 
+    def test_dynamic_date_component_config_based_on_variables_with_datetime(self):
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "date",
+                        "key": "date1",
+                    },
+                    {
+                        "type": "date",
+                        "key": "date2",
+                        "openForms": {
+                            "minDate": {
+                                "mode": "relativeToVariable",
+                                "variable": "date1",
+                                "operator": "add",
+                                "delta": {"days": 7},
+                            },
+                        },
+                    },
+                ]
+            },
+        )
+        step = form.formstep_set.get()
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            form_step=step,
+            submission=submission,
+            # Before the data is saved in the backend, the dates are sent from the SDK as datetimes
+            data={"date1": "2022-09-13T00:00:00+02:00"},
+        )
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+        self._add_submission_to_session(submission)
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        date2 = response.json()["formStep"]["configuration"]["components"][1]
+
+        self.assertEqual(date2["datePicker"]["minDate"], "2022-09-20T00:00:00+02:00")
+
     def test_custom_components_and_form_logic(self):
         # set up custom field type for test only
         register = ComponentRegistry()
