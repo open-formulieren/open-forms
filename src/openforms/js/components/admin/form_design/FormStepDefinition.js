@@ -44,6 +44,7 @@ const FormStepDefinition = ({
   loginRequired = false,
   isReusable = false,
   translations = {},
+  componentTranslations = {},
   configuration = emptyConfiguration,
   onChange,
   onComponentMutated,
@@ -313,6 +314,7 @@ const FormStepDefinition = ({
           configuration={configuration}
           onChange={onChange}
           onComponentMutated={onComponentMutated.bind(null, url || generatedId)}
+          componentTranslations={componentTranslations}
           {...props}
         />
       </div>
@@ -339,6 +341,7 @@ FormStepDefinition.propTypes = {
       nextText: PropTypes.string.isRequired,
     })
   ),
+  componentTranslations: PropTypes.objectOf(PropTypes.objectOf(PropTypes.string)),
 };
 
 const ConfigurationErrors = ({errors = []}) => {

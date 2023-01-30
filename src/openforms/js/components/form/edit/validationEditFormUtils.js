@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 
-import jsonScriptToVar from 'utils/json-script';
+import {getSupportedLanguages} from 'components/formio_builder/translation';
 
 const getCustomValidationErrorMessagesEditForm = validators => {
   const defaultValues = Object.assign(
@@ -10,7 +10,7 @@ const getCustomValidationErrorMessagesEditForm = validators => {
     }))
   );
 
-  const languages = jsonScriptToVar('languages', {default: []});
+  const languages = getSupportedLanguages();
 
   const customErrorMessages = languages.map(([languageCode, _label]) => {
     return {

@@ -6,9 +6,9 @@ import {FormattedMessage} from 'react-intl';
 import Loader from 'components/admin/Loader';
 import ValidationErrorsProvider from 'components/admin/forms/ValidationErrors';
 
-import {FormStepContext} from './Context';
 import FormStep from './FormStep';
 import FormStepsNav from './FormStepsNav';
+import TYPES from './types';
 
 const FormSteps = ({
   steps = [],
@@ -45,19 +45,15 @@ const FormSteps = ({
       </div>
       <div className="edit-panel__edit-area">
         {activeStep ? (
-          <FormStepContext.Provider
-            value={{componentTranslations: activeStep.componentTranslations || {}}}
-          >
-            <ValidationErrorsProvider errors={activeStep.validationErrors}>
-              <FormStep
-                data={activeStep}
-                onEdit={onEdit.bind(null, activeStepIndex)}
-                onComponentMutated={onComponentMutated}
-                onFieldChange={onFieldChange.bind(null, activeStepIndex)}
-                onReplace={onReplace.bind(null, activeStepIndex)}
-              />
-            </ValidationErrorsProvider>
-          </FormStepContext.Provider>
+          <ValidationErrorsProvider errors={activeStep.validationErrors}>
+            <FormStep
+              data={activeStep}
+              onEdit={onEdit.bind(null, activeStepIndex)}
+              onComponentMutated={onComponentMutated}
+              onFieldChange={onFieldChange.bind(null, activeStepIndex)}
+              onReplace={onReplace.bind(null, activeStepIndex)}
+            />
+          </ValidationErrorsProvider>
         ) : (
           <FormattedMessage
             defaultMessage="Select a step to view or modify."
@@ -70,18 +66,7 @@ const FormSteps = ({
 };
 
 FormSteps.propTypes = {
-  steps: PropTypes.arrayOf(
-    PropTypes.shape({
-      configuration: PropTypes.object,
-      formDefinition: PropTypes.string,
-      index: PropTypes.number,
-      name: PropTypes.string,
-      slug: PropTypes.string,
-      url: PropTypes.string,
-      isNew: PropTypes.bool,
-      validationErrors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
-    })
-  ),
+  steps: PropTypes.arrayOf(TYPES.FormStep),
   onEdit: PropTypes.func.isRequired,
   onComponentMutated: PropTypes.func.isRequired,
   onFieldChange: PropTypes.func.isRequired,

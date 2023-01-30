@@ -1,5 +1,4 @@
 from django import forms
-from django.contrib.postgres.forms import JSONField
 
 from ..models import FormDefinition
 from ..validators import validate_formio_js_schema
@@ -7,7 +6,7 @@ from ..widgets import FormBuilderWidget
 
 
 class FormDefinitionForm(forms.ModelForm):
-    configuration = JSONField(
+    configuration = forms.JSONField(
         widget=FormBuilderWidget, validators=[validate_formio_js_schema]
     )
 
@@ -21,5 +20,11 @@ class FormDefinitionForm(forms.ModelForm):
             "login_required",
             "is_reusable",
             "configuration",
+            "component_translations",
         )
-        widgets = {"uuid": forms.TextInput(attrs={"readonly": True})}
+        widgets = {
+            "uuid": forms.TextInput(attrs={"readonly": True}),
+            "component_translations": forms.HiddenInput(
+                attrs={"class": "form-builder__component-translations"}
+            ),
+        }
