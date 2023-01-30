@@ -8,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 from glom import assign, glom
 
 from openforms.typing import DataMapping
+from openforms.utils.date import parse_date
 
 from ..typing import Component
 
@@ -107,8 +108,13 @@ def calculate_delta(
             base_date = timezone.localtime(value=base_value).date()
         case date():
             base_date = base_value
-        case None:
+        case None | "":
             return
+        case str():
+            # attempt to parse it as a date/datetime - could be because the variable
+            # was not properly typed and type conversion didn't happen.
+            # This can raise ValueError if the string is gibberish.
+            base_date = parse_date(base_value)
         case _:
             raise ValueError("Unexpected type encountered for base value")
 
