@@ -1,4 +1,5 @@
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
@@ -18,6 +19,44 @@ module.exports = {
       'node_modules',
       path.resolve(__dirname, '../src/openforms/js'),
     ];
+
+    config.plugins = config.plugins.concat([new MiniCssExtractPlugin()]);
+
+    config.module.rules = config.module.rules.concat([
+      // .scss
+      {
+        test: /\.(sa|sc|c)ss$/,
+        use: [
+          // Writes css files.
+          MiniCssExtractPlugin.loader,
+
+          // Loads CSS files.
+          {
+            loader: 'css-loader',
+            options: {
+              url: false,
+            },
+          },
+
+          // Runs postcss configuration (postcss.config.js).
+          {
+            loader: 'postcss-loader',
+          },
+
+          // Compiles .scss to .css.
+          {
+            loader: 'sass-loader',
+            options: {
+              sassOptions: {
+                comments: false,
+                style: 'compressed',
+              },
+              // sourceMap: argv.sourcemap,
+            },
+          },
+        ],
+      },
+    ]);
 
     return config;
   },
