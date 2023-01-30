@@ -6,6 +6,7 @@ import requests_mock
 from freezegun import freeze_time
 from privates.test import temp_private_root
 
+from openforms.config.models import GlobalConfiguration
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.tests.factories import SubmissionFactory
 from stuf.stuf_zds.models import StufZDSConfig
@@ -37,6 +38,16 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
         cls.config_patcher = patch(
             "openforms.registrations.contrib.stuf_zds.plugin.StufZDSConfig.get_solo",
             return_value=StufZDSConfig(service=cls.service),
+        )
+        cls.general_config_patcher = patch(
+            "openforms.plugins.plugin.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                plugin_configuration={
+                    "registration": {
+                        "stuf_zds": {"enabled": True},
+                    },
+                }
+            ),
         )
 
         # set up a simple form to track the partial result storing state
@@ -71,6 +82,9 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
 
         self.config_patcher.start()
         self.addCleanup(self.config_patcher.stop)
+
+        self.general_config_patcher.start()
+        self.addCleanup(self.general_config_patcher.stop)
 
         self.requests_mock = requests_mock.Mocker()
         self.requests_mock.start()
