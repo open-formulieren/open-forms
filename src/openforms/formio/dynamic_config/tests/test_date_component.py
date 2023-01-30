@@ -248,11 +248,71 @@ class DynamicDateConfigurationTests(SimpleTestCase):
                 },
             },
         }
+        empty_values = [None, ""]
 
-        new_component = self._get_dynamic_config(component, {"emptyVar": None})
+        for empty_value in empty_values:
+            with self.subTest(empty_value=empty_value):
+                new_component = self._get_dynamic_config(
+                    component, {"emptyVar": empty_value}
+                )
 
-        self.assertIsNone(new_component["datePicker"]["maxDate"])
+                self.assertIsNone(new_component["datePicker"]["maxDate"])
 
+    @tag("gh-2581")
+    def test_variable_is_string_serialized_date(self):
+        component = {
+            "type": "date",
+            "key": "aDate",
+            "openForms": {
+                "maxDate": {
+                    "mode": "relativeToVariable",
+                    "variable": "stringVar",
+                    "operator": "add",
+                },
+            },
+        }
+
+        values = ["2023-01-30", "2023-01-30T15:22:00+01:00"]
+        for value in values:
+            with self.subTest(value=value):
+                new_component = self._get_dynamic_config(
+                    component, {"stringVar": value}
+                )
+
+                max_date = new_component["datePicker"]["maxDate"]
+                self.assertEqual(max_date, "2023-01-30T00:00:00+01:00")
+
+    @tag("gh-2581")
+    def test_nonsense_variable(self):
+        component = {
+            "type": "date",
+            "key": "aDate",
+            "openForms": {
+                "maxDate": {
+                    "mode": "relativeToVariable",
+                    "variable": "emptyVar",
+                    "operator": "add",
+                },
+            },
+        }
+
+        # Discussed in office - essentially we have two options:
+        # * crashing hard
+        # * silently casting to None, removing any expected constraints from the
+        #   date picker, possibly allowing garbage into registration backends that was
+        #   not anticipated
+        #
+        # We picked option 1, as the end-user will receive a generic error message from
+        # the SDK, so they can contact their municipality, who in turn contact the service
+        # provider, who in turn can look up the crash/error in Sentry and provide the
+        # fixes.
+        #
+        # Option 2 is harder to debug without visbility in error monitoring and therefore
+        # not desired.
+        with self.assertRaises(ValueError):
+            self._get_dynamic_config(component, {"emptyVar": "foobar"})
+
+    @tag("gh-2581")
     def test_incomplete_config_no_crash(self):
         component = {
             "type": "date",
