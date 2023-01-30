@@ -3,6 +3,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
+  staticDirs: [{from: '../static/admin', to: '/admin'}],
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
@@ -25,7 +26,7 @@ module.exports = {
     config.module.rules = config.module.rules.concat([
       // .scss
       {
-        test: /\.(sa|sc|c)ss$/,
+        test: /\.(sa|sc)ss$/,
         use: [
           // Writes css files.
           MiniCssExtractPlugin.loader,
