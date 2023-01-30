@@ -90,7 +90,7 @@
     "originalDefault": "Email option"
   },
   "3FxzLm": {
-    "defaultMessage": "When {desc}",
+    "defaultMessage": "Als {desc}",
     "description": "Logic expression generated description",
     "originalDefault": "When {desc}"
   },
@@ -465,7 +465,7 @@
     "originalDefault": "Whether the step progression should be displayed in the UI or not."
   },
   "G5q9GH": {
-    "defaultMessage": "Reset to default description",
+    "defaultMessage": "Resetten naar standaardomschrijving",
     "description": "Reset logic expression icon title",
     "originalDefault": "Reset to default description"
   },
@@ -600,7 +600,7 @@
     "originalDefault": "Authentication failure"
   },
   "JRGs/Q": {
-    "defaultMessage": "Expand/collapse JsonLogic",
+    "defaultMessage": "Klap JsonLogic-expressie in/uit",
     "description": "Expand/collapse logic expression icon title",
     "originalDefault": "Expand/collapse JsonLogic"
   },
@@ -765,7 +765,7 @@
     "originalDefault": "Enabled"
   },
   "PRNizF": {
-    "defaultMessage": "Include confirmation page content in PDF",
+    "defaultMessage": "Voeg de inhoud toe aan de PDF",
     "description": "Include confirmation page content in PDF",
     "originalDefault": "Include confirmation page content in PDF"
   },
@@ -1135,7 +1135,7 @@
     "originalDefault": "String"
   },
   "dlrWUr": {
-    "defaultMessage": "Date",
+    "defaultMessage": "Datum",
     "description": "data type date",
     "originalDefault": "Date"
   },
@@ -1355,7 +1355,7 @@
     "originalDefault": "Steps and fields"
   },
   "mXJbc8": {
-    "defaultMessage": "Easy to understand description",
+    "defaultMessage": "Makkelijk te begrijpen omschrijving",
     "description": "Logic rule description placeholder",
     "originalDefault": "Easy to understand description"
   },
@@ -1400,7 +1400,7 @@
     "originalDefault": "String"
   },
   "oYmpN5": {
-    "defaultMessage": "Whether to include the content of the confirmation page in the PDF.",
+    "defaultMessage": "Vink aan om de inhoud toe te voegen aan de PDF met gegevens ter bevestiging.",
     "description": "Include confirmation page content in PDF",
     "originalDefault": "Whether to include the content of the confirmation page in the PDF."
   },
