@@ -1,8 +1,11 @@
+from unittest.mock import patch
+
 from django.urls import reverse
 
 from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import SuperUserFactory
+from openforms.config.models import GlobalConfiguration
 
 from ..models import PrefillConfig
 
@@ -13,7 +16,19 @@ class PrefillConfigTests(WebTest):
 
         self.assertEqual(str(instance), PrefillConfig._meta.verbose_name)
 
-    def test_registry_list_for_defaults(self):
+    @patch(
+        "openforms.plugins.registry.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            plugin_configuration={
+                "registration": {
+                    "stufbg": {"enabled": True},
+                    "haalcentraal": {"enabled": True},
+                    "kvk-kvknumber": {"enabled": True},
+                },
+            }
+        ),
+    )
+    def test_registry_list_for_defaults(self, m_global_config):
         user = SuperUserFactory.create()
         (
             config,
