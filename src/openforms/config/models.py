@@ -360,6 +360,14 @@ class GlobalConfiguration(SingletonModel):
         ),
         default="Ja, ik heb kennis genomen van het {% privacy_policy %} en geef uitdrukkelijk "
         "toestemming voor het verwerken van de door mij opgegeven gegevens.",
+        validators=[
+            DjangoTemplateValidator(
+                required_template_tags=[
+                    "privacy_policy",
+                ],
+                backend="openforms.template.openforms_backend",
+            ),
+        ],
     )
 
     # debug/feature flags
