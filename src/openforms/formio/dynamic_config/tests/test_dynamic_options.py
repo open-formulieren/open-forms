@@ -562,3 +562,114 @@ class TestDynamicConfigAddingOptions(TestCase):
             logs[0].extra_data["error"],
             'Variable obtained with expression {"var": "textField"} for dynamic options is not an array.',
         )
+
+    def test_duplicate_options_with_multiple_field(self):
+        configuration = {
+            "components": [
+                {
+                    "key": "textField",
+                    "type": "textfield",
+                    "multiple": True,
+                },
+                {
+                    "label": "Radio",
+                    "key": "radio",
+                    "type": "radio",
+                    "values": [
+                        {"label": "", "value": ""},
+                    ],
+                    "openForms": {
+                        "dataSrc": "variable",
+                        "itemsExpression": {"var": "textField"},
+                    },
+                },
+            ]
+        }
+
+        submission = SubmissionFactory.create()
+
+        rewrite_formio_components(
+            FormioConfigurationWrapper(configuration),
+            submission,
+            {"textField": ["duplicate", "duplicate", "duplicate"]},
+        )
+        self.assertEqual(
+            configuration["components"][1]["values"],
+            [{"label": "duplicate", "value": "duplicate"}],
+        )
+
+    def test_duplicate_options_with_repeating_group(self):
+        configuration = {
+            "components": [
+                {
+                    "key": "repeatingGroup",
+                    "type": "editgrid",
+                    "components": [{"type": "textfield", "key": "name"}],
+                },
+                {
+                    "label": "Radio",
+                    "key": "radio",
+                    "type": "radio",
+                    "values": [
+                        {"label": "", "value": ""},
+                    ],
+                    "openForms": {
+                        "dataSrc": "variable",
+                        "itemsExpression": {"var": "repeatingGroup"},
+                        "valueExpression": {"var": "name"},
+                    },
+                },
+            ]
+        }
+
+        submission = SubmissionFactory.create()
+
+        rewrite_formio_components(
+            FormioConfigurationWrapper(configuration),
+            submission,
+            {"repeatingGroup": [{"name": "duplicate"}, {"name": "duplicate"}]},
+        )
+        self.assertEqual(
+            configuration["components"][1]["values"],
+            [{"label": "duplicate", "value": "duplicate"}],
+        )
+
+    def test_badly_formatted_items(self):
+        configuration = {
+            "components": [
+                {
+                    "label": "Radio",
+                    "key": "radio",
+                    "type": "radio",
+                    "values": [
+                        {"label": "", "value": ""},
+                    ],
+                    "openForms": {
+                        "dataSrc": "variable",
+                        "itemsExpression": {"var": "externalData"},
+                        "valueExpression": {"var": "id"},
+                    },
+                },
+            ]
+        }
+
+        submission = SubmissionFactory.create()
+
+        rewrite_formio_components(
+            FormioConfigurationWrapper(configuration),
+            submission,
+            # Only the first object has the property "id"
+            {
+                "externalData": [
+                    {"id": "111"},
+                    {"no-id": "222"},
+                    "i'm not an object!",
+                    123,
+                    ["im", "an", "array"],
+                ]
+            },
+        )
+        self.assertEqual(
+            configuration["components"][0]["values"],
+            [{"label": "111", "value": "111"}],
+        )
