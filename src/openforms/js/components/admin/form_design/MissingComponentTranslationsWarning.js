@@ -6,26 +6,26 @@ import {FormattedMessage} from 'react-intl';
 import MessageList from 'components/admin/MessageList';
 import Modal from 'components/admin/Modal';
 import {ChangelistColumn, ChangelistTable} from 'components/admin/tables';
-import {TRANSLATABLE_FIELDS, getValuesOfField} from 'components/formio_builder/builder';
-import jsonScriptToVar from 'utils/json-script';
+import {
+  extractComponentLiterals,
+  getSupportedLanguages,
+} from 'components/formio_builder/translation';
+
+const LANGUAGES = getSupportedLanguages();
 
 const extractTranslatableValues = configuration => {
   let translatableValues = [];
   FormioUtils.eachComponent(
     configuration.components,
     component => {
-      translatableValues[component.label] = [];
-      for (const field of TRANSLATABLE_FIELDS) {
-        if (getValuesOfField(component, field)) {
-          for (const value of getValuesOfField(component, field)) {
-            translatableValues.push({
-              componentKey: component.key,
-              componentLabel: component.label,
-              literal: value,
-            });
-          }
-        }
-      }
+      const literals = extractComponentLiterals(component);
+      literals.forEach(literal => {
+        translatableValues.push({
+          componentKey: component.key,
+          componentLabel: component.label,
+          literal: literal,
+        });
+      });
     },
     true
   );
@@ -56,12 +56,18 @@ const MissingComponentTranslationsTable = ({children: missingTranslations}) => (
 );
 
 MissingComponentTranslationsTable.propTypes = {
-  children: PropTypes.arrayOf(PropTypes.object),
+  children: PropTypes.arrayOf(
+    PropTypes.shape({
+      componentKey: PropTypes.string.isRequired,
+      componentLabel: PropTypes.string.isRequired,
+      language: PropTypes.string.isRequired,
+      literal: PropTypes.string.isRequired,
+    })
+  ),
 };
 
 const MissingComponentTranslationsWarning = ({configuration, componentTranslations}) => {
-  const languages = jsonScriptToVar('languages');
-  const languageCodeMapping = Object.fromEntries(languages);
+  const languageCodeMapping = Object.fromEntries(LANGUAGES);
 
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -74,12 +80,21 @@ const MissingComponentTranslationsWarning = ({configuration, componentTranslatio
 
   let missingTranslations = [];
   for (const entry of translatableValues) {
-    for (const [languageCode, _languageLabel] of languages) {
+    for (const [languageCode, _languageLabel] of LANGUAGES) {
       let translations = componentTranslations[languageCode] || {};
       if (!translations[entry.literal])
         missingTranslations.push({language: languageCodeMapping[languageCode], ...entry});
     }
   }
+  missingTranslations.sort((a, b) => {
+    if (a.componentKey !== b.componentKey) {
+      return a.componentKey.localeCompare(b.componentKey);
+    }
+    if (a.language !== b.language) {
+      return a.language.localeCompare(b.language);
+    }
+    return a.literal.localeCompare(b.literal);
+  });
 
   const formattedWarning = (
     <FormattedMessage

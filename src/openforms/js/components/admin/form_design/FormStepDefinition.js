@@ -70,7 +70,6 @@ const FormStepDefinition = ({
   };
 
   const {translationEnabled} = useContext(FormContext);
-  const {componentTranslations} = useContext(FormStepContext);
 
   const {changed, affectedForms} = useDetectConfigurationChanged(url, configuration);
   const {warnings} = useDetectSimpleLogicErrors(configuration);

@@ -829,6 +829,11 @@
     "description": "Form name field help text",
     "originalDefault": "Internal name/title of the form"
   },
+  "RfbS0v": {
+    "defaultMessage": "Language",
+    "description": "Readable label for the language",
+    "originalDefault": "Language"
+  },
   "Rk13i+": {
     "defaultMessage": "Beginwaarde",
     "description": "Variable table initial value title",
@@ -1003,6 +1008,11 @@
     "defaultMessage": "De sleutel van een variabele moet uniek zijn binnen een formulier",
     "description": "Unique key error message",
     "originalDefault": "The variable key must be unique within a form"
+  },
+  "ZEo3mR": {
+    "defaultMessage": "Form has translation enabled, but is missing <link>{count, plural, one {# translation} other {# translations} }</link>",
+    "description": "Warning message for missing translations",
+    "originalDefault": "Form has translation enabled, but is missing <link>{count, plural, one {# translation} other {# translations} }</link>"
   },
   "ZICfus": {
     "defaultMessage": "'Vorige' tekst",
@@ -1249,6 +1259,11 @@
     "description": "Form name field label",
     "originalDefault": "Internal name"
   },
+  "i7HknI": {
+    "defaultMessage": "Tab name",
+    "description": "Name of the tab in the Form admin",
+    "originalDefault": "Tab name"
+  },
   "iZESbd": {
     "defaultMessage": "is kleiner dan",
     "description": "\"<\" operator description",
@@ -1339,10 +1354,20 @@
     "description": "Add item to multi-input field",
     "originalDefault": "Add item"
   },
+  "lvxPCk": {
+    "defaultMessage": "Component label",
+    "description": "Label of the Form component",
+    "originalDefault": "Component label"
+  },
   "mH3X/G": {
     "defaultMessage": "vandaag",
     "description": "\"today\" operand type",
     "originalDefault": "today"
+  },
+  "mL6vhw": {
+    "defaultMessage": "Component key",
+    "description": "Key of the Form component",
+    "originalDefault": "Component key"
   },
   "mOgTIH": {
     "defaultMessage": "de variabele",
@@ -1403,6 +1428,11 @@
     "defaultMessage": "Whether to include the content of the confirmation page in the PDF.",
     "description": "Include confirmation page content in PDF",
     "originalDefault": "Whether to include the content of the confirmation page in the PDF."
+  },
+  "ooyhQ7": {
+    "defaultMessage": "Form has translation enabled, but is missing <link>{count, plural, one {# component translation} other {# component translations} }</link>",
+    "description": "Warning message for missing component translations",
+    "originalDefault": "Form has translation enabled, but is missing <link>{count, plural, one {# component translation} other {# component translations} }</link>"
   },
   "ow5AAO": {
     "defaultMessage": "De gegevens zijn ongeldig. Los de problemen hieronder op.",
@@ -1554,6 +1584,11 @@
     "description": "Confirmation template help text",
     "originalDefault": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
   },
+  "vjHM9z": {
+    "defaultMessage": "Literal",
+    "description": "Literal to be translated",
+    "originalDefault": "Literal"
+  },
   "vng/5K": {
     "defaultMessage": "Er moet een sleutelnaam ingesteld worden voordat deze variabele geconfigureerd kan worden",
     "description": "JSON editor: object entry has empty key name",
@@ -1623,6 +1658,11 @@
     "defaultMessage": "Telefoonnummer veld",
     "description": "Phone Number Component field label",
     "originalDefault": "Phone Number Component"
+  },
+  "z0FW+t": {
+    "defaultMessage": "Field name",
+    "description": "Name of the translatable field",
+    "originalDefault": "Field name"
   },
   "z0bXZT": {
     "defaultMessage": "Actie",

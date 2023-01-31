@@ -183,28 +183,13 @@ class FormAdmin(
             extra_context = {}
 
         # Give frontend access to proper field labels, to display in warning messages
-        form_translatable_fields = [
-            field
-            for field in self.model._meta.get_fields()
-            if field.name in get_translatable_fields_for_model(self.model)
-        ]
-        formstep_translatable_fields = [
-            field
-            for field in FormStep._meta.get_fields()
-            if field.name in get_translatable_fields_for_model(FormStep)
-        ]
-        email_template_translatable_fields = [
-            field
-            for field in ConfirmationEmailTemplate._meta.get_fields()
-            if field.name
-            in get_translatable_fields_for_model(ConfirmationEmailTemplate)
-        ]
-        extra_context["label_mapping"] = {
+        label_mapping = {
             underscore_to_camel(field.name): field.verbose_name
-            for field in form_translatable_fields
-            + formstep_translatable_fields
-            + email_template_translatable_fields
+            for model in (self.model, FormStep, ConfirmationEmailTemplate)
+            for field in model._meta.get_fields()
+            if field.name in get_translatable_fields_for_model(model)
         }
+        extra_context["label_mapping"] = label_mapping
 
         return super().changeform_view(
             request, object_id=object_id, form_url=form_url, extra_context=extra_context
