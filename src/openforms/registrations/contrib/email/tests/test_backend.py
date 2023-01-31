@@ -8,10 +8,15 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
+import tablib
 from furl import furl
 
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.tests.factories import FormFactory
+from openforms.forms.tests.factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormStepFactory,
+)
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.exports import create_submission_export
@@ -38,14 +43,31 @@ from ..plugin import EmailRegistration
 class EmailBackendTests(HTMLAssertMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.form = FormFactory.create(
-            generate_minimal_setup=True,
+        fd = FormDefinitionFactory.create(
+            configuration={
+                "components": [
+                    {
+                        "key": "someField",
+                        "label": "Some Field",
+                        "type": "textfield",
+                    },
+                    {
+                        "key": "someList",
+                        "label": "Some list",
+                        "type": "textfield",
+                        "multiple": True,
+                    },
+                ],
+            }
+        )
+        form = FormFactory.create(
             name="MyName",
             internal_name="MyInternalName",
             registration_backend="email",
         )
-        cls.fs = cls.form.formstep_set.get()
-        cls.fd = cls.fs.form_definition
+        cls.fs = FormStepFactory.create(form=form, form_definition=fd)
+        cls.form = form
+        cls.fd = fd
 
     def test_submission_with_email_backend(self):
         submission = SubmissionFactory.from_components(
@@ -408,7 +430,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             attachment_formats=[AttachmentFormat.csv, AttachmentFormat.xlsx],
         )
 
-        data = {"foo": "bar", "some_list": ["value1", "value2"]}
+        data = {"someField": "value0", "someList": ["value1", "value2"]}
 
         submission = SubmissionFactory.create(form=self.form)
         submission_step = SubmissionStepFactory.create(
@@ -421,11 +443,13 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             submission_step=submission_step,
             file_name="my-foo.bin",
             content_type="application/foo",
+            form_key="attachment1",
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=submission_step,
             file_name="my-bar.txt",
             content_type="text/bar",
+            form_key="attachment2",
         )
 
         email_submission = EmailRegistration("email")
@@ -451,7 +475,33 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertEqual(
             xlsx_export[0], f"{submission.form.admin_name} - submission.xlsx"
         )
-        self.assertEqual(xlsx_export[1], create_submission_export(qs).export("xlsx"))
+
+        data = tablib.Dataset()
+        binary_excel = xlsx_export[1]
+        data.load(binary_excel)
+
+        self.assertEqual(
+            data.headers,
+            [
+                "Formuliernaam",
+                "Inzendingdatum",
+                "someField",
+                "someList",
+                "attachment1",
+                "attachment2",
+            ],
+        )
+        self.assertEqual(
+            list(data._data[0]),
+            [
+                "MyInternalName",
+                datetime(2021, 1, 1, 12, 0),
+                "value0",
+                "['value1', 'value2']",
+                None,
+                None,
+            ],
+        )
         self.assertEqual(
             xlsx_export[2],
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
