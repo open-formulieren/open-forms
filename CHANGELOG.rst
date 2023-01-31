@@ -2,6 +2,163 @@
 Changelog
 =========
 
+2.1.0-beta.0 (2023-01-31)
+=========================
+
+Open Forms 2.1 beta.
+
+This beta release of Open Forms 2.1 marks the feature freeze, meaning no more new
+features will be added in this minor version. The beta version is available for testing
+and bugfixing to get a stable version suitable for release/production.
+
+Version 2.1 is backwards compatible.
+
+Major features
+--------------
+
+A quick summary of the new features in version 2.1 compared to 2.0. Scroll down for the
+full list of changes since the *2.1.0-alpha.1* version.
+
+**🌐 Multilingual support**
+
+You can now enter content translations for supported languages (NL/EN) and enable
+language selection on a per-form basis. End-users can then pick their preferred language
+while filling out a form, defaulting to the browser preferences.
+
+The submission language is registered as metadata in registration backends, and assets
+like the confirmation PDF are rendered in the preferred language.
+
+Contact us to add support for additional languages, if desired.
+
+**♿️ Accessibility improvements**
+
+We've scrutinized the markup to find accessibility issues and made big steps in fixing
+them. Using Open Forms with a screen reader or other assistive technology should now be
+a more pleasant experience. We continue making improvements in this department!
+
+Additionally, it's now possible to specify custom error messages for form components
+instead of relying on the default, generic messages.
+
+Finally, the form designer now comes with presets for a number of common form fields,
+which provide the appropriate autocomplete configuration.
+
+**🛂 Organization member authentication (OIDC)**
+
+Forms can now be set up for organization member authentication (via OpenID Connect) so
+that your employees can start submissions for them.
+
+This functionality is useful for internal forms that should not be filled out by
+non-employees, or for employees filling out forms on behalf of a customer. In the latter
+case, all the necessary meta-information is registered alongside the form submission
+itself.
+
+**💄 Further integration with NL Design System**
+
+We are increasingly adapting the principles and community components under the NL Design
+System umbrella, which exposes more and more controls to organizations for themeing Open
+Forms to their brand/identity.
+
+Detailed changes
+----------------
+
+**New features**
+
+* Multilingual support
+
+    * [#2478] Implemented UI/UX for form designers to manage component-level translations.
+    * [#2390] PDF reports and confirmation e-mails are now rendered in the submission
+      language.
+    * [#2286] Ensured that the API endpoints for the SDK return the translations
+      according to the active language.
+    * [#2546] Added language metadata to MS Graph, Objects API, ZGW API, StUF-ZDS and
+      email registration backends.
+    * [#1242] The form designer component edit form and preview are now properly localized.
+
+* Accessibility improvements
+
+    * [#2268] Added support for the autocomplete property in the form designer. This
+      comes with a set of pre-configured form fields having the correct autocomplete
+      attribute set out of the box.
+    * [#2490] Login logo objects in the API now contain meta-information about their
+      appearance for appropriate focus-styling in the SDK.
+    * [#2534] Added support for custom errors per-component in the form designer,
+      including translation options.
+    * [#2273] Improved accessibility of error messages for required fields.
+
+* Registration plugins
+
+    * [#2494] Added ability to add identifying person details in StUF-ZDS registration
+      even if the person did not authenticate via DigiD (or similar).
+    * [#2511] Added more options for the Microsoft Graph registration plugin, such as
+      base folder path, drive ID and year/month/day interpolation.
+
+* [#1902] Added support for sourcing choice widget values from variables.
+* [#2504] Improved performance in form designer initial load when you have many
+  forms/form definitions.
+* [#2450] Added "description" field to logic rules in the form designer. The description
+  can be specified manually or is automatically generated from the logic expression.
+* [#2143] Added option to exclude confirmation page content from PDF.
+* [#2539] Added support for ``.msg`` and ``.dwg`` file uploads.
+* [security#20] Use fully qualified URLs in analytics config for maximum CSP strictness.
+* [#2591] Added rate limits to API endpoints for pausing and submitting forms.
+* [#2557] Implemented comparing date and times with the ``now +- someDelta`` variable.
+
+**Bugfixes**
+
+* [#2520] Fixed MIME type validation error for ``.doc`` files.
+* [#2577] Fixed MIME type validation regression for OpenOffice and dwg files.
+* [#2377] Fixed link-hover design token not being applied consistently.
+* [#2519] Only perform upgrade checks when not upgrading between patch versions.
+* [#2120] Fixed layout components inadvertedly getting the ``validate.required=true``
+  configuration.
+* [#2396] Fixed auto-login setting not resetting when the authentication option is
+  removed from the form.
+* Add missing ``br`` tag to allowed WYSIWYG tag list.
+* [#2550] Removed ``role=img`` from logo in header.
+* [#2525] Fixed clearing the date component min/max validation configuration.
+* [#2538] Normalize radio components to always be string type.
+* [#2576] Fix crash on components with prefill attribute names > 50 chars.
+* [#2012] Fixed missing ``script-src`` CSP directive for SiteImprove analytics.
+* [#2541] Fixed a crash in the logic editor when changing the key of selectboxes
+  components.
+* [#2587] Fixed inadvertedly HTML escaping while templating out e-mail subjects.
+* [#2599] Fixed typo in registration constants.
+* [#2607] Fixed crash in logic editor when specifying a "trigger-from" step.
+* [#2581] Fixed bug in logic where dates and datetimes were being mixed.
+
+**Documentation**
+
+* [#2198] Added examples and documentation for highly-available setups with regard to
+  the background task message queue.
+* Updated installation documentation to mention the correct Python version.
+* Documented the flow to register a form on behalf of a customer.
+* Delete obsolete/old boilerplate documentation.
+* Updated developer docs and clarified SDK developer documentation.
+
+**Project maintenance**
+
+* Removed some obsolete/unnecessary assets on error pages.
+* [#2377] Refactored links to make use of the NL DS ``utrecht-link`` component - you can
+  now use all the design tokens from that component in Open Forms too.
+* [#2454] Upgraded black and flake8 versions for Python 3.10 support.
+* [#2450] Moved JSON-logic expression processing into maykin-json-logic-py library.
+* Upgraded a number of dependencies.
+* [#2471] Refactored appointments module to bring the plugin structure in line with the
+  rest of the project.
+* [#1439] The Docker Hub readme/description is now automatically updated via Github
+  Actions.
+* [#2555] Removed dead code.
+* [#1904] Refactored existing code to make use of the sandboxed template backends.
+* [#1898] Refactored template validators to use the sandboxed template backends.
+* Tweaked CI for speed so we spend less time waiting for CI builds to complete.
+* Delete explicitly setting the template loaders.
+* [#2583] Fixed a case of broken test isolation.
+* Upgraded drf-spectacular to the latest version.
+* Added omg.org and jccsoftware.nl to docs link-check ignore list.
+* Added CI job to install dev deps on MacOS.
+* [#2478] Added frontend code test infrastructure.
+
+
 2.0.3 (2023-01-24)
 ==================
 
