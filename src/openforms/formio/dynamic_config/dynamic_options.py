@@ -1,6 +1,7 @@
 import json
 
 from django.template.defaultfilters import escape_filter as escape
+from django.utils.datastructures import OrderedSet
 from django.utils.translation import gettext as _
 
 from glom import assign, glom
@@ -26,7 +27,6 @@ def add_options_to_config(
 
     # The array of items from which we need to get the values
     items_array = jsonLogic(items_path, data)
-
     if not items_array:
         return
 
@@ -41,32 +41,28 @@ def add_options_to_config(
         )
         return
 
-    # Is each item a dict, like for repeating groups, or are they primitives
-    # ready to use?
-    is_obj = isinstance(items_array[0], dict)
-
-    if is_obj:
-        value_path = glom(component, "openForms.valueExpression", default=None)
-        # Case in which the form designer didn't configure the valueExpression by mistake.
-        # Catching this in validation on creation of the form definition is tricky, because the referenced component may
-        # be in another form definition.
-        if not value_path:
-            logevent.form_configuration_error(
-                submission.form,
-                component,
-                _(
-                    "The choices for component %(label)s (%(key)s) are improperly configured. "
-                    "The JSON logic expression to retrieve the items is configured, but no expression for the items "
-                    "values was configured."
-                )
-                % {"label": component["label"], "key": component["key"]},
+    value_path = glom(component, "openForms.valueExpression", default=None)
+    if not value_path and any([isinstance(item, (list, dict)) for item in items_array]):
+        logevent.form_configuration_error(
+            submission.form,
+            component,
+            _(
+                "The choices for component %(label)s (%(key)s) are improperly configured. "
+                "The JSON logic expression to retrieve the items is configured, but no expression for the items "
+                "values was configured."
             )
-            return
+            % {"label": component["label"], "key": component["key"]},
+        )
+        return
 
-        items_array = [jsonLogic(value_path, item) for item in items_array]
+    if value_path:
+        items_array = map(lambda item: jsonLogic(value_path, item), items_array)
 
-    # items_array contains user input!
-    escaped_values = map(escape, items_array)
+    # Remove any None values
+    items_array = [item for item in items_array if item is not None]
+
+    # items_array contains user input! We also don't want duplicate values
+    escaped_values = OrderedSet(map(escape, items_array))
     assign(
         component,
         options_path,
