@@ -23,10 +23,8 @@ def add_options_to_config(
     if glom(component, "openForms.dataSrc", default=None) != "variable":
         return
 
-    items_path = glom(component, "openForms.itemsExpression")
-
-    # The array of items from which we need to get the values
-    items_array = jsonLogic(items_path, data)
+    items_expression = glom(component, "openForms.itemsExpression")
+    items_array = jsonLogic(items_expression, data)
     if not items_array:
         return
 
@@ -35,31 +33,34 @@ def add_options_to_config(
             submission.form,
             component,
             _(
-                "Variable obtained with expression %(items_path)s for dynamic options is not an array."
+                "Variable obtained with expression %(items_expression)s for dynamic options is not an array."
             )
-            % {"items_path": json.dumps(items_path)},
+            % {"items_expression": json.dumps(items_expression)},
         )
         return
 
-    value_path = glom(component, "openForms.valueExpression", default=None)
-    if not value_path and any([isinstance(item, (list, dict)) for item in items_array]):
+    if any([isinstance(item, (list, dict)) for item in items_array]):
         logevent.form_configuration_error(
             submission.form,
             component,
             _(
-                "The choices for component %(label)s (%(key)s) are improperly configured. "
-                "The JSON logic expression to retrieve the items is configured, but no expression for the items "
-                "values was configured."
+                "The dynamic options obtained with expression %(items_expression)s contain non-primitive types."
             )
-            % {"label": component["label"], "key": component["key"]},
+            % {"items_expression": json.dumps(items_expression)},
         )
         return
 
-    if value_path:
-        items_array = map(lambda item: jsonLogic(value_path, item), items_array)
-
     # Remove any None values
-    items_array = [item for item in items_array if item is not None]
+    if None in items_array:
+        logevent.form_configuration_error(
+            submission.form,
+            component,
+            _(
+                "Expression %(items_expression)s did not return a valid option for each item."
+            )
+            % {"items_expression": json.dumps(items_expression)},
+        )
+        items_array = [item for item in items_array if item is not None]
 
     # items_array contains user input! We also don't want duplicate values
     escaped_values = OrderedSet(map(escape, items_array))
