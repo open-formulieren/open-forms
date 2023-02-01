@@ -362,5 +362,14 @@
   "Remove Row Text": "'Groep verwijderen'-tekst",
   "Set the text of the remove Row button.": "Geef de knoptekst om een groep te verwijderen op.",
   "maxFileSizeMessage": "De maximale bestandsgrootte is {{maxFileSize}}.",
+  "Date / Time": "Datum & tijd",
+  "Custom error messages": "Foutmeldingen",
+  "Custom error messages for this component and their translations": "Foutmeldingen specifiek voor dit component, inclusief vertalingen",
+  "Error code": "Foutcode",
+  "Error message": "Foutmelding",
+  "Translations": "Vertalingen",
+  "Translations for literals used in this component.": "Vertalingen voor teksten die in dit component gebruikt worden.",
+  "Literal": "Brontekst",
+  "Translation": "Vertaling",
   "": ""
 }
