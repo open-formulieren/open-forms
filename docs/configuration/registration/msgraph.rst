@@ -47,18 +47,45 @@ Configuration
 =============
 
 1. Obtain the parameters from the Azure application.
-2. In Open Forms, navigate to: **Configuration** > **Overview**. In the **Registration plugin** group, click on **Configuration** for the **Microsoft Graph (OneDrive/SharePoint)** line.
+2. In Open Forms, navigate to: **Configuration** > **Overview**.
 
-   a. Click **Microsoft Graph Service toevoegen**.
-   b. Fill out the form with the requested parameters; note the *Label* field is for internal use.
-   c. Click **Opslaan**
+   a. In the **Registration plugin** section, click on **Configuration** for 
+      the **Microsoft Graph (OneDrive/SharePoint)** line.
+   b. Click the **+**-sign (Add Microsoft Graph Service). A popup should show 
+      up.
+   c. Fill out the form with the requested parameters; note the **Label** field 
+      is for internal use.
+   d. Click **Save** to save this service configuration
+   e. Click **Save** again to select the just added service configuration as 
+      the default service.
 
-3. Navigate to: **Configuration** > **Microsoft Graph registration**
+3. Open any form, and open the **Registration** tab
 
-   a. Select the *Microsoft Graph Service* we created above.
-   b. Click **Opslaan**
+   a. Select **Microsoft Graph (OneDrive/Sharepoint)** as registration backend.
+   b. Optionally fill in the desired **Path** and **Drive ID**. The path value 
+      supports the variables ``{{year}}``, ``{{month}}`` and ``{{day}}`` to 
+      make dynamic paths.
 
-The Microsoft Graph configuration is now completed and can be selected as registration backend in the form builder.
+Submissions on the configured form should now create a folder with the form 
+name, in the configured drive and path. In this folder, the submission PDF, 
+attachments and JSON-data is stored.
+
+
+.. note::
+
+   It can be a little hard to find the Drive ID when using SharePoint which 
+   typically works with "Sites". One trick is to head to the desired SharePoint 
+   folder in the browser and modify the URL to retrieve the Drive ID.
+
+   If the desired folder is shown in the browser, on a URL like this:
+
+   ``https://example.sharepoint.com/sites/MY-SITE`` or ``https://example.sharepoint.com/sites/MY-SITE/Shared%20documents/MY-FOLDER/AllItems.aspx``
+
+   The Drive ID can be found here by modifying the URL to:
+
+   ``https://example.sharepoint.com/sites/MY-SITE/_api/v2.0/drives``
+
+   Look for the ``id`` property which is the Drive ID.
 
 
 Technical
