@@ -126,7 +126,7 @@ class FormDesignerComponentTranslationTests(SeleniumTestCase):
                 By.CSS_SELECTOR, ".formio-dialog-content .nav-link"
             )
             translations_tab = next(
-                tab for tab in modal_tabs if tab.text == "Translations"
+                tab for tab in modal_tabs if tab.text == "Vertalingen"
             )
             translations_tab.click()
             time.sleep(0.1)  # some time for the translations to update
@@ -209,7 +209,7 @@ class FormDesignerComponentTranslationTests(SeleniumTestCase):
                 By.CSS_SELECTOR, ".formio-dialog-content .nav-link"
             )
             translations_tab = next(
-                tab for tab in modal_tabs if tab.text == "Translations"
+                tab for tab in modal_tabs if tab.text == "Vertalingen"
             )
             translations_tab.click()
 

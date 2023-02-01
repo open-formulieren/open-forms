@@ -23,14 +23,15 @@ versions may introduce breaking changes and minor versions are backwards compati
 Open Forms SDK
 --------------
 
-We aim to align the SDK major version with the API major version. This means that SDK
-``1.x`` requires API ``1.x`` and SDK ``2.x`` will require API ``2.x`` or higher.
+The SDK follows its own semantic versioning scheme. Major versions typically mean that
+users of the Javascript interfaces are impacted (npm package users or users modifying
+the window global directly in their own code).
 
-It is possible an SDK minor version (e.g. ``1.1``) requires the same minimal minor
-version of the API, but this is not a guarantee.
+Whenever new features are added to the SDK that depend on certain API functionality
+being available, then *at least* the minor version of the SDK will be bumped.
 
-Newer minor API versions are compatible with a given minor SDK version, per the semantic
-versioning principles.
+Newer minor API versions should be compatible with a given minor SDK version, per the
+semantic versioning principles.
 
 The table below documents the required API version ranges for a given SDK version. The
 maximum API version should usually not be applicable, unless the SDK relies on
@@ -47,6 +48,7 @@ experimental feature changes (see :ref:`developers_versioning_api`).
    1.1.0       1.1.0               < 2.0.0
    1.1.1       1.1.1               < 2.0.0
    1.2.x       2.0.y               n/a
+   1.3.0       2.1.0               n/a
    =========== =================== ===================
 
 .. _developers_versioning_api:
@@ -94,6 +96,7 @@ backend version.
    =============== ===========
    Backend version API version
    =============== ===========
+   2.1.x           2.1.y
    2.0.x           2.0.y
    1.1.x           1.1.y
    1.1.3           1.1.1

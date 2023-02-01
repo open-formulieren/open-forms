@@ -22,7 +22,7 @@ const getCustomValidationErrorMessagesEditForm = validators => {
           input: true,
           key: `translatedErrors.${languageCode}`,
           tooltip: 'Custom errors and their translation.',
-          keyLabel: 'Error',
+          keyLabel: 'Error code',
           disableKey: true,
           disableAddingRemovingRows: true,
           hideLabel: true,
@@ -31,7 +31,7 @@ const getCustomValidationErrorMessagesEditForm = validators => {
           valueComponent: {
             type: 'textfield',
             key: 'message',
-            label: 'Message',
+            label: 'Error message',
             input: true,
             hideLabel: true,
             tableView: true,
@@ -50,19 +50,6 @@ const getCustomValidationErrorMessagesEditForm = validators => {
     collapsible: true,
     collapsed: true,
     components: [
-      {
-        type: 'htmlelement',
-        tag: 'div',
-        // Work around to avoid {{ field }} being parsed by Formio.
-        // Taken from https://github.com/formio/formio.js/blob/v4.14.12/src/components/_classes/component/editForm/Component.edit.validation.js#L165
-        content: `
-        <div>
-          Below you can set different error messages for different errors. You can reference the label of the field
-          with the expression <code>{<span />{ field }}</code>.
-          <br />
-          For example, for a required field the error can be: "{<span/>{ field }} is required. Try again."
-        </div>`,
-      },
       {
         key: 'translations',
         components: [

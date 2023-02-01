@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Open Forms API
-  version: 2.0.0
+  version: 2.1.0-alpha.2
   description: |2
 
     Open Forms provides an API to manage multi-page or multi-step forms.
@@ -663,15 +663,18 @@ paths:
   /api/v2/form-definitions:
     get:
       operationId: form_definitions_list
-      description: "Get a list of existing form definitions, where a single item may\
-        \ be a re-usable or single-use definition. This includes form definitions\
-        \ not currently used in any form(s) at all.\n\nYou can filter this list down\
-        \ to only re-usable definitions or definitions used in a particular form.\n\
-        \n**Note**: filtering on both `is_reusable` and `used_in` at the same time\
-        \ is implemented as an OR-filter.\n\n**Warning: the response data depends\
-        \ on user permissions**\n\nNon-staff users receive a subset of all the documented\
-        \ fields. The fields reserved for staff users are used for internal form configuration.\
-        \ These are: \n\n- `translations`"
+      description: |-
+        Geef een lijst van bestaande formulierdefinities waarin één enkele definitie herbruikbaar of voor éénmalig gebruik kan zijn. Dit is inclusief definities die in geen enkel formulier gebruikt zijn.
+
+        Je kan deze lijst filteren op enkel herbruikbare definities of definities die in een specifiek formulier gebruikt worden.
+
+        **Merk op**: tegelijk filteren op `is_reusable` en `used_in` is geïmplementeerd als een OF-filter - je krijgt dus beide resultaten terug.
+
+        **Waarschuwing: de gegevens in het antwoord zijn afhankelijk van je gebruikersrechten**
+
+        Gebruikers die geen beheerder zijn, ontvangen maar een deel van de gedocumenteerde velden. De velden die enkel voor beheerders beschikbaar zijn, zijn voor interne formulierconfiguratie. Het gaat om de velden:
+
+        - `translations`
       summary: List form step definitions
       parameters:
       - in: query

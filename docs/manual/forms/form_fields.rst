@@ -115,6 +115,16 @@ Validatie
   valideren. De waarde van het veld wordt naar de plugin gestuurd en 
   gevalideerd.
 
+**Foutmeldingen**
+
+Open Formulieren heeft standaardfoutmeldingen bij verschillende typen van
+validatiefouten (denk aan "verplicht", "maximale lengte"...). U kunt deze foutmeldingen
+per formulierveld gericht instellen per ondersteunde taal.
+
+In de foutmelding kunt refereren naar het formulierveld. Bijvoorbeeld voor een
+``required`` veld: "Het veld {{ field }} is verplicht". Op het moment van weergave wordt
+``{{ field }}`` vervangen met de naam van het veld.
+
 Registratie
 -----------
 
