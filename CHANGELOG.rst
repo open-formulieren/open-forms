@@ -731,7 +731,7 @@ data. This involves a couple of steps with some pointers below.
 
 1. The temporary uploads are automatically removed by the cronjobs at 3:30 UTC. The
    default setting is to do this after 2 days (48 hours). We have provided an example
-   `management command <https://github.com/open-formulieren/open-forms/blob/issue/recover-missing-submission-attachments/src/openforms/utils/management/commands/check_restore_needed.py>`_ that you can use to check if you need to partially
+   management command that you can use to check if you need to partially
    restore backups. Make sure to tweak the ``WINDOW_START`` and ``WINDOW_END`` variables
    to your specific situation - the start would be when you started deploying version
    1.0.9, and the end would be ``most recent 3:30 minus 48 hours``.
