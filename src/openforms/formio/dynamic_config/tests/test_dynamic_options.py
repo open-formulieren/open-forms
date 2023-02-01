@@ -95,8 +95,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "openForms": {
                         "dataSrc": "variable",
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        "valueExpression": {"var": "name"},
+                        "itemsExpression": {
+                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
+                        },
                     },
                 },
                 {
@@ -109,8 +110,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                     },
                     "openForms": {
                         "dataSrc": "variable",
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        "valueExpression": {"var": "name"},
+                        "itemsExpression": {
+                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
+                        },
                     },
                     "type": "select",
                 },
@@ -122,8 +124,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                         {"label": "", "value": ""},
                     ],
                     "openForms": {
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        "valueExpression": {"var": "name"},
+                        "itemsExpression": {
+                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
+                        },
                         "dataSrc": "variable",
                     },
                 },
@@ -177,8 +180,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "dataSrc": "variable",
                     "data": {
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        "valueExpression": {"var": "name"},
+                        "itemsExpression": {
+                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
+                        },
                     },
                 },
                 {
@@ -189,8 +193,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                             {"label": "", "value": ""},
                         ],
                         "dataSrc": "variable",
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        "valueExpression": {"var": "name"},
+                        "itemsExpression": {
+                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
+                        },
                     },
                     "type": "select",
                 },
@@ -203,8 +208,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "dataSrc": "variable",
                     "data": {
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        "valueExpression": {"var": "name"},
+                        "itemsExpression": {
+                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
+                        },
                     },
                 },
             ]
@@ -378,7 +384,7 @@ class TestDynamicConfigAddingOptions(TestCase):
             [{"label": "", "value": ""}],
         )
 
-    def test_variable_options_repeating_group_missing_value_path(self):
+    def test_variable_options_repeating_group_missing_map(self):
         configuration = {
             "components": [
                 {
@@ -395,8 +401,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "openForms": {
                         "dataSrc": "variable",
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        # Missing valueExpression
+                        "itemsExpression": {
+                            "var": "repeatingGroup"
+                        },  # No map operation to transform dict into str
                     },
                 },
                 {
@@ -409,8 +416,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                     },
                     "openForms": {
                         "dataSrc": "variable",
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        # Missing valueExpression
+                        "itemsExpression": {
+                            "var": "repeatingGroup"
+                        },  # No map operation to transform dict into str
                     },
                     "type": "select",
                 },
@@ -422,9 +430,10 @@ class TestDynamicConfigAddingOptions(TestCase):
                         {"label": "", "value": ""},
                     ],
                     "openForms": {
-                        "itemsExpression": {"var": "repeatingGroup"},
+                        "itemsExpression": {
+                            "var": "repeatingGroup"
+                        },  # No map operation to transform dict into str
                         "dataSrc": "variable",
-                        # Missing valueExpression
                     },
                 },
             ]
@@ -459,21 +468,15 @@ class TestDynamicConfigAddingOptions(TestCase):
         self.assertEqual(len(logs), 3)
         self.assertEqual(
             logs[0].extra_data["error"],
-            "The choices for component Select Boxes (selectBoxes) are improperly configured. "
-            "The JSON logic expression to retrieve the items is configured, but no expression for the items "
-            "values was configured.",
+            'The dynamic options obtained with expression {"var": "repeatingGroup"} contain non-primitive types.',
         )
         self.assertEqual(
             logs[1].extra_data["error"],
-            "The choices for component Select (select) are improperly configured. "
-            "The JSON logic expression to retrieve the items is configured, but no expression for the items "
-            "values was configured.",
+            'The dynamic options obtained with expression {"var": "repeatingGroup"} contain non-primitive types.',
         )
         self.assertEqual(
             logs[2].extra_data["error"],
-            "The choices for component Radio (radio) are improperly configured. "
-            "The JSON logic expression to retrieve the items is configured, but no expression for the items "
-            "values was configured.",
+            'The dynamic options obtained with expression {"var": "repeatingGroup"} contain non-primitive types.',
         )
 
     def test_escaped_html(self):
@@ -615,8 +618,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "openForms": {
                         "dataSrc": "variable",
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        "valueExpression": {"var": "name"},
+                        "itemsExpression": {
+                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
+                        },
                     },
                 },
             ]
@@ -646,8 +650,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "openForms": {
                         "dataSrc": "variable",
-                        "itemsExpression": {"var": "externalData"},
-                        "valueExpression": {"var": "id"},
+                        "itemsExpression": {
+                            "map": [{"var": "externalData"}, {"var": "id"}]
+                        },
                     },
                 },
             ]
@@ -672,4 +677,15 @@ class TestDynamicConfigAddingOptions(TestCase):
         self.assertEqual(
             configuration["components"][0]["values"],
             [{"label": "111", "value": "111"}],
+        )
+
+        logs = TimelineLogProxy.objects.filter(
+            object_id=submission.form.id,
+            template="logging/events/form_configuration_error.txt",
+        )
+
+        self.assertEqual(len(logs), 1)
+        self.assertEqual(
+            logs[0].extra_data["error"],
+            'Expression {"map": [{"var": "externalData"}, {"var": "id"}]} did not return a valid option for each item.',
         )
