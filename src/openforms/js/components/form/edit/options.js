@@ -245,21 +245,6 @@ const OPTIONS_CHOICES = [
       required: true,
     },
   },
-  {
-    label: 'Items value',
-    key: 'openForms.valueExpression',
-    type: 'textarea',
-    tooltip:
-      'In case the items are objects, provide a JSON logic expression to construct the value to use from each item of the array. ' +
-      'For example, this is needed when referring to repeating groups.',
-    editor: 'ace',
-    as: 'json',
-    conditional: {
-      show: true,
-      when: 'openForms.dataSrc',
-      eq: 'variable',
-    },
-  },
 ];
 
 export {
