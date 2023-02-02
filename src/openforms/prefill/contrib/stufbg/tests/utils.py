@@ -29,7 +29,7 @@ def mock_stufbg_make_request(template: str):
             pass
 
     patcher = patch(
-        "stuf.stuf_bg.client.StufBGClient.make_request",
+        "stuf.stuf_bg.client.StufBGClient.request",
         return_value=FakeResponse(),
     )
     patcher.start()
