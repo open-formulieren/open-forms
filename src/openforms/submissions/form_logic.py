@@ -17,6 +17,7 @@ from openforms.forms.models import FormVariable
 from openforms.logging import logevent
 from openforms.typing import DataMapping, JSONValue
 from openforms.variables.models import DataMappingTypes, ServiceFetchConfiguration
+from openforms.variables.validators import HeaderValidator
 
 from .logic.actions import PropertyAction
 from .logic.datastructures import DataContainer
@@ -268,21 +269,7 @@ def bind(var: FormVariable, values: DataMapping) -> JSONValue:
     match var:
         case FormVariable(service_fetch_configuration=fetch_config) if fetch_config:
             client = fetch_config.service.build_client()
-
-            request_args = dict(
-                path=fetch_config.path.format(
-                    **{k: quote(str(v), safe="") for k, v in values.items()}  # O(n)
-                ),
-                params=fetch_config.query_params,
-                method=fetch_config.method,
-                headers=fetch_config.headers,
-                # XXX required parameter to zds-client...
-                # Maybe offer as alternative to path and method?
-                operation="",
-            )
-            if fetch_config.body is not None:
-                request_args["json"] = fetch_config.body
-
+            request_args = _request_arguments(fetch_config, values)
             raw_value = client.request(**request_args)
 
             match fetch_config.data_mapping_type, fetch_config.mapping_expression:
@@ -295,3 +282,32 @@ def bind(var: FormVariable, values: DataMapping) -> JSONValue:
                     return raw_value
         case _:
             raise NotImplementedError()
+
+
+def _request_arguments(fetch_config: ServiceFetchConfiguration, values: DataMapping):
+    headers = {
+        # no leading spaces and the value into the legal field-value codespace
+        header: value.format(**values).strip().encode("utf-8").decode("latin1")
+        for header, value in (fetch_config.headers or {}).items()
+    }
+    # before we go further
+    # assert headers are still valid after we put submmitter data in there
+    HeaderValidator()(headers)
+
+    escaped_values = {k: quote(str(v), safe="") for k, v in values.items()}
+
+    query_params = fetch_config.query_params.format(**escaped_values)
+    query_params = query_params[1:] if query_params.startswith("?") else query_params
+
+    request_args = dict(
+        path=fetch_config.path.format(**escaped_values),
+        params=query_params,
+        method=fetch_config.method,
+        headers=headers,
+        # XXX operationId is a required parameter to zds-client...
+        # Maybe offer as alternative to path and method?
+        operation="",
+    )
+    if fetch_config.body is not None:
+        request_args["json"] = fetch_config.body
+    return request_args
