@@ -222,7 +222,7 @@ Zie ook: :ref:`configuration_appointment_index`
    globaal te configureren.
 
 
-.. _`manual_forms_basics_variables`:
+.. _manual_forms_basics_variables:
 
 Variabelen
 ----------

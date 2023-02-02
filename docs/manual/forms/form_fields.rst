@@ -28,7 +28,7 @@ Basis
   vullen en door te zetten naar achterliggende registratiesystemen. Beheerders
   kunnen de waarden van onzichtbare velden uiteraard wel zien.
 
-.. _`manual_forms_form_fields_variables_usage`:
+.. _manual_forms_form_fields_variables_usage:
 
 Variabelen
 ~~~~~~~~~~
