@@ -539,6 +539,11 @@
     "description": "Label for option to disable autoLoginAuthenticationBackend",
     "originalDefault": "(none)"
   },
+  "HpKhVP": {
+    "defaultMessage": "Appointment enabled",
+    "description": "Form appointment enabled field label",
+    "originalDefault": "Appointment enabled"
+  },
   "HqVHBq": {
     "defaultMessage": "Will send the email specified.",
     "description": "Form confirmation email help text",
@@ -1258,6 +1263,11 @@
     "defaultMessage": "years",
     "description": "Logic trigger number of years",
     "originalDefault": "years"
+  },
+  "iq0ppL": {
+    "defaultMessage": "Experimental mode. Indicates whether appointments are enabled for this form.",
+    "description": "Form appointment enabled field help text",
+    "originalDefault": "Experimental mode. Indicates whether appointments are enabled for this form."
   },
   "ixiVhj": {
     "defaultMessage": "{name} [new]",

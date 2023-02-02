@@ -799,6 +799,12 @@
       "value": "(none)"
     }
   ],
+  "HpKhVP": [
+    {
+      "type": 0,
+      "value": "Appointment enabled"
+    }
+  ],
   "HqVHBq": [
     {
       "type": 0,
@@ -1779,6 +1785,12 @@
     {
       "type": 0,
       "value": "years"
+    }
+  ],
+  "iq0ppL": [
+    {
+      "type": 0,
+      "value": "Experimental mode. Indicates whether appointments are enabled for this form."
     }
   ],
   "ixiVhj": [
