@@ -20,6 +20,7 @@ from .descriptions import (
     op_in,
     op_less_than,
     op_less_than_or_equal,
+    op_map,
     op_max,
     op_merge,
     op_min,
@@ -74,6 +75,7 @@ OPERATION_DESCRIPTION_BUILDERS: dict[str, DescriptionGeneratorProtocol] = {
     "max": op_max,
     "merge": op_merge,
     "reduce": op_reduce,
+    "map": op_map,
     # custom operators
     "today": op_today,
     "date": op_date,
