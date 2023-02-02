@@ -10,7 +10,8 @@ class StufServiceAdminAdminForm(forms.ModelForm):
     class Meta:
         model = StufService
         widgets = {
-            "password": PasswordInput(),
+            # turn off autocomplete: https://stackoverflow.com/q/33113891
+            "password": PasswordInput(attrs={"autocomplete": "new-password"}),
         }
         fields = "__all__"
 

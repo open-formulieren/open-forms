@@ -136,7 +136,7 @@ django-better-admin-arrayfield==1.4.2
     # via
     #   -r requirements/base.in
     #   mozilla-django-oidc-db
-django-camunda==0.12.0
+django-camunda==0.13.0
     # via -r requirements/base.in
 django-capture-tag==1.0
     # via -r requirements/base.in
