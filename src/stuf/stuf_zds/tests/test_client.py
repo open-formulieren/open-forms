@@ -153,6 +153,7 @@ class StufZdsRegressionTests(TestCase):
         ):
             try:
                 client._make_request(
+                    "irrelevant",
                     template_name="stuf_zds/soap/creeerZaak.xml",
                     context={"referentienummer": "123", "extra": {"foo": "Ş"}},
                     endpoint_type=EndpointType.ontvang_asynchroon,

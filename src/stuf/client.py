@@ -92,7 +92,8 @@ class BaseClient:
     def _get_auth_kwargs(self):
         cert = self.service.get_cert()
         auth = self.service.get_auth()
-        return {"cert": cert, "auth": auth}
+        verify = self.service.get_verify()
+        return {"cert": cert, "auth": auth, "verify": verify}
 
     def _build_headers(self, soap_action: str) -> dict[str, str]:
         soap_version = self.service.soap_service.soap_version
@@ -127,7 +128,7 @@ class BaseClient:
 
         url = self.service.get_endpoint(type=endpoint_type)
         logger.debug(
-            "%r client request.\nurl: %s\ndata: %s",
+            "%r client (SOAP) request.\nurl: %s\ndata: %s",
             self_cls,
             url,
             body,

@@ -3,7 +3,7 @@ import logging
 import os
 from collections import OrderedDict
 from datetime import timedelta
-from typing import Tuple
+from typing import Literal, TypedDict
 from uuid import uuid4
 
 from django.template import loader
@@ -22,13 +22,10 @@ from openforms.logging import logevent
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
-from stuf.constants import (
-    SOAP_VERSION_CONTENT_TYPES,
-    STUF_ZDS_EXPIRY_MINUTES,
-    EndpointSecurity,
-    EndpointType,
-)
-from stuf.models import StufService
+
+from ..client import BaseClient
+from ..constants import STUF_ZDS_EXPIRY_MINUTES, EndpointSecurity, EndpointType
+from ..models import StufService
 
 logger = logging.getLogger(__name__)
 
@@ -88,15 +85,44 @@ def xml_value(xml, xpath, namespaces=nsmap):
         raise ValueError(f"xpath not found {xpath}")
 
 
-class StufZDSClient:
-    def __init__(self, service: StufService, options):
-        """
-        the options are the values from the ZaakOptionsSerializer plus 'omschrijving' and 'referentienummer'
-        """
-        self.service = service
-        self.options = options
+class ZaakOptions(TypedDict):
+    # from stuf_zds.plugin.ZaakOptionsSerializer
+    gemeentecode: str
+    zds_zaaktype_code: str
+    zds_zaaktype_omschrijving: str
+    zds_zaaktype_status_code: str
+    zds_zaaktype_status_omschrijving: str
+    zds_documenttype_omschrijving_inzending: str
+    zds_zaakdoc_vertrouwelijkheid: Literal[
+        "ZEER GEHEIM",
+        "GEHEIM",
+        "CONFIDENTIEEL",
+        "VERTROUWELIJK",
+        "ZAAKVERTROUWELIJK",
+        "INTERN",
+        "BEPERKT OPENBAAR",
+        "OPENBAAR",
+    ]
+    # extra's
+    omschrijving: str
+    referentienummer: str
 
-        self._global_config = GlobalConfiguration.get_solo()
+
+class StufZDSClient(BaseClient):
+    sector_alias = "zkn"
+
+    def __init__(self, service: StufService, options: ZaakOptions):
+        """
+        Initialize the client instance.
+
+        :arg options: Values from the ``ZaakOptionsSerializer``, amended with
+          'omschrijving' and 'referentienummer'.
+        """
+        super().__init__(
+            service,
+            request_log_hook=logevent.stuf_zds_request,
+        )
+        self.options = options
 
     def _get_request_base_context(self):
         return {
@@ -126,7 +152,7 @@ class StufZDSClient:
                 "zds_zaakdoc_vertrouwelijkheid"
             ],
             "referentienummer": str(uuid4()),
-            "global_config": self._global_config,
+            "global_config": GlobalConfiguration.get_solo(),
         }
 
     def _wrap_soap_envelope(self, xml_str: str) -> str:
@@ -150,80 +176,64 @@ class StufZDSClient:
 
     def _make_request(
         self,
+        soap_action: str,
         template_name: str,
         context: dict,
-        endpoint_type,
-        soap_action: str = "",
-    ) -> Tuple[Response, Element]:
-
+        endpoint_type: str,
+    ) -> tuple[Response, Element]:
+        # URL for logging purposes
+        _url = self.service.get_endpoint(type=endpoint_type)
         request_body = loader.render_to_string(template_name, context)
         request_data = self._wrap_soap_envelope(request_body)
 
-        url = self.service.get_endpoint(endpoint_type)
-
-        logger.debug("SOAP-request:\n%s\n%s", url, request_data)
         ref_nr = context["referentienummer"]
-
         try:
-            logevent.stuf_zds_request(self.service, url)
-            response = requests.post(
-                url,
-                data=request_data.encode(
-                    "utf-8"
-                ),  # TODO: this should be shared in a generic StUF client base class, see #388
-                headers={
-                    "Content-Type": SOAP_VERSION_CONTENT_TYPES.get(
-                        self.service.soap_service.soap_version
-                    ),
-                    "SOAPAction": f"http://www.egem.nl/StUF/sector/zkn/0310/{soap_action}",
-                },
-                auth=self.service.get_auth(),
-                cert=self.service.get_cert(),
-                verify=self.service.get_verify(),
+            response = self.request(
+                soap_action, body=request_data, endpoint_type=endpoint_type
             )
-            if response.status_code < 200 or response.status_code >= 400:
-                logger.debug("SOAP-response:\n%s", response.content)
-                error_text = parse_soap_error_text(response)
-                logger.error(
-                    "bad response for referentienummer '%s'\n%s",
-                    ref_nr,
-                    error_text,
-                )
-                logevent.stuf_zds_failure_response(self.service, url)
-                raise RegistrationFailed(
-                    f"error while making backend request: HTTP {response.status_code}: {error_text}",
-                    response=response,
-                )
-            else:
-                logger.debug("SOAP-response:\n%s", response.content)
         except RequestException as e:
             logger.error(
                 "bad request for referentienummer '%s'",
                 ref_nr,
+                extra={"ref_nr": ref_nr},
             )
-            logevent.stuf_zds_failure_response(self.service, url)
+            logevent.stuf_zds_failure_response(self.service, _url)
             raise RegistrationFailed("error while making backend request") from e
+
+        if response.status_code < 200 or response.status_code >= 400:
+            error_text = parse_soap_error_text(response)
+            logger.error(
+                "bad response for referentienummer '%s'\n%s",
+                ref_nr,
+                error_text,
+                extra={"ref_nr": ref_nr},
+            )
+            logevent.stuf_zds_failure_response(self.service, _url)
+            raise RegistrationFailed(
+                f"error while making backend request: HTTP {response.status_code}: {error_text}",
+                response=response,
+            )
 
         try:
             xml = df_fromstring(response.content)
         except etree.XMLSyntaxError as e:
-            logevent.stuf_zds_failure_response(self.service, url)
+            logevent.stuf_zds_failure_response(self.service, _url)
             raise RegistrationFailed(
                 "error while parsing incoming backend response XML"
             ) from e
 
-        logevent.stuf_zds_success_response(self.service, url)
+        logevent.stuf_zds_success_response(self.service, _url)
 
         return response, xml
 
-    def create_zaak_identificatie(self):
+    def create_zaak_identificatie(self) -> str:
         template = "stuf_zds/soap/genereerZaakIdentificatie.xml"
         context = self._get_request_base_context()
-        response, xml = self._make_request(
+        _, xml = self._make_request(
+            "genereerZaakIdentificatie_Di02",
             template,
             context,
             endpoint_type=EndpointType.vrije_berichten,
-            soap_action="genereerZaakIdentificatie_Di02",
         )
 
         try:
@@ -239,7 +249,7 @@ class StufZDSClient:
 
     def create_zaak(
         self, zaak_identificatie, zaak_data, extra_data, payment_required=False
-    ):
+    ) -> None:
         template = "stuf_zds/soap/creeerZaak.xml"
         context = self._get_request_base_context()
         context.update(
@@ -252,16 +262,14 @@ class StufZDSClient:
             }
         )
         context.update(zaak_data)
-        response, xml = self._make_request(
+        self._make_request(
+            "creeerZaak_Lk01",
             template,
             context,
             endpoint_type=EndpointType.ontvang_asynchroon,
-            soap_action="creeerZaak_Lk01",
         )
 
-        return None
-
-    def partial_update_zaak(self, zaak_identificatie: str, zaak_data: dict) -> dict:
+    def partial_update_zaak(self, zaak_identificatie: str, zaak_data: dict) -> None:
         template = "stuf_zds/soap/updateZaak.xml"
         context = self._get_request_base_context()
         context.update(
@@ -270,13 +278,12 @@ class StufZDSClient:
             }
         )
         context.update(zaak_data)
-        response, xml = self._make_request(
+        self._make_request(
+            "updateZaak_Lk01",
             template,
             context,
             endpoint_type=EndpointType.ontvang_asynchroon,
-            soap_action="updateZaak_Lk01",
         )
-        return None
 
     def set_zaak_payment(self, zaak_identificatie: str, partial: bool = False) -> dict:
         data = {
@@ -287,14 +294,14 @@ class StufZDSClient:
         }
         return self.partial_update_zaak(zaak_identificatie, data)
 
-    def create_document_identificatie(self):
+    def create_document_identificatie(self) -> str:
         template = "stuf_zds/soap/genereerDocumentIdentificatie.xml"
         context = self._get_request_base_context()
-        response, xml = self._make_request(
+        _, xml = self._make_request(
+            "genereerDocumentIdentificatie_Di02",
             template,
             context,
             endpoint_type=EndpointType.vrije_berichten,
-            soap_action="genereerDocumentIdentificatie_Di02",
         )
 
         try:
@@ -347,14 +354,12 @@ class StufZDSClient:
 
         # TODO: vertrouwelijkAanduiding
 
-        response, xml = self._make_request(
+        self._make_request(
+            "voegZaakdocumentToe_Lk01",
             template,
             context,
             endpoint_type=EndpointType.ontvang_asynchroon,
-            soap_action="voegZaakdocumentToe_Lk01",
         )
-
-        return None
 
     def create_zaak_attachment(
         self, zaak_id: str, doc_id: str, submission_attachment: SubmissionFileAttachment
@@ -384,25 +389,18 @@ class StufZDSClient:
             }
         )
 
-        response, xml = self._make_request(
+        self._make_request(
+            "voegZaakdocumentToe_Lk01",
             template,
             context,
             endpoint_type=EndpointType.ontvang_asynchroon,
-            soap_action="voegZaakdocumentToe_Lk01",
         )
 
-        return None
-
-    def check_config(self):
+    def check_config(self) -> None:
         url = f"{self.service.get_endpoint(EndpointType.beantwoord_vraag)}?wsdl"
-
+        auth_kwargs = self._get_auth_kwargs()
         try:
-            response = requests.get(
-                url,
-                auth=self.service.get_auth(),
-                cert=self.service.get_cert(),
-                verify=self.service.get_verify(),
-            )
+            response = requests.get(url, **auth_kwargs)
             if not response.ok:
                 error_text = parse_soap_error_text(response)
                 raise InvalidPluginConfiguration(
