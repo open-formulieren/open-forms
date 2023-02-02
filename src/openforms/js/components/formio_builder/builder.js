@@ -351,6 +351,10 @@ const FormIOBuilder = ({
   // https://help.form.io/developers/form-renderer#form-events
   const onBuilderFormChange = (changed, flags, modifiedByHuman) => {
     const {instance, value: newLiteral} = flags;
+
+    // Call Formio triggerChange
+    instance.root.triggerChange(changed, flags, modifiedByHuman);
+
     // get the submission data of the form in the modal, which configures the component
     // itself.
     const newComponentConfiguration = instance.root.submission.data;
