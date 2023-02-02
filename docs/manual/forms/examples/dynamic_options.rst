@@ -50,7 +50,10 @@ Formulier maken
       {
          "map": [
             {"var": "adressen"},
-            {"cat": [{"var": "straatnaam"}, " ", {"var": "huisnummerEnToevoeging"}]}
+            [
+                {"cat": [{"var": "postcode"}, ",", {"var": "huisnummerEnToevoeging"}]},
+                {"cat": [{"var": "straatnaam"}, " ", {"var": "huisnummerEnToevoeging"}]}
+            ]
          ]
       }
 
