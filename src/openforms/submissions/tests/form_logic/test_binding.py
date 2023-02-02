@@ -1,3 +1,4 @@
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 from unittest import skip
@@ -8,7 +9,7 @@ from django.test import SimpleTestCase
 import requests_mock
 from factory.django import FileField
 from furl import furl
-from hypothesis import example, given, strategies as st
+from hypothesis import example, given, settings, strategies as st
 from zgw_consumers.constants import APITypes, AuthTypes
 
 from openforms.forms.tests.factories import FormVariableFactory
@@ -33,9 +34,15 @@ def data_mapping_values() -> st.SearchStrategy[Any]:
     return st.one_of(st.text(), st.integers(), st.floats(), st.dates(), st.datetimes())
 
 
+# the first test still takes too much time
+# decorating given because I don't want to count on test running order
+given = settings(deadline=500)(given)
+
+
 class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
-    def setUp(self):
-        self.service = ServiceFactory.build(
+    @classmethod
+    def setUpClass(cls):
+        cls.service = ServiceFactory.build(
             api_type=APITypes.orc,
             api_root="https://httpbin.org/",
             auth_type=AuthTypes.no_auth,
@@ -43,6 +50,15 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
                 from_path=str(Path(__file__).parent.parent / "files" / "openapi.yaml")
             ),
         )
+        # prevent parsing the yaml over and over and over
+        cls.service.id = 1  # need pk for __hash__
+        cls.service.build_client = lru_cache(1)(cls.service.build_client)
+
+    @classmethod
+    def tearDownClass(cls):
+        # we did not touch the database, we're Simple
+        # super() insists on calling _remove_databases_failures
+        pass
 
     @requests_mock.Mocker()
     def test_it_performs_simple_get(self, m):
@@ -62,8 +78,6 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
     @example("../otherendpoint")
     def test_it_can_construct_simple_path_parameters(self, field_value):
         # https://swagger.io/docs/specification/describing-parameters/#path-parameters
-
-        self.service.oas_file.seek(0)  # oas fetcher reads n times
         context = {"seconds": field_value}
 
         var = FormVariableFactory.build(
@@ -116,8 +130,6 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
     )
     def test_it_can_construct_simple_query_parameters(self, field_value, question_mark):
         # https://swagger.io/docs/specification/describing-parameters/#query-parameters
-
-        self.service.oas_file.seek(0)  # oas fetcher reads n times
         context = {"some_field": field_value}
 
         var = FormVariableFactory.build(
@@ -151,8 +163,6 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
         self, some_text, some_value
     ):
         # https://swagger.io/docs/specification/describing-parameters/#query-parameters
-
-        self.service.oas_file.seek(0)  # oas fetcher reads n times
         context = {"url": some_text, "code": some_value}
 
         var = FormVariableFactory.build(
@@ -226,7 +236,6 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
     def test_it_can_construct_simple_header_parameters(self, field_value):
         "Assert the happy path"
         # https://swagger.io/docs/specification/describing-parameters/#header-parameters
-        self.service.oas_file.seek(0)  # oas fetcher reads n times
         context = {"some_value": field_value}
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
@@ -264,7 +273,6 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
     def test_it_never_sends_bad_headers_regardless_of_what_people_submit(
         self, field_value
     ):
-        self.service.oas_file.seek(0)  # oas fetcher reads n times
         context = {"some_value": field_value}
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
