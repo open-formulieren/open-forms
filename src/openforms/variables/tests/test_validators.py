@@ -65,11 +65,11 @@ def field_values() -> st.SearchStrategy[str]:
     > field-vchar    = VCHAR / obs-text
     > obs-text       = %x80-FF
     """
-    return st.text(alphabet=FIELD_VALUE_ALPHABET).map(lambda s: s.strip())
+    return st.text(alphabet=FIELD_VALUE_ALPHABET).map(lambda s: s.strip(SP + HTAB))
 
 
 def whitespace() -> st.SearchStrategy[str]:
-    return st.characters(whitelist_categories=("Zs",))
+    return st.one_of(st.just(SP), st.just(HTAB))
 
 
 def insert_string(chars: str, s: str, at: Literal[0, 1, 2]) -> str:
@@ -128,6 +128,9 @@ class HeaderValidatorTests(SimpleTestCase):
         > specific version of HTTP allows such whitespace to appear in a message, a
         > field parsing implementation MUST exclude such whitespace prior to
         > evaluating the field value.
+
+        https://www.rfc-editor.org/rfc/rfc9110#section-5.6.3
+        "whitespace" is difined as SP / HTAB
         """
         # take the first or last key of the dict
         key = list(userinput.keys())[0 if first_elem else -1]
