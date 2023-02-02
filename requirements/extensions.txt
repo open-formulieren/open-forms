@@ -438,7 +438,7 @@ maykin-django-two-factor-auth[phonenumbers]==2.0.4
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-maykin-json-logic-py==0.10.0
+maykin-json-logic-py==0.11.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
