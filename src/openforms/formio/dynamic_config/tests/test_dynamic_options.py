@@ -671,12 +671,14 @@ class TestDynamicConfigAddingOptions(TestCase):
                     "i'm not an object!",
                     123,
                     ["im", "an", "array"],
+                    {"id": ["111", None]},
+                    {"id": ["key", "label"]},
                 ]
             },
         )
         self.assertEqual(
             configuration["components"][0]["values"],
-            [{"label": "111", "value": "111"}],
+            [{"label": "111", "value": "111"}, {"label": "label", "value": "key"}],
         )
 
         logs = TimelineLogProxy.objects.filter(
@@ -688,4 +690,56 @@ class TestDynamicConfigAddingOptions(TestCase):
         self.assertEqual(
             logs[0].extra_data["error"],
             'Expression {"map": [{"var": "externalData"}, {"var": "id"}]} did not return a valid option for each item.',
+        )
+
+    def test_different_label_key_options(self):
+        configuration = {
+            "components": [
+                {
+                    "key": "repeatingGroup",
+                    "type": "editgrid",
+                    "components": [
+                        {"type": "textfield", "key": "name"},
+                        {"type": "textfield", "key": "bsn"},
+                    ],
+                },
+                {
+                    "label": "Select Boxes",
+                    "key": "selectBoxes",
+                    "type": "selectboxes",
+                    "values": [
+                        {"label": "", "value": ""},
+                    ],
+                    "openForms": {
+                        "dataSrc": "variable",
+                        "itemsExpression": {
+                            "map": [
+                                {"var": "repeatingGroup"},
+                                [{"var": "bsn"}, {"var": "name"}],
+                            ]
+                        },
+                    },
+                },
+            ]
+        }
+
+        submission = SubmissionFactory.create()
+
+        rewrite_formio_components(
+            FormioConfigurationWrapper(configuration),
+            submission,
+            {
+                "repeatingGroup": [
+                    {"name": "Test1", "bsn": "123456789"},
+                    {"name": "Test2", "bsn": "987654321"},
+                ]
+            },
+        )
+
+        self.assertEqual(
+            configuration["components"][1]["values"],
+            [
+                {"label": "Test1", "value": "123456789"},
+                {"label": "Test2", "value": "987654321"},
+            ],
         )
