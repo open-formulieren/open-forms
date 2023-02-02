@@ -13,26 +13,26 @@ from openforms.typing import DataMapping, JSONValue
 from ..typing import Component
 
 
-def normalise_option(option: JSONValue) -> list[JSONValue]:
+def normalise_option(option: JSONValue) -> JSONValue:
     if not isinstance(option, list):
         return [option, option]
 
     return option[:2]
 
 
-def is_or_contains_none(option):
+def is_or_contains_none(option: JSONValue) -> bool:
     if isinstance(option, list):
         return None in option
     return option is None
 
 
-def escape_option(option: list[JSONValue]) -> list[str]:
+def escape_option(option: JSONValue) -> list[str]:
     return [escape(item) for item in option]
 
 
 def deduplicate_options(
-    options: list[JSONValue],
-) -> list[JSONValue]:
+    options: JSONValue,
+) -> JSONValue:
     new_options = []
     for option in options:
         if option not in new_options:
@@ -66,7 +66,11 @@ def add_options_to_config(
         return
 
     # Remove any None values
-    if any([is_or_contains_none(item) for item in items_array]):
+    if len(
+        not_none_options := [
+            item for item in items_array if not is_or_contains_none(item)
+        ]
+    ) != len(items_array):
         logevent.form_configuration_error(
             submission.form,
             component,
@@ -75,9 +79,8 @@ def add_options_to_config(
             )
             % {"items_expression": json.dumps(items_expression)},
         )
-        items_array = [item for item in items_array if not is_or_contains_none(item)]
 
-    normalised_options = [normalise_option(option) for option in items_array]
+    normalised_options = [normalise_option(option) for option in not_none_options]
     if any(
         [
             isinstance(item_key, (dict, list)) or isinstance(item_label, (dict, list))
