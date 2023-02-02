@@ -1,7 +1,8 @@
-<ZKN:zakLv01 xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" xmlns:gml="http://www.opengis.net/gml">
+{% extends "stuf/soap_envelope.xml" %}{% load stuf %}
+{% block body %}<ZKN:zakLv01 xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310" xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" xmlns:gml="http://www.opengis.net/gml">
     <ZKN:stuurgegevens>
         <StUF:berichtcode>Lv01</StUF:berichtcode>
-        {% include "stuf_zds/soap/includes/stuurgegevens.xml" %}
+        {% render_stuurgegevens service referentienummer %}
         <StUF:entiteittype>ZAK</StUF:entiteittype>
     </ZKN:stuurgegevens>
     <ZKN:parameters>
@@ -17,4 +18,4 @@
             <ZKN:omschrijving>Client</ZKN:omschrijving>
         </ZKN:object>
     </ZKN:scope>
-</ZKN:zakLv01>
+</ZKN:zakLv01>{% endblock %}

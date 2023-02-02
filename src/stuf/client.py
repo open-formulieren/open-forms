@@ -189,6 +189,7 @@ class BaseClient:
         return {
             # namespace configuration
             "main_namespace": self.sector_namespace,
+            "soap_version": self.service.soap_service.soap_version,
             # context for security tag
             "service": self.service,
             "security_expires_minutes": self.soap_security_expires_minutes,

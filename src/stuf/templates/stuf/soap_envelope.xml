@@ -1,7 +1,7 @@
 {% load stuf %}<?xml version="1.0" encoding="UTF-8"?>
 {# TODO: use only relevant namespaces #}
 <soapenv:Envelope
-    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:soapenv="{% if soap_version == '1.1' %}http://schemas.xmlsoap.org/soap/envelope/{% else %}http://www.w3.org/2003/05/soap-envelope{% endif %}"
     xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:gml="http://www.opengis.net/gml"

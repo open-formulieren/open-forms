@@ -1,12 +1,12 @@
-<ZKN:zakLk01
-        xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+{% extends "stuf/soap_envelope.xml" %}{% load stuf %}
+{% block body %}<ZKN:zakLk01
         xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"
         xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.stufstandaarden.nl/koppelvlak/zds0120 ../zds0120_msg_zs-dms.xsd">
     <ZKN:stuurgegevens>
         <StUF:berichtcode>Lk01</StUF:berichtcode>
-        {% include "stuf_zds/soap/includes/stuurgegevens.xml" %}
+        {% render_stuurgegevens service referentienummer %}
         <StUF:entiteittype>ZAK</StUF:entiteittype>
     </ZKN:stuurgegevens>
     <ZKN:parameters>
@@ -18,4 +18,4 @@
         {% if betalings_indicatie %}<ZKN:betalingsIndicatie>{{ betalings_indicatie }}</ZKN:betalingsIndicatie>{% endif %}
         {% if laatste_betaaldatum %}<ZKN:laatsteBetaaldatum>{{ laatste_betaaldatum }}</ZKN:laatsteBetaaldatum>{% endif %}
     </ZKN:object>
-</ZKN:zakLk01>
+</ZKN:zakLk01>{% endblock %}

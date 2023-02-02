@@ -25,7 +25,7 @@ from stuf.tests.factories import StufServiceFactory
 class StufBGConfigTests(TestCase):
     def setUp(self):
         super().setUp()
-        self.service = StufServiceFactory.create()
+        self.service = StufServiceFactory.create(soap_service__soap_version="1.1")
         self.config = StufBGConfig.get_solo()
         self.config.service = self.service
         self.config.save()
@@ -66,7 +66,7 @@ class StufBGConfigTests(TestCase):
         self.assertEqual(m.last_request.method, "POST")
         self.assertEqual(
             m.last_request.headers["Content-Type"],
-            SOAP_VERSION_CONTENT_TYPES.get(SOAPVersion.soap12),
+            SOAP_VERSION_CONTENT_TYPES.get(SOAPVersion.soap11),
         )
         self.assertEqual(
             m.last_request.headers["SOAPAction"],
