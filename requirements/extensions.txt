@@ -117,7 +117,7 @@ defusedxml==0.6.0
     #   django-camunda
     #   django-digid-eherkenning
     #   maykin-python3-saml
-django==3.2.16
+django==3.2.17
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
