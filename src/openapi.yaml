@@ -5926,6 +5926,9 @@ components:
           readOnly: true
         translations:
           $ref: '#/components/schemas/FormModelTranslations'
+        appointmentEnabled:
+          type: boolean
+          description: This is experimental mode for appointments
       required:
       - loginOptions
       - loginRequired
@@ -7215,6 +7218,9 @@ components:
           readOnly: true
         translations:
           $ref: '#/components/schemas/FormModelTranslations'
+        appointmentEnabled:
+          type: boolean
+          description: This is experimental mode for appointments
     PatchedFormDefinition:
       type: object
       properties:

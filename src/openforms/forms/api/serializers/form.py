@@ -149,6 +149,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "include_confirmation_page_content_in_pdf",
             "required_fields_with_asterisk",
             "translations",
+            "appointment_enabled",
         )
         # allowlist for anonymous users
         public_fields = (
@@ -171,6 +172,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "active",
             "required_fields_with_asterisk",
             "submission_allowed",
+            "appointment_enabled",
         )
         extra_kwargs = {
             "uuid": {

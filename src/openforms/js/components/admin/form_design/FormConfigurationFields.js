@@ -75,6 +75,7 @@ const FormConfigurationFields = ({
     maintenanceMode,
     translationEnabled,
     submissionAllowed,
+    appointmentEnabled,
   } = form;
 
   const intl = useIntl();
@@ -307,6 +308,25 @@ const FormConfigurationFields = ({
           />
         </Field>
       </FormRow>
+      <FormRow>
+        <Checkbox
+          name="form.appointmentEnabled"
+          label={
+            <FormattedMessage
+              defaultMessage="Appointment enabled"
+              description="Form appointment enabled field label"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              defaultMessage="Experimental mode. Indicates whether appointments are enabled for this form."
+              description="Form appointment enabled field help text"
+            />
+          }
+          checked={appointmentEnabled}
+          onChange={event => onCheckboxChange(event, appointmentEnabled)}
+        />
+      </FormRow>
     </Fieldset>
   );
 };
@@ -321,6 +341,7 @@ FormConfigurationFields.propTypes = {
     maintenanceMode: PropTypes.bool.isRequired,
     translationEnabled: PropTypes.bool.isRequired,
     submissionAllowed: PropTypes.oneOf(SUMBISSION_ALLOWED_CHOICES.map(opt => opt[0])),
+    appointmentEnabled: PropTypes.bool.isRequired,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
   availableAuthPlugins: PropTypes.arrayOf(
