@@ -1,0 +1,17 @@
+{% load stuf %}<?xml version="1.0" encoding="UTF-8"?>
+{# TODO: use only relevant namespaces #}
+<soapenv:Envelope
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:gml="http://www.opengis.net/gml"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ns="{{ main_namespace }}"
+>
+    <soapenv:Header>
+        {% render_security service security_expires_minutes %}
+    </soapenv:Header>
+    <soapenv:Body>
+        {% block body %}{% endblock %}
+    </soapenv:Body>
+</soapenv:Envelope>

@@ -1,0 +1,8 @@
+<StUF:zender>
+    {% include "stuf/includes/involved_party.xml" with party=zender only %}
+</StUF:zender>
+<StUF:ontvanger>
+    {% include "stuf/includes/involved_party.xml" with party=ontvanger only %}
+</StUF:ontvanger>
+<StUF:referentienummer>{{ referentienummer }}</StUF:referentienummer>
+<StUF:tijdstipBericht>{{ tijdstip_bericht }}</StUF:tijdstipBericht>

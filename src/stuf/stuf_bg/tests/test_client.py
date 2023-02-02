@@ -33,7 +33,7 @@ class StufBGConfigTests(TestCase):
 
     @freeze_time("2020-12-11T10:53:19+01:00")
     @patch(
-        "stuf.stuf_bg.client.uuid.uuid4",
+        "stuf.client.uuid.uuid4",
         return_value=uuid.UUID("38151851-0fe9-4463-ba39-416042b8f406"),
     )
     def test_get_address(self, _mock):

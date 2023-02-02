@@ -1,0 +1,18 @@
+{% if use_wss %}
+    <Security xmlns="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+        <Timestamp>
+            <Created>{{ wss_created }}</Created>
+            <Expires>{{ wss_expires }}</Expires>
+        </Timestamp>
+        {% if wss_username or wss_password %}
+            <UsernameToken>
+                {% if wss_username %}
+                    <Username>{{ wss_username }}</Username>
+                {% endif %}
+                {% if wss_password %}
+                    <Password>{{ wss_password }}</Password>
+                {% endif %}
+            </UsernameToken>
+        {% endif %}
+    </Security>
+{% endif %}

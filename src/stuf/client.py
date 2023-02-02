@@ -12,8 +12,9 @@ Whenever you are implementing a particular StUF integration, you are expected to
 subclass the base class and implement your domain specific logic in your own class.
 """
 import logging
+import uuid
 from contextlib import contextmanager
-from typing import Literal, Protocol, cast
+from typing import Any, Literal, Protocol, cast
 
 from requests import Session
 from requests.models import Response
@@ -57,6 +58,20 @@ class BaseClient:
     Must be set by the subclass, example value are 'bg' or 'zkn'. This is used in
     building up the ``SOAPAction`` HTTP header.
     """
+    sector_namespace: str = ""
+    """
+    The XML namespace for your concrete subclass.
+
+    Must be set by the subclass. This is used in the SOAP envelope to specify the
+    actual namespace aliased by ``ns``. Example value:
+    'http://www.egem.nl/StUF/sector/bg/0310'
+    """
+    soap_security_expires_minutes: int
+    """
+    Specify how long a SOAP request is valid after creation.
+
+    Used in the Security element of the SOAP envelope. Must be set by subclass.
+    """
 
     _session: Session | None = None
     _in_context_manager: bool = False
@@ -79,6 +94,10 @@ class BaseClient:
         if self.session is not None:
             self.session.close()
         self._in_context_manager = False
+
+    #
+    # HTTP interaction
+    #
 
     @property
     def session(self) -> Session:
@@ -156,3 +175,23 @@ class BaseClient:
             # TODO should this do response.raise_for_error() ?
 
         return response
+
+    #
+    # XML templating related methods
+    #
+
+    def build_base_context(self) -> dict[str, Any]:
+        """
+        Create the base context derived from the dynamic service configuration.
+        """
+        # the referentienummer may be overridden later on!
+        referentienummer = uuid.uuid4()
+        return {
+            # namespace configuration
+            "main_namespace": self.sector_namespace,
+            # context for security tag
+            "service": self.service,
+            "security_expires_minutes": self.soap_security_expires_minutes,
+            # meta-information
+            "referentienummer": referentienummer,
+        }

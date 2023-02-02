@@ -110,6 +110,8 @@ class ZaakOptions(TypedDict):
 
 class StufZDSClient(BaseClient):
     sector_alias = "zkn"
+    sector_namespace = "http://www.egem.nl/StUF/sector/zkn/0310"
+    soap_security_expires_minutes = STUF_ZDS_EXPIRY_MINUTES
 
     def __init__(self, service: StufService, options: ZaakOptions):
         """
