@@ -66,10 +66,12 @@ Configuration
       supports the variables ``{{year}}``, ``{{month}}`` and ``{{day}}`` to 
       make dynamic paths.
 
-Submissions on the configured form should now create a folder with the form 
-name, in the configured drive and path. In this folder, the submission PDF, 
-attachments and JSON-data is stored.
-
+Upon registration the submissions will be saved in the configured drive and path. Submissions for a particular form will
+be in a folder named after the form slug, each in a subfolder with the submission reference name.
+For example, if the configured path was ``/OpenForms/{{year}}``, and the form slug was ``drivers-licence-request``,
+the data of a submission with reference ``OF-1234`` would be saved under the path 
+``/OpenForms/2023/drivers-licence-request/OF-1234``.
+In this folder, the submission PDF, attachments and JSON-data is stored.
 
 .. note::
 
