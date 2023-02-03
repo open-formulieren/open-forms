@@ -157,9 +157,9 @@ class StufZdsRegressionTests(TestCase):
                 "extra": {"foo": "Ş"},
             }
             try:
-                client._make_request(
-                    "irrelevant",
-                    template_name="stuf_zds/soap/creeerZaak.xml",
+                client.templated_request(
+                    soap_action="irrelevant",
+                    template="stuf_zds/soap/creeerZaak.xml",
                     context=context,
                     endpoint_type=EndpointType.ontvang_asynchroon,
                 )

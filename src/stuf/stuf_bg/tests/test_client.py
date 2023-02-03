@@ -1,5 +1,6 @@
 import uuid
 from io import BytesIO
+from pathlib import Path
 from unittest.mock import patch
 
 from django.conf import settings
@@ -20,6 +21,9 @@ from stuf.stuf_bg.constants import NAMESPACE_REPLACEMENTS, FieldChoices
 from stuf.stuf_bg.models import StufBGConfig
 from stuf.stuf_zds.client import nsmap
 from stuf.tests.factories import StufServiceFactory
+
+PATH_XSDS = (Path(settings.BASE_DIR) / "src" / "stuf" / "stuf_bg" / "xsd").resolve()
+STUF_BG_XSD = PATH_XSDS / "bg0310" / "vraagAntwoord" / "bg0310_namespace.xsd"
 
 
 class StufBGConfigTests(TestCase):
@@ -119,52 +123,53 @@ class StufBGConfigTests(TestCase):
         available_attributes = FieldChoices.attributes.keys()
         test_bsn = "999992314"
 
-        with open(
-            f"{settings.BASE_DIR}/src/stuf/stuf_bg/xsd/bg0310/vraagAntwoord/bg0310_namespace.xsd",
-            "r",
-        ) as f:
-            xmlschema_doc = etree.parse(f)
-            xmlschema = etree.XMLSchema(xmlschema_doc)
+        with STUF_BG_XSD.open("r") as infile:
+            xmlschema_doc = etree.parse(infile)
+        xmlschema = etree.XMLSchema(xmlschema_doc)
 
-            data = self.client.get_request_data(test_bsn, available_attributes)
-            doc = etree.parse(BytesIO(bytes(data, encoding="UTF-8")))
-            el = (
-                doc.getroot()
-                .xpath(
-                    "soap:Body",
-                    namespaces={"soap": "http://schemas.xmlsoap.org/soap/envelope/"},
-                )[0]
-                .getchildren()[0]
+        with requests_mock.Mocker() as m:
+            m.post(self.client.service.soap_service.url, status_code=200)
+            self.client.get_values_for_attributes(test_bsn, available_attributes)
+
+        request_body = m.last_request.body
+        doc = etree.parse(BytesIO(request_body))
+        el = (
+            doc.getroot()
+            .xpath(
+                "soap:Body",
+                namespaces={"soap": "http://schemas.xmlsoap.org/soap/envelope/"},
+            )[0]
+            .getchildren()[0]
+        )
+
+        if not xmlschema.validate(el):
+            self.fail(
+                f'Attributes "{available_attributes}" produces an invalid StUF-BG. '
+                f"Error: {xmlschema.error_log.last_error.message}"
             )
 
-            if not xmlschema.validate(el):
-                self.fail(
-                    f'Attributes "{available_attributes}" produces an invalid StUF-BG. '
-                    f"Error: {xmlschema.error_log.last_error.message}"
-                )
+        # convert to dict to glom
+        bg_obj = doc.getroot().xpath("//bg:object", namespaces=nsmap)
+        data_dict = xmltodict.parse(
+            etree.tostring(bg_obj[0]),
+            process_namespaces=True,
+            namespaces=NAMESPACE_REPLACEMENTS,
+        )["object"]
+        sentinel = object()
 
-            # convert to dict to glom
-            bg_obj = doc.getroot().xpath("//bg:object", namespaces=nsmap)
-            data_dict = xmltodict.parse(
-                etree.tostring(bg_obj[0]),
-                process_namespaces=True,
-                namespaces=NAMESPACE_REPLACEMENTS,
-            )["object"]
-            sentinel = object()
-
-            # now test if all attributes appear as nodes in the request data
-            # TODO this is in-accurate as we don't check the actual nodes (nil/no-value etc)
-            for attribute in available_attributes:
-                with self.subTest(attribute=attribute):
-                    glom_target = ATTRIBUTES_TO_STUF_BG_MAPPING.get(attribute)
-                    if not glom_target:
-                        self.fail(f"unmapped attribute: {attribute}")
-                    else:
-                        value = glom(data_dict, glom_target, default=sentinel)
-                        if value == sentinel:
-                            self.fail(
-                                f"missing attribute in request {attribute} (as {glom_target}"
-                            )
+        # now test if all attributes appear as nodes in the request data
+        # TODO this is in-accurate as we don't check the actual nodes (nil/no-value etc)
+        for attribute in available_attributes:
+            with self.subTest(attribute=attribute):
+                glom_target = ATTRIBUTES_TO_STUF_BG_MAPPING.get(attribute)
+                if not glom_target:
+                    self.fail(f"unmapped attribute: {attribute}")
+                else:
+                    value = glom(data_dict, glom_target, default=sentinel)
+                    if value == sentinel:
+                        self.fail(
+                            f"missing attribute in request {attribute} (as {glom_target}"
+                        )
 
     @tag("gh-1842")
     def test_errors_are_not_swallowed(self):

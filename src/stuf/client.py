@@ -16,6 +16,8 @@ import uuid
 from contextlib import contextmanager
 from typing import Any, Literal, Protocol, cast
 
+from django.template import loader
+
 from requests import Session
 from requests.models import Response
 
@@ -208,3 +210,28 @@ class BaseClient:
             # meta-information
             "referentienummer": referentienummer,
         }
+
+    def templated_request(
+        self,
+        soap_action: str,
+        template: str,
+        context: dict[str, Any] | None = None,
+        endpoint_type: str = cast(str, EndpointType.vrije_berichten),
+    ) -> Response:
+        """
+        Make a request by templating out a template with the provided context.
+
+        The context is merged with the base context and the resolved template is
+        rendered into a string, suitable to be passed down to :meth:`request`.
+        """
+        full_context = {**self.build_base_context(), **(context or {})}
+        ref_nr = full_context["referentienummer"]
+        logger.debug(
+            "Making StUF-%r request with referentienummer %s",
+            self.sector_alias.upper(),
+            ref_nr,
+            extra={"ref_nr": ref_nr, "sector_alias": self.sector_alias},
+        )
+        body = loader.render_to_string(template, full_context)
+        response = self.request(soap_action, body=body, endpoint_type=endpoint_type)
+        return response

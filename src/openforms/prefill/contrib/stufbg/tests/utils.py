@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from django.template import loader
 
-from defusedxml.lxml import fromstring as df_fromstring
+from stuf.xml import fromstring
 
 from ....registry import register
 
@@ -38,5 +38,5 @@ def mock_stufbg_make_request(template: str):
 
 def get_mock_xml(template: str):
     xml_text = loader.render_to_string(f"stuf_bg/tests/responses/{template}")
-    xml = df_fromstring(xml_text.encode("utf8"))
+    xml = fromstring(xml_text.encode("utf8"))
     return xml

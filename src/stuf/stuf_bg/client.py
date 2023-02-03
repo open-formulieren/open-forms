@@ -1,8 +1,6 @@
 import logging
 from typing import List
 
-from django.template import loader
-
 import xmltodict
 from glom import glom
 
@@ -27,23 +25,15 @@ class StufBGClient(BaseClient):
             response_log_hook=stuf_bg_response,
         )
 
-    def get_request_data(self, bsn, attributes) -> str:
+    def get_values_for_attributes(self, bsn: str, attributes) -> bytes:
         context = {
-            **self.build_base_context(),
             **dict(zip(attributes, attributes)),
             "bsn": bsn,
         }
-        logger.debug(
-            "Making StUF-BG request with referentienummer %s",
-            context["referentienummer"],
-        )
-        return loader.render_to_string("stuf_bg/StufBgRequest.xml", context)
-
-    def get_values_for_attributes(self, bsn: str, attributes) -> bytes:
-        body = self.get_request_data(bsn, attributes)
-        response = self.request(
+        response = self.templated_request(
             "npsLv01",
-            body=body,
+            template="stuf_bg/StufBgRequest.xml",
+            context=context,
             endpoint_type=EndpointType.vrije_berichten,
         )
         return response.content
