@@ -151,6 +151,7 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
             "is_authenticated",
             "payment",
             "form_url",
+            "privacy_policy_accepted",
         )
         extra_kwargs = {
             "id": {

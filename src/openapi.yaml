@@ -7547,6 +7547,9 @@ components:
           format: uri
           description: URL where the user initialized the submission.
           maxLength: 255
+        privacyPolicyAccepted:
+          type: boolean
+          description: Has the user accepted the privacy policy?
       required:
       - form
       - formUrl

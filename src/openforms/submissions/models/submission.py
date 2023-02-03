@@ -202,6 +202,12 @@ class Submission(models.Model):
         help_text=_("Indicates whether the confirmation email has been sent."),
     )
 
+    privacy_policy_accepted = models.BooleanField(
+        _("privacy policy accepted"),
+        default=False,
+        help_text=_("Has the user accepted the privacy policy?"),
+    )
+
     _is_cleaned = models.BooleanField(
         _("is cleaned"),
         default=False,
