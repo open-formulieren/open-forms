@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 
 class StufBGClient(BaseClient):
     sector_alias = "bg"
-    sector_namespace = "http://www.egem.nl/StUF/sector/bg/0310"
     soap_security_expires_minutes = STUF_BG_EXPIRY_MINUTES
 
     def __init__(self, service: StufService):

@@ -1,9 +1,7 @@
 {% extends "stuf/soap_envelope.xml" %}{% load stuf %}
-{% block body %}<ZKN:genereerZaakIdentificatie_Di02
-        xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
-        xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.stufstandaarden.nl/koppelvlak/zds0120 ../zds0120_msg_zs-dms.xsd">
+{% block body %}
+{# Parent template already defines some common namespaces #}
+<ZKN:genereerZaakIdentificatie_Di02 xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310">
     <ZKN:stuurgegevens>
         <StUF:berichtcode>Di02</StUF:berichtcode>
         {% render_stuurgegevens service referentienummer %}

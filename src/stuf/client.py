@@ -49,6 +49,28 @@ class BaseClient:
 
     >>> with MyClient() as client:
     >>>     client.do_the_thing()
+
+    This client also provides the generic template context for the StUF/SOAP envelopes.
+    Ideally, you would render an XML template which extends the base template, focusing
+    on your sector/domain specific markup. For example:
+
+    .. code-block:: django
+
+        {% extends "stuf/soap_envelope.xml" %}{% load stuf %}
+        {% block body %}
+            <SN:operation
+                xmlns:SN="sector-namespace"
+                {additionalnamespaces used}
+            >
+                <SN:stuurgegevens>
+                    <StUF:berichtcode>Lk01</StUF:berichtcode>
+                    {% render_stuurgegevens service referentienummer %}
+                    <StUF:entiteittype>ZAK</StUF:entiteittype>
+                </SN:stuurgegevens>
+                ...
+            </SN:operation>
+        {% endblock %}
+
     """
 
     sector_alias: str = ""
@@ -57,14 +79,6 @@ class BaseClient:
 
     Must be set by the subclass, example value are 'bg' or 'zkn'. This is used in
     building up the ``SOAPAction`` HTTP header.
-    """
-    sector_namespace: str = ""
-    """
-    The XML namespace for your concrete subclass.
-
-    Must be set by the subclass. This is used in the SOAP envelope to specify the
-    actual namespace aliased by ``ns``. Example value:
-    'http://www.egem.nl/StUF/sector/bg/0310'
     """
     soap_security_expires_minutes: int
     """
@@ -187,8 +201,6 @@ class BaseClient:
         # the referentienummer may be overridden later on!
         referentienummer = uuid.uuid4()
         return {
-            # namespace configuration
-            "main_namespace": self.sector_namespace,
             "soap_version": self.service.soap_service.soap_version,
             # context for security tag
             "service": self.service,

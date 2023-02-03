@@ -1,5 +1,6 @@
 {% extends "stuf/soap_envelope.xml" %}{% load stuf %}
-{% block body %}<ns:npsLv01>
+{% block body %}
+<ns:npsLv01 xmlns:ns="http://www.egem.nl/StUF/sector/bg/0310">
     <ns:stuurgegevens>
         <StUF:berichtcode>Lv01</StUF:berichtcode>
         {% render_stuurgegevens service referentienummer %}
