@@ -418,6 +418,11 @@ faker==7.0.1
     #   -r requirements/base.txt
     #   factory-boy
     #   zgw-consumers
+filelock==3.9.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   tldextract
 flake8==6.0.0
     # via -r requirements/test-tools.in
 flower==1.2.0
@@ -464,6 +469,7 @@ idna==2.10
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   requests
+    #   tldextract
     #   trio
 imagesize==1.2.0
     # via sphinx
@@ -740,12 +746,14 @@ requests==2.26.0
     #   requests-oauthlib
     #   requests-toolbelt
     #   sphinx
+    #   tldextract
     #   zeep
     #   zgw-consumers
 requests-file==1.5.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
+    #   tldextract
     #   zeep
 requests-mock==1.8.0
     # via
@@ -884,6 +892,10 @@ tinycss2==1.1.0
     #   cairosvg
     #   cssselect2
     #   weasyprint
+tldextract==3.4.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 toml==0.10.2
     # via pytest
 tomli==1.2.1

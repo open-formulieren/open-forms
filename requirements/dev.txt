@@ -468,6 +468,11 @@ faker==7.0.1
     #   -r requirements/ci.txt
     #   factory-boy
     #   zgw-consumers
+filelock==3.9.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   tldextract
 flake8==6.0.0
     # via
     #   -c requirements/ci.txt
@@ -529,6 +534,7 @@ idna==2.10
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   requests
+    #   tldextract
     #   trio
 imagesize==1.2.0
     # via
@@ -878,12 +884,14 @@ requests==2.26.0
     #   requests-oauthlib
     #   requests-toolbelt
     #   sphinx
+    #   tldextract
     #   zeep
     #   zgw-consumers
 requests-file==1.5.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
+    #   tldextract
     #   zeep
 requests-mock==1.8.0
     # via
@@ -1065,6 +1073,10 @@ tinycss2==1.1.0
     #   cairosvg
     #   cssselect2
     #   weasyprint
+tldextract==3.4.0
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 toml==0.10.2
     # via
     #   -c requirements/ci.txt
