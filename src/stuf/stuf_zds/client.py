@@ -3,7 +3,7 @@ import logging
 import uuid
 from collections import OrderedDict
 from datetime import datetime
-from typing import Any, Literal, TypedDict
+from typing import Literal, TypedDict
 
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 import requests
 from lxml import etree
 from lxml.etree import Element
-from requests import RequestException, Response
+from requests import RequestException
 
 from openforms.config.models import GlobalConfiguration
 from openforms.logging import logevent
@@ -111,30 +111,31 @@ class StufZDSClient(BaseClient):
         )
         self.options = options
 
-    def templated_request(
-        self,
-        soap_action: str,
-        template: str,
-        context: dict[str, Any] | None = None,
-        endpoint_type: str = ...,
-    ) -> tuple[Response, Element]:
-        # FIXME: inheritance is NOT the solution here, since we're violating the
-        # Liskov substitution principle. Since the calling code is only interested in
-        # the parsed XML, this should probably be done via a different method or
-        # utility.
+    def execute_call(self, *args, **kwargs) -> Element:
+        """
+        Method actual performing the SOAP call, with error handling.
 
-        # create reference number here so we can keep track of it in logging
-        context = context or {}
+        This essentially wraps around templated_request, but returns the parsed XML
+        or raises the relevant exceptions.
+
+        .. todo:: this can be reworked further to decouple if from our registration
+           backend semantics.
+        """
+        # we need to pull some things out of the context for logging that may or may
+        # not necessarily be set by the caller.
+        context = kwargs.get("context") or {}
         context.setdefault("referentienummer", uuid.uuid4())
 
-        # URL & reference number for logging purposes
-        _url = self.service.get_endpoint(type=endpoint_type)
+        kwargs["context"] = context
+        kwargs.setdefault("endpoint_type", EndpointType.vrije_berichten)
+
+        # logging context
         ref_nr = context["referentienummer"]
+        endpoint_type = kwargs["endpoint_type"]
+        _url = self.service.get_endpoint(type=endpoint_type)
 
         try:
-            response = super().templated_request(
-                soap_action, template, context, endpoint_type
-            )
+            response = self.templated_request(*args, **kwargs)
         except RequestException as e:
             logger.error(
                 "bad request for referentienummer '%s'",
@@ -144,7 +145,7 @@ class StufZDSClient(BaseClient):
             logevent.stuf_zds_failure_response(self.service, _url)
             raise RegistrationFailed("error while making backend request") from e
 
-        if response.status_code < 200 or response.status_code >= 400:
+        if (status_code := response.status_code) < 200 or status_code >= 400:
             error_text = parse_soap_error_text(response)
             logger.error(
                 "bad response for referentienummer '%s'\n%s",
@@ -154,7 +155,7 @@ class StufZDSClient(BaseClient):
             )
             logevent.stuf_zds_failure_response(self.service, _url)
             raise RegistrationFailed(
-                f"error while making backend request: HTTP {response.status_code}: {error_text}",
+                f"error while making backend request: HTTP {status_code}: {error_text}",
                 response=response,
             )
 
@@ -167,10 +168,10 @@ class StufZDSClient(BaseClient):
             ) from e
 
         logevent.stuf_zds_success_response(self.service, _url)
-        return response, xml
+        return xml
 
     def create_zaak_identificatie(self) -> str:
-        _, xml = self.templated_request(
+        _, xml = self.execute_call(
             soap_action="genereerZaakIdentificatie_Di02",
             template="stuf_zds/soap/genereerZaakIdentificatie.xml",
             endpoint_type=EndpointType.vrije_berichten,
@@ -213,7 +214,7 @@ class StufZDSClient(BaseClient):
             "global_config": GlobalConfiguration.get_solo(),
             **zaak_data,
         }
-        self.templated_request(
+        self.execute_call(
             soap_action="creeerZaak_Lk01",
             template="stuf_zds/soap/creeerZaak.xml",
             context=context,
@@ -225,7 +226,7 @@ class StufZDSClient(BaseClient):
             "zaak_identificatie": zaak_identificatie,
             **zaak_data,
         }
-        self.templated_request(
+        self.execute_call(
             soap_action="updateZaak_Lk01",
             template="stuf_zds/soap/updateZaak.xml",
             context=context,
@@ -242,7 +243,7 @@ class StufZDSClient(BaseClient):
         return self.partial_update_zaak(zaak_identificatie, data)
 
     def create_document_identificatie(self) -> str:
-        _, xml = self.templated_request(
+        _, xml = self.execute_call(
             soap_action="genereerDocumentIdentificatie_Di02",
             template="stuf_zds/soap/genereerDocumentIdentificatie.xml",
             endpoint_type=EndpointType.vrije_berichten,
@@ -289,7 +290,7 @@ class StufZDSClient(BaseClient):
             "status": "definitief",
             **doc_data,
         }
-        self.templated_request(
+        self.execute_call(
             soap_action="voegZaakdocumentToe_Lk01",
             template="stuf_zds/soap/voegZaakdocumentToe.xml",
             context=context,
