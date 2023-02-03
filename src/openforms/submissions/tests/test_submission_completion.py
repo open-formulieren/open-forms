@@ -46,7 +46,9 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
     def test_all_required_steps_validated(self):
         step = FormStepFactory.create()
-        submission = SubmissionFactory.create(form=step.form)
+        submission = SubmissionFactory.create(
+            form=step.form, privacy_policy_accepted=True
+        )
         self._add_submission_to_session(submission)
         form_step_url = reverse(
             "api:form-steps-detail",
@@ -67,6 +69,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                     {"formStep": f"http://testserver{form_step_url}"},
                 ],
                 "submissionAllowed": SubmissionAllowedChoices.yes,
+                "privacyPolicyAccepted": True,
             },
         )
 
@@ -78,7 +81,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         )
         step1 = FormStepFactory.create(form=form)
         step2 = FormStepFactory.create(form=form)
-        submission = SubmissionFactory.create(form=form)
+        submission = SubmissionFactory.create(form=form, privacy_policy_accepted=True)
         SubmissionStepFactory.create(
             submission=submission, form_step=step1, data={"foo": "bar"}
         )
@@ -146,7 +149,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
-        submission = SubmissionFactory.create(form=form)
+        submission = SubmissionFactory.create(form=form, privacy_policy_accepted=True)
         SubmissionStepFactory.create(
             submission=submission,
             form_step=step1,
@@ -165,7 +168,8 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
     def test_submit_form_with_submission_disabled_with_overview(self):
         submission = SubmissionFactory.create(
-            form__submission_allowed=SubmissionAllowedChoices.no_with_overview
+            form__submission_allowed=SubmissionAllowedChoices.no_with_overview,
+            privacy_policy_accepted=True,
         )
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
@@ -179,12 +183,14 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             {
                 "incompleteSteps": [],
                 "submissionAllowed": SubmissionAllowedChoices.no_with_overview,
+                "privacyPolicyAccepted": True,
             },
         )
 
     def test_submit_form_with_submission_disabled_without_overview(self):
         submission = SubmissionFactory.create(
-            form__submission_allowed=SubmissionAllowedChoices.no_without_overview
+            form__submission_allowed=SubmissionAllowedChoices.no_without_overview,
+            privacy_policy_accepted=True,
         )
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
@@ -198,11 +204,14 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             {
                 "incompleteSteps": [],
                 "submissionAllowed": SubmissionAllowedChoices.no_without_overview,
+                "privacyPolicyAccepted": True,
             },
         )
 
     def test_form_auth_cleaned_after_completion(self):
-        submission = SubmissionFactory.create(auth_info__value="foo")
+        submission = SubmissionFactory.create(
+            auth_info__value="foo", privacy_policy_accepted=True
+        )
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
         session = self.client.session
@@ -231,6 +240,31 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         )
         self.assertNotEqual(value, "foo")
 
+    def test_submission_privacy_policy_not_accepted(self):
+        form = FormFactory.create(
+            submission_confirmation_template="Thank you for submitting {{ foo }}."
+        )
+        form_step = FormStepFactory.create(form=form)
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step, data={"foo": "bar"}
+        )
+        self._add_submission_to_session(submission)
+
+        response = self.client.post(
+            reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.json(),
+            {
+                "incompleteSteps": [],
+                "submissionAllowed": SubmissionAllowedChoices.yes,
+                "privacyPolicyAccepted": False,
+            },
+        )
+
 
 @temp_private_root()
 class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
@@ -243,6 +277,7 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form__generate_minimal_setup=True,
             form__product=None,
             form__payment_backend="demo",
+            privacy_policy_accepted=True,
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -269,6 +304,7 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form__generate_minimal_setup=True,
             form__product=None,
             form__payment_backend="demo",
+            privacy_policy_accepted=True,
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -297,6 +333,7 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form__generate_minimal_setup=True,
             form__product__price=Decimal("123.45"),
             form__payment_backend="demo",
+            privacy_policy_accepted=True,
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -320,6 +357,7 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form__generate_minimal_setup=True,
             form__product__price=Decimal("123.45"),
             form__payment_backend="demo",
+            privacy_policy_accepted=True,
         )
         FormVariableFactory.create(
             key="test-key",
@@ -356,6 +394,7 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form__generate_minimal_setup=True,
             form__product__price=Decimal("123.45"),
             form__payment_backend="demo",
+            privacy_policy_accepted=True,
         )
         FormVariableFactory.create(
             key="test-key",

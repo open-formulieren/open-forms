@@ -443,7 +443,7 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
             ],
         )
 
-        submission = SubmissionFactory.create(form=form)
+        submission = SubmissionFactory.create(form=form, privacy_policy_accepted=True)
         SubmissionStepFactory.create(
             submission=submission,
             form_step=form_step,

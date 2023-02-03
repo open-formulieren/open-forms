@@ -34,7 +34,7 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
         with freeze_time(initial_datetime) as frozen_datetime:
             # 10 requests per minute allowed
             for i in range(10):
-                submission = SubmissionFactory.create()
+                submission = SubmissionFactory.create(privacy_policy_accepted=True)
                 self._add_submission_to_session(submission)
                 endpoint = reverse(
                     "api:submission-complete", kwargs={"uuid": submission.uuid}
@@ -48,7 +48,7 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
                 )
 
             # Request #11 should fail with HTTP 429
-            submission = SubmissionFactory.create()
+            submission = SubmissionFactory.create(privacy_policy_accepted=True)
             self._add_submission_to_session(submission)
             endpoint = reverse(
                 "api:submission-complete", kwargs={"uuid": submission.uuid}

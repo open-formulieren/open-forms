@@ -36,7 +36,9 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
         cls.step = FormStepFactory.create(
             form=cls.form, form_definition__name="Select product"
         )
-        cls.submission = SubmissionFactory.create(form=cls.form)
+        cls.submission = SubmissionFactory.create(
+            form=cls.form, privacy_policy_accepted=True
+        )
         cls.endpoint = reverse(
             "api:submission-detail", kwargs={"uuid": cls.submission.uuid}
         )
@@ -80,6 +82,7 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
                 "url": f"http://testserver{self.endpoint}",
                 "form": f"http://testserver{form_path}",
                 "formUrl": "",
+                "privacyPolicyAccepted": True,
                 "steps": [
                     {
                         "id": str(self.step.uuid),

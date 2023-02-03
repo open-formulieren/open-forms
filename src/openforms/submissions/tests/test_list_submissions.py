@@ -48,7 +48,9 @@ class SubmissionListTests(SubmissionsMixin, APITestCase):
 
     def test_list_response_format(self):
         submission = SubmissionFactory.create(
-            form=self.form, form_url="http://formserver/myform"
+            form=self.form,
+            form_url="http://formserver/myform",
+            privacy_policy_accepted=True,
         )
         self._add_submission_to_session(submission)
         submission_path = reverse(
@@ -78,6 +80,7 @@ class SubmissionListTests(SubmissionsMixin, APITestCase):
             "url": f"http://testserver{submission_path}",
             "form": f"http://testserver{form_path}",
             "formUrl": "http://formserver/myform",
+            "privacyPolicyAccepted": True,
             "steps": [
                 {
                     "id": str(self.step.uuid),
