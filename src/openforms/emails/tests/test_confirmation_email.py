@@ -3,6 +3,7 @@ import re
 from copy import deepcopy
 from datetime import date, datetime
 from decimal import Decimal
+from unittest import skipIf
 from unittest.mock import patch
 
 from django.core import mail
@@ -31,7 +32,7 @@ from openforms.submissions.tests.factories import (
     SubmissionStepFactory,
 )
 from openforms.submissions.utils import send_confirmation_email
-from openforms.tests.utils import NOOP_CACHES
+from openforms.tests.utils import NOOP_CACHES, can_connect
 from openforms.utils.tests.html_assert import HTMLAssertMixin, strip_all_attributes
 from openforms.utils.urls import build_absolute_uri
 
@@ -124,6 +125,10 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         ):
             email.full_clean()
 
+    @skipIf(
+        not can_connect("https://publicsuffix.org/list/public_suffix_list.dat"),
+        "URL sanitation test require the download of the Public Suffix list",
+    )
     def test_validate_content_netloc_sanitation_validation(self):
         config = GlobalConfiguration.get_solo()
         config.email_template_netloc_allowlist = ["good.net"]

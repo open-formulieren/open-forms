@@ -1,3 +1,5 @@
+from unittest import skipIf
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.test import TestCase
@@ -5,8 +7,13 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.validators import URLSanitationValidator
+from openforms.tests.utils import can_connect
 
 
+@skipIf(
+    not can_connect("https://publicsuffix.org/list/public_suffix_list.dat"),
+    "URL sanitation test require the download of the Public Suffix list",
+)
 class URLSanitationValidatorTest(TestCase):
     def test_validator(self):
         config = GlobalConfiguration.get_solo()
