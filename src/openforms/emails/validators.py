@@ -22,6 +22,10 @@ class URLSanitationValidator:
         from openforms.config.models import GlobalConfiguration
         from openforms.emails.utils import get_system_netloc_allowlist
 
+        url_matches = list(URL_REGEX.finditer(value))
+        if len(url_matches) == 0:
+            return
+
         config = GlobalConfiguration.get_solo()
 
         allowlist = (
@@ -29,7 +33,7 @@ class URLSanitationValidator:
         )
         allowed_domains = [tldextract.extract(url).domain for url in allowlist]
 
-        for m in URL_REGEX.finditer(value):
+        for m in url_matches:
             parsed_url = tldextract.extract(m.group())
             domain = parsed_url.domain
             if domain not in allowed_domains:
