@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from simple_certmanager.models import Certificate
 from zeep import Client
 
-from stuf.constants import EndpointSecurity, SOAPVersion
+from .constants import EndpointSecurity, SOAPVersion
 
 
 class SoapService(models.Model):

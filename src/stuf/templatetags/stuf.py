@@ -11,29 +11,29 @@ from ..models import StufService
 register = Library()
 
 
-DATE_FORMAT = "%Y%m%d"
-TIME_FORMAT = "%H%M%S"
-DATETIME_FORMAT = "%Y%m%d%H%M%S"
-
-
-def fmt_soap_datetime(d: datetime) -> str:
-    return d.strftime(DATETIME_FORMAT)
-
-
-def fmt_soap_date(d: datetime) -> str:
-    return d.strftime(DATE_FORMAT)
-
-
-def fmt_soap_time(d: datetime) -> str:
-    return d.strftime(TIME_FORMAT)
-
-
 @register.inclusion_tag("stuf/includes/security.xml")
 def render_security(service: StufService, expiry_minutes: int) -> dict[str, Any]:
     """
     Provide the security headers block based on service configuration.
+
+    Note the formatting of the timestamps, according to the spec at
+    https://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0.pdf
+    (lines 1290 and further):
+
+        This specification defines and illustrates time references in terms of the xsd:dateTime type
+        defined in XML Schema. It is RECOMMENDED that all time references use this type. It is further
+        RECOMMENDED that all references be in UTC time. Implementations MUST NOT generate time
+        instants that specify leap seconds. If, however, other time types are used, then the ValueType
+        attribute (described below) MUST be specified to indicate the data type of the time format.
+        Requestors and receivers SHOULD NOT rely on other applications supporting time resolution
+        finer than milliseconds.
+
+    Hence we use a maximum resolution of seconds and ensure the source datetime is in
+    UTC. The datetime module does not support leap seconds, so we should be safe in that
+    regard.
     """
-    now = timezone.now()
+    # get 'now' in UTC
+    now = timezone.localtime(timezone.now(), timezone=timezone.utc)
     expires_at = now + timedelta(minutes=expiry_minutes)
     return {
         "use_wss": (
@@ -42,11 +42,8 @@ def render_security(service: StufService, expiry_minutes: int) -> dict[str, Any]
         ),
         "wss_username": service.soap_service.user,
         "wss_password": service.soap_service.password,
-        # uh - fmt as date seems wrong? what's the point of specifying an expiry in
-        # minutes if you truncate the time part??? This is taken from the StUF-ZDS
-        # implementation, note that StUF-BG does not format at all!
-        "wss_created": fmt_soap_date(now),
-        "wss_expires": fmt_soap_date(expires_at),
+        "wss_created": now.isoformat(timespec="seconds").replace("+00:00", "Z"),
+        "wss_expires": expires_at.isoformat(timespec="seconds").replace("+00:00", "Z"),
     }
 
 
