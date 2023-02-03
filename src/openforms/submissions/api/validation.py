@@ -21,6 +21,7 @@ from .fields import NestedSubmissionRelatedField
 @dataclass
 class InvalidCompletion:
     submission: Submission
+    privacy_policy_accepted: bool
     incomplete_steps: List[SubmissionStep] = field(default_factory=list)
     request: Request = None
 
@@ -30,7 +31,7 @@ class InvalidCompletion:
             self.submission.form.submission_allowed != SubmissionAllowedChoices.yes,
         ]
         invalid = any(checks)
-        if not invalid:
+        if not invalid and self.submission.privacy_policy_accepted:
             return None
 
         return CompletionValidationSerializer(
@@ -57,6 +58,7 @@ class CompletionValidationSerializer(serializers.Serializer):
         source="submission.form.submission_allowed",
         read_only=True,
     )
+    privacy_policy_accepted = serializers.BooleanField()
 
 
 def is_step_unexpectedly_incomplete(submission_step: "SubmissionStep") -> bool:
@@ -82,6 +84,7 @@ def validate_submission_completion(
 
     completion = InvalidCompletion(
         submission=submission,
+        privacy_policy_accepted=submission.privacy_policy_accepted,
         incomplete_steps=incomplete_steps,
         request=request,
     )
