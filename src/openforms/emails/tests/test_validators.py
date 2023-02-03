@@ -47,3 +47,6 @@ class URLSanitationValidatorTest(TestCase):
                 ValidationError, message.format(netloc="bad.net")
             ):
                 validator("bla bla http://bad.net/xyz?123 bla bla ")
+
+        with self.subTest("Valid with http://www."):
+            validator("http://www.good.net")
