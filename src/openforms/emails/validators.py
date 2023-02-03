@@ -1,9 +1,8 @@
-from urllib.parse import urlsplit
-
 from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
+import tldextract
 from mail_cleaner.constants import URL_REGEX
 
 
@@ -28,10 +27,13 @@ class URLSanitationValidator:
         allowlist = (
             get_system_netloc_allowlist() + config.email_template_netloc_allowlist
         )
+        allowed_domains = [tldextract.extract(url).domain for url in allowlist]
 
         for m in URL_REGEX.finditer(value):
-            parsed = urlsplit(m.group())
-            if parsed.netloc not in allowlist:
+            parsed_url = tldextract.extract(m.group())
+            domain = parsed_url.domain
+            if domain not in allowed_domains:
                 raise ValidationError(
-                    self.message.format(netloc=parsed.netloc), code="invalid"
+                    self.message.format(netloc=parsed_url.registered_domain),
+                    code="invalid",
                 )
