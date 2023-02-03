@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Any, Literal
 
 from django.template import Library
@@ -72,15 +72,9 @@ class InvolvedParty:
 
 
 @register.inclusion_tag("stuf/includes/stuurgegevens.xml")
-def render_stuurgegevens(
-    service: StufService,
-    referentienummer: str,
-    tijdstip_bericht: datetime | str | None = None,
-) -> dict[str, Any]:
-    if tijdstip_bericht is None:
-        tijdstip_bericht = timezone.now()
-    if isinstance(tijdstip_bericht, datetime):
-        tijdstip_bericht = dateformat.format(tijdstip_bericht, "YmdHis")
+def render_stuurgegevens(service: StufService, referentienummer: str) -> dict[str, Any]:
+    tijdstip_bericht = timezone.now()
+    tijdstip_bericht = dateformat.format(tijdstip_bericht, "YmdHis")
     return {
         "zender": InvolvedParty.from_service_configuration(service, "zender"),
         "ontvanger": InvolvedParty.from_service_configuration(service, "ontvanger"),

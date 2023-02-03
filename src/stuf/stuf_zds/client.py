@@ -1,7 +1,7 @@
 import base64
 import logging
-import os
 from collections import OrderedDict
+from datetime import datetime
 from typing import Any, Literal, TypedDict
 
 from django.template import loader
@@ -38,13 +38,6 @@ nsmap = OrderedDict(
     )
 )
 
-SCHEMA_DIR = os.path.join(
-    os.path.dirname(__file__), "vendor", "Zaak_DocumentServices_1_1_02"
-)
-DATE_FORMAT = "%Y%m%d"
-TIME_FORMAT = "%H%M%S"
-DATETIME_FORMAT = "%Y%m%d%H%M%S"
-
 
 class PaymentStatus:
     """
@@ -62,16 +55,12 @@ class PaymentStatus:
     FULL = "Geheel"
 
 
-def fmt_soap_datetime(d):
-    return d.strftime(DATETIME_FORMAT)
+def fmt_soap_datetime(value: datetime):
+    return value.strftime("%Y%m%d%H%M%S")
 
 
-def fmt_soap_date(d):
-    return d.strftime(DATE_FORMAT)
-
-
-def fmt_soap_time(d):
-    return d.strftime(TIME_FORMAT)
+def fmt_soap_date(value: datetime):
+    return value.strftime("%Y%m%d")
 
 
 def xml_value(xml, xpath, namespaces=nsmap):
@@ -107,7 +96,6 @@ class ZaakOptions(TypedDict):
 
 class StufZDSClient(BaseClient):
     sector_alias = "zkn"
-    sector_namespace = "http://www.egem.nl/StUF/sector/zkn/0310"
     soap_security_expires_minutes = STUF_ZDS_EXPIRY_MINUTES
 
     def __init__(self, service: StufService, options: ZaakOptions):
