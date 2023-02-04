@@ -174,8 +174,11 @@ class StufBgPrefill(BasePlugin):
 
         client = config.get_client()
         try:
-            data = client.get_request_data(check_bsn, [FieldChoices.bsn])
-            response = client.request("npsLv01", data)
+            response = client.templated_request(
+                "npsLv01",
+                template="stuf_bg/StufBgRequest.xml",
+                context={"bsn": check_bsn},
+            )
             response.raise_for_status()
         except (RequestException, HTTPError) as e:
             raise InvalidPluginConfiguration(
