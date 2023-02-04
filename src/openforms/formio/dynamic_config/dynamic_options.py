@@ -82,10 +82,8 @@ def add_options_to_config(
 
     normalised_options = [normalise_option(option) for option in not_none_options]
     if any(
-        [
-            isinstance(item_key, (dict, list)) or isinstance(item_label, (dict, list))
-            for item_key, item_label in normalised_options
-        ]
+        isinstance(item_key, (dict, list)) or isinstance(item_label, (dict, list))
+        for item_key, item_label in normalised_options
     ):
         logevent.form_configuration_error(
             submission.form,

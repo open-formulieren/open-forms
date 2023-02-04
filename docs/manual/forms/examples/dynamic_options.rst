@@ -52,7 +52,7 @@ Formulier maken
             {"var": "adressen"},
             [
                 {"cat": [{"var": "postcode"}, ",", {"var": "huisnummerEnToevoeging"}]},
-                {"cat": [{"var": "straatnaam"}, " ", {"var": "huisnummerEnToevoeging"}]}
+                {"cat": [{"var": "straatnaam"}, " ", {"var": "huisnummerEnToevoeging"}, ", ", {"var": "plaatsnaam"}]}
             ]
          ]
       }
