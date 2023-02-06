@@ -8,9 +8,36 @@ from json_logic import jsonLogic
 
 from openforms.logging import logevent
 from openforms.submissions.models import Submission
-from openforms.typing import DataMapping
+from openforms.typing import DataMapping, JSONValue
 
 from ..typing import Component
+
+
+def normalise_option(option: JSONValue) -> JSONValue:
+    if not isinstance(option, list):
+        return [option, option]
+
+    return option[:2]
+
+
+def is_or_contains_none(option: JSONValue) -> bool:
+    if isinstance(option, list):
+        return None in option
+    return option is None
+
+
+def escape_option(option: JSONValue) -> list[str]:
+    return [escape(item) for item in option]
+
+
+def deduplicate_options(
+    options: JSONValue,
+) -> JSONValue:
+    new_options = []
+    for option in options:
+        if option not in new_options:
+            new_options.append(option)
+    return new_options
 
 
 def add_options_to_config(
@@ -22,11 +49,8 @@ def add_options_to_config(
     if glom(component, "openForms.dataSrc", default=None) != "variable":
         return
 
-    items_path = glom(component, "openForms.itemsExpression")
-
-    # The array of items from which we need to get the values
-    items_array = jsonLogic(items_path, data)
-
+    items_expression = glom(component, "openForms.itemsExpression")
+    items_array = jsonLogic(items_expression, data)
     if not items_array:
         return
 
@@ -35,44 +59,50 @@ def add_options_to_config(
             submission.form,
             component,
             _(
-                "Variable obtained with expression %(items_path)s for dynamic options is not an array."
+                "Variable obtained with expression %(items_expression)s for dynamic options is not an array."
             )
-            % {"items_path": json.dumps(items_path)},
+            % {"items_expression": json.dumps(items_expression)},
         )
         return
 
-    # Is each item a dict, like for repeating groups, or are they primitives
-    # ready to use?
-    is_obj = isinstance(items_array[0], dict)
-
-    if is_obj:
-        value_path = glom(component, "openForms.valueExpression", default=None)
-        # Case in which the form designer didn't configure the valueExpression by mistake.
-        # Catching this in validation on creation of the form definition is tricky, because the referenced component may
-        # be in another form definition.
-        if not value_path:
-            logevent.form_configuration_error(
-                submission.form,
-                component,
-                _(
-                    "The choices for component %(label)s (%(key)s) are improperly configured. "
-                    "The JSON logic expression to retrieve the items is configured, but no expression for the items "
-                    "values was configured."
-                )
-                % {"label": component["label"], "key": component["key"]},
+    # Remove any None values
+    if len(
+        not_none_options := [
+            item for item in items_array if not is_or_contains_none(item)
+        ]
+    ) != len(items_array):
+        logevent.form_configuration_error(
+            submission.form,
+            component,
+            _(
+                "Expression %(items_expression)s did not return a valid option for each item."
             )
-            return
+            % {"items_expression": json.dumps(items_expression)},
+        )
 
-        items_array = [jsonLogic(value_path, item) for item in items_array]
+    normalised_options = [normalise_option(option) for option in not_none_options]
+    if any(
+        isinstance(item_key, (dict, list)) or isinstance(item_label, (dict, list))
+        for item_key, item_label in normalised_options
+    ):
+        logevent.form_configuration_error(
+            submission.form,
+            component,
+            _(
+                "The dynamic options obtained with expression %(items_expression)s contain non-primitive types."
+            )
+            % {"items_expression": json.dumps(items_expression)},
+        )
+        return
 
-    # items_array contains user input!
-    escaped_values = map(escape, items_array)
+    escaped_options = [escape_option(option) for option in normalised_options]
+    deduplicated_options = deduplicate_options(escaped_options)
     assign(
         component,
         options_path,
         [
-            {"label": escaped_value, "value": escaped_value}
-            for escaped_value in escaped_values
+            {"label": escaped_label, "value": escaped_key}
+            for escaped_key, escaped_label in deduplicated_options
         ],
         missing=dict,
     )

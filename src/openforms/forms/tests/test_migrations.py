@@ -527,3 +527,107 @@ class TestAddDataSourceToOptions(TestMigrations):
             self.form_definition.configuration["components"][3]["openForms"]["dataSrc"],
             "manual",
         )
+
+
+class TestRemoveValueExpression(TestMigrations):
+    migrate_from = "0069_form_appointment_enabled"
+    migrate_to = "0070_remove_value_expression"
+
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+
+        self.form_definition = FormDefinition.objects.create(
+            name="Definition with radio",
+            slug="definition-with-radio",
+            configuration={
+                "components": [
+                    {
+                        "key": "repeatingGroup",
+                        "type": "editgrid",
+                        "components": [{"type": "textfield", "key": "name"}],
+                    },
+                    {"key": "textField", "type": "textfield"},
+                    {
+                        "label": "Select Boxes",
+                        "key": "selectBoxes",
+                        "type": "selectboxes",
+                        "values": [
+                            {"label": "", "value": ""},
+                        ],
+                        "openForms": {
+                            "dataSrc": "variable",
+                            "itemsExpression": {"var": "repeatingGroup"},
+                            "valueExpression": {"var": "name"},
+                        },
+                    },
+                    {
+                        "label": "Select",
+                        "key": "select",
+                        "data": {
+                            "values": [
+                                {"label": "", "value": ""},
+                            ],
+                        },
+                        "openForms": {
+                            "dataSrc": "variable",
+                            "itemsExpression": {"var": "textField"},
+                        },
+                        "type": "select",
+                    },
+                    {
+                        "label": "Radio",
+                        "key": "radio",
+                        "type": "radio",
+                        "values": [
+                            {"label": "test", "value": "test"},
+                        ],
+                        "openForms": {
+                            "dataSrc": "manual",
+                        },
+                    },
+                ]
+            },
+        )
+
+    def test_options_have_data_source(self):
+        self.form_definition.refresh_from_db()
+
+        self.assertNotIn(
+            "openForms", self.form_definition.configuration["components"][0]
+        )
+        self.assertNotIn(
+            "openForms", self.form_definition.configuration["components"][1]
+        )
+
+        self.assertEqual(
+            self.form_definition.configuration["components"][2]["openForms"][
+                "itemsExpression"
+            ],
+            {"map": [{"var": "repeatingGroup"}, {"var": "name"}]},
+        )
+        self.assertNotIn(
+            "valueExpression",
+            self.form_definition.configuration["components"][2]["openForms"],
+        )
+
+        self.assertEqual(
+            self.form_definition.configuration["components"][3]["openForms"][
+                "itemsExpression"
+            ],
+            {"var": "textField"},
+        )
+        self.assertNotIn(
+            "valueExpression",
+            self.form_definition.configuration["components"][3]["openForms"],
+        )
+
+        self.assertNotIn(
+            "valueExpression",
+            self.form_definition.configuration["components"][4]["openForms"],
+        )
+        self.assertNotIn(
+            "itemsExpression",
+            self.form_definition.configuration["components"][4]["openForms"],
+        )

@@ -43,13 +43,18 @@ Formulier maken
 
    * **Label**: Waar ontvangt u graag post?
    * **Data bron**: *variabele*
-   * **Items**: ``{"var": "adressen"}``
-   * **Item waarde**:
+   * **Items**:
 
    .. code-block:: json
 
       {
-         "cat": [{"var": "straatnaam"}, " ", {"var": "huisnummerEnToevoeging"}]
+         "map": [
+            {"var": "adressen"},
+            [
+                {"cat": [{"var": "postcode"}, ",", {"var": "huisnummerEnToevoeging"}]},
+                {"cat": [{"var": "straatnaam"}, " ", {"var": "huisnummerEnToevoeging"}, ", ", {"var": "plaatsnaam"}]}
+            ]
+         ]
       }
 
 #. Sleep een **IBAN** component op het witte vlak, vul de volgende

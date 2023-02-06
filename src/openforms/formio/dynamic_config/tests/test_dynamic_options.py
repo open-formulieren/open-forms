@@ -95,8 +95,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "openForms": {
                         "dataSrc": "variable",
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        "valueExpression": {"var": "name"},
+                        "itemsExpression": {
+                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
+                        },
                     },
                 },
                 {
@@ -109,8 +110,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                     },
                     "openForms": {
                         "dataSrc": "variable",
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        "valueExpression": {"var": "name"},
+                        "itemsExpression": {
+                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
+                        },
                     },
                     "type": "select",
                 },
@@ -122,8 +124,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                         {"label": "", "value": ""},
                     ],
                     "openForms": {
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        "valueExpression": {"var": "name"},
+                        "itemsExpression": {
+                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
+                        },
                         "dataSrc": "variable",
                     },
                 },
@@ -177,8 +180,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "dataSrc": "variable",
                     "data": {
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        "valueExpression": {"var": "name"},
+                        "itemsExpression": {
+                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
+                        },
                     },
                 },
                 {
@@ -189,8 +193,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                             {"label": "", "value": ""},
                         ],
                         "dataSrc": "variable",
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        "valueExpression": {"var": "name"},
+                        "itemsExpression": {
+                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
+                        },
                     },
                     "type": "select",
                 },
@@ -203,8 +208,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "dataSrc": "variable",
                     "data": {
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        "valueExpression": {"var": "name"},
+                        "itemsExpression": {
+                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
+                        },
                     },
                 },
             ]
@@ -378,7 +384,7 @@ class TestDynamicConfigAddingOptions(TestCase):
             [{"label": "", "value": ""}],
         )
 
-    def test_variable_options_repeating_group_missing_value_path(self):
+    def test_variable_options_repeating_group_missing_map(self):
         configuration = {
             "components": [
                 {
@@ -395,8 +401,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                     ],
                     "openForms": {
                         "dataSrc": "variable",
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        # Missing valueExpression
+                        "itemsExpression": {
+                            "var": "repeatingGroup"
+                        },  # No map operation to transform dict into str
                     },
                 },
                 {
@@ -409,8 +416,9 @@ class TestDynamicConfigAddingOptions(TestCase):
                     },
                     "openForms": {
                         "dataSrc": "variable",
-                        "itemsExpression": {"var": "repeatingGroup"},
-                        # Missing valueExpression
+                        "itemsExpression": {
+                            "var": "repeatingGroup"
+                        },  # No map operation to transform dict into str
                     },
                     "type": "select",
                 },
@@ -422,9 +430,10 @@ class TestDynamicConfigAddingOptions(TestCase):
                         {"label": "", "value": ""},
                     ],
                     "openForms": {
-                        "itemsExpression": {"var": "repeatingGroup"},
+                        "itemsExpression": {
+                            "var": "repeatingGroup"
+                        },  # No map operation to transform dict into str
                         "dataSrc": "variable",
-                        # Missing valueExpression
                     },
                 },
             ]
@@ -459,21 +468,15 @@ class TestDynamicConfigAddingOptions(TestCase):
         self.assertEqual(len(logs), 3)
         self.assertEqual(
             logs[0].extra_data["error"],
-            "The choices for component Select Boxes (selectBoxes) are improperly configured. "
-            "The JSON logic expression to retrieve the items is configured, but no expression for the items "
-            "values was configured.",
+            'The dynamic options obtained with expression {"var": "repeatingGroup"} contain non-primitive types.',
         )
         self.assertEqual(
             logs[1].extra_data["error"],
-            "The choices for component Select (select) are improperly configured. "
-            "The JSON logic expression to retrieve the items is configured, but no expression for the items "
-            "values was configured.",
+            'The dynamic options obtained with expression {"var": "repeatingGroup"} contain non-primitive types.',
         )
         self.assertEqual(
             logs[2].extra_data["error"],
-            "The choices for component Radio (radio) are improperly configured. "
-            "The JSON logic expression to retrieve the items is configured, but no expression for the items "
-            "values was configured.",
+            'The dynamic options obtained with expression {"var": "repeatingGroup"} contain non-primitive types.',
         )
 
     def test_escaped_html(self):
@@ -561,4 +564,182 @@ class TestDynamicConfigAddingOptions(TestCase):
         self.assertEqual(
             logs[0].extra_data["error"],
             'Variable obtained with expression {"var": "textField"} for dynamic options is not an array.',
+        )
+
+    def test_duplicate_options_with_multiple_field(self):
+        configuration = {
+            "components": [
+                {
+                    "key": "textField",
+                    "type": "textfield",
+                    "multiple": True,
+                },
+                {
+                    "label": "Radio",
+                    "key": "radio",
+                    "type": "radio",
+                    "values": [
+                        {"label": "", "value": ""},
+                    ],
+                    "openForms": {
+                        "dataSrc": "variable",
+                        "itemsExpression": {"var": "textField"},
+                    },
+                },
+            ]
+        }
+
+        submission = SubmissionFactory.create()
+
+        rewrite_formio_components(
+            FormioConfigurationWrapper(configuration),
+            submission,
+            {"textField": ["duplicate", "duplicate", "duplicate"]},
+        )
+        self.assertEqual(
+            configuration["components"][1]["values"],
+            [{"label": "duplicate", "value": "duplicate"}],
+        )
+
+    def test_duplicate_options_with_repeating_group(self):
+        configuration = {
+            "components": [
+                {
+                    "key": "repeatingGroup",
+                    "type": "editgrid",
+                    "components": [{"type": "textfield", "key": "name"}],
+                },
+                {
+                    "label": "Radio",
+                    "key": "radio",
+                    "type": "radio",
+                    "values": [
+                        {"label": "", "value": ""},
+                    ],
+                    "openForms": {
+                        "dataSrc": "variable",
+                        "itemsExpression": {
+                            "map": [{"var": "repeatingGroup"}, {"var": "name"}]
+                        },
+                    },
+                },
+            ]
+        }
+
+        submission = SubmissionFactory.create()
+
+        rewrite_formio_components(
+            FormioConfigurationWrapper(configuration),
+            submission,
+            {"repeatingGroup": [{"name": "duplicate"}, {"name": "duplicate"}]},
+        )
+        self.assertEqual(
+            configuration["components"][1]["values"],
+            [{"label": "duplicate", "value": "duplicate"}],
+        )
+
+    def test_badly_formatted_items(self):
+        configuration = {
+            "components": [
+                {
+                    "label": "Radio",
+                    "key": "radio",
+                    "type": "radio",
+                    "values": [
+                        {"label": "", "value": ""},
+                    ],
+                    "openForms": {
+                        "dataSrc": "variable",
+                        "itemsExpression": {
+                            "map": [{"var": "externalData"}, {"var": "id"}]
+                        },
+                    },
+                },
+            ]
+        }
+
+        submission = SubmissionFactory.create()
+
+        rewrite_formio_components(
+            FormioConfigurationWrapper(configuration),
+            submission,
+            # Only the first object has the property "id"
+            {
+                "externalData": [
+                    {"id": "111"},
+                    {"no-id": "222"},
+                    "i'm not an object!",
+                    123,
+                    ["im", "an", "array"],
+                    {"id": ["111", None]},
+                    {"id": ["key", "label"]},
+                ]
+            },
+        )
+        self.assertEqual(
+            configuration["components"][0]["values"],
+            [{"label": "111", "value": "111"}, {"label": "label", "value": "key"}],
+        )
+
+        logs = TimelineLogProxy.objects.filter(
+            object_id=submission.form.id,
+            template="logging/events/form_configuration_error.txt",
+        )
+
+        self.assertEqual(len(logs), 1)
+        self.assertEqual(
+            logs[0].extra_data["error"],
+            'Expression {"map": [{"var": "externalData"}, {"var": "id"}]} did not return a valid option for each item.',
+        )
+
+    def test_different_label_key_options(self):
+        configuration = {
+            "components": [
+                {
+                    "key": "repeatingGroup",
+                    "type": "editgrid",
+                    "components": [
+                        {"type": "textfield", "key": "name"},
+                        {"type": "textfield", "key": "bsn"},
+                    ],
+                },
+                {
+                    "label": "Select Boxes",
+                    "key": "selectBoxes",
+                    "type": "selectboxes",
+                    "values": [
+                        {"label": "", "value": ""},
+                    ],
+                    "openForms": {
+                        "dataSrc": "variable",
+                        "itemsExpression": {
+                            "map": [
+                                {"var": "repeatingGroup"},
+                                [{"var": "bsn"}, {"var": "name"}],
+                            ]
+                        },
+                    },
+                },
+            ]
+        }
+
+        submission = SubmissionFactory.create()
+
+        rewrite_formio_components(
+            FormioConfigurationWrapper(configuration),
+            submission,
+            {
+                "repeatingGroup": [
+                    {"name": "Test1", "bsn": "123456789"},
+                    {"name": "Test2", "bsn": "987654321"},
+                ]
+            },
+        )
+
+        self.assertEqual(
+            configuration["components"][1]["values"],
+            [
+                {"label": "Test1", "value": "123456789"},
+                {"label": "Test2", "value": "987654321"},
+            ],
         )
