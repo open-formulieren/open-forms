@@ -46,7 +46,7 @@ def remove_value_expression(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("forms", "0068_add_options_data_source"),
+        ("forms", "0069_form_appointment_enabled"),
     ]
 
     operations = [

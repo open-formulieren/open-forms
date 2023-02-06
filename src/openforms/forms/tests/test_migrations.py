@@ -530,8 +530,8 @@ class TestAddDataSourceToOptions(TestMigrations):
 
 
 class TestRemoveValueExpression(TestMigrations):
-    migrate_from = "0068_add_options_data_source"
-    migrate_to = "0069_remove_value_expression"
+    migrate_from = "0069_form_appointment_enabled"
+    migrate_to = "0070_remove_value_expression"
 
     app = "forms"
 
