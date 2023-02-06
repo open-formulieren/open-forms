@@ -13,7 +13,7 @@ import {FormCreationForm} from './form_design/form-creation-form';
 import FormVersionsTable from './form_versions/FormVersionsTable';
 import {getIntlProviderProps} from './i18n';
 import './plugin_configuration';
-import setSeleniumMarker from './selenium';
+import setE2EMarker from './selenium';
 import './submissions/filter';
 
 const mountForm = intlProps => {
@@ -94,4 +94,4 @@ mountDebugComponent();
 
 // this must be the last call in the script, as we rely on the marker being absent
 // to detect crashes in the JS via Selenium tests
-setSeleniumMarker();
+setE2EMarker();
