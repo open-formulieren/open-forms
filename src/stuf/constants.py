@@ -1,3 +1,5 @@
+from typing import Literal
+
 from django.utils.translation import gettext_lazy as _
 
 from djchoices import ChoiceItem, DjangoChoices
@@ -7,6 +9,8 @@ class EndpointSecurity(DjangoChoices):
     basicauth = ChoiceItem("basicauth", _("Basic authentication"))
     wss = ChoiceItem("wss", _("SOAP extension: WS-Security"))
     wss_basicauth = ChoiceItem("wss_basicauth", _("Both"))
+
+    TypeHint = Literal["basicauth", "wss", "wss_basicauth"]
 
 
 class SOAPVersion(DjangoChoices):

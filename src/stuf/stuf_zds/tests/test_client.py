@@ -129,10 +129,7 @@ class StufZdsClientTest(TestCase):
         request_with_tls = history[-1]
 
         self.assertTrue(request_with_tls.verify)
-        self.assertEqual(
-            (None, None),
-            request_with_tls.cert,
-        )
+        self.assertIsNone(request_with_tls.cert)
 
 
 class StufZdsRegressionTests(TestCase):

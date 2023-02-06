@@ -107,7 +107,7 @@ class BaseClient:
         return self
 
     def __exit__(self, *args):
-        if self.session is not None:
+        if self._session is not None:
             self.session.close()
         self._in_context_manager = False
 
@@ -147,7 +147,7 @@ class BaseClient:
                 hook = self.request_log_hook
             case "response":
                 hook = self.response_log_hook
-            case _:
+            case _:  # pragma: nocover
                 raise ValueError("Unexpected direction received")
         if not hook:
             return

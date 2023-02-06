@@ -166,10 +166,10 @@ class StufService(models.Model):
         verbose_name = _("StUF service")
         verbose_name_plural = _("StUF services")
 
-    def get_cert(self):
+    def get_cert(self) -> None | str | tuple[str, str]:
         certificate = self.soap_service.client_certificate
         if not certificate:
-            return (None, None)
+            return None
 
         if certificate.public_certificate and certificate.private_key:
             return (certificate.public_certificate.path, certificate.private_key.path)
@@ -177,23 +177,20 @@ class StufService(models.Model):
         if certificate.public_certificate:
             return certificate.public_certificate.path
 
-    def get_verify(self):
+    def get_verify(self) -> bool | str:
         certificate = self.soap_service.server_certificate
         if certificate:
             return certificate.public_certificate.path
-
         return True
 
-    def get_endpoint(self, type):
+    def get_endpoint(self, type: EndpointSecurity.TypeHint) -> str:
         attr = f"endpoint_{type}"
-
-        if not hasattr(self, attr):
+        value = getattr(self, attr, None)
+        if value is None:
             raise ValueError(f"Endpoint type {type} does not exist.")
+        return value or self.soap_service.url
 
-        val = getattr(self, attr, None)
-        return val or self.soap_service.url
-
-    def get_auth(self):
+    def get_auth(self) -> tuple[str, str] | None:
         if (
             self.soap_service.endpoint_security
             in [EndpointSecurity.basicauth, EndpointSecurity.wss_basicauth]
@@ -201,7 +198,7 @@ class StufService(models.Model):
             and self.soap_service.password
         ):
             return (self.soap_service.user, self.soap_service.password)
-        return (None, None)
+        return None
 
     def __str__(self):
         return self.soap_service.label
