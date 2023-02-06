@@ -63,10 +63,7 @@ const updateKeyReferencesInLogic = (existingLogicRules, originalKey, newKey) => 
     let newRule = {...rule};
     // Replace the key in the JSON trigger
     const stringJsonTrigger = JSON.stringify(rule.jsonLogicTrigger);
-    const patternToReplace = new RegExp(
-      `\{"var":"${originalKey}(\\.)?([0-9a-zA-Z_\\-]+?)?"\}`,
-      'g'
-    );
+    const patternToReplace = new RegExp(`{"var":"${originalKey}(\\.)?([0-9a-zA-Z_\\-]+?)?"}`, 'g');
     newRule.jsonLogicTrigger = JSON.parse(
       stringJsonTrigger.replaceAll(patternToReplace, `\{"var":"${newKey}$1$2"\}`)
     );
