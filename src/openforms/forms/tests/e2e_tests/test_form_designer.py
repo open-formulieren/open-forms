@@ -1,3 +1,4 @@
+import re
 from contextlib import contextmanager
 
 from django.urls import reverse
@@ -22,10 +23,10 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
         def setUpTestData():
             # set up a form
             form = FormFactory.create(
-                name="Selenium test",
-                name_nl="Selenium test",
+                name="Playwright test",
+                name_nl="Playwright test",
                 generate_minimal_setup=True,
-                formstep__form_definition__name_nl="Selenium test",
+                formstep__form_definition__name_nl="Playwright test",
                 formstep__form_definition__configuration={
                     "components": [
                         {
@@ -161,3 +162,57 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             )
 
         await assertState()
+
+    async def test_regex_validation_key(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Playwright test",
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "someField",
+                            "label": "Some Field",
+                        }
+                    ],
+                },
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            # Open the edit modal
+            await page.get_by_text("Some Field").hover()
+            await page.locator('css=[ref="editComponent"]').locator(
+                "visible=true"
+            ).click()
+            await expect(page.locator("css=.formio-dialog-content")).to_have_count(1)
+
+            # fill the component key field with an invalid value to trigger validation
+            key_input = page.get_by_label("Eigenschapnaam")
+            await key_input.click()
+            await key_input.fill(" +?!")
+            parent = key_input.locator("xpath=../..")
+            await expect(parent).to_have_class(re.compile(r"has-error"))
+            await expect(parent).to_have_class(re.compile(r"has-message"))
+            error_message = (
+                "De eigenschapsnaam mag alleen alfanumerieke tekens, "
+                "onderstrepingstekens, punten en streepjes bevatten en mag niet "
+                "worden afgesloten met een streepje of punt."
+            )
+            await expect(parent).to_contain_text(error_message)
