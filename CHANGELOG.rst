@@ -62,32 +62,32 @@ Detailed changes
 
 * Multilingual support
 
-    * [#2478] Implemented UI/UX for form designers to manage component-level translations.
-    * [#2390] PDF reports and confirmation e-mails are now rendered in the submission
-      language.
-    * [#2286] Ensured that the API endpoints for the SDK return the translations
-      according to the active language.
-    * [#2546] Added language metadata to MS Graph, Objects API, ZGW API, StUF-ZDS and
-      email registration backends.
-    * [#1242] The form designer component edit form and preview are now properly localized.
+  * [#2478] Implemented UI/UX for form designers to manage component-level translations.
+  * [#2390] PDF reports and confirmation e-mails are now rendered in the submission
+    language.
+  * [#2286] Ensured that the API endpoints for the SDK return the translations
+    according to the active language.
+  * [#2546] Added language metadata to MS Graph, Objects API, ZGW API, StUF-ZDS and
+    email registration backends.
+  * [#1242] The form designer component edit form and preview are now properly localized.
 
 * Accessibility improvements
 
-    * [#2268] Added support for the autocomplete property in the form designer. This
-      comes with a set of pre-configured form fields having the correct autocomplete
-      attribute set out of the box.
-    * [#2490] Login logo objects in the API now contain meta-information about their
-      appearance for appropriate focus-styling in the SDK.
-    * [#2534] Added support for custom errors per-component in the form designer,
-      including translation options.
-    * [#2273] Improved accessibility of error messages for required fields.
+  * [#2268] Added support for the autocomplete property in the form designer. This
+    comes with a set of pre-configured form fields having the correct autocomplete
+    attribute set out of the box.
+  * [#2490] Login logo objects in the API now contain meta-information about their
+    appearance for appropriate focus-styling in the SDK.
+  * [#2534] Added support for custom errors per-component in the form designer,
+    including translation options.
+  * [#2273] Improved accessibility of error messages for required fields.
 
 * Registration plugins
 
-    * [#2494] Added ability to add identifying person details in StUF-ZDS registration
-      even if the person did not authenticate via DigiD (or similar).
-    * [#2511] Added more options for the Microsoft Graph registration plugin, such as
-      base folder path, drive ID and year/month/day interpolation.
+  * [#2494] Added ability to add identifying person details in StUF-ZDS registration
+    even if the person did not authenticate via DigiD (or similar).
+  * [#2511] Added more options for the Microsoft Graph registration plugin, such as
+    base folder path, drive ID and year/month/day interpolation.
 
 * [#1902] Added support for sourcing choice widget values from variables.
 * [#2504] Improved performance in form designer initial load when you have many
