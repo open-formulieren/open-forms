@@ -6,6 +6,7 @@ django-jenkins
 django-webtest
 factory-boy
 freezegun
+playwright
 pyquery  # integrates with webtest
 requests-mock
 selenium
