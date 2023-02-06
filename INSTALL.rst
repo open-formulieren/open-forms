@@ -239,7 +239,8 @@ To run the test suite:
 
 .. code-block:: bash
 
-    $ python src/manage.py test src
+    playwright install
+    python src/manage.py test src
 
 See the detailed developer documentation for more information and different strategies.
 

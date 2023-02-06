@@ -14,9 +14,10 @@ The testsuite uses Django's standard test mechanism:
 
 .. code-block:: bash
 
-    python src/manage.py test src
+    python src/manage.py test src --exclude=e2e
 
-will run all the tests discovered in the ``src`` directory.
+will run all the tests discovered in the ``src`` directory, excluding
+:ref:`developers_backend_tests_e2e`.
 
 You can also limit the tests to run by python path:
 
@@ -58,33 +59,48 @@ You can also run jest in watch mode or pass any other flags:
 
     npm run test -- --watch
 
+.. _developers_backend_tests_e2e:
+
 End-to-end tests
 ================
 
-We have some end-to-end and Javascript smoke tests with Selenium for the custom JS used
-in the admin.
+We have some end-to-end and Javascript smoke tests with Playwright for the custom JS
+used in the admin.
 
-These are slower and harder to debug/maintain.
+These tend to be slower and harder to debug/maintain.
 
-**Running only the Selenium tests**
+**Installation**
+
+After installing the dependencies, install the browsers locally:
 
 .. code-block:: bash
 
-    python src/manage.py test src --tag=selenium
+    playwright install
+
+**Running only the E2E tests**
+
+.. code-block:: bash
+
+    TWO_FACTOR_PATCH_ADMIN=no python src/manage.py test src --tag=e2e
+
+.. note:: When the admin is monkeypatched to enable 2FA behaviour, it's been observed
+   that the end to end tests fail to run/complete properly. Disabling this via your
+   local settings or the environment variable ``TWO_FACTOR_PATCH_ADMIN=no`` mitigates
+   this.
 
 **Configuration**
 
 Configuration is done through environment variables:
 
-* ``NO_SELENIUM_HEADLESS=1``: will open an actual browser window so you can see what's
-  happening. By default, tests are run in headless mode
+* ``NO_E2E_HEADLESS=1``: will open an actual browser window so you can see what's
+  happening. By default, tests are run in headless mode.
 
-* ``SELENIUM_WEBDRIVER=Chrome``: specifies which browser is used for the selenium tests,
-  defaults to Chrome.
+* ``E2E_DRIVER=chromium``: specifies which browser is used for the selenium tests,
+  defaults to Chromium. Available options: ``chromium``, ``firefox`` and ``webkit``.
 
 Example custom command:
 
 .. code-block:: bash
 
-    export NO_SELENIUM_HEADLESS=1 SELENIUM_WEBDRIVER=Firefox
-    python src/manage.py test src --tag=selenium
+    export NO_E2E_HEADLESS=1 E2E_DRIVER=firefox
+    python src/manage.py test src --tag=e2e
