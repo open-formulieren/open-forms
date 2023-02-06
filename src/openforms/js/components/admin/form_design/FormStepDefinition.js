@@ -14,7 +14,7 @@ import FormIOBuilder from 'components/formio_builder/builder';
 
 import AuthenticationWarning from './AuthenticationWarning';
 import ChangedFormDefinitionWarning from './ChangedFormDefinitionWarning';
-import {FormContext, FormStepContext} from './Context';
+import {FormContext} from './Context';
 import LanguageTabs from './LanguageTabs';
 import LogicWarning from './LogicWarning';
 import MissingComponentTranslationsWarning from './MissingComponentTranslationsWarning';
