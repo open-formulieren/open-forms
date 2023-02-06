@@ -32,6 +32,32 @@ const extractTranslatableValues = configuration => {
   return translatableValues;
 };
 
+const extractMissingComponentTranslations = (configuration, componentTranslations) => {
+  const languageCodeMapping = Object.fromEntries(LANGUAGES);
+
+  const translatableValues = extractTranslatableValues(configuration);
+
+  let missingTranslations = [];
+  for (const entry of translatableValues) {
+    for (const [languageCode, _languageLabel] of LANGUAGES) {
+      let translations = componentTranslations[languageCode] || {};
+      if (!translations[entry.literal])
+        missingTranslations.push({language: languageCodeMapping[languageCode], ...entry});
+    }
+  }
+  missingTranslations.sort((a, b) => {
+    if (a.componentKey !== b.componentKey) {
+      return a.componentKey.localeCompare(b.componentKey);
+    }
+    if (a.language !== b.language) {
+      return a.language.localeCompare(b.language);
+    }
+    return a.literal.localeCompare(b.literal);
+  });
+
+  return missingTranslations;
+};
+
 const MissingComponentTranslationsTable = ({children: missingTranslations}) => (
   <ChangelistTable data={missingTranslations}>
     <ChangelistColumn objProp="componentKey">
@@ -67,8 +93,6 @@ MissingComponentTranslationsTable.propTypes = {
 };
 
 const MissingComponentTranslationsWarning = ({configuration, componentTranslations}) => {
-  const languageCodeMapping = Object.fromEntries(LANGUAGES);
-
   const [modalOpen, setModalOpen] = useState(false);
 
   const onShowModal = event => {
@@ -76,25 +100,10 @@ const MissingComponentTranslationsWarning = ({configuration, componentTranslatio
     setModalOpen(true);
   };
 
-  const translatableValues = extractTranslatableValues(configuration);
-
-  let missingTranslations = [];
-  for (const entry of translatableValues) {
-    for (const [languageCode, _languageLabel] of LANGUAGES) {
-      let translations = componentTranslations[languageCode] || {};
-      if (!translations[entry.literal])
-        missingTranslations.push({language: languageCodeMapping[languageCode], ...entry});
-    }
-  }
-  missingTranslations.sort((a, b) => {
-    if (a.componentKey !== b.componentKey) {
-      return a.componentKey.localeCompare(b.componentKey);
-    }
-    if (a.language !== b.language) {
-      return a.language.localeCompare(b.language);
-    }
-    return a.literal.localeCompare(b.literal);
-  });
+  const missingTranslations = extractMissingComponentTranslations(
+    configuration,
+    componentTranslations
+  );
 
   const formattedWarning = (
     <FormattedMessage
@@ -139,3 +148,4 @@ MissingComponentTranslationsWarning.propTypes = {
 };
 
 export default MissingComponentTranslationsWarning;
+export {extractMissingComponentTranslations};

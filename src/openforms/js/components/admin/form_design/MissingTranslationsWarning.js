@@ -7,6 +7,8 @@ import Modal from 'components/admin/Modal';
 import {ChangelistColumn, ChangelistTable} from 'components/admin/tables';
 import jsonScriptToVar from 'utils/json-script';
 
+import {extractMissingComponentTranslations} from './MissingComponentTranslationsWarning';
+
 const extractMissingTranslations = (translations, tabName, fieldNames, fallbackFields) => {
   const labelMapping = jsonScriptToVar('label-mapping');
   const languages = jsonScriptToVar('languages');
@@ -65,6 +67,17 @@ MissingTranslationsTable.propTypes = {
 const MissingTranslationsWarning = ({form, formSteps}) => {
   let formStepTranslations = [];
 
+  // console.log(formSteps)
+  let formStepsMissingTranslations = [];
+  for (const formStep of formSteps) {
+    if (
+      extractMissingComponentTranslations(formStep.configuration, formStep.componentTranslations)
+        .length
+    ) {
+      formStepsMissingTranslations.push(formStep.name);
+    }
+  }
+
   for (const [index, formStep] of formSteps.entries()) {
     formStepTranslations = formStepTranslations.concat(
       extractMissingTranslations(
@@ -116,25 +129,43 @@ const MissingTranslationsWarning = ({form, formSteps}) => {
     setModalOpen(true);
   };
 
-  const formattedWarning = (
-    <FormattedMessage
-      description="Warning message for missing translations"
-      defaultMessage="Form has translation enabled, but is missing <link>{count, plural,
-        one {# translation}
-        other {# translations}
-    }</link>"
-      values={{
-        count: missingTranslations.length,
-        link: chunks => (
-          <a href="#" onClick={onShowModal}>
-            {chunks}
-          </a>
-        ),
-      }}
-    />
-  );
+  let warningList = [];
 
-  if (!missingTranslations.length) {
+  if (formStepsMissingTranslations.length) {
+    let formattedWarning = (
+      <FormattedMessage
+        description="Warning message for missing translations"
+        defaultMessage="Form has translation enabled, but there are missing translations for the following Form Steps: {stepNames}"
+        values={{
+          stepNames: formStepsMissingTranslations.join(', '),
+        }}
+      />
+    );
+    warningList.push({level: 'warning', message: formattedWarning});
+  }
+
+  if (missingTranslations.length) {
+    let formattedWarning = (
+      <FormattedMessage
+        description="Warning message for missing translations"
+        defaultMessage="Form has translation enabled, but is missing <link>{count, plural,
+          one {# translation}
+          other {# translations}
+      }</link>"
+        values={{
+          count: missingTranslations.length,
+          link: chunks => (
+            <a href="#" onClick={onShowModal}>
+              {chunks}
+            </a>
+          ),
+        }}
+      />
+    );
+    warningList.push({level: 'warning', message: formattedWarning});
+  }
+
+  if (!warningList.length) {
     return null;
   }
 
@@ -148,7 +179,7 @@ const MissingTranslationsWarning = ({form, formSteps}) => {
         <MissingTranslationsTable>{missingTranslations}</MissingTranslationsTable>
       </Modal>
 
-      <MessageList messages={[{level: 'warning', message: formattedWarning}]} />
+      <MessageList messages={warningList} />
     </>
   );
 };
