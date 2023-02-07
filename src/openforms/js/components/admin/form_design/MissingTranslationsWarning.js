@@ -9,11 +9,12 @@ import jsonScriptToVar from 'utils/json-script';
 
 import {extractMissingComponentTranslations} from './MissingComponentTranslationsWarning';
 
+const LABEL_MAPPING = jsonScriptToVar('label-mapping', {default: {}});
+const LANGUAGES = jsonScriptToVar('languages', {default: []});
+
 const extractMissingTranslations = (translations, tabName, fieldNames, fallbackFields) => {
-  const labelMapping = jsonScriptToVar('label-mapping');
-  const languages = jsonScriptToVar('languages');
-  const defaultLangCode = languages[0][0];
-  const languageCodeMapping = Object.fromEntries(languages);
+  const defaultLangCode = LANGUAGES[0][0];
+  const languageCodeMapping = Object.fromEntries(LANGUAGES);
   let skipWarningsFor = [];
 
   let missingTranslations = [];
@@ -27,13 +28,13 @@ const extractMissingTranslations = (translations, tabName, fieldNames, fallbackF
       if (!translation && !skipWarningsFor.includes(key)) {
         if (fieldNames === undefined) {
           missingTranslations.push({
-            fieldName: labelMapping[key],
+            fieldName: LABEL_MAPPING[key],
             language: languageCodeMapping[languageCode],
             tabName: tabName,
           });
         } else if (fieldNames.includes(key)) {
           missingTranslations.push({
-            fieldName: labelMapping[key],
+            fieldName: LABEL_MAPPING[key],
             language: languageCodeMapping[languageCode],
             tabName: tabName,
           });
