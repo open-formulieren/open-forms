@@ -1,0 +1,13 @@
+{% load stuf %}<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope
+    xmlns:soapenv="{% if soap_version == '1.1' %}http://schemas.xmlsoap.org/soap/envelope/{% else %}http://www.w3.org/2003/05/soap-envelope{% endif %}"
+    xmlns:StUF="http://www.egem.nl/StUF/StUF0301"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>
+    <soapenv:Header>
+        {% render_security service security_expires_minutes %}
+    </soapenv:Header>
+    <soapenv:Body>
+        {% block body %}{% endblock %}
+    </soapenv:Body>
+</soapenv:Envelope>

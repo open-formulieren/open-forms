@@ -1,34 +1,28 @@
 import base64
 import logging
-import os
+import uuid
 from collections import OrderedDict
-from datetime import timedelta
-from typing import Tuple
-from uuid import uuid4
+from datetime import datetime
+from typing import Literal, TypedDict
 
-from django.template import loader
 from django.utils import timezone
-from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 import requests
-from defusedxml.lxml import fromstring as df_fromstring
 from lxml import etree
 from lxml.etree import Element
-from requests import RequestException, Response
+from requests import RequestException
 
 from openforms.config.models import GlobalConfiguration
 from openforms.logging import logevent
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
-from stuf.constants import (
-    SOAP_VERSION_CONTENT_TYPES,
-    STUF_ZDS_EXPIRY_MINUTES,
-    EndpointSecurity,
-    EndpointType,
-)
-from stuf.models import StufService
+
+from ..client import BaseClient
+from ..constants import STUF_ZDS_EXPIRY_MINUTES, EndpointType
+from ..models import StufService
+from ..xml import fromstring
 
 logger = logging.getLogger(__name__)
 
@@ -43,13 +37,6 @@ nsmap = OrderedDict(
         ("xmime", "http://www.w3.org/2005/05/xmlmime"),
     )
 )
-
-SCHEMA_DIR = os.path.join(
-    os.path.dirname(__file__), "vendor", "Zaak_DocumentServices_1_1_02"
-)
-DATE_FORMAT = "%Y%m%d"
-TIME_FORMAT = "%H%M%S"
-DATETIME_FORMAT = "%Y%m%d%H%M%S"
 
 
 class PaymentStatus:
@@ -68,16 +55,12 @@ class PaymentStatus:
     FULL = "Geheel"
 
 
-def fmt_soap_datetime(d):
-    return d.strftime(DATETIME_FORMAT)
+def fmt_soap_datetime(value: datetime):
+    return value.strftime("%Y%m%d%H%M%S")
 
 
-def fmt_soap_date(d):
-    return d.strftime(DATE_FORMAT)
-
-
-def fmt_soap_time(d):
-    return d.strftime(TIME_FORMAT)
+def fmt_soap_date(value: datetime):
+    return value.strftime("%Y%m%d")
 
 
 def xml_value(xml, xpath, namespaces=nsmap):
@@ -88,142 +71,110 @@ def xml_value(xml, xpath, namespaces=nsmap):
         raise ValueError(f"xpath not found {xpath}")
 
 
-class StufZDSClient:
-    def __init__(self, service: StufService, options):
+class ZaakOptions(TypedDict):
+    # from stuf_zds.plugin.ZaakOptionsSerializer
+    gemeentecode: str  # unused?? can't find any template using this
+    zds_zaaktype_code: str
+    zds_zaaktype_omschrijving: str
+    zds_zaaktype_status_code: str
+    zds_zaaktype_status_omschrijving: str
+    zds_documenttype_omschrijving_inzending: str
+    zds_zaakdoc_vertrouwelijkheid: Literal[
+        "ZEER GEHEIM",
+        "GEHEIM",
+        "CONFIDENTIEEL",
+        "VERTROUWELIJK",
+        "ZAAKVERTROUWELIJK",
+        "INTERN",
+        "BEPERKT OPENBAAR",
+        "OPENBAAR",
+    ]
+    # extra's
+    omschrijving: str
+    referentienummer: str
+
+
+class StufZDSClient(BaseClient):
+    sector_alias = "zkn"
+    soap_security_expires_minutes = STUF_ZDS_EXPIRY_MINUTES
+
+    def __init__(self, service: StufService, options: ZaakOptions):
         """
-        the options are the values from the ZaakOptionsSerializer plus 'omschrijving' and 'referentienummer'
+        Initialize the client instance.
+
+        :arg options: Values from the ``ZaakOptionsSerializer``, amended with
+          'omschrijving' and 'referentienummer'.
         """
-        self.service = service
+        super().__init__(
+            service,
+            request_log_hook=logevent.stuf_zds_request,
+        )
         self.options = options
 
-        self._global_config = GlobalConfiguration.get_solo()
+    def execute_call(self, *args, **kwargs) -> Element:
+        """
+        Method actual performing the SOAP call, with error handling.
 
-    def _get_request_base_context(self):
-        return {
-            "zender_organisatie": self.service.zender_organisatie,
-            "zender_applicatie": self.service.zender_applicatie,
-            "zender_gebruiker": self.service.zender_gebruiker,
-            "zender_administratie": self.service.zender_administratie,
-            "ontvanger_organisatie": self.service.ontvanger_organisatie,
-            "ontvanger_applicatie": self.service.ontvanger_applicatie,
-            "ontvanger_gebruiker": self.service.ontvanger_gebruiker,
-            "ontvanger_administratie": self.service.ontvanger_administratie,
-            "tijdstip_bericht": fmt_soap_datetime(timezone.now()),
-            "tijdstip_registratie": fmt_soap_datetime(timezone.now()),
-            "datum_vandaag": fmt_soap_date(timezone.now()),
-            "gemeentecode": self.options["gemeentecode"],
-            "zds_zaaktype_code": self.options["zds_zaaktype_code"],
-            "zds_zaaktype_omschrijving": self.options.get("zds_zaaktype_omschrijving"),
-            "zds_zaaktype_status_code": self.options.get("zds_zaaktype_status_code"),
-            "zds_zaaktype_status_omschrijving": self.options.get(
-                "zds_zaaktype_status_omschrijving"
-            ),
-            "zaak_omschrijving": self.options["omschrijving"],
-            "zds_documenttype_omschrijving_inzending": self.options[
-                "zds_documenttype_omschrijving_inzending"
-            ],
-            "zds_zaakdoc_vertrouwelijkheid": self.options[
-                "zds_zaakdoc_vertrouwelijkheid"
-            ],
-            "referentienummer": str(uuid4()),
-            "global_config": self._global_config,
-        }
+        This essentially wraps around templated_request, but returns the parsed XML
+        or raises the relevant exceptions.
 
-    def _wrap_soap_envelope(self, xml_str: str) -> str:
-        return loader.render_to_string(
-            "stuf_zds/soap/includes/envelope.xml",
-            {
-                "soap_version": self.service.soap_service.soap_version,
-                "soap_use_wss": (
-                    self.service.soap_service.endpoint_security
-                    in [EndpointSecurity.wss, EndpointSecurity.wss_basicauth]
-                ),
-                "wss_username": self.service.soap_service.user,
-                "wss_password": self.service.soap_service.password,
-                "wss_created": fmt_soap_date(timezone.now()),
-                "wss_expires": fmt_soap_date(
-                    timezone.now() + timedelta(minutes=STUF_ZDS_EXPIRY_MINUTES)
-                ),
-                "content": mark_safe(xml_str),
-            },
-        )
+        .. todo:: this can be reworked further to decouple it from our registration
+           backend semantics.
+        """
+        # we need to pull some things out of the context for logging that may or may
+        # not necessarily be set by the caller.
+        context = kwargs.get("context") or {}
+        context.setdefault("referentienummer", uuid.uuid4())
 
-    def _make_request(
-        self,
-        template_name: str,
-        context: dict,
-        endpoint_type,
-        soap_action: str = "",
-    ) -> Tuple[Response, Element]:
+        kwargs["context"] = context
+        kwargs.setdefault("endpoint_type", EndpointType.vrije_berichten)
 
-        request_body = loader.render_to_string(template_name, context)
-        request_data = self._wrap_soap_envelope(request_body)
-
-        url = self.service.get_endpoint(endpoint_type)
-
-        logger.debug("SOAP-request:\n%s\n%s", url, request_data)
+        # logging context
         ref_nr = context["referentienummer"]
+        endpoint_type = kwargs["endpoint_type"]
+        _url = self.service.get_endpoint(type=endpoint_type)
 
         try:
-            logevent.stuf_zds_request(self.service, url)
-            response = requests.post(
-                url,
-                data=request_data.encode(
-                    "utf-8"
-                ),  # TODO: this should be shared in a generic StUF client base class, see #388
-                headers={
-                    "Content-Type": SOAP_VERSION_CONTENT_TYPES.get(
-                        self.service.soap_service.soap_version
-                    ),
-                    "SOAPAction": f"http://www.egem.nl/StUF/sector/zkn/0310/{soap_action}",
-                },
-                auth=self.service.get_auth(),
-                cert=self.service.get_cert(),
-                verify=self.service.get_verify(),
-            )
-            if response.status_code < 200 or response.status_code >= 400:
-                logger.debug("SOAP-response:\n%s", response.content)
-                error_text = parse_soap_error_text(response)
-                logger.error(
-                    "bad response for referentienummer '%s'\n%s",
-                    ref_nr,
-                    error_text,
-                )
-                logevent.stuf_zds_failure_response(self.service, url)
-                raise RegistrationFailed(
-                    f"error while making backend request: HTTP {response.status_code}: {error_text}",
-                    response=response,
-                )
-            else:
-                logger.debug("SOAP-response:\n%s", response.content)
+            response = self.templated_request(*args, **kwargs)
         except RequestException as e:
             logger.error(
                 "bad request for referentienummer '%s'",
                 ref_nr,
+                extra={"ref_nr": ref_nr},
             )
-            logevent.stuf_zds_failure_response(self.service, url)
+            logevent.stuf_zds_failure_response(self.service, _url)
             raise RegistrationFailed("error while making backend request") from e
 
+        if (status_code := response.status_code) < 200 or status_code >= 400:
+            error_text = parse_soap_error_text(response)
+            logger.error(
+                "bad response for referentienummer '%s'\n%s",
+                ref_nr,
+                error_text,
+                extra={"ref_nr": ref_nr},
+            )
+            logevent.stuf_zds_failure_response(self.service, _url)
+            raise RegistrationFailed(
+                f"error while making backend request: HTTP {status_code}: {error_text}",
+                response=response,
+            )
+
         try:
-            xml = df_fromstring(response.content)
+            xml = fromstring(response.content)
         except etree.XMLSyntaxError as e:
-            logevent.stuf_zds_failure_response(self.service, url)
+            logevent.stuf_zds_failure_response(self.service, _url)
             raise RegistrationFailed(
                 "error while parsing incoming backend response XML"
             ) from e
 
-        logevent.stuf_zds_success_response(self.service, url)
+        logevent.stuf_zds_success_response(self.service, _url)
+        return xml
 
-        return response, xml
-
-    def create_zaak_identificatie(self):
-        template = "stuf_zds/soap/genereerZaakIdentificatie.xml"
-        context = self._get_request_base_context()
-        response, xml = self._make_request(
-            template,
-            context,
-            endpoint_type=EndpointType.vrije_berichten,
+    def create_zaak_identificatie(self) -> str:
+        _, xml = self.execute_call(
             soap_action="genereerZaakIdentificatie_Di02",
+            template="stuf_zds/soap/genereerZaakIdentificatie.xml",
+            endpoint_type=EndpointType.vrije_berichten,
         )
 
         try:
@@ -238,45 +189,49 @@ class StufZDSClient:
         return zaak_identificatie
 
     def create_zaak(
-        self, zaak_identificatie, zaak_data, extra_data, payment_required=False
-    ):
-        template = "stuf_zds/soap/creeerZaak.xml"
-        context = self._get_request_base_context()
-        context.update(
-            {
-                "zaak_identificatie": zaak_identificatie,
-                "extra": extra_data,
-                "betalings_indicatie": (
-                    PaymentStatus.NOT_YET if payment_required else PaymentStatus.NVT
-                ),
-            }
-        )
-        context.update(zaak_data)
-        response, xml = self._make_request(
-            template,
-            context,
-            endpoint_type=EndpointType.ontvang_asynchroon,
+        self,
+        zaak_identificatie: str,
+        zaak_data: dict,
+        extra_data,
+        payment_required=False,
+    ) -> None:
+        now = timezone.now()
+        context = {
+            "tijdstip_registratie": fmt_soap_datetime(now),
+            "datum_vandaag": fmt_soap_date(now),
+            "zds_zaaktype_code": self.options["zds_zaaktype_code"],
+            "zds_zaaktype_omschrijving": self.options.get("zds_zaaktype_omschrijving"),
+            "zds_zaaktype_status_code": self.options.get("zds_zaaktype_status_code"),
+            "zds_zaaktype_status_omschrijving": self.options.get(
+                "zds_zaaktype_status_omschrijving"
+            ),
+            "zaak_omschrijving": self.options["omschrijving"],
+            "zaak_identificatie": zaak_identificatie,
+            "extra": extra_data,
+            "betalings_indicatie": (
+                PaymentStatus.NOT_YET if payment_required else PaymentStatus.NVT
+            ),
+            "global_config": GlobalConfiguration.get_solo(),
+            **zaak_data,
+        }
+        self.execute_call(
             soap_action="creeerZaak_Lk01",
-        )
-
-        return None
-
-    def partial_update_zaak(self, zaak_identificatie: str, zaak_data: dict) -> dict:
-        template = "stuf_zds/soap/updateZaak.xml"
-        context = self._get_request_base_context()
-        context.update(
-            {
-                "zaak_identificatie": zaak_identificatie,
-            }
-        )
-        context.update(zaak_data)
-        response, xml = self._make_request(
-            template,
-            context,
+            template="stuf_zds/soap/creeerZaak.xml",
+            context=context,
             endpoint_type=EndpointType.ontvang_asynchroon,
-            soap_action="updateZaak_Lk01",
         )
-        return None
+
+    def partial_update_zaak(self, zaak_identificatie: str, zaak_data: dict) -> None:
+        context = {
+            "zaak_identificatie": zaak_identificatie,
+            **zaak_data,
+        }
+        self.execute_call(
+            soap_action="updateZaak_Lk01",
+            template="stuf_zds/soap/updateZaak.xml",
+            context=context,
+            endpoint_type=EndpointType.ontvang_asynchroon,
+        )
 
     def set_zaak_payment(self, zaak_identificatie: str, partial: bool = False) -> dict:
         data = {
@@ -287,14 +242,11 @@ class StufZDSClient:
         }
         return self.partial_update_zaak(zaak_identificatie, data)
 
-    def create_document_identificatie(self):
-        template = "stuf_zds/soap/genereerDocumentIdentificatie.xml"
-        context = self._get_request_base_context()
-        response, xml = self._make_request(
-            template,
-            context,
-            endpoint_type=EndpointType.vrije_berichten,
+    def create_document_identificatie(self) -> str:
+        _, xml = self.execute_call(
             soap_action="genereerDocumentIdentificatie_Di02",
+            template="stuf_zds/soap/genereerDocumentIdentificatie.xml",
+            endpoint_type=EndpointType.vrije_berichten,
         )
 
         try:
@@ -308,6 +260,43 @@ class StufZDSClient:
 
         return document_identificatie
 
+    def _create_related_document(
+        self,
+        zaak_id: str,
+        doc_id: str,
+        document: SubmissionReport | SubmissionFileAttachment,
+        doc_data: dict,
+    ) -> None:
+        document.content.seek(0)
+        base64_body = base64.b64encode(document.content.read()).decode()
+
+        now = timezone.now()
+        # TODO: vertrouwelijkAanduiding
+        context = {
+            "tijdstip_registratie": fmt_soap_datetime(now),
+            "datum_vandaag": fmt_soap_date(now),
+            "zaak_omschrijving": self.options["omschrijving"],
+            "zds_documenttype_omschrijving_inzending": self.options[
+                "zds_documenttype_omschrijving_inzending"
+            ],
+            "zds_zaakdoc_vertrouwelijkheid": self.options[
+                "zds_zaakdoc_vertrouwelijkheid"
+            ],
+            "zaak_identificatie": zaak_id,
+            "document_identificatie": doc_id,
+            "auteur": "open-forms",
+            "taal": "nld",
+            "inhoud": base64_body,
+            "status": "definitief",
+            **doc_data,
+        }
+        self.execute_call(
+            soap_action="voegZaakdocumentToe_Lk01",
+            template="stuf_zds/soap/voegZaakdocumentToe.xml",
+            context=context,
+            endpoint_type=EndpointType.ontvang_asynchroon,
+        )
+
     def create_zaak_document(
         self, zaak_id: str, doc_id: str, submission_report: SubmissionReport
     ) -> None:
@@ -319,42 +308,21 @@ class StufZDSClient:
         :meth:`openforms.submissions.api.viewsets.SubmissionViewSet._complete` where
         celery tasks are chained to guarantee this.
         """
-        template = "stuf_zds/soap/voegZaakdocumentToe.xml"
-
-        submission_report.content.seek(0)
-
-        base64_body = base64.b64encode(submission_report.content.read()).decode()
-
-        context = self._get_request_base_context()
-        context.update(
-            {
-                "zaak_identificatie": zaak_id,
-                "document_identificatie": doc_id,
+        self._create_related_document(
+            zaak_id=zaak_id,
+            doc_id=doc_id,
+            document=submission_report,
+            doc_data={
                 # TODO: Pass submission object, extract name.
                 # "titel": name,
                 "titel": "inzending",
-                "auteur": "open-forms",
-                "taal": "nld",
-                "inhoud": base64_body,
-                "status": "definitief",
-                "bestandsnaam": "open-forms-inzending.pdf",
                 # TODO: Use name in filename
                 # "bestandsnaam": f"open-forms-{name}.pdf",
+                "bestandsnaam": "open-forms-inzending.pdf",
                 "formaat": "application/pdf",
                 "beschrijving": "Ingezonden formulier",
-            }
+            },
         )
-
-        # TODO: vertrouwelijkAanduiding
-
-        response, xml = self._make_request(
-            template,
-            context,
-            endpoint_type=EndpointType.ontvang_asynchroon,
-            soap_action="voegZaakdocumentToe_Lk01",
-        )
-
-        return None
 
     def create_zaak_attachment(
         self, zaak_id: str, doc_id: str, submission_attachment: SubmissionFileAttachment
@@ -362,47 +330,23 @@ class StufZDSClient:
         """
         Create a zaakdocument with the submitted file.
         """
-        template = "stuf_zds/soap/voegZaakdocumentToe.xml"
-
-        submission_attachment.content.seek(0)
-
-        base64_body = base64.b64encode(submission_attachment.content.read()).decode()
-
-        context = self._get_request_base_context()
-        context.update(
-            {
-                "zaak_identificatie": zaak_id,
-                "document_identificatie": doc_id,
+        self._create_related_document(
+            zaak_id=zaak_id,
+            doc_id=doc_id,
+            document=submission_attachment,
+            doc_data={
                 "titel": "bijlage",
-                "auteur": "open-forms",
-                "taal": "nld",
-                "inhoud": base64_body,
-                "status": "definitief",
                 "bestandsnaam": submission_attachment.get_display_name(),
                 "formaat": submission_attachment.content_type,
                 "beschrijving": "Bijgevoegd document",
-            }
+            },
         )
 
-        response, xml = self._make_request(
-            template,
-            context,
-            endpoint_type=EndpointType.ontvang_asynchroon,
-            soap_action="voegZaakdocumentToe_Lk01",
-        )
-
-        return None
-
-    def check_config(self):
+    def check_config(self) -> None:
         url = f"{self.service.get_endpoint(EndpointType.beantwoord_vraag)}?wsdl"
-
+        auth_kwargs = self._get_auth_kwargs()
         try:
-            response = requests.get(
-                url,
-                auth=self.service.get_auth(),
-                cert=self.service.get_cert(),
-                verify=self.service.get_verify(),
-            )
+            response = requests.get(url, **auth_kwargs)
             if not response.ok:
                 error_text = parse_soap_error_text(response)
                 raise InvalidPluginConfiguration(
@@ -446,7 +390,7 @@ def parse_soap_error_text(response):
         message = response.status_code
     else:
         try:
-            xml = df_fromstring(response.text.encode("utf8"))
+            xml = fromstring(response.text.encode("utf8"))
             faults = xml.xpath("//*[local-name()='Fault']", namespaces=nsmap)
             if faults:
                 messages = []

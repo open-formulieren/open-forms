@@ -101,9 +101,8 @@ class StufBgPrefill(BasePlugin):
         self, bsn: str, attributes: Iterable[str]
     ) -> Dict[str, Any]:
         config = StufBGConfig.get_solo()
-        client = config.get_client()
-
-        data = client.get_values(bsn, attributes)
+        with config.get_client() as client:
+            data = client.get_values(bsn, attributes)
 
         response_dict = {}
         for attribute in attributes:
@@ -175,8 +174,11 @@ class StufBgPrefill(BasePlugin):
 
         client = config.get_client()
         try:
-            data = client.get_request_data(check_bsn, [FieldChoices.bsn])
-            response = client.make_request(data)
+            response = client.templated_request(
+                "npsLv01",
+                template="stuf_bg/StufBgRequest.xml",
+                context={"bsn": check_bsn},
+            )
             response.raise_for_status()
         except (RequestException, HTTPError) as e:
             raise InvalidPluginConfiguration(

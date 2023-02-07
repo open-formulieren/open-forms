@@ -1,0 +1,4 @@
+{% if party.organisatie %}<StUF:organisatie>{{ party.organisatie }}</StUF:organisatie>{% endif %}
+<StUF:applicatie>{{ party.applicatie }}</StUF:applicatie>
+{% if party.administratie %}<StUF:administratie>{{ party.administratie }}</StUF:administratie>{% endif %}
+{% if party.gebruiker %}<StUF:gebruiker>{{ party.gebruiker }}</StUF:gebruiker>{% endif %}

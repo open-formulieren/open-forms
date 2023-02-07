@@ -199,7 +199,7 @@ class StufBgCheckTests(TestCase):
 
     def test_check_config_exception(self):
         with patch(
-            "stuf.stuf_bg.client.StufBGClient.get_request_data",
+            "stuf.stuf_bg.client.StufBGClient.get_values_for_attributes",
             side_effect=RequestException(),
         ):
             with self.assertRaises(InvalidPluginConfiguration):

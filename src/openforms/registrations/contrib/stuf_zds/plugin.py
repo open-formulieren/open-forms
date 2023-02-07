@@ -209,93 +209,97 @@ class StufZDSRegistration(BasePlugin):
 
         options["omschrijving"] = submission.form.admin_name
 
-        client = config.get_client(options)
+        with config.get_client(options) as client:
 
-        # obtain a zaaknummer & save it - first, check if we have an intermediate result
-        # from earlier attempts. if we do, do not generate a new number
-        zaak_id = execute_unless_result_exists(
-            client.create_zaak_identificatie,
-            submission,
-            "intermediate.zaaknummer",
-            default="",
-        )
-
-        zaak_data = apply_data_mapping(
-            submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
-        )
-        if zaak_data.get("locatie"):
-            zaak_data["locatie"]["key"] = get_component(
+            # obtain a zaaknummer & save it - first, check if we have an intermediate result
+            # from earlier attempts. if we do, do not generate a new number
+            zaak_id = execute_unless_result_exists(
+                client.create_zaak_identificatie,
                 submission,
-                RegistrationAttribute.locatie_coordinaat,
-                REGISTRATION_ATTRIBUTE,
-            )["key"]
-
-        extra_data = get_unmapped_data(
-            submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
-        )
-
-        if submission.public_registration_reference:
-            zaak_data.update({"kenmerken": [submission.public_registration_reference]})
-
-        # Add medewerker to the data
-        if submission.has_registrator:
-            zaak_data.update(
-                {
-                    "registrator": {
-                        "medewerker": {"identificatie": submission.registrator.value}
-                    }
-                }
-            )
-
-        class LangInjection:
-            """Ensures the first extra element is the submission language
-            and isn't shadowed by a form field with the same key"""
-
-            def items(self):
-                yield ("language_code", submission.language_code)
-                yield from extra_data.items()
-
-        execute_unless_result_exists(
-            lambda: client.create_zaak(
-                zaak_id, zaak_data, LangInjection(), submission.payment_required
-            ),
-            submission,
-            "intermediate.zaak_created",
-            default=False,
-            result=True,
-        )
-
-        doc_id = execute_unless_result_exists(
-            client.create_document_identificatie,
-            submission,
-            "intermediate.document_nummers.pdf-report",
-            default="",
-        )
-        submission_report = SubmissionReport.objects.get(submission=submission)
-        execute_unless_result_exists(
-            lambda: client.create_zaak_document(zaak_id, doc_id, submission_report),
-            submission,
-            "intermediate.documents_created.pdf-report",
-            default=False,
-            result=True,
-        )
-
-        for attachment in submission.attachments:
-            attachment_doc_id = execute_unless_result_exists(
-                client.create_document_identificatie,
-                submission,
-                f"intermediate.document_nummers.{attachment.id}",
+                "intermediate.zaaknummer",
                 default="",
             )
+
+            zaak_data = apply_data_mapping(
+                submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
+            )
+            if zaak_data.get("locatie"):
+                zaak_data["locatie"]["key"] = get_component(
+                    submission,
+                    RegistrationAttribute.locatie_coordinaat,
+                    REGISTRATION_ATTRIBUTE,
+                )["key"]
+
+            extra_data = get_unmapped_data(
+                submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
+            )
+
+            if submission.public_registration_reference:
+                zaak_data.update(
+                    {"kenmerken": [submission.public_registration_reference]}
+                )
+
+            # Add medewerker to the data
+            if submission.has_registrator:
+                zaak_data.update(
+                    {
+                        "registrator": {
+                            "medewerker": {
+                                "identificatie": submission.registrator.value
+                            }
+                        }
+                    }
+                )
+
+            class LangInjection:
+                """Ensures the first extra element is the submission language
+                and isn't shadowed by a form field with the same key"""
+
+                def items(self):
+                    yield ("language_code", submission.language_code)
+                    yield from extra_data.items()
+
             execute_unless_result_exists(
-                lambda: client.create_zaak_attachment(
-                    zaak_id, attachment_doc_id, attachment
+                lambda: client.create_zaak(
+                    zaak_id, zaak_data, LangInjection(), submission.payment_required
                 ),
                 submission,
-                f"intermediate.documents_created.{attachment.id}",
+                "intermediate.zaak_created",
                 default=False,
                 result=True,
             )
+
+            doc_id = execute_unless_result_exists(
+                client.create_document_identificatie,
+                submission,
+                "intermediate.document_nummers.pdf-report",
+                default="",
+            )
+            submission_report = SubmissionReport.objects.get(submission=submission)
+            execute_unless_result_exists(
+                lambda: client.create_zaak_document(zaak_id, doc_id, submission_report),
+                submission,
+                "intermediate.documents_created.pdf-report",
+                default=False,
+                result=True,
+            )
+
+            for attachment in submission.attachments:
+                attachment_doc_id = execute_unless_result_exists(
+                    client.create_document_identificatie,
+                    submission,
+                    f"intermediate.document_nummers.{attachment.id}",
+                    default="",
+                )
+                execute_unless_result_exists(
+                    lambda: client.create_zaak_attachment(
+                        zaak_id, attachment_doc_id, attachment
+                    ),
+                    submission,
+                    f"intermediate.documents_created.{attachment.id}",
+                    default=False,
+                    result=True,
+                )
 
         result = {
             "zaak": zaak_id,
@@ -322,8 +326,8 @@ class StufZDSRegistration(BasePlugin):
     def update_payment_status(self, submission: "Submission", options: dict):
         config = StufZDSConfig.get_solo()
         config.apply_defaults_to(options)
-        client = config.get_client(options)
-        client.set_zaak_payment(submission.registration_result["zaak"])
+        with config.get_client(options) as client:
+            client.set_zaak_payment(submission.registration_result["zaak"])
 
     def check_config(self):
         config = StufZDSConfig.get_solo()
@@ -343,13 +347,13 @@ class StufZDSRegistration(BasePlugin):
             "zds_documenttype_omschrijving_inzending": "test",
         }
         config.apply_defaults_to(options)
-        client = config.get_client(options)
-        try:
-            client.check_config()
-        except Exception as e:
-            raise InvalidPluginConfiguration(
-                _("Could not connect: {exception}").format(exception=e)
-            ) from e
+        with config.get_client(options) as client:
+            try:
+                client.check_config()
+            except Exception as e:
+                raise InvalidPluginConfiguration(
+                    _("Could not connect: {exception}").format(exception=e)
+                ) from e
 
     def get_config_actions(self):
         return [

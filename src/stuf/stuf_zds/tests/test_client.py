@@ -63,13 +63,13 @@ class StufZdsClientTest(TestCase):
             soap_service__client_certificate=self.client_certificate,
             soap_service__server_certificate=self.server_certificate,
         )
-
+        client = StufZDSClient(stuf_service, self.client_options)
         m.post(
             stuf_service.soap_service.url,
-            text=render_to_string("stuf_zds/soap/creeerZaak.xml"),
+            text=render_to_string(
+                "stuf_zds/soap/creeerZaak.xml", context=client.build_base_context()
+            ),
         )
-
-        client = StufZDSClient(stuf_service, self.client_options)
 
         client.create_zaak(zaak_identificatie="ZAAK-01", zaak_data={}, extra_data={})
 
@@ -92,13 +92,13 @@ class StufZdsClientTest(TestCase):
             soap_service__client_certificate=self.client_certificate_only,
             soap_service__server_certificate=self.server_certificate,
         )
-
+        client = StufZDSClient(stuf_service, self.client_options)
         m.post(
             stuf_service.soap_service.url,
-            text=render_to_string("stuf_zds/soap/creeerZaak.xml"),
+            text=render_to_string(
+                "stuf_zds/soap/creeerZaak.xml", context=client.build_base_context()
+            ),
         )
-
-        client = StufZDSClient(stuf_service, self.client_options)
 
         client.create_zaak(zaak_identificatie="ZAAK-01", zaak_data={}, extra_data={})
 
@@ -115,13 +115,13 @@ class StufZdsClientTest(TestCase):
 
     def test_no_mutual_tls(self, m):
         stuf_service = StufServiceFactory.create()
-
+        client = StufZDSClient(stuf_service, self.client_options)
         m.post(
             stuf_service.soap_service.url,
-            text=render_to_string("stuf_zds/soap/creeerZaak.xml"),
+            text=render_to_string(
+                "stuf_zds/soap/creeerZaak.xml", context=client.build_base_context()
+            ),
         )
-
-        client = StufZDSClient(stuf_service, self.client_options)
 
         client.create_zaak(zaak_identificatie="ZAAK-01", zaak_data={}, extra_data={})
 
@@ -129,10 +129,7 @@ class StufZdsClientTest(TestCase):
         request_with_tls = history[-1]
 
         self.assertTrue(request_with_tls.verify)
-        self.assertEqual(
-            (None, None),
-            request_with_tls.cert,
-        )
+        self.assertIsNone(request_with_tls.cert)
 
 
 class StufZdsRegressionTests(TestCase):
@@ -151,10 +148,16 @@ class StufZdsRegressionTests(TestCase):
         with patch.object(
             client.service, "get_endpoint", return_value="https://example.com"
         ):
+            context = {
+                **client.build_base_context(),
+                "referentienummer": "123",
+                "extra": {"foo": "Ş"},
+            }
             try:
-                client._make_request(
-                    template_name="stuf_zds/soap/creeerZaak.xml",
-                    context={"referentienummer": "123", "extra": {"foo": "Ş"}},
+                client.templated_request(
+                    soap_action="irrelevant",
+                    template="stuf_zds/soap/creeerZaak.xml",
+                    context=context,
                     endpoint_type=EndpointType.ontvang_asynchroon,
                 )
             except UnicodeError:
