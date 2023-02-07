@@ -4,6 +4,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings, tag
 from django.utils.translation import gettext as _
 
+import clamd
 from privates.test import temp_private_root
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -168,3 +169,24 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         )
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+    def test_file_contains_virus(self):
+        self._add_submission_to_session(self.submission)
+
+        url = reverse("api:formio:temporary-file-upload")
+        # File contains signature for a virus that clamd catches
+        file = SimpleUploadedFile(
+            "my-file.bin", clamd.EICAR, content_type="application/octet-stream"
+        )
+
+        response = self.client.post(
+            url,
+            {"file": file},
+            format="multipart",
+        )
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEqual(
+            response.data["file"][0],
+            "The file 'my-file.bin' did not pass the virus scan. It was found to contain 'Win.Test.EICAR_HDB-1'.",
+        )
