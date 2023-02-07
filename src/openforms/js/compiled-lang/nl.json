@@ -1189,6 +1189,12 @@
       "value": "Interne naam van het formulier voor onderscheid in overzichten"
     }
   ],
+  "RfbS0v": [
+    {
+      "type": 0,
+      "value": "Language"
+    }
+  ],
   "Rk13i+": [
     {
       "type": 0,
@@ -1485,6 +1491,48 @@
       "value": "De sleutel van een variabele moet uniek zijn binnen een formulier"
     }
   ],
+  "ZEo3mR": [
+    {
+      "type": 0,
+      "value": "Form has translation enabled, but is missing "
+    },
+    {
+      "children": [
+        {
+          "offset": 0,
+          "options": {
+            "one": {
+              "value": [
+                {
+                  "type": 7
+                },
+                {
+                  "type": 0,
+                  "value": " translation"
+                }
+              ]
+            },
+            "other": {
+              "value": [
+                {
+                  "type": 7
+                },
+                {
+                  "type": 0,
+                  "value": " translations"
+                }
+              ]
+            }
+          },
+          "pluralType": "cardinal",
+          "type": 6,
+          "value": "count"
+        }
+      ],
+      "type": 8,
+      "value": "link"
+    }
+  ],
   "ZICfus": [
     {
       "type": 0,
@@ -1779,6 +1827,12 @@
       "value": "Interne naam"
     }
   ],
+  "i7HknI": [
+    {
+      "type": 0,
+      "value": "Tab name"
+    }
+  ],
   "iZESbd": [
     {
       "type": 0,
@@ -1897,10 +1951,22 @@
       "value": "Item toevoegen"
     }
   ],
+  "lvxPCk": [
+    {
+      "type": 0,
+      "value": "Component label"
+    }
+  ],
   "mH3X/G": [
     {
       "type": 0,
       "value": "vandaag"
+    }
+  ],
+  "mL6vhw": [
+    {
+      "type": 0,
+      "value": "Component key"
     }
   ],
   "mOgTIH": [
@@ -1973,6 +2039,48 @@
     {
       "type": 0,
       "value": "Vink aan om de inhoud toe te voegen aan de PDF die mensen op het eind kunnen downloaden."
+    }
+  ],
+  "ooyhQ7": [
+    {
+      "type": 0,
+      "value": "Form has translation enabled, but is missing "
+    },
+    {
+      "children": [
+        {
+          "offset": 0,
+          "options": {
+            "one": {
+              "value": [
+                {
+                  "type": 7
+                },
+                {
+                  "type": 0,
+                  "value": " component translation"
+                }
+              ]
+            },
+            "other": {
+              "value": [
+                {
+                  "type": 7
+                },
+                {
+                  "type": 0,
+                  "value": " component translations"
+                }
+              ]
+            }
+          },
+          "pluralType": "cardinal",
+          "type": 6,
+          "value": "count"
+        }
+      ],
+      "type": 8,
+      "value": "link"
     }
   ],
   "ow5AAO": [
@@ -2169,6 +2277,12 @@
       "value": "De inhoud van bevestigingspagina na het versturen van de inzending. Dit sjabloon mag variabelen bevatten met inzendings-gegevens. Laat dit veld leeg om de standaardinstelling te gebruiken."
     }
   ],
+  "vjHM9z": [
+    {
+      "type": 0,
+      "value": "Literal"
+    }
+  ],
   "vng/5K": [
     {
       "type": 0,
@@ -2251,6 +2365,12 @@
     {
       "type": 0,
       "value": "Telefoonnummer veld"
+    }
+  ],
+  "z0FW+t": [
+    {
+      "type": 0,
+      "value": "Field name"
     }
   ],
   "z0bXZT": [

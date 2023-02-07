@@ -114,7 +114,7 @@ export const persistComponentTranslations = (container, component) => {
   delete component.openForms.translations;
 };
 
-const extractComponentLiterals = component => {
+export const extractComponentLiterals = component => {
   const allTranslatableProperties = [
     ...ALWAYS_TRANSLATABLE_PROPERTIES,
     ...(ADDITIONAL_PROPERTIES_BY_COMPONENT_TYPE[component.type] || []),

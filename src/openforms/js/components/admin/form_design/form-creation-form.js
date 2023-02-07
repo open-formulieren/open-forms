@@ -33,6 +33,7 @@ import FormObjectTools from './FormObjectTools';
 import FormSteps from './FormSteps';
 import FormSubmit from './FormSubmit';
 import {DEFAULT_LANGUAGE} from './LanguageTabs';
+import MissingTranslationsWarning from './MissingTranslationsWarning';
 import PaymentFields from './PaymentFields';
 import {EMPTY_PRICE_RULE, PriceLogic} from './PriceLogic';
 import ProductFields from './ProductFields';
@@ -1117,6 +1118,10 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
         </div>
       ) : null}
 
+      {state.form.translationEnabled ? (
+        <MissingTranslationsWarning form={state.form} formSteps={state.formSteps} />
+      ) : null}
+
       <FormContext.Provider
         value={{
           form: {url: state.form.url},
@@ -1131,6 +1136,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             availablePrefillPlugins: state.availablePrefillPlugins,
           },
           languages: state.languageInfo.languages,
+          translationEnabled: state.form.translationEnabled,
         }}
       >
         <Tabs defaultIndex={activeTab ? parseInt(activeTab, 10) : null}>

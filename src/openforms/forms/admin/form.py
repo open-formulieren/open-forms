@@ -7,8 +7,11 @@ from django.urls import path, reverse
 from django.utils.html import format_html_join
 from django.utils.translation import ngettext, ugettext_lazy as _
 
+from modeltranslation.manager import get_translatable_fields_for_model
 from ordered_model.admin import OrderedInlineModelAdminMixin, OrderedTabularInline
 
+from openforms.api.utils import underscore_to_camel
+from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.payments.admin import PaymentBackendChoiceFieldMixin
 from openforms.registrations.admin import RegistrationBackendFieldMixin
 from openforms.utils.expressions import FirstNotBlank
@@ -173,6 +176,24 @@ class FormAdmin(
             )
 
         return response
+
+    @admin.options.csrf_protect_m
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        if not extra_context:
+            extra_context = {}
+
+        # Give frontend access to proper field labels, to display in warning messages
+        label_mapping = {
+            underscore_to_camel(field.name): field.verbose_name
+            for model in (self.model, FormStep, ConfirmationEmailTemplate)
+            for field in model._meta.get_fields()
+            if field.name in get_translatable_fields_for_model(model)
+        }
+        extra_context["label_mapping"] = label_mapping
+
+        return super().changeform_view(
+            request, object_id=object_id, form_url=form_url, extra_context=extra_context
+        )
 
     def _async_changelist_view(self, request):
         # YOLO

@@ -1,0 +1,193 @@
+import PropTypes from 'prop-types';
+import React, {useState} from 'react';
+import {FormattedMessage} from 'react-intl';
+
+import MessageList from 'components/admin/MessageList';
+import Modal from 'components/admin/Modal';
+import {ChangelistColumn, ChangelistTable} from 'components/admin/tables';
+import jsonScriptToVar from 'utils/json-script';
+
+import {extractMissingComponentTranslations} from './MissingComponentTranslationsWarning';
+
+const LABEL_MAPPING = jsonScriptToVar('label-mapping', {default: {}});
+const LANGUAGES = jsonScriptToVar('languages', {default: []});
+
+const extractMissingTranslations = (translations, tabName, fieldNames, fallbackFields) => {
+  const defaultLangCode = LANGUAGES[0][0];
+  const languageCodeMapping = Object.fromEntries(LANGUAGES);
+  let skipWarningsFor = [];
+
+  let missingTranslations = [];
+  for (const [languageCode, mapping] of Object.entries(translations)) {
+    for (const [key, translation] of Object.entries(mapping)) {
+      // Ignore missing translations for fields that can have global defaults,
+      // if no value was entered for the default
+      if (!translation && languageCode === defaultLangCode && (fallbackFields || []).includes(key))
+        skipWarningsFor.push(key);
+
+      if (!translation && !skipWarningsFor.includes(key)) {
+        if (fieldNames === undefined) {
+          missingTranslations.push({
+            fieldName: LABEL_MAPPING[key],
+            language: languageCodeMapping[languageCode],
+            tabName: tabName,
+          });
+        } else if (fieldNames.includes(key)) {
+          missingTranslations.push({
+            fieldName: LABEL_MAPPING[key],
+            language: languageCodeMapping[languageCode],
+            tabName: tabName,
+          });
+        }
+      }
+    }
+  }
+  return missingTranslations;
+};
+
+const MissingTranslationsTable = ({children: missingTranslations}) => (
+  <ChangelistTable data={missingTranslations}>
+    <ChangelistColumn objProp="tabName">
+      <FormattedMessage description="Name of the tab in the Form admin" defaultMessage="Tab name" />
+    </ChangelistColumn>
+
+    <ChangelistColumn objProp="language">
+      <FormattedMessage description="Readable label for the language" defaultMessage="Language" />
+    </ChangelistColumn>
+
+    <ChangelistColumn objProp="fieldName">
+      <FormattedMessage description="Name of the translatable field" defaultMessage="Field name" />
+    </ChangelistColumn>
+  </ChangelistTable>
+);
+
+MissingTranslationsTable.propTypes = {
+  children: PropTypes.arrayOf(PropTypes.object),
+};
+
+const MissingTranslationsWarning = ({form, formSteps}) => {
+  let formStepTranslations = [];
+
+  // console.log(formSteps)
+  let formStepsMissingTranslations = [];
+  for (const formStep of formSteps) {
+    if (
+      extractMissingComponentTranslations(formStep.configuration, formStep.componentTranslations)
+        .length
+    ) {
+      formStepsMissingTranslations.push(formStep.name);
+    }
+  }
+
+  for (const [index, formStep] of formSteps.entries()) {
+    formStepTranslations = formStepTranslations.concat(
+      extractMissingTranslations(
+        formStep.translations,
+        <FormattedMessage defaultMessage="Steps and fields" description="Form design tab title" />,
+        undefined,
+        ['previousText', 'saveText', 'nextText']
+      )
+    );
+  }
+
+  const missingTranslations = [].concat(
+    extractMissingTranslations(
+      form.translations,
+      <FormattedMessage defaultMessage="Form" description="Form fields tab title" />,
+      ['name', 'explanationTemplate']
+    ),
+    extractMissingTranslations(
+      form.translations,
+      <FormattedMessage
+        defaultMessage="Confirmation"
+        description="Form confirmation options tab title"
+      />,
+      ['submissionConfirmationTemplate'],
+      ['submissionConfirmationTemplate']
+    ),
+    extractMissingTranslations(
+      form.translations,
+      <FormattedMessage defaultMessage="Literals" description="Form literals tab title" />,
+      ['beginText', 'previousText', 'changeText', 'confirmText'],
+      ['beginText', 'previousText', 'changeText', 'confirmText']
+    ),
+    extractMissingTranslations(
+      form.confirmationEmailTemplate.translations,
+      <FormattedMessage
+        defaultMessage="Confirmation"
+        description="Form confirmation options tab title"
+      />,
+      undefined,
+      ['subject', 'content']
+    ),
+    formStepTranslations
+  );
+
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const onShowModal = event => {
+    event.preventDefault();
+    setModalOpen(true);
+  };
+
+  let warningList = [];
+
+  if (formStepsMissingTranslations.length) {
+    let formattedWarning = (
+      <FormattedMessage
+        description="Warning message for missing translations"
+        defaultMessage="Form has translation enabled, but there are missing translations for the following Form Steps: {stepNames}"
+        values={{
+          stepNames: formStepsMissingTranslations.join(', '),
+        }}
+      />
+    );
+    warningList.push({level: 'warning', message: formattedWarning});
+  }
+
+  if (missingTranslations.length) {
+    let formattedWarning = (
+      <FormattedMessage
+        description="Warning message for missing translations"
+        defaultMessage="Form has translation enabled, but is missing <link>{count, plural,
+          one {# translation}
+          other {# translations}
+      }</link>"
+        values={{
+          count: missingTranslations.length,
+          link: chunks => (
+            <a href="#" onClick={onShowModal}>
+              {chunks}
+            </a>
+          ),
+        }}
+      />
+    );
+    warningList.push({level: 'warning', message: formattedWarning});
+  }
+
+  if (!warningList.length) {
+    return null;
+  }
+
+  return (
+    <>
+      <Modal
+        isOpen={modalOpen}
+        closeModal={() => setModalOpen(false)}
+        title={`Missing translations`}
+      >
+        <MissingTranslationsTable>{missingTranslations}</MissingTranslationsTable>
+      </Modal>
+
+      <MessageList messages={warningList} />
+    </>
+  );
+};
+
+MissingTranslationsWarning.propTypes = {
+  form: PropTypes.object.isRequired,
+  formSteps: PropTypes.array.isRequired,
+};
+
+export default MissingTranslationsWarning;

@@ -1185,6 +1185,12 @@
       "value": "Internal name/title of the form"
     }
   ],
+  "RfbS0v": [
+    {
+      "type": 0,
+      "value": "Language"
+    }
+  ],
   "Rk13i+": [
     {
       "type": 0,
@@ -1481,6 +1487,48 @@
       "value": "The variable key must be unique within a form"
     }
   ],
+  "ZEo3mR": [
+    {
+      "type": 0,
+      "value": "Form has translation enabled, but is missing "
+    },
+    {
+      "children": [
+        {
+          "offset": 0,
+          "options": {
+            "one": {
+              "value": [
+                {
+                  "type": 7
+                },
+                {
+                  "type": 0,
+                  "value": " translation"
+                }
+              ]
+            },
+            "other": {
+              "value": [
+                {
+                  "type": 7
+                },
+                {
+                  "type": 0,
+                  "value": " translations"
+                }
+              ]
+            }
+          },
+          "pluralType": "cardinal",
+          "type": 6,
+          "value": "count"
+        }
+      ],
+      "type": 8,
+      "value": "link"
+    }
+  ],
   "ZICfus": [
     {
       "type": 0,
@@ -1775,6 +1823,12 @@
       "value": "Internal name"
     }
   ],
+  "i7HknI": [
+    {
+      "type": 0,
+      "value": "Tab name"
+    }
+  ],
   "iZESbd": [
     {
       "type": 0,
@@ -1893,10 +1947,22 @@
       "value": "Add item"
     }
   ],
+  "lvxPCk": [
+    {
+      "type": 0,
+      "value": "Component label"
+    }
+  ],
   "mH3X/G": [
     {
       "type": 0,
       "value": "today"
+    }
+  ],
+  "mL6vhw": [
+    {
+      "type": 0,
+      "value": "Component key"
     }
   ],
   "mOgTIH": [
@@ -1969,6 +2035,48 @@
     {
       "type": 0,
       "value": "Whether to include the content of the confirmation page in the PDF."
+    }
+  ],
+  "ooyhQ7": [
+    {
+      "type": 0,
+      "value": "Form has translation enabled, but is missing "
+    },
+    {
+      "children": [
+        {
+          "offset": 0,
+          "options": {
+            "one": {
+              "value": [
+                {
+                  "type": 7
+                },
+                {
+                  "type": 0,
+                  "value": " component translation"
+                }
+              ]
+            },
+            "other": {
+              "value": [
+                {
+                  "type": 7
+                },
+                {
+                  "type": 0,
+                  "value": " component translations"
+                }
+              ]
+            }
+          },
+          "pluralType": "cardinal",
+          "type": 6,
+          "value": "count"
+        }
+      ],
+      "type": 8,
+      "value": "link"
     }
   ],
   "ow5AAO": [
@@ -2165,6 +2273,12 @@
       "value": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
     }
   ],
+  "vjHM9z": [
+    {
+      "type": 0,
+      "value": "Literal"
+    }
+  ],
   "vng/5K": [
     {
       "type": 0,
@@ -2247,6 +2361,12 @@
     {
       "type": 0,
       "value": "Phone Number Component"
+    }
+  ],
+  "z0FW+t": [
+    {
+      "type": 0,
+      "value": "Field name"
     }
   ],
   "z0bXZT": [
