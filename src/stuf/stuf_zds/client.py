@@ -118,7 +118,7 @@ class StufZDSClient(BaseClient):
         This essentially wraps around templated_request, but returns the parsed XML
         or raises the relevant exceptions.
 
-        .. todo:: this can be reworked further to decouple if from our registration
+        .. todo:: this can be reworked further to decouple it from our registration
            backend semantics.
         """
         # we need to pull some things out of the context for logging that may or may

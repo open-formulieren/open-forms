@@ -27,19 +27,23 @@ from .models import StufService
 logger = logging.getLogger(__name__)
 
 
-class LoggingHookProtocol(Protocol):
+class LoggingHook(Protocol):
     def __call__(self, service: StufService, url: str) -> None:
         ...  # pragma: nocover
 
 
 @contextmanager
 def _maybe_close_session(client: "BaseClient"):
-    should_close = not client._in_context_manager
+    _should_close = not client._in_context_manager
     try:
         yield client.session
     finally:
-        if should_close and client._session is not None:
+        if _should_close and client._session is not None:
             client._session.close()
+
+
+def noop(*args, **kwargs) -> None:
+    pass
 
 
 class BaseClient:
@@ -95,8 +99,8 @@ class BaseClient:
     def __init__(
         self,
         service: StufService,
-        request_log_hook: LoggingHookProtocol | None = None,
-        response_log_hook: LoggingHookProtocol | None = None,
+        request_log_hook: LoggingHook = noop,
+        response_log_hook: LoggingHook = noop,
     ):
         self.service = service
         self.request_log_hook = request_log_hook
@@ -149,8 +153,6 @@ class BaseClient:
                 hook = self.response_log_hook
             case _:  # pragma: nocover
                 raise ValueError("Unexpected direction received")
-        if not hook:
-            return
         hook(self.service, url)
 
     def request(
