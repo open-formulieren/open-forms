@@ -15,7 +15,7 @@ from openforms.accounts.tests.factories import SuperUserFactory
 HEADLESS = "NO_E2E_HEADLESS" not in os.environ
 BROWSER: Literal["chromium", "firefox", "webkit"] = os.getenv(
     "E2E_DRIVER", default="chromium"
-)
+)  # type:ignore
 
 LAUNCH_KWARGS = {
     "headless": HEADLESS,
