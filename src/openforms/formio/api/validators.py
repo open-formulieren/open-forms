@@ -3,6 +3,7 @@ from typing import Iterable, Optional
 from django.core.files.uploadedfile import UploadedFile
 from django.utils.translation import gettext_lazy as _
 
+import clamd
 import magic
 from rest_framework import serializers
 
@@ -97,3 +98,38 @@ class MimeTypeValidator:
                     filename=value.name, file_type=f".{ext}"
                 )
             )
+
+
+class NoVirusValidator:
+    def __call__(self, uploaded_file: UploadedFile) -> None:
+        # TODO wrap an log errors
+        scanner = clamd.ClamdNetworkSocket()
+
+        uploaded_file.file.seek(0)
+        result = scanner.instream(uploaded_file.file)
+
+        # Possible results FOUND|OK|ERROR
+        result = result["stream"]
+
+        match result:
+            case ("FOUND", virus_name):
+                raise serializers.ValidationError(
+                    _(
+                        "The file '{filename}' did not pass the virus scan. It was found to contain '{virus_name}'."
+                    ).format(filename=uploaded_file.name, virus_name=virus_name)
+                )
+            case ("ERROR", virus_name):
+                # TODO Add logging
+                raise serializers.ValidationError(
+                    _("The virus scan on '{filename}' returned an error.").format(
+                        filename=uploaded_file.name, virus_name=virus_name
+                    )
+                )
+            case ("OK", _):
+                return
+
+            case _:
+                # TODO logging for unexpected status
+                raise serializers.ValidationError(
+                    _("The virus scan returned an unexpected status.")
+                )
