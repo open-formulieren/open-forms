@@ -563,7 +563,7 @@ o365==2.0.16
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-oauthlib==3.2.1
+oauthlib==3.2.2
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
