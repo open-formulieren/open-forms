@@ -78,6 +78,10 @@ charset-normalizer==2.0.2
     # via
     #   -r requirements/base.txt
     #   requests
+clamd==1.0.2
+    # via
+    #   -c requirements/base.in
+    #   -r requirements/base.txt
 click==8.0.3
     # via
     #   -r requirements/base.txt

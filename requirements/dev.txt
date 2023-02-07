@@ -122,6 +122,10 @@ charset-normalizer==2.0.2
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   requests
+clamd==1.0.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
 click==8.0.3
     # via
     #   -c requirements/ci.txt
