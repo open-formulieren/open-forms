@@ -1,0 +1,69 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import {FormContext} from 'components/admin/form_design/Context';
+
+import VariableSelection from './VariableSelection';
+
+<Meta title="Form design/VariableSelection" component={VariableSelection} />
+
+# Field
+
+Select widget for form and static variables
+
+export const Template = args => (
+  <FormContext.Provider
+    value={{
+      formSteps: [
+        {
+          configuration: {display: 'form'},
+          formDefinition: 'foo',
+          slug: '',
+          url: '',
+          _generatedId: '',
+          isNew: true,
+          validationErrors: [],
+        },
+      ],
+      staticVariables: [
+        {
+          form: 'foo',
+          formDefinition: 'foo',
+          name: 'name1',
+          key: 'key1',
+        },
+      ],
+      formVariables: [
+        {
+          form: 'bar',
+          formDefinition: 'bar',
+          name: 'name2',
+          key: 'key2',
+        },
+      ],
+    }}
+  >
+    <VariableSelection {...args} />
+  </FormContext.Provider>
+);
+
+## Presentation
+
+<Canvas>
+  <Story
+    name="Default"
+    args={{
+      name: 'VariableSelection',
+      value: 'foo',
+      onChange: ({...args}) => {
+        null;
+      },
+      filter: () => true,
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+### Props
+
+<ArgsTable story="Default" />
