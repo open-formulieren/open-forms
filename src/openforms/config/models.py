@@ -494,6 +494,15 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
 
+    enable_virus_scan = models.BooleanField(
+        _("Enable virus scan"),
+        default=False,
+        help_text=_(
+            "Whether the files uploaded by the users should be scanned by ClamAV virus scanner."
+            "In case a file is found to be infected, the file is deleted."
+        ),
+    )
+
     class Meta:
         verbose_name = _("General configuration")
 
