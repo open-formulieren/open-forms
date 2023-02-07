@@ -1,7 +1,7 @@
 -c base.txt
 
 # Dependencies only relevant for (unit) testing
-coverage < 5.0
+coverage
 django-jenkins
 django-webtest
 factory-boy
