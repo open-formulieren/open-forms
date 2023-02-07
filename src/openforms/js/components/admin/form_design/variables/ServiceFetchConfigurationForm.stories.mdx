@@ -1,0 +1,50 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import {FormContext} from '../Context';
+import ServiceFetchConfigurationForm from './ServiceFetchConfigurationForm';
+
+<Meta title="Form design/ServiceFetchConfigurationForm" component={ServiceFetchConfigurationForm} />
+
+# Field
+
+Form to edit/create a ServiceFetchConfiguration
+
+export const Template = args => (
+  <FormContext.Provider
+    value={{
+      services: [
+        {
+          url: 'http://openforms.dev/services/foo',
+          label: 'Service 1',
+          type: 'ORC',
+          apiRootUrl: 'https://some-api.com/api/v1/',
+        },
+        {
+          url: 'http://openforms.dev/services/foo',
+          label: 'Service 2',
+          type: 'ORC',
+          apiRootUrl: 'https://some-other-api.com/api/v1/',
+        },
+      ],
+    }}
+  >
+    <ServiceFetchConfigurationForm {...args} />;
+  </FormContext.Provider>
+);
+
+## Presentation
+
+<Canvas>
+  <Story
+    name="Default"
+    args={{
+      data: {path: '/foo', httpMethod: 'POST'},
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+### Props
+
+<ArgsTable story="Default" />
