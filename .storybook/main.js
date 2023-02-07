@@ -3,7 +3,10 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
-  staticDirs: [{from: '../static/admin', to: '/admin'}],
+  staticDirs: [
+    {from: '../static/admin', to: 'admin'},
+    {from: '../static/fonts', to: 'fonts'},
+  ],
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
