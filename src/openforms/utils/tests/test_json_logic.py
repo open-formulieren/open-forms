@@ -24,7 +24,6 @@ class RuleDescriptionTests(SimpleTestCase):
 
     UNSUPPORTED_OPERATORS = (
         "filter",
-        "map",
         "all",
         "none",
         "some",

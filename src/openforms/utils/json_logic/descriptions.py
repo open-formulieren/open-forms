@@ -120,8 +120,8 @@ def op_var(operation: Operation, for_root=False) -> str:
     if isinstance(var_ref, (str, int)):
         return _fmt_var(str(var_ref))
 
-    if var_ref is None:
-        return gettext("(invalid var ref)")
+    if var_ref is None or var_ref == "":
+        return gettext("{{data object}}")
 
     nested = op_var(var_ref)
     return _fmt_var(f" {nested} ")
@@ -309,6 +309,17 @@ def op_reduce(iterable, scoped_logic, initializer) -> str:
         iterable=iterable,
         scoped_logic=scoped_logic,
         initializer=initializer,
+    )
+    return description
+
+
+@add_boilerplate()
+def op_map(iterable, scoped_logic) -> str:
+    description = gettext(
+        "apply operation {scoped_logic} to each item of {iterable}"
+    ).format(
+        iterable=iterable,
+        scoped_logic=scoped_logic,
     )
     return description
 
