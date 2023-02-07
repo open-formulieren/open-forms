@@ -14,9 +14,8 @@ import {
 
 <Meta title="Django admin/Inputs" component={Input} />
 
-# Field
-
-React components for several input types
+React components for several input types. Note that these should be wrapped in the `Field` component
+for proper Django admin look-and-feel.
 
 export const CheckboxTemplate = args => <Checkbox {...args} />;
 export const DateInputTemplate = args => <DateInput {...args} />;
@@ -27,7 +26,7 @@ export const RadioTemplate = args => <Radio {...args} />;
 export const TextAreaTemplate = args => <TextArea {...args} />;
 export const TextInputTemplate = args => <TextInput {...args} />;
 
-## Presentation
+## Checkbox
 
 <Canvas>
   <Story
@@ -41,6 +40,13 @@ export const TextInputTemplate = args => <TextInput {...args} />;
   >
     {CheckboxTemplate.bind({})}
   </Story>
+</Canvas>
+
+<ArgsTable of={Checkbox} />
+
+## Date input
+
+<Canvas>
   <Story
     name="DateInput"
     args={{
@@ -49,6 +55,11 @@ export const TextInputTemplate = args => <TextInput {...args} />;
   >
     {DateInputTemplate.bind({})}
   </Story>
+</Canvas>
+
+## Date/time input
+
+<Canvas>
   <Story
     name="DateTimeInput"
     args={{
@@ -58,14 +69,29 @@ export const TextInputTemplate = args => <TextInput {...args} />;
   >
     {DateTimeInputTemplate.bind({})}
   </Story>
+</Canvas>
+
+<ArgsTable of={DateTimeInput} />
+
+## Generic input
+
+<Canvas>
   <Story
     name="Input"
     args={{
       name: 'Input',
+      type: 'text',
     }}
   >
     {InputTemplate.bind({})}
   </Story>
+</Canvas>
+
+<ArgsTable of={Input} />
+
+## Number input
+
+<Canvas>
   <Story
     name="NumberInput"
     args={{
@@ -74,6 +100,11 @@ export const TextInputTemplate = args => <TextInput {...args} />;
   >
     {NumberInputTemplate.bind({})}
   </Story>
+</Canvas>
+
+## Radio choices
+
+<Canvas>
   <Story
     name="Radio"
     args={{
@@ -85,6 +116,13 @@ export const TextInputTemplate = args => <TextInput {...args} />;
   >
     {RadioTemplate.bind({})}
   </Story>
+</Canvas>
+
+<ArgsTable of={Radio} />
+
+## Textarea
+
+<Canvas>
   <Story
     name="TextArea"
     args={{
@@ -95,6 +133,13 @@ export const TextInputTemplate = args => <TextInput {...args} />;
   >
     {TextAreaTemplate.bind({})}
   </Story>
+</Canvas>
+
+<ArgsTable of={TextArea} />
+
+## Text input
+
+<Canvas>
   <Story
     name="TextInput"
     args={{
@@ -105,14 +150,3 @@ export const TextInputTemplate = args => <TextInput {...args} />;
     {TextInputTemplate.bind({})}
   </Story>
 </Canvas>
-
-### Props
-
-<ArgsTable of={Checkbox} />
-<ArgsTable story="DateInput" />
-<ArgsTable of={DateTimeInput} />
-<ArgsTable of={Input} />
-<ArgsTable story="NumberInput" />
-<ArgsTable of={Radio} />
-<ArgsTable of={TextArea} />
-<ArgsTable story="TextInput" />

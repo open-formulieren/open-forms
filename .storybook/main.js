@@ -6,6 +6,7 @@ module.exports = {
   staticDirs: [
     {from: '../static/admin', to: 'admin'},
     {from: '../static/fonts', to: 'fonts'},
+    {from: '../static/img', to: 'img'},
   ],
   addons: [
     '@storybook/addon-links',

@@ -7,7 +7,8 @@ import {TextInput} from './Inputs';
 
 # Field
 
-Wrapper for admin form fields
+Wrapper for admin form fields. Note that the `name` prop is forwarded to the child (like
+`TextInput`).
 
 export const Template = args => (
   <Field {...args}>
@@ -15,7 +16,7 @@ export const Template = args => (
   </Field>
 );
 
-## Presentation
+## Default usage
 
 <Canvas>
   <Story
@@ -30,6 +31,15 @@ export const Template = args => (
   >
     {Template.bind({})}
   </Story>
+</Canvas>
+
+<ArgsTable of={Field} />
+
+## Variants
+
+### With validation errors
+
+<Canvas>
   <Story
     name="Has errors"
     args={{
@@ -41,6 +51,11 @@ export const Template = args => (
   >
     {Template.bind({})}
   </Story>
+</Canvas>
+
+### Disabled
+
+<Canvas>
   <Story
     name="Disabled"
     args={{
@@ -52,6 +67,11 @@ export const Template = args => (
   >
     {Template.bind({})}
   </Story>
+</Canvas>
+
+### Required field
+
+<Canvas>
   <Story
     name="Required"
     args={{
@@ -64,7 +84,3 @@ export const Template = args => (
     {Template.bind({})}
   </Story>
 </Canvas>
-
-### Props
-
-<ArgsTable story="Default" />

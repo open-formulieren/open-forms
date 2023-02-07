@@ -2,29 +2,29 @@ import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
 
 import ButtonContainer from './ButtonContainer';
 
-<Meta title="Django admin/ButtonContainer" component={ButtonContainer} />
+<Meta title="Form design/ButtonContainer" component={ButtonContainer} />
 
-# Field
+## Usage
 
-Wrapper for admin add button
+The button container is typically used in lists to add another item to the list.
 
-export const Template = args => <ButtonContainer {...args}>Add</ButtonContainer>;
-
-## Presentation
+export const Template = ({text, ...args}) => <ButtonContainer {...args}>{text}</ButtonContainer>;
 
 <Canvas>
   <Story
     name="Default"
     args={{
-      onClick: (...args) => {
-        null;
-      },
+      onClick: () => null,
+      text: 'Add',
+    }}
+    argTypes={{
+      children: {table: {disable: true}},
     }}
   >
     {Template.bind({})}
   </Story>
 </Canvas>
 
-### Props
+## Props
 
 <ArgsTable story="Default" />

@@ -16,12 +16,10 @@ export const Template = args => <ArrayInput {...args} />;
   <Story
     name="Default"
     args={{
-      name: 'Field',
+      name: 'field',
       inputType: 'text',
       values: ['foo', 'bar'],
-      onChange: (...args) => {
-        null;
-      },
+      onChange: () => null,
       deleteConfirmationMessage: 'Are you sure you want to delete this?',
       addButtonMessage: 'Add more',
     }}

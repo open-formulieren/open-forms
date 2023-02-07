@@ -4,15 +4,17 @@ import {FormContext} from 'components/admin/form_design/Context';
 
 import ComponentSelection from './ComponentSelection';
 
-<Meta title="Django admin/ComponentSelection" component={ComponentSelection} />
+<Meta title="Form design/ComponentSelection" component={ComponentSelection} />
 
-# Field
+## Usage
 
-Select widget with components as options
+Given a context of available (Formio) fields/components, display them in a dropdown.
 
-export const Template = args => (
-  <FormContext.Provider value={{components: {foo: {label: 'Foo'}, bar: {label: 'Bar'}}}}>
-    <ComponentSelection {...args}>Add</ComponentSelection>
+Note that this component relies on the `FormContext` provider.
+
+export const Template = ({availableComponents, ...args}) => (
+  <FormContext.Provider value={{components: availableComponents}}>
+    <ComponentSelection {...args} />
   </FormContext.Provider>
 );
 
@@ -26,9 +28,8 @@ export const Template = args => (
     args={{
       name: 'componentSelect',
       value: 'foo',
-      onChange: ({target}) => {
-        null;
-      },
+      onChange: () => null,
+      availableComponents: {foo: {label: 'Foo'}, bar: {label: 'Bar'}},
     }}
   >
     {Template.bind({})}
