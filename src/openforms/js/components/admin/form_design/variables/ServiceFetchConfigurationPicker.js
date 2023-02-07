@@ -91,6 +91,8 @@ const ServiceFetchConfigurationPicker = ({data = {}, onChange}) => {
                 choices={serviceFetchConfigurationChoices}
                 value={data.serviceFetchConfiguration || ''}
                 onChange={({...args}) => {
+                  // TODO ensure this onChange sets the state config data to the values of
+                  // the selected config
                   onChange({...args});
                   setShowServiceFetchConfigurationForm(true);
                 }}
