@@ -1,21 +1,28 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
-import {useIntl} from 'react-intl';
+import React, {useContext, useState} from 'react';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import DeleteIcon from 'components/admin/DeleteIcon';
 import {FeatureFlagsContext} from 'components/admin/form_design/Context';
+import FormModal from 'components/admin/FormModal';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 import DataPreview from 'components/admin/form_design/logic/DataPreview';
 import {ACTION_TYPES} from 'components/admin/form_design/logic/constants';
 import Select from 'components/admin/forms/Select';
 
+import ServiceFetchConfigurationPicker from '../../variables/ServiceFetchConfigurationPicker';
 import {ActionComponent} from './Actions';
 import {ActionError, Action as ActionType} from './types';
 
 const Action = ({prefixText, action, errors = {}, onChange, onDelete}) => {
   const intl = useIntl();
   const hasErrors = Object.entries(errors).length > 0;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const flags = useContext(FeatureFlagsContext);
   const enabledActionTypes = ACTION_TYPES.filter(action => {
@@ -54,6 +61,33 @@ const Action = ({prefixText, action, errors = {}, onChange, onDelete}) => {
             </DSLEditorNode>
 
             <ActionComponent action={action} errors={errors} onChange={onChange} />
+
+            <button
+              type="button"
+              className="button"
+              onClick={() => {
+                setIsModalOpen(true);
+              }}
+            >
+              <FormattedMessage
+                description="Button to toggle service fetch configuration modal"
+                defaultMessage="Add service fetch configuration"
+              />
+            </button>
+
+            <FormModal
+              isOpen={isModalOpen}
+              closeModal={closeModal}
+              title={
+                <FormattedMessage
+                  description="Service fetch configuration selection modal title"
+                  defaultMessage="Service fetch configuration"
+                />
+              }
+              extraModifiers={['large']}
+            >
+              <ServiceFetchConfigurationPicker onFormSave={closeModal} onChange={onChange} />
+            </FormModal>
           </div>
         </div>
       </div>

@@ -22,7 +22,8 @@ const EXPRESSION_MAPPING_LANGUAGES = [
   ['jq', 'jq'],
 ];
 
-const ServiceFetchConfigurationForm = ({data = {}, onFormSubmit, onChange}) => {
+const ServiceFetchConfigurationForm = ({data = {}, onChange, onFormSave}) => {
+  // TODO ensure that onChange actually updates state with data
   const intl = useIntl();
   const formLogicContext = useContext(FormLogicContext);
 
