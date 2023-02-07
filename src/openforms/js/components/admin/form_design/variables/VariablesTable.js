@@ -142,6 +142,12 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
     setPrefillAttributeChoices(response.data.map(attribute => [attribute.id, attribute.label]));
   }, [variable.prefillPlugin]);
 
+  // Cast booleans to strings, otherwise they don't display properly in the select widget
+  const initialValue =
+    variable.dataType === 'boolean' && typeof variable.initialValue == 'boolean'
+      ? JSON.stringify(variable.initialValue)
+      : variable.initialValue;
+
   return (
     <tr
       className={classNames('variables-table__row', `row${(index % 2) + 1}`, {
@@ -217,7 +223,7 @@ const EditableVariableRow = ({index, variable, onDelete, onChange}) => {
           <LiteralValueInput
             name="initialValue"
             type={variable.dataType}
-            value={variable.initialValue}
+            value={initialValue}
             onChange={onValueChanged}
           />
         </Field>
