@@ -108,8 +108,11 @@ class NoVirusValidator:
         if not config.enable_virus_scan:
             return
 
-        # TODO wrap an log errors
-        scanner = clamd.ClamdNetworkSocket()
+        scanner = clamd.ClamdNetworkSocket(
+            host=config.clamdav_host,
+            port=config.clamdav_port,
+            timeout=config.clamdav_timeout,
+        )
 
         uploaded_file.file.seek(0)
         result = scanner.instream(uploaded_file.file)
@@ -125,7 +128,6 @@ class NoVirusValidator:
                     ).format(filename=uploaded_file.name, virus_name=virus_name)
                 )
             case ("ERROR", virus_name):
-                # TODO Add logging
                 raise serializers.ValidationError(
                     _("The virus scan on '{filename}' returned an error.").format(
                         filename=uploaded_file.name, virus_name=virus_name
@@ -135,7 +137,6 @@ class NoVirusValidator:
                 return
 
             case _:
-                # TODO logging for unexpected status
                 raise serializers.ValidationError(
                     _("The virus scan returned an unexpected status.")
                 )

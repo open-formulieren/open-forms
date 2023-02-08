@@ -1,6 +1,7 @@
 from collections import defaultdict
 from functools import partial
 
+from django.core.exceptions import ValidationError
 from django.core.validators import (
     FileExtensionValidator,
     MaxValueValidator,
@@ -502,6 +503,28 @@ class GlobalConfiguration(SingletonModel):
             "In case a file is found to be infected, the file is deleted."
         ),
     )
+    clamdav_host = models.CharField(
+        _("ClamdAV server hostname"),
+        max_length=1000,
+        help_text=_("Hostname or IP address where ClamdAV is running."),
+        blank=True,
+    )
+
+    clamdav_port = models.IntegerField(
+        _("ClamdAV port number"),
+        help_text=_("The TCP port on which ClamdAV is listening."),
+        null=True,
+        blank=True,
+    )
+
+    clamdav_timeout = models.FloatField(
+        _("ClamdAV socket timeout"),
+        help_text=_(
+            "ClamdAV socket timeout (optional). Non-negative floating point number expressing seconds."
+        ),
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         verbose_name = _("General configuration")
@@ -523,6 +546,17 @@ class GlobalConfiguration(SingletonModel):
             default=True,
         )
         return enabled
+
+    def clean(self):
+        if self.enable_virus_scan:
+            if not self.clamdav_host or self.clamdav_port is None:
+                raise ValidationError(
+                    _(
+                        "ClamdAV host and port need to be configured if virus scan is enabled."
+                    )
+                )
+
+        return super().clean()
 
 
 class CSPSettingQuerySet(models.QuerySet):

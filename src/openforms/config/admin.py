@@ -120,7 +120,17 @@ class GlobalConfigurationAdmin(
         (_("Search engines"), {"fields": ("allow_indexing_form_detail",)}),
         (_("Plugin configuration"), {"fields": ("plugin_configuration",)}),
         (_("Registration"), {"fields": ("registration_attempt_limit",)}),
-        (_("Virus scan"), {"fields": ("enable_virus_scan",)}),
+        (
+            _("Virus scan"),
+            {
+                "fields": (
+                    "enable_virus_scan",
+                    "clamdav_host",
+                    "clamdav_port",
+                    "clamdav_timeout",
+                )
+            },
+        ),
         (
             _("Feature flags & fields for testing"),
             {
