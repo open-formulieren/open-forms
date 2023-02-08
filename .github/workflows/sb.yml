@@ -16,11 +16,6 @@ permissions:
   pages: write
   id-token: write
 
-# Allow one concurrent deployment
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
 jobs:
   storybook:
     name: Create storybook build
@@ -53,6 +48,11 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
+    # Allow one concurrent deployment
+    concurrency:
+      group: "pages"
+      cancel-in-progress: true
 
     runs-on: ubuntu-latest
     if: github.event_name == 'push'  # Exclude PRs
