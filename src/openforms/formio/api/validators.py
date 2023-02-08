@@ -109,9 +109,9 @@ class NoVirusValidator:
             return
 
         scanner = clamd.ClamdNetworkSocket(
-            host=config.clamdav_host,
-            port=config.clamdav_port,
-            timeout=config.clamdav_timeout,
+            host=config.clamav_host,
+            port=config.clamav_port,
+            timeout=config.clamav_timeout,
         )
 
         uploaded_file.file.seek(0)

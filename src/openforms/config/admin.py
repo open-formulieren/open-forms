@@ -125,9 +125,9 @@ class GlobalConfigurationAdmin(
             {
                 "fields": (
                     "enable_virus_scan",
-                    "clamdav_host",
-                    "clamdav_port",
-                    "clamdav_timeout",
+                    "clamav_host",
+                    "clamav_port",
+                    "clamav_timeout",
                 )
             },
         ),

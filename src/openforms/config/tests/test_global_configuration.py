@@ -191,7 +191,7 @@ class AdminTests(WebTest):
 
         self.assertEqual(
             list(list_errors.children)[0].text,
-            "ClamdAV host and port need to be configured if virus scan is enabled.",
+            "ClamAV host and port need to be configured if virus scan is enabled.",
         )
 
 

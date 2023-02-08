@@ -503,23 +503,23 @@ class GlobalConfiguration(SingletonModel):
             "In case a file is found to be infected, the file is deleted."
         ),
     )
-    clamdav_host = models.CharField(
-        _("ClamdAV server hostname"),
+    clamav_host = models.CharField(
+        _("ClamAV server hostname"),
         max_length=1000,
-        help_text=_("Hostname or IP address where ClamdAV is running."),
+        help_text=_("Hostname or IP address where ClamAV is running."),
         blank=True,
     )
 
-    clamdav_port = models.IntegerField(
-        _("ClamdAV port number"),
-        help_text=_("The TCP port on which ClamdAV is listening."),
+    clamav_port = models.IntegerField(
+        _("ClamAV port number"),
+        help_text=_("The TCP port on which ClamAV is listening."),
         null=True,
         blank=True,
     )
 
-    clamdav_timeout = models.PositiveIntegerField(
-        _("ClamdAV socket timeout"),
-        help_text=_("ClamdAV socket timeout expressed in seconds (optional)."),
+    clamav_timeout = models.PositiveIntegerField(
+        _("ClamAV socket timeout"),
+        help_text=_("ClamAV socket timeout expressed in seconds (optional)."),
         null=True,
         blank=True,
     )
@@ -547,10 +547,10 @@ class GlobalConfiguration(SingletonModel):
 
     def clean(self):
         if self.enable_virus_scan:
-            if not self.clamdav_host or self.clamdav_port is None:
+            if not self.clamav_host or self.clamav_port is None:
                 raise ValidationError(
                     _(
-                        "ClamdAV host and port need to be configured if virus scan is enabled."
+                        "ClamAV host and port need to be configured if virus scan is enabled."
                     )
                 )
 
