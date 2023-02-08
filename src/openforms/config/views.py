@@ -6,6 +6,8 @@ from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 
+import clamd
+
 from openforms.appointments.registry import register as appointments_register
 from openforms.contrib.kvk.checks import check_kvk_remote_validator
 from openforms.dmn.registry import register as dmn_register
@@ -15,6 +17,7 @@ from openforms.registrations.registry import register as registrations_register
 from openforms.utils.mixins import UserIsStaffMixin
 
 from .data import Entry
+from .models import GlobalConfiguration
 
 
 def _subset_match(requested: Optional[str], checking: str) -> bool:
@@ -71,6 +74,8 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
                     "entries": list(self.get_register_entries(register)),
                 }
             )
+
+        sections.append({"name": "Anti-virus", "entries": [self.get_clamav_entry()]})
 
         context.update({"sections": sections})
 
@@ -137,3 +142,30 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
             ]
         else:
             return [self.get_plugin_entry(client)]
+
+    def get_clamav_entry(self):
+        config = GlobalConfiguration.get_solo()
+        if not config.enable_virus_scan:
+            return Entry(
+                name="ClamAV",
+                status=None,
+            )
+
+        scanner = clamd.ClamdNetworkSocket(
+            host=config.clamav_host,
+            port=config.clamav_port,
+            timeout=config.clamav_timeout,
+        )
+
+        try:
+            result = scanner.ping()
+        except clamd.ConnectionError as exc:
+            return Entry(name="ClamAV", status=False, actions=[(exc.args[0], "")])
+
+        if result == "PONG":
+            return Entry(
+                name="ClamAV",
+                status=True,
+            )
+
+        return Entry(name="ClamAV", status=False, actions=[(result, "")])
