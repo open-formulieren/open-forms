@@ -7,6 +7,8 @@ import clamd
 import magic
 from rest_framework import serializers
 
+from openforms.config.models import GlobalConfiguration
+
 
 def mimetype_allowed(
     mime_type: str,
@@ -102,6 +104,10 @@ class MimeTypeValidator:
 
 class NoVirusValidator:
     def __call__(self, uploaded_file: UploadedFile) -> None:
+        config = GlobalConfiguration.get_solo()
+        if not config.enable_virus_scan:
+            return
+
         # TODO wrap an log errors
         scanner = clamd.ClamdNetworkSocket()
 
