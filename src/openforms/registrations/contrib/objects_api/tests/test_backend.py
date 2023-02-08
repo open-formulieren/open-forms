@@ -108,7 +108,8 @@ class ObjectsAPIBackendTests(TestCase):
             upload_submission_csv=True,
             informatieobjecttype_submission_csv="https://catalogi.nl/api/v1/informatieobjecttypen/5",
             organisatie_rsin="123456782",
-            vertrouwelijkheidaanduiding="geheim",
+            zaak_vertrouwelijkheidaanduiding="geheim",
+            doc_vertrouwelijkheidaanduiding="geheim",
         )
 
         expected_result = {
@@ -297,7 +298,8 @@ class ObjectsAPIBackendTests(TestCase):
             informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/2",
             upload_submission_csv=True,
             organisatie_rsin="123456782",
-            vertrouwelijkheidaanduiding="geheim",
+            zaak_vertrouwelijkheidaanduiding="geheim",
+            doc_vertrouwelijkheidaanduiding="geheim",
         )
 
         expected_result = {
@@ -469,7 +471,8 @@ class ObjectsAPIBackendTests(TestCase):
             informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/2",
             upload_submission_csv=False,
             organisatie_rsin="123456782",
-            vertrouwelijkheidaanduiding="geheim",
+            zaak_vertrouwelijkheidaanduiding="geheim",
+            doc_vertrouwelijkheidaanduiding="geheim",
         )
 
         expected_result = {
@@ -859,7 +862,6 @@ class ObjectsAPIBackendTests(TestCase):
             document_create_body["informatieobjecttype"],
             "https://catalogi.nl/api/v1/informatieobjecttypen/1",
         )
-        self.assertNotIn("vertrouwelijkheidaanduiding", document_create_body)
 
         self.assertEqual(objecten_oas_get.method, "GET")
         self.assertEqual(

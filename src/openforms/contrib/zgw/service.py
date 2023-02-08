@@ -30,8 +30,10 @@ def create_zaak(
         "toelichting": "Aangemaakt door Open Formulieren",
         "betalingsindicatie": "nog_niet" if payment_required else "nvt",
     }
-    if "vertrouwelijkheidaanduiding" in options:
-        data["vertrouwelijkheidaanduiding"] = options["vertrouwelijkheidaanduiding"]
+    if "zaak_vertrouwelijkheidaanduiding" in options:
+        data["vertrouwelijkheidaanduiding"] = options[
+            "zaak_vertrouwelijkheidaanduiding"
+        ]
 
     # add existing (internal) reference if it exists
     if existing_reference:
@@ -82,7 +84,7 @@ def create_document(
         "bronorganisatie": options["organisatie_rsin"],
         "creatiedatum": today,
         "titel": name,
-        "auteur": options["author"],
+        "auteur": options["auteur"],
         "taal": options["language"],
         "formaat": options["format"],
         "inhoud": base64_body,
@@ -91,8 +93,11 @@ def create_document(
         "beschrijving": options["description"],
         "indicatieGebruiksrecht": False,
     }
-    if "vertrouwelijkheidaanduiding" in options:
-        data["vertrouwelijkheidaanduiding"] = options["vertrouwelijkheidaanduiding"]
+    # map "docVertrouwelijkheidaanduiding" to value that conforms to Document API
+    if "doc_vertrouwelijkheidaanduiding" in options:
+        data["vertrouwelijkheidaanduiding"] = options["doc_vertrouwelijkheidaanduiding"]
+
+    assert options["auteur"], "auteur must be a non-empty string"
 
     informatieobject = client.create("enkelvoudiginformatieobject", data)
     return informatieobject
@@ -108,7 +113,7 @@ def create_report_document(
     base64_body = b64encode(submission_report.content.read()).decode()
 
     document_options = {
-        "author": "open-forms",
+        "auteur": options.get("auteur") or "Aanvrager",
         "language": to_iso639_2b(submission_report.submission.language_code),
         "format": "application/pdf",
         "status": "definitief",
@@ -131,7 +136,7 @@ def create_csv_document(
     base64_body = b64encode(csv_data.encode()).decode()
 
     document_options = {
-        "author": "open-forms",
+        "auteur": options.get("auteur") or "Aanvrager",
         "language": language,
         "format": "text/csv",
         "status": "definitief",
@@ -154,7 +159,7 @@ def create_attachment_document(
     base64_body = b64encode(submission_attachment.content.read()).decode()
 
     document_options = {
-        "author": "open-forms",
+        "auteur": options.get("auteur") or "Aanvrager",
         "language": to_iso639_2b(
             submission_attachment.submission_step.submission.language_code
         ),  # assume same as submission
@@ -166,7 +171,9 @@ def create_attachment_document(
 
     options = {**options, **document_options}
 
-    return create_document(name, base64_body, options, get_drc=get_drc)
+    titel = options.get("titel") or name
+
+    return create_document(titel, base64_body, options, get_drc=get_drc)
 
 
 def relate_document(zaak_url: str, document_url: str) -> dict:

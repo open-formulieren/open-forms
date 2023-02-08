@@ -244,7 +244,8 @@ class ZGWBackendTests(TestCase):
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
-            vertrouwelijkheidaanduiding="openbaar",
+            zaak_vertrouwelijkheidaanduiding="openbaar",
+            doc_vertrouwelijkheidaanduiding="openbaar",
         )
 
         self.install_mocks(m)
@@ -430,7 +431,8 @@ class ZGWBackendTests(TestCase):
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
-            vertrouwelijkheidaanduiding="openbaar",
+            zaak_vertrouwelijkheidaanduiding="openbaar",
+            doc_vertrouwelijkheidaanduiding="openbaar",
         )
 
         self.install_mocks(m)
@@ -603,7 +605,8 @@ class ZGWBackendTests(TestCase):
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
-            vertrouwelijkheidaanduiding="openbaar",
+            zaak_vertrouwelijkheidaanduiding="openbaar",
+            doc_vertrouwelijkheidaanduiding="openbaar",
         )
 
         self.install_mocks(m)
@@ -670,7 +673,8 @@ class ZGWBackendTests(TestCase):
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
-            vertrouwelijkheidaanduiding="openbaar",
+            zaak_vertrouwelijkheidaanduiding="openbaar",
+            doc_vertrouwelijkheidaanduiding="openbaar",
         )
 
         self.install_mocks(m)
@@ -836,7 +840,8 @@ class ZGWBackendTests(TestCase):
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
-            vertrouwelijkheidaanduiding="openbaar",
+            zaak_vertrouwelijkheidaanduiding="openbaar",
+            doc_vertrouwelijkheidaanduiding="openbaar",
             medewerker_roltype="Some description",
         )
 
@@ -896,7 +901,8 @@ class ZGWBackendTests(TestCase):
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
-            vertrouwelijkheidaanduiding="openbaar",
+            zaak_vertrouwelijkheidaanduiding="openbaar",
+            doc_vertrouwelijkheidaanduiding="openbaar",
         )
         self.install_mocks(m)
 
@@ -930,7 +936,8 @@ class ZGWBackendTests(TestCase):
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
-            vertrouwelijkheidaanduiding="openbaar",
+            zaak_vertrouwelijkheidaanduiding="openbaar",
+            doc_vertrouwelijkheidaanduiding="openbaar",
         )
 
         self.install_mocks(m)
@@ -984,19 +991,26 @@ class ZGWBackendTests(TestCase):
 
         self.assertEqual("abcd1234", reference)
 
-    def test_submission_with_zgw_backend_override_attachment_iotype(self, m):
+    def test_submission_with_zgw_backend_override_fields(self, m):
+        """Assert that override of default values for the ZGW backend works"""
         submission = SubmissionFactory.from_components(
             [
                 {
                     "key": "field1",
                     "registration": {
                         "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/10",
+                        "bronorganisatie": "100000009",
+                        "docVertrouwelijkheidaanduiding": "zeer_geheim",
+                        "titel": "TITEL",
                     },
                 },
                 {
                     "key": "field2",
                     "registration": {
                         "informatieobjecttype": "",
+                        "bronorganisatie": "",
+                        "doc_vertrouwelijkheidaanduiding": "",
+                        "titel": "",
                     },
                 },
             ],
@@ -1009,7 +1023,7 @@ class ZGWBackendTests(TestCase):
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
-            vertrouwelijkheidaanduiding="openbaar",
+            zaak_vertrouwelijkheidaanduiding="openbaar",
         )
 
         SubmissionFileAttachmentFactory.create(
@@ -1031,6 +1045,8 @@ class ZGWBackendTests(TestCase):
         document_create_attachment1 = m.request_history[-4]
         document_create_attachment2 = m.request_history[-2]
 
+        # Case 1: override fields
+
         # Verify attachments
         document_create_attachment1_body = document_create_attachment1.json()
         self.assertEqual(document_create_attachment1.method, "POST")
@@ -1038,7 +1054,8 @@ class ZGWBackendTests(TestCase):
             document_create_attachment1.url,
             "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
         )
-        # Use override IOType
+
+        # Use override fields
         self.assertEqual(
             document_create_attachment1_body["bestandsnaam"], "attachment1.jpg"
         )
@@ -1046,6 +1063,20 @@ class ZGWBackendTests(TestCase):
             document_create_attachment1_body["informatieobjecttype"],
             "https://catalogi.nl/api/v1/informatieobjecttypen/10",
         )
+        self.assertEqual(
+            document_create_attachment1_body["bronorganisatie"],
+            "100000009",
+        )
+        self.assertEqual(
+            document_create_attachment1_body["vertrouwelijkheidaanduiding"],
+            "zeer_geheim",
+        )
+        self.assertEqual(
+            document_create_attachment1_body["titel"],
+            "TITEL",
+        )
+
+        # Case 2: default field values
 
         # Verify attachments
         document_create_attachment2_body = document_create_attachment2.json()
@@ -1062,6 +1093,126 @@ class ZGWBackendTests(TestCase):
             document_create_attachment2_body["informatieobjecttype"],
             "https://catalogi.nl/api/v1/informatieobjecttypen/1",
         )
+        self.assertEqual(
+            document_create_attachment2_body["bronorganisatie"],
+            "000000000",
+        )
+        self.assertEqual(
+            document_create_attachment2_body["vertrouwelijkheidaanduiding"],
+            "",
+        )
+        # if no title is explicitly provided, the file name should be inserted
+        self.assertEqual(document_create_attachment2_body["titel"], "attachment2.jpg")
+
+    def test_zgw_backend_default_author(self, m):
+        """Assert that the default values for the ZGW API configuration are inserted
+
+        * default author: "Aanvrager"
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "handelsnaam",
+                    "type": "textfield",
+                },
+            ],
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=submission.steps[0],
+        )
+        zgw_form_options = dict(
+            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+        )
+        self.install_mocks(m)
+
+        plugin = ZGWRegistration("zgw")
+        plugin.register_submission(submission, zgw_form_options)
+
+        # zaak
+        create_zaak = m.request_history[1]
+        create_zaak_body = create_zaak.json()
+
+        # make sure we have the right request
+        self.assertEqual(create_zaak.method, "POST")
+        self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
+
+        # check defaults
+        self.assertEqual(
+            create_zaak_body["vertrouwelijkheidaanduiding"],
+            "",
+        )
+
+        # eio
+        create_eio = m.request_history[3]
+        create_eio_body = create_eio.json()
+
+        # make sure we have the right request
+        self.assertEqual(create_zaak.method, "POST")
+        self.assertEqual(
+            create_eio.url,
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+        )
+
+        # check defaults
+        self.assertEqual(
+            create_eio_body["vertrouwelijkheidaanduiding"],
+            "",
+        )
+        self.assertEqual(create_eio_body["auteur"], "Aanvrager")
+
+        # attachment
+        create_attachment = m.request_history[10]
+        create_attachment_body = create_attachment.json()
+
+        # make sure we have the right request
+        self.assertEqual(create_attachment.method, "POST")
+        self.assertEqual(
+            create_attachment.url,
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+        )
+
+        # check defaults
+        self.assertEqual(
+            create_attachment.url,
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+        )
+        self.assertEqual(create_attachment_body["auteur"], "Aanvrager")
+
+    def test_zgw_backend_defaults_empty_string(self, m):
+        """Assert that empty strings for new fields are overriden with defaults
+
+        This test ensures that old DB entries won't have an empty string as the value
+        of newly added fields like `auteur`.
+        """
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "handelsnaam",
+                    "type": "textfield",
+                },
+            ],
+        )
+        zgw_form_options = dict(
+            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            auteur="",
+        )
+
+        SubmissionFileAttachmentFactory.create(
+            submission_step=SubmissionStep.objects.first(),
+            file_name="attachment1.jpg",
+            form_key="field1",
+        )
+
+        self.install_mocks(m)
+
+        plugin = ZGWRegistration("zgw")
+        plugin.register_submission(submission, zgw_form_options)
+
+        document_create_attachment = m.request_history[-2]
+        document_create_attachment_body = document_create_attachment.json()
+
+        self.assertEqual(document_create_attachment_body["auteur"], "Aanvrager")
 
 
 @tag("gh-1183")

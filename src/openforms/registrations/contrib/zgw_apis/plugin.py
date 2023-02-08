@@ -48,7 +48,8 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         validators=[validate_rsin],
         help_text=_("RSIN of organization, which creates the ZAAK"),
     )
-    vertrouwelijkheidaanduiding = serializers.ChoiceField(
+    zaak_vertrouwelijkheidaanduiding = serializers.ChoiceField(
+        label=_("Vertrouwelijkheidaanduiding"),
         required=False,
         choices=VertrouwelijkheidsAanduidingen.choices,
         help_text=_(
@@ -239,8 +240,30 @@ class ZGWRegistration(BasePlugin):
         )
 
         for attachment in submission.attachments:
+            # collect attributes of the attachment and add them to the configuration
+            # attribute names conform to the Documenten API specification
             iot = attachment.informatieobjecttype or options["informatieobjecttype"]
-            doc_options = {**options, "informatieobjecttype": iot}
+            bronorganisatie = attachment.bronorganisatie or options["organisatie_rsin"]
+            vertrouwelijkheidaanduiding = (
+                attachment.doc_vertrouwelijkheidaanduiding
+                or options["doc_vertrouwelijkheidaanduiding"]
+            )
+            # `titel` should be a non-empty string
+            # `get_display_name` is used to enforce this
+            titel = attachment.titel or options.get(
+                "titel", attachment.get_display_name()
+            )
+            doc_options = {
+                **options,
+                "informatieobjecttype": iot,
+                "organisatie_rsin": bronorganisatie,
+                "titel": titel,
+            }
+            if vertrouwelijkheidaanduiding:
+                doc_options[
+                    "doc_vertrouwelijkheidaanduiding"
+                ] = vertrouwelijkheidaanduiding
+
             attachment_document = execute_unless_result_exists(
                 partial(
                     create_attachment_document,

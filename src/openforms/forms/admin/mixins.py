@@ -1,6 +1,8 @@
 from django.utils.encoding import force_str
 from django.utils.translation import gettext as _
 
+from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
+
 from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration, RichTextColor
 
@@ -28,6 +30,10 @@ class FormioConfigMixin:
                     for value, label in UploadFileType.choices
                 ],
                 "feature_flags": {},
+                "confidentiality_levels": [
+                    {"label": label, "value": value}
+                    for value, label in VertrouwelijkheidsAanduidingen.choices
+                ],
             }
         )
 
