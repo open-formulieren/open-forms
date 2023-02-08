@@ -66,7 +66,7 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.2.0
     # via celery
-cryptography==38.0.3
+cryptography==39.0.1
     # via
     #   django-simple-certmanager
     #   josepy
@@ -330,7 +330,7 @@ pycparser==2.20
     # via cffi
 pyjwt==2.6.0
     # via gemma-zds-client
-pyopenssl==22.1.0
+pyopenssl==23.0.0
     # via
     #   -r requirements/base.in
     #   django-simple-certmanager

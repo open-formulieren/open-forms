@@ -97,7 +97,7 @@ click-repl==0.2.0
     # via
     #   -r requirements/base.txt
     #   celery
-cryptography==38.0.3
+cryptography==39.0.1
     # via
     #   -r requirements/base.txt
     #   django-simple-certmanager
@@ -512,7 +512,7 @@ pyjwt==2.6.0
     # via
     #   -r requirements/base.txt
     #   gemma-zds-client
-pyopenssl==22.1.0
+pyopenssl==23.0.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
