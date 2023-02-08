@@ -1,11 +1,12 @@
 from unittest.mock import patch
 
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+import clamd
 import requests_mock
 
 from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
@@ -101,3 +102,107 @@ class ConfigCheckTests(TestCase):
             failure_message=_("Failed to validate the configuration."),
         )
         self.assertContains(response, expected_entry, html=True)
+
+    def test_clamav_health_check_clamav_disabled(self):
+        user = StaffUserFactory(user_permissions=["configuration_overview"])
+        self.client.force_login(user)
+
+        with patch(
+            "openforms.formio.api.validators.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(enable_virus_scan=False),
+        ):
+            response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+
+        expected_entry = format_html(
+            "<td>{status_icon}{skipped_message}</td>",
+            status_icon=_boolean_icon(None),
+            skipped_message=_("Skipped"),
+        )
+
+        self.assertContains(response, expected_entry, html=True)
+
+    def test_clamav_health_check_clamav_enabled_healthy(self):
+        user = StaffUserFactory(user_permissions=["configuration_overview"])
+        self.client.force_login(user)
+
+        with patch(
+            "openforms.formio.api.validators.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(enable_virus_scan=True),
+        ):
+            with patch.object(
+                clamd.ClamdNetworkSocket,
+                "ping",
+                return_value="PONG",
+            ):
+                response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+
+        expected_entry = format_html(
+            "<td>{status_icon}</td>",
+            status_icon=_boolean_icon(True),
+        )
+
+        self.assertContains(response, expected_entry, html=True)
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_clamav_health_check_clamav_enabled_cant_connect(self):
+        user = StaffUserFactory(user_permissions=["configuration_overview"])
+        self.client.force_login(user)
+
+        with patch(
+            "openforms.formio.api.validators.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(enable_virus_scan=True),
+        ):
+            with patch.object(
+                clamd.ClamdNetworkSocket,
+                "ping",
+                side_effect=clamd.ConnectionError("Cannot connect!"),
+            ):
+                response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+
+        expected_entry_error = format_html(
+            "<td>{status_icon}{error_message}</td>",
+            status_icon=_boolean_icon(False),
+            error_message="Failed to validate the configuration.",
+        )
+        expected_entry_actions = format_html(
+            "<td>{error_message}</td>", error_message="Cannot connect!"
+        )
+
+        self.assertContains(response, expected_entry_error, html=True)
+        self.assertContains(response, expected_entry_actions, html=True)
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_clamav_health_check_clamav_enabled_returns_unexpected_response(self):
+        user = StaffUserFactory(user_permissions=["configuration_overview"])
+        self.client.force_login(user)
+
+        with patch(
+            "openforms.formio.api.validators.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(enable_virus_scan=True),
+        ):
+            with patch.object(
+                clamd.ClamdNetworkSocket,
+                "ping",
+                return_value="NOT PONG",
+            ):
+                response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+
+        expected_entry_error = format_html(
+            "<td>{status_icon}{error_message}</td>",
+            status_icon=_boolean_icon(False),
+            error_message="Failed to validate the configuration.",
+        )
+        expected_entry_actions = format_html(
+            "<td>{error_message}</td>", error_message="NOT PONG"
+        )
+
+        self.assertContains(response, expected_entry_error, html=True)
+        self.assertContains(response, expected_entry_actions, html=True)
