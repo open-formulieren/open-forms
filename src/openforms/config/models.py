@@ -517,11 +517,9 @@ class GlobalConfiguration(SingletonModel):
         blank=True,
     )
 
-    clamdav_timeout = models.FloatField(
+    clamdav_timeout = models.PositiveIntegerField(
         _("ClamdAV socket timeout"),
-        help_text=_(
-            "ClamdAV socket timeout (optional). Non-negative floating point number expressing seconds."
-        ),
+        help_text=_("ClamdAV socket timeout expressed in seconds (optional)."),
         null=True,
         blank=True,
     )

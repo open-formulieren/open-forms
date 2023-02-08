@@ -118,9 +118,7 @@ class NoVirusValidator:
         result = scanner.instream(uploaded_file.file)
 
         # Possible results FOUND|OK|ERROR
-        result = result["stream"]
-
-        match result:
+        match result["stream"]:
             case ("FOUND", virus_name):
                 raise serializers.ValidationError(
                     _(
