@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="globalconfiguration",
             name="clamav_port",
-            field=models.IntegerField(
+            field=models.PositiveIntegerField(
                 blank=True,
                 help_text="The TCP port on which ClamAV is listening.",
                 null=True,

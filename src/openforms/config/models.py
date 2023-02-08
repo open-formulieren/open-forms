@@ -510,7 +510,7 @@ class GlobalConfiguration(SingletonModel):
         blank=True,
     )
 
-    clamav_port = models.IntegerField(
+    clamav_port = models.PositiveIntegerField(
         _("ClamAV port number"),
         help_text=_("The TCP port on which ClamAV is listening."),
         null=True,

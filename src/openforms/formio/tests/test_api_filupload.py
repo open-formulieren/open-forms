@@ -201,7 +201,7 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response_virus.status_code)
         self.assertEqual(
             response_virus.data["file"][0],
-            "The file 'my-file.bin' did not pass the virus scan. It was found to contain 'Win.Test.EICAR_HDB-1'.",
+            "File did not pass the virus scan. It was found to contain 'Win.Test.EICAR_HDB-1'.",
         )
 
         tmpdir_contents = os.listdir(tmpdir)
@@ -241,3 +241,37 @@ class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
         tmpdir_contents = os.listdir(tmpdir)
 
         self.assertEqual(["my-file.bin"], tmpdir_contents)
+
+    @patch("openforms.formio.api.validators.GlobalConfiguration.get_solo")
+    def test_file_scan_returns_error(self, m_config):
+        m_config.return_value = GlobalConfiguration(enable_virus_scan=True)
+
+        self._add_submission_to_session(self.submission)
+
+        url = reverse("api:formio:temporary-file-upload")
+        file_with_virus = SimpleUploadedFile(
+            "my-file.bin", b"I am a nice file", content_type="application/octet-stream"
+        )
+
+        tmpdir = tempfile.mkdtemp()
+        with override_settings(PRIVATE_MEDIA_ROOT=tmpdir, SENDFILE_ROOT=tmpdir):
+            with patch.object(
+                clamd.ClamdNetworkSocket,
+                "instream",
+                return_value={"stream": ("ERROR", "I am an error")},
+            ):
+                response_virus = self.client.post(
+                    url,
+                    {"file": file_with_virus},
+                    format="multipart",
+                )
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response_virus.status_code)
+        self.assertEqual(
+            response_virus.data["file"][0],
+            "The virus scan on this file returned an error.",
+        )
+
+        tmpdir_contents = os.listdir(tmpdir)
+
+        self.assertEqual(0, len(tmpdir_contents))

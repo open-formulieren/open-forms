@@ -1,3 +1,4 @@
+import logging
 from typing import Iterable, Optional
 
 from django.core.files.uploadedfile import UploadedFile
@@ -8,6 +9,8 @@ import magic
 from rest_framework import serializers
 
 from openforms.config.models import GlobalConfiguration
+
+logger = logging.getLogger(__name__)
 
 
 def mimetype_allowed(
@@ -122,14 +125,13 @@ class NoVirusValidator:
             case ("FOUND", virus_name):
                 raise serializers.ValidationError(
                     _(
-                        "The file '{filename}' did not pass the virus scan. It was found to contain '{virus_name}'."
-                    ).format(filename=uploaded_file.name, virus_name=virus_name)
+                        "File did not pass the virus scan. It was found to contain '{virus_name}'."
+                    ).format(virus_name=virus_name)
                 )
-            case ("ERROR", virus_name):
+            case ("ERROR", error_message):
+                logger.error("ClamAV error: %s", error_message)
                 raise serializers.ValidationError(
-                    _("The virus scan on '{filename}' returned an error.").format(
-                        filename=uploaded_file.name, virus_name=virus_name
-                    )
+                    _("The virus scan on this file returned an error.")
                 )
             case ("OK", _):
                 return
