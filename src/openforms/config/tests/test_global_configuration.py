@@ -170,6 +170,30 @@ class AdminTests(WebTest):
         config = GlobalConfiguration.get_solo()
         self.assertEqual(config.theme_stylesheet_file, "config/themes/my-theme.css")
 
+    @override_settings(LANGUAGE_CODE="en")
+    def test_virus_scan_enabled_not_configured(self):
+        url = reverse("admin:config_globalconfiguration_change", args=(1,))
+
+        change_page = self.app.get(url)
+
+        change_page.form["enable_virus_scan"] = True
+        response = change_page.form.submit()
+
+        self.assertEqual(200, response.status_code)
+
+        html_soup = response.html
+
+        error_node = html_soup.find("p", attrs={"class": "errornote"})
+
+        self.assertIn("Please correct the error below", error_node.text)
+
+        list_errors = html_soup.find("ul", attrs={"class": "errorlist"})
+
+        self.assertEqual(
+            list(list_errors.children)[0].text,
+            "ClamdAV host and port need to be configured if virus scan is enabled.",
+        )
+
 
 class GlobalConfirmationEmailTests(TestCase):
     def setUp(self):
