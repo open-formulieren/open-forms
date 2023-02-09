@@ -63,6 +63,7 @@ from .serializers import (
     SubmissionStepSerializer,
     SubmissionStepSummarySerialzier,
     SubmissionSuspensionSerializer,
+    SubmissionUpdateSerializer,
 )
 from .validation import CompletionValidationSerializer, validate_submission_completion
 
@@ -233,6 +234,13 @@ class SubmissionViewSet(
         ---
         """
         submission = self.get_object()
+
+        update_serializer = SubmissionUpdateSerializer(
+            instance=submission, data=request.data
+        )
+        update_serializer.is_valid(raise_exception=True)
+        update_serializer.save()
+
         validation_serializer = validate_submission_completion(
             submission, request=request
         )

@@ -11,6 +11,7 @@ from rest_framework import serializers
 from rest_framework.request import Request
 
 from openforms.api.utils import mark_experimental
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.constants import SubmissionAllowedChoices
 
 from ..form_logic import check_submission_logic
@@ -31,7 +32,14 @@ class InvalidCompletion:
             self.submission.form.submission_allowed != SubmissionAllowedChoices.yes,
         ]
         invalid = any(checks)
-        if not invalid and self.submission.privacy_policy_accepted:
+
+        config = GlobalConfiguration.get_solo()
+        privacy_policy_valid = (
+            self.submission.privacy_policy_accepted
+            if config.ask_privacy_consent
+            else True
+        )
+        if not invalid and privacy_policy_valid:
             return None
 
         return CompletionValidationSerializer(
