@@ -2,11 +2,10 @@ from typing import Any, Dict, Generator, Optional
 
 from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.urls import reverse
 from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
-
-import clamd
 
 from openforms.appointments.registry import register as appointments_register
 from openforms.contrib.kvk.checks import check_kvk_remote_validator
@@ -18,6 +17,7 @@ from openforms.utils.mixins import UserIsStaffMixin
 
 from .data import Entry
 from .models import GlobalConfiguration
+from .utils import verify_clamav_connection
 
 
 def _subset_match(requested: Optional[str], checking: str) -> bool:
@@ -145,27 +145,32 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
 
     def get_clamav_entry(self):
         config = GlobalConfiguration.get_solo()
+        config_url = reverse(
+            "admin:config_globalconfiguration_change", args=(config.pk,)
+        )
         if not config.enable_virus_scan:
             return Entry(
                 name="ClamAV",
                 status=None,
+                actions=[
+                    (_("Configuration"), config_url),
+                ],
             )
 
-        scanner = clamd.ClamdNetworkSocket(
+        result = verify_clamav_connection(
             host=config.clamav_host,
             port=config.clamav_port,
             timeout=config.clamav_timeout,
         )
 
-        try:
-            result = scanner.ping()
-        except clamd.ConnectionError as exc:
-            return Entry(name="ClamAV", status=False, actions=[(exc.args[0], "")])
-
-        if result == "PONG":
-            return Entry(
-                name="ClamAV",
-                status=True,
-            )
-
-        return Entry(name="ClamAV", status=False, actions=[(result, "")])
+        return Entry(
+            name="ClamAV",
+            status=result["can_connect"],
+            error=result["error"],
+            actions=[
+                (
+                    _("Configuration"),
+                    config_url,
+                ),
+            ],
+        )

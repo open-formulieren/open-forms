@@ -166,16 +166,13 @@ class ConfigCheckTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
         expected_entry_error = format_html(
-            "<td>{status_icon}{error_message}</td>",
+            '<td title="{clamdav_error}">{status_icon}{generic_error}</td>',
             status_icon=_boolean_icon(False),
-            error_message="Failed to validate the configuration.",
-        )
-        expected_entry_actions = format_html(
-            "<td>{error_message}</td>", error_message="Cannot connect!"
+            generic_error="Failed to validate the configuration.",
+            clamdav_error="Cannot connect!",
         )
 
         self.assertContains(response, expected_entry_error, html=True)
-        self.assertContains(response, expected_entry_actions, html=True)
 
     @override_settings(LANGUAGE_CODE="en")
     def test_clamav_health_check_clamav_enabled_returns_unexpected_response(self):
@@ -196,13 +193,10 @@ class ConfigCheckTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
         expected_entry_error = format_html(
-            "<td>{status_icon}{error_message}</td>",
+            '<td title="{clamdav_error}">{status_icon}{generic_error}</td>',
             status_icon=_boolean_icon(False),
-            error_message="Failed to validate the configuration.",
-        )
-        expected_entry_actions = format_html(
-            "<td>{error_message}</td>", error_message="NOT PONG"
+            generic_error="Failed to validate the configuration.",
+            clamdav_error="NOT PONG",
         )
 
         self.assertContains(response, expected_entry_error, html=True)
-        self.assertContains(response, expected_entry_actions, html=True)

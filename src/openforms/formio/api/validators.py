@@ -118,7 +118,16 @@ class NoVirusValidator:
         )
 
         uploaded_file.file.seek(0)
-        result = scanner.instream(uploaded_file.file)
+
+        try:
+            result = scanner.instream(uploaded_file.file)
+        except Exception as exc:
+            logger.error("ClamAV error: %s", exc.args[0])
+            raise serializers.ValidationError(
+                _(
+                    "The virus scan could not be performed at this time. Please retry later."
+                )
+            )
 
         # Possible results FOUND|OK|ERROR
         match result["stream"]:
@@ -136,7 +145,12 @@ class NoVirusValidator:
             case ("OK", _):
                 return
 
-            case _:
+            case (status, message):
+                logger.error(
+                    "ClamAV returned an unexpected status for a scan: %s, %s",
+                    status,
+                    message,
+                )
                 raise serializers.ValidationError(
                     _("The virus scan returned an unexpected status.")
                 )
