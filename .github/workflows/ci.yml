@@ -17,8 +17,6 @@ env:
   CAMUNDA_API_BASE_URL: http://localhost:8080/engine-rest/
   CAMUNDA_USER: demo
   CAMUNDA_PASSWORD: demo
-  # pre-installed according to https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2004-Readme.md
-  SELENIUM_WEBDRIVER: Chrome
 
 jobs:
   macos-deps:
@@ -102,7 +100,8 @@ jobs:
             --concurrency=multiprocessing \
             --parallel-mode \
             src/manage.py test src \
-              --parallel 2
+              --parallel 2 \
+              --exclude-tag=e2e
           coverage combine
 
         env:
@@ -126,6 +125,71 @@ jobs:
           name: open-forms-oas
           path: openapi.yaml
           retention-days: 1
+
+  e2etests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser:
+          - chromium
+          - firefox
+          - webkit
+
+    name: End-to-end tests, ${{ matrix.browser }}
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        # Needed because the postgres container does not provide a healthcheck
+        options:
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+          --name postgres
+      redis:
+        image: redis:6
+        ports:
+          - 6379:6379
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up backend environment
+        uses: maykinmedia/setup-django-backend@v1
+        with:
+          apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gettext postgresql-client'
+          python-version: '3.10'
+          optimize-postgres: 'yes'
+          pg-service: 'postgres'
+          setup-node: 'yes'
+          npm-ci-flags: '--legacy-peer-deps'
+
+      # See https://playwright.dev/python/docs/ci#caching-browsers
+      - name: Cache Playwright browser
+        id: cache-browser
+        uses: actions/cache@v3
+        with:
+          path: /home/runner/.cache/ms-playwright
+          key:
+            ${{ runner.os }}-${{ matrix.browser }}-playwright-${{ hashFiles('requirements/ci.txt') }}
+
+      - name: Install playwright deps
+        run: playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Run testsuite
+        run: |
+          python src/manage.py compilemessages
+          python src/manage.py collectstatic --noinput --link
+          src/manage.py test src --tag=e2e
+        env:
+          DJANGO_SETTINGS_MODULE: openforms.conf.ci
+          SECRET_KEY: dummy
+          DB_USER: postgres
+          DB_PASSWORD: ''
+          E2E_DRIVER: ${{ matrix.browser }}
+          # with 2FA enabled, *for some reason* this doesn't work on CI -> can't find
+          # the inputs
+          TWO_FACTOR_PATCH_ADMIN: 'no'
 
   docs:
     name: Build and check documentation
@@ -325,6 +389,7 @@ jobs:
   docker_push:
     needs:
       - tests
+      - e2etests
       - docker_build
       - oas-lint
       - oas-postman

@@ -14,7 +14,7 @@ class AnalyticsToolsRenderingTest(WebTest):
     The tests check that the analytics snippets are rendered if they are
     enabled (by the admin) and cookies are accepted (by the user). They
     do *not* test whether the scripts are properly executed, which requires
-    either manual testing or functional tests with Selenium.
+    either manual testing or functional tests with Playwright.
     """
 
     @classmethod
