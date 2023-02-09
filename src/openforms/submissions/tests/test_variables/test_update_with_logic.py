@@ -443,7 +443,7 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
             ],
         )
 
-        submission = SubmissionFactory.create(form=form, privacy_policy_accepted=True)
+        submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
             form_step=form_step,
@@ -453,7 +453,7 @@ class UpdateVariablesWithLogicTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        response = self.client.post(endpoint)
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 

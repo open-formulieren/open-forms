@@ -478,9 +478,3 @@ class SubmissionStepSummarySerialzier(serializers.Serializer):
         required=True,
     )
     data = SubmissionComponentSummarySerializer(many=True)
-
-
-class SubmissionUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Submission
-        fields = ("privacy_policy_accepted",)

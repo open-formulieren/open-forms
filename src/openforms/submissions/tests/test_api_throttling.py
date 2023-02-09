@@ -34,12 +34,12 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
         with freeze_time(initial_datetime) as frozen_datetime:
             # 10 requests per minute allowed
             for i in range(10):
-                submission = SubmissionFactory.create(privacy_policy_accepted=True)
+                submission = SubmissionFactory.create()
                 self._add_submission_to_session(submission)
                 endpoint = reverse(
                     "api:submission-complete", kwargs={"uuid": submission.uuid}
                 )
-                response = self.client.post(endpoint)
+                response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
                 assert (
                     response.status_code == status.HTTP_200_OK
@@ -48,12 +48,12 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
                 )
 
             # Request #11 should fail with HTTP 429
-            submission = SubmissionFactory.create(privacy_policy_accepted=True)
+            submission = SubmissionFactory.create()
             self._add_submission_to_session(submission)
             endpoint = reverse(
                 "api:submission-complete", kwargs={"uuid": submission.uuid}
             )
-            response = self.client.post(endpoint)
+            response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
             assert (
                 response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
@@ -64,7 +64,7 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
             # Wait 1 minute for the next request
             frozen_datetime.tick(delta=datetime.timedelta(minutes=1))
 
-            response = self.client.post(endpoint)
+            response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
             assert (
                 response.status_code == status.HTTP_200_OK

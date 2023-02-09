@@ -523,15 +523,13 @@ class MaintenanceFormStaffUserTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_can_complete_submission(self):
-        submission = SubmissionFactory.create(
-            form=self.form, privacy_policy_accepted=True
-        )
+        submission = SubmissionFactory.create(form=self.form)
         step = self.form.formstep_set.get()
         SubmissionStepFactory.create(submission=submission, form_step=step, data={})
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        response = self.client.post(endpoint)
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 

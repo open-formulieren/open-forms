@@ -4,11 +4,10 @@ Perform submission-level validation.
 TODO: refactor/rework the entire way we _run_ the validations and communicate them back
 to the frontend.
 """
-from dataclasses import dataclass, field
-from typing import List, Optional
+from django.core.validators import MaxLengthValidator
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
-from rest_framework.request import Request
 
 from openforms.api.utils import mark_experimental
 from openforms.config.models import GlobalConfiguration
@@ -16,57 +15,44 @@ from openforms.forms.constants import SubmissionAllowedChoices
 
 from ..form_logic import check_submission_logic
 from ..models import Submission, SubmissionStep
-from .fields import NestedSubmissionRelatedField
-
-
-@dataclass
-class InvalidCompletion:
-    submission: Submission
-    privacy_policy_accepted: bool
-    incomplete_steps: List[SubmissionStep] = field(default_factory=list)
-    request: Request = None
-
-    def validate(self) -> Optional["CompletionValidationSerializer"]:
-        checks = [
-            any([self.incomplete_steps]),
-            self.submission.form.submission_allowed != SubmissionAllowedChoices.yes,
-        ]
-        invalid = any(checks)
-
-        config = GlobalConfiguration.get_solo()
-        privacy_policy_valid = (
-            self.submission.privacy_policy_accepted
-            if config.ask_privacy_consent
-            else True
-        )
-        if not invalid and privacy_policy_valid:
-            return None
-
-        return CompletionValidationSerializer(
-            instance=self, context={"request": self.request}
-        )
-
-
-class IncompleteStepSerializer(serializers.Serializer):
-    form_step = NestedSubmissionRelatedField(
-        view_name="api:form-steps-detail",
-        lookup_field="uuid",
-        lookup_url_kwarg="uuid",
-        instance_lookup_kwargs={
-            "form_uuid_or_slug": "form__uuid",
-        },
-    )
 
 
 @mark_experimental
 class CompletionValidationSerializer(serializers.Serializer):
-    incomplete_steps = IncompleteStepSerializer(many=True)
+    incomplete_steps = serializers.ListField(
+        child=serializers.CharField(),
+        validators=[
+            MaxLengthValidator(
+                limit_value=0,
+                message=_("Not all applicable steps have been completed: %(value)s"),
+            )
+        ],
+    )
     submission_allowed = serializers.ChoiceField(
         choices=SubmissionAllowedChoices,
-        source="submission.form.submission_allowed",
-        read_only=True,
     )
     privacy_policy_accepted = serializers.BooleanField()
+
+    def validate_privacy_policy_accepted(self, privacy_policy_accepted: bool) -> None:
+        config = GlobalConfiguration.get_solo()
+        privacy_policy_valid = (
+            privacy_policy_accepted if config.ask_privacy_consent else True
+        )
+        if not privacy_policy_valid:
+            raise serializers.ValidationError(
+                _("Privacy policy must be accepted before completing submission.")
+            )
+
+    def validate_submission_allowed(self, submission_allowed):
+        if submission_allowed != SubmissionAllowedChoices.yes:
+            raise serializers.ValidationError(
+                _("Submission of this form is not allowed.")
+            )
+
+    def save(self, **kwargs):
+        submission = self.context["submission"]
+        submission.privacy_policy_accepted = True
+        submission.save()
 
 
 def is_step_unexpectedly_incomplete(submission_step: "SubmissionStep") -> bool:
@@ -75,9 +61,7 @@ def is_step_unexpectedly_incomplete(submission_step: "SubmissionStep") -> bool:
     return False
 
 
-def validate_submission_completion(
-    submission: Submission, request=None
-) -> Optional[CompletionValidationSerializer]:
+def validate_submission_completion(submission: Submission, request) -> None:
     # check that all required steps are completed
     state = submission.load_execution_state()
 
@@ -85,15 +69,18 @@ def validate_submission_completion(
     check_submission_logic(submission)
 
     incomplete_steps = [
-        submission_step
+        submission_step.form_step.form_definition.name
         for submission_step in state.submission_steps
         if is_step_unexpectedly_incomplete(submission_step)
     ]
 
-    completion = InvalidCompletion(
-        submission=submission,
-        privacy_policy_accepted=submission.privacy_policy_accepted,
-        incomplete_steps=incomplete_steps,
-        request=request,
+    serializer = CompletionValidationSerializer(
+        data={
+            "incomplete_steps": incomplete_steps,
+            "submission_allowed": submission.form.submission_allowed,
+            "privacy_policy_accepted": request.data.get("privacy_policy_accepted"),
+        },
+        context={"request": request, "submission": submission},
     )
-    return completion.validate()
+    serializer.is_valid(raise_exception=True)
+    serializer.save()

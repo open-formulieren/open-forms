@@ -4024,13 +4024,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubmissionUpdate'
+              $ref: '#/components/schemas/Submission'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/SubmissionUpdate'
+              $ref: '#/components/schemas/Submission'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/SubmissionUpdate'
+              $ref: '#/components/schemas/Submission'
+        required: true
       security:
       - cookieAuth: []
       responses:
@@ -5525,11 +5526,10 @@ components:
         incompleteSteps:
           type: array
           items:
-            $ref: '#/components/schemas/IncompleteStep'
+            type: string
+          maxItems: 0
         submissionAllowed:
-          allOf:
-          - $ref: '#/components/schemas/SubmissionAllowedEnum'
-          readOnly: true
+          $ref: '#/components/schemas/SubmissionAllowedEnum'
         privacyPolicyAccepted:
           type: boolean
       required:
@@ -6682,15 +6682,6 @@ components:
       required:
       - city
       - streetName
-    IncompleteStep:
-      type: object
-      properties:
-        formStep:
-          type: string
-          format: uri
-          readOnly: true
-      required:
-      - formStep
     IncompleteSubmissionsRemovalMethodEnum:
       enum:
       - delete_permanently
@@ -7763,12 +7754,6 @@ components:
       required:
       - email
       - suspendedOn
-    SubmissionUpdate:
-      type: object
-      properties:
-        privacyPolicyAccepted:
-          type: boolean
-          description: Has the user accepted the privacy policy?
     SubmissionsRemovalOptions:
       type: object
       properties:

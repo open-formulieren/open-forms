@@ -63,7 +63,6 @@ from .serializers import (
     SubmissionStepSerializer,
     SubmissionStepSummarySerialzier,
     SubmissionSuspensionSerializer,
-    SubmissionUpdateSerializer,
 )
 from .validation import CompletionValidationSerializer, validate_submission_completion
 
@@ -193,7 +192,6 @@ class SubmissionViewSet(
 
     @extend_schema(
         summary=_("Complete a submission"),
-        request=SubmissionUpdateSerializer,
         responses={
             200: SubmissionCompletionSerializer,
             400: CompletionValidationSerializer,
@@ -235,19 +233,7 @@ class SubmissionViewSet(
         """
         submission = self.get_object()
 
-        update_serializer = SubmissionUpdateSerializer(
-            instance=submission, data=request.data
-        )
-        update_serializer.is_valid(raise_exception=True)
-        update_serializer.save()
-
-        validation_serializer = validate_submission_completion(
-            submission, request=request
-        )
-        if validation_serializer is not None:
-            return Response(
-                validation_serializer.data, status=status.HTTP_400_BAD_REQUEST
-            )
+        validate_submission_completion(submission, request=request)
 
         # dispatch signal for modules to tap into
         submission_complete.send(sender=self.__class__, request=self.request)

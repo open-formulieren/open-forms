@@ -46,32 +46,26 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_all_required_steps_validated(self):
-        step = FormStepFactory.create()
-        submission = SubmissionFactory.create(
-            form=step.form, privacy_policy_accepted=True
-        )
+        step = FormStepFactory.create(form_definition__name="Personal Details")
+        submission = SubmissionFactory.create(form=step.form)
         self._add_submission_to_session(submission)
-        form_step_url = reverse(
-            "api:form-steps-detail",
-            kwargs={"form_uuid_or_slug": step.form.uuid, "uuid": step.uuid},
-        )
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
         assert not SubmissionStep.objects.filter(
             submission=submission, form_step=step
         ).exists()
 
-        response = self.client.post(endpoint)
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            response.json(),
-            {
-                "incompleteSteps": [
-                    {"formStep": f"http://testserver{form_step_url}"},
-                ],
-                "submissionAllowed": SubmissionAllowedChoices.yes,
-                "privacyPolicyAccepted": True,
-            },
+            response.json()["invalidParams"],
+            [
+                {
+                    "name": "incompleteSteps",
+                    "code": "max_length",
+                    "reason": "Not all applicable steps have been completed: ['Personal Details']",
+                }
+            ],
         )
 
     @patch("openforms.submissions.api.viewsets.on_completion")
@@ -82,7 +76,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         )
         step1 = FormStepFactory.create(form=form)
         step2 = FormStepFactory.create(form=form)
-        submission = SubmissionFactory.create(form=form, privacy_policy_accepted=True)
+        submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission, form_step=step1, data={"foo": "bar"}
         )
@@ -93,7 +87,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
         with self.captureOnCommitCallbacks(execute=True):
-            response = self.client.post(endpoint)
+            response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -102,6 +96,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         submission.refresh_from_db()
         self.assertEqual(submission.completed_on, timezone.now())
+        self.assertTrue(submission.privacy_policy_accepted)
 
         # test that submission ID removed from session
         submissions_in_session = response.wsgi_request.session[SUBMISSIONS_SESSION_KEY]
@@ -150,7 +145,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 }
             ],
         )
-        submission = SubmissionFactory.create(form=form, privacy_policy_accepted=True)
+        submission = SubmissionFactory.create(form=form)
         SubmissionStepFactory.create(
             submission=submission,
             form_step=step1,
@@ -159,7 +154,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        response = self.client.post(endpoint)
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
@@ -170,49 +165,49 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
     def test_submit_form_with_submission_disabled_with_overview(self):
         submission = SubmissionFactory.create(
             form__submission_allowed=SubmissionAllowedChoices.no_with_overview,
-            privacy_policy_accepted=True,
         )
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        response = self.client.post(endpoint)
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         response_data = response.json()
         self.assertEqual(
-            response_data,
-            {
-                "incompleteSteps": [],
-                "submissionAllowed": SubmissionAllowedChoices.no_with_overview,
-                "privacyPolicyAccepted": True,
-            },
+            response_data["invalidParams"],
+            [
+                {
+                    "name": "submissionAllowed",
+                    "code": "invalid",
+                    "reason": "Submission of this form is not allowed.",
+                }
+            ],
         )
 
     def test_submit_form_with_submission_disabled_without_overview(self):
         submission = SubmissionFactory.create(
             form__submission_allowed=SubmissionAllowedChoices.no_without_overview,
-            privacy_policy_accepted=True,
         )
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        response = self.client.post(endpoint)
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         response_data = response.json()
         self.assertEqual(
-            response_data,
-            {
-                "incompleteSteps": [],
-                "submissionAllowed": SubmissionAllowedChoices.no_without_overview,
-                "privacyPolicyAccepted": True,
-            },
+            response_data["invalidParams"],
+            [
+                {
+                    "name": "submissionAllowed",
+                    "code": "invalid",
+                    "reason": "Submission of this form is not allowed.",
+                }
+            ],
         )
 
     def test_form_auth_cleaned_after_completion(self):
-        submission = SubmissionFactory.create(
-            auth_info__value="foo", privacy_policy_accepted=True
-        )
+        submission = SubmissionFactory.create(auth_info__value="foo")
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
         session = self.client.session
@@ -226,7 +221,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         # The auth details are cleaned by the signal handler
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
             with self.captureOnCommitCallbacks(execute=True):
-                self.client.post(endpoint)
+                self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         cleaned_session = self.client.session
         self.assertNotIn(FORM_AUTH_SESSION_KEY, cleaned_session)
@@ -281,12 +276,14 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            response.json(),
-            {
-                "incompleteSteps": [],
-                "submissionAllowed": SubmissionAllowedChoices.yes,
-                "privacyPolicyAccepted": False,
-            },
+            response.json()["invalidParams"],
+            [
+                {
+                    "name": "privacyPolicyAccepted",
+                    "code": "invalid",
+                    "reason": "Privacy policy must be accepted before completing submission.",
+                }
+            ],
         )
 
     def test_submission_privacy_policy_not_accepted_but_not_required(self):
@@ -323,7 +320,6 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form__generate_minimal_setup=True,
             form__product=None,
             form__payment_backend="demo",
-            privacy_policy_accepted=True,
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -335,7 +331,7 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        response = self.client.post(endpoint)
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         submission.refresh_from_db()
@@ -350,7 +346,6 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form__generate_minimal_setup=True,
             form__product=None,
             form__payment_backend="demo",
-            privacy_policy_accepted=True,
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -367,7 +362,7 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        response = self.client.post(endpoint)
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         submission.refresh_from_db()
@@ -379,7 +374,6 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form__generate_minimal_setup=True,
             form__product__price=Decimal("123.45"),
             form__payment_backend="demo",
-            privacy_policy_accepted=True,
         )
         SubmissionStepFactory.create(
             submission=submission,
@@ -391,7 +385,7 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        response = self.client.post(endpoint)
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         submission.refresh_from_db()
@@ -403,7 +397,6 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form__generate_minimal_setup=True,
             form__product__price=Decimal("123.45"),
             form__payment_backend="demo",
-            privacy_policy_accepted=True,
         )
         FormVariableFactory.create(
             key="test-key",
@@ -425,7 +418,7 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        response = self.client.post(endpoint)
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         submission.refresh_from_db()
@@ -440,7 +433,6 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
             form__generate_minimal_setup=True,
             form__product__price=Decimal("123.45"),
             form__payment_backend="demo",
-            privacy_policy_accepted=True,
         )
         FormVariableFactory.create(
             key="test-key",
@@ -462,7 +454,7 @@ class SetSubmissionPriceOnCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        response = self.client.post(endpoint)
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         submission.refresh_from_db()
