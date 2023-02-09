@@ -165,8 +165,8 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
 
         return Entry(
             name="ClamAV",
-            status=result["can_connect"],
-            error=result["error"],
+            status=result.can_connect,
+            error=result.error,
             actions=[
                 (
                     _("Configuration"),

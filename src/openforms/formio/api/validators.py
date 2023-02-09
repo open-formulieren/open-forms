@@ -122,7 +122,7 @@ class NoVirusValidator:
         try:
             result = scanner.instream(uploaded_file.file)
         except Exception as exc:
-            logger.error("ClamAV error: %s", exc.args[0])
+            logger.error("ClamAV error", exc_info=exc)
             raise serializers.ValidationError(
                 _(
                     "The virus scan could not be performed at this time. Please retry later."

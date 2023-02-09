@@ -2,6 +2,7 @@ import json
 import shutil
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -9,6 +10,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
+import clamd
 from django_webtest import WebTest
 from webtest import Upload
 
@@ -192,6 +194,38 @@ class AdminTests(WebTest):
         self.assertEqual(
             list(list_errors.children)[0].text,
             "ClamAV host and port need to be configured if virus scan is enabled.",
+        )
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_virus_scan_enabled_cant_connect(self):
+        url = reverse("admin:config_globalconfiguration_change", args=(1,))
+
+        change_page = self.app.get(url)
+
+        change_page.form["enable_virus_scan"] = True
+        change_page.form["clamav_host"] = "clamav.bla"
+        change_page.form["clamav_port"] = 3310
+
+        with patch.object(
+            clamd.ClamdNetworkSocket,
+            "ping",
+            side_effect=clamd.ConnectionError("Cannot connect!"),
+        ):
+            response = change_page.form.submit()
+
+        self.assertEqual(200, response.status_code)
+
+        html_soup = response.html
+
+        error_node = html_soup.find("p", attrs={"class": "errornote"})
+
+        self.assertIn("Please correct the error below", error_node.text)
+
+        list_errors = html_soup.find("ul", attrs={"class": "errorlist"})
+
+        self.assertEqual(
+            list(list_errors.children)[0].text,
+            "Cannot connect to ClamAV: Cannot connect!",
         )
 
 

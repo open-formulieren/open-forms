@@ -30,6 +30,7 @@ class Migration(migrations.Migration):
                 null=True,
                 validators=[django.core.validators.MaxValueValidator(65535)],
                 verbose_name="ClamAV port number",
+                default=3310,
             ),
         ),
         migrations.AddField(

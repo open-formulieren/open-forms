@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from typing import Optional
+
 import clamd
 
 
@@ -19,7 +22,13 @@ def remove_empty_design_tokens(obj: dict) -> dict:
     return result
 
 
-def verify_clamav_connection(host: str, port: int, timeout: int) -> dict:
+@dataclass
+class ClamAVStatus:
+    can_connect: bool
+    error: Optional[str] = None
+
+
+def verify_clamav_connection(host: str, port: int, timeout: int) -> "ClamAVStatus":
     scanner = clamd.ClamdNetworkSocket(
         host=host,
         port=port,
@@ -28,9 +37,9 @@ def verify_clamav_connection(host: str, port: int, timeout: int) -> dict:
     try:
         result = scanner.ping()
     except clamd.ConnectionError as exc:
-        return {"can_connect": False, "error": exc.args[0]}
+        return ClamAVStatus(can_connect=False, error=exc.args[0])
 
     if result == "PONG":
-        return {"can_connect": True, "error": ""}
+        return ClamAVStatus(can_connect=True)
 
-    return {"can_connect": False, "error": result}
+    return ClamAVStatus(can_connect=False, error=result)

@@ -517,6 +517,7 @@ class GlobalConfiguration(SingletonModel):
         null=True,
         blank=True,
         validators=[MaxValueValidator(65535)],
+        default=3310,
     )
 
     clamav_timeout = models.PositiveSmallIntegerField(
@@ -562,12 +563,9 @@ class GlobalConfiguration(SingletonModel):
                 port=self.clamav_port,
                 timeout=self.clamav_timeout,
             )
-            if not result["can_connect"]:
+            if not result.can_connect:
                 raise ValidationError(
-                    _(
-                        "Cannot connect to ClamAV: %(error)s"
-                        % {"error": result["error"]}
-                    )
+                    _("Cannot connect to ClamAV: %(error)s" % {"error": result.error})
                 )
 
         return super().clean()
