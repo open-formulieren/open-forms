@@ -4020,6 +4020,17 @@ paths:
         required: true
       tags:
       - submissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmissionUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubmissionUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubmissionUpdate'
       security:
       - cookieAuth: []
       responses:
@@ -5519,8 +5530,11 @@ components:
           allOf:
           - $ref: '#/components/schemas/SubmissionAllowedEnum'
           readOnly: true
+        privacyPolicyAccepted:
+          type: boolean
       required:
       - incompleteSteps
+      - privacyPolicyAccepted
       - submissionAllowed
       x-experimental: true
     ComponentProperty:
@@ -7749,6 +7763,12 @@ components:
       required:
       - email
       - suspendedOn
+    SubmissionUpdate:
+      type: object
+      properties:
+        privacyPolicyAccepted:
+          type: boolean
+          description: Has the user accepted the privacy policy?
     SubmissionsRemovalOptions:
       type: object
       properties:

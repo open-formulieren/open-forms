@@ -193,7 +193,7 @@ class SubmissionViewSet(
 
     @extend_schema(
         summary=_("Complete a submission"),
-        request=None,
+        request=SubmissionUpdateSerializer,
         responses={
             200: SubmissionCompletionSerializer,
             400: CompletionValidationSerializer,
