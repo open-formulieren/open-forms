@@ -1,3 +1,5 @@
+@use 'microscope-sass/lib/bem';
+
 @import '~microscope-sass/lib/responsive';
 @import '~microscope-sass/lib/grid';
 @import '~microscope-sass/lib/typography';
@@ -17,9 +19,10 @@
   background: $page-header-background;
   color: var(--of-page-header-fg, #{$typography-color-text});
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
+  align-items: center;
 
-  &--has-logo {
+  @include bem.modifier('has-logo') {
     .page-header__return-url {
       &,
       &:hover {
@@ -37,13 +40,10 @@
       min-height: 50px;
       width: $page-header-logo-width;
       height: $page-header-logo-height;
-
-      &:hover {
-      }
     }
   }
 
-  & &__return-url {
+  @include bem.element('return-url') {
     display: block;
   }
 }

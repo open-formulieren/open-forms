@@ -11,7 +11,15 @@
     {% if sdk_sentry_env %}const sentryEnv = '{% filter escapejs %}{{ sdk_sentry_env }}{% endfilter %}';{% endif %}
     const form = new OpenForms.OpenForm(
         targetNode,
-        { baseUrl, formId, basePath, CSPNonce{% if sdk_sentry_dsn %}, sentryDSN{% endif %}{% if sdk_sentry_env %}, sentryEnv{% endif %} }
+        {
+            baseUrl,
+            formId,
+            basePath,
+            CSPNonce,
+            {% if sdk_sentry_dsn %}sentryDSN,{% endif %}
+            {% if sdk_sentry_env %}sentryEnv,{% endif %}
+            languageSelectorTarget: '#react-portal--language-selection',
+        }
     );
     form.init();
 </script>{% endwith %}{% endif %}
