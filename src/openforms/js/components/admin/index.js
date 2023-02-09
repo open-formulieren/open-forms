@@ -7,13 +7,13 @@ import jsonScriptToVar from 'utils/json-script';
 
 import SessionStatus from './SessionStatus';
 import Debug from './debug';
+import setE2EMarker from './e2e-marker';
 import './form-category';
 import {APIContext, FeatureFlagsContext, TinyMceContext} from './form_design/Context';
 import {FormCreationForm} from './form_design/form-creation-form';
 import FormVersionsTable from './form_versions/FormVersionsTable';
 import {getIntlProviderProps} from './i18n';
 import './plugin_configuration';
-import setE2EMarker from './selenium';
 import './submissions/filter';
 
 const mountForm = intlProps => {
@@ -93,5 +93,5 @@ bootstrapApplication();
 mountDebugComponent();
 
 // this must be the last call in the script, as we rely on the marker being absent
-// to detect crashes in the JS via Selenium tests
+// to detect crashes in the JS via E2E integration tests
 setE2EMarker();

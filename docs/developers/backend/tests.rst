@@ -92,7 +92,7 @@ After installing the dependencies, install the browsers locally:
 
 Configuration is done through environment variables:
 
-* ``NO_E2E_HEADLESS=1``: will open an actual browser window so you can see what's
+* ``NO_E2E_HEADLESS=<anything>``: will open an actual browser window so you can see what's
   happening. By default, tests are run in headless mode.
 
 * ``E2E_DRIVER=chromium``: specifies which browser is used for the selenium tests,
@@ -102,5 +102,6 @@ Example custom command:
 
 .. code-block:: bash
 
-    export NO_E2E_HEADLESS=1 E2E_DRIVER=firefox
-    python src/manage.py test src --tag=e2e
+    NO_E2E_HEADLESS=1 E2E_DRIVER=firefox python src/manage.py test src --tag=e2e
+
+.. note:: Only the presence of the ``NO_E2E_HEADLESS`` is checked, not the value
