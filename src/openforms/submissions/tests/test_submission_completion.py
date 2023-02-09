@@ -19,6 +19,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from openforms.config.models import GlobalConfiguration
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.tests.factories import (
     FormFactory,
@@ -240,6 +241,28 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         )
         self.assertNotEqual(value, "foo")
 
+    def test_privacy_policy_accepted(self):
+        form = FormFactory.create(
+            submission_confirmation_template="Thank you for submitting {{ foo }}."
+        )
+        form_step = FormStepFactory.create(form=form)
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step, data={"foo": "bar"}
+        )
+        self._add_submission_to_session(submission)
+
+        with patch(
+            "openforms.submissions.api.validation.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(ask_privacy_consent=True),
+        ):
+            response = self.client.post(
+                reverse("api:submission-complete", kwargs={"uuid": submission.uuid}),
+                data={"privacy_policy_accepted": True},
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_submission_privacy_policy_not_accepted(self):
         form = FormFactory.create(
             submission_confirmation_template="Thank you for submitting {{ foo }}."
@@ -252,7 +275,8 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
 
         response = self.client.post(
-            reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
+            reverse("api:submission-complete", kwargs={"uuid": submission.uuid}),
+            data={"privacy_policy_accepted": False},
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -264,6 +288,28 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 "privacyPolicyAccepted": False,
             },
         )
+
+    def test_submission_privacy_policy_not_accepted_but_not_required(self):
+        form = FormFactory.create(
+            submission_confirmation_template="Thank you for submitting {{ foo }}."
+        )
+        form_step = FormStepFactory.create(form=form)
+        submission = SubmissionFactory.create(form=form)
+        SubmissionStepFactory.create(
+            submission=submission, form_step=form_step, data={"foo": "bar"}
+        )
+        self._add_submission_to_session(submission)
+
+        with patch(
+            "openforms.submissions.api.validation.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(ask_privacy_consent=False),
+        ):
+            response = self.client.post(
+                reverse("api:submission-complete", kwargs={"uuid": submission.uuid}),
+                data={"privacy_policy_accepted": False},
+            )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 @temp_private_root()
