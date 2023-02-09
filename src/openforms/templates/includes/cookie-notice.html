@@ -14,17 +14,29 @@
         {% endblocktrans %}
     </span>
 
-    <div class="cookie-notice__buttons">
-        <form action="{% url 'cookie_consent_accept' varname='' %}" method="post" class="cookie-notice__form cookie-notice__form--accept">
-            {% csrf_token %}
-            <input type="hidden" name="next" value="{{ request.build_absolute_uri }}" />
-            <button type="submit" class="button">{% trans "Accept all" %}</button>
-        </form>
-        <form action="{% url 'cookie_consent_decline' varname='' %}" method="post" class="cookie-notice__form cookie-notice__form--decline">
-            {% csrf_token %}
-            <input type="hidden" name="next" value="{{ request.build_absolute_uri }}" />
-            <button type="submit" class="button">{% trans "Decline all" %}</button>
-        </form>
+    <div class="openforms-toolbar">
+        <ul class="openforms-toolbar__list">
+            <li class="openforms-toolbar__list-item">
+                <form action="{% url 'cookie_consent_accept_all' %}" method="post" class="cookie-notice__form cookie-notice__form--accept">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.build_absolute_uri }}" />
+                    <button
+                        type="submit"
+                        class="utrecht-button utrecht-button--primary-action openforms-button openforms-button--primary"
+                    >{% trans "Accept all" %}</button>
+                </form>
+            </li>
+            <li class="openforms-toolbar__list-item">
+                <form action="{% url 'cookie_consent_decline_all' %}" method="post" class="cookie-notice__form cookie-notice__form--decline">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.build_absolute_uri }}" />
+                    <button
+                        type="submit"
+                        class="utrecht-button utrecht-button--primary-action openforms-button openforms-button--primary"
+                    >{% trans "Decline all" %}</button>
+                </form>
+            </li>
+        </ul>
     </div>
 </div>
 {% endif %}

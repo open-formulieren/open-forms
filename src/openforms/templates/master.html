@@ -42,7 +42,10 @@
         to get some actual content.
     {% endblock %}
 
-    {% include "includes/cookie-notice.html" %}
+    {% block footer %}
+        {% include "includes/cookie-notice.html" %}
+    {% endblock %}
+
     <script src="{% static 'bundles/public.js' %}"></script>
     {% block extra_js %}{% endblock %}
     {% if enable_analytics %}

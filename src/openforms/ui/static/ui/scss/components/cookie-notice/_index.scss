@@ -1,56 +1,44 @@
-@import '~microscope-sass/lib/responsive';
-@import '~microscope-sass/lib/grid';
-@import '~microscope-sass/lib/typography';
+@use 'microscope-sass/lib/bem';
 
-@import '../../../../../../scss/components/form/button';
-@import './vars';
+@import '~microscope-sass/lib/responsive';
+@import '~microscope-sass/lib/typography';
 
 .cookie-notice {
   @include margin(true, $properties: padding);
   @include body;
-
+  @include responsive(max-width, 100%, 100%, 75vw, 75vw);
   width: 100%;
-  @include responsive(max-width, 95vw, 95vw, 75vw, 75vw);
+  box-sizing: border-box;
 
-  // center at bottom of page
-  position: fixed;
-  bottom: 3rem;
-  left: 0;
-  right: 0;
-  z-index: 1;
-  margin-left: auto;
-  margin-right: auto;
-
-  background: $cookie-notice-background;
-  box-shadow: $cookie-notice-shadow;
-
-  @include responsive(display, block, block, flex, flex);
+  display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
+
+  position: sticky;
+  bottom: 1rem;
+
+  margin-left: auto;
+  margin-right: auto;
+  background: var(--of-cookie-notice-bg, $color-white);
+  box-shadow: var(--of-cookie-notice-shadow, 0px 0px 3px 0px rgba($color-black, 0.4));
 
   @include mobile-only {
-    bottom: 7rem;
-    left: 10px;
-    right: 10px;
-    width: auto;
-    max-width: auto;
+    flex-direction: column;
+    align-items: stretch;
+    bottom: 0;
   }
 
-  & &__buttons {
-    display: flex;
-    align-items: center;
-
-    @include mobile-only {
-      justify-content: flex-end;
-      margin-top: 10px;
-    }
+  @include tablet {
+    margin-bottom: 1rem;
   }
 
-  & &__form {
-    @include margin($properties: margin-right);
+  @include bem.element('form') {
+    width: 100%;
+  }
 
-    .button {
-      @include button-theme('', $cookie-notice-color-btn, $cookie-notice-color-primary, $cookie-notice-border-color-btn);
-    }
+  .openforms-toolbar__list:last-child .openforms-toolbar__list-item:last-child {
+    padding-bottom: 0;
   }
 }

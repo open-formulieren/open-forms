@@ -14,10 +14,12 @@
             {% endblock %}
         </main>
     {% endblock %}
+{% endblock %}
 
-    {% block footer %}
-        {% include "ui/components/footer/footer.html" %}
-    {% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+    {% include "ui/components/footer/footer.html" %}
 {% endblock %}
 
 
