@@ -1,32 +1,34 @@
-@import '~microscope-sass/lib/color';
+@use 'microscope-sass/lib/bem';
+
 @import '~microscope-sass/lib/grid';
 @import '~microscope-sass/lib/responsive';
 
-@import 'constants';
-@import 'vars';
-
-
 .footer {
-  @include margin(true, padding);
-  background-color: $footer-background;
+  @include margin(
+    true,
+    padding,
+    $value-mobile: var(--of-page-footer-mobile-padding, 10px 15px),
+    $value-tablet: var(--of-page-footer-tablet-padding, 10px 15px),
+    $value-laptop: var(--of-page-footer-laptop-padding, $typography-margin-text),
+    $value-desktop: var(--of-page-footer-desktop-padding, $typography-margin-text)
+  );
+
+  background-color: var(--of-page-footer-bg);
   box-sizing: border-box;
-  min-height: $footer-min-height;
+  min-height: var(--of-page-footer-min-height, 40px);
 
-  .footer__nav {
-    .list {
-      @include container(flex);
-      @include responsive(flex-direction, column, row);
+  @include bem.element('nav') {
+    @include container(false, true);
+
+    --of-list-display: flex;
+    --of-list-item-compact-margin: 0;
+    --of-list-item-color: var(--of-page-footer-fg);
+
+    @include mobile-only {
+      --of-list-flex-direction: column;
+      --of-list-gap: 0.2rem;
+      padding: 0;
+      max-width: 100%;
     }
-
-    .list__item {
-      @include tablet {
-        @include margin(auto, margin-right);
-        margin-bottom: 0 !important;
-      }
-    }
-  }
-
-  .list__item {
-    color: $footer-color;
   }
 }

@@ -1,3 +1,6 @@
+// FIXME: refactor to use SDK list component instead?
+@use 'microscope-sass/lib/bem';
+
 @import '~microscope-sass/lib/typography';
 
 .list {
@@ -5,13 +8,23 @@
     @include margin(true, $properties: margin-top);
   }
 
+  display: var(--of-list-display, block);
+  flex-direction: var(--of-list-flex-direction, row);
+  gap: var(--of-list-gap, $typography-margin-text);
   list-style: none;
   margin: 0;
   padding: 0;
 
-  &__item {
+  @include bem.modifier('compact') {
+    @include bem.element('item') {
+      margin: var(--of-list-item-compact-margin, 0);
+    }
+  }
+
+  @include bem.element('item') {
     @include body;
     @include body--big;
+    color: var(--of-list-item-color, $typography-color-text);
   }
 
   &:not(#{&}--compact) &__item {
@@ -19,9 +32,5 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-  }
-
-  &--compact &__item {
-    @include margin($value-mobile: $grid-margin-1);
   }
 }
