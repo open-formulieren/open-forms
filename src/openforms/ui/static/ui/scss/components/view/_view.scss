@@ -2,6 +2,7 @@
 
 .view {
   position: relative;
+  background-color: var(--of-view-background, var(--of-layout-background, $color-gray));
 
   &__body {
     -webkit-font-smoothing: antialiased;
@@ -30,5 +31,4 @@
     background-color: rgba(0, 0, 0, 0.8);
     z-index: 100;
   }
-
 }
