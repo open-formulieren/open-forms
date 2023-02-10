@@ -121,6 +121,17 @@ class GlobalConfigurationAdmin(
         (_("Plugin configuration"), {"fields": ("plugin_configuration",)}),
         (_("Registration"), {"fields": ("registration_attempt_limit",)}),
         (
+            _("Virus scan"),
+            {
+                "fields": (
+                    "enable_virus_scan",
+                    "clamav_host",
+                    "clamav_port",
+                    "clamav_timeout",
+                )
+            },
+        ),
+        (
             _("Feature flags & fields for testing"),
             {
                 "classes": ("collapse",),

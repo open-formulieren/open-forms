@@ -2,6 +2,7 @@ from typing import Any, Dict, Generator, Optional
 
 from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.urls import reverse
 from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
@@ -15,6 +16,8 @@ from openforms.registrations.registry import register as registrations_register
 from openforms.utils.mixins import UserIsStaffMixin
 
 from .data import Entry
+from .models import GlobalConfiguration
+from .utils import verify_clamav_connection
 
 
 def _subset_match(requested: Optional[str], checking: str) -> bool:
@@ -71,6 +74,8 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
                     "entries": list(self.get_register_entries(register)),
                 }
             )
+
+        sections.append({"name": "Anti-virus", "entries": [self.get_clamav_entry()]})
 
         context.update({"sections": sections})
 
@@ -137,3 +142,35 @@ class ConfigurationView(UserIsStaffMixin, PermissionRequiredMixin, TemplateView)
             ]
         else:
             return [self.get_plugin_entry(client)]
+
+    def get_clamav_entry(self):
+        config = GlobalConfiguration.get_solo()
+        config_url = reverse(
+            "admin:config_globalconfiguration_change", args=(config.pk,)
+        )
+        if not config.enable_virus_scan:
+            return Entry(
+                name="ClamAV",
+                status=None,
+                actions=[
+                    (_("Configuration"), config_url),
+                ],
+            )
+
+        result = verify_clamav_connection(
+            host=config.clamav_host,
+            port=config.clamav_port,
+            timeout=config.clamav_timeout,
+        )
+
+        return Entry(
+            name="ClamAV",
+            status=result.can_connect,
+            error=result.error,
+            actions=[
+                (
+                    _("Configuration"),
+                    config_url,
+                ),
+            ],
+        )

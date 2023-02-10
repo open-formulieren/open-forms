@@ -54,6 +54,8 @@ cffi==1.14.3
     #   weasyprint
 charset-normalizer==2.0.2
     # via requests
+clamd==1.0.2
+    # via -r requirements/base.in
 click==8.0.3
     # via
     #   celery

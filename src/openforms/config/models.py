@@ -1,6 +1,7 @@
 from collections import defaultdict
 from functools import partial
 
+from django.core.exceptions import ValidationError
 from django.core.validators import (
     FileExtensionValidator,
     MaxValueValidator,
@@ -28,6 +29,7 @@ from openforms.utils.fields import SVGOrImageField
 from openforms.utils.translations import ensure_default_language, runtime_gettext
 
 from .constants import CSPDirective, UploadFileType
+from .utils import verify_clamav_connection
 
 
 @ensure_default_language()
@@ -494,6 +496,38 @@ class GlobalConfiguration(SingletonModel):
         ),
     )
 
+    enable_virus_scan = models.BooleanField(
+        _("Enable virus scan"),
+        default=False,
+        help_text=_(
+            "Whether the files uploaded by the users should be scanned by ClamAV virus scanner."
+            "In case a file is found to be infected, the file is deleted."
+        ),
+    )
+    clamav_host = models.CharField(
+        _("ClamAV server hostname"),
+        max_length=1000,
+        help_text=_("Hostname or IP address where ClamAV is running."),
+        blank=True,
+    )
+
+    clamav_port = models.PositiveIntegerField(
+        _("ClamAV port number"),
+        help_text=_("The TCP port on which ClamAV is listening."),
+        null=True,
+        blank=True,
+        validators=[MaxValueValidator(65535)],
+        default=3310,
+    )
+
+    clamav_timeout = models.PositiveSmallIntegerField(
+        _("ClamAV socket timeout"),
+        help_text=_("ClamAV socket timeout expressed in seconds (optional)."),
+        null=True,
+        blank=True,
+        validators=[MaxValueValidator(60)],
+    )
+
     class Meta:
         verbose_name = _("General configuration")
 
@@ -514,6 +548,27 @@ class GlobalConfiguration(SingletonModel):
             default=True,
         )
         return enabled
+
+    def clean(self):
+        if self.enable_virus_scan:
+            if not self.clamav_host or self.clamav_port is None:
+                raise ValidationError(
+                    _(
+                        "ClamAV host and port need to be configured if virus scan is enabled."
+                    )
+                )
+
+            result = verify_clamav_connection(
+                host=self.clamav_host,
+                port=self.clamav_port,
+                timeout=self.clamav_timeout,
+            )
+            if not result.can_connect:
+                raise ValidationError(
+                    _("Cannot connect to ClamAV: %(error)s" % {"error": result.error})
+                )
+
+        return super().clean()
 
 
 class CSPSettingQuerySet(models.QuerySet):

@@ -1,10 +1,16 @@
+import logging
 from typing import Iterable, Optional
 
 from django.core.files.uploadedfile import UploadedFile
 from django.utils.translation import gettext_lazy as _
 
+import clamd
 import magic
 from rest_framework import serializers
+
+from openforms.config.models import GlobalConfiguration
+
+logger = logging.getLogger(__name__)
 
 
 def mimetype_allowed(
@@ -97,3 +103,54 @@ class MimeTypeValidator:
                     filename=value.name, file_type=f".{ext}"
                 )
             )
+
+
+class NoVirusValidator:
+    def __call__(self, uploaded_file: UploadedFile) -> None:
+        config = GlobalConfiguration.get_solo()
+        if not config.enable_virus_scan:
+            return
+
+        scanner = clamd.ClamdNetworkSocket(
+            host=config.clamav_host,
+            port=config.clamav_port,
+            timeout=config.clamav_timeout,
+        )
+
+        uploaded_file.file.seek(0)
+
+        try:
+            result = scanner.instream(uploaded_file.file)
+        except Exception as exc:
+            logger.error("ClamAV error", exc_info=exc)
+            raise serializers.ValidationError(
+                _(
+                    "The virus scan could not be performed at this time. Please retry later."
+                )
+            )
+
+        # Possible results FOUND|OK|ERROR
+        match result["stream"]:
+            case ("FOUND", virus_name):
+                raise serializers.ValidationError(
+                    _(
+                        "File did not pass the virus scan. It was found to contain '{virus_name}'."
+                    ).format(virus_name=virus_name)
+                )
+            case ("ERROR", error_message):
+                logger.error("ClamAV error: %s", error_message)
+                raise serializers.ValidationError(
+                    _("The virus scan on this file returned an error.")
+                )
+            case ("OK", _):
+                return
+
+            case (status, message):
+                logger.error(
+                    "ClamAV returned an unexpected status for a scan: %s, %s",
+                    status,
+                    message,
+                )
+                raise serializers.ValidationError(
+                    _("The virus scan returned an unexpected status.")
+                )

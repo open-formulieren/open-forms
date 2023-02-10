@@ -14,6 +14,8 @@ The following events happen during that process:
 - The user adds a file to the component:
 
   - A ``POST`` request is made to ``/api/v1/formio/fileupload`` with the content of the file.
+  - If configured, the file is scanned for viruses (more details :ref:`here<configuration_general_virus_scan>`). In case
+    a virus is found, the file is not saved and the user receives an error alerting them that a virus was found in the file.
   - An instance of the :class:`openforms.submissions.models.TemporaryFileUpload` model is created.
   - The endpoint returns the url of the file ``/api/v1/submissions/files/<uuid>``, the file name and size. This information is added
     to the Formio submission step data.

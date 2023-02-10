@@ -11,3 +11,4 @@ General configuration
    cookies
    oidc
    cms_integration
+   virus_scan

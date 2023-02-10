@@ -37,6 +37,11 @@ services:
     networks:
       - open-forms-dev
 
+  clamav:
+    image: clamav/clamav:1.0.0
+    networks:
+      - open-forms-dev
+
   busybox:
     image: busybox
     command: /bin/chown -R 1000 /private-media
@@ -84,6 +89,7 @@ services:
       - db
       - redis
       - smtp
+      - clamav
     networks:
       - open-forms-dev
 
