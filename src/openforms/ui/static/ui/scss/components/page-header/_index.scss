@@ -36,10 +36,15 @@
       background-repeat: no-repeat;
       background-size: contain;
       background-position: center;
-      min-width: 100px;
-      min-height: 50px;
+      min-width: var(--of-page-header-logo-return-url-min-width, 100px);
+      min-height: var(--of-page-header-logo-return-url-min-height, 50px);
       width: $page-header-logo-width;
       height: $page-header-logo-height;
+
+      @include mobile-only {
+        min-width: var(--of-page-header-logo-return-url-mobile-min-width, 50px);
+        min-height: var(--of-page-header-logo-return-url-mobile-min-height, 25px);
+      }
     }
   }
 
