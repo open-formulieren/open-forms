@@ -25,7 +25,7 @@ def remove_empty_design_tokens(obj: dict) -> dict:
 @dataclass
 class ClamAVStatus:
     can_connect: bool
-    error: Optional[str] = None
+    error: str = ""
 
 
 def verify_clamav_connection(host: str, port: int, timeout: int) -> "ClamAVStatus":
