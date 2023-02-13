@@ -5,10 +5,16 @@ import elasticapm
 from json_logic import jsonLogic
 
 from openforms.forms.constants import LogicActionTypes
-from openforms.forms.models import FormLogic, FormStep
+from openforms.forms.models import FormLogic, FormStep, FormVariable
+from openforms.variables.models import ServiceFetchConfiguration
 
 from ..models import Submission, SubmissionStep
-from .actions import ActionOperation, compile_action_operation
+from .actions import (
+    ActionOperation,
+    ServiceFetchAction,
+    VariableAction,
+    compile_action_operation,
+)
 from .datastructures import DataContainer
 from .log_utils import log_errors
 
@@ -154,19 +160,27 @@ def iter_evaluate_rules(
             if not triggered:
                 continue
 
-            # process all the actions in order for the triggered rule
-            for action in rule.actions:
-                action_details = action["action"]
-                # If the action type is to set a variable, update the variable state.
-                # This is the ONLY operation that is allowed to execute while we're looping
-                # through the rules.
-                if action_details["type"] == LogicActionTypes.variable:
-                    new_value = None
-                    with log_errors(action_details["value"], rule):
-                        new_value = jsonLogic(
-                            action_details["value"], data_container.data
+            for operation in map(compile_action_operation, rule.actions):
+                match operation:
+                    # only assigments to names in the context are done here
+                    case VariableAction(value=expression, variable=name):
+                        new_value = None
+                        with log_errors(expression, rule):
+                            new_value = jsonLogic(expression, data_container.data)
+                        data_container.update({name: new_value})
+                    case ServiceFetchAction(fetch_config=config_id, variable=name):
+                        from ..form_logic import bind
+
+                        config = ServiceFetchConfiguration.objects.get(pk=config_id)
+                        # XXX bind is expressed in terms of FormVariables
+                        # this disguise as an Action is temporary
+                        dummy_var = FormVariable(
+                            name=name, service_fetch_configuration=config
                         )
-                    data_container.update({action["variable"]: new_value})
-                else:
-                    operation = compile_action_operation(action)
-                    yield operation
+                        with log_errors({}, rule):
+                            data_container.update(
+                                {name: bind(dummy_var, data_container.data)}
+                            )
+                    case _:
+                        # other operations are left for the caller to apply
+                        yield operation

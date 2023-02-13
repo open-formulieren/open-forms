@@ -198,9 +198,20 @@ class VariableAction(ActionOperation):
         }
 
 
+@dataclass
+class ServiceFetchAction(ActionOperation):
+    variable: str
+    fetch_config: int
+
+    @classmethod
+    def from_action(cls, action: ActionDict) -> "ServiceFetchAction":
+        return cls(variable=action["variable"], fetch_config=action["action"]["value"])
+
+
 ACTION_TYPE_MAPPING = {
     LogicActionTypes.property: PropertyAction,
     LogicActionTypes.disable_next: DisableNextAction,
     LogicActionTypes.step_not_applicable: StepNotApplicableAction,
     LogicActionTypes.variable: VariableAction,
+    LogicActionTypes.fetch_from_service: ServiceFetchAction,
 }

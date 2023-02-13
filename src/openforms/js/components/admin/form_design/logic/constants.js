@@ -78,6 +78,13 @@ const ACTION_TYPES = [
     }),
   ],
   [
+    'fetch-from-service',
+    defineMessage({
+      description: 'action type "fetch-from-service" label',
+      defaultMessage: 'fetch the value for a variable from a service',
+    }),
+  ],
+  [
     'step-not-applicable',
     defineMessage({
       description: 'action type "step-not-applicable" label',

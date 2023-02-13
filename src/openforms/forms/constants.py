@@ -8,9 +8,11 @@ class LogicActionTypes(models.TextChoices):
     step_not_applicable = "step-not-applicable", _(
         "Mark the form step as not-applicable"
     )
+
     disable_next = "disable-next", _("Disable the next step")
     property = "property", _("Modify a component property")
     variable = "variable", _("Set the value of a variable")
+    fetch_from_service = "fetch-from-service", _("Fetch the value from a service")
 
     @classmethod
     def get_label(cls, value: str) -> str:
@@ -18,7 +20,10 @@ class LogicActionTypes(models.TextChoices):
 
 
 LOGIC_ACTION_TYPES_REQUIRING_COMPONENT: set[str] = {LogicActionTypes.property}
-LOGIC_ACTION_TYPES_REQUIRING_VARIABLE: set[str] = {LogicActionTypes.variable}
+LOGIC_ACTION_TYPES_REQUIRING_VARIABLE: set[str] = {
+    LogicActionTypes.variable,
+    LogicActionTypes.fetch_from_service,
+}
 
 
 class PropertyTypes(models.TextChoices):

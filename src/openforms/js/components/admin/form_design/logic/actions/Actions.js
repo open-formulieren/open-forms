@@ -82,13 +82,13 @@ const ActionProperty = ({action, errors, onChange}) => {
   );
 };
 
+const getVariableChoices = variables => {
+  return variables.map(variable => [variable.key, variable.name]);
+};
+
 const ActionVariableValue = ({action, errors, onChange}) => {
   const formContext = useContext(FormContext);
   const allVariables = formContext.formVariables;
-
-  const getVariableChoices = variables => {
-    return variables.map(variable => [variable.key, variable.name]);
-  };
 
   return (
     <>
@@ -104,6 +104,35 @@ const ActionVariableValue = ({action, errors, onChange}) => {
       </DSLEditorNode>
       <DSLEditorNode errors={errors.action?.value}>
         <JsonWidget name="action.value" logic={action.action.value} onChange={onChange} />
+      </DSLEditorNode>
+    </>
+  );
+};
+
+const ActionFetchFromService = ({action, errors, onChange}) => {
+  const formContext = useContext(FormContext);
+  const allVariables = formContext.formVariables;
+  debugger;
+
+  return (
+    <>
+      <DSLEditorNode errors={errors.variable}>
+        <Select
+          name="variable"
+          choices={getVariableChoices(allVariables)}
+          allowBlank
+          onChange={onChange}
+          value={action.variable}
+        />
+      </DSLEditorNode>
+      <DSLEditorNode errors={errors.action?.value}>
+        <input
+          name="action.value"
+          onChange={onChange}
+          value={action.action.value}
+          placeholder="ServiceFetchConfiguration id"
+          type="number"
+        />
       </DSLEditorNode>
     </>
   );
@@ -126,6 +155,10 @@ const ActionComponent = ({action, errors, onChange}) => {
     }
     case 'variable': {
       Component = ActionVariableValue;
+      break;
+    }
+    case 'fetch-from-service': {
+      Component = ActionFetchFromService;
       break;
     }
     case '':

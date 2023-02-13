@@ -29,7 +29,7 @@ from .logic.rules import (
 )
 from .models.submission_step import DirtyData
 
-if TYPE_CHECKING:  # pragma: nocover
+if TYPE_CHECKING:  # pragma: no cover
     from .models import Submission, SubmissionStep
 
 
@@ -257,7 +257,7 @@ def check_submission_logic(
     submission._form_logic_evaluated = True
 
 
-def bind(var: FormVariable, values: DataMapping) -> JSONValue:
+def bind(var: FormVariable, context: DataMapping) -> JSONValue:
     """Bind a value to a variable `var`
 
     :raises: :class:`requests.HTTPException` for internal server errors
@@ -269,32 +269,34 @@ def bind(var: FormVariable, values: DataMapping) -> JSONValue:
     match var:
         case FormVariable(service_fetch_configuration=fetch_config) if fetch_config:
             client = fetch_config.service.build_client()
-            request_args = _request_arguments(fetch_config, values)
+            request_args = _request_arguments(fetch_config, context)
             raw_value = client.request(**request_args)
 
             match fetch_config.data_mapping_type, fetch_config.mapping_expression:
                 case DataMappingTypes.jq, expression:
                     # XXX raise warning if len(result) > 1 ?
-                    return jq.compile(expression).input(raw_value).first()
+                    value = jq.compile(expression).input(raw_value).first()
                 case DataMappingTypes.json_logic, expression:
-                    return jsonLogic(expression, raw_value)
+                    value = jsonLogic(expression, raw_value)
                 case _:
-                    return raw_value
+                    value = raw_value
         case _:
             raise NotImplementedError()
 
+    return value
 
-def _request_arguments(fetch_config: ServiceFetchConfiguration, values: DataMapping):
+
+def _request_arguments(fetch_config: ServiceFetchConfiguration, context: DataMapping):
     headers = {
         # no leading spaces and the value into the legal field-value codespace
-        header: value.format(**values).strip().encode("utf-8").decode("latin1")
+        header: value.format(**context).strip().encode("utf-8").decode("latin1")
         for header, value in (fetch_config.headers or {}).items()
     }
     # before we go further
     # assert headers are still valid after we put submmitter data in there
     HeaderValidator()(headers)
 
-    escaped_values = {k: quote(str(v), safe="") for k, v in values.items()}
+    escaped_values = {k: quote(str(v), safe="") for k, v in context.items()}
 
     query_params = fetch_config.query_params.format(**escaped_values)
     query_params = query_params[1:] if query_params.startswith("?") else query_params
