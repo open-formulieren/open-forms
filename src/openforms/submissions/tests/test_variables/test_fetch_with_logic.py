@@ -38,7 +38,7 @@ class ServiceFetchWithActionsTest(SubmissionsMixin, APITestCase):
 
         FormLogicFactory.create(
             form=submission.form,
-            json_logic_trigger={"!": {"var": ""}},  # True
+            json_logic_trigger={"!": {"var": "someField"}},  # True
             actions=[
                 {
                     "variable": "someField",
@@ -61,7 +61,7 @@ class ServiceFetchWithActionsTest(SubmissionsMixin, APITestCase):
             },
         )
 
-        response = self.client.post(endpoint, data={"data": {"someField": 0}})
+        response = self.client.post(endpoint, data={"data": {"someField": None}})
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["step"]["data"], {"someField": 42})
@@ -77,7 +77,7 @@ class ServiceFetchWithActionsTest(SubmissionsMixin, APITestCase):
 
         FormLogicFactory.create(
             form=submission.form,
-            json_logic_trigger={"!": {"var": ""}},  # True
+            json_logic_trigger={"!": {"var": "someField"}},  # True
             actions=[
                 {
                     "variable": "someField",
@@ -101,7 +101,7 @@ class ServiceFetchWithActionsTest(SubmissionsMixin, APITestCase):
             },
         )
 
-        response = self.client.post(endpoint, data={"data": {"someField": 0}})
+        response = self.client.post(endpoint, data={"data": {"someField": None}})
 
         self.assertEqual(response.status_code, 200)
         # assert no new value

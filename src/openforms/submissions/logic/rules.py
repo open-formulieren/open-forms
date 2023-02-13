@@ -4,7 +4,6 @@ from typing import Callable, Iterable, Iterator, List, Optional
 import elasticapm
 from json_logic import jsonLogic
 
-from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic, FormStep, FormVariable
 from openforms.variables.models import ServiceFetchConfiguration
 

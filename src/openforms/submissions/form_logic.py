@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Mapping, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from urllib.parse import quote
 
 from django.utils.functional import empty
