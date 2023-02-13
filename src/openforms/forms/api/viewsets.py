@@ -22,6 +22,7 @@ from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.translations.utils import set_language_cookie
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
+from openforms.utils.urls import is_admin_request
 from openforms.variables.constants import FormVariableSources
 
 from ..messages import add_success_message
@@ -394,13 +395,13 @@ class FormViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         form = self.get_object()
-        if not form.translation_enabled:
+        if not form.translation_enabled and not is_admin_request(request):
             translation.activate(settings.LANGUAGE_CODE)
             current_language = translation.get_language()
 
         response = super().retrieve(request, *args, **kwargs)
 
-        if not form.translation_enabled:
+        if not form.translation_enabled and not is_admin_request(request):
             set_language_cookie(response, current_language)
         return response
 

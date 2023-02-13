@@ -8,6 +8,7 @@ from furl import furl
 from playwright.async_api import expect
 
 from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
 from ..factories import FormFactory
 
@@ -216,3 +217,201 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                 "worden afgesloten met een streepje of punt."
             )
             await expect(parent).to_contain_text(error_message)
+
+
+class FormDesignerRegressionTests(E2ETestCase):
+    async def test_user_defined_variable_boolean_initial_value_false(self):
+        """
+        Regression test for https://github.com/open-formulieren/open-forms/issues/2636
+        """
+
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                formstep__form_definition__name_nl="Playwright test",
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Variables").click()
+            await page.get_by_role("tab", name="User defined").click()
+            with phase("Add variable"):
+                await page.get_by_text("Add variable").click()
+                await page.locator("#id_name").fill("Foo")
+                await page.locator("#id_name").blur()
+                await page.locator("#id_dataType").select_option(label="Boolean")
+                await page.locator("[name='initialValue']").select_option(label="No")
+
+                # Verify that the select updated to the selected value
+                await expect(page.locator("[name='initialValue']")).to_have_value(
+                    "false"
+                )
+
+            with phase("Save variable and check state"):
+                await page.get_by_text("Save and continue editing").click()
+                await page.get_by_role("tab", name="Variables").click()
+                await page.get_by_role("tab", name="User defined").click()
+
+                # Verify that the select still holds the correct value
+                await expect(page.locator("[name='initialValue']")).to_have_value(
+                    "false"
+                )
+
+        @sync_to_async
+        def assertState():
+            user_defined_vars = form.formvariable_set.filter(
+                source=FormVariableSources.user_defined
+            )
+
+            self.assertEqual(user_defined_vars.count(), 1)
+
+            created_var = user_defined_vars.first()
+
+            self.assertEqual(created_var.data_type, FormVariableDataTypes.boolean)
+            self.assertEqual(created_var.initial_value, False)
+
+        await assertState()
+
+    async def test_user_defined_variable_boolean_initial_value_true(self):
+        """
+        Regression test for https://github.com/open-formulieren/open-forms/issues/2636
+        """
+
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                formstep__form_definition__name_nl="Playwright test",
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Variables").click()
+            await page.get_by_role("tab", name="User defined").click()
+            with phase("Add variable"):
+                await page.get_by_text("Add variable").click()
+                await page.locator("#id_name").fill("Foo")
+                await page.locator("#id_name").blur()
+                await page.locator("#id_dataType").select_option(label="Boolean")
+                await page.locator("[name='initialValue']").select_option(label="Yes")
+
+                # Verify that the select updated to the selected value
+                await expect(page.locator("[name='initialValue']")).to_have_value(
+                    "true"
+                )
+
+            with phase("Save variable and check state"):
+                await page.get_by_text("Save and continue editing").click()
+                await page.get_by_role("tab", name="Variables").click()
+                await page.get_by_role("tab", name="User defined").click()
+
+                # Verify that the select still holds the correct value
+                await expect(page.locator("[name='initialValue']")).to_have_value(
+                    "true"
+                )
+
+        @sync_to_async
+        def assertState():
+            user_defined_vars = form.formvariable_set.filter(
+                source=FormVariableSources.user_defined
+            )
+
+            self.assertEqual(user_defined_vars.count(), 1)
+
+            created_var = user_defined_vars.first()
+
+            self.assertEqual(created_var.data_type, FormVariableDataTypes.boolean)
+            self.assertEqual(created_var.initial_value, True)
+
+        await assertState()
+
+    async def test_logic_rule_trigger_from_step_show_saved_value_in_select(self):
+        """
+        Regression test for https://github.com/open-formulieren/open-forms/issues/2636
+        """
+
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Playwright test",
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+
+        @sync_to_async
+        def get_formstep_uuid():
+            return str(form.formstep_set.first().uuid)
+
+        formstep_uuid = await get_formstep_uuid()
+
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Logic").click()
+
+            with phase("Add logic rule with triggerFromStep"):
+                await page.get_by_text("Add rule").click()
+                await page.get_by_text("Advanced").click()
+                await page.get_by_title("Advanced options").click()
+                await page.locator("[name='triggerFromStep']").select_option(
+                    label="Playwright test"
+                )
+                await page.locator("[name='jsonLogicTrigger']").fill('{"==": [1, 1]}')
+
+            with phase("Save logic rule and check state"):
+                await page.get_by_text("Save and continue editing").click()
+                await page.get_by_role("tab", name="Logic").click()
+                await page.get_by_title("Advanced options").click()
+
+                # Verify that the select still holds the correct value
+                await expect(page.locator("[name='triggerFromStep']")).to_have_value(
+                    formstep_uuid
+                )
+
+        @sync_to_async
+        def assertState():
+            form_logic = form.formlogic_set
+
+            self.assertEqual(form_logic.count(), 1)
+
+            created_form_logic = form_logic.first()
+
+            self.assertEqual(
+                created_form_logic.trigger_from_step, form.formstep_set.first()
+            )
+
+        await assertState()

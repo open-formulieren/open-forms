@@ -36,7 +36,15 @@ class FormDefinitionFactory(factory.django.DjangoModelFactory):
     slug = factory.Sequence(lambda n: f"fd-{n}")
     login_required = False
     configuration = factory.Sequence(
-        lambda n: {"components": [{"type": "textfield", "key": f"test-key-{n}"}]}
+        lambda n: {
+            "components": [
+                {
+                    "type": "textfield",
+                    "key": f"test-key-{n}",
+                    "label": f"Test label {n}",
+                }
+            ]
+        }
     )
 
     class Meta:

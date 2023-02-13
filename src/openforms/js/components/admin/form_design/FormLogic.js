@@ -228,7 +228,7 @@ const Rule = ({
               <DSLEditorNode errors={null}>
                 <StepSelection
                   name="triggerFromStep"
-                  value={triggerFromStepIdentifier || ''}
+                  value={triggerFromStep?.step?.uuid || triggerFromStepIdentifier || ''}
                   onChange={onChange}
                 />
                 {!triggerFromStepIdentifier && (

@@ -97,3 +97,15 @@ def reverse_plus(
         return f.url
     else:
         return location
+
+
+def is_admin_request(request: RequestType) -> bool:
+    """
+    Checks whether a request is made from the admin
+
+    :arg request: the request object to be checked.
+    """
+    if not (referrer := request.headers.get("Referer")):
+        return False
+    admin_base = request.build_absolute_uri(reverse("admin:index"))
+    return referrer.startswith(admin_base)

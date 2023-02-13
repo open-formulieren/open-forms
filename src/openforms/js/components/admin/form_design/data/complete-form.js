@@ -242,6 +242,11 @@ const saveVariables = async (state, csrftoken) => {
         variable.formDefinition,
         'formDefinition'
       );
+
+      // Cast strings to boolean values, to make sure they are actually saved as booleans
+      // in the backend
+      if (variable.dataType === 'boolean' && typeof variable.initialValue != 'boolean')
+        variable.initialValue = variable.initialValue === 'true';
     }
   });
 
