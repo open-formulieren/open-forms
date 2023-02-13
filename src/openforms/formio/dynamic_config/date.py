@@ -1,6 +1,6 @@
 import operator
 from datetime import date, datetime, time
-from typing import Literal, Optional, TypedDict, cast
+from typing import Any, Literal, Optional, TypedDict, cast
 
 from django.utils import timezone
 
@@ -44,7 +44,14 @@ class FormioDateComponent(Component):
     datePicker: Optional[DatePickerConfig]
 
 
-def mutate(component: FormioDateComponent, data: DataMapping) -> None:
+class FormioDatetimeComponent(Component):
+    openForms: Optional[OpenFormsConfig]
+    datePicker: Optional[DatePickerConfig]
+
+
+def mutate(
+    component: FormioDateComponent | FormioDatetimeComponent, data: DataMapping
+) -> None:
     for key in ("minDate", "maxDate"):
         config = cast(
             DateConstraintConfiguration,
@@ -60,14 +67,15 @@ def mutate(component: FormioDateComponent, data: DataMapping) -> None:
         if mode == "fixedValue":
             continue
 
-        config = normalize_config(config)
-        value = calculate_delta(config, data)
+        config = normalize_config(component, config)
+        value = calculate_delta(component, config, data)
         if value and isinstance(value, datetime):
             value = value.isoformat()
         assign(component, f"datePicker.{key}", value, missing=dict)
 
 
 def normalize_config(
+    component: FormioDateComponent | FormioDatetimeComponent,
     config: DateConstraintConfiguration,
 ) -> DateConstraintConfiguration:
     mode = config["mode"]
@@ -78,7 +86,12 @@ def normalize_config(
     # mode is now future or past -> convert that to a relative delta config
     config["mode"] = "relativeToVariable"
     config["variable"] = NOW_VARIABLE
-    include_today = cast(bool, glom(config, "includeToday", default=False))
+    # With datetimes, it doesn't make sense to 'include today' or not when validating for future/past
+    include_today = (
+        True
+        if component["type"] == "datetime"
+        else cast(bool, glom(config, "includeToday", default=False))
+    )
     config["operator"] = "add" if mode == "future" else "subtract"
 
     delta = cast(
@@ -93,30 +106,50 @@ def normalize_config(
     return config
 
 
+def convert_to_python_type(component_type: str, value: Any) -> date | datetime:
+    if component_type == "date":
+        match value:
+            case datetime():
+                assert (
+                    value.tzinfo is not None
+                ), "Expected the input variable to be timezone aware!"
+                return timezone.localtime(value=value).date()
+            case date():
+                return value
+            case str():
+                # attempt to parse it as a date/datetime - could be because the variable
+                # was not properly typed and type conversion didn't happen.
+                # This can raise ValueError if the string is gibberish.
+                return parse_date(value)
+
+    if component_type == "datetime":
+        match value:
+            case datetime():
+                return value
+            case str():
+                # attempt to parse it as a datetime - could be because the variable
+                # was not properly typed and type conversion didn't happen.
+                # This can raise ValueError if the string is gibberish.
+                return datetime.fromisoformat(value)
+
+    raise ValueError(
+        "Unexpected type encountered when processing min/max validation for %s component."
+        % component_type
+    )
+
+
 def calculate_delta(
+    component: FormioDateComponent | FormioDatetimeComponent,
     config: DateConstraintConfiguration,
     data: DataMapping,
 ) -> Optional[datetime]:
     assert config["mode"] == "relativeToVariable"
 
     base_value = glom(data, config["variable"], default=None)
-    match base_value:
-        case datetime():
-            assert (
-                base_value.tzinfo is not None
-            ), "Expected the input variable to be timezone aware!"
-            base_date = timezone.localtime(value=base_value).date()
-        case date():
-            base_date = base_value
-        case None | "":
-            return
-        case str():
-            # attempt to parse it as a date/datetime - could be because the variable
-            # was not properly typed and type conversion didn't happen.
-            # This can raise ValueError if the string is gibberish.
-            base_date = parse_date(base_value)
-        case _:
-            raise ValueError("Unexpected type encountered for base value")
+    if base_value is None or base_value == "":
+        return
+
+    base_value = convert_to_python_type(component["type"], base_value)
 
     delta = relativedelta(
         years=cast(int, glom(config, "delta.years", default=None) or 0),
@@ -126,7 +159,10 @@ def calculate_delta(
 
     add_or_subtract = glom(config, "operator", default="add")
     func = operator.add if add_or_subtract == "add" else operator.sub
-    value = func(base_date, delta)
+    value = func(base_value, delta)
+
+    if component["type"] == "datetime":
+        return timezone.localtime(value)
 
     # convert to datetime at midnight for the date in the local timezone
     naive_value = datetime.combine(value, time.min)
