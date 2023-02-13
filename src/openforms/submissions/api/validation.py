@@ -61,7 +61,9 @@ def is_step_unexpectedly_incomplete(submission_step: "SubmissionStep") -> bool:
     return False
 
 
-def validate_submission_completion(submission: Submission, request) -> None:
+def get_submission_completion_serializer(
+    submission: Submission, request
+) -> CompletionValidationSerializer:
     # check that all required steps are completed
     state = submission.load_execution_state()
 
@@ -74,7 +76,7 @@ def validate_submission_completion(submission: Submission, request) -> None:
         if is_step_unexpectedly_incomplete(submission_step)
     ]
 
-    serializer = CompletionValidationSerializer(
+    return CompletionValidationSerializer(
         data={
             "incomplete_steps": incomplete_steps,
             "submission_allowed": submission.form.submission_allowed,
@@ -82,5 +84,3 @@ def validate_submission_completion(submission: Submission, request) -> None:
         },
         context={"request": request, "submission": submission},
     )
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
