@@ -162,6 +162,14 @@ def calculate_delta(
     value = func(base_value, delta)
 
     if component["type"] == "datetime":
+        value = timezone.localtime(value)
+        # Truncate seconds/microseconds, because they can be problematic when comparing with variables like "now" which can have
+        # seconds > 0 while the flatpickr editor always sets the seconds to 0. This means that if the datetime entered
+        # by the user needs to be >= 2022-11-03T12:00:05Z and the user enters 2022-11-03 12:00, this will be outside
+        # the configured min/max interval. Since for the flatpickr configuration this datetime is invalid, it is cleared
+        # from the input field (i.e. - the value disappears in the frontend) and then the picker defaults to
+        # the next year when opened again.
+        value = value.replace(second=0, microsecond=0)
         return timezone.localtime(value)
 
     # convert to datetime at midnight for the date in the local timezone
