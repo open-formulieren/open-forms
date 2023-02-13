@@ -126,16 +126,25 @@ class ReversePlusTest(TestCase):
         self.assertEqual("http://fooserver/foo/kwargs/1/2?aa=123&bb=1&bb=2", url)
 
 
-@override_settings(BASE_URL="http://test/")
 class IsAdminRequestTest(TestCase):
     def test_is_admin_request_true(self):
-        request = RequestFactory().get("/api/v1/foo")
-        request.headers = {"Referer": "http://test/admin/forms/form/1/change/"}
+        factory = RequestFactory()
+        request = factory.get(
+            "/api/v1/foo",
+            HTTP_REFERER="http://testserver/admin/forms/form/1/change/",
+        )
 
         self.assertTrue(is_admin_request(request))
 
     def test_is_admin_request_false(self):
-        request = RequestFactory().get("/api/v1/foo")
-        request.headers = {"Referer": "http://otherdomain/bar/"}
+        factory = RequestFactory()
+        bad_referers = (
+            "http://otherdomain/bar/",
+            "http://otherdomain/admin/forms/form/",
+        )
 
-        self.assertFalse(is_admin_request(request))
+        for referer in bad_referers:
+            with self.subTest(referer=referer):
+                request = factory.get("/api/v1/foo", HTTP_REFERER=referer)
+
+                self.assertFalse(is_admin_request(request))

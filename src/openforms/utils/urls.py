@@ -105,8 +105,7 @@ def is_admin_request(request: RequestType) -> bool:
 
     :arg request: the request object to be checked.
     """
-    if "Referer" not in request.headers:
+    if not (referrer := request.headers.get("Referer")):
         return False
-
-    referrer = furl(request.headers["Referer"])
-    return str(referrer.path).startswith(reverse("admin:index"))
+    admin_base = request.build_absolute_uri(reverse("admin:index"))
+    return referrer.startswith(admin_base)
