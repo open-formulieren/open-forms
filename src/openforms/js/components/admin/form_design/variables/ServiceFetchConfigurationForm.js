@@ -22,7 +22,7 @@ const EXPRESSION_MAPPING_LANGUAGES = [
   ['jq', 'jq'],
 ];
 
-const ServiceFetchConfigurationForm = ({data = {}, onFormSubmit, onChange}) => {
+const ServiceFetchConfigurationForm = ({data = {}, onChange, onFormSave}) => {
   // TODO ensure that onChange actually updates state with data
   const intl = useIntl();
   const formLogicContext = useContext(FormLogicContext);
@@ -30,12 +30,9 @@ const ServiceFetchConfigurationForm = ({data = {}, onFormSubmit, onChange}) => {
   const serviceChoices = formLogicContext.services.map(service => {
     return [service.url, service.label];
   });
-
+  console.log(onChange);
   return (
-    <form
-      className="aligned react-modal__form"
-      onSubmit={event => onFormSubmit && onFormSubmit(event)}
-    >
+    <div>
       <Fieldset
         title={
           <FormattedMessage
@@ -195,15 +192,14 @@ const ServiceFetchConfigurationForm = ({data = {}, onFormSubmit, onChange}) => {
       </Fieldset>
 
       <SubmitRow>
-        <SubmitAction
-          text={intl.formatMessage({
-            description: 'Confirm service fetch configuration',
-            defaultMessage: 'Confirm',
-          })}
-          onClick={onFormSubmit}
-        />
+        <button type="button" className="button" onClick={onFormSave}>
+          <FormattedMessage
+            description="Confirm service fetch configuration"
+            defaultMessage="Confirm"
+          />
+        </button>
       </SubmitRow>
-    </form>
+    </div>
   );
 };
 

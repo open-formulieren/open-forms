@@ -79,7 +79,7 @@ const Action = ({prefixText, action, errors = {}, onChange, onDelete}) => {
               }
               extraModifiers={['large']}
             >
-              <ServiceFetchConfigurationPicker />
+              <ServiceFetchConfigurationPicker onFormSave={closeModal} onChange={onChange} />
             </FormModal>
           </div>
         </div>

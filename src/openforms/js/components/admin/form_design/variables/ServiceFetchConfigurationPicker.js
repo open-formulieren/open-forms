@@ -11,7 +11,7 @@ import Select from 'components/admin/forms/Select';
 import {FormLogicContext} from './../Context';
 import ServiceFetchConfigurationForm from './ServiceFetchConfigurationForm';
 
-const ServiceFetchConfigurationPicker = ({data = {}, onChange}) => {
+const ServiceFetchConfigurationPicker = ({data = {}, onChange, onFormSave}) => {
   const intl = useIntl();
   const formLogicContext = useContext(FormLogicContext);
 
@@ -105,7 +105,7 @@ const ServiceFetchConfigurationPicker = ({data = {}, onChange}) => {
 
       {showServiceFetchConfigurationForm ? (
         <div className="servicefetchconfiguration-form">
-          <ServiceFetchConfigurationForm data={{}} />
+          <ServiceFetchConfigurationForm data={{}} onFormSave={onFormSave} onChange={onChange} />
         </div>
       ) : null}
     </div>

@@ -702,6 +702,7 @@ function reducer(draft, action) {
     }
     case 'CHANGE_USER_DEFINED_VARIABLE': {
       const {key, propertyName, propertyValue} = action.payload;
+      console.log(action.payload);
 
       const index = draft.formVariables.findIndex(variable => variable.key === key);
 
