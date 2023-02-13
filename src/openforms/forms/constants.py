@@ -20,10 +20,7 @@ class LogicActionTypes(models.TextChoices):
 
 
 LOGIC_ACTION_TYPES_REQUIRING_COMPONENT: set[str] = {LogicActionTypes.property}
-LOGIC_ACTION_TYPES_REQUIRING_VARIABLE: set[str] = {
-    LogicActionTypes.variable,
-    LogicActionTypes.fetch_from_service,
-}
+LOGIC_ACTION_TYPES_REQUIRING_VARIABLE: set[str] = {LogicActionTypes.variable}
 
 
 class PropertyTypes(models.TextChoices):

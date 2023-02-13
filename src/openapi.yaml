@@ -6763,6 +6763,7 @@ components:
       - $ref: '#/components/schemas/LogicActionPolymorphicGenericObject'
       - $ref: '#/components/schemas/LogicActionPolymorphicLogicPropertyAction'
       - $ref: '#/components/schemas/LogicActionPolymorphicLogicValueAction'
+      - $ref: '#/components/schemas/LogicActionPolymorphicLogicFetchAction'
       discriminator:
         propertyName: type
         mapping:
@@ -6770,10 +6771,15 @@ components:
           property: '#/components/schemas/LogicActionPolymorphicLogicPropertyAction'
           step-not-applicable: '#/components/schemas/LogicActionPolymorphicGenericObject'
           variable: '#/components/schemas/LogicActionPolymorphicLogicValueAction'
+          fetch-from-service: '#/components/schemas/LogicActionPolymorphicLogicFetchAction'
     LogicActionPolymorphicGenericObject:
       allOf:
       - $ref: '#/components/schemas/LogicActionPolymorphicShared'
       - $ref: '#/components/schemas/GenericObject'
+    LogicActionPolymorphicLogicFetchAction:
+      allOf:
+      - $ref: '#/components/schemas/LogicActionPolymorphicShared'
+      - $ref: '#/components/schemas/LogicFetchAction'
     LogicActionPolymorphicLogicPropertyAction:
       allOf:
       - $ref: '#/components/schemas/LogicActionPolymorphicShared'
@@ -6815,6 +6821,7 @@ components:
       - disable-next
       - property
       - variable
+      - fetch-from-service
       type: string
     LogicComponentAction:
       type: object
@@ -6864,6 +6871,15 @@ components:
       required:
       - description
       - expression
+    LogicFetchAction:
+      type: object
+      properties:
+        value:
+          type: object
+          additionalProperties: {}
+          title: service_fetch_configuration
+      required:
+      - value
     LogicPropertyAction:
       type: object
       properties:
