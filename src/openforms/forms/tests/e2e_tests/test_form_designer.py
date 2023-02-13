@@ -261,8 +261,8 @@ class FormDesignerRegressionTests(E2ETestCase):
 
             with phase("Save variable and check state"):
                 await page.get_by_text("Save and continue editing").click()
-                await page.get_by_role("tab", name="Variabelen").click()
-                await page.get_by_role("tab", name="Gebruikersvariabelen").click()
+                await page.get_by_role("tab", name="Variables").click()
+                await page.get_by_role("tab", name="User defined").click()
 
                 # Verify that the select still holds the correct value
                 await expect(page.locator("[name='initialValue']")).to_have_value(
@@ -325,8 +325,8 @@ class FormDesignerRegressionTests(E2ETestCase):
 
             with phase("Save variable and check state"):
                 await page.get_by_text("Save and continue editing").click()
-                await page.get_by_role("tab", name="Variabelen").click()
-                await page.get_by_role("tab", name="Gebruikersvariabelen").click()
+                await page.get_by_role("tab", name="Variables").click()
+                await page.get_by_role("tab", name="User defined").click()
 
                 # Verify that the select still holds the correct value
                 await expect(page.locator("[name='initialValue']")).to_have_value(
@@ -395,7 +395,7 @@ class FormDesignerRegressionTests(E2ETestCase):
             with phase("Save logic rule and check state"):
                 await page.get_by_text("Save and continue editing").click()
                 await page.get_by_role("tab", name="Logic").click()
-                await page.get_by_title("Geavanceerde opties").click()
+                await page.get_by_title("Advanced options").click()
 
                 # Verify that the select still holds the correct value
                 await expect(page.locator("[name='triggerFromStep']")).to_have_value(

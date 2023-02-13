@@ -1,7 +1,7 @@
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import path, re_path
 
-from openforms.utils.urls import build_absolute_uri, reverse_plus
+from openforms.utils.urls import build_absolute_uri, is_admin_request, reverse_plus
 
 
 @override_settings(IS_HTTPS=True, BASE_URL="http://test/")  # IS_HTTPS is ignored
@@ -124,3 +124,18 @@ class ReversePlusTest(TestCase):
             query={"aa": 123, "bb": [1, 2]},
         )
         self.assertEqual("http://fooserver/foo/kwargs/1/2?aa=123&bb=1&bb=2", url)
+
+
+@override_settings(BASE_URL="http://test/")
+class IsAdminRequestTest(TestCase):
+    def test_is_admin_request_true(self):
+        request = RequestFactory().get("/api/v1/foo")
+        request.headers = {"Referer": "http://test/admin/forms/form/1/change/"}
+
+        self.assertTrue(is_admin_request(request))
+
+    def test_is_admin_request_false(self):
+        request = RequestFactory().get("/api/v1/foo")
+        request.headers = {"Referer": "http://otherdomain/bar/"}
+
+        self.assertFalse(is_admin_request(request))
