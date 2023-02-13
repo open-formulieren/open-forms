@@ -75,8 +75,8 @@ class DateField extends DateTimeField {
       ...VALIDATION,
       components: [
         ...VALIDATION.components,
-        getMinMaxValidationEditForm('minDate'),
-        getMinMaxValidationEditForm('maxDate'),
+        getMinMaxValidationEditForm('minDate', 'date'),
+        getMinMaxValidationEditForm('maxDate', 'date'),
       ],
     };
     const TABS = {
