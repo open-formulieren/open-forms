@@ -1,25 +1,26 @@
+@use 'microscope-sass/lib/bem';
+
 @import '~microscope-sass/lib/responsive';
 @import '~microscope-sass/lib/grid';
 @import '~microscope-sass/lib/typography';
-
-@import './vars';
 
 .page-header {
   @include margin(
     true,
     $properties: padding,
-    $value-mobile: $page-header-padding--mobile,
-    $value-tablet: $page-header-padding--tablet,
-    $value-laptop: $page-header-padding--laptop,
-    $value-desktop: $page-header-padding--desktop
+    $value-mobile: var(--of-page-header-mobile-padding),
+    $value-tablet: var(--of-page-header-tablet-padding),
+    $value-laptop: var(--of-page-header-laptop-padding),
+    $value-desktop: var(--of-page-header-desktop-padding)
   );
 
-  background: $page-header-background;
+  background: var(--of-page-header-bg);
   color: var(--of-page-header-fg, #{$typography-color-text});
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
+  align-items: center;
 
-  &--has-logo {
+  @include bem.modifier('has-logo') {
     .page-header__return-url {
       &,
       &:hover {
@@ -29,21 +30,23 @@
 
       font-size: 0;
 
-      background-image: $page-header-logo-url;
+      background-image: var(--of-header-logo-url);
       background-repeat: no-repeat;
       background-size: contain;
       background-position: center;
-      min-width: 100px;
-      min-height: 50px;
-      width: $page-header-logo-width;
-      height: $page-header-logo-height;
+      min-width: var(--of-page-header-logo-return-url-min-width, 100px);
+      min-height: var(--of-page-header-logo-return-url-min-height, 50px);
+      width: var(--of-header-logo-width);
+      height: var(--of-header-logo-height);
 
-      &:hover {
+      @include mobile-only {
+        min-width: var(--of-page-header-logo-return-url-mobile-min-width, 50px);
+        min-height: var(--of-page-header-logo-return-url-mobile-min-height, 25px);
       }
     }
   }
 
-  & &__return-url {
+  @include bem.element('return-url') {
     display: block;
   }
 }
