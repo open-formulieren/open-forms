@@ -9,7 +9,6 @@ freezegun
 playwright
 pyquery  # integrates with webtest
 requests-mock
-selenium
 tblib
 testfixtures
 pep8
