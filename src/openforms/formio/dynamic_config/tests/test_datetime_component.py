@@ -161,7 +161,7 @@ class DynamicDatetimeConfigurationTests(SimpleTestCase):
             "openForms": {
                 "minDate": {
                     "mode": "relativeToVariable",
-                    "variable": "someDate",
+                    "variable": "someDatetime",
                     "operator": "add",
                     "delta": {
                         "days": 21,
@@ -174,7 +174,7 @@ class DynamicDatetimeConfigurationTests(SimpleTestCase):
         some_date = timezone.make_aware(datetime(2022, 10, 14, 15, 0, 0))
         assert some_date.tzinfo.zone == "Europe/Amsterdam"
 
-        new_component = self._get_dynamic_config(component, {"someDate": some_date})
+        new_component = self._get_dynamic_config(component, {"someDatetime": some_date})
 
         self.assertEqual(
             new_component["datePicker"]["minDate"],
@@ -188,7 +188,7 @@ class DynamicDatetimeConfigurationTests(SimpleTestCase):
             "openForms": {
                 "maxDate": {
                     "mode": "relativeToVariable",
-                    "variable": "someDate",
+                    "variable": "someDatetime",
                     "operator": "subtract",
                     "delta": {
                         "months": 1,
@@ -200,7 +200,7 @@ class DynamicDatetimeConfigurationTests(SimpleTestCase):
         some_date = timezone.make_aware(datetime(2022, 10, 14, 15, 0, 0))
         assert some_date.tzinfo.zone == "Europe/Amsterdam"
 
-        new_component = self._get_dynamic_config(component, {"someDate": some_date})
+        new_component = self._get_dynamic_config(component, {"someDatetime": some_date})
 
         self.assertEqual(
             new_component["datePicker"]["maxDate"], "2022-09-14T15:00:00+02:00"
@@ -227,3 +227,28 @@ class DynamicDatetimeConfigurationTests(SimpleTestCase):
                 )
 
                 self.assertIsNone(new_component["datePicker"]["maxDate"])
+
+    @freeze_time("2022-11-03T12:00:05.12345Z")
+    def test_seconds_microseconds_are_truncated(self):
+        component = {
+            "type": "datetime",
+            "key": "aDatetime",
+            "openForms": {
+                "minDate": {
+                    "mode": "relativeToVariable",
+                    "variable": "now",
+                    "operator": "add",
+                    "delta": {
+                        "days": 0,
+                        "months": 0,
+                        "years": 0,
+                    },
+                },
+            },
+        }
+
+        new_component = self._get_dynamic_config(component, {})
+
+        self.assertEqual(
+            new_component["datePicker"]["minDate"], "2022-11-03T13:00:00+01:00"
+        )
