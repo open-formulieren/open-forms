@@ -82,7 +82,6 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
                 "url": f"http://testserver{self.endpoint}",
                 "form": f"http://testserver{form_path}",
                 "formUrl": "",
-                "privacyPolicyAccepted": True,
                 "steps": [
                     {
                         "id": str(self.step.uuid),
