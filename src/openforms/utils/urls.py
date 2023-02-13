@@ -97,3 +97,16 @@ def reverse_plus(
         return f.url
     else:
         return location
+
+
+def is_admin_request(request: RequestType) -> bool:
+    """
+    Checks whether a request is made from the admin
+
+    :arg request: the request object to be checked.
+    """
+    if "Referer" not in request.headers:
+        return False
+
+    referrer = furl(request.headers["Referer"])
+    return str(referrer.path).startswith(reverse("admin:index"))
