@@ -4,9 +4,9 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
   stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
   staticDirs: [
-    {from: '../static/admin', to: 'admin'},
-    {from: '../static/fonts', to: 'fonts'},
-    {from: '../static/img', to: 'img'},
+    {from: '../static/admin', to: 'static/admin'},
+    {from: '../static/fonts', to: 'static/fonts'},
+    {from: '../static/img', to: 'static/img'},
   ],
   addons: [
     '@storybook/addon-links',
@@ -25,12 +25,16 @@ module.exports = {
       path.resolve(__dirname, '../src/openforms/js'),
     ];
 
-    config.plugins = config.plugins.concat([new MiniCssExtractPlugin()]);
+    config.plugins = config.plugins.concat([
+      new MiniCssExtractPlugin({
+        filename: 'static/bundles/[name].css',
+      }),
+    ]);
 
     config.module.rules = config.module.rules.concat([
       // .scss
       {
-        test: /\.(sa|sc)ss$/,
+        test: /\.scss$/,
         use: [
           // Writes css files.
           MiniCssExtractPlugin.loader,
@@ -62,7 +66,6 @@ module.exports = {
         ],
       },
     ]);
-
     return config;
   },
 };
