@@ -23,7 +23,12 @@ const EXPRESSION_MAPPING_LANGUAGES = [
   ['jq', 'jq'],
 ];
 
-const ServiceFetchConfigurationForm = ({stateData = {}, setData, onFormSave}) => {
+const ServiceFetchConfigurationForm = ({
+  stateData = {},
+  selectExisting = false,
+  setData,
+  onFormSave,
+}) => {
   // TODO ensure that onChange actually updates state with data
   const intl = useIntl();
   const formLogicContext = useContext(FormLogicContext);
@@ -205,11 +210,17 @@ const ServiceFetchConfigurationForm = ({stateData = {}, setData, onFormSave}) =>
 
       <SubmitRow>
         <button type="button" className="button" onClick={onFormSave}>
-          <FormattedMessage
-            description="Confirm service fetch configuration"
-            defaultMessage="Confirm"
-          />
+          <FormattedMessage description="Save service fetch configuration" defaultMessage="Save" />
         </button>
+
+        {selectExisting ? (
+          <button type="button" className="button" onClick={onFormSave}>
+            <FormattedMessage
+              description="Copy and save service fetch configuration"
+              defaultMessage="Copy and save"
+            />
+          </button>
+        ) : null}
       </SubmitRow>
     </div>
   );

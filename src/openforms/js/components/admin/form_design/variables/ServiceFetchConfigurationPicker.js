@@ -115,6 +115,7 @@ const ServiceFetchConfigurationPicker = ({data = {}, onChange, onFormSave}) => {
           <ServiceFetchConfigurationForm
             stateData={serviceFetchData}
             setData={setServiceFetchData}
+            selectExisting={selectExisting}
             onFormSave={onFormSave}
             onChange={onChange}
           />
