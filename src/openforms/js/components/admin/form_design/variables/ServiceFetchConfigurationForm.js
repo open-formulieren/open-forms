@@ -8,6 +8,7 @@ import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {TextInput} from 'components/admin/forms/Inputs';
 import JsonWidget from 'components/admin/forms/JsonWidget';
+import MappingArrayInput from 'components/admin/forms/MappingArrayInput';
 import Select from 'components/admin/forms/Select';
 import SubmitRow from 'components/admin/forms/SubmitRow';
 
@@ -123,11 +124,11 @@ const ServiceFetchConfigurationForm = ({data = {}, onChange, onFormSave}) => {
               />
             }
           >
-            <JsonWidget
+            <MappingArrayInput
               name="fetchConfiguration.headers"
-              logic={data.headers || {}}
-              cols={20}
-              onChange={onChange}
+              onChange={({...args}) => {
+                null;
+              }}
             />
           </Field>
         </FormRow>
