@@ -6,7 +6,7 @@ from ..models import ServiceFetchConfiguration
 
 
 class ServiceFetchConfigurationFactory(factory.django.DjangoModelFactory):
+    service = factory.SubFactory(ServiceFactory)
+
     class Meta:
         model = ServiceFetchConfiguration
-
-    service = factory.SubFactory(ServiceFactory)

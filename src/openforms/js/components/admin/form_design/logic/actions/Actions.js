@@ -110,9 +110,7 @@ const ActionVariableValue = ({action, errors, onChange}) => {
 };
 
 const ActionFetchFromService = ({action, errors, onChange}) => {
-  const formContext = useContext(FormContext);
-  const allVariables = formContext.formVariables;
-  debugger;
+  const {allVariables} = useContext(FormContext);
 
   return (
     <>

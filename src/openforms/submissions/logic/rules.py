@@ -7,6 +7,7 @@ from json_logic import jsonLogic
 from openforms.forms.models import FormLogic, FormStep, FormVariable
 from openforms.variables.models import ServiceFetchConfiguration
 
+from ..logic.binding import bind
 from ..models import Submission, SubmissionStep
 from .actions import (
     ActionOperation,
@@ -168,7 +169,6 @@ def iter_evaluate_rules(
                             new_value = jsonLogic(expression, data_container.data)
                         data_container.update({name: new_value})
                     case ServiceFetchAction(fetch_config=config_id, variable=name):
-                        from ..form_logic import bind
 
                         config = ServiceFetchConfiguration.objects.get(pk=config_id)
                         # XXX bind is expressed in terms of FormVariables

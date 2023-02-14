@@ -18,7 +18,7 @@ from openforms.variables.constants import DataMappingTypes
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 from openforms.variables.validators import HeaderValidator, ValidationError
 
-from ...form_logic import bind
+from ...logic.binding import bind
 
 DEFAULT_REQUEST_HEADERS = {
     "Accept",
@@ -140,7 +140,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             )
         )
 
-        with requests_mock.mock(case_sensitive=True) as m:
+        with requests_mock.Mocker(case_sensitive=True) as m:
             m.get(
                 furl("https://httpbin.org/response-headers")
                 .set({"freeform": field_value})
@@ -173,7 +173,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             )
         )
 
-        with requests_mock.mock(case_sensitive=True) as m:
+        with requests_mock.Mocker(case_sensitive=True) as m:
             m.get(
                 furl("https://httpbin.org/redirect-to")
                 .set({"url": some_text, "status_code": some_value})
@@ -249,7 +249,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
         # force unicode into a str with just characters in [\x00 .. \xff]
         expected_value = str(field_value).strip().encode("utf-8").decode("latin1")
 
-        with requests_mock.mock(case_sensitive=True) as m:
+        with requests_mock.Mocker(case_sensitive=True) as m:
             m.get("https://httpbin.org/cache")
             _ = bind(var, context)
             request = m.last_request
@@ -282,7 +282,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             )
         )
 
-        with requests_mock.mock(case_sensitive=True) as m:
+        with requests_mock.Mocker(case_sensitive=True) as m:
             m.get("https://httpbin.org/cache")
             try:
                 # when we bind

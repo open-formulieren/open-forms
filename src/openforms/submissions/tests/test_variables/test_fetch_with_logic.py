@@ -27,7 +27,7 @@ class ServiceFetchWithActionsTest(SubmissionsMixin, APITestCase):
             ),
         )
 
-    @requests_mock.mock(case_sensitive=True)
+    @requests_mock.Mocker(case_sensitive=True)
     def test_it_calls_service_for_the_answer(self, m):
         submission = SubmissionFactory.from_components(
             [{"type": "number", "key": "someField"}]
@@ -38,7 +38,7 @@ class ServiceFetchWithActionsTest(SubmissionsMixin, APITestCase):
 
         FormLogicFactory.create(
             form=submission.form,
-            json_logic_trigger={"!": {"var": "someField"}},  # True
+            json_logic_trigger=True,
             actions=[
                 {
                     "variable": "someField",
@@ -66,7 +66,7 @@ class ServiceFetchWithActionsTest(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["step"]["data"], {"someField": 42})
 
-    @requests_mock.mock(case_sensitive=True)
+    @requests_mock.Mocker(case_sensitive=True)
     def test_it_handles_bad_service_responses(self, m):
         submission = SubmissionFactory.from_components(
             [{"type": "number", "key": "someField"}]
@@ -77,7 +77,7 @@ class ServiceFetchWithActionsTest(SubmissionsMixin, APITestCase):
 
         FormLogicFactory.create(
             form=submission.form,
-            json_logic_trigger={"!": {"var": "someField"}},  # True
+            json_logic_trigger=True,
             actions=[
                 {
                     "variable": "someField",

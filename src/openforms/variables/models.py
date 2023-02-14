@@ -1,3 +1,5 @@
+from urllib.parse import quote
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -6,6 +8,7 @@ import jq
 from rest_framework.serializers import ValidationError as DRFValidationError
 
 from openforms.forms.api.validators import JsonLogicValidator
+from openforms.typing import DataMapping
 
 from .constants import DataMappingTypes, ServiceFetchMethods
 from .validators import HeaderValidator
@@ -100,3 +103,36 @@ class ServiceFetchConfiguration(models.Model):
 
         if errors:
             raise ValidationError(errors)
+
+    def request_arguments(self, context: DataMapping) -> dict:
+        """Return a dictionary with keyword arguments for a
+        zgw_consumers.Service client request call.
+        """
+        headers = {
+            # no leading spaces and the value into the legal field-value codespace
+            header: value.format(**context).strip().encode("utf-8").decode("latin1")
+            for header, value in (self.headers or {}).items()
+        }
+        # before we go further
+        # assert headers are still valid after we put submmitter data in there
+        HeaderValidator()(headers)
+
+        escaped_values = {k: quote(str(v), safe="") for k, v in context.items()}
+
+        query_params = self.query_params.format(**escaped_values)
+        query_params = (
+            query_params[1:] if query_params.startswith("?") else query_params
+        )
+
+        request_args = dict(
+            path=self.path.format(**escaped_values),
+            params=query_params,
+            method=self.method,
+            headers=headers,
+            # XXX operationId is a required parameter to zds-client...
+            # Maybe offer as alternative to path and method?
+            operation="",
+        )
+        if self.body is not None:
+            request_args["json"] = self.body
+        return request_args
