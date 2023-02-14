@@ -14,7 +14,7 @@ from django.urls import Resolver404, resolve
 from django.utils.translation import gettext as _
 
 import PIL
-from glom import glom
+from glom import Path, glom
 from PIL import Image
 from rest_framework.exceptions import ValidationError
 
@@ -23,12 +23,14 @@ from openforms.conf.utils import Filesize
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.api.validators import MimeTypeValidator
 from openforms.formio.typing import Component
+from openforms.formio.utils import iterate_data_with_components
 from openforms.submissions.models import (
     Submission,
     SubmissionFileAttachment,
     SubmissionStep,
     TemporaryFileUpload,
 )
+from openforms.typing import JSONObject
 
 logger = logging.getLogger(__name__)
 
@@ -92,6 +94,7 @@ class UploadContext:
     component: Component
     index: int  # one-based
     form_key: str  # formio key
+    data_path: str  # The path to the component data in the submission data
     num_uploads: int
 
 
@@ -105,17 +108,20 @@ def iter_step_uploads(
     processing.
     """
     data = data or submission_step.data
-    components = list(submission_step.form_step.iter_components(recursive=True))
-    uploads = resolve_uploads_from_data(components, data)
+    # components = list(submission_step.form_step.iter_components(recursive=True))
+    uploads = resolve_uploads_from_data(
+        submission_step.form_step.form_definition.configuration, data
+    )
     for key, (component, upload_instances) in uploads.items():
         # formio sends a list of uploads even with multiple=False
         for i, upload in enumerate(upload_instances, start=1):
             yield UploadContext(
                 upload=upload,
-                form_key=key,
+                form_key=component["key"],
                 component=component,
                 index=i,
                 num_uploads=len(upload_instances),
+                data_path=key,
             )
 
 
@@ -172,16 +178,26 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
     step_variables = variable_state.get_variables_in_submission_step(submission_step)
 
     for upload_context in iter_step_uploads(submission_step):
-        upload, component, key = (
+        upload, component, key, data_path = (
             upload_context.upload,
             upload_context.component,
             upload_context.form_key,
+            Path.from_text(upload_context.data_path),
         )
 
-        # TODO decide what it means if this fails
-        assert key in step_variables
+        submission_variable = step_variables.get(key)
+        if not submission_variable:
+            # This is the case for fields inside repeating groups. We need to find the variable of the parent group
+            # to which they belong
+            for index in range(len(data_path) - 1, 0, -1):
+                submission_variable = glom(
+                    step_variables, data_path[:index], default=None
+                )
+                if submission_variable:
+                    break
 
-        submission_variable = step_variables[key]
+        # TODO decide what it means if this fails
+        assert submission_variable is not None
 
         # grab resize settings
         resize_apply = glom(component, "of.image.resize.apply", default=False)
@@ -257,7 +273,7 @@ def iter_component_data(components: Iterable[dict], data: dict, filter_types=Non
         yield component, data[key]
 
 
-def resolve_uploads_from_data(components: Iterable[dict], data: dict) -> dict:
+def resolve_uploads_from_data(configuration: JSONObject, data: dict) -> dict:
     """
     "my_file": [
         {
@@ -280,10 +296,9 @@ def resolve_uploads_from_data(components: Iterable[dict], data: dict) -> dict:
     """
     result = dict()
 
-    for component, upload_info in iter_component_data(
-        components, data, filter_types={"file"}
+    for component, upload_info, data_path in iterate_data_with_components(
+        configuration, data, filter_types={"file"}
     ):
-        key = component["key"]
         uploads = list()
         for info in upload_info:
             # lets be careful with malformed user data
@@ -295,7 +310,7 @@ def resolve_uploads_from_data(components: Iterable[dict], data: dict) -> dict:
                 uploads.append(upload)
 
         if uploads:
-            result[key] = (component, uploads)
+            result[data_path] = (component, uploads)
 
     return result
 
