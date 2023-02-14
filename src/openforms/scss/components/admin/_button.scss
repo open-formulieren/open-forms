@@ -1,7 +1,9 @@
+@use 'microscope-sass/lib/bem';
+
 @import '../../vars';
 
 .button {
-  &--plain {
+  @include bem.modifier('plain') {
     width: 100%;
     border: none;
     background: transparent;
@@ -24,7 +26,7 @@
     }
   }
 
-  &--center {
+  @include bem.modifier('center') {
     text-align: center;
   }
 }
@@ -32,7 +34,7 @@
 .button-container {
   display: inline-block;
 
-  &--padded {
+  @include bem.modifier('padded') {
     padding: 1em;
   }
 }
