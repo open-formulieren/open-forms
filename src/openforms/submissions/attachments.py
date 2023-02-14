@@ -14,7 +14,7 @@ from django.utils.translation import gettext as _
 
 import magic
 import PIL
-from glom import glom
+from glom import Path, glom
 from PIL import Image
 from rest_framework.exceptions import ErrorDetail, ValidationError
 
@@ -23,12 +23,14 @@ from openforms.conf.utils import Filesize
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.service import mimetype_allowed
 from openforms.formio.typing import Component
+from openforms.formio.utils import get_all_component_keys, iter_components
 from openforms.submissions.models import (
     Submission,
     SubmissionFileAttachment,
     SubmissionStep,
     TemporaryFileUpload,
 )
+from openforms.typing import JSONObject
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +94,66 @@ class UploadContext:
     component: Component
     index: int  # one-based
     form_key: str  # formio key
+    data_path: str  # The path to the component data in the submission data
     num_uploads: int
+
+
+def _glom_path_to_str(path: Path) -> str:
+    return ".".join([str(value) for value in path.values()])
+
+
+def _iterate_data_with_components(
+    configuration: JSONObject,
+    data: JSONObject,
+    data_path: Path = Path(),
+    filter_types=None,
+):
+    """
+    Iterate through a configuration and return a tuple with the component JSON, its value in the submission data
+    and the path within the submission data.
+
+    For example, for a configuration with components:
+
+    .. code:: json
+
+        [
+            {"key": "surname", "type": "textfield"},
+            {"key": "pets", "type": "editgrid", "components": [{"key": "name", "type": "textfield"}]}
+        ]
+
+    And a submission data:
+
+    .. code:: json
+
+        {"surname": "Doe", "pets": [{"name": "Qui"}, {"name": "Quo"}, {"name": "Qua"}] }
+
+    For the "Qui" item of the repeating group this function would yield:
+    ``({"key": "name", "type": "textfield"}, "Qui", "pets.0.name")``.
+    """
+    if configuration.get("type") == "columns":
+        for column in configuration["columns"]:
+            yield from _iterate_data_with_components(column, data, data_path)
+
+    parent_type = configuration.get("type")
+    if parent_type == "editgrid":
+        parent_path = Path(data_path, Path.from_text(configuration["key"]))
+        group_data = glom(data, parent_path, default=list)
+        for index in range(len(group_data)):
+            yield from _iterate_data_with_components(
+                {"components": configuration.get("components", [])},
+                data,
+                data_path=Path(parent_path, index),
+            )
+    else:
+        for child_component in configuration.get("components", []):
+            yield from _iterate_data_with_components(child_component, data, data_path)
+
+    filter_out = (parent_type in filter_types) if filter_types else False
+    if "key" in configuration and not filter_out:
+        component_path = Path(data_path, Path.from_text(configuration["key"]))
+        component_data = glom(data, component_path, default=None)
+        if component_data is not None:
+            yield configuration, component_data, _glom_path_to_str(component_path)
 
 
 def iter_step_uploads(
@@ -105,17 +166,19 @@ def iter_step_uploads(
     processing.
     """
     data = data or submission_step.data
-    components = list(submission_step.form_step.iter_components(recursive=True))
-    uploads = resolve_uploads_from_data(components, data)
+    uploads = resolve_uploads_from_data(
+        submission_step.form_step.form_definition.configuration, data
+    )
     for key, (component, upload_instances) in uploads.items():
         # formio sends a list of uploads even with multiple=False
         for i, upload in enumerate(upload_instances, start=1):
             yield UploadContext(
                 upload=upload,
-                form_key=key,
+                form_key=component["key"],
                 component=component,
                 index=i,
                 num_uploads=len(upload_instances),
+                data_path=key,
             )
 
 
@@ -176,18 +239,41 @@ def validate_uploads(submission_step: SubmissionStep, data: Optional[dict]) -> N
         raise ValidationError(validation_errors)
 
 
+def _get_repeating_group_keys(configuration):
+    keys = []
+    for component in iter_components(configuration, recursive=False):
+        if component["type"] == "editgrid":
+            for nested in iter_components(component, recursive=False):
+                keys.append(nested["key"])
+                keys += _get_repeating_group_keys(nested)
+    return keys
+
+
 def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
     # circular import
     from .tasks import resize_submission_attachment
 
     result = list()
 
+    config = submission_step.form_step.form_definition.configuration
+    all_component_keys = get_all_component_keys(config)
+    repeating_group_keys = _get_repeating_group_keys(config)
+
     for upload_context in iter_step_uploads(submission_step):
-        upload, component, key = (
+        upload, component, key, data_path = (
             upload_context.upload,
             upload_context.component,
             upload_context.form_key,
+            Path.from_text(upload_context.data_path),
         )
+
+        # GH#2699 - properly map to repeating group key
+        if key in repeating_group_keys:
+            for index in range(len(data_path) - 1, 0, -1):
+                _key = _glom_path_to_str(data_path[:index])
+                if _key not in repeating_group_keys and _key in all_component_keys:
+                    key = _key
+                    break
 
         # grab resize settings
         resize_apply = glom(component, "of.image.resize.apply", default=False)
@@ -260,7 +346,7 @@ def iter_component_data(components: Iterable[dict], data: dict, filter_types=Non
         yield component, data[key]
 
 
-def resolve_uploads_from_data(components: Iterable[dict], data: dict) -> dict:
+def resolve_uploads_from_data(configuration: JSONObject, data: dict) -> dict:
     """
     "my_file": [
         {
@@ -283,10 +369,9 @@ def resolve_uploads_from_data(components: Iterable[dict], data: dict) -> dict:
     """
     result = dict()
 
-    for component, upload_info in iter_component_data(
-        components, data, filter_types={"file"}
+    for component, upload_info, data_path in _iterate_data_with_components(
+        configuration, data, filter_types={"file"}
     ):
-        key = component["key"]
         uploads = list()
         for info in upload_info:
             # lets be careful with malformed user data
@@ -298,7 +383,7 @@ def resolve_uploads_from_data(components: Iterable[dict], data: dict) -> dict:
                 uploads.append(upload)
 
         if uploads:
-            result[key] = (component, uploads)
+            result[data_path] = (component, uploads)
 
     return result
 
