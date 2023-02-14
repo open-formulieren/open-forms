@@ -23,16 +23,16 @@ const EXPRESSION_MAPPING_LANGUAGES = [
   ['jq', 'jq'],
 ];
 
-const ServiceFetchConfigurationForm = ({onFormSave}) => {
+const ServiceFetchConfigurationForm = ({stateData = {}, setData, onFormSave}) => {
   // TODO ensure that onChange actually updates state with data
   const intl = useIntl();
   const formLogicContext = useContext(FormLogicContext);
-  const [data, setData] = useState({});
+  // const [stateData, setData] = useState(data);
 
   const onChange = event => {
     const [prefix, key] = event.target.name.split('.');
-    let copiedData = Object.assign({}, data);
-    copiedData[key] = event.nativeEvent.target.value;
+    let copiedData = Object.assign({}, stateData);
+    copiedData[key] = event.target.value;
     setData(copiedData);
   };
 
@@ -64,7 +64,7 @@ const ServiceFetchConfigurationForm = ({onFormSave}) => {
             <Select
               name="fetchConfiguration.httpMethod"
               choices={serviceChoices}
-              value={data.service}
+              value={stateData.service}
               onChange={onChange}
             />
           </Field>
@@ -80,7 +80,7 @@ const ServiceFetchConfigurationForm = ({onFormSave}) => {
               />
             }
           >
-            <TextInput value={data.path} onChange={onChange} maxLength="1000" />
+            <TextInput value={stateData.path} onChange={onChange} maxLength="1000" />
           </Field>
         </FormRow>
 
@@ -97,7 +97,7 @@ const ServiceFetchConfigurationForm = ({onFormSave}) => {
             <Select
               name="fetchConfiguration.method"
               choices={HTTP_METHODS}
-              value={data.method || 'GET'}
+              value={stateData.method || 'GET'}
               onChange={onChange}
             />
           </Field>
@@ -142,7 +142,7 @@ const ServiceFetchConfigurationForm = ({onFormSave}) => {
           </Field>
         </FormRow>
 
-        {data.method === 'POST' ? (
+        {stateData.method === 'POST' ? (
           <FormRow>
             <Field
               name={'fetchConfiguration.body'}
@@ -155,7 +155,7 @@ const ServiceFetchConfigurationForm = ({onFormSave}) => {
             >
               <JsonWidget
                 name="fetchConfiguration.body"
-                logic={data.body || {}}
+                logic={stateData.body || {}}
                 cols={20}
                 onChange={onChange}
               />
@@ -176,7 +176,7 @@ const ServiceFetchConfigurationForm = ({onFormSave}) => {
             <Select
               name="fetchConfiguration.dataMappingType"
               choices={EXPRESSION_MAPPING_LANGUAGES}
-              value={data.dataMappingType || ''}
+              value={stateData.dataMappingType || ''}
               onChange={onChange}
               allowBlank
             />
@@ -195,7 +195,7 @@ const ServiceFetchConfigurationForm = ({onFormSave}) => {
           >
             <JsonWidget
               name="fetchConfiguration.mappingExpression"
-              logic={data.mappingExpression || {}}
+              logic={stateData.mappingExpression || {}}
               cols={20}
               onChange={onChange}
             />

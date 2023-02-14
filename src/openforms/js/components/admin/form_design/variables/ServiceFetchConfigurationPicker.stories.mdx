@@ -1,6 +1,6 @@
 import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
 
-import {FormContext} from '../Context';
+import {FormLogicContext} from '../Context';
 import ServiceFetchConfigurationPicker from './ServiceFetchConfigurationPicker';
 
 <Meta
@@ -14,7 +14,7 @@ Form that is shown when adding a ServiceFetchConfiguration, first the user must 
 use an existing configuration or to create a new one.
 
 export const Template = args => (
-  <FormContext.Provider
+  <FormLogicContext.Provider
     value={{
       services: [
         {
@@ -57,7 +57,7 @@ export const Template = args => (
     }}
   >
     <ServiceFetchConfigurationPicker {...args} />;
-  </FormContext.Provider>
+  </FormLogicContext.Provider>
 );
 
 ## Presentation

@@ -17,6 +17,7 @@ const ServiceFetchConfigurationPicker = ({data = {}, onChange, onFormSave}) => {
 
   const [selectExisting, setSelectExisting] = useState(false);
   const [showServiceFetchConfigurationForm, setShowServiceFetchConfigurationForm] = useState(false);
+  const [serviceFetchData, setServiceFetchData] = useState({});
 
   const serviceFetchConfigurationChoices = formLogicContext.serviceFetchConfigurations.map(
     fetchConfig => {
@@ -90,10 +91,16 @@ const ServiceFetchConfigurationPicker = ({data = {}, onChange, onFormSave}) => {
                 name="fetchConfiguration.existing"
                 choices={serviceFetchConfigurationChoices}
                 value={data.serviceFetchConfiguration || ''}
-                onChange={({...args}) => {
+                onChange={event => {
                   // TODO ensure this onChange sets the state config data to the values of
                   // the selected config
-                  onChange({...args});
+                  onChange(event);
+                  data.serviceFetchConfiguration = event.target.value;
+                  setServiceFetchData(
+                    formLogicContext.serviceFetchConfigurations.find(
+                      element => element.url === event.target.value
+                    )
+                  );
                   setShowServiceFetchConfigurationForm(true);
                 }}
                 allowBlank
@@ -105,7 +112,12 @@ const ServiceFetchConfigurationPicker = ({data = {}, onChange, onFormSave}) => {
 
       {showServiceFetchConfigurationForm ? (
         <div className="servicefetchconfiguration-form">
-          <ServiceFetchConfigurationForm data={{}} onFormSave={onFormSave} onChange={onChange} />
+          <ServiceFetchConfigurationForm
+            stateData={serviceFetchData}
+            setData={setServiceFetchData}
+            onFormSave={onFormSave}
+            onChange={onChange}
+          />
         </div>
       ) : null}
     </div>
