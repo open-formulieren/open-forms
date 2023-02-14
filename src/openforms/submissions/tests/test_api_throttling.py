@@ -39,7 +39,7 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
                 endpoint = reverse(
                     "api:submission-complete", kwargs={"uuid": submission.uuid}
                 )
-                response = self.client.post(endpoint)
+                response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
                 assert (
                     response.status_code == status.HTTP_200_OK
@@ -53,7 +53,7 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
             endpoint = reverse(
                 "api:submission-complete", kwargs={"uuid": submission.uuid}
             )
-            response = self.client.post(endpoint)
+            response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
             assert (
                 response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
@@ -64,7 +64,7 @@ class APIThrottlingTest(SubmissionsMixin, APITestCase):
             # Wait 1 minute for the next request
             frozen_datetime.tick(delta=datetime.timedelta(minutes=1))
 
-            response = self.client.post(endpoint)
+            response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
             assert (
                 response.status_code == status.HTTP_200_OK

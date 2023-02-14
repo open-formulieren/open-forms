@@ -1,0 +1,15 @@
+@use 'microscope-sass/lib/bem';
+
+.submission-privacy-policy {
+  display: flex;
+  align-items: flex-start;
+
+  @include bem.element('text') {
+    padding-left: 5px;
+
+    // The WYSIWYG editor wraps everything in a <p>, which gets a margin.
+    p {
+      margin: 0;
+    }
+  }
+}

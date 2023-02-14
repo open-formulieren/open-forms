@@ -529,7 +529,7 @@ class MaintenanceFormStaffUserTests(SubmissionsMixin, APITestCase):
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-complete", kwargs={"uuid": submission.uuid})
 
-        response = self.client.post(endpoint)
+        response = self.client.post(endpoint, {"privacy_policy_accepted": True})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
