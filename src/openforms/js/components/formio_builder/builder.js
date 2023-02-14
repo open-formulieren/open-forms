@@ -84,7 +84,7 @@ const getBuilderOptions = () => {
             icon: 'terminal',
             schema: {
               label: 'Volledige naam',
-              autocomplete: 'name',
+              autocomplete: 'off',
               type: 'textfield',
               key: 'fullName',
               input: true,
@@ -96,7 +96,7 @@ const getBuilderOptions = () => {
             icon: 'terminal',
             schema: {
               label: 'Voornaam',
-              autocomplete: 'given-name',
+              autocomplete: 'off',
               type: 'textfield',
               key: 'firstName',
               input: true,
@@ -108,7 +108,7 @@ const getBuilderOptions = () => {
             icon: 'terminal',
             schema: {
               label: 'Achternaam',
-              autocomplete: 'family-name',
+              autocomplete: 'off',
               type: 'textfield',
               key: 'lastName',
               input: true,

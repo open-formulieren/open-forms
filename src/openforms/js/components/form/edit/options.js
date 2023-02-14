@@ -59,7 +59,8 @@ const AUTOCOMPLETE = {
   key: 'autocomplete',
   label: 'Autocomplete',
   placeholder: 'on',
-  tooltip: 'Display options to fill in the field, based on earlier typed values.',
+  tooltip:
+    "Display options to fill in the field, based on earlier typed values (see the <a href='https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete'>MDN documentation</a> for possible values).",
 };
 
 const PRESENTATION = {
