@@ -105,11 +105,12 @@ const ServiceFetchConfigurationForm = ({data = {}, onChange, onFormSave}) => {
               />
             }
           >
-            <JsonWidget
+            <MappingArrayInput
               name="fetchConfiguration.queryParams"
-              logic={data.queryParams || {}}
-              cols={20}
-              onChange={onChange}
+              valueArrayInput={true}
+              onChange={({...args}) => {
+                null;
+              }}
             />
           </Field>
         </FormRow>
