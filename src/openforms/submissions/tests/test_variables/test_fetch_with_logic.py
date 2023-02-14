@@ -18,6 +18,7 @@ from ..mixins import SubmissionsMixin
 class ServiceFetchWithActionsTest(SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
         cls.service = ServiceFactory.create(
             api_type=APITypes.orc,
             api_root="https://httpbin.org/",

@@ -9,7 +9,7 @@ from django.test import SimpleTestCase
 import requests_mock
 from factory.django import FileField
 from furl import furl
-from hypothesis import example, given, settings, strategies as st
+from hypothesis import assume, example, given, settings, strategies as st
 from zgw_consumers.constants import APITypes, AuthTypes
 
 from openforms.forms.tests.factories import FormVariableFactory
@@ -34,14 +34,15 @@ def data_mapping_values() -> st.SearchStrategy[Any]:
     return st.one_of(st.text(), st.integers(), st.floats(), st.dates(), st.datetimes())
 
 
-# the first test still takes too much time
-# decorating given because I don't want to count on test running order
-given = settings(deadline=500)(given)
+# the first test in the process might take too much time
+settings.register_profile("django", deadline=500)
+settings.load_profile("django")
 
 
 class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
     @classmethod
     def setUpClass(cls):
+        super().setUpClass()
         cls.service = ServiceFactory.build(
             api_type=APITypes.orc,
             api_root="https://httpbin.org/",
@@ -53,12 +54,6 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
         # prevent parsing the yaml over and over and over
         cls.service.id = 1  # need pk for __hash__
         cls.service.build_client = lru_cache(1)(cls.service.build_client)
-
-    @classmethod
-    def tearDownClass(cls):
-        # we did not touch the database, we're Simple
-        # super() insists on calling _remove_databases_failures
-        pass
 
     @requests_mock.Mocker()
     def test_it_performs_simple_get(self, m):
@@ -76,7 +71,10 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
 
     @given(data_mapping_values())
     @example("../otherendpoint")
+    @example("./../.")
+    @example("foo/.")
     def test_it_can_construct_simple_path_parameters(self, field_value):
+        assume(field_value != ".")  # request_mock eats the single dot :pacman:
         # https://swagger.io/docs/specification/describing-parameters/#path-parameters
         context = {"seconds": field_value}
 
