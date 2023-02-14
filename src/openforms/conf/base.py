@@ -35,6 +35,7 @@ DEBUG = config("DEBUG", default=False)
 
 # = domains we're running on
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="", split=True)
+USE_X_FORWARDED_HOST = config("USE_X_FORWARDED_HOST", default=False)
 
 IS_HTTPS = config("IS_HTTPS", default=not DEBUG)
 

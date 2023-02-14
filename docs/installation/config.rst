@@ -184,6 +184,11 @@ Other settings
 * ``IS_HTTPS``: Used to construct absolute URLs and controls a variety of
   security settings. Defaults to the inverse of ``DEBUG``.
 
+* ``USE_X_FORWARDED_HOST``: whether to grab the domain/host from the
+  ``X-Forwarded-Host`` request header or not. This header is typically set by reverse
+  proxies (such as nginx, traefik, Apache...). Default ``False`` - this is a header
+  that can be spoofed and you need to ensure you control it before enabling this.
+
 * ``DB_ENGINE``: Backend to use as database system. See
   `Django DATABASE settings`_ for a full list of backends. Only the default is
   supported but others might work. Defaults to ``django.db.backends.postgresql``
