@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import {SubmitAction} from 'components/admin/forms/ActionButton';
@@ -23,10 +23,18 @@ const EXPRESSION_MAPPING_LANGUAGES = [
   ['jq', 'jq'],
 ];
 
-const ServiceFetchConfigurationForm = ({data = {}, onChange, onFormSave}) => {
+const ServiceFetchConfigurationForm = ({onFormSave}) => {
   // TODO ensure that onChange actually updates state with data
   const intl = useIntl();
   const formLogicContext = useContext(FormLogicContext);
+  const [data, setData] = useState({});
+
+  const onChange = event => {
+    const [prefix, key] = event.target.name.split('.');
+    let copiedData = Object.assign({}, data);
+    copiedData[key] = event.nativeEvent.target.value;
+    setData(copiedData);
+  };
 
   const serviceChoices = formLogicContext.services.map(service => {
     return [service.url, service.label];
@@ -134,24 +142,26 @@ const ServiceFetchConfigurationForm = ({data = {}, onChange, onFormSave}) => {
           </Field>
         </FormRow>
 
-        <FormRow>
-          <Field
-            name={'fetchConfiguration.body'}
-            label={
-              <FormattedMessage
-                defaultMessage="Request body"
-                description="Service fetch configuration modal form request body field label"
+        {data.method === 'POST' ? (
+          <FormRow>
+            <Field
+              name={'fetchConfiguration.body'}
+              label={
+                <FormattedMessage
+                  defaultMessage="Request body"
+                  description="Service fetch configuration modal form request body field label"
+                />
+              }
+            >
+              <JsonWidget
+                name="fetchConfiguration.body"
+                logic={data.body || {}}
+                cols={20}
+                onChange={onChange}
               />
-            }
-          >
-            <JsonWidget
-              name="fetchConfiguration.body"
-              logic={data.body || {}}
-              cols={20}
-              onChange={onChange}
-            />
-          </Field>
-        </FormRow>
+            </Field>
+          </FormRow>
+        ) : null}
 
         <FormRow>
           <Field
