@@ -224,7 +224,7 @@ drf_jsonschema @ git+https://github.com/maykinmedia/drf_jsonschema.git@b7a482670
     # via -r requirements/base.in
 drf-nested-routers==0.93.4
     # via -r requirements/base.in
-drf-polymorphic @ git+https://github.com/maykinmedia/drf-polymorphic@3584f285b6fd87ac2adad46a6c6e9fca5475cbdb
+drf-polymorphic==1.0.0
     # via -r requirements/base.in
 drf-spectacular==0.25.1
     # via -r requirements/base.in

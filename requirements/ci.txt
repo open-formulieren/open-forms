@@ -383,7 +383,7 @@ drf-nested-routers==0.93.4
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-drf-polymorphic @ git+https://github.com/maykinmedia/drf-polymorphic@3584f285b6fd87ac2adad46a6c6e9fca5475cbdb
+drf-polymorphic==1.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

@@ -7,7 +7,6 @@ from urllib.parse import urlparse
 
 ALLOWLIST = [
     "maykinmedia/drf_jsonschema",
-    "maykinmedia/drf-polymorphic",
 ]
 
 ROOT_DIR = Path(__file__).parent.parent.resolve()
