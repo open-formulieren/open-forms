@@ -3,6 +3,7 @@ from datetime import date, datetime, time
 from typing import Any, Literal, Optional, TypedDict, cast
 
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 
 from dateutil.relativedelta import relativedelta
 from glom import assign, glom
@@ -107,30 +108,27 @@ def normalize_config(
 
 
 def convert_to_python_type(component_type: str, value: Any) -> date | datetime:
-    if component_type == "date":
-        match value:
-            case datetime():
-                assert (
-                    value.tzinfo is not None
-                ), "Expected the input variable to be timezone aware!"
-                return timezone.localtime(value=value).date()
-            case date():
-                return value
-            case str():
-                # attempt to parse it as a date/datetime - could be because the variable
-                # was not properly typed and type conversion didn't happen.
-                # This can raise ValueError if the string is gibberish.
-                return parse_date(value)
+    match [value, component_type]:
+        case [datetime(), "date"]:
+            assert (
+                value.tzinfo is not None
+            ), "Expected the input variable to be timezone aware!"
+            return timezone.localtime(value=value).date()
+        case [date(), "date"]:
+            return value
+        case [str(), "date"]:
+            # attempt to parse it as a date/datetime - could be because the variable
+            # was not properly typed and type conversion didn't happen.
+            # This can raise ValueError if the string is gibberish.
+            return parse_date(value)
 
-    if component_type == "datetime":
-        match value:
-            case datetime():
-                return value
-            case str():
-                # attempt to parse it as a datetime - could be because the variable
-                # was not properly typed and type conversion didn't happen.
-                # This can raise ValueError if the string is gibberish.
-                return datetime.fromisoformat(value)
+        case [datetime(), "datetime"]:
+            return value
+        case [str(), "datetime"]:
+            parsed_value = parse_datetime(value)
+            if not parsed_value:
+                raise ValueError("Could not parse %s as a datetime" % value)
+            return parsed_value
 
     raise ValueError(
         "Unexpected type encountered when processing min/max validation for %s component."
@@ -146,7 +144,7 @@ def calculate_delta(
     assert config["mode"] == "relativeToVariable"
 
     base_value = glom(data, config["variable"], default=None)
-    if base_value is None or base_value == "":
+    if not base_value:
         return
 
     base_value = convert_to_python_type(component["type"], base_value)
@@ -162,7 +160,6 @@ def calculate_delta(
     value = func(base_value, delta)
 
     if component["type"] == "datetime":
-        value = timezone.localtime(value)
         # Truncate seconds/microseconds, because they can be problematic when comparing with variables like "now" which can have
         # seconds > 0 while the flatpickr editor always sets the seconds to 0. This means that if the datetime entered
         # by the user needs to be >= 2022-11-03T12:00:05Z and the user enters 2022-11-03 12:00, this will be outside
