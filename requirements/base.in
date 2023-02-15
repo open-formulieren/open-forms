@@ -59,7 +59,6 @@ django-tinymce
 django-treebeard
 django-yubin
 mozilla-django-oidc-db
-git+https://github.com/maykinmedia/drf_jsonschema.git@b7a482670274d11c1849e625a704018f1e9dd852#egg=drf_jsonschema
 pyopenssl
 maykin-django-two-factor-auth[phonenumbers]
 django-timeline-logger
@@ -72,6 +71,7 @@ djangorestframework~=3.13.0
 drf-nested-routers
 djangorestframework-camel-case
 django-filter
+drf-jsonschema-serializer
 drf-polymorphic
 
 # API schema generation (OpenAPI 3)

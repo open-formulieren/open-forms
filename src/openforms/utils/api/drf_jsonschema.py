@@ -1,12 +1,14 @@
 """
 drf_jsonschema integration - register custom converters
 """
+from typing import Any
+
 from django.utils.translation import gettext_lazy as _
 
-from drf_jsonschema.converters import (
+from drf_jsonschema_serializer.convert import converter
+from drf_jsonschema_serializer.converters import (
     BooleanFieldConverter,
     PrimaryKeyRelatedFieldConverter,
-    converter,
 )
 from rest_framework import serializers
 
@@ -17,14 +19,15 @@ from .fields import PrimaryKeyRelatedAsChoicesField
 class PrimaryKeyRelatedAsChoicesFieldConverter(PrimaryKeyRelatedFieldConverter):
     field_class = PrimaryKeyRelatedAsChoicesField
 
-    def convert(self, field):
-        result = super().convert(field)
+    def convert(self, field) -> dict[str, Any]:
+        result: dict[str, Any] = super().convert(field)
 
         # https://react-jsonschema-form.readthedocs.io/en/latest/usage/single/#custom-labels-for-enum-fields
         # enumNames is not JSON-schema compliant, but works with rjfs library.
 
         # output the options as enum
-        enum, enum_names = [], []
+        enum: list[int | None] = []
+        enum_names: list[str] = []
         for obj in field.queryset:
             enum.append(obj.pk)
             enum_names.append(str(obj))

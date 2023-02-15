@@ -5,9 +5,7 @@ import sys
 from pathlib import Path
 from urllib.parse import urlparse
 
-ALLOWLIST = [
-    "maykinmedia/drf_jsonschema",
-]
+ALLOWLIST = []
 
 ROOT_DIR = Path(__file__).parent.parent.resolve()
 
