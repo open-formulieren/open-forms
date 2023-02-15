@@ -45,8 +45,23 @@ def iterate_data_with_components(
     Iterate through a configuration and return a tuple with the component JSON, its value in the submission data
     and the path within the submission data.
 
-    Note: for repeating groups (editgrid component), each component can have multiple values, depending on how many items
-    the user added.
+    For example, for a configuration with components:
+
+    .. code:: json
+
+        [
+            {"key": "surname", "type": "textfield"},
+            {"key": "pets", "type": "editgrid", "components": [{"key": "name", "type": "textfield"}]}
+        ]
+
+    And a submission data:
+
+    .. code:: json
+
+        {"surname": "Doe", "pets": [{"name": "Qui"}, {"name": "Quo"}, {"name": "Qua"}] }
+
+    For the "Qui" item of the repeating group this function would yield:
+    ``({"key": "name", "type": "textfield"}, "Qui", "pets.0.name")``.
     """
     if configuration.get("type") == "columns":
         for column in configuration["columns"]:
@@ -55,7 +70,7 @@ def iterate_data_with_components(
     parent_type = configuration.get("type")
     if parent_type == "editgrid":
         parent_path = Path(data_path, Path.from_text(configuration["key"]))
-        group_data = glom(data, parent_path)
+        group_data = glom(data, parent_path, default=list)
         for index in range(len(group_data)):
             yield from iterate_data_with_components(
                 {"components": configuration.get("components", [])},
