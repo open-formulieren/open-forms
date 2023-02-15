@@ -269,6 +269,32 @@ class DynamicDatetimeConfigurationTests(SimpleTestCase):
         with self.assertRaises(ValueError):
             self._get_dynamic_config(component, {"wrongVar": "Im not a datetime!! :("})
 
+    def test_variable_string_datetime(self):
+        component = {
+            "type": "datetime",
+            "key": "aDatetime",
+            "openForms": {
+                "maxDate": {
+                    "mode": "relativeToVariable",
+                    "variable": "stringDateVar",
+                    "operator": "add",
+                    "delta": {
+                        "days": 0,
+                        "months": 0,
+                        "years": 0,
+                    },
+                },
+            },
+        }
+
+        new_component = self._get_dynamic_config(
+            component, {"stringDateVar": "2023-01-30T15:22:00+01:00"}
+        )
+
+        self.assertEqual(
+            new_component["datePicker"]["maxDate"], "2023-01-30T15:22:00+01:00"
+        )
+
     def test_variable_of_wrong_type_list(self):
         component = {
             "type": "datetime",
