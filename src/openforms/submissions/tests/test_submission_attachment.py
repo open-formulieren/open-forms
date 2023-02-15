@@ -45,6 +45,7 @@ class SubmissionAttachmentTest(TestCase):
 
     def test_resolve_uploads_from_formio_data(self):
         upload = TemporaryFileUploadFactory.create()
+        upload_in_column = TemporaryFileUploadFactory.create()
         data = {
             "my_normal_key": "foo",
             "my_file": [
@@ -65,13 +66,42 @@ class SubmissionAttachmentTest(TestCase):
                     "originalName": "my-image.jpg",
                 }
             ],
+            "fileInColumn": [
+                {
+                    "url": f"http://server/api/v2/submissions/files/{upload_in_column.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v2/submissions/files/{upload_in_column.uuid}",
+                        "form": "",
+                        "name": "my-image.jpg",
+                        "size": 46114,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                    "size": 46114,
+                    "type": "image/jpg",
+                    "storage": "url",
+                    "originalName": "my-image.jpg",
+                }
+            ],
         }
         components = [
             {"key": "my_normal_key", "type": "text"},
             {"key": "my_file", "type": "file"},
+            {
+                "key": "columnWithFile",
+                "type": "columns",
+                "columns": [{"key": "fileInColumn", "type": "file"}],
+            },
         ]
         actual = resolve_uploads_from_data({"components": components}, data)
-        self.assertEqual(actual, {"my_file": (components[1], [upload])})
+        self.assertEqual(
+            actual,
+            {
+                "my_file": (components[1], [upload]),
+                "fileInColumn": (components[2]["columns"][0], [upload_in_column]),
+            },
+        )
 
     def test_resolve_nested_uploads(self):
         upload_in_repeating_group_1 = TemporaryFileUploadFactory.create()
