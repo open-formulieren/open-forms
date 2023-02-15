@@ -15,7 +15,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         pkg-config \
         build-essential \
         python3-dev \
-        git \
         libpq-dev \
         libxml2-dev \
         libxslt-dev \
@@ -35,7 +34,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 
 WORKDIR /app
-RUN mkdir /app/src
 
 # Ensure we use the latest version of pip
 RUN pip install pip -U
@@ -102,7 +100,6 @@ VOLUME ["/app/log", "/app/media", "/app/private_media", "/app/certifi_ca_bundle"
 COPY --from=backend-build /usr/local/lib/python3.10 /usr/local/lib/python3.10
 COPY --from=backend-build /usr/local/bin/uwsgi /usr/local/bin/uwsgi
 COPY --from=backend-build /usr/local/bin/celery /usr/local/bin/celery
-COPY --from=backend-build /app/src/ /app/src/
 
 # copy frontend build statics
 COPY --from=frontend-build /app/src/openforms/static /app/src/openforms/static
