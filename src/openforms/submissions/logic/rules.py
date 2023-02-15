@@ -4,17 +4,10 @@ from typing import Callable, Iterable, Iterator, List, Optional
 import elasticapm
 from json_logic import jsonLogic
 
-from openforms.forms.models import FormLogic, FormStep, FormVariable
-from openforms.variables.models import ServiceFetchConfiguration
+from openforms.forms.models import FormLogic, FormStep
 
-from ..logic.binding import bind
 from ..models import Submission, SubmissionStep
-from .actions import (
-    ActionOperation,
-    ServiceFetchAction,
-    VariableAction,
-    compile_action_operation,
-)
+from .actions import ActionOperation
 from .datastructures import DataContainer
 from .log_utils import log_errors
 
@@ -160,26 +153,7 @@ def iter_evaluate_rules(
             if not triggered:
                 continue
 
-            for operation in map(compile_action_operation, rule.actions):
-                match operation:
-                    # only assigments to names in the context are done here
-                    case VariableAction(value=expression, variable=name):
-                        new_value = None
-                        with log_errors(expression, rule):
-                            new_value = jsonLogic(expression, data_container.data)
-                        data_container.update({name: new_value})
-                    case ServiceFetchAction(fetch_config=config_id, variable=name):
-
-                        config = ServiceFetchConfiguration.objects.get(pk=config_id)
-                        # XXX bind is expressed in terms of FormVariables
-                        # this disguise as an Action is temporary
-                        dummy_var = FormVariable(
-                            name=name, service_fetch_configuration=config
-                        )
-                        with log_errors({}, rule):
-                            data_container.update(
-                                {name: bind(dummy_var, data_container.data)}
-                            )
-                    case _:
-                        # other operations are left for the caller to apply
-                        yield operation
+            for operation in rule.action_operations:
+                if mutations := operation.eval(data_container.data):
+                    data_container.update(mutations)
+                yield operation

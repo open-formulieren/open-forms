@@ -68,3 +68,11 @@ class FormLogic(OrderedModel):
                 ),
                 code="invalid",
             )
+
+    @property
+    def action_operations(self):
+        from openforms.submissions.logic.actions import compile_action_operation
+
+        for action in map(compile_action_operation, self.actions):
+            action.rule = self
+            yield action

@@ -1,14 +1,19 @@
 from dataclasses import dataclass
-from typing import Any, Dict, Optional, TypedDict
+from typing import Any, Dict, Mapping, Optional, Type, TypedDict
+
+from json_logic import jsonLogic
 
 from openforms.formio.service import FormioConfigurationWrapper
 from openforms.forms.constants import LogicActionTypes
-from openforms.forms.models import FormVariable
-from openforms.typing import JSONObject
+from openforms.forms.models import FormLogic, FormVariable
+from openforms.typing import DataMapping, JSONObject
 from openforms.utils.json_logic import ComponentMeta, introspect_json_logic
+from openforms.variables.models import ServiceFetchConfiguration
 
+from ..logic.binding import bind
 from ..models import SubmissionStep
 from ..models.submission_step import DirtyData
+from .log_utils import log_errors
 
 
 class ActionDetails(TypedDict):
@@ -31,6 +36,8 @@ def compile_action_operation(action: ActionDict) -> "ActionOperation":
 
 
 class ActionOperation:
+    rule: FormLogic
+
     @staticmethod
     def from_action(action: ActionDict) -> "ActionOperation":
         action_type = action["action"]["type"]
@@ -42,6 +49,13 @@ class ActionOperation:
     ) -> None:
         """
         Implements the side effects of the action operation.
+        """
+        pass
+
+    def eval(self, context: DataMapping) -> DataMapping | None:
+        """
+        Return a mapping [name/path -> new_value] with changes that are to be
+        applied to the context.
         """
         pass
 
@@ -176,6 +190,10 @@ class VariableAction(ActionOperation):
     def from_action(cls, action: ActionDict) -> "VariableAction":
         return cls(variable=action["variable"], value=action["action"]["value"])
 
+    def eval(self, context: DataMapping) -> DataMapping:
+        with log_errors(self.value, self.rule):
+            return {self.variable: jsonLogic(self.value, context)}
+
     def get_action_log_data(
         self,
         component_map: Dict[str, ComponentMeta],
@@ -207,8 +225,20 @@ class ServiceFetchAction(ActionOperation):
     def from_action(cls, action: ActionDict) -> "ServiceFetchAction":
         return cls(variable=action["variable"], fetch_config=action["action"]["value"])
 
+    def eval(self, context: DataMapping) -> DataMapping:
+        # XXX bind is expressed in terms of FormVariables
+        # this disguise as an Action should be temporary
+        dummy_var = FormVariable(
+            name=self.variable,
+            service_fetch_configuration=ServiceFetchConfiguration.objects.get(
+                pk=self.fetch_config
+            ),
+        )
+        with log_errors({}, self.rule):  # TODO proper logging/error handling
+            return {dummy_var.name: bind(dummy_var, context)}
 
-ACTION_TYPE_MAPPING = {
+
+ACTION_TYPE_MAPPING: Mapping[str, Type[ActionOperation]] = {
     LogicActionTypes.property: PropertyAction,
     LogicActionTypes.disable_next: DisableNextAction,
     LogicActionTypes.step_not_applicable: StepNotApplicableAction,

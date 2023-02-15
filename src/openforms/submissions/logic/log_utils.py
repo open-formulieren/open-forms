@@ -6,8 +6,6 @@ from openforms.forms.models import FormLogic, FormVariable
 from openforms.logging import logevent
 from openforms.typing import JSONObject
 
-from .actions import compile_action_operation
-
 logger = logging.getLogger(__name__)
 
 
@@ -18,8 +16,7 @@ def get_targeted_components(
     initial_data: dict,
 ) -> List[dict]:
     targeted_components = []
-    for action in rule.actions:
-        action_operation = compile_action_operation(action)
+    for action_operation in rule.action_operations:
         action_log_data = action_operation.get_action_log_data(
             component_map=components_map,
             all_variables=all_variables,
