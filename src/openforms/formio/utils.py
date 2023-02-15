@@ -2,7 +2,7 @@ import logging
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 import elasticapm
-from glom import Path, glom
+from glom import glom
 
 from openforms.variables.constants import DEFAULT_INITIAL_VALUE, FormVariableDataTypes
 
@@ -33,64 +33,6 @@ def iter_components(
             yield from iter_components(
                 configuration=component, recursive=recursive, _is_root=False
             )
-
-
-def iterate_data_with_components(
-    configuration: JSONObject,
-    data: JSONObject,
-    data_path: Path = Path(),
-    filter_types: list[str] = None,
-) -> tuple[JSONObject, JSONObject, str] | None:
-    """
-    Iterate through a configuration and return a tuple with the component JSON, its value in the submission data
-    and the path within the submission data.
-
-    For example, for a configuration with components:
-
-    .. code:: json
-
-        [
-            {"key": "surname", "type": "textfield"},
-            {"key": "pets", "type": "editgrid", "components": [{"key": "name", "type": "textfield"}]}
-        ]
-
-    And a submission data:
-
-    .. code:: json
-
-        {"surname": "Doe", "pets": [{"name": "Qui"}, {"name": "Quo"}, {"name": "Qua"}] }
-
-    For the "Qui" item of the repeating group this function would yield:
-    ``({"key": "name", "type": "textfield"}, "Qui", "pets.0.name")``.
-    """
-    if configuration.get("type") == "columns":
-        for column in configuration["columns"]:
-            yield from iterate_data_with_components(column, data, data_path)
-
-    parent_type = configuration.get("type")
-    if parent_type == "editgrid":
-        parent_path = Path(data_path, Path.from_text(configuration["key"]))
-        group_data = glom(data, parent_path, default=list)
-        for index in range(len(group_data)):
-            yield from iterate_data_with_components(
-                {"components": configuration.get("components", [])},
-                data,
-                data_path=Path(parent_path, index),
-            )
-    else:
-        for child_component in configuration.get("components", []):
-            yield from iterate_data_with_components(child_component, data, data_path)
-
-    filter_out = (parent_type in filter_types) if filter_types else False
-    if "key" in configuration and not filter_out:
-        component_path = Path(data_path, Path.from_text(configuration["key"]))
-        component_data = glom(data, component_path, default=None)
-        if component_data is not None:
-            yield configuration, component_data, glom_path_to_str(component_path)
-
-
-def glom_path_to_str(path: Path) -> str:
-    return ".".join([str(value) for value in path.values()])
 
 
 @elasticapm.capture_span(span_type="app.formio.configuration")
