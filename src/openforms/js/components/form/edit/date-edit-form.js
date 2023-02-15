@@ -13,7 +13,7 @@ const MESSAGES = {
   },
 };
 
-const getMinMaxValidationEditForm = fieldName => {
+const getMinMaxValidationEditForm = (fieldName, componentType) => {
   const panel = {
     type: 'panel',
     key: `openForms.${fieldName}`,
@@ -68,7 +68,9 @@ const getMinMaxValidationEditForm = fieldName => {
           return isFixedValue && !data[attrName];
         },
       },
-      {
+      // Only include 'includingToday' for dates, since it doesn't make sense for datetimes when checking if a
+      // datetime is in the past/future
+      componentType === 'date' && {
         type: 'checkbox',
         key: `openForms.${fieldName}.includeToday`,
         label: 'Including today',

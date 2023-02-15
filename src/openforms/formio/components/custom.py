@@ -9,7 +9,11 @@ from openforms.submissions.models import Submission
 from openforms.typing import DataMapping
 from openforms.utils.date import format_date_value
 
-from ..dynamic_config.date import FormioDateComponent, mutate as mutate_date
+from ..dynamic_config.date import (
+    FormioDateComponent,
+    FormioDatetimeComponent,
+    mutate as mutate_min_max_validation,
+)
 from ..formatters.custom import DateFormatter, DateTimeFormatter, MapFormatter
 from ..formatters.formio import DefaultFormatter, TextFieldFormatter
 from ..registry import BasePlugin, register
@@ -40,12 +44,23 @@ class Date(BasePlugin):
         In the JS, this component type inherits from Formio datetime component. See
         ``src/openforms/js/components/form/date.js`` for the various configurable options.
         """
-        mutate_date(component, data)
+        mutate_min_max_validation(component, data)
 
 
 @register("datetime")
 class Datetime(BasePlugin):
     formatter = DateTimeFormatter
+
+    def mutate_config_dynamically(
+        self,
+        component: FormioDatetimeComponent,
+        submission: Submission,
+        data: DataMapping,
+    ) -> None:
+        """
+        Implement the behaviour for our custom datetime component options.
+        """
+        mutate_min_max_validation(component, data)
 
 
 @register("map")
