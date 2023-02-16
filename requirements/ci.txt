@@ -163,7 +163,6 @@ django==3.2.18
     #   django-appconf
     #   django-axes
     #   django-camunda
-    #   django-choices
     #   django-cookie-consent
     #   django-cors-headers
     #   django-csp
@@ -227,11 +226,6 @@ django-capture-tag==1.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-choices==1.7.1
-    # via
-    #   -c requirements/base.txt
-    #   -r requirements/base.txt
-    #   zgw-consumers
 django-colorfield==0.7.0
     # via
     #   -c requirements/base.txt
@@ -780,7 +774,6 @@ six==1.15.0
     #   -r requirements/base.txt
     #   bleach
     #   click-repl
-    #   django-choices
     #   freezegun
     #   furl
     #   html5lib
@@ -938,7 +931,7 @@ zeep==4.1.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-zgw-consumers==0.22.0
+zgw-consumers==0.24.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

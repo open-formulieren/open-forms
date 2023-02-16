@@ -92,7 +92,6 @@ django==3.2.18
     #   django-appconf
     #   django-axes
     #   django-camunda
-    #   django-choices
     #   django-cookie-consent
     #   django-cors-headers
     #   django-csp
@@ -142,8 +141,6 @@ django-camunda==0.13.0
     # via -r requirements/base.in
 django-capture-tag==1.0
     # via -r requirements/base.in
-django-choices==1.7.1
-    # via zgw-consumers
 django-colorfield==0.7.0
     # via -r requirements/base.in
 django-cookie-consent==0.3.1
@@ -406,7 +403,6 @@ six==1.15.0
     # via
     #   bleach
     #   click-repl
-    #   django-choices
     #   furl
     #   html5lib
     #   isodate
@@ -470,7 +466,7 @@ xmltodict==0.12.0
     # via -r requirements/base.in
 zeep==4.1.0
     # via -r requirements/base.in
-zgw-consumers==0.22.0
+zgw-consumers==0.24.0
     # via -r requirements/base.in
 
 # The following packages are considered to be unsafe in a requirements file:
