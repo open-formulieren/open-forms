@@ -144,7 +144,6 @@ django-capture-tag==1.0
     # via -r requirements/base.in
 django-choices==1.7.1
     # via
-    #   -r requirements/base.in
     #   django-digid-eherkenning
     #   django-simple-certmanager
     #   zgw-consumers
