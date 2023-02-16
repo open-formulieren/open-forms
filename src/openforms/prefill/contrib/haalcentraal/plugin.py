@@ -29,7 +29,7 @@ class HaalCentraalPrefill(BasePlugin):
     request_kwargs = dict(headers={"Accept": "application/hal+json"})
 
     @staticmethod
-    def get_available_attributes():
+    def get_available_attributes() -> list[tuple[str, str]]:
         return Attributes.choices
 
     @classmethod

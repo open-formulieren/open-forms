@@ -426,7 +426,7 @@ class GlobalConfiguration(SingletonModel):
     successful_submissions_removal_method = models.CharField(
         _("successful submissions removal method"),
         max_length=50,
-        choices=RemovalMethods,
+        choices=RemovalMethods.choices,
         default=RemovalMethods.delete_permanently,
         help_text=_("How successful submissions will be removed after the limit"),
     )
@@ -441,7 +441,7 @@ class GlobalConfiguration(SingletonModel):
     incomplete_submissions_removal_method = models.CharField(
         _("incomplete submissions removal method"),
         max_length=50,
-        choices=RemovalMethods,
+        choices=RemovalMethods.choices,
         default=RemovalMethods.delete_permanently,
         help_text=_("How incomplete submissions will be removed after the limit"),
     )
@@ -456,7 +456,7 @@ class GlobalConfiguration(SingletonModel):
     errored_submissions_removal_method = models.CharField(
         _("errored submissions removal method"),
         max_length=50,
-        choices=RemovalMethods,
+        choices=RemovalMethods.choices,
         default=RemovalMethods.delete_permanently,
         help_text=_("How errored submissions will be removed after the"),
     )

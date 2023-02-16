@@ -114,9 +114,11 @@ def generate_prefill_from_spec_url(
             names.remove(n)
         raise Exception(f"generated names not unique, duplicates: {names}")
 
+    yield "from django.db import models"
     yield "from django.utils.translation import gettext_lazy as _"
-    yield "from djchoices import ChoiceItem, DjangoChoices"
-    yield "class Attributes(DjangoChoices):"
+    yield ""
+    yield ""
+    yield "class Attributes(models.TextChoices):"
     yield '    """'
     yield "    this code was (at some point) generated from an API-spec, so names and labels are in Dutch if the spec was Dutch"
     yield ""
@@ -132,7 +134,7 @@ def generate_prefill_from_spec_url(
     for c in sorted(raw_props, key=lambda o: o.name):
         label = " > ".join(c.labels)  # .replace(" > []", "[]")
         label = f'_("{label}")'
-        yield f'    {c.name} = ChoiceItem("{c.path}", {label})'
+        yield f'    {c.name} = "{c.path}", {label}'
 
     yield ""
 

@@ -29,7 +29,7 @@ class CompletionValidationSerializer(serializers.Serializer):
         ],
     )
     submission_allowed = serializers.ChoiceField(
-        choices=SubmissionAllowedChoices,
+        choices=SubmissionAllowedChoices.choices,
     )
     privacy_policy_accepted = serializers.BooleanField()
 

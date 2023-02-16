@@ -1,55 +1,61 @@
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from djchoices import ChoiceItem, DjangoChoices
 
-
-class CSPDirective(DjangoChoices):
+class CSPDirective(models.TextChoices):
     # via https://django-csp.readthedocs.io/en/latest/configuration.html
-    DEFAULT_SRC = ChoiceItem("default-src", label="default-src")
-    SCRIPT_SRC = ChoiceItem("script-src", label="script-src")
-    SCRIPT_SRC_ATTR = ChoiceItem("script-src-attr", label="script-src-attr")
-    SCRIPT_SRC_ELEM = ChoiceItem("script-src-elem", label="script-src-elem")
-    IMG_SRC = ChoiceItem("img-src", label="img-src")
-    OBJECT_SRC = ChoiceItem("object-src", label="object-src")
-    PREFETCH_SRC = ChoiceItem("prefetch-src", label="prefetch-src")
-    MEDIA_SRC = ChoiceItem("media-src", label="media-src")
-    FRAME_SRC = ChoiceItem("frame-src", label="frame-src")
-    FONT_SRC = ChoiceItem("font-src", label="font-src")
-    CONNECT_SRC = ChoiceItem("connect-src", label="connect-src")
-    STYLE_SRC = ChoiceItem("style-src", label="style-src")
-    STYLE_SRC_ATTR = ChoiceItem("style-src-attr", label="style-src-attr")
-    STYLE_SRC_ELEM = ChoiceItem("style-src-elem", label="style-src-elem")
-    BASE_URI = ChoiceItem(
-        "base-uri", label="base-uri"
+    DEFAULT_SRC = "default-src", "default-src"
+    SCRIPT_SRC = "script-src", "script-src"
+    SCRIPT_SRC_ATTR = "script-src-attr", "script-src-attr"
+    SCRIPT_SRC_ELEM = "script-src-elem", "script-src-elem"
+    IMG_SRC = "img-src", "img-src"
+    OBJECT_SRC = "object-src", "object-src"
+    PREFETCH_SRC = "prefetch-src", "prefetch-src"
+    MEDIA_SRC = "media-src", "media-src"
+    FRAME_SRC = "frame-src", "frame-src"
+    FONT_SRC = "font-src", "font-src"
+    CONNECT_SRC = "connect-src", "connect-src"
+    STYLE_SRC = "style-src", "style-src"
+    STYLE_SRC_ATTR = "style-src-attr", "style-src-attr"
+    STYLE_SRC_ELEM = "style-src-elem", "style-src-elem"
+    BASE_URI = (
+        "base-uri",
+        "base-uri",
     )  # Note: This doesn’t use default-src as a fall-back.
-    CHILD_SRC = ChoiceItem(
-        "child-src", label="child-src"
+    CHILD_SRC = (
+        "child-src",
+        "child-src",
     )  # Note: Deprecated in CSP v3. Use frame-src and worker-src instead.
-    FRAME_ANCESTORS = ChoiceItem(
-        "frame-ancestors", label="frame-ancestors"
+    FRAME_ANCESTORS = (
+        "frame-ancestors",
+        "frame-ancestors",
     )  # Note: This doesn’t use default-src as a fall-back.
-    NAVIGATE_TO = ChoiceItem(
-        "navigate-to", label="navigate-to"
+    NAVIGATE_TO = (
+        "navigate-to",
+        "navigate-to",
     )  # Note: This doesn’t use default-src as a fall-back.
-    FORM_ACTION = ChoiceItem(
-        "form-action", label="form-action"
+    FORM_ACTION = (
+        "form-action",
+        "form-action",
     )  # Note: This doesn’t use default-src as a fall-back.
-    SANDBOX = ChoiceItem(
-        "sandbox", label="sandbox"
-    )  # Note: This doesn’t use default-src as a fall-back.
-    REPORT_URI = ChoiceItem(
-        "report-uri", label="report-uri"
+    SANDBOX = "sandbox", "sandbox"  # Note: This doesn’t use default-src as a fall-back.
+    REPORT_URI = (
+        "report-uri",
+        "report-uri",
     )  # Each URI can be a full or relative URI. None Note: This doesn’t use default-src as a fall-back.
-    REPORT_TO = ChoiceItem(
-        "report-to", label="report-to"
+    REPORT_TO = (
+        "report-to",
+        "report-to",
     )  # A string describing a reporting group. None Note: This doesn’t use default-src as a fall-back. See Section 1.2: https://w3c.github.io/reporting/#group
-    MANIFEST_SRC = ChoiceItem("manifest-src", label="manifest-src")
-    WORKER_SRC = ChoiceItem("worker-src", label="worker-src")
-    PLUGIN_TYPES = ChoiceItem(
-        "plugin-types", label="plugin-types"
+    MANIFEST_SRC = "manifest-src", "manifest-src"
+    WORKER_SRC = "worker-src", "worker-src"
+    PLUGIN_TYPES = (
+        "plugin-types",
+        "plugin-types",
     )  # Note: This doesn’t use default-src as a fall-back.
-    REQUIRE_SRI_FOR = ChoiceItem(
-        "require-sri-for", label="require-sri-for"
+    REQUIRE_SRI_FOR = (
+        "require-sri-for",
+        "require-sri-for",
     )  # Valid values: script, style, or both. See: require-sri-for-known-tokens Note: This doesn’t use default-src as a fall-back.
 
     # CSP_UPGRADE_INSECURE_REQUESTS  # Include upgrade-insecure-requests directive. A boolean. False See: upgrade-insecure-requests
@@ -57,34 +63,34 @@ class CSPDirective(DjangoChoices):
     # CSP_INCLUDE_NONCE_IN  # Include dynamically generated nonce in all listed directives, e.g. CSP_INCLUDE_NONCE_IN=['script-src'] will add 'nonce-<b64-value>' to the script-src directive.
 
 
-class UploadFileType(DjangoChoices):
-    all = ChoiceItem("*", label=_("any filetype"))
-    heic = ChoiceItem("image/heic", label=(".heic"))
-    png = ChoiceItem("image/png", label=_(".png"))
-    jpg = ChoiceItem("image/jpeg", label=_(".jpg"))
-    pdf = ChoiceItem("application/pdf", label=_(".pdf"))
-    xls = ChoiceItem("application/vnd.ms-excel", label=_(".xls"))
-    xlsx = ChoiceItem(
+class UploadFileType(models.TextChoices):
+    all = "*", _("any filetype")
+    heic = "image/heic", (".heic")
+    png = "image/png", _(".png")
+    jpg = "image/jpeg", _(".jpg")
+    pdf = "application/pdf", _(".pdf")
+    xls = "application/vnd.ms-excel", _(".xls")
+    xlsx = (
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        label=_(".xlsx"),
+        _(".xlsx"),
     )
-    csv = ChoiceItem("text/csv", label=_(".csv"))
-    txt = ChoiceItem("text/plain", label=(".txt"))
-    doc = ChoiceItem("application/msword", label=_(".doc"))
-    docx = ChoiceItem(
+    csv = "text/csv", _(".csv")
+    txt = "text/plain", (".txt")
+    doc = "application/msword", _(".doc")
+    docx = (
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        label=_(".docx"),
+        _(".docx"),
     )
-    open_office = ChoiceItem(
+    open_office = (
         "application/vnd.oasis.opendocument.*,application/vnd.stardivision.*,application/vnd.sun.xml.*",
-        label=_("Open Office"),
+        _("Open Office"),
     )
-    zip = ChoiceItem("application/zip", label=_(".zip"))
-    rar = ChoiceItem("application/vnd.rar", label=_(".rar"))
-    tar = ChoiceItem("application/x-tar", label=_(".tar"))
-    msg = ChoiceItem("application/vnd.ms-outlook", label=_(".msg"))
-    dwg = ChoiceItem(
+    zip = "application/zip", _(".zip")
+    rar = "application/vnd.rar", _(".rar")
+    tar = "application/x-tar", _(".tar")
+    msg = "application/vnd.ms-outlook", _(".msg")
+    dwg = (
         "application/acad.dwg,application/autocad_dwg.dwg,application/dwg.dwg,application/x-acad.dwg,"
         "application/x-autocad.dwg,application/x-dwg.dwg,drawing/dwg.dwg,image/vnd.dwg,image/x-dwg.dwg",
-        label=_(".dwg"),
+        _(".dwg"),
     )

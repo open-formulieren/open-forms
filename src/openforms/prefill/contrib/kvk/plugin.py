@@ -36,7 +36,7 @@ class KVK_KVKNumberPrefill(BasePlugin):
 
     requires_auth = AuthAttribute.kvk
 
-    def get_available_attributes(self):
+    def get_available_attributes(self) -> list[tuple[str, str]]:
         return Attributes.choices
 
     def get_prefill_values(

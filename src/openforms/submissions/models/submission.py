@@ -176,7 +176,7 @@ class Submission(models.Model):
     registration_status = models.CharField(
         _("registration backend status"),
         max_length=50,
-        choices=RegistrationStatuses,
+        choices=RegistrationStatuses.choices,
         default=RegistrationStatuses.pending,
         help_text=_(
             "Indication whether the registration in the configured backend was successful."

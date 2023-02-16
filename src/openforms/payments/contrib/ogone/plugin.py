@@ -16,7 +16,7 @@ from openforms.logging import logevent
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from ...base import BasePlugin
-from ...constants import PaymentStatus, UserAction
+from ...constants import PAYMENT_STATUS_FINAL, UserAction
 from ...contrib.ogone.client import OgoneClient
 from ...contrib.ogone.constants import OgoneStatus
 from ...contrib.ogone.exceptions import InvalidSignature
@@ -120,7 +120,7 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
         return payment
 
     def apply_status(self, payment, ogone_status) -> None:
-        if payment.status in PaymentStatus.is_final:
+        if payment.status in PAYMENT_STATUS_FINAL:
             # shouldn't happen or race-condition
             return
 
@@ -128,7 +128,7 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
         # run this query as atomic update()
         qs = SubmissionPayment.objects.filter(id=payment.id)
-        qs = qs.exclude(status__in=PaymentStatus.is_final)
+        qs = qs.exclude(status__in=PAYMENT_STATUS_FINAL)
         qs = qs.exclude(status=new_status)
         res = qs.update(status=new_status)
 

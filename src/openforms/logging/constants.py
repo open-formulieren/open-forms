@@ -1,8 +1,7 @@
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from djchoices import ChoiceItem, DjangoChoices
 
-
-class TimelineLogTags(DjangoChoices):
-    AVG = ChoiceItem("avg", _("AVG"))
-    hijack = ChoiceItem("hijack", _("Hijack"))
+class TimelineLogTags(models.TextChoices):
+    AVG = "avg", _("AVG")
+    hijack = "hijack", _("Hijack")

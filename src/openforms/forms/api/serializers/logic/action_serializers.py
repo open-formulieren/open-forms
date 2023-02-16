@@ -11,7 +11,12 @@ from rest_framework import serializers
 from openforms.api.serializers import DummySerializer
 from openforms.submissions.api.fields import URLRelatedField
 
-from ....constants import LogicActionTypes, PropertyTypes
+from ....constants import (
+    LOGIC_ACTION_TYPES_REQUIRING_COMPONENT,
+    LOGIC_ACTION_TYPES_REQUIRING_VARIABLE,
+    LogicActionTypes,
+    PropertyTypes,
+)
 from ....models import FormStep
 from ...validators import JsonLogicActionValueValidator
 from .fields import ActionFormStepUUIDField
@@ -27,7 +32,7 @@ class ComponentPropertySerializer(serializers.Serializer):
     type = serializers.ChoiceField(
         label=_("type"),
         help_text=_("The type of the value field"),
-        choices=PropertyTypes,
+        choices=PropertyTypes.choices,
     )
 
 
@@ -62,17 +67,17 @@ class LogicValueActionSerializer(serializers.Serializer):
 
 class LogicActionPolymorphicSerializer(PolymorphicSerializer):
     type = serializers.ChoiceField(
-        choices=LogicActionTypes,
+        choices=LogicActionTypes.choices,
         label=_("Type"),
         help_text=_("Action type for this particular action."),
     )
 
     discriminator_field = "type"
     serializer_mapping = {
-        LogicActionTypes.disable_next: DummySerializer,
-        LogicActionTypes.property: LogicPropertyActionSerializer,
-        LogicActionTypes.step_not_applicable: DummySerializer,
-        LogicActionTypes.variable: LogicValueActionSerializer,
+        str(LogicActionTypes.disable_next): DummySerializer,
+        str(LogicActionTypes.property): LogicPropertyActionSerializer,
+        str(LogicActionTypes.step_not_applicable): DummySerializer,
+        str(LogicActionTypes.variable): LogicValueActionSerializer,
     }
 
 
@@ -90,7 +95,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
             action_types=", ".join(
                 [
                     f"`{action_type}`"
-                    for action_type in sorted(LogicActionTypes.requires_component)
+                    for action_type in sorted(LOGIC_ACTION_TYPES_REQUIRING_COMPONENT)
                 ]
             )
         ),
@@ -106,7 +111,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
             action_types=", ".join(
                 [
                     f"`{action_type}`"
-                    for action_type in sorted(LogicActionTypes.requires_variable)
+                    for action_type in sorted(LOGIC_ACTION_TYPES_REQUIRING_VARIABLE)
                 ]
             )
         ),
@@ -159,7 +164,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
 
         if (
             action_type
-            and action_type in LogicActionTypes.requires_component
+            and action_type in LOGIC_ACTION_TYPES_REQUIRING_COMPONENT
             and not component
         ):
             raise serializers.ValidationError(
@@ -169,7 +174,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
 
         if (
             action_type
-            and action_type in LogicActionTypes.requires_variable
+            and action_type in LOGIC_ACTION_TYPES_REQUIRING_VARIABLE
             and not variable
         ):
             raise serializers.ValidationError(

@@ -7,7 +7,7 @@ from freezegun import freeze_time
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ..constants import PaymentStatus
+from ..constants import PAYMENT_STATUS_FINAL, PaymentStatus
 from ..models import SubmissionPayment
 from .factories import SubmissionPaymentFactory
 
@@ -104,7 +104,7 @@ class SubmissionPaymentTests(TestCase):
     def test_status_is_final(self):
         for s in [PaymentStatus.started, PaymentStatus.processing]:
             with self.subTest(s):
-                self.assertNotIn(s, PaymentStatus.is_final)
+                self.assertNotIn(s, PAYMENT_STATUS_FINAL)
 
         for s in [
             PaymentStatus.registered,
@@ -112,4 +112,4 @@ class SubmissionPaymentTests(TestCase):
             PaymentStatus.failed,
         ]:
             with self.subTest(s):
-                self.assertIn(s, PaymentStatus.is_final)
+                self.assertIn(s, PAYMENT_STATUS_FINAL)

@@ -1,25 +1,29 @@
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from djchoices import ChoiceItem, DjangoChoices
+
+class JSONPrimitiveVariableTypes(models.TextChoices):
+    string = "string", _("String")
+    number = "number", _("Number")
+    boolean = "boolean", _("Boolean")
+    null = "null", _("Null")
 
 
-class JSONPrimitiveVariableTypes(DjangoChoices):
-    string = ChoiceItem("string", _("String"))
-    number = ChoiceItem("number", _("Number"))
-    boolean = ChoiceItem("boolean", _("Boolean"))
-    null = ChoiceItem("null", _("Null"))
+class JSONComplexVariableTypes(models.TextChoices):
+    object = "object", _("Object")
+    array = "array", _("Array")
 
 
-class JSONComplexVariableTypes(DjangoChoices):
-    object = ChoiceItem("object", _("Object"))
-    array = ChoiceItem("array", _("Array"))
+class JSONVariableTypes(models.TextChoices):
+    object = "object", _("Object")
+    array = "array", _("Array")
+    string = "string", _("String")
+    number = "number", _("Number")
+    boolean = "boolean", _("Boolean")
+    null = "null", _("Null")
 
 
-class JSONVariableTypes(JSONComplexVariableTypes, JSONPrimitiveVariableTypes):
-    pass
-
-
-class VariableSourceChoices(DjangoChoices):
-    component = ChoiceItem("component", _("Component"))
-    manual = ChoiceItem("manual", _("Manual"))
-    interpolate = ChoiceItem("interpolate", _("Interpolation"))
+class VariableSourceChoices(models.TextChoices):
+    component = "component", _("Component")
+    manual = "manual", _("Manual")
+    interpolate = "interpolate", _("Interpolation")

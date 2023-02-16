@@ -1,39 +1,43 @@
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from djchoices import ChoiceItem, DjangoChoices
+
+class PaymentRequestType(models.TextChoices):
+    get = "get"
+    post = "post"
 
 
-class PaymentRequestType(DjangoChoices):
-    get = ChoiceItem("get")
-    post = ChoiceItem("post")
+class UserAction(models.TextChoices):
+    accept = "accept"
+    exception = "exception"
+    cancel = "cancel"
+    # back = "back"
+    # decline = "decline"
+
+    unknown = "unknown"
 
 
-class UserAction(DjangoChoices):
-    accept = ChoiceItem("accept")
-    exception = ChoiceItem("exception")
-    cancel = ChoiceItem("cancel")
-    # back = ChoiceItem("back")
-    # decline = ChoiceItem("decline")
-
-    unknown = ChoiceItem("unknown")
-
-
-class PaymentStatus(DjangoChoices):
-    # not_required = ChoiceItem("not_required", _("Not required"))
+class PaymentStatus(models.TextChoices):
+    # not_required = "not_required", _("Not required")
 
     # in-progress
-    started = ChoiceItem("started", _("Started by user"))
-    processing = ChoiceItem("processing", _("Backend is processing"))
+    started = "started", _("Started by user")
+    processing = "processing", _("Backend is processing")
 
     # payment finished
-    failed = ChoiceItem("failed", _("Cancelled or failed"))
-    completed = ChoiceItem("completed", _("Completed by user"))
+    failed = "failed", _("Cancelled or failed")
+    completed = "completed", _("Completed by user")
 
     # flow done
-    registered = ChoiceItem("registered", _("Completed and registered"))
+    registered = "registered", _("Completed and registered")
 
-    is_final = {
-        failed.value,
-        completed.value,
-        registered.value,
-    }
+    @classmethod
+    def get_label(cls, value: str) -> str:
+        return dict(cls.choices)[value]
+
+
+PAYMENT_STATUS_FINAL: set[str] = {
+    PaymentStatus.failed,
+    PaymentStatus.completed,
+    PaymentStatus.registered,
+}

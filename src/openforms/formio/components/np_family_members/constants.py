@@ -1,8 +1,7 @@
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from djchoices import ChoiceItem, DjangoChoices
 
-
-class FamilyMembersDataAPIChoices(DjangoChoices):
-    haal_centraal = ChoiceItem("haal_centraal", _("Haal Centraal"))
-    stuf_bg = ChoiceItem("stuf_bg", _("StufBg"))
+class FamilyMembersDataAPIChoices(models.TextChoices):
+    haal_centraal = "haal_centraal", _("Haal Centraal")
+    stuf_bg = "stuf_bg", _("StufBg")

@@ -1,8 +1,8 @@
 from unittest.mock import patch
 
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from djchoices import ChoiceItem, DjangoChoices
 from rest_framework import serializers, status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
@@ -16,9 +16,9 @@ from ...registry import Registry
 register = Registry()
 
 
-class TestAttributes(DjangoChoices):
-    one = ChoiceItem("one_id", "One Label")
-    two = ChoiceItem("two_id", "Two Label")
+class TestAttributes(models.TextChoices):
+    one = "one_id", "One Label"
+    two = "two_id", "Two Label"
 
 
 class OptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):

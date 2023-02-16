@@ -1,5 +1,3 @@
-from typing import cast
-
 from django.utils.translation import gettext_lazy as _
 
 from drf_polymorphic.serializers import PolymorphicSerializer
@@ -71,7 +69,7 @@ class NullTypeDefinitionSerializer(serializers.Serializer):
 
 class ManualVariableSerializer(PolymorphicSerializer):
     type = serializers.ChoiceField(
-        choices=JSONVariableTypes,
+        choices=JSONVariableTypes.choices,
         required=True,
         allow_blank=False,
         label=_("Manual variable type"),
@@ -80,14 +78,14 @@ class ManualVariableSerializer(PolymorphicSerializer):
 
     discriminator_field = "type"
     serializer_mapping = {
-        cast(str, JSONVariableTypes.string): StringTypeDefinitionSerializer,
-        cast(str, JSONVariableTypes.number): NumberTypeDefinitionSerializer,
-        cast(str, JSONVariableTypes.boolean): BooleanTypeDefinitionSerializer,
-        cast(str, JSONVariableTypes.null): NullTypeDefinitionSerializer,
+        str(JSONVariableTypes.string): StringTypeDefinitionSerializer,
+        str(JSONVariableTypes.number): NumberTypeDefinitionSerializer,
+        str(JSONVariableTypes.boolean): BooleanTypeDefinitionSerializer,
+        str(JSONVariableTypes.null): NullTypeDefinitionSerializer,
         # monkeypatched later on
-        cast(str, JSONVariableTypes.object): serializers.Serializer,
+        str(JSONVariableTypes.object): serializers.Serializer,
         # monkeypatched later on
-        cast(str, JSONVariableTypes.array): serializers.Serializer,
+        str(JSONVariableTypes.array): serializers.Serializer,
     }
 
 
@@ -119,16 +117,16 @@ class InterpolateVariableSerializer(serializers.Serializer):
 
 class VariableDefinitionSerializer(PolymorphicSerializer):
     source = serializers.ChoiceField(
-        choices=VariableSourceChoices,
+        choices=VariableSourceChoices.choices,
         label=_("Variable source"),
         help_text=_("Designates where the value of the variable is sourced."),
     )
 
     discriminator_field = "source"
     serializer_mapping = {
-        cast(str, VariableSourceChoices.component): ComponentVariableSerializer,
-        cast(str, VariableSourceChoices.manual): ManualVariableSerializer,
-        cast(str, VariableSourceChoices.interpolate): InterpolateVariableSerializer,
+        str(VariableSourceChoices.component): ComponentVariableSerializer,
+        str(VariableSourceChoices.manual): ManualVariableSerializer,
+        str(VariableSourceChoices.interpolate): InterpolateVariableSerializer,
     }
 
 
@@ -150,10 +148,10 @@ class ArrayVariableDefinitionSerializer(serializers.Serializer):
 
 # recursive references, fun!
 ManualVariableSerializer.serializer_mapping[
-    cast(str, JSONVariableTypes.object)
+    str(JSONVariableTypes.object)
 ] = ObjectVariableDefinitionSerializer
 ManualVariableSerializer.serializer_mapping[
-    cast(str, JSONVariableTypes.array)
+    str(JSONVariableTypes.array)
 ] = ArrayVariableDefinitionSerializer
 
 
@@ -179,8 +177,8 @@ class ComplexVariableSerializer(PolymorphicSerializer):
 
     discriminator_field = "type"
     serializer_mapping = {
-        cast(str, JSONComplexVariableTypes.object): ObjectVariableDefinitionSerializer,
-        cast(str, JSONComplexVariableTypes.array): ArrayVariableDefinitionSerializer,
+        str(JSONComplexVariableTypes.object): ObjectVariableDefinitionSerializer,
+        str(JSONComplexVariableTypes.array): ArrayVariableDefinitionSerializer,
     }
 
 

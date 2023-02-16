@@ -1,11 +1,11 @@
-from djchoices import ChoiceItem, DjangoChoices
+from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
-class AppointmentDetailsStatus(DjangoChoices):
-    success = ChoiceItem("success", "Success")
-    missing_info = ChoiceItem(
-        "missing_info",
-        "Submission does not contain all the info needed to make an appointment",
+class AppointmentDetailsStatus(models.TextChoices):
+    success = "success", _("Success")
+    missing_info = "missing_info", _(
+        "Submission does not contain all the info needed to make an appointment"
     )
-    failed = ChoiceItem("failed", "Failed")
-    cancelled = ChoiceItem("cancelled", "Cancelled")
+    failed = "failed", _("Failed")
+    cancelled = "cancelled", _("Cancelled")

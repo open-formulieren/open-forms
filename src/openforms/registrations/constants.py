@@ -1,61 +1,42 @@
+from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-from djchoices import ChoiceItem, DjangoChoices
 
 # field name in the component configuration JSON schema
 REGISTRATION_ATTRIBUTE = "registration.attribute"
 
 
-class RegistrationAttribute(DjangoChoices):
+class RegistrationAttribute(models.TextChoices):
     # Initiator
     # Medewerker
-    initiator_medewerker_nummer = ChoiceItem(
-        "medewerker_nummer", _("Employee > Employee number")
-    )
+    initiator_medewerker_nummer = "medewerker_nummer", _("Employee > Employee number")
     # Natuurlijk Persoon
-    initiator_voorletters = ChoiceItem(
-        "initiator_voorletters", _("Initiator > Voorletters")
+    initiator_voorletters = "initiator_voorletters", _("Initiator > Voorletters")
+    initiator_voornamen = "initiator_voornamen", _("Initiator > Voornamen")
+    initiator_geslachtsnaam = "initiator_geslachtsnaam", _("Initiator > Geslachtsnaam")
+    initiator_tussenvoegsel = "initiator_tussenvoegsel", _("Initiator > Tussenvoegsel")
+    initiator_geslachtsaanduiding = "initiator_geslachtsaanduiding", _(
+        "Initiator > Geslachtsaanduiding"
     )
-    initiator_voornamen = ChoiceItem("initiator_voornamen", _("Initiator > Voornamen"))
-    initiator_geslachtsnaam = ChoiceItem(
-        "initiator_geslachtsnaam", _("Initiator > Geslachtsnaam")
-    )
-    initiator_tussenvoegsel = ChoiceItem(
-        "initiator_tussenvoegsel", _("Initiator > Tussenvoegsel")
-    )
-    initiator_geslachtsaanduiding = ChoiceItem(
-        "initiator_geslachtsaanduiding", _("Initiator > Geslachtsaanduiding")
-    )
-    initiator_geboortedatum = ChoiceItem(
-        "initiator_geboortedatum", _("Initiator > Geboortedatum")
-    )
-    initiator_aanschrijfwijze = ChoiceItem(
-        "initiator_aanschrijfwijze", _("Initiator > Aanschrijfwijze")
+    initiator_geboortedatum = "initiator_geboortedatum", _("Initiator > Geboortedatum")
+    initiator_aanschrijfwijze = "initiator_aanschrijfwijze", _(
+        "Initiator > Aanschrijfwijze"
     )
 
     # Verblijfsadres for both Natuurlijk Persoon and Vestiging
-    initiator_straat = ChoiceItem("initiator_straat", _("Initiator > Straat"))
-    initiator_huisnummer = ChoiceItem(
-        "initiator_huisnummer", _("Initiator > Huisnummer")
+    initiator_straat = "initiator_straat", _("Initiator > Straat")
+    initiator_huisnummer = "initiator_huisnummer", _("Initiator > Huisnummer")
+    initiator_huisletter = "initiator_huisletter", _("Initiator > Huisletter")
+    initiator_huisnummer_toevoeging = "initiator_huisnummer_toevoeging", _(
+        "Initiator > Huisnummertoevoeging"
     )
-    initiator_huisletter = ChoiceItem(
-        "initiator_huisletter", _("Initiator > Huisletter")
-    )
-    initiator_huisnummer_toevoeging = ChoiceItem(
-        "initiator_huisnummer_toevoeging", _("Initiator > Huisnummertoevoeging")
-    )
-    initiator_postcode = ChoiceItem("initiator_postcode", _("Initiator > Postcode"))
-    initiator_woonplaats = ChoiceItem(
-        "initiator_woonplaats", _("Initiator > Woonplaats")
-    )
+    initiator_postcode = "initiator_postcode", _("Initiator > Postcode")
+    initiator_woonplaats = "initiator_woonplaats", _("Initiator > Woonplaats")
 
     # Vestiging
-    initiator_handelsnaam = ChoiceItem(
-        "initiator_handelsnaam", _("Initiator > Handelsnaam")
-    )
-    initiator_vestigingsnummer = ChoiceItem(
-        "initiator_vestigingsnummer", _("Initiator > Vestigingsnummer")
+    initiator_handelsnaam = "initiator_handelsnaam", _("Initiator > Handelsnaam")
+    initiator_vestigingsnummer = "initiator_vestigingsnummer", _(
+        "Initiator > Vestigingsnummer"
     )
 
     # Location
-    locatie_coordinaat = ChoiceItem("locatie_coordinaat", _("Location > Coordinate"))
+    locatie_coordinaat = "locatie_coordinaat", _("Location > Coordinate")
