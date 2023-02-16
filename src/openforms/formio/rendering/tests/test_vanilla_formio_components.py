@@ -12,6 +12,7 @@ from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
     SubmissionStepFactory,
+    TemporaryFileUploadFactory,
 )
 
 from ..nodes import ComponentNode
@@ -438,6 +439,319 @@ class FormNodeTests(TestCase):
             link = component_node.render()
             self.assertTrue(link.startswith("My File: http://localhost:8000/"))
             self.assertTrue(link.endswith(" (blank-renamed.doc)"))
+
+    @override_settings(BASE_URL="http://localhost:8000")
+    def test_nested_files(self):
+        components = [
+            {
+                "key": "repeatingGroup",
+                "type": "editgrid",
+                "label": "Files",
+                "groupLabel": "File",
+                "components": [
+                    {
+                        "type": "file",
+                        "label": "File in repeating group",
+                        "key": "fileInRepeatingGroup",
+                        "registration": {
+                            "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
+                        },
+                    }
+                ],
+            },
+            {
+                "key": "nested.file",
+                "type": "file",
+                "registration": {
+                    "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
+                },
+            },
+        ]
+        submission = SubmissionFactory.create(
+            form__name="public name",
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={"components": components},
+        )
+
+        upload_in_repeating_group_1 = TemporaryFileUploadFactory.create()
+        upload_in_repeating_group_2 = TemporaryFileUploadFactory.create()
+        nested_upload = TemporaryFileUploadFactory.create()
+        step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={
+                "repeatingGroup": [
+                    {
+                        "fileInRepeatingGroup": [
+                            {
+                                "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_1.uuid}",
+                                "data": {
+                                    "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_2.uuid}",
+                                    "form": "",
+                                    "name": "my-image.jpg",
+                                    "size": 46114,
+                                    "baseUrl": "http://server",
+                                    "project": "",
+                                },
+                                "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                                "size": 46114,
+                                "type": "image/jpg",
+                                "storage": "url",
+                                "originalName": "my-image.jpg",
+                            }
+                        ]
+                    },
+                    {
+                        "fileInRepeatingGroup": [
+                            {
+                                "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_2.uuid}",
+                                "data": {
+                                    "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_2.uuid}",
+                                    "form": "",
+                                    "name": "my-image.jpg",
+                                    "size": 46114,
+                                    "baseUrl": "http://server",
+                                    "project": "",
+                                },
+                                "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                                "size": 46114,
+                                "type": "image/jpg",
+                                "storage": "url",
+                                "originalName": "my-image.jpg",
+                            }
+                        ]
+                    },
+                ],
+                "nested": {
+                    "file": [
+                        {
+                            "url": f"http://server/api/v2/submissions/files/{nested_upload.uuid}",
+                            "data": {
+                                "url": f"http://server/api/v2/submissions/files/{nested_upload.uuid}",
+                                "form": "",
+                                "name": "my-image.jpg",
+                                "size": 46114,
+                                "baseUrl": "http://server",
+                                "project": "",
+                            },
+                            "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                            "size": 46114,
+                            "type": "image/jpg",
+                            "storage": "url",
+                            "originalName": "my-image.jpg",
+                        }
+                    ],
+                },
+            },
+        )
+        # The factory creates a submission variable for the repeating group and for the nested file
+        SubmissionFileAttachmentFactory.create(
+            submission_step=step,
+            form_key="repeatingGroup",
+            file_name="file1.doc",
+            original_name="file1.doc",
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=step,
+            form_key="repeatingGroup",
+            file_name="file2.doc",
+            original_name="file2.doc",
+        )
+        SubmissionFileAttachmentFactory.create(
+            submission_step=step,
+            form_key="nested.file",
+            file_name="file3.doc",
+            original_name="file3.doc",
+        )
+
+        self.assertEqual(2, submission.submissionvaluevariable_set.count())
+        self.assertTrue(
+            submission.submissionvaluevariable_set.filter(key="repeatingGroup").exists()
+        )
+        self.assertTrue(
+            submission.submissionvaluevariable_set.filter(key="nested.file").exists()
+        )
+
+        with self.subTest(as_html=True):
+            renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
+            repeating_group_node = ComponentNode.build_node(
+                step=step, component=components[0], renderer=renderer
+            )
+
+            nodelist = list(repeating_group_node)
+
+            # One node for the EditGrid, 2 nodes per child (2 children, since 2 files uploaded)
+            self.assertEqual(5, len(nodelist))
+
+            self.assertEqual("Files: ", nodelist[0].render())
+            self.assertEqual("File 1", nodelist[1].render())
+
+            link1 = nodelist[2].render()
+
+            self.assertTrue(
+                link1.startswith(
+                    'File in repeating group: <a href="http://localhost:8000/submissions/attachment/'
+                )
+            )
+            self.assertEqual("File 2", nodelist[3].render())
+
+            link2 = nodelist[4].render()
+
+            self.assertTrue(
+                link2.startswith(
+                    'File in repeating group: <a href="http://localhost:8000/submissions/attachment/'
+                )
+            )
+
+        with self.subTest(as_html=True):
+            renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
+            nested_file_node = ComponentNode.build_node(
+                step=step, component=components[1], renderer=renderer
+            )
+
+            link = nested_file_node.render()
+            self.assertTrue(
+                link.startswith(
+                    'nested.file: <a href="http://localhost:8000/submissions/attachment/'
+                )
+            )
+            self.assertTrue(
+                link.endswith(
+                    '" target="_blank" rel="noopener noreferrer">file3.doc</a>'
+                )
+            )
+
+    @override_settings(BASE_URL="http://localhost:8000")
+    def test_two_different_files_in_repeating_group(self):
+        components = [
+            {
+                "key": "repeatingGroup",
+                "type": "editgrid",
+                "label": "Files",
+                "groupLabel": "Group file",
+                "components": [
+                    {
+                        "type": "file",
+                        "label": "File 1 in repeating group",
+                        "key": "fileInRepeatingGroup1",
+                        "registration": {
+                            "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
+                        },
+                    },
+                    {
+                        "type": "file",
+                        "label": "File 2 in repeating group",
+                        "key": "fileInRepeatingGroup2",
+                        "registration": {
+                            "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456"
+                        },
+                    },
+                ],
+            },
+        ]
+        submission = SubmissionFactory.create(
+            form__name="public name",
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={"components": components},
+        )
+
+        upload_in_repeating_group_1 = TemporaryFileUploadFactory.create()
+        upload_in_repeating_group_2 = TemporaryFileUploadFactory.create()
+        step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={
+                "repeatingGroup": [
+                    {
+                        "fileInRepeatingGroup1": [
+                            {
+                                "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_1.uuid}",
+                                "data": {
+                                    "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_1.uuid}",
+                                    "form": "",
+                                    "name": "my-image.jpg",
+                                    "size": 46114,
+                                    "baseUrl": "http://server",
+                                    "project": "",
+                                },
+                                "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                                "size": 46114,
+                                "type": "image/jpg",
+                                "storage": "url",
+                                "originalName": "my-image.jpg",
+                            }
+                        ],
+                        "fileInRepeatingGroup2": [
+                            {
+                                "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_2.uuid}",
+                                "data": {
+                                    "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_2.uuid}",
+                                    "form": "",
+                                    "name": "my-image.jpg",
+                                    "size": 46114,
+                                    "baseUrl": "http://server",
+                                    "project": "",
+                                },
+                                "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                                "size": 46114,
+                                "type": "image/jpg",
+                                "storage": "url",
+                                "originalName": "my-image.jpg",
+                            }
+                        ],
+                    },
+                ],
+            },
+        )
+        # The factory creates a submission variable for the repeating group and for the nested file
+        attachment_1 = SubmissionFileAttachmentFactory.create(
+            submission_step=step,
+            form_key="repeatingGroup",
+            file_name="file1.doc",
+            original_name="file1.doc",
+            _component_key="fileInRepeatingGroup1",
+        )
+        attachment_2 = SubmissionFileAttachmentFactory.create(
+            submission_step=step,
+            form_key="repeatingGroup",
+            file_name="file2.doc",
+            original_name="file2.doc",
+            _component_key="fileInRepeatingGroup2",
+        )
+
+        self.assertEqual(1, submission.submissionvaluevariable_set.count())
+        self.assertTrue(
+            submission.submissionvaluevariable_set.filter(key="repeatingGroup").exists()
+        )
+
+        renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
+        repeating_group_node = ComponentNode.build_node(
+            step=step, component=components[0], renderer=renderer
+        )
+
+        nodelist = list(repeating_group_node)
+
+        # One node for the EditGrid, 3 nodes per child (1 child)
+        self.assertEqual(4, len(nodelist))
+
+        self.assertEqual("Files: ", nodelist[0].render())
+        self.assertEqual("Group file 1", nodelist[1].render())
+
+        link1 = nodelist[2].render()
+
+        self.assertTrue(
+            link1.startswith(
+                f'File 1 in repeating group: <a href="http://localhost:8000/submissions/attachment/{attachment_1.uuid}'
+            )
+        )
+
+        link2 = nodelist[3].render()
+
+        self.assertTrue(
+            link2.startswith(
+                f'File 2 in repeating group: <a href="http://localhost:8000/submissions/attachment/{attachment_2.uuid}'
+            )
+        )
 
     def test_file_component_email_registration_no_file(self):
         # via GH issue #1594

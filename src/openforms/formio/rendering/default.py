@@ -164,6 +164,10 @@ class FileNode(ComponentNode):
         files = []
         attachments = self.renderer.submission.get_merged_attachments()
         value = attachments.get(self.component["key"])
+        if not value and self.parent_node:
+            # The attachment may be nested within a repeating group
+            value = attachments.get(self.parent_node.component["key"])
+
         if value:
             for submission_file_attachment in value:
                 display_name = submission_file_attachment.get_display_name()
