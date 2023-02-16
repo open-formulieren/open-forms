@@ -294,7 +294,11 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
             attachment,
             created,
         ) = SubmissionFileAttachment.objects.get_or_create_from_upload(
-            submission_step, submission_variable, upload, file_name=file_name
+            submission_step,
+            submission_variable,
+            component["key"],
+            upload,
+            file_name=file_name,
         )
         result.append((attachment, created))
 

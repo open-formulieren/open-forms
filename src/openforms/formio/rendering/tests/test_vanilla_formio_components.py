@@ -413,6 +413,7 @@ class FormNodeTests(TestCase):
             form_key="file",
             file_name="blank-renamed.doc",
             original_name="blank.doc",
+            _component_key="file",
         )
 
         with self.subTest(as_html=True):
@@ -550,18 +551,21 @@ class FormNodeTests(TestCase):
             form_key="repeatingGroup",
             file_name="file1.doc",
             original_name="file1.doc",
+            _component_key="fileInRepeatingGroup",
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=step,
             form_key="repeatingGroup",
             file_name="file2.doc",
             original_name="file2.doc",
+            _component_key="fileInRepeatingGroup",
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=step,
             form_key="nested.file",
             file_name="file3.doc",
             original_name="file3.doc",
+            _component_key="nested.file",
         )
 
         self.assertEqual(2, submission.submissionvaluevariable_set.count())

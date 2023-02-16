@@ -85,6 +85,7 @@ class SubmissionFileAttachmentManager(models.Manager):
         self,
         submission_step: SubmissionStep,
         submission_variable: "SubmissionValueVariable",
+        component_key: str,
         upload: TemporaryFileUpload,
         file_name: Optional[str] = None,
     ) -> Tuple["SubmissionFileAttachment", bool]:
@@ -94,6 +95,7 @@ class SubmissionFileAttachmentManager(models.Manager):
                     submission_step=submission_step,
                     temporary_file=upload,
                     submission_variable=submission_variable,
+                    _component_key=component_key,
                 ),
                 False,
             )
@@ -108,6 +110,7 @@ class SubmissionFileAttachmentManager(models.Manager):
                     content_type=upload.content_type,
                     original_name=upload.file_name,
                     file_name=file_name,
+                    _component_key=component_key,
                 )
             return (instance, True)
 
@@ -137,6 +140,15 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         on_delete=models.CASCADE,
         blank=True,
         null=True,
+    )
+    _component_key = models.CharField(
+        verbose_name=_("component key"),
+        help_text=_(
+            "Key of the file component corresponding to this attachment. It can be different from the submission "
+            "variable key, for example if the file component is in a repeating group (editgrid component)."
+        ),
+        max_length=255,
+        blank=True,
     )
 
     content = PrivateMediaFileField(
@@ -186,19 +198,24 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         return sha256.hexdigest()
 
     @property
-    def informatieobjecttype(self) -> Optional[str]:
+    def informatieobjecttype(self) -> str | None:
         """
         Get the informatieobjecttype for this attachment from the configuration
         """
         # use configuration wrapper for caching
         wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
         for component in wrapper:
-            if component["key"] == self.form_key:
-                # Use field-specific override
-                if iotype := glom(
-                    component, "registration.informatieobjecttype", default=""
-                ):
-                    return iotype
+            if (
+                component["key"] != self.form_key
+                and component["key"] != self._component_key
+            ):
+                continue
+
+            # Use field-specific override
+            if iotype := glom(
+                component, "registration.informatieobjecttype", default=""
+            ):
+                return iotype
 
     @property
     def bronorganisatie(self) -> str | None:
@@ -208,11 +225,16 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         # use configuration wrapper for caching
         wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
         for component in wrapper:
-            if component["key"] == self.form_key:
-                if bronorganisatie := glom(
-                    component, "registration.bronorganisatie", default=""
-                ):
-                    return bronorganisatie
+            if (
+                component["key"] != self.form_key
+                and component["key"] != self._component_key
+            ):
+                continue
+
+            if bronorganisatie := glom(
+                component, "registration.bronorganisatie", default=""
+            ):
+                return bronorganisatie
 
     @property
     def doc_vertrouwelijkheidaanduiding(self) -> str | None:
@@ -222,13 +244,18 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         # use configuration wrapper for caching
         wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
         for component in wrapper:
-            if component["key"] == self.form_key:
-                if vertrouwelijk := glom(
-                    component,
-                    "registration.docVertrouwelijkheidaanduiding",
-                    default="",
-                ):
-                    return vertrouwelijk
+            if (
+                component["key"] != self.form_key
+                and component["key"] != self._component_key
+            ):
+                continue
+
+            if vertrouwelijk := glom(
+                component,
+                "registration.docVertrouwelijkheidaanduiding",
+                default="",
+            ):
+                return vertrouwelijk
 
     @property
     def titel(self) -> str | None:
@@ -238,9 +265,14 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         # use configuration wrapper for caching
         wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
         for component in wrapper:
-            if component["key"] == self.form_key:
-                if titel := glom(component, "registration.titel", default=""):
-                    return titel
+            if (
+                component["key"] != self.form_key
+                and component["key"] != self._component_key
+            ):
+                continue
+
+            if titel := glom(component, "registration.titel", default=""):
+                return titel
 
     @property
     def form_key(self):

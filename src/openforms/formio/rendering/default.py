@@ -170,6 +170,10 @@ class FileNode(ComponentNode):
 
         if value:
             for submission_file_attachment in value:
+                if submission_file_attachment._component_key != self.component["key"]:
+                    # Case in which there are multiple file components inside a repeating group.
+                    continue
+
                 display_name = submission_file_attachment.get_display_name()
                 download_link = build_absolute_uri(
                     reverse(
