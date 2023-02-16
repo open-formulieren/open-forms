@@ -40,7 +40,7 @@ class StufBgPrefillTests(TestCase):
     def test_get_available_attributes_returns_correct_attributes(self):
         client_patcher = mock_stufbg_client("StufBgResponse.xml")
         self.addCleanup(client_patcher.stop)
-        attributes = FieldChoices.attributes.keys()
+        attributes = [c.value for c in FieldChoices]
 
         values = self.plugin.get_prefill_values(self.submission, attributes)
 
@@ -57,7 +57,7 @@ class StufBgPrefillTests(TestCase):
     def test_response_external_municipality_returns_correct_attributes(self):
         client_patcher = mock_stufbg_client("StufBgResponseGemeenteVanInschrijving.xml")
         self.addCleanup(client_patcher.stop)
-        attributes = FieldChoices.attributes.keys()
+        attributes = [c.value for c in FieldChoices]
 
         values = self.plugin.get_prefill_values(self.submission, attributes)
 
@@ -74,7 +74,7 @@ class StufBgPrefillTests(TestCase):
     def test_get_available_attributes_when_some_attributes_are_not_returned(self):
         client_patcher = mock_stufbg_client("StufBgResponseMissingSomeData.xml")
         self.addCleanup(client_patcher.stop)
-        attributes = FieldChoices.attributes.keys()
+        attributes = [c.value for c in FieldChoices]
 
         values = self.plugin.get_prefill_values(self.submission, attributes)
 
@@ -91,7 +91,7 @@ class StufBgPrefillTests(TestCase):
     def test_voorvoegsel_is_parsed(self):
         client_patcher = mock_stufbg_client("StufBgResponseWithVoorvoegsel.xml")
         self.addCleanup(client_patcher.stop)
-        attributes = FieldChoices.attributes.keys()
+        attributes = [c.value for c in FieldChoices]
 
         values = self.plugin.get_prefill_values(self.submission, attributes)
 
@@ -110,7 +110,7 @@ class StufBgPrefillTests(TestCase):
         client_patcher = mock_stufbg_client("StufBgErrorResponse.xml")
         self.addCleanup(client_patcher.stop)
 
-        attributes = FieldChoices.attributes.keys()
+        attributes = [c.value for c in FieldChoices]
 
         with self.assertLogs() as logs:
             with self.assertRaises(ValueError):
@@ -128,7 +128,7 @@ class StufBgPrefillTests(TestCase):
     def test_get_available_attributes_when_no_answer_is_returned(self):
         client_patcher = mock_stufbg_client("StufBgNoAnswerResponse.xml")
         self.addCleanup(client_patcher.stop)
-        attributes = FieldChoices.attributes.keys()
+        attributes = [c.value for c in FieldChoices]
 
         try:
             values = self.plugin.get_prefill_values(self.submission, attributes)
@@ -141,7 +141,7 @@ class StufBgPrefillTests(TestCase):
     def test_get_available_attributes_when_object_not_found_reponse_is_returned(self):
         client_patcher = mock_stufbg_client("StufBgNotFoundResponse.xml")
         self.addCleanup(client_patcher.stop)
-        attributes = FieldChoices.attributes.keys()
+        attributes = [c.value for c in FieldChoices]
 
         with self.assertLogs() as logs:
             with self.assertRaises(ValueError):
@@ -154,7 +154,7 @@ class StufBgPrefillTests(TestCase):
     def test_get_available_attributes_when_empty_reponse_is_returned(self):
         client_patcher = mock_stufbg_client("StufBgNoObjectResponse.xml")
         self.addCleanup(client_patcher.stop)
-        attributes = FieldChoices.attributes.keys()
+        attributes = [c.value for c in FieldChoices]
 
         try:
             values = self.plugin.get_prefill_values(self.submission, attributes)
