@@ -231,7 +231,6 @@ django-choices==1.7.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-    #   django-digid-eherkenning
     #   django-simple-certmanager
     #   zgw-consumers
 django-colorfield==0.7.0
@@ -258,7 +257,7 @@ django-decorator-include==3.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-digid-eherkenning==0.5.1
+django-digid-eherkenning==0.6.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
