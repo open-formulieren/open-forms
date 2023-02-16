@@ -323,6 +323,25 @@ class SubmissionAttachmentTest(TestCase):
         self.assertEqual(SubmissionFileAttachment.objects.count(), 1)
 
     @patch("openforms.submissions.tasks.resize_submission_attachment.delay")
+    def test_attach_malformed_file(self, resize_mock):
+        data = {
+            "my_file": [{"malformed": "No 'url' for the file!"}],
+        }
+        components = [
+            {"key": "my_file", "type": "file", "file": {"name": "test.txt"}},
+        ]
+        form_step = FormStepFactory.create(
+            form_definition__configuration={"components": components}
+        )
+        submission_step = SubmissionStepFactory.create(
+            form_step=form_step, submission__form=form_step.form, data=data
+        )
+
+        result = attach_uploads_to_submission_step(submission_step)
+
+        self.assertEqual(0, len(result))
+
+    @patch("openforms.submissions.tasks.resize_submission_attachment.delay")
     def test_attach_uploads_to_submission_step_with_nested_fields(self, resize_mock):
         upload_in_repeating_group_1 = TemporaryFileUploadFactory.create()
         upload_in_repeating_group_2 = TemporaryFileUploadFactory.create()
