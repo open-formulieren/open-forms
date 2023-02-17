@@ -1,8 +1,10 @@
 from datetime import timedelta
 
+from django.http import HttpRequest
 from django.middleware.csrf import get_token
 
 from openforms.config.models import GlobalConfiguration
+from openforms.typing import RequestHandler
 
 SESSION_EXPIRES_IN_HEADER = "X-Session-Expires-In"
 CSRF_TOKEN_HEADER_NAME = "X-CSRFToken"
@@ -15,10 +17,10 @@ class SessionTimeoutMiddleware:
     is configured in our GlobalConfiguration
     """
 
-    def __init__(self, get_response):
+    def __init__(self, get_response: RequestHandler):
         self.get_response = get_response
 
-    def __call__(self, request):
+    def __call__(self, request: HttpRequest):
         config = GlobalConfiguration.get_solo()
         timeout = (
             config.admin_session_timeout
@@ -38,10 +40,10 @@ class CsrfTokenMiddleware:
     Add a CSRF Token to a response header
     """
 
-    def __init__(self, get_response):
+    def __init__(self, get_response: RequestHandler):
         self.get_response = get_response
 
-    def __call__(self, request):
+    def __call__(self, request: HttpRequest):
         response = self.get_response(request)
 
         # Only add the CSRF token header if it's an api endpoint
@@ -58,10 +60,10 @@ class CanNavigateBetweenStepsMiddleware:
     that have not been completed yet.
     """
 
-    def __init__(self, get_response):
+    def __init__(self, get_response: RequestHandler):
         self.get_response = get_response
 
-    def __call__(self, request):
+    def __call__(self, request: HttpRequest):
         response = self.get_response(request)
 
         # Only add the header if it's an api endpoint
