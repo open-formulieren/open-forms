@@ -6,6 +6,8 @@ This information drives the frontend/navigation.
 """
 from decimal import Decimal
 
+from django.test import tag
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -14,13 +16,19 @@ from openforms.authentication.tests.factories import AuthInfoFactory
 from openforms.forms.constants import SubmissionAllowedChoices
 from openforms.forms.tests.factories import (
     FormFactory,
+    FormLogicFactory,
     FormPriceLogicFactory,
     FormStepFactory,
     FormVariableFactory,
 )
 from openforms.logging.models import TimelineLogProxy
+from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
-from .factories import SubmissionFactory, SubmissionStepFactory
+from .factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+    SubmissionValueVariableFactory,
+)
 from .mixins import SubmissionsMixin
 
 
@@ -213,6 +221,55 @@ class SubmissionReadPaymentInformationTests(SubmissionsMixin, APITestCase):
             {
                 "isRequired": True,
                 "amount": "51.15",
+                "hasPaid": False,
+            },
+        )
+
+    @tag("gh-2709")
+    def test_submission_payment_with_logic_using_user_defined_variables(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[{"type": "number", "key": "triggerComponent"}],
+            submitted_data={"triggerComponent": 1},
+            form__product__price=Decimal("10"),
+            form__payment_backend="demo",
+        )
+        SubmissionValueVariableFactory.create(
+            key="userDefinedVar",
+            form_variable__form=submission.form,
+            submission=submission,
+            source=FormVariableSources.user_defined,
+            form_variable__data_type=FormVariableDataTypes.int,
+            value=0,
+        )
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "triggerComponent"}, 1]},
+            actions=[
+                {
+                    "variable": "userDefinedVar",
+                    "action": {"type": "variable", "value": 2},
+                }
+            ],
+        )
+        FormPriceLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "userDefinedVar"}, 2]},
+            price=Decimal("20"),
+        )
+
+        self.assertTrue(submission.payment_required)
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-detail", kwargs={"uuid": submission.uuid})
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json()["payment"],
+            {
+                "isRequired": True,
+                "amount": "20.00",
                 "hasPaid": False,
             },
         )
