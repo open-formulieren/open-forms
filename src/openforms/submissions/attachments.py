@@ -131,7 +131,9 @@ def _iterate_data_with_components(
     """
     if configuration.get("type") == "columns":
         for column in configuration["columns"]:
-            yield from _iterate_data_with_components(column, data, data_path)
+            yield from _iterate_data_with_components(
+                column, data, data_path, filter_types
+            )
 
     parent_type = configuration.get("type")
     if parent_type == "editgrid":
@@ -145,9 +147,11 @@ def _iterate_data_with_components(
             )
     else:
         for child_component in configuration.get("components", []):
-            yield from _iterate_data_with_components(child_component, data, data_path)
+            yield from _iterate_data_with_components(
+                child_component, data, data_path, filter_types
+            )
 
-    filter_out = (parent_type in filter_types) if filter_types else False
+    filter_out = (parent_type not in filter_types) if filter_types else False
     if "key" in configuration and not filter_out:
         component_path = Path(data_path, Path.from_text(configuration["key"]))
         component_data = glom(data, component_path, default=None)
