@@ -29,6 +29,7 @@ from .factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
     SubmissionStepFactory,
+    SubmissionValueVariableFactory,
     TemporaryFileUploadFactory,
 )
 
@@ -443,6 +444,119 @@ class SubmissionAttachmentTest(TestCase):
         )
 
         self.assertEqual(1, attachments_repeating_group.count())
+
+    @patch("openforms.submissions.tasks.resize_submission_attachment.delay")
+    def test_attach_uploads_to_submission_step_with_nested_fields_with_matching_keys(
+        self, resize_mock
+    ):
+        attachment_1 = TemporaryFileUploadFactory.create(
+            file_name="attachmentInside.pdf"
+        )
+        attachment_2 = TemporaryFileUploadFactory.create(
+            file_name="attachmentOutside.pdf"
+        )
+        data = {
+            "repeatingGroup": [
+                {
+                    "attachment": [
+                        {
+                            "url": f"http://server/api/v2/submissions/files/{attachment_1.uuid}",
+                            "data": {
+                                "url": f"http://server/api/v2/submissions/files/{attachment_1.uuid}",
+                                "form": "",
+                                "name": "attachmentInside.pdf",
+                                "size": 46114,
+                                "baseUrl": "http://server",
+                                "project": "",
+                            },
+                            "name": "attachmentInside.pdf",
+                            "size": 46114,
+                            "type": "image/jpg",
+                            "storage": "url",
+                            "originalName": "attachmentInside.pdf",
+                        }
+                    ]
+                }
+            ],
+            "attachment": [
+                {
+                    "url": f"http://server/api/v2/submissions/files/{attachment_2.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v2/submissions/files/{attachment_2.uuid}",
+                        "form": "",
+                        "name": "attachmentOutside.pdf",
+                        "size": 46114,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "attachmentOutside.pdf",
+                    "size": 46114,
+                    "type": "image/jpg",
+                    "storage": "url",
+                    "originalName": "attachmentOutside.pdf",
+                }
+            ],
+        }
+        components = [
+            {
+                "key": "repeatingGroup",
+                "type": "editgrid",
+                "components": [
+                    {
+                        "type": "file",
+                        "key": "attachment",
+                        "registration": {
+                            "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
+                        },
+                    }
+                ],
+            },
+            {
+                "key": "attachment",
+                "type": "file",
+                "registration": {
+                    "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456"
+                },
+            },
+        ]
+        form_step = FormStepFactory.create(
+            form_definition__configuration={"components": components}
+        )
+        submission_step = SubmissionStepFactory.create(
+            form_step=form_step, submission__form=form_step.form, data=data
+        )
+        # TODO: remove once #2728 is fixed
+        SubmissionValueVariableFactory.create(
+            key="attachment",
+            form_variable__form=form_step.form,
+            submission=submission_step.submission,
+            value=data["attachment"],
+        )
+
+        result = attach_uploads_to_submission_step(submission_step)
+
+        self.assertEqual(len(result), 2)
+        self.assertEqual(SubmissionFileAttachment.objects.count(), 2)
+
+        # TODO can't get the attachment based on the submission variable, because both are wrongly related to the
+        # attachment variable
+        attachment_repeating_group = submission_step.attachments.get(
+            original_name="attachmentInside.pdf"
+        )
+
+        self.assertEqual(
+            attachment_repeating_group.informatieobjecttype,
+            "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123",
+        )
+
+        attachment = submission_step.attachments.get(
+            original_name="attachmentOutside.pdf"
+        )
+
+        self.assertEqual(
+            attachment.informatieobjecttype,
+            "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456",
+        )
 
     @patch("openforms.submissions.tasks.resize_submission_attachment.delay")
     def test_attach_multiple_uploads_to_submission_step_in_repeating_group(
