@@ -14,6 +14,5 @@ class PollingRateThrottle(UserRateThrottle):
         if request.user.is_authenticated and request.user.is_staff:
             # unlimited for admin users
             return True
-        else:
-            # regular user-rate under our own scope
-            return super().allow_request(request, view)
+        # regular user-rate under our own scope
+        return super().allow_request(request, view)
