@@ -30,7 +30,7 @@ from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSet
 
 from ..attachments import attach_uploads_to_submission_step
 from ..exceptions import FormDeactivated, FormMaintenance
-from ..form_logic import evaluate_form_logic
+from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep
 from ..models.submission_step import DirtyData
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser, IgnoreDataJSONRenderer
@@ -136,6 +136,7 @@ class SubmissionViewSet(
             self._get_object_cache = submission
             # on the fly, calculate the price if it's not set yet (required for overview screen)
             if submission.completed_on is None:
+                check_submission_logic(submission, submission.data)
                 submission.calculate_price(save=False)
         return self._get_object_cache
 

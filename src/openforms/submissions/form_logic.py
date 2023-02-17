@@ -189,6 +189,9 @@ def evaluate_form_logic(
 def check_submission_logic(
     submission: "Submission", unsaved_data: Optional[dict] = None
 ) -> None:
+    if getattr(submission, "_form_logic_evaluated", False):
+        return
+
     submission_state = submission.load_execution_state()
     # if there are no form steps at all, then there's nothing to do
     if not submission_state.form_steps:
@@ -213,3 +216,5 @@ def check_submission_logic(
 
     for mutation in mutation_operations:
         mutation.apply(step, {})
+
+    submission._form_logic_evaluated = True

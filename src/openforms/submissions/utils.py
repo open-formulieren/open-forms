@@ -25,7 +25,7 @@ from openforms.variables.constants import FormVariableSources
 
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from .exceptions import FormDeactivated, FormMaintenance
-from .form_logic import evaluate_form_logic
+from .form_logic import check_submission_logic
 from .models import Submission, SubmissionValueVariable, TemporaryFileUpload
 
 logger = logging.getLogger(__name__)
@@ -170,7 +170,7 @@ def persist_user_defined_variables(
     if not last_form_step:
         return
 
-    evaluate_form_logic(submission, last_form_step, data, dirty=False, request=request)
+    check_submission_logic(submission, data)
 
     state = submission.load_submission_value_variables_state()
     variables = state.variables
