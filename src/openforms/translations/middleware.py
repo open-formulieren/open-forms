@@ -48,7 +48,13 @@ class AdminLocaleMiddleware:
         # we do not language-code prefixed URLs
         if is_admin_request(request):
             _remove_language_cookie_from_request(request)
-            language = translation.get_language_from_request(request, check_path=False)
+            language = ""
+            if request.user.is_authenticated:
+                language = request.user.ui_language
+            if not language:
+                language = translation.get_language_from_request(
+                    request, check_path=False
+                )
             translation.activate(language)
         response = self.get_response(request)
         return response

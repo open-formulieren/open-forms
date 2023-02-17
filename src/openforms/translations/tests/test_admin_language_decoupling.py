@@ -27,3 +27,15 @@ class AdminLanguageTests(WebTest):
         )
 
         self.assertEqual(admin_index["Content-Language"], "nl")
+
+    def test_user_preference_overrides_browser_prefs(self):
+        self.user.ui_language = "en"
+        self.user.save()
+
+        admin_index = self.app.get(
+            reverse("admin:index"),
+            headers={"Accept-Language": "nl-NL, nl;q=0.9, en;q=0.5"},
+            user=self.user,
+        )
+
+        self.assertEqual(admin_index["Content-Language"], "en")
