@@ -32,7 +32,7 @@ jobs:
           cache-dependency-path: 'requirements/*.txt'
       - name: Install OS-level packages
         run: |
-          brew install libxmlsec1
+          brew install pkg-config libxmlsec1
       - name: Install dependencies
         run: |
           export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/
