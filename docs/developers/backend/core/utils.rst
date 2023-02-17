@@ -9,12 +9,11 @@ General purpose utilities available on a project-wide base.
 Django Rest Framework extensions
 --------------------------------
 
-.. todo:: these should be moved to ``openforms.api``
 
-.. automodule:: openforms.utils.api.throttle_classes
+.. automodule:: openforms.api.throttle_classes
    :members:
 
-.. automodule:: openforms.utils.api.views
+.. automodule:: openforms.api.views.mixins
    :members:
 
 
