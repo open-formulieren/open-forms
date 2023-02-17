@@ -19,8 +19,8 @@ from rest_framework.views import APIView
 
 from openforms.api.drf_spectacular.functional import lazy_enum
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
+from openforms.api.views.mixins import SerializerContextMixin
 from openforms.translations.utils import set_language_cookie
-from openforms.utils.api.views import SerializerContextMixin
 
 from .serializers import LanguageCodeSerializer, LanguageInfoSerializer
 from .utils import get_language_codes

@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from openforms.api.authentication import AnonCSRFSessionAuthentication
-from openforms.utils.api.views import ListMixin
+from openforms.api.views import ListMixin
 from openforms.validations.api.serializers import (
     ValidationInputSerializer,
     ValidationPluginSerializer,
