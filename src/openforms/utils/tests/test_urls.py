@@ -1,5 +1,5 @@
 from django.test import RequestFactory, TestCase, override_settings
-from django.urls import path, re_path
+from django.urls import path, re_path, reverse
 
 from openforms.utils.urls import build_absolute_uri, is_admin_request, reverse_plus
 
@@ -148,3 +148,14 @@ class IsAdminRequestTest(TestCase):
                 request = factory.get("/api/v1/foo", HTTP_REFERER=referer)
 
                 self.assertFalse(is_admin_request(request))
+
+    def test_is_admin_request_direct(self):
+        """
+        Test for requests directly hitting admin URLs.
+        """
+        factory = RequestFactory()
+        request = factory.get(reverse("admin:login"))
+
+        result = is_admin_request(request)
+
+        self.assertTrue(result)
