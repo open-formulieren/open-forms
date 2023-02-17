@@ -86,4 +86,5 @@ linkcheck_ignore = [
     r"https://portal.azure.com*",
     r"https://.*kvk\.nl*",
     r"https://gdpr.eu*",
+    r"https://www\.jccsoftware\.nl/.*",  # looks like the requests user agent is blocked...
 ]
