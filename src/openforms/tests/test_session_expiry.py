@@ -9,6 +9,7 @@ from datetime import datetime
 from unittest.mock import patch
 
 from django.conf import settings
+from django.contrib import admin
 from django.test import override_settings
 from django.urls import path
 from django.utils import timezone
@@ -41,6 +42,7 @@ class SessionTestView(APIView):
 
 urlpatterns = [
     path("tests/session", SessionTestView.as_view()),
+    path("admin/", admin.site.urls),
 ]
 
 
