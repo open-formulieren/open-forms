@@ -24,7 +24,7 @@ export const Template = args => (
           apiRootUrl: 'https://some-api.com/api/v1/',
         },
         {
-          url: 'http://openforms.dev/services/foo',
+          url: 'http://openforms.dev/services/bar',
           label: 'Service 2',
           type: 'ORC',
           apiRootUrl: 'https://some-other-api.com/api/v1/',
@@ -37,7 +37,7 @@ export const Template = args => (
           path: '/some-path',
           method: 'GET',
           headers: {'X-Foo': 'foo'},
-          queryParams: {parameter: 'value'},
+          queryParams: {parameter2: ['value1', 'value2']},
           body: {field1: 'value', field2: 'value2'},
           dataMappingType: 'jq',
           mappingExpression: '.field.nested',
@@ -48,7 +48,7 @@ export const Template = args => (
           path: '/some-other-path',
           method: 'POST',
           headers: {'X-Foo': 'bar'},
-          queryParams: {parameter: 'value'},
+          queryParams: {parameter: ['value'], parameter2: ['value1', 'value2']},
           body: {field1: 'value', field2: 'value2'},
           dataMappingType: 'JsonLogic',
           mappingExpression: '{"var": "field"}',
@@ -56,7 +56,7 @@ export const Template = args => (
       ],
     }}
   >
-    <ServiceFetchConfigurationPicker {...args} />;
+    <ServiceFetchConfigurationPicker {...args} />
   </FormLogicContext.Provider>
 );
 

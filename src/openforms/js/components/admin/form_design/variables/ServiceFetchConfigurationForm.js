@@ -35,15 +35,24 @@ const ServiceFetchConfigurationForm = ({
   // const [stateData, setData] = useState(data);
 
   const onChange = event => {
+    if (!event.target) return;
     const [prefix, key] = event.target.name.split('.');
     let copiedData = Object.assign({}, stateData);
     copiedData[key] = event.target.value;
     setData(copiedData);
   };
 
-  const serviceChoices = formLogicContext.services.map(service => {
-    return [service.url, service.label];
-  });
+  const onMappingChange = (key, value) => {
+    let copiedData = Object.assign({}, stateData);
+    copiedData[key] = value;
+    setData(copiedData);
+  };
+
+  const serviceChoices = [['', '-------']].concat(
+    formLogicContext.services.map(service => {
+      return [service.url, service.label];
+    })
+  );
 
   return (
     <div>
@@ -67,7 +76,7 @@ const ServiceFetchConfigurationForm = ({
             }
           >
             <Select
-              name="fetchConfiguration.httpMethod"
+              name="fetchConfiguration.method"
               choices={serviceChoices}
               value={stateData.service}
               onChange={onChange}
@@ -120,10 +129,9 @@ const ServiceFetchConfigurationForm = ({
           >
             <MappingArrayInput
               name="fetchConfiguration.queryParams"
+              mapping={stateData.queryParams}
               valueArrayInput={true}
-              onChange={({...args}) => {
-                null;
-              }}
+              onChange={onMappingChange}
             />
           </Field>
         </FormRow>
@@ -140,9 +148,8 @@ const ServiceFetchConfigurationForm = ({
           >
             <MappingArrayInput
               name="fetchConfiguration.headers"
-              onChange={({...args}) => {
-                null;
-              }}
+              mapping={stateData.headers}
+              onChange={onMappingChange}
             />
           </Field>
         </FormRow>

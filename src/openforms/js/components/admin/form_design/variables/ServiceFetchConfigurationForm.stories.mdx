@@ -1,6 +1,6 @@
 import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
 
-import {FormContext} from '../Context';
+import {FormLogicContext} from '../Context';
 import ServiceFetchConfigurationForm from './ServiceFetchConfigurationForm';
 
 <Meta title="Form design/ServiceFetchConfigurationForm" component={ServiceFetchConfigurationForm} />
@@ -10,7 +10,7 @@ import ServiceFetchConfigurationForm from './ServiceFetchConfigurationForm';
 Form to edit/create a ServiceFetchConfiguration
 
 export const Template = args => (
-  <FormContext.Provider
+  <FormLogicContext.Provider
     value={{
       services: [
         {
@@ -20,7 +20,7 @@ export const Template = args => (
           apiRootUrl: 'https://some-api.com/api/v1/',
         },
         {
-          url: 'http://openforms.dev/services/foo',
+          url: 'http://openforms.dev/services/bar',
           label: 'Service 2',
           type: 'ORC',
           apiRootUrl: 'https://some-other-api.com/api/v1/',
@@ -29,7 +29,7 @@ export const Template = args => (
     }}
   >
     <ServiceFetchConfigurationForm {...args} />;
-  </FormContext.Provider>
+  </FormLogicContext.Provider>
 );
 
 ## Presentation
@@ -38,7 +38,12 @@ export const Template = args => (
   <Story
     name="Default"
     args={{
-      data: {path: '/foo', httpMethod: 'POST'},
+      stateData: {
+        service: 'http://openforms.dev/services/foo',
+        path: '/foo',
+        method: 'POST'
+      },
+      setData: ({...args}) => {null}
     }}
   >
     {Template.bind({})}
