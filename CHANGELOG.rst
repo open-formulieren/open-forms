@@ -2,6 +2,18 @@
 Changelog
 =========
 
+2.0.4 (2023-02-22)
+==================
+
+Periodic maintenance release
+
+* [#2607] Fixed crash when selecting trigger-from-step in logic editor
+* Fixed crash when importing forms
+* [#2699] Fixed file uploads not resolving when inside fieldsets/repeating groups
+* Stopped link checking JCC links in CI since we're actively being blocked
+* [#2709] Fixed (bandaid) inconsistent dynamic product price logic
+* [#2724] Ensure backport of negative-numbers (#1351) is correctly included
+
 2.0.3 (2023-01-24)
 ==================
 
