@@ -22,10 +22,10 @@ from openforms.api import pagination
 from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
+from openforms.api.throttle_classes import PollingRateThrottle
 from openforms.forms.models import FormStep
 from openforms.logging import logevent
 from openforms.prefill import prefill_variables
-from openforms.utils.api.throttle_classes import PollingRateThrottle
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
 from ..attachments import attach_uploads_to_submission_step

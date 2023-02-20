@@ -1,3 +1,6 @@
+"""
+Concrete view classes/utilities not tied to any particular app.
+"""
 import logging
 import os
 from collections import OrderedDict
@@ -16,8 +19,8 @@ from rest_framework.views import APIView, exception_handler as drf_exception_han
 
 from openforms.submissions.api.permissions import AnyActiveSubmissionPermission
 
-from .exception_handling import HandledException
-from .serializers import ExceptionSerializer
+from ..exception_handling import HandledException
+from ..serializers import ExceptionSerializer
 
 logger = logging.getLogger(__name__)
 

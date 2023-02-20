@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from openforms.api.drf_spectacular.functional import lazy_enum
 from openforms.api.mixins import ValidateQueryStringParametersMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
-from openforms.utils.api.views import ListMixin
+from openforms.api.views import ListMixin
 
 from ..base import DecisionDefinition
 from ..registry import register

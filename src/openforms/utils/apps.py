@@ -13,9 +13,6 @@ class UtilsConfig(AppConfig):
         from . import cache  # noqa
         from . import checks  # noqa
 
-        # register custom converters
-        from .api import drf_jsonschema  # noqa
-
         setting_changed.connect(clear_lru_cache_on_settings_changed)
 
         mute_deprecation_warnings()

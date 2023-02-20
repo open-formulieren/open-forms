@@ -7,8 +7,8 @@ from zgw_consumers.api_models.base import factory
 from zgw_consumers.api_models.catalogi import Catalogus, InformatieObjectType
 from zgw_consumers.service import get_paginated_results
 
+from openforms.api.views import ListMixin
 from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
-from openforms.utils.api.views import ListMixin
 
 from .serializers import InformatieObjectTypeChoiceSerializer
 

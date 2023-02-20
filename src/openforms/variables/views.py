@@ -5,8 +5,8 @@ from rest_framework import authentication, permissions
 from rest_framework.views import APIView
 
 from openforms.api.serializers import ExceptionSerializer
+from openforms.api.views import ListMixin
 from openforms.forms.api.serializers import FormVariableSerializer
-from openforms.utils.api.views import ListMixin
 
 from .service import get_static_variables
 

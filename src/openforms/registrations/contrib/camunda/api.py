@@ -9,7 +9,7 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import authentication, permissions, views
 from zgw_consumers.drf.serializers import APIModelSerializer
 
-from openforms.utils.api.views import ListMixin
+from openforms.api.views import ListMixin
 
 
 class ProcessDefinitionSerializer(APIModelSerializer):

@@ -13,13 +13,13 @@ from rest_framework.views import APIView
 
 from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.serializers import ExceptionSerializer
+from openforms.api.views import ListMixin
 from openforms.logging import logevent
 from openforms.submissions.api.permissions import (
     ActiveSubmissionPermission,
     AnyActiveSubmissionPermission,
 )
 from openforms.submissions.models import Submission
-from openforms.utils.api.views import ListMixin
 
 from ..api.serializers import (
     CancelAppointmentInputSerializer,

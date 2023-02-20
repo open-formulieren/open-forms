@@ -10,9 +10,9 @@ from furl import furl
 from rest_framework import serializers
 from rest_framework.exceptions import ParseError
 
+from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.config.data import Entry
 from openforms.logging import logevent
-from openforms.utils.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
 from ...base import BasePlugin
