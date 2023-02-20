@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-23 16:57+0100\n"
+"POT-Creation-Date: 2023-02-20 12:43+0100\n"
 "PO-Revision-Date: 2022-10-24 17:09+0018\n"
 "Last-Translator: Sergei Maertens <sergei@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -353,7 +353,8 @@ msgstr "Matomo server-URL"
 
 #: openforms/analytics_tools/models.py:50
 msgid "The base URL of your Matomo server, e.g. 'https://matomo.example.com'."
-msgstr "De basis-URL van uw Matomo server, bijvoorbeeld 'https://matomo.example.com'."
+msgstr ""
+"De basis-URL van uw Matomo server, bijvoorbeeld 'https://matomo.example.com'."
 
 #: openforms/analytics_tools/models.py:54
 msgid "Matomo site ID"
@@ -377,7 +378,8 @@ msgstr "Piwik server-URL"
 
 #: openforms/analytics_tools/models.py:70
 msgid "The base URL of your Piwik server, e.g. 'https://piwik.example.com'."
-msgstr "De basis-URL van uw Piwik server, bijvoorbeeld 'https://piwik.example.com'."
+msgstr ""
+"De basis-URL van uw Piwik server, bijvoorbeeld 'https://piwik.example.com'."
 
 #: openforms/analytics_tools/models.py:74
 msgid "Piwik site ID"
@@ -6364,39 +6366,39 @@ msgstr ""
 "Start een inzending voor een specifiek formulier. De inzending wordt "
 "onderdeel van de gebruikerssessie."
 
-#: openforms/submissions/api/viewsets.py:164
+#: openforms/submissions/api/viewsets.py:165
 msgid "Retrieve co-sign state"
 msgstr "Haal mede-ondertekeningstatus op"
 
-#: openforms/submissions/api/viewsets.py:185
+#: openforms/submissions/api/viewsets.py:186
 msgid "Complete a submission"
 msgstr "Inzending voltooien"
 
-#: openforms/submissions/api/viewsets.py:266
+#: openforms/submissions/api/viewsets.py:267
 msgid "Get the submission processing status"
 msgstr "De verwerkingsstatus van de inzending ophalen"
 
-#: openforms/submissions/api/viewsets.py:278
+#: openforms/submissions/api/viewsets.py:279
 msgid "Time-based authentication token"
 msgstr "Op tijd gebaseerde authenticatietoken"
 
-#: openforms/submissions/api/viewsets.py:307
+#: openforms/submissions/api/viewsets.py:308
 msgid "Suspend a submission"
 msgstr "Inzending onderbreken"
 
-#: openforms/submissions/api/viewsets.py:340
+#: openforms/submissions/api/viewsets.py:341
 msgid "Summary page data"
 msgstr "Gegevenssamenvatting"
 
-#: openforms/submissions/api/viewsets.py:341
+#: openforms/submissions/api/viewsets.py:342
 msgid "Retrieve the data to display in the submission summary page."
 msgstr "Haal alle inzendinggegevens om op een overzichtspagina weer te geven."
 
-#: openforms/submissions/api/viewsets.py:365
+#: openforms/submissions/api/viewsets.py:366
 msgid "Retrieve step details"
 msgstr "Stap details weergeven"
 
-#: openforms/submissions/api/viewsets.py:367
+#: openforms/submissions/api/viewsets.py:368
 msgid ""
 "The details of a particular submission step always return the related form "
 "step configuration. If there is no data yet for the step, the ID will be "
@@ -6406,30 +6408,30 @@ msgstr ""
 "formulierstap configuratie terug. Indien er nog geen gegevens zijn voor de "
 "stap dan zal het ID `null` zijn."
 
-#: openforms/submissions/api/viewsets.py:437
+#: openforms/submissions/api/viewsets.py:438
 msgid "Invalid form step reference given."
 msgstr "Ongeldige formulierstapverwijzing."
 
-#: openforms/submissions/api/viewsets.py:447
-#: openforms/submissions/api/viewsets.py:505
+#: openforms/submissions/api/viewsets.py:448
+#: openforms/submissions/api/viewsets.py:506
 msgid "Store submission step data"
 msgstr "Inzendingsstap gegevens bewaren"
 
-#: openforms/submissions/api/viewsets.py:539
+#: openforms/submissions/api/viewsets.py:540
 msgid "Apply/check form logic"
 msgstr "Pas formulier logica toe"
 
-#: openforms/submissions/api/viewsets.py:540
+#: openforms/submissions/api/viewsets.py:541
 msgid "Apply/check the logic rules specified on the form step."
 msgstr ""
 "Pas de logische regels toe die zijn gespecificeerd in de formulierstap."
 
-#: openforms/submissions/attachments.py:156
+#: openforms/submissions/attachments.py:223
 #, python-brace-format
 msgid "The file '{filename}' is not a valid file type."
 msgstr "Het bestand '{filename}' is geen toegestaan bestandstype."
 
-#: openforms/submissions/attachments.py:209
+#: openforms/submissions/attachments.py:299
 #, python-brace-format
 msgid "Upload {uuid} exceeds the maximum upload size of {max_size}b"
 msgstr ""
