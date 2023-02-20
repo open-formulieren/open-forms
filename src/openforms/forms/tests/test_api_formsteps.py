@@ -2,6 +2,7 @@ import uuid
 from unittest.mock import patch
 
 from django.contrib.auth.models import Permission
+from django.test import override_settings
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
@@ -600,6 +601,7 @@ class FormsStepsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_create_duplicate_keys_in_different_form_steps(self):
         form_definition1 = FormDefinitionFactory.create(
             name="Form Def 1",
@@ -664,6 +666,7 @@ class FormsStepsAPITests(APITestCase):
             "Form Def 2 > Repeating Group > Duplicate, Form Def 1 > Duplicate)",
         )
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_update_duplicate_keys_in_different_form_steps(self):
         form_definition1 = FormDefinitionFactory.create(
             name="Form Def 1",
