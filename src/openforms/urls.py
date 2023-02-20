@@ -2,7 +2,6 @@ from django.apps import apps
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -11,9 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 
 from decorator_include import decorator_include
-from mozilla_django_oidc_db.views import AdminLoginFailure
 
-from openforms.emails.admin import EmailTestAdminView
 from openforms.emails.views import EmailWrapperTestView
 from openforms.submissions.dev_views import SubmissionPDFTestView
 from openforms.utils.views import ErrorDetailView, SDKRedirectView
@@ -25,30 +22,7 @@ admin.site.index_title = _("Welcome to the Open Forms admin")
 admin.site.enable_nav_sidebar = False
 
 urlpatterns = [
-    path(
-        "admin/password_reset/",
-        auth_views.PasswordResetView.as_view(),
-        name="admin_password_reset",
-    ),
-    path(
-        "admin/password_reset/done/",
-        auth_views.PasswordResetDoneView.as_view(),
-        name="password_reset_done",
-    ),
-    path(
-        "admin/email/test/",
-        admin.site.admin_view(EmailTestAdminView.as_view()),
-        name="admin_email_test",
-    ),
-    path("admin/hijack/", include("hijack.urls")),
-    path(
-        "admin/config/",
-        decorator_include(
-            staff_member_required, "openforms.config.urls", namespace="config"
-        ),
-    ),
-    path("admin/login/failure/", AdminLoginFailure.as_view(), name="admin-oidc-error"),
-    path("admin/", admin.site.urls),
+    path("admin/", include("openforms.admin.urls")),
     path(
         "reset/<uidb64>/<token>/",
         auth_views.PasswordResetConfirmView.as_view(),

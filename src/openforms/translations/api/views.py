@@ -2,12 +2,7 @@ from pathlib import Path
 
 from django.conf import settings
 from django.http import FileResponse
-from django.utils.translation import (
-    activate,
-    get_language,
-    get_language_info,
-    gettext_lazy as _,
-)
+from django.utils.translation import activate, get_language, gettext_lazy as _
 
 from drf_spectacular.plumbing import build_object_type
 from drf_spectacular.utils import OpenApiExample, OpenApiParameter, extend_schema
@@ -22,8 +17,8 @@ from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerial
 from openforms.api.views.mixins import SerializerContextMixin
 from openforms.translations.utils import set_language_cookie
 
+from ..utils import get_language_codes, get_supported_languages
 from .serializers import LanguageCodeSerializer, LanguageInfoSerializer
-from .utils import get_language_codes
 
 
 class LanguageInfoView(SerializerContextMixin, APIView):
@@ -54,11 +49,7 @@ class LanguageInfoView(SerializerContextMixin, APIView):
         ],
     )
     def get(self, request: Request) -> Response:
-        codes = get_language_codes()
-        languages = [
-            {"code": code, "name": get_language_info(code)["name_local"]}
-            for code in codes
-        ]
+        languages = get_supported_languages()
         current = get_language()
         serializer = self.get_serializer(
             instance={"languages": languages, "current": current}

@@ -5,7 +5,14 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
+from openforms.translations.utils import get_supported_languages
+
 from .managers import UserManager
+
+
+def get_ui_languages() -> list[tuple[str, str]]:
+    languages = get_supported_languages()
+    return [(language.code, language.name) for language in languages]
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -52,6 +59,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
 
+    # user preferences
+    ui_language = models.CharField(
+        _("UI language"),
+        max_length=10,
+        choices=get_ui_languages(),
+        default="",
+        blank=True,
+        help_text=_(
+            "Preferred (admin) UI language. If unset, your browser preferences are "
+            "respected."
+        ),
+    )
+
     objects = UserManager()
 
     USERNAME_FIELD = "username"
@@ -84,3 +104,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_employee_name(self):
         "Best effort to get something presentable"
         return self.get_full_name() or self.employee_id or self.username
+
+
+class UserPreferences(User):
+    """
+    Expose the user model for preference-editing in a separate admin entry.
+    """
+
+    class Meta:
+        proxy = True
+        verbose_name = _("user preferences")
+        verbose_name_plural = _("user preferences")

@@ -1,7 +1,9 @@
+from dataclasses import dataclass
 from typing import Union
 
 from django.conf import settings
 from django.http.response import HttpResponseBase
+from django.utils.translation import get_language_info
 
 from rest_framework.response import Response
 
@@ -34,3 +36,22 @@ def to_iso639_2b(language_code: str) -> str:
         return mapping[language_code]
     except KeyError:
         raise ValueError(f"Unknown language code '{language_code}'")
+
+
+def get_language_codes() -> list[str]:
+    return [language[0] for language in settings.LANGUAGES]
+
+
+@dataclass
+class LanguageInfo:
+    code: str
+    name: str
+
+
+def get_supported_languages() -> list[LanguageInfo]:
+    codes = get_language_codes()
+    languages = [
+        LanguageInfo(code=code, name=get_language_info(code)["name_local"])
+        for code in codes
+    ]
+    return languages

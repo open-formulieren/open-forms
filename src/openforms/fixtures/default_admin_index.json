@@ -11,6 +11,10 @@
                 "user"
             ],
             [
+                "accounts",
+                "userpreferences"
+            ],
+            [
                 "auth",
                 "group"
             ],
