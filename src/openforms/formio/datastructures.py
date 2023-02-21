@@ -24,6 +24,7 @@ class FormioConfigurationWrapper:
     _configuration: JSONObject
     # depth-first ordered of all components in the formio configuration tree
     _cached_component_map: Optional[Dict[str, Component]] = None
+    _flattened_by_path: None | dict[str, Component] = None
     _reverse_flattened: None | dict[str, str] = None
 
     def __init__(self, configuration: JSONObject):
@@ -60,11 +61,16 @@ class FormioConfigurationWrapper:
         return self._configuration
 
     @property
+    def flattened_by_path(self) -> dict[str, Component]:
+        if self._flattened_by_path is None:
+            self._flattened_by_path = flatten_by_path(self.configuration)
+        return self._flattened_by_path
+
+    @property
     def reverse_flattened(self) -> dict[str, str]:
         if self._reverse_flattened is None:
-            flattened = flatten_by_path(self.configuration)
             self._reverse_flattened = {
-                component["key"]: path for path, component in flattened.items()
+                component["key"]: path for path, component in self.flattened_by_path.items()
             }
         return self._reverse_flattened
 

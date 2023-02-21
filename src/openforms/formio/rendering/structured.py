@@ -35,15 +35,15 @@ def render_json(submission: "Submission") -> JSONObject:
             continue
 
         if isinstance(node, EditGridGroupNode):
-            node_path = Path(current_step_slug, node.configuration_path)
+            node_path = Path(current_step_slug, node.json_renderer_path)
             editgrid_array = glom(data, node_path)
             editgrid_array.append({})
             continue
 
         if isinstance(node, ComponentNode):
             node_path = (
-                Path(current_step_slug, node.configuration_path, node.key)
-                if node.configuration_path
+                Path(current_step_slug, node.json_renderer_path, node.key)
+                if node.json_renderer_path
                 else Path(current_step_slug, node.key)
             )
 

@@ -10,7 +10,11 @@ from openforms.submissions.rendering.constants import RenderModes
 
 from ..service import format_value, translate_function
 from ..typing import Component
-from ..utils import is_layout_component, is_visible_in_frontend, iter_components
+from ..utils import (
+    is_layout_component,
+    is_visible_in_frontend,
+    iterate_components_with_configuration_path,
+)
 
 if TYPE_CHECKING:
     from openforms.submissions.rendering import Renderer
@@ -38,7 +42,8 @@ class ComponentNode(Node):
     depth: int = 0
     is_layout = False
     path: Path = None  # Path in the data (#TODO rename to data_path?)
-    configuration_path: Path = None  # Path in the configuration tree
+    json_renderer_path: Path = None  # Special data path used by the JSON rendering in openforms/formio/rendering/nodes.py #TODO Refactor?
+    configuration_path: str = None  # Path in the configuration tree, matching the path obtained with openforms/formio/utils.py `flatten_by_path`
     parent_node: Node = None
 
     @staticmethod
@@ -47,7 +52,8 @@ class ComponentNode(Node):
         component: Component,
         renderer: "Renderer",
         path: Path | None = None,  # Path in the data
-        configuration_path: Path | None = None,
+        json_renderer_path: Path | None = None,
+        configuration_path: str | None = None,
         depth: int = 0,
         parent_node: Node | None = None,
     ) -> "ComponentNode":
@@ -63,6 +69,7 @@ class ComponentNode(Node):
             renderer=renderer,
             depth=depth,
             path=path,
+            json_renderer_path=json_renderer_path,
             configuration_path=configuration_path,
             parent_node=parent_node,
         )
@@ -165,8 +172,10 @@ class ComponentNode(Node):
         """
         Yield the child components if this component is a container type.
         """
-        for component in iter_components(
-            configuration=self.component, recursive=False, _is_root=False
+        for configuration_path, component in iterate_components_with_configuration_path(
+            configuration=self.component,
+            prefix=self.configuration_path or "components",
+            recursive=False,
         ):
             yield ComponentNode.build_node(
                 step=self.step,
@@ -174,9 +183,10 @@ class ComponentNode(Node):
                 renderer=self.renderer,
                 depth=self.depth + 1,
                 path=self.path,
-                configuration_path=Path(self.configuration_path, self.key_as_path)
-                if self.configuration_path
+                json_renderer_path=Path(self.json_renderer_path, self.key_as_path)
+                if self.json_renderer_path
                 else Path(self.key_as_path),
+                configuration_path=configuration_path,
             )
 
     def __iter__(self) -> Iterator["ComponentNode"]:
@@ -269,9 +279,14 @@ class FormioNode(Node):
         return ""
 
     def get_children(self) -> Iterator[ComponentNode]:
-        form_step = self.step.form_step
-        for component in form_step.iter_components(recursive=False, _mark_root=True):
+        configuration = self.step.form_step.form_definition.configuration
+        for configuration_path, component in iterate_components_with_configuration_path(
+            configuration, recursive=False
+        ):
             child_node = ComponentNode.build_node(
-                step=self.step, component=component, renderer=self.renderer
+                step=self.step,
+                component=component,
+                renderer=self.renderer,
+                configuration_path=configuration_path,
             )
             yield from child_node

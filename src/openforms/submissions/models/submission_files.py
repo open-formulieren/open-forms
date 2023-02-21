@@ -14,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from glom import glom
 from privates.fields import PrivateMediaFileField
 
+from openforms.formio.utils import flatten_by_path
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 
 from .submission import Submission
@@ -76,7 +77,7 @@ class SubmissionFileAttachmentQuerySet(DeleteFilesQuerySetMixin, models.QuerySet
     def as_form_dict(self) -> Mapping[str, List["SubmissionFileAttachment"]]:
         files = defaultdict(list)
         for file in self:
-            files[file.form_key].append(file)
+            files[file._component_configuration_path].append(file)
         return dict(files)
 
 
@@ -85,7 +86,7 @@ class SubmissionFileAttachmentManager(models.Manager):
         self,
         submission_step: SubmissionStep,
         submission_variable: "SubmissionValueVariable",
-        component_key: str,
+        configuration_path: str,
         upload: TemporaryFileUpload,
         file_name: Optional[str] = None,
     ) -> Tuple["SubmissionFileAttachment", bool]:
@@ -95,7 +96,7 @@ class SubmissionFileAttachmentManager(models.Manager):
                     submission_step=submission_step,
                     temporary_file=upload,
                     submission_variable=submission_variable,
-                    _component_key=component_key,
+                    _component_configuration_path=configuration_path,
                 ),
                 False,
             )
@@ -110,7 +111,7 @@ class SubmissionFileAttachmentManager(models.Manager):
                     content_type=upload.content_type,
                     original_name=upload.file_name,
                     file_name=file_name,
-                    _component_key=component_key,
+                    _component_configuration_path=configuration_path,
                 )
             return (instance, True)
 
@@ -141,11 +142,11 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         blank=True,
         null=True,
     )
-    _component_key = models.CharField(
-        verbose_name=_("component key"),
+    _component_configuration_path = models.CharField(
+        verbose_name=_("component configuration path"),
         help_text=_(
-            "Key of the file component corresponding to this attachment. It can be different from the submission "
-            "variable key, for example if the file component is in a repeating group (editgrid component)."
+            "Path to the component in the configuration corresponding to this attachment. This is needed to distinguish"
+            " between component that have the same key but one is within a repeating group (editgrid component)."
         ),
         max_length=255,
         blank=True,
@@ -204,18 +205,13 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         """
         # use configuration wrapper for caching
         wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
-        for component in wrapper:
-            if (
-                component["key"] != self.form_key
-                and component["key"] != self._component_key
-            ):
-                continue
+        component = wrapper.flattened_by_path.get(self._component_configuration_path)
+        if not component:
+            return
 
-            # Use field-specific override
-            if iotype := glom(
-                component, "registration.informatieobjecttype", default=""
-            ):
-                return iotype
+        # Use field-specific override
+        if iotype := glom(component, "registration.informatieobjecttype", default=""):
+            return iotype
 
     @property
     def bronorganisatie(self) -> str | None:
@@ -224,17 +220,15 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         """
         # use configuration wrapper for caching
         wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
-        for component in wrapper:
-            if (
-                component["key"] != self.form_key
-                and component["key"] != self._component_key
-            ):
-                continue
+        component = wrapper.flattened_by_path.get(self._component_configuration_path)
+        if not component:
+            return
 
-            if bronorganisatie := glom(
-                component, "registration.bronorganisatie", default=""
-            ):
-                return bronorganisatie
+        # Use field-specific override
+        if bronorganisatie := glom(
+            component, "registration.bronorganisatie", default=""
+        ):
+            return bronorganisatie
 
     @property
     def doc_vertrouwelijkheidaanduiding(self) -> str | None:
@@ -243,19 +237,17 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         """
         # use configuration wrapper for caching
         wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
-        for component in wrapper:
-            if (
-                component["key"] != self.form_key
-                and component["key"] != self._component_key
-            ):
-                continue
+        component = wrapper.flattened_by_path.get(self._component_configuration_path)
+        if not component:
+            return
 
-            if vertrouwelijk := glom(
-                component,
-                "registration.docVertrouwelijkheidaanduiding",
-                default="",
-            ):
-                return vertrouwelijk
+        # Use field-specific override
+        if vertrouwelijk := glom(
+            component,
+            "registration.docVertrouwelijkheidaanduiding",
+            default="",
+        ):
+            return vertrouwelijk
 
     @property
     def titel(self) -> str | None:
@@ -264,15 +256,13 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         """
         # use configuration wrapper for caching
         wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
-        for component in wrapper:
-            if (
-                component["key"] != self.form_key
-                and component["key"] != self._component_key
-            ):
-                continue
+        component = wrapper.flattened_by_path.get(self._component_configuration_path)
+        if not component:
+            return
 
-            if titel := glom(component, "registration.titel", default=""):
-                return titel
+        # Use field-specific override
+        if titel := glom(component, "registration.titel", default=""):
+            return titel
 
     @property
     def form_key(self):

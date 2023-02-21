@@ -13,7 +13,7 @@ from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
 from openforms.submissions.rendering.constants import RenderModes
 from openforms.utils.urls import build_absolute_uri
 
-from ..utils import is_visible_in_frontend, iter_components
+from ..utils import is_visible_in_frontend, iterate_components_with_configuration_path
 from .conf import RENDER_CONFIGURATION
 from .nodes import ComponentNode
 from .registry import register
@@ -109,8 +109,13 @@ class ColumnsNode(ContainerMixin, ComponentNode):
             }
         """
         for index, column in enumerate(self.component["columns"]):
-            for component in iter_components(
-                configuration=column, recursive=False, _is_root=False
+            for (
+                configuration_path,
+                component,
+            ) in iterate_components_with_configuration_path(
+                configuration=column,
+                prefix=f"{self.configuration_path}.columns.{index}",
+                recursive=False,
             ):
                 yield ComponentNode.build_node(
                     step=self.step,
@@ -118,11 +123,12 @@ class ColumnsNode(ContainerMixin, ComponentNode):
                     renderer=self.renderer,
                     depth=self.depth + 1,
                     path=self.path,
-                    configuration_path=Path(
-                        self.configuration_path, self.key_as_path, index
+                    json_renderer_path=Path(
+                        self.json_renderer_path, self.key_as_path, index
                     )
-                    if self.configuration_path
+                    if self.json_renderer_path
                     else Path(self.key_as_path, index),
+                    configuration_path=configuration_path,
                 )
 
 
@@ -163,17 +169,10 @@ class FileNode(ComponentNode):
 
         files = []
         attachments = self.renderer.submission.get_merged_attachments()
-        value = attachments.get(self.component["key"])
-        if not value and self.parent_node:
-            # The attachment may be nested within a repeating group
-            value = attachments.get(self.parent_node.component["key"])
+        value = attachments.get(self.configuration_path)
 
         if value:
             for submission_file_attachment in value:
-                if submission_file_attachment._component_key != self.component["key"]:
-                    # Case in which there are multiple file components inside a repeating group.
-                    continue
-
                 display_name = submission_file_attachment.get_display_name()
                 download_link = build_absolute_uri(
                     reverse(
@@ -243,9 +242,9 @@ class EditGridNode(ContainerMixin, ComponentNode):
         repeats = len(self._value) if self._value else 0
 
         for node_index in range(repeats):
-            configuration_path = (
-                Path(self.configuration_path, self.key_as_path)
-                if self.configuration_path
+            json_renderer_path = (
+                Path(self.json_renderer_path, self.key_as_path)
+                if self.json_renderer_path
                 else self.key_as_path
             )
 
@@ -256,7 +255,8 @@ class EditGridNode(ContainerMixin, ComponentNode):
                 depth=self.depth + 1,
                 group_index=node_index,
                 path=self.key_as_path,
-                configuration_path=configuration_path,
+                json_renderer_path=json_renderer_path,
+                configuration_path=f"{self.configuration_path}.components",
             )
 
 
@@ -268,8 +268,10 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
     default_label: str = _("Item")
 
     def get_children(self) -> Iterator["ComponentNode"]:
-        for component in iter_components(
-            configuration=self.component, recursive=False, _is_root=False
+        for configuration_path, component in iterate_components_with_configuration_path(
+            configuration=self.component,
+            prefix=self.configuration_path or "components",
+            recursive=False,
         ):
             yield ComponentNode.build_node(
                 step=self.step,
@@ -277,10 +279,11 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
                 renderer=self.renderer,
                 depth=self.depth + 1,
                 path=Path(self.path, Path(self.group_index)),
-                configuration_path=Path(
-                    self.configuration_path, Path(self.group_index)
+                json_renderer_path=Path(
+                    self.json_renderer_path, Path(self.group_index)
                 ),
                 parent_node=self,
+                configuration_path=configuration_path,
             )
 
     def __post_init__(self):
