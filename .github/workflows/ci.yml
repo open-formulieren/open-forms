@@ -97,12 +97,14 @@ jobs:
         run: |
           python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
+          coverage run src/manage.py test src --exclude-tag=e2e
+
           # coverage run \
           #   --concurrency=multiprocessing \
           #   --parallel-mode \
-          src/manage.py test src \
-            --parallel 2 \
-            --exclude-tag=e2e
+          # src/manage.py test src \
+          #   --parallel 2 \
+          #   --exclude-tag=e2e
           # coverage combine
 
         env:
@@ -114,8 +116,8 @@ jobs:
       - name: Run JS tests
         run: npm test
 
-      # - name: Publish coverage report
-      #   uses: codecov/codecov-action@v3
+      - name: Publish coverage report
+        uses: codecov/codecov-action@v3
 
       - name: Generate OAS
         run: ./bin/generate_oas.sh openapi.yaml
