@@ -41,9 +41,11 @@ export const Template = args => (
       stateData: {
         service: 'http://openforms.dev/services/foo',
         path: '/foo',
-        method: 'POST'
+        method: 'POST',
       },
-      setData: ({...args}) => {null}
+      setData: ({...args}) => {
+        null;
+      },
     }}
   >
     {Template.bind({})}

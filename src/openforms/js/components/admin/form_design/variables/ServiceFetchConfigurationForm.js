@@ -54,8 +54,54 @@ const ServiceFetchConfigurationForm = ({
     })
   );
 
+  const queryString = new URLSearchParams(stateData.queryParams || {}).toString();
+
   return (
     <div>
+      <Fieldset
+        title={
+          <FormattedMessage
+            defaultMessage="Preview"
+            description="Service fetch configuration modal preview fieldset title"
+          />
+        }
+        extraClassName="admin-fieldset"
+      >
+        <FormRow>
+          <Field
+            name={'fetchConfiguration.preview'}
+            label={
+              <FormattedMessage
+                defaultMessage="Request preview"
+                description="Service fetch configuration modal form request preview field label"
+              />
+            }
+          >
+            <div>
+              {stateData.method || 'GET'} {stateData.service}
+              {stateData.path}
+              {queryString !== '' ? `?${queryString}` : null}
+              {stateData.headers ? (
+                <table>
+                  <thead>
+                    <th>Header key</th>
+                    <th>Header value</th>
+                  </thead>
+                  <tbody>
+                    {Object.entries(stateData.headers).map(([key, value], index) => (
+                      <tr key={key}>
+                        <td>{key}:</td>
+                        <td>{value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : null}
+            </div>
+          </Field>
+        </FormRow>
+      </Fieldset>
+
       <Fieldset
         title={
           <FormattedMessage
@@ -94,7 +140,7 @@ const ServiceFetchConfigurationForm = ({
               />
             }
           >
-            <TextInput defaultValue={stateData.path} onChange={onChange} maxLength="1000" />
+            <TextInput value={stateData.path || ''} onChange={onChange} maxLength="1000" />
           </Field>
         </FormRow>
 
