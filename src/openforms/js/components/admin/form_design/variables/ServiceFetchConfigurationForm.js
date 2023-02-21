@@ -220,7 +220,17 @@ const ServiceFetchConfigurationForm = ({
             </Field>
           </FormRow>
         ) : null}
+      </Fieldset>
 
+      <Fieldset
+        title={
+          <FormattedMessage
+            defaultMessage="Data extraction"
+            description="Service fetch configuration modal data extraction fieldset title"
+          />
+        }
+        extraClassName="admin-fieldset"
+      >
         <FormRow>
           <Field
             name={'fetchConfiguration.dataMappingType'}
