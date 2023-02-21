@@ -87,6 +87,7 @@ class SubmissionFileAttachmentManager(models.Manager):
         submission_step: SubmissionStep,
         submission_variable: "SubmissionValueVariable",
         configuration_path: str,
+        data_path: str,
         upload: TemporaryFileUpload,
         file_name: Optional[str] = None,
     ) -> Tuple["SubmissionFileAttachment", bool]:
@@ -97,6 +98,7 @@ class SubmissionFileAttachmentManager(models.Manager):
                     temporary_file=upload,
                     submission_variable=submission_variable,
                     _component_configuration_path=configuration_path,
+                    _component_data_path=data_path,
                 ),
                 False,
             )
@@ -112,6 +114,7 @@ class SubmissionFileAttachmentManager(models.Manager):
                     original_name=upload.file_name,
                     file_name=file_name,
                     _component_configuration_path=configuration_path,
+                    _component_data_path=data_path,
                 )
             return (instance, True)
 
@@ -142,12 +145,19 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         blank=True,
         null=True,
     )
+    # The whole path and not just the key is needed for nested fields.
     _component_configuration_path = models.CharField(
         verbose_name=_("component configuration path"),
         help_text=_(
-            "Path to the component in the configuration corresponding to this attachment. This is needed to distinguish"
-            " between component that have the same key but one is within a repeating group (editgrid component)."
+            "Path to the component in the configuration corresponding to this attachment."
         ),
+        max_length=255,
+        blank=True,
+    )
+    # Needed to distinguish in which iteration of a repeating group a file was attached
+    _component_data_path = models.CharField(
+        verbose_name=_("component data path"),
+        help_text=_("Path to the attachment in the submission data."),
         max_length=255,
         blank=True,
     )

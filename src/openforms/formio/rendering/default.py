@@ -10,6 +10,7 @@ from furl import furl
 from glom import Path
 
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
+from openforms.submissions.attachments import _glom_path_to_str
 from openforms.submissions.rendering.constants import RenderModes
 from openforms.utils.urls import build_absolute_uri
 
@@ -173,6 +174,14 @@ class FileNode(ComponentNode):
 
         if value:
             for submission_file_attachment in value:
+                component_path = (
+                    _glom_path_to_str(Path(self.path, self.key))
+                    if self.path
+                    else self.key
+                )
+                if submission_file_attachment._component_data_path != component_path:
+                    continue
+
                 display_name = submission_file_attachment.get_display_name()
                 download_link = build_absolute_uri(
                     reverse(

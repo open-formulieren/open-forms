@@ -179,7 +179,7 @@ def iter_step_uploads(
     uploads = resolve_uploads_from_data(
         submission_step.form_step.form_definition.configuration, data
     )
-    for key, (component, upload_instances, configuration_path) in uploads.items():
+    for data_path, (component, upload_instances, configuration_path) in uploads.items():
         # formio sends a list of uploads even with multiple=False
         for i, upload in enumerate(upload_instances, start=1):
             yield UploadContext(
@@ -188,7 +188,7 @@ def iter_step_uploads(
                 component=component,
                 index=i,
                 num_uploads=len(upload_instances),
-                data_path=key,
+                data_path=data_path,
                 configuration_path=configuration_path,
             )
 
@@ -306,6 +306,7 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
             submission_step,
             submission_variable,
             configuration_path,
+            _glom_path_to_str(data_path),
             upload,
             file_name=file_name,
         )
