@@ -42,9 +42,10 @@ jobs:
         env:
           STATIC_DEPS: 'true'
 
-  tests:
+  django-tests:
     name: Run the Django test suite
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     services:
       postgres:
@@ -282,7 +283,7 @@ jobs:
       extensions: ${{ matrix.target.extensions }}
 
   oas-up-to-date:
-    needs: tests
+    needs: django-tests
     name: Check for unexepected OAS changes
     runs-on: ubuntu-latest
     steps:
@@ -388,7 +389,7 @@ jobs:
 
   docker_push:
     needs:
-      - tests
+      - django-tests
       - e2etests
       - docker_build
       - oas-lint
