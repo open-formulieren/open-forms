@@ -632,3 +632,50 @@ class StufZDSClientTests(StufTestBase):
             ).count(),
             1,
         )
+
+    def test_missing_key(self, m):
+        """Assert that KeyError is raised if `omschrijving` is not manually set
+
+        The configuration for this test suite sets a value for `omschrijving` in the
+        `setUp` method. Here we remove the key from the configuration and expect a
+        KeyError for every method in the `StufZDSClient` that calls the underlying
+        `self._get_request_base_context`.
+
+        Sentry: 312722"""
+
+        del self.options["omschrijving"]
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock("creeerZaak.xml"),
+        )
+
+        # 1: create zaak identificatie
+        with self.assertRaises(KeyError):
+            # uses `self._get_request_base_context`
+            self.client.create_document_identificatie()
+
+        # 2: partial update zaak
+        with self.assertRaises(KeyError):
+            # uses `self._get_request_base_context`
+            self.client.partial_update_zaak("foo", {})
+
+        # 3: zaak payment
+        with self.assertRaises(KeyError):
+            # uses `self._get_request_base_context`
+            self.client.set_zaak_payment("foo", partial=True)
+
+        # 4: create document identificatie
+        with self.assertRaises(KeyError):
+            # uses `self._get_request_base_context`
+            self.test_create_document_identificatie()
+
+        # 5: create zaak document
+        with self.assertRaises(KeyError):
+            # uses `self._get_request_base_context`
+            self.test_create_zaak_document()
+
+        # 6: create zaak attachment
+        with self.assertRaises(KeyError):
+            # uses `self._get_request_base_context`
+            self.test_create_zaak_attachment()
