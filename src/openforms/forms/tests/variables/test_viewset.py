@@ -1,10 +1,13 @@
+from pathlib import Path
 from unittest.mock import patch
 
 from django.test import override_settings
 
+from factory.django import FileField
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
+from zgw_consumers.constants import APITypes, AuthTypes
 
 from openforms.accounts.tests.factories import (
     StaffUserFactory,
@@ -17,7 +20,13 @@ from openforms.forms.tests.factories import (
     FormStepFactory,
     FormVariableFactory,
 )
-from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
+from openforms.variables.constants import (
+    DataMappingTypes,
+    FormVariableDataTypes,
+    FormVariableSources,
+    ServiceFetchMethods,
+)
 
 
 @override_settings(LANGUAGE_CODE="en")
@@ -33,6 +42,7 @@ class FormVariableViewsetTest(APITestCase):
 
         self.assertEqual(status.HTTP_401_UNAUTHORIZED, response.status_code)
 
+
     def test_staff_required(self):
         # add the permissions to verify we specifically check is_staff
         user = UserFactory.create(
@@ -42,6 +52,7 @@ class FormVariableViewsetTest(APITestCase):
         url = reverse(
             "api:form-variables",
             kwargs={"uuid_or_slug": form.uuid},
+
         )
 
         self.client.force_authenticate(user=user)
@@ -116,6 +127,130 @@ class FormVariableViewsetTest(APITestCase):
         self.assertTrue(form_variables.filter(key="variable1").exists())
         self.assertFalse(form_variables.filter(key="variable2").exists())
         self.assertTrue(form_variables.filter(key="variable3").exists())
+
+    def test_it_accepts_inline_service_fetch_configs(self):
+        designer = StaffUserFactory.create(user_permissions=["change_form"])
+        service = ServiceFactory.create(
+            api_type=APITypes.orc,
+            api_root="http://testserver/api/v2",
+            auth_type=AuthTypes.no_auth,
+            oas_file=FileField(
+                from_path=str(Path(__file__).parents[4] / "openapi.yaml")
+            ),
+        )
+        form = FormFactory.create(generate_minimal_setup=True)
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver{form_path}"
+        form_definition = form.formstep_set.get().form_definition
+        form_definition_path = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
+        )
+        form_definition_url = f"http://testserver{form_definition_path}"
+        form_variables_path = reverse(
+            "api:form-variables", kwargs={"uuid_or_slug": form.uuid}
+        )
+
+        self.client.force_authenticate(designer)
+        response = self.client.put(
+            form_variables_path,
+            data=[
+                {
+                    "form": form_url,
+                    "form_definition": form_definition_url,
+                    "name": "x",
+                    "key": "x",
+                    "source": FormVariableSources.user_defined,
+                    "data_type": FormVariableDataTypes.object,
+                    "initial_value": None,
+                    "service_fetch_configuration": {
+                        "service": service.id,
+                        "path": form_variables_path,
+                        "method": ServiceFetchMethods.get,
+                        "data_mapping_type": DataMappingTypes.json_logic,
+                        "mapping_expression": {
+                            "var": [
+                                0,
+                                {
+                                    "map": [
+                                        {"if": {"==": [{"var": "key"}, "x"]}},
+                                        {"var": ""},
+                                    ]
+                                },
+                            ]
+                        },
+                    },
+                }
+            ],
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        fetch_config = FormVariable.objects.get(key="x").service_fetch_configuration
+
+        self.assertEqual(fetch_config.service_id, service.id)
+        self.assertEqual(fetch_config.path, form_variables_path)
+        self.assertEqual(fetch_config.method, ServiceFetchMethods.get)
+
+    def test_inline_service_fetch_configs_can_return_errors(self):
+        designer = StaffUserFactory.create(user_permissions=["change_form"])
+        service = ServiceFactory.create(
+            api_type=APITypes.orc,
+            api_root="http://testserver/api/v2",
+            auth_type=AuthTypes.no_auth,
+            oas_file=FileField(
+                from_path=str(Path(__file__).parents[4] / "openapi.yaml")
+            ),
+        )
+        form = FormFactory.create(generate_minimal_setup=True)
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver{form_path}"
+        form_definition = form.formstep_set.get().form_definition
+        form_definition_path = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
+        )
+        form_definition_url = f"http://testserver{form_definition_path}"
+        form_variables_path = reverse(
+            "api:form-variables", kwargs={"uuid_or_slug": form.uuid}
+        )
+
+        self.client.force_authenticate(designer)
+        response = self.client.put(
+            form_variables_path,
+            data=[
+                {
+                    "form": form_url,
+                    "form_definition": form_definition_url,
+                    "name": "x",
+                    "key": "x",
+                    "source": FormVariableSources.user_defined,
+                    "data_type": FormVariableDataTypes.string,
+                    "initial_value": None,
+                    "service_fetch_configuration": {
+                        "service": service.id,
+                        "path": form_variables_path,
+                        "method": ServiceFetchMethods.get,
+                        "data_mapping_type": DataMappingTypes.json_logic,
+                        "mapping_expression": {"bork": []},
+                    },
+                }
+            ],
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        error = response.json()
+        self.assertEqual(error["code"], "invalid")
+        self.assertEqual(1, len(error["invalidParams"]))
+        self.assertEqual(
+            error["invalidParams"][0]["name"],
+            "0.serviceFetchConfiguration.mappingExpression",
+        )
+        self.assertEqual(
+            error["invalidParams"][0]["code"],
+            "invalid",
+        )
+        self.assertEqual(
+            error["invalidParams"][0]["reason"],
+            "Unrecognized operation bork",
+        )
 
     def test_unique_together_key_form(self):
         user = SuperUserFactory.create()

@@ -7,6 +7,7 @@ from rest_framework.exceptions import ValidationError
 
 from openforms.api.fields import RelatedFieldFromContext
 from openforms.api.serializers import ListWithChildSerializer
+from openforms.variables.api.serializers import ServiceFetchConfigurationSerializer
 from openforms.variables.constants import FormVariableSources
 from openforms.variables.service import get_static_variables
 
@@ -25,7 +26,14 @@ class FormVariableListSerializer(ListWithChildSerializer):
         static_data_keys = [item.key for item in get_static_variables()]
 
         existing_form_key_combinations = []
-        errors = defaultdict(list)
+
+        try:
+            super().validate(attrs)
+        except ValidationError as e:
+            errors = e.args[0]
+        else:
+            errors = defaultdict(list)
+
         for index, item in enumerate(attrs):
             key_form_combination = (item["key"], item["form"].slug)
             if key_form_combination in existing_form_key_combinations:
@@ -93,6 +101,7 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
         allow_null=True,
         context_name="form_definitions",
     )
+    service_fetch_configuration = ServiceFetchConfigurationSerializer(required=False)
 
     class Meta:
         model = FormVariable
@@ -103,6 +112,7 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
             "name",
             "key",
             "source",
+            "service_fetch_configuration",
             "prefill_plugin",
             "prefill_attribute",
             "data_type",
