@@ -788,15 +788,23 @@ class SubmissionAttachmentTest(TestCase):
         attachments_repeating_group_1 = submission_step.attachments.filter(
             submission_variable__key="repeatingGroup",
             _component_configuration_path="components.0.components.0",
-        )
+        ).order_by("_component_data_path")
 
         self.assertEqual(
             attachments_repeating_group_1[0].informatieobjecttype,
             "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123",
         )
         self.assertEqual(
+            attachments_repeating_group_1[0]._component_data_path,
+            "repeatingGroup.0.fileInRepeatingGroup1",
+        )
+        self.assertEqual(
             attachments_repeating_group_1[1].informatieobjecttype,
             "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123",
+        )
+        self.assertEqual(
+            attachments_repeating_group_1[1]._component_data_path,
+            "repeatingGroup.1.fileInRepeatingGroup1",
         )
 
         attachments_repeating_group_2 = submission_step.attachments.filter(
@@ -807,15 +815,20 @@ class SubmissionAttachmentTest(TestCase):
             attachments_repeating_group_2[0].informatieobjecttype,
             "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456",
         )
+        self.assertEqual(
+            attachments_repeating_group_2[0]._component_data_path,
+            "repeatingGroup.0.fileInRepeatingGroup2",
+        )
 
-        attachments_repeating_group = submission_step.attachments.filter(
+        attachments_nested = submission_step.attachments.filter(
             submission_variable__key="nested.file"
         )
 
         self.assertEqual(
-            attachments_repeating_group[0].informatieobjecttype,
+            attachments_nested[0].informatieobjecttype,
             "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123",
         )
+        self.assertEqual(attachments_nested[0]._component_data_path, "nested.file")
 
     @patch("openforms.submissions.tasks.resize_submission_attachment.delay")
     def test_attach_multiple_uploads_to_submission_step(self, resize_mock):
