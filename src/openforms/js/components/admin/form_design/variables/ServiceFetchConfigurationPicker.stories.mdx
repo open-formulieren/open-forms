@@ -48,7 +48,10 @@ export const Template = args => (
           path: '/some-other-path',
           method: 'POST',
           headers: [['X-Foo', 'bar']],
-          queryParams: [['parameter', ['value']], ['parameter2', ['value1', 'value2']]],
+          queryParams: [
+            ['parameter', ['value']],
+            ['parameter2', ['value1', 'value2']],
+          ],
           body: {field1: 'value', field2: 'value2'},
           dataMappingType: 'JsonLogic',
           mappingExpression: '{"var": "field"}',

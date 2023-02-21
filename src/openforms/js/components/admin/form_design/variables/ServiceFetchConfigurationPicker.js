@@ -4,7 +4,6 @@ import {FormattedMessage, useIntl} from 'react-intl';
 
 import FAIcon from 'components/admin/FAIcon';
 import Field from 'components/admin/forms/Field';
-import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import Select from 'components/admin/forms/Select';
 

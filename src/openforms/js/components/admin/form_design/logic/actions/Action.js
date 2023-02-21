@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import DeleteIcon from 'components/admin/DeleteIcon';

@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
-import React, {useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import {SubmitAction} from 'components/admin/forms/ActionButton';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
@@ -29,7 +28,6 @@ const ServiceFetchConfigurationForm = ({
   setData,
   onFormSave,
 }) => {
-  // TODO ensure that onChange actually updates state with data
   const intl = useIntl();
   const formLogicContext = useContext(FormLogicContext);
   // const [stateData, setData] = useState(data);
