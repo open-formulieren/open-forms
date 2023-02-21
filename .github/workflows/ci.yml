@@ -102,7 +102,7 @@ jobs:
             src/manage.py test src \
               --parallel 2 \
               --exclude-tag=e2e
-          coverage combine
+          # coverage combine
 
         env:
           DJANGO_SETTINGS_MODULE: openforms.conf.ci
@@ -113,8 +113,8 @@ jobs:
       - name: Run JS tests
         run: npm test
 
-      - name: Publish coverage report
-        uses: codecov/codecov-action@v3
+      # - name: Publish coverage report
+      #   uses: codecov/codecov-action@v3
 
       - name: Generate OAS
         run: ./bin/generate_oas.sh openapi.yaml
