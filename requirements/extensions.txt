@@ -82,7 +82,7 @@ clamd==1.0.2
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-click==8.0.3
+click==8.1.3
     # via
     #   -r requirements/base.txt
     #   celery

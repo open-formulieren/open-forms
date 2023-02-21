@@ -45,7 +45,7 @@ jobs:
   django-tests:
     name: Run the Django test suite
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     services:
       postgres:
@@ -112,6 +112,7 @@ jobs:
           SECRET_KEY: dummy
           DB_USER: postgres
           DB_PASSWORD: ''
+          COVERAGE_DEBUG: process,pid
 
       - name: Run JS tests
         run: npm test
