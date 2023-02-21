@@ -99,8 +99,12 @@ class SubmissionAttachmentTest(TestCase):
         self.assertEqual(
             actual,
             {
-                "my_file": (components[1], [upload]),
-                "fileInColumn": (components[2]["columns"][0], [upload_in_column]),
+                "my_file": (components[1], [upload], "components.1"),
+                "fileInColumn": (
+                    components[2]["columns"][0],
+                    [upload_in_column],
+                    "components.2.columns.0",
+                ),
             },
         )
 
@@ -194,12 +198,18 @@ class SubmissionAttachmentTest(TestCase):
                 "repeatingGroup.0.fileInRepeatingGroup": (
                     configuration["components"][0]["components"][0],
                     [upload_in_repeating_group_1],
+                    "components.0.components.0",
                 ),
                 "repeatingGroup.1.fileInRepeatingGroup": (
                     configuration["components"][0]["components"][0],
                     [upload_in_repeating_group_2],
+                    "components.0.components.0",
                 ),
-                "nested.file": (configuration["components"][1], [nested_upload]),
+                "nested.file": (
+                    configuration["components"][1],
+                    [nested_upload],
+                    "components.1",
+                ),
             },
         )
 
@@ -633,13 +643,13 @@ class SubmissionAttachmentTest(TestCase):
         self.assertTrue(
             submission_step.attachments.filter(
                 submission_variable__key="repeatingGroup",
-                _component_key="fileInRepeatingGroup1",
+                _component_configuration_path="components.0.components.0",
             ).exists()
         )
         self.assertTrue(
             submission_step.attachments.filter(
                 submission_variable__key="repeatingGroup",
-                _component_key="fileInRepeatingGroup2",
+                _component_configuration_path="components.0.components.1",
             ).exists()
         )
 
@@ -777,7 +787,7 @@ class SubmissionAttachmentTest(TestCase):
 
         attachments_repeating_group_1 = submission_step.attachments.filter(
             submission_variable__key="repeatingGroup",
-            _component_key="fileInRepeatingGroup1",
+            _component_configuration_path="components.0.components.0",
         )
 
         self.assertEqual(
@@ -791,7 +801,7 @@ class SubmissionAttachmentTest(TestCase):
 
         attachments_repeating_group_2 = submission_step.attachments.filter(
             submission_variable__key="repeatingGroup",
-            _component_key="fileInRepeatingGroup2",
+            _component_configuration_path="components.0.components.1",
         )
         self.assertEqual(
             attachments_repeating_group_2[0].informatieobjecttype,

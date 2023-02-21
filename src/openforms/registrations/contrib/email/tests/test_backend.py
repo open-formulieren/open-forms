@@ -113,14 +113,14 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             submission_step=submission.submissionstep_set.get(),
             file_name="my-foo.bin",
             content_type="application/foo",
-            _component_key="file1",
+            _component_configuration_path="components.2",
         )
         submission_file_attachment_2 = SubmissionFileAttachmentFactory.create(
             form_key="file2",
             submission_step=submission.submissionstep_set.get(),
             file_name="my-bar.txt",
             content_type="text/bar",
-            _component_key="file2",
+            _component_configuration_path="components.3",
         )
         email_form_options = dict(
             to_emails=["foo@bar.nl", "bar@foo.nl"],
@@ -311,7 +311,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form_key="someFile",
             file_name="my-foo.bin",
             content_type="application/foo",
-            _component_key="someFile",
+            _component_configuration_path="components.1",
         )
 
         self.assertTrue(submission.payment_required)

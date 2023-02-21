@@ -1309,11 +1309,13 @@ class ObjectsAPIBackendTests(TestCase):
             submission_step=SubmissionStep.objects.first(),
             file_name="attachment1.jpg",
             form_key="field1",
+            _component_configuration_path="components.0",
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
             file_name="attachment2.jpg",
             form_key="field2",
+            _component_configuration_path="component.1",
         )
 
         mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")

@@ -413,13 +413,16 @@ class FormNodeTests(TestCase):
             form_key="file",
             file_name="blank-renamed.doc",
             original_name="blank.doc",
-            _component_key="file",
+            _component_configuration_path="components.0",
         )
 
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             component_node = ComponentNode.build_node(
-                step=step, component=component, renderer=renderer
+                step=step,
+                component=component,
+                configuration_path="components.0",
+                renderer=renderer,
             )
 
             link = component_node.render()
@@ -435,7 +438,10 @@ class FormNodeTests(TestCase):
                 submission, mode=RenderModes.registration, as_html=False
             )
             component_node = ComponentNode.build_node(
-                step=step, component=component, renderer=renderer
+                step=step,
+                component=component,
+                configuration_path="components.0",
+                renderer=renderer,
             )
             link = component_node.render()
             self.assertTrue(link.startswith("My File: http://localhost:8000/"))
@@ -546,26 +552,26 @@ class FormNodeTests(TestCase):
             },
         )
         # The factory creates a submission variable for the repeating group and for the nested file
-        SubmissionFileAttachmentFactory.create(
+        attachment1 = SubmissionFileAttachmentFactory.create(
             submission_step=step,
             form_key="repeatingGroup",
             file_name="file1.doc",
             original_name="file1.doc",
-            _component_key="fileInRepeatingGroup",
+            _component_configuration_path="components.0.components.0",
         )
-        SubmissionFileAttachmentFactory.create(
+        attachment2 = SubmissionFileAttachmentFactory.create(
             submission_step=step,
             form_key="repeatingGroup",
             file_name="file2.doc",
             original_name="file2.doc",
-            _component_key="fileInRepeatingGroup",
+            _component_configuration_path="components.0.components.0",
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=step,
             form_key="nested.file",
             file_name="file3.doc",
             original_name="file3.doc",
-            _component_key="nested.file",
+            _component_configuration_path="components.1",
         )
 
         self.assertEqual(2, submission.submissionvaluevariable_set.count())
@@ -579,7 +585,10 @@ class FormNodeTests(TestCase):
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             repeating_group_node = ComponentNode.build_node(
-                step=step, component=components[0], renderer=renderer
+                step=step,
+                component=components[0],
+                renderer=renderer,
+                configuration_path="components.0",
             )
 
             nodelist = list(repeating_group_node)
@@ -594,7 +603,12 @@ class FormNodeTests(TestCase):
 
             self.assertTrue(
                 link1.startswith(
-                    'File in repeating group: <a href="http://localhost:8000/submissions/attachment/'
+                    f'File in repeating group: <a href="http://localhost:8000/submissions/attachment/{attachment1.uuid}'
+                )
+            )
+            self.assertTrue(
+                link1.endswith(
+                    'target="_blank" rel="noopener noreferrer">file1.doc</a>'
                 )
             )
             self.assertEqual("File 2", nodelist[3].render())
@@ -603,14 +617,17 @@ class FormNodeTests(TestCase):
 
             self.assertTrue(
                 link2.startswith(
-                    'File in repeating group: <a href="http://localhost:8000/submissions/attachment/'
+                    f'File in repeating group: <a href="http://localhost:8000/submissions/attachment/{attachment2.uuid}'
                 )
             )
 
         with self.subTest(as_html=True):
             renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
             nested_file_node = ComponentNode.build_node(
-                step=step, component=components[1], renderer=renderer
+                step=step,
+                component=components[1],
+                renderer=renderer,
+                configuration_path="components.1",
             )
 
             link = nested_file_node.render()
@@ -622,6 +639,143 @@ class FormNodeTests(TestCase):
             self.assertTrue(
                 link.endswith(
                     '" target="_blank" rel="noopener noreferrer">file3.doc</a>'
+                )
+            )
+
+    @override_settings(BASE_URL="http://localhost:8000")
+    def test_nested_files_with_duplicate_keys(self):
+        components = [
+            {
+                "key": "repeatingGroup",
+                "type": "editgrid",
+                "label": "Files",
+                "groupLabel": "File",
+                "components": [
+                    {
+                        "type": "file",
+                        "label": "File in repeating group",
+                        "key": "attachment",
+                    }
+                ],
+            },
+            {
+                "key": "attachment",
+                "type": "file",
+            },
+        ]
+        submission = SubmissionFactory.create(
+            form__name="public name",
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={"components": components},
+        )
+
+        upload_1 = TemporaryFileUploadFactory.create()
+        upload_2 = TemporaryFileUploadFactory.create()
+        step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={
+                "repeatingGroup": [
+                    {
+                        "attachment": [
+                            {
+                                "url": f"http://server/api/v2/submissions/files/{upload_1.uuid}",
+                                "data": {
+                                    "url": f"http://server/api/v2/submissions/files/{upload_1.uuid}",
+                                    "form": "",
+                                    "name": "attachmentInside.pdf",
+                                    "size": 46114,
+                                    "baseUrl": "http://server",
+                                    "project": "",
+                                },
+                                "name": "attachmentInside.pdf",
+                                "size": 46114,
+                                "type": "image/jpg",
+                                "storage": "url",
+                                "originalName": "attachmentInside.pdf",
+                            }
+                        ]
+                    }
+                ],
+                "attachment": [
+                    {
+                        "url": f"http://server/api/v2/submissions/files/{upload_2.uuid}",
+                        "data": {
+                            "url": f"http://server/api/v2/submissions/files/{upload_2.uuid}",
+                            "form": "",
+                            "name": "attachmentOutside.pdf",
+                            "size": 46114,
+                            "baseUrl": "http://server",
+                            "project": "",
+                        },
+                        "name": "attachmentOutside.pdf",
+                        "size": 46114,
+                        "type": "image/jpg",
+                        "storage": "url",
+                        "originalName": "attachmentOutside.pdf",
+                    }
+                ],
+            },
+        )
+        # The factory creates a submission variable for the repeating group and for the nested file
+        attachment1 = SubmissionFileAttachmentFactory.create(
+            submission_step=step,
+            form_key="repeatingGroup",
+            file_name="attachmentInside.pdf",
+            original_name="attachmentInside.pdf",
+            _component_configuration_path="components.0.components.0",
+        )
+        attachment2 = SubmissionFileAttachmentFactory.create(
+            submission_step=step,
+            form_key="attachment",
+            file_name="attachmentOutside.pdf",
+            original_name="attachmentOutside.pdf",
+            _component_configuration_path="components.1",
+        )
+
+        with self.subTest(as_html=True):
+            renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
+            repeating_group_node = ComponentNode.build_node(
+                step=step,
+                component=components[0],
+                configuration_path="components.0",
+                renderer=renderer,
+            )
+
+            nodelist = list(repeating_group_node)
+
+            # One node for the EditGrid, 2 nodes per child (1 child)
+            self.assertEqual(3, len(nodelist))
+
+            self.assertEqual("Files: ", nodelist[0].render())
+            self.assertEqual("File 1", nodelist[1].render())
+
+            link1 = nodelist[2].render()
+
+            self.assertTrue(
+                link1.startswith(
+                    f'File in repeating group: <a href="http://localhost:8000/submissions/attachment/{attachment1.uuid}'
+                )
+            )
+
+        with self.subTest(as_html=True):
+            renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
+            outside_file_node = ComponentNode.build_node(
+                step=step,
+                component=components[1],
+                configuration_path="components.1",
+                renderer=renderer,
+            )
+
+            link = outside_file_node.render()
+            self.assertTrue(
+                link.startswith(
+                    f'attachment: <a href="http://localhost:8000/submissions/attachment/{attachment2.uuid}'
+                )
+            )
+            self.assertTrue(
+                link.endswith(
+                    '" target="_blank" rel="noopener noreferrer">attachmentOutside.pdf</a>'
                 )
             )
 
@@ -713,14 +867,14 @@ class FormNodeTests(TestCase):
             form_key="repeatingGroup",
             file_name="file1.doc",
             original_name="file1.doc",
-            _component_key="fileInRepeatingGroup1",
+            _component_configuration_path="components.0.components.0",
         )
         attachment_2 = SubmissionFileAttachmentFactory.create(
             submission_step=step,
             form_key="repeatingGroup",
             file_name="file2.doc",
             original_name="file2.doc",
-            _component_key="fileInRepeatingGroup2",
+            _component_configuration_path="components.0.components.1",
         )
 
         self.assertEqual(1, submission.submissionvaluevariable_set.count())
@@ -730,7 +884,10 @@ class FormNodeTests(TestCase):
 
         renderer = Renderer(submission, mode=RenderModes.registration, as_html=True)
         repeating_group_node = ComponentNode.build_node(
-            step=step, component=components[0], renderer=renderer
+            step=step,
+            component=components[0],
+            configuration_path="components.0",
+            renderer=renderer,
         )
 
         nodelist = list(repeating_group_node)
