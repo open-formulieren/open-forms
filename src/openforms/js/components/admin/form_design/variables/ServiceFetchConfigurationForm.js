@@ -94,7 +94,7 @@ const ServiceFetchConfigurationForm = ({
               />
             }
           >
-            <TextInput value={stateData.path} onChange={onChange} maxLength="1000" />
+            <TextInput defaultValue={stateData.path} onChange={onChange} maxLength="1000" />
           </Field>
         </FormRow>
 
