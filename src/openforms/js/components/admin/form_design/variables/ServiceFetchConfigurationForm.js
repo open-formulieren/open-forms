@@ -78,22 +78,30 @@ const ServiceFetchConfigurationForm = ({
             }
           >
             <div>
-              {stateData.method || 'GET'} {stateData.service}
-              {stateData.path}
-              {queryString !== '' ? `?${queryString}` : null}
+              <span className="servicefetchconfiguration-form__preview">
+                {stateData.method || 'GET'} {stateData.service}
+                {stateData.path}
+                {queryString !== '' ? `?${queryString}` : null}
+              </span>
               {stateData.headers ? (
                 <table>
                   <thead>
-                    <th>Header key</th>
-                    <th>Header value</th>
+                    <tr>
+                      <th>Header key</th>
+                      <th>Header value</th>
+                    </tr>
                   </thead>
                   <tbody>
-                    {Object.entries(stateData.headers).map(([key, value], index) => (
-                      <tr key={key}>
-                        <td>{key}:</td>
-                        <td>{value}</td>
-                      </tr>
-                    ))}
+                    {stateData.headers.map(([key, value], index) => {
+                      if (key === '') return null;
+                      else
+                        return (
+                          <tr key={key}>
+                            <td>{key}</td>
+                            <td>{value}</td>
+                          </tr>
+                        );
+                    })}
                   </tbody>
                 </table>
               ) : null}
