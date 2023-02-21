@@ -95,9 +95,10 @@ jobs:
 
       - name: Run tests
         run: |
+          sudo apt-get install strace
           python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
-          coverage run src/manage.py test src --exclude-tag=e2e
+          strace coverage run src/manage.py test src --exclude-tag=e2e
 
           # coverage run \
           #   --concurrency=multiprocessing \
