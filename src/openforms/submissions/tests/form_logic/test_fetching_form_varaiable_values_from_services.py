@@ -18,7 +18,7 @@ from openforms.variables.constants import DataMappingTypes
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 from openforms.variables.validators import HeaderValidator, ValidationError
 
-from ...logic.binding import bind
+from ...logic.service_fetching import perform_service_fetch
 
 DEFAULT_REQUEST_HEADERS = {
     "Accept",
@@ -65,7 +65,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             )
         )
 
-        value = bind(var, {})
+        value = perform_service_fetch(var, {})
 
         self.assertEqual(value["url"], "https://httpbin.org/get")
 
@@ -87,7 +87,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
 
         with requests_mock.Mocker() as m:
             m.get(requests_mock.ANY)
-            _ = bind(var, context)
+            _ = perform_service_fetch(var, context)
             request = m.last_request
 
         head, rest = request.url[:26], request.url[26:]
@@ -144,7 +144,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
                 .set({"freeform": field_value})
                 .url
             )
-            _ = bind(var, context)
+            _ = perform_service_fetch(var, context)
             request = m.last_request
 
         # it shouldn't change other parts of the request
@@ -177,7 +177,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
                 .set({"url": some_text, "status_code": some_value})
                 .url
             )
-            _ = bind(var, context)
+            _ = perform_service_fetch(var, context)
             request = m.last_request
 
         # it shouldn't change other parts of the request
@@ -214,7 +214,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             )
         )
 
-        _ = bind(var, {})
+        _ = perform_service_fetch(var, {})
         request_headers = m.last_request.headers
 
         self.assertIn(("X-Brony-Identity", "Jumper"), request_headers.items())
@@ -249,7 +249,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
 
         with requests_mock.Mocker(case_sensitive=True) as m:
             m.get("https://httpbin.org/cache")
-            _ = bind(var, context)
+            _ = perform_service_fetch(var, context)
             request = m.last_request
 
         self.assertIn(("If-None-Match", expected_value), request.headers.items())
@@ -284,7 +284,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             m.get("https://httpbin.org/cache")
             try:
                 # when we bind
-                _ = bind(var, context)
+                _ = perform_service_fetch(var, context)
             except Exception:  # XXX unclear what exception to expect
                 # either raise an exception
                 return
@@ -308,7 +308,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             )
         )
 
-        _ = bind(var, {})
+        _ = perform_service_fetch(var, {})
         request = m.last_request
 
         self.assertIn(("Content-Type", "application/json"), request.headers.items())
@@ -327,7 +327,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             )
         )
 
-        value = bind(var, {})
+        value = perform_service_fetch(var, {})
 
         self.assertEqual(value, "https://httpbin.org/get")
 
@@ -344,7 +344,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             )
         )
 
-        value = bind(var, {})
+        value = perform_service_fetch(var, {})
 
         self.assertEqual(value, "https://httpbin.org/get")
 
@@ -362,12 +362,12 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             )
         )
 
-        value = bind(var, {})
+        value = perform_service_fetch(var, {})
 
         self.assertEqual(value, "https://httpbin.org/get")
 
-    def test_it_does_not_swallow_unknown_types(self):
+    def test_it_raises_value_errors(self):
         var = FormVariableFactory.build()
 
-        with self.assertRaises(NotImplementedError):
-            bind(var, {})
+        with self.assertRaises(ValueError):
+            perform_service_fetch(var, {})

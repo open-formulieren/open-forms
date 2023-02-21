@@ -10,10 +10,10 @@ from openforms.typing import DataMapping, JSONObject
 from openforms.utils.json_logic import ComponentMeta, introspect_json_logic
 from openforms.variables.models import ServiceFetchConfiguration
 
-from ..logic.binding import bind
 from ..models import SubmissionStep
 from ..models.submission_step import DirtyData
 from .log_utils import log_errors
+from .service_fetching import perform_service_fetch
 
 
 class ActionDetails(TypedDict):
@@ -226,8 +226,7 @@ class ServiceFetchAction(ActionOperation):
         return cls(variable=action["variable"], fetch_config=action["action"]["value"])
 
     def eval(self, context: DataMapping) -> DataMapping:
-        # XXX bind is expressed in terms of FormVariables
-        # this disguise as an Action should be temporary
+        # XXX perform_service_fetch is expressed in terms of FormVariables
         dummy_var = FormVariable(
             name=self.variable,
             service_fetch_configuration=ServiceFetchConfiguration.objects.get(
@@ -235,7 +234,7 @@ class ServiceFetchAction(ActionOperation):
             ),
         )
         with log_errors({}, self.rule):  # TODO proper logging/error handling
-            return {dummy_var.name: bind(dummy_var, context)}
+            return {dummy_var.name: perform_service_fetch(dummy_var, context)}
 
 
 ACTION_TYPE_MAPPING: Mapping[str, Type[ActionOperation]] = {
