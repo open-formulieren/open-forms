@@ -206,7 +206,7 @@ Stel er zijn 4 velden:
 Keuzelijst
 ==========
 
-Met een *Keuzelijst* kunt u voorgedefinieerde lijst van opties aanbieden.
+Met een *Keuzelijst* kunt u lijst van opties aanbieden, deze lijst kan voorgedefinieerd zijn of dynamisch (zie :ref:`Formulier met dynamische opties <example_logic_dynamic_options>`).
 
 Basis
 -----
