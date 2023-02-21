@@ -147,7 +147,7 @@ commonmark==0.9.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   recommonmark
-coverage==7.1.0
+coverage==7.0.5
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
