@@ -67,7 +67,7 @@ jobs:
         uses: maykinmedia/setup-django-backend@v1
         with:
           apt-packages: 'libxml2-dev libxmlsec1-dev libxmlsec1-openssl gettext postgresql-client'
-          python-version: '3.10'
+          python-version: '3.10.9'
           optimize-postgres: 'yes'
           pg-service: 'postgres'
           setup-node: 'yes'
@@ -96,16 +96,13 @@ jobs:
         run: |
           python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
+          coverage run \
+          --concurrency=multiprocessing \
+          --parallel-mode \
           src/manage.py test src \
             --parallel 2 \
             --exclude-tag=e2e
-          # coverage run \
-          #  --concurrency=multiprocessing \
-          #  --parallel-mode \
-          #  src/manage.py test src \
-          #    --parallel 2 \
-          #    --exclude-tag=e2e
-          # coverage combine
+          coverage combine
 
         env:
           DJANGO_SETTINGS_MODULE: openforms.conf.ci
@@ -116,8 +113,8 @@ jobs:
       - name: Run JS tests
         run: npm test
 
-      # - name: Publish coverage report
-      #   uses: codecov/codecov-action@v3
+      - name: Publish coverage report
+        uses: codecov/codecov-action@v3
 
       - name: Generate OAS
         run: ./bin/generate_oas.sh openapi.yaml
