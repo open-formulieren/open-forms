@@ -236,7 +236,6 @@ waar de JSON-logic op werkt).
     niet ondersteund:
 
     * filter
-    * map
     * all
     * none
     * some
