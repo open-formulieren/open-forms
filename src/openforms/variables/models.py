@@ -16,6 +16,25 @@ from .validators import (
 )
 
 
+def interpolate_request_body(body: dict, context: dict) -> dict:
+    """Recursively perform variable injection on a JSON request body"""
+    if not isinstance(body, dict):
+        return body
+
+    interpolated = {}
+    for key, value in body.items():
+        if isinstance(value, dict):
+            interpolated[key] = interpolate_request_body(body[key], context)
+        else:
+            interpolated[key] = (
+                render_from_string(value, context, backend=sandbox_backend)
+                .strip()
+                .encode("utf-8")
+                .decode("latin1")
+            )
+    return interpolated
+
+
 class ServiceFetchConfiguration(models.Model):
     service = models.ForeignKey(
         "zgw_consumers.Service",
@@ -163,5 +182,6 @@ class ServiceFetchConfiguration(models.Model):
             operation="",
         )
         if self.body is not None:
-            request_args["json"] = self.body
+            request_args["json"] = interpolate_request_body(self.body, context)
+
         return request_args
