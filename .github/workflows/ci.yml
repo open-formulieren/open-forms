@@ -97,12 +97,12 @@ jobs:
         run: |
           python src/manage.py compilemessages
           python src/manage.py collectstatic --noinput --link
-          coverage run \
-            --concurrency=multiprocessing \
-            --parallel-mode \
-            src/manage.py test src \
-              --parallel 2 \
-              --exclude-tag=e2e
+          # coverage run \
+          #   --concurrency=multiprocessing \
+          #   --parallel-mode \
+          src/manage.py test src \
+            --parallel 2 \
+            --exclude-tag=e2e
           # coverage combine
 
         env:
