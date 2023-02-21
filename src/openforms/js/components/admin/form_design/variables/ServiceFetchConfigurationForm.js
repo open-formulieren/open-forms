@@ -205,12 +205,16 @@ const ServiceFetchConfigurationForm = ({
               />
             }
           >
-            <JsonWidget
-              name="fetchConfiguration.mappingExpression"
-              logic={stateData.mappingExpression || {}}
-              cols={20}
-              onChange={onChange}
-            />
+            {stateData.dataMappingType === 'JsonLogic' ? (
+              <JsonWidget
+                name="fetchConfiguration.mappingExpression"
+                logic={stateData.mappingExpression || {}}
+                cols={20}
+                onChange={onChange}
+              />
+            ) : (
+              <TextInput value={stateData.mappingExpression} onChange={onChange} />
+            )}
           </Field>
         </FormRow>
       </Fieldset>
