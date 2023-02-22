@@ -302,6 +302,8 @@ class StufZDSRegistration(BasePlugin):
         return result["zaak"]
 
     def update_payment_status(self, submission: "Submission", options: dict):
+        # bandaid to avoid KeyError in the `StufZDSClient` (GH #2717)
+        options["omschrijving"] = submission.form.admin_name
         config = StufZDSConfig.get_solo()
         config.apply_defaults_to(options)
         client = config.get_client(options)

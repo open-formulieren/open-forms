@@ -1,4 +1,5 @@
 import dataclasses
+from copy import deepcopy
 from decimal import Decimal
 from unittest.mock import patch
 
@@ -1521,7 +1522,10 @@ class StufZDSPluginTests(StUFZDSTestBase):
         serializer = plugin.configuration_options(data=form_options)
         self.assertTrue(serializer.is_valid())
 
-        result = plugin.register_submission(submission, serializer.validated_data)
+        # use deepcopy to avoid mutating the configuration (see `plugin.update_payment_status` below)
+        result = plugin.register_submission(
+            submission, deepcopy(serializer.validated_data)
+        )
         self.assertEqual(
             result,
             {
