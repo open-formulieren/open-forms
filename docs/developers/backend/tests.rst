@@ -32,6 +32,8 @@ or even by certain tags:
 
     python src/manage.py test src --tag=gh-2418
 
+There's a tag ``dangerous`` for tests that point out breaking behaviour.
+
 For all options, see ``src/manage.py test --help``.
 
 Cheatsheet for speeding up tests
