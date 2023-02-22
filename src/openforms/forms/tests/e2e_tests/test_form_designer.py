@@ -218,6 +218,54 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             )
             await expect(parent).to_contain_text(error_message)
 
+    async def test_key_automatically_updated_for_files(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Playwright test",
+                formstep__form_definition__configuration={
+                    "components": [],
+                },
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            # Drag and drop a component
+            await page.get_by_text("Bestandsupload").hover()
+            await page.mouse.down()
+            await page.locator('css=[ref="-container"]').hover()
+            await page.mouse.up()
+
+            # Check that the modal is open
+            await expect(page.locator("css=.formio-dialog-content")).to_have_count(1)
+
+            # Check the key before modifying the label
+            key_input = page.get_by_label("Eigenschapnaam")
+            await expect(key_input).to_have_value("file")
+
+            # Modify the component label
+            label_input = page.get_by_label("Label")
+            await label_input.click()
+            await label_input.fill("Test")
+
+            # Test that the key also changed
+            await expect(key_input).to_have_value("test")
+
 
 class FormDesignerRegressionTests(E2ETestCase):
     async def test_user_defined_variable_boolean_initial_value_false(self):
