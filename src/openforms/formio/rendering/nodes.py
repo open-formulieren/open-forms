@@ -9,7 +9,11 @@ from openforms.submissions.rendering.constants import RenderModes
 
 from ..formatters.service import format_value
 from ..typing import Component
-from ..utils import is_layout_component, is_visible_in_frontend, iter_components
+from ..utils import (
+    is_layout_component,
+    is_visible_in_frontend,
+    iterate_components_with_configuration_path,
+)
 
 if TYPE_CHECKING:
     from openforms.submissions.rendering import Renderer
@@ -36,15 +40,21 @@ class ComponentNode(Node):
     step: SubmissionStep
     depth: int = 0
     is_layout = False
-    path: Path = None
+    path: Path = None  # Path in the data (#TODO rename to data_path?)
+    json_renderer_path: Path = None  # Special data path used by the JSON rendering in openforms/formio/rendering/nodes.py #TODO Refactor?
+    configuration_path: str = None  # Path in the configuration tree, matching the path obtained with openforms/formio/utils.py `flatten_by_path`
+    parent_node: Node = None
 
     @staticmethod
     def build_node(
         step: SubmissionStep,
         component: Component,
         renderer: "Renderer",
-        path: Path = None,
+        path: Optional[Path] = None,  # Path in the data
+        json_renderer_path: Optional[Path] = None,
+        configuration_path: Optional[str] = None,
         depth: int = 0,
+        parent_node: Optional[Node] = None,
     ) -> "ComponentNode":
         """
         Instantiate the most specific node type for a given component type.
@@ -53,7 +63,14 @@ class ComponentNode(Node):
 
         node_cls = register[component["type"]]
         nested_node = node_cls(
-            step=step, component=component, renderer=renderer, depth=depth, path=path
+            step=step,
+            component=component,
+            renderer=renderer,
+            depth=depth,
+            path=path,
+            json_renderer_path=json_renderer_path,
+            configuration_path=configuration_path,
+            parent_node=parent_node,
         )
         return nested_node
 
@@ -133,8 +150,10 @@ class ComponentNode(Node):
         """
         Yield the child components if this component is a container type.
         """
-        for component in iter_components(
-            configuration=self.component, recursive=False, _is_root=False
+        for configuration_path, component in iterate_components_with_configuration_path(
+            configuration=self.component,
+            prefix=self.configuration_path or "components",
+            recursive=False,
         ):
             yield ComponentNode.build_node(
                 step=self.step,
@@ -142,6 +161,10 @@ class ComponentNode(Node):
                 renderer=self.renderer,
                 depth=self.depth + 1,
                 path=self.path,
+                json_renderer_path=Path(self.json_renderer_path, self.key_as_path)
+                if self.json_renderer_path
+                else Path(self.key_as_path),
+                configuration_path=configuration_path,
             )
 
     def __iter__(self) -> Iterator["ComponentNode"]:
@@ -206,6 +229,18 @@ class ComponentNode(Node):
         """
         return f"{self.indent}{self.label}: {self.display_value}"
 
+    @property
+    def key(self):
+        return self.component["key"]
+
+    @property
+    def key_as_path(self) -> Path:
+        """
+        See https://glom.readthedocs.io/en/latest/api.html?highlight=Path#glom.Path
+        Using Path("a.b") in glom will not use the nested path, but will look for a key "a.b"
+        """
+        return Path(*(self.component["key"].split(".")))
+
 
 @dataclass
 class FormioNode(Node):
@@ -215,9 +250,14 @@ class FormioNode(Node):
         return ""
 
     def get_children(self) -> Iterator[ComponentNode]:
-        form_step = self.step.form_step
-        for component in form_step.iter_components(recursive=False, _mark_root=True):
+        configuration = self.step.form_step.form_definition.configuration
+        for configuration_path, component in iterate_components_with_configuration_path(
+            configuration, recursive=False
+        ):
             child_node = ComponentNode.build_node(
-                step=self.step, component=component, renderer=self.renderer
+                step=self.step,
+                component=component,
+                renderer=self.renderer,
+                configuration_path=configuration_path,
             )
             yield from child_node

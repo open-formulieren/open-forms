@@ -539,7 +539,7 @@ class Submission(models.Model):
 
     attachments = property(get_attachments)
 
-    def get_merged_attachments(self) -> Mapping[str, "SubmissionFileAttachment"]:
+    def get_merged_attachments(self) -> Mapping[str, List["SubmissionFileAttachment"]]:
         if not hasattr(self, "_merged_attachments"):
             self._merged_attachments = self.get_attachments().as_form_dict()
         return self._merged_attachments
