@@ -252,7 +252,7 @@ class FileField extends BaseFileField {
       components: [
         {
           type: 'tabs',
-          key: 'file',
+          key: 'tabs',
           components: [
             {
               ...SENSITIVE_BASIC,
