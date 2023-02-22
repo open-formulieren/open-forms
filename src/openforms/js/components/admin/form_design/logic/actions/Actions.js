@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
-import React, {useContext} from 'react';
+import React from 'react';
 
-import {FormContext} from 'components/admin/form_design/Context';
 import StepSelection from 'components/admin/form_design/StepSelection';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 import {
@@ -12,6 +11,7 @@ import {
 import ComponentSelection from 'components/admin/forms/ComponentSelection';
 import JsonWidget from 'components/admin/forms/JsonWidget';
 import Select from 'components/admin/forms/Select';
+import VariableSelection from 'components/admin/forms/VariableSelection';
 
 import {ActionError, Action as ActionType} from './types';
 
@@ -82,39 +82,27 @@ const ActionProperty = ({action, errors, onChange}) => {
   );
 };
 
-const getVariableChoices = variables => {
-  return variables.map(variable => [variable.key, variable.name]);
-};
-
-const ActionVariableValue = ({action, errors, onChange}) => {
-  const formContext = useContext(FormContext);
-  const allVariables = formContext.formVariables;
-
-  return (
-    <>
-      <DSLEditorNode errors={errors.variable}>
-        {/*TODO: This should be a searchable select for when there are a billion variables?*/}
-        <Select
-          name="variable"
-          choices={getVariableChoices(allVariables)}
-          allowBlank
-          onChange={onChange}
-          value={action.variable}
-        />
-      </DSLEditorNode>
-      <DSLEditorNode errors={errors.action?.value}>
-        <JsonWidget name="action.value" logic={action.action.value} onChange={onChange} />
-      </DSLEditorNode>
-    </>
-  );
-};
+const ActionVariableValue = ({action, errors, onChange}) => (
+  <>
+    <DSLEditorNode errors={errors.variable}>
+      <VariableSelection name="variable" onChange={onChange} value={action.variable} />
+    </DSLEditorNode>
+    <DSLEditorNode errors={errors.action?.value}>
+      <JsonWidget name="action.value" logic={action.action.value} onChange={onChange} />
+    </DSLEditorNode>
+  </>
+);
 
 const ActionFetchFromService = ({action, errors, onChange}) => {
   return (
     <>
       <DSLEditorNode errors={errors.variable}>
-        {/* TODO: ackchyually we want Components ∪ User defined variables */}
-        <ComponentSelection name="variable" value={action.variable} onChange={onChange} />
+        {/*
+          TODO: should we filter this to only allow user defined variables?
+
+          const filter = variable => variable.source === 'user_defined'
+        */}
+        <VariableSelection name="variable" value={action.variable} onChange={onChange} />
       </DSLEditorNode>
       <DSLEditorNode errors={errors.action?.value}>
         {/* TODO: this element loses state on change of the variable sibling right above*/}
@@ -124,6 +112,7 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
           value={action.action.value}
           placeholder="ServiceFetchConfiguration id"
           type="number"
+          min="1"
         />
       </DSLEditorNode>
     </>
