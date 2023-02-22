@@ -135,16 +135,16 @@
                 "appgroup"
             ],
             [
+                "analytics_tools",
+                "analyticstoolsconfiguration"
+            ],
+            [
                 "appointments",
                 "appointmentsconfig"
             ],
             [
                 "config",
                 "cspsetting"
-            ],
-            [
-                "analytics_tools",
-                "analyticstoolsconfiguration"
             ],
             [
                 "config",
@@ -157,10 +157,6 @@
             [
                 "cookie_consent",
                 "cookiegroup"
-            ],
-            [
-                "np_family_members",
-                "familymemberstypeconfig"
             ],
             [
                 "digid_eherkenning",
@@ -199,16 +195,24 @@
                 "domain"
             ],
             [
+                "np_family_members",
+                "familymemberstypeconfig"
+            ],
+            [
                 "prefill",
                 "prefillconfig"
+            ],
+            [
+                "simple_certmanager",
+                "certificate"
             ],
             [
                 "stuf",
                 "soapservice"
             ],
             [
-                "simple_certmanager",
-                "certificate"
+                "variables",
+                "servicefetchconfiguration"
             ],
             [
                 "zgw_consumers",
@@ -217,10 +221,6 @@
             [
                 "zgw_consumers",
                 "service"
-            ],
-            [
-                "variables",
-                "servicefetchconfiguration"
             ]
         ]
     }
