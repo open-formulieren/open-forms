@@ -218,6 +218,7 @@ const Trigger = ({name, logic, onChange, error, withDSLPreview = false, children
           name="operand"
           value={operand}
           onChange={onTriggerChange}
+          includeStaticVariables
           // filter variables of the same type as the trigger variable
           filter={variable => variable.dataType === triggerVariable?.dataType}
         />
@@ -317,6 +318,7 @@ const Trigger = ({name, logic, onChange, error, withDSLPreview = false, children
               name="variable"
               value={triggerVariableKey}
               onChange={onTriggerChange}
+              includeStaticVariables
             />
           </DSLEditorNode>
           {triggerVariableKey ? (

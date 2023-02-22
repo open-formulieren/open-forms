@@ -1,3 +1,5 @@
+from urllib.parse import quote, quote_plus
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -6,6 +8,7 @@ import jq
 from rest_framework.serializers import ValidationError as DRFValidationError
 
 from openforms.forms.api.validators import JsonLogicValidator
+from openforms.typing import DataMapping
 
 from .constants import DataMappingTypes, ServiceFetchMethods
 from .validators import HeaderValidator
@@ -100,3 +103,53 @@ class ServiceFetchConfiguration(models.Model):
 
         if errors:
             raise ValidationError(errors)
+
+    def request_arguments(self, context: DataMapping) -> dict:
+        """Return a dictionary with keyword arguments for a
+        zgw_consumers.Service client request call.
+        """
+        # The zgw-consumers client uses the requests library to perform the request,
+        # but requests sends out malformed headers if you ask it to. We are
+        # interpolating user input into headers, so we might ask it to if we aren't careful.
+        #
+        # The Internet Standard currently applicable is RFC9110
+        # What you and I call http headers, it calls `fields`
+        # https://www.rfc-editor.org/rfc/rfc9110#section-5
+        #
+        # Validating the contents of headers is beyond the scope of this
+        # function, we only make sure the requests we send are within the
+        # Internet Standard spec. If some service needs empoji in the header,
+        # we force it into a sequence of bytes that is allowed.
+        #
+        # extra knowledge not in the RFC: latin1 is a different name for ISO-8859-1
+
+        headers = {
+            # map all unicode into what the RFC allows with utf-8; remove leading space
+            header: value.format(**context).encode("utf-8").decode("latin1").lstrip()
+            for header, value in (self.headers or {}).items()
+        }
+        # before we go further
+        # assert headers are still valid after we put submmitter data in there
+        # this catches faults requests doesn't: https://github.com/psf/requests/issues/6359
+        HeaderValidator()(headers)
+
+        escaped_for_query = {k: quote(str(v)) for k, v in context.items()}
+        escaped_for_path = {k: quote_plus(str(v)) for k, v in context.items()}
+
+        query_params = self.query_params.format(**escaped_for_query)
+        query_params = (
+            query_params[1:] if query_params.startswith("?") else query_params
+        )
+
+        request_args = dict(
+            path=self.path.format(**escaped_for_path),
+            params=query_params,
+            method=self.method,
+            headers=headers,
+            # XXX operationId is a required parameter to zds-client...
+            # Maybe offer as alternative to path and method?
+            operation="",
+        )
+        if self.body is not None:
+            request_args["json"] = self.body
+        return request_args

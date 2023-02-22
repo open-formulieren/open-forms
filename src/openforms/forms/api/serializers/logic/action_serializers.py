@@ -65,6 +65,12 @@ class LogicValueActionSerializer(serializers.Serializer):
     )
 
 
+class LogicFetchActionSerializer(serializers.Serializer):
+    value = serializers.JSONField(
+        label=_("service_fetch_configuration"),
+    )
+
+
 class LogicActionPolymorphicSerializer(PolymorphicSerializer):
     type = serializers.ChoiceField(
         choices=LogicActionTypes.choices,
@@ -78,6 +84,7 @@ class LogicActionPolymorphicSerializer(PolymorphicSerializer):
         str(LogicActionTypes.property): LogicPropertyActionSerializer,
         str(LogicActionTypes.step_not_applicable): DummySerializer,
         str(LogicActionTypes.variable): LogicValueActionSerializer,
+        str(LogicActionTypes.fetch_from_service): LogicFetchActionSerializer,
     }
 
 

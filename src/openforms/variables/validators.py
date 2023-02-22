@@ -115,4 +115,4 @@ class HeaderValidator:
 
 
 def has_whitespace_padding(s: str) -> bool:
-    return not re.match(r"^(\S.*\S|\S)$", s)
+    return not re.match(r"^([^ \t].*[^ \t]|[^ \t])$", s)

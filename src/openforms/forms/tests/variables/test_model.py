@@ -1,7 +1,9 @@
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.test import TestCase
 
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
+from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 from ..factories import FormFactory, FormVariableFactory
 
@@ -15,11 +17,33 @@ class FormVariableModelTests(TestCase):
         with self.assertRaises(IntegrityError):
             FormVariableFactory.create(prefill_plugin="demo", prefill_attribute="")
 
+    def test_valid_prefill_plugin_config(self):
+        try:
+            FormVariableFactory.create(prefill_plugin="demo", prefill_attribute="demo")
+        except (ValidationError, IntegrityError) as e:
+            raise self.failureException("Failed valid input") from e
+
+    def test_service_fetch_config_and_prefill_plugin_are_mutually_exclusive(self):
+        with self.assertRaises(IntegrityError):
+            FormVariableFactory.create(
+                service_fetch_configuration=ServiceFetchConfigurationFactory.create(),
+                prefill_plugin="demo",
+                prefill_attribute="demo",
+            )
+
     def test_component_variable_without_form_definition_invalid(self):
         with self.assertRaises(IntegrityError):
             FormVariableFactory.create(
                 source=FormVariableSources.component, form_definition=None
             )
+
+    def test_variable_can_have_a_service_fetch_configuration(self):
+        try:
+            FormVariableFactory.create(
+                service_fetch_configuration=ServiceFetchConfigurationFactory.create()
+            )
+        except TypeError as e:
+            raise self.failureException("Failed valid input") from e
 
     def test_component_variable_data_type_automatically_set(self):
         form = FormFactory.create(

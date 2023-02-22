@@ -4,11 +4,10 @@ from typing import Callable, Iterable, Iterator, List, Optional
 import elasticapm
 from json_logic import jsonLogic
 
-from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic, FormStep
 
 from ..models import Submission, SubmissionStep
-from .actions import ActionOperation, compile_action_operation
+from .actions import ActionOperation
 from .datastructures import DataContainer
 from .log_utils import log_errors
 
@@ -154,19 +153,7 @@ def iter_evaluate_rules(
             if not triggered:
                 continue
 
-            # process all the actions in order for the triggered rule
-            for action in rule.actions:
-                action_details = action["action"]
-                # If the action type is to set a variable, update the variable state.
-                # This is the ONLY operation that is allowed to execute while we're looping
-                # through the rules.
-                if action_details["type"] == LogicActionTypes.variable:
-                    new_value = None
-                    with log_errors(action_details["value"], rule):
-                        new_value = jsonLogic(
-                            action_details["value"], data_container.data
-                        )
-                    data_container.update({action["variable"]: new_value})
-                else:
-                    operation = compile_action_operation(action)
-                    yield operation
+            for operation in rule.action_operations:
+                if mutations := operation.eval(data_container.data):
+                    data_container.update(mutations)
+                yield operation

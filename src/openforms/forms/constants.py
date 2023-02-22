@@ -11,6 +11,7 @@ class LogicActionTypes(models.TextChoices):
     disable_next = "disable-next", _("Disable the next step")
     property = "property", _("Modify a component property")
     variable = "variable", _("Set the value of a variable")
+    fetch_from_service = "fetch-from-service", _("Fetch the value from a service")
 
     @classmethod
     def get_label(cls, value: str) -> str:
