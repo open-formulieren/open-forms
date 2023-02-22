@@ -1,3 +1,5 @@
+from typing import cast
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -18,8 +20,12 @@ class LogicActionTypes(models.TextChoices):
         return dict(cls.choices)[value]
 
 
-LOGIC_ACTION_TYPES_REQUIRING_COMPONENT: set[str] = {LogicActionTypes.property}
-LOGIC_ACTION_TYPES_REQUIRING_VARIABLE: set[str] = {LogicActionTypes.variable}
+LOGIC_ACTION_TYPES_REQUIRING_COMPONENT = cast(
+    set[str], {LogicActionTypes.property.value}
+)
+LOGIC_ACTION_TYPES_REQUIRING_VARIABLE = cast(
+    set[str], {LogicActionTypes.variable.value}
+)
 
 
 class PropertyTypes(models.TextChoices):
