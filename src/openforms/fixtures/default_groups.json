@@ -669,26 +669,6 @@
                 "token"
             ],
             [
-                "add_tokenproxy",
-                "authtoken",
-                "tokenproxy"
-            ],
-            [
-                "change_tokenproxy",
-                "authtoken",
-                "tokenproxy"
-            ],
-            [
-                "delete_tokenproxy",
-                "authtoken",
-                "tokenproxy"
-            ],
-            [
-                "view_tokenproxy",
-                "authtoken",
-                "tokenproxy"
-            ],
-            [
                 "add_accessattempt",
                 "axes",
                 "accessattempt"
