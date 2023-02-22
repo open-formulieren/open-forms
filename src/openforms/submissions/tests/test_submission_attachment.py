@@ -29,6 +29,7 @@ from .factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
     SubmissionStepFactory,
+    SubmissionValueVariableFactory,
     TemporaryFileUploadFactory,
 )
 
@@ -98,8 +99,12 @@ class SubmissionAttachmentTest(TestCase):
         self.assertEqual(
             actual,
             {
-                "my_file": (components[1], [upload]),
-                "fileInColumn": (components[2]["columns"][0], [upload_in_column]),
+                "my_file": (components[1], [upload], "components.1"),
+                "fileInColumn": (
+                    components[2]["columns"][0],
+                    [upload_in_column],
+                    "components.2.columns.0",
+                ),
             },
         )
 
@@ -193,12 +198,18 @@ class SubmissionAttachmentTest(TestCase):
                 "repeatingGroup.0.fileInRepeatingGroup": (
                     configuration["components"][0]["components"][0],
                     [upload_in_repeating_group_1],
+                    "components.0.components.0",
                 ),
                 "repeatingGroup.1.fileInRepeatingGroup": (
                     configuration["components"][0]["components"][0],
                     [upload_in_repeating_group_2],
+                    "components.0.components.0",
                 ),
-                "nested.file": (configuration["components"][1], [nested_upload]),
+                "nested.file": (
+                    configuration["components"][1],
+                    [nested_upload],
+                    "components.1",
+                ),
             },
         )
 
@@ -441,6 +452,379 @@ class SubmissionAttachmentTest(TestCase):
         )
 
         self.assertEqual(1, attachments_repeating_group.count())
+
+    @patch("openforms.submissions.tasks.resize_submission_attachment.delay")
+    def test_attach_uploads_to_submission_step_with_nested_fields_with_matching_keys(
+        self, resize_mock
+    ):
+        attachment_1 = TemporaryFileUploadFactory.create(
+            file_name="attachmentInside.pdf"
+        )
+        attachment_2 = TemporaryFileUploadFactory.create(
+            file_name="attachmentOutside.pdf"
+        )
+        data = {
+            "repeatingGroup": [
+                {
+                    "attachment": [
+                        {
+                            "url": f"http://server/api/v2/submissions/files/{attachment_1.uuid}",
+                            "data": {
+                                "url": f"http://server/api/v2/submissions/files/{attachment_1.uuid}",
+                                "form": "",
+                                "name": "attachmentInside.pdf",
+                                "size": 46114,
+                                "baseUrl": "http://server",
+                                "project": "",
+                            },
+                            "name": "attachmentInside.pdf",
+                            "size": 46114,
+                            "type": "image/jpg",
+                            "storage": "url",
+                            "originalName": "attachmentInside.pdf",
+                        }
+                    ]
+                }
+            ],
+            "attachment": [
+                {
+                    "url": f"http://server/api/v2/submissions/files/{attachment_2.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v2/submissions/files/{attachment_2.uuid}",
+                        "form": "",
+                        "name": "attachmentOutside.pdf",
+                        "size": 46114,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "attachmentOutside.pdf",
+                    "size": 46114,
+                    "type": "image/jpg",
+                    "storage": "url",
+                    "originalName": "attachmentOutside.pdf",
+                }
+            ],
+        }
+        components = [
+            {
+                "key": "repeatingGroup",
+                "type": "editgrid",
+                "components": [
+                    {
+                        "type": "file",
+                        "key": "attachment",
+                        "registration": {
+                            "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
+                        },
+                    }
+                ],
+            },
+            {
+                "key": "attachment",
+                "type": "file",
+                "registration": {
+                    "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456"
+                },
+            },
+        ]
+        form_step = FormStepFactory.create(
+            form_definition__configuration={"components": components}
+        )
+        submission_step = SubmissionStepFactory.create(
+            form_step=form_step, submission__form=form_step.form, data=data
+        )
+        # TODO: remove once #2728 is fixed
+        SubmissionValueVariableFactory.create(
+            key="attachment",
+            form_variable__form=form_step.form,
+            submission=submission_step.submission,
+            value=data["attachment"],
+        )
+
+        result = attach_uploads_to_submission_step(submission_step)
+
+        self.assertEqual(len(result), 2)
+        self.assertEqual(SubmissionFileAttachment.objects.count(), 2)
+
+        # TODO can't get the attachment based on the submission variable, because both are wrongly related to the
+        # attachment variable
+        attachment_repeating_group = submission_step.attachments.get(
+            original_name="attachmentInside.pdf"
+        )
+
+        self.assertEqual(
+            attachment_repeating_group.informatieobjecttype,
+            "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123",
+        )
+
+        attachment = submission_step.attachments.get(
+            original_name="attachmentOutside.pdf"
+        )
+
+        self.assertEqual(
+            attachment.informatieobjecttype,
+            "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456",
+        )
+
+    @patch("openforms.submissions.tasks.resize_submission_attachment.delay")
+    def test_attach_multiple_uploads_to_submission_step_in_repeating_group(
+        self, resize_mock
+    ):
+        upload_in_repeating_group_1 = TemporaryFileUploadFactory.create()
+        upload_in_repeating_group_2 = TemporaryFileUploadFactory.create()
+        data = {
+            "repeatingGroup": [
+                {
+                    "fileInRepeatingGroup1": [
+                        {
+                            "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_1.uuid}",
+                            "data": {
+                                "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_1.uuid}",
+                                "form": "",
+                                "name": "my-image.jpg",
+                                "size": 46114,
+                                "baseUrl": "http://server",
+                                "project": "",
+                            },
+                            "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                            "size": 46114,
+                            "type": "image/jpg",
+                            "storage": "url",
+                            "originalName": "my-image.jpg",
+                        }
+                    ],
+                    "fileInRepeatingGroup2": [
+                        {
+                            "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_2.uuid}",
+                            "data": {
+                                "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_2.uuid}",
+                                "form": "",
+                                "name": "my-image.jpg",
+                                "size": 46114,
+                                "baseUrl": "http://server",
+                                "project": "",
+                            },
+                            "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                            "size": 46114,
+                            "type": "image/jpg",
+                            "storage": "url",
+                            "originalName": "my-image.jpg",
+                        }
+                    ],
+                },
+            ],
+        }
+        components = [
+            {
+                "key": "repeatingGroup",
+                "type": "editgrid",
+                "components": [
+                    {"type": "file", "key": "fileInRepeatingGroup1"},
+                    {"type": "file", "key": "fileInRepeatingGroup2"},
+                ],
+            },
+        ]
+        form_step = FormStepFactory.create(
+            form_definition__configuration={"components": components}
+        )
+        submission_step = SubmissionStepFactory.create(
+            form_step=form_step, submission__form=form_step.form, data=data
+        )
+
+        # test attaching the file
+        result = attach_uploads_to_submission_step(submission_step)
+        resize_mock.assert_not_called()
+
+        self.assertEqual(len(result), 2)
+        self.assertEqual(SubmissionFileAttachment.objects.count(), 2)
+
+        self.assertTrue(
+            submission_step.attachments.filter(
+                _component_configuration_path="components.0.components.0",
+                _component_data_path="repeatingGroup.0.fileInRepeatingGroup1",
+            ).exists()
+        )
+        self.assertTrue(
+            submission_step.attachments.filter(
+                _component_configuration_path="components.0.components.1",
+                _component_data_path="repeatingGroup.0.fileInRepeatingGroup2",
+            ).exists()
+        )
+
+    @patch("openforms.submissions.tasks.resize_submission_attachment.delay")
+    def test_attach_uploads_to_submission_step_with_nested_fields_to_register(
+        self, resize_mock
+    ):
+        upload_in_repeating_group_1 = TemporaryFileUploadFactory.create()
+        upload_in_repeating_group_2 = TemporaryFileUploadFactory.create()
+        nested_upload = TemporaryFileUploadFactory.create()
+        data = {
+            "repeatingGroup": [
+                {
+                    "fileInRepeatingGroup1": [
+                        {
+                            "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_1.uuid}",
+                            "data": {
+                                "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_1.uuid}",
+                                "form": "",
+                                "name": "my-image.jpg",
+                                "size": 46114,
+                                "baseUrl": "http://server",
+                                "project": "",
+                            },
+                            "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                            "size": 46114,
+                            "type": "image/jpg",
+                            "storage": "url",
+                            "originalName": "my-image.jpg",
+                        }
+                    ],
+                    "fileInRepeatingGroup2": [
+                        {
+                            "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_1.uuid}",
+                            "data": {
+                                "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_1.uuid}",
+                                "form": "",
+                                "name": "my-image.jpg",
+                                "size": 46114,
+                                "baseUrl": "http://server",
+                                "project": "",
+                            },
+                            "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                            "size": 46114,
+                            "type": "image/jpg",
+                            "storage": "url",
+                            "originalName": "my-image.jpg",
+                        }
+                    ],
+                },
+                {
+                    "fileInRepeatingGroup1": [
+                        {
+                            "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_2.uuid}",
+                            "data": {
+                                "url": f"http://server/api/v2/submissions/files/{upload_in_repeating_group_2.uuid}",
+                                "form": "",
+                                "name": "my-image.jpg",
+                                "size": 46114,
+                                "baseUrl": "http://server",
+                                "project": "",
+                            },
+                            "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                            "size": 46114,
+                            "type": "image/jpg",
+                            "storage": "url",
+                            "originalName": "my-image.jpg",
+                        }
+                    ]
+                },
+            ],
+            "nested": {
+                "file": [
+                    {
+                        "url": f"http://server/api/v2/submissions/files/{nested_upload.uuid}",
+                        "data": {
+                            "url": f"http://server/api/v2/submissions/files/{nested_upload.uuid}",
+                            "form": "",
+                            "name": "my-image.jpg",
+                            "size": 46114,
+                            "baseUrl": "http://server",
+                            "project": "",
+                        },
+                        "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                        "size": 46114,
+                        "type": "image/jpg",
+                        "storage": "url",
+                        "originalName": "my-image.jpg",
+                    }
+                ],
+            },
+        }
+        components = [
+            {
+                "key": "repeatingGroup",
+                "type": "editgrid",
+                "components": [
+                    {
+                        "type": "file",
+                        "key": "fileInRepeatingGroup1",
+                        "registration": {
+                            "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
+                        },
+                    },
+                    {
+                        "type": "file",
+                        "key": "fileInRepeatingGroup2",
+                        "registration": {
+                            "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456"
+                        },
+                    },
+                ],
+            },
+            {
+                "key": "nested.file",
+                "type": "file",
+                "registration": {
+                    "informatieobjecttype": "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123"
+                },
+            },
+        ]
+        form_step = FormStepFactory.create(
+            form_definition__configuration={"components": components}
+        )
+        submission_step = SubmissionStepFactory.create(
+            form_step=form_step, submission__form=form_step.form, data=data
+        )
+
+        # test attaching the file
+        result = attach_uploads_to_submission_step(submission_step)
+        resize_mock.assert_not_called()
+
+        self.assertEqual(len(result), 4)
+        self.assertEqual(SubmissionFileAttachment.objects.count(), 4)
+
+        attachments_repeating_group_1 = submission_step.attachments.filter(
+            _component_configuration_path="components.0.components.0",
+        ).order_by("_component_data_path")
+
+        self.assertEqual(
+            attachments_repeating_group_1[0].informatieobjecttype,
+            "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123",
+        )
+        self.assertEqual(
+            attachments_repeating_group_1[0]._component_data_path,
+            "repeatingGroup.0.fileInRepeatingGroup1",
+        )
+        self.assertEqual(
+            attachments_repeating_group_1[1].informatieobjecttype,
+            "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123",
+        )
+        self.assertEqual(
+            attachments_repeating_group_1[1]._component_data_path,
+            "repeatingGroup.1.fileInRepeatingGroup1",
+        )
+
+        attachments_repeating_group_2 = submission_step.attachments.filter(
+            _component_configuration_path="components.0.components.1",
+        )
+        self.assertEqual(
+            attachments_repeating_group_2[0].informatieobjecttype,
+            "http://oz.nl/catalogi/api/v1/informatieobjecttypen/456-456-456",
+        )
+        self.assertEqual(
+            attachments_repeating_group_2[0]._component_data_path,
+            "repeatingGroup.0.fileInRepeatingGroup2",
+        )
+
+        attachments_nested = submission_step.attachments.filter(
+            _component_configuration_path="components.1",
+        )
+
+        self.assertEqual(
+            attachments_nested[0].informatieobjecttype,
+            "http://oz.nl/catalogi/api/v1/informatieobjecttypen/123-123-123",
+        )
+        self.assertEqual(attachments_nested[0]._component_data_path, "nested.file")
 
     @patch("openforms.submissions.tasks.resize_submission_attachment.delay")
     def test_attach_multiple_uploads_to_submission_step(self, resize_mock):

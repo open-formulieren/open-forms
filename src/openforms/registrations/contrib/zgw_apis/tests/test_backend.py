@@ -844,11 +844,13 @@ class ZGWBackendTests(TestCase):
             submission_step=SubmissionStep.objects.first(),
             file_name="attachment1.jpg",
             form_key="field1",
+            _component_configuration_path="components.0",
         )
         SubmissionFileAttachmentFactory.create(
             submission_step=SubmissionStep.objects.first(),
             file_name="attachment2.jpg",
             form_key="field2",
+            _component_configuration_path="components.1",
         )
 
         self.install_mocks(m)
