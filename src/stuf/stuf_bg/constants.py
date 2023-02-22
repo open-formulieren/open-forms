@@ -1,6 +1,5 @@
+from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-from djchoices import ChoiceItem, DjangoChoices
 
 # Namespacing in the XML we want to remove
 # Note:  This could cause a collision if two of the same elements
@@ -17,37 +16,31 @@ NAMESPACE_REPLACEMENTS = {
 STUF_BG_EXPIRY_MINUTES = 5
 
 
-class FieldChoices(DjangoChoices):
-    bsn = ChoiceItem("bsn", _("BSN"))
+class FieldChoices(models.TextChoices):
+    bsn = "bsn", _("BSN")
 
-    voornamen = ChoiceItem("voornamen", _("First name"))
-    geslachtsnaam = ChoiceItem("geslachtsnaam", _("Last name"))
-    voorvoegselGeslachtsnaam = ChoiceItem(
-        "voorvoegselGeslachtsnaam", _("Last name prefix")
+    voornamen = "voornamen", _("First name")
+    geslachtsnaam = "geslachtsnaam", _("Last name")
+    voorvoegselGeslachtsnaam = "voorvoegselGeslachtsnaam", _("Last name prefix")
+
+    straatnaam = "straatnaam", _("Street Name")
+    huisnummer = "huisnummer", _("House number")
+    huisletter = "huisletter", _("House letter")
+    huisnummertoevoeging = "huisnummertoevoeging", _("House number addition")
+    postcode = "postcode", _("Postal code")
+    woonplaatsNaam = "woonplaatsNaam", _("Residence name")
+    gemeenteVanInschrijving = "gemeenteVanInschrijving", _(
+        "Municipality where registered"
     )
 
-    straatnaam = ChoiceItem("straatnaam", _("Street Name"))
-    huisnummer = ChoiceItem("huisnummer", _("House number"))
-    huisletter = ChoiceItem("huisletter", _("House letter"))
-    huisnummertoevoeging = ChoiceItem(
-        "huisnummertoevoeging", _("House number addition")
-    )
-    postcode = ChoiceItem("postcode", _("Postal code"))
-    woonplaatsNaam = ChoiceItem("woonplaatsNaam", _("Residence name"))
-    gemeenteVanInschrijving = ChoiceItem(
-        "gemeenteVanInschrijving", _("Municipality where registered")
-    )
+    landAdresBuitenland = "landAdresBuitenland", _("Foreign address country")
+    adresBuitenland1 = "adresBuitenland1", _("Foreign address line 1")
+    adresBuitenland2 = "adresBuitenland2", _("Foreign address line 2")
+    adresBuitenland3 = "adresBuitenland3", _("Foreign address line 3")
 
-    landAdresBuitenland = ChoiceItem(
-        "landAdresBuitenland", _("Foreign address country")
-    )
-    adresBuitenland1 = ChoiceItem("adresBuitenland1", _("Foreign address line 1"))
-    adresBuitenland2 = ChoiceItem("adresBuitenland2", _("Foreign address line 2"))
-    adresBuitenland3 = ChoiceItem("adresBuitenland3", _("Foreign address line 3"))
+    geboorteplaats = "geboorteplaats", _("Place of birth")
+    geboortedatum = "geboortedatum", _("Date of birth")
+    geboorteland = "geboorteland", _("Country of birth")
+    geslachtsaanduiding = "geslachtsaanduiding", _("Gender indication")
 
-    geboorteplaats = ChoiceItem("geboorteplaats", _("Place of birth"))
-    geboortedatum = ChoiceItem("geboortedatum", _("Date of birth"))
-    geboorteland = ChoiceItem("geboorteland", _("Country of birth"))
-    geslachtsaanduiding = ChoiceItem("geslachtsaanduiding", _("Gender indication"))
-
-    overlijdensdatum = ChoiceItem("overlijdensdatum", _("Date of death"))
+    overlijdensdatum = "overlijdensdatum", _("Date of death")

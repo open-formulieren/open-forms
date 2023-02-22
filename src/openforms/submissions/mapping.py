@@ -1,7 +1,6 @@
 import dataclasses
 from typing import Any, Callable, Mapping, Optional, Union
 
-from djchoices import ChoiceItem
 from glom import Assign, glom
 
 from openforms.submissions.models import Submission
@@ -13,7 +12,7 @@ SKIP = object()
 @dataclasses.dataclass()
 class FieldConf:
     # value from RegistrationAttribute
-    attribute: Union[str, ChoiceItem] = None
+    attribute: str = ""
 
     # transform value (eg: dates/times etc)
     transform: Optional[Callable[[Any], Any]] = None
@@ -39,7 +38,7 @@ def apply_data_mapping(
     submission: Submission,
     mapping_config: Mapping[str, Union[str, FieldConf]],
     component_attribute: str,
-    target_dict: dict = None,
+    target_dict: dict | None = None,
 ) -> dict:
     """
     apply mapping to data and build new data structure based on mapped attributes on the formio component configuration

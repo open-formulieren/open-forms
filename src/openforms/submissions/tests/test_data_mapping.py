@@ -1,6 +1,6 @@
+from django.db import models
 from django.test import TestCase
 
-from djchoices import ChoiceItem, DjangoChoices
 from privates.test import temp_private_root
 
 from openforms.registrations.constants import REGISTRATION_ATTRIBUTE
@@ -13,17 +13,11 @@ from openforms.submissions.mapping import (
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
-class TestAttribute(DjangoChoices):
-    initiator_voornamen = ChoiceItem("initiator_voornamen", "Initiator > Voornamen")
-    initiator_geslachtsnaam = ChoiceItem(
-        "initiator_geslachtsnaam", "Initiator > Geslachtsnaam"
-    )
-    initiator_tussenvoegsel = ChoiceItem(
-        "initiator_tussenvoegsel", "Initiator > Tussenvoegsel"
-    )
-    initiator_geboortedatum = ChoiceItem(
-        "initiator_geboortedatum", "Initiator > Geboortedatum"
-    )
+class TestAttribute(models.TextChoices):
+    initiator_voornamen = "initiator_voornamen", "Initiator > Voornamen"
+    initiator_geslachtsnaam = "initiator_geslachtsnaam", "Initiator > Geslachtsnaam"
+    initiator_tussenvoegsel = "initiator_tussenvoegsel", "Initiator > Tussenvoegsel"
+    initiator_geboortedatum = "initiator_geboortedatum", "Initiator > Geboortedatum"
 
 
 @temp_private_root()

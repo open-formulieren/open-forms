@@ -96,9 +96,7 @@ class PropertyAction(ActionOperation):
 
         return {
             "key": self.component,
-            "type_display": LogicActionTypes.get_choice(
-                LogicActionTypes.property
-            ).label,
+            "type_display": LogicActionTypes.get_label(LogicActionTypes.property),
             "value": self.property,
             "state": self.value,
             "label": label,
@@ -123,9 +121,7 @@ class DisableNextAction(ActionOperation):
     ) -> JSONObject:
 
         return {
-            "type_display": LogicActionTypes.get_choice(
-                LogicActionTypes.disable_next
-            ).label,
+            "type_display": LogicActionTypes.get_label(LogicActionTypes.disable_next),
         }
 
 
@@ -164,9 +160,9 @@ class StepNotApplicableAction(ActionOperation):
         initial_data: dict,
     ) -> JSONObject:
         return {
-            "type_display": LogicActionTypes.get_choice(
+            "type_display": LogicActionTypes.get_label(
                 LogicActionTypes.step_not_applicable
-            ).label,
+            ),
             "step_name": self.form_step_identifier,
         }
 
@@ -197,9 +193,7 @@ class VariableAction(ActionOperation):
 
         return {
             "key": self.variable,
-            "type_display": LogicActionTypes.get_choice(
-                LogicActionTypes.variable
-            ).label,
+            "type_display": LogicActionTypes.get_label(LogicActionTypes.variable),
             "value": value,
         }
 

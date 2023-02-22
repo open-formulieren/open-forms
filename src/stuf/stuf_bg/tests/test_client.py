@@ -63,9 +63,7 @@ class StufBGConfigTests(TestCase):
                     encoding="utf-8",
                 ),
             )
-            self.client.get_values_for_attributes(
-                "999992314", list(FieldChoices.values.keys())
-            )
+            self.client.get_values_for_attributes("999992314", FieldChoices.values)
 
         self.assertEqual(m.last_request.method, "POST")
         self.assertEqual(
@@ -112,7 +110,7 @@ class StufBGConfigTests(TestCase):
         )
 
     def test_all_attributes_are_mapped(self):
-        available_attributes = FieldChoices.attributes.keys()
+        available_attributes = FieldChoices.values
         for attribute in available_attributes:
             with self.subTest(attribute=attribute):
                 glom_target = ATTRIBUTES_TO_STUF_BG_MAPPING.get(attribute)
@@ -120,7 +118,7 @@ class StufBGConfigTests(TestCase):
                     self.fail(f"unmapped attribute: {attribute}")
 
     def test_getting_request_data_returns_valid_data(self):
-        available_attributes = FieldChoices.attributes.keys()
+        available_attributes = FieldChoices.values
         test_bsn = "999992314"
 
         with STUF_BG_XSD.open("r") as infile:

@@ -68,7 +68,6 @@ def evaluate_form_logic(
     """
     # grab the configuration that will be mutated
     config_wrapper = step.form_step.form_definition.configuration_wrapper
-
     # 1. we have `submission` and `step` available and ...
     # 2. the prefilled variables are already recorded in the variables state
     #

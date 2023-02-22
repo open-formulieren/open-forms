@@ -1,7 +1,7 @@
-from djchoices import ChoiceItem, DjangoChoices
+from django.db import models
 
 
-class ConflictHandling(DjangoChoices):
-    fail = ChoiceItem("fail")
-    replace = ChoiceItem("replace")
-    rename = ChoiceItem("rename")
+class ConflictHandling(models.TextChoices):
+    fail = "fail"
+    replace = "replace"
+    rename = "rename"

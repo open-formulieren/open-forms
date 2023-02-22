@@ -1,27 +1,30 @@
-from typing import Literal
+from typing import Literal, get_args
 
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from djchoices import ChoiceItem, DjangoChoices
+
+class EndpointSecurity(models.TextChoices):
+    basicauth = "basicauth", _("Basic authentication")
+    wss = "wss", _("SOAP extension: WS-Security")
+    wss_basicauth = "wss_basicauth", _("Both")
 
 
-class EndpointSecurity(DjangoChoices):
-    basicauth = ChoiceItem("basicauth", _("Basic authentication"))
-    wss = ChoiceItem("wss", _("SOAP extension: WS-Security"))
-    wss_basicauth = ChoiceItem("wss_basicauth", _("Both"))
-
-    TypeHint = Literal["basicauth", "wss", "wss_basicauth"]
+EndpointSecurityTypeHint = Literal["basicauth", "wss", "wss_basicauth"]
+assert set(get_args(EndpointSecurityTypeHint)) == {
+    member.value for member in EndpointSecurity
+}
 
 
-class SOAPVersion(DjangoChoices):
-    soap11 = ChoiceItem("1.1", "SOAP 1.1")
-    soap12 = ChoiceItem("1.2", "SOAP 1.2")
+class SOAPVersion(models.TextChoices):
+    soap11 = "1.1", "SOAP 1.1"
+    soap12 = "1.2", "SOAP 1.2"
 
 
-class EndpointType(DjangoChoices):
-    beantwoord_vraag = ChoiceItem("beantwoord_vraag", "BeantwoordVraag")
-    vrije_berichten = ChoiceItem("vrije_berichten", "VrijeBerichten")
-    ontvang_asynchroon = ChoiceItem("ontvang_asynchroon", "OntvangAsynchroon")
+class EndpointType(models.TextChoices):
+    beantwoord_vraag = "beantwoord_vraag", "BeantwoordVraag"
+    vrije_berichten = "vrije_berichten", "VrijeBerichten"
+    ontvang_asynchroon = "ontvang_asynchroon", "OntvangAsynchroon"
 
 
 STUF_ZDS_EXPIRY_MINUTES = 5

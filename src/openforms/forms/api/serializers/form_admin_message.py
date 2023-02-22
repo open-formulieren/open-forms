@@ -15,7 +15,7 @@ class FormAdminMessageSerializer(serializers.Serializer):
 
     submit_action = serializers.ChoiceField(
         label=_("submit action"),
-        choices=SubmitActions,
+        choices=SubmitActions.choices,
         help_text=_(
             "Which submit action was clicked. This determines the success message to"
             "display."

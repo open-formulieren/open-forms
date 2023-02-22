@@ -18,7 +18,7 @@ class AppointmentInfo(models.Model):
 
     status = models.CharField(
         _("status"),
-        choices=AppointmentDetailsStatus,
+        choices=AppointmentDetailsStatus.choices,
         max_length=50,
     )
     appointment_id = models.CharField(

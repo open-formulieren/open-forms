@@ -310,7 +310,7 @@ def payment_flow_return(payment: "SubmissionPayment", plugin):
             "payment_order_id": payment.order_id,
             "payment_id": payment.id,
             "payment_status": payment.status,
-            "payment_status_label": str(PaymentStatus.labels[payment.status]),
+            "payment_status_label": PaymentStatus.get_label(payment.status),
         },
     )
 
@@ -324,7 +324,7 @@ def payment_flow_webhook(payment: "SubmissionPayment", plugin):
             "payment_order_id": payment.order_id,
             "payment_id": payment.id,
             "payment_status": payment.status,
-            "payment_status_label": str(PaymentStatus.labels[payment.status]),
+            "payment_status_label": PaymentStatus.get_label(payment.status),
         },
     )
 

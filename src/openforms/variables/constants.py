@@ -1,35 +1,34 @@
+from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-from djchoices import ChoiceItem, DjangoChoices
 
 from .utils import check_date, check_time
 
 
-class FormVariableSources(DjangoChoices):
-    component = ChoiceItem("component", _("Component"))
-    user_defined = ChoiceItem("user_defined", _("User defined"))
+class FormVariableSources(models.TextChoices):
+    component = "component", _("Component")
+    user_defined = "user_defined", _("User defined")
 
 
-class FormVariableDataTypes(DjangoChoices):
-    string = ChoiceItem("string", _("String"))
-    boolean = ChoiceItem("boolean", _("Boolean"))
-    object = ChoiceItem("object", _("Object"))
-    array = ChoiceItem("array", _("Array"))
-    int = ChoiceItem("int", _("Integer"))
-    float = ChoiceItem("float", _("Float"))
-    datetime = ChoiceItem("datetime", _("Datetime"))
-    time = ChoiceItem("time", _("Time"))
-    date = ChoiceItem("date", _("Date"))
+class FormVariableDataTypes(models.TextChoices):
+    string = "string", _("String")
+    boolean = "boolean", _("Boolean")
+    object = "object", _("Object")
+    array = "array", _("Array")
+    int = "int", _("Integer")
+    float = "float", _("Float")
+    datetime = "datetime", _("Datetime")
+    time = "time", _("Time")
+    date = "date", _("Date")
 
 
-class ServiceFetchMethods(DjangoChoices):
-    get = ChoiceItem("GET", "GET")
-    post = ChoiceItem("POST", "POST")
+class ServiceFetchMethods(models.TextChoices):
+    get = "GET", "GET"
+    post = "POST", "POST"
 
 
-class DataMappingTypes(DjangoChoices):
-    json_logic = ChoiceItem("JsonLogic", "JsonLogic")
-    jq = ChoiceItem("jq", "jq")
+class DataMappingTypes(models.TextChoices):
+    json_logic = "JsonLogic", "JsonLogic"
+    jq = "jq", "jq"
 
 
 DEFAULT_INITIAL_VALUE = {

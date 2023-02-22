@@ -116,7 +116,7 @@ class SubmissionSerializer(serializers.HyperlinkedModelSerializer):
         ),
     )
     submission_allowed = serializers.ChoiceField(
-        choices=SubmissionAllowedChoices,
+        choices=SubmissionAllowedChoices.choices,
         label=_("submission allowed"),
         source="form.submission_allowed",
         help_text=_(
@@ -359,7 +359,7 @@ class SubmissionCompletionSerializer(serializers.Serializer):
 class SubmissionProcessingStatusSerializer(serializers.Serializer):
     status = serializers.ChoiceField(
         label=_("background processing status"),
-        choices=ProcessingStatuses,
+        choices=ProcessingStatuses.choices,
         default=ProcessingStatuses.in_progress,
         help_text=_(
             "The async task state, managed by the async task queue. Once the status is "
@@ -368,7 +368,7 @@ class SubmissionProcessingStatusSerializer(serializers.Serializer):
     )
     result = serializers.ChoiceField(
         label=_("background processing result"),
-        choices=ProcessingResults,
+        choices=ProcessingResults.choices,
         required=False,
         allow_blank=True,
         help_text=_(

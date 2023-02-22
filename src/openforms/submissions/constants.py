@@ -1,6 +1,5 @@
+from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-from djchoices import ChoiceItem, DjangoChoices
 
 SUBMISSIONS_SESSION_KEY = "form-submissions"
 UPLOADS_SESSION_KEY = "form-uploads"
@@ -8,36 +7,34 @@ UPLOADS_SESSION_KEY = "form-uploads"
 IMAGE_COMPONENTS = ["signature"]
 
 
-class RegistrationStatuses(DjangoChoices):
-    pending = ChoiceItem("pending", _("Pending (not registered yet)"))
-    in_progress = ChoiceItem("in_progress", _("In progress (not registered yet)"))
-    success = ChoiceItem("success", _("Success"))
-    failed = ChoiceItem("failed", _("Failed"))
+class RegistrationStatuses(models.TextChoices):
+    pending = "pending", _("Pending (not registered yet)")
+    in_progress = "in_progress", _("In progress (not registered yet)")
+    success = "success", _("Success")
+    failed = "failed", _("Failed")
 
 
-class ProcessingStatuses(DjangoChoices):
+class ProcessingStatuses(models.TextChoices):
     """
     Translation of interal Celery states to public states.
     """
 
-    in_progress = ChoiceItem("in_progress", _("In progress"))
-    done = ChoiceItem("done", _("Done"))
+    in_progress = "in_progress", _("In progress")
+    done = "done", _("Done")
 
 
-class ProcessingResults(DjangoChoices):
+class ProcessingResults(models.TextChoices):
     """
     Possible background processing outcomes (once it's 'done')
     """
 
-    failed = ChoiceItem("failed", _("Failed, should return to the start of the form."))
-    success = ChoiceItem("success", _("Success, proceed to confirmation page."))
+    failed = "failed", _("Failed, should return to the start of the form.")
+    success = "success", _("Success, proceed to confirmation page.")
 
 
-class SubmissionValueVariableSources(DjangoChoices):
-    sensitive_data_cleaner = ChoiceItem(
-        "sensitive_data_cleaner", _("Sensitive data cleaner")
-    )
-    user_input = ChoiceItem("user_input", _("User input"))
-    prefill = ChoiceItem("prefill", _("Prefill"))
-    logic = ChoiceItem("logic", _("Logic"))
-    dmn = ChoiceItem("dmn", _("DMN"))
+class SubmissionValueVariableSources(models.TextChoices):
+    sensitive_data_cleaner = "sensitive_data_cleaner", _("Sensitive data cleaner")
+    user_input = "user_input", _("User input")
+    prefill = "prefill", _("Prefill")
+    logic = "logic", _("Logic")
+    dmn = "dmn", _("DMN")

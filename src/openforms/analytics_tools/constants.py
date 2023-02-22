@@ -1,10 +1,10 @@
-from djchoices import ChoiceItem, DjangoChoices
+from django.db import models
 
 
-class AnalyticsTools(DjangoChoices):
+class AnalyticsTools(models.TextChoices):
 
-    google_analytics = ChoiceItem("google_analytics", label="Google Analytics")
-    matomo = ChoiceItem("matomo", label="Matomo")
-    piwik = ChoiceItem("piwik", label="Piwik")
-    piwik_pro = ChoiceItem("piwik_pro", label="Piwik Pro")
-    siteimprove = ChoiceItem("siteimprove", label="Siteimprove")
+    google_analytics = "google_analytics", "Google Analytics"
+    matomo = "matomo", "Matomo"
+    piwik = "piwik", "Piwik"
+    piwik_pro = "piwik_pro", "Piwik Pro"
+    siteimprove = "siteimprove", "Siteimprove"

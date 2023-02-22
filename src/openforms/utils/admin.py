@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import admin
+from django.db import models
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
@@ -7,13 +8,12 @@ from cookie_consent.admin import LogItemAdmin as CookieLogAdmin
 from cookie_consent.models import LogItem as CookieLog
 from cspreports.admin import CSPReportAdmin
 from cspreports.models import CSPReport
-from djchoices import ChoiceItem, DjangoChoices
 
 
-class SubmitActions(DjangoChoices):
-    save = ChoiceItem("_save", _("Save"))
-    add_another = ChoiceItem("_addanother", _("Save and add another"))
-    edit_again = ChoiceItem("_continue", _("Save and continue editing"))
+class SubmitActions(models.TextChoices):
+    save = "_save", _("Save")
+    add_another = "_addanother", _("Save and add another")
+    edit_again = "_continue", _("Save and continue editing")
 
 
 class ReadOnlyAdminMixin:

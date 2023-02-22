@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from simple_certmanager.models import Certificate
 from zeep import Client
 
-from .constants import EndpointSecurity, SOAPVersion
+from .constants import EndpointSecurity, EndpointSecurityTypeHint, SOAPVersion
 
 
 class SoapService(models.Model):
@@ -183,7 +183,7 @@ class StufService(models.Model):
             return certificate.public_certificate.path
         return True
 
-    def get_endpoint(self, type: EndpointSecurity.TypeHint) -> str:
+    def get_endpoint(self, type: EndpointSecurityTypeHint) -> str:
         attr = f"endpoint_{type}"
         value = getattr(self, attr, None)
         if value is None:

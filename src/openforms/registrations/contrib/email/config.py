@@ -15,7 +15,7 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         required=True,
     )
     attachment_formats = serializers.ListField(
-        child=serializers.ChoiceField(choices=AttachmentFormat),
+        child=serializers.ChoiceField(choices=AttachmentFormat.choices),
         label=_("The format(s) of the attachment(s) containing the submission details"),
         required=False,
     )

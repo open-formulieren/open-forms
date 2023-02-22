@@ -1,9 +1,8 @@
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from djchoices import ChoiceItem, DjangoChoices
 
-
-class AttachmentFormat(DjangoChoices):
-    pdf = ChoiceItem("pdf", _("PDF"))
-    csv = ChoiceItem("csv", _("CSV"))
-    xlsx = ChoiceItem("xlsx", _("Excel"))
+class AttachmentFormat(models.TextChoices):
+    pdf = "pdf", _("PDF")
+    csv = "csv", _("CSV")
+    xlsx = "xlsx", _("Excel")

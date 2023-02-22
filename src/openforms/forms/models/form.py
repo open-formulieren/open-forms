@@ -98,7 +98,7 @@ class Form(models.Model):
     )
     submission_allowed = models.CharField(
         _("submission allowed"),
-        choices=SubmissionAllowedChoices,
+        choices=SubmissionAllowedChoices.choices,
         default=SubmissionAllowedChoices.yes,
         help_text=_(
             "Whether the user is allowed to submit this form or not, "
@@ -127,7 +127,7 @@ class Form(models.Model):
     )
     confirmation_email_option = models.CharField(
         _("confirmation email option"),
-        choices=ConfirmationEmailOptions,
+        choices=ConfirmationEmailOptions.choices,
         default=ConfirmationEmailOptions.global_email,
         max_length=20,
     )
@@ -207,7 +207,7 @@ class Form(models.Model):
         _("successful submissions removal method"),
         max_length=50,
         blank=True,
-        choices=RemovalMethods,
+        choices=RemovalMethods.choices,
         help_text=_(
             "How successful submissions of this form will be removed after the limit. "
             "Leave blank to use value in General Configuration."
@@ -227,7 +227,7 @@ class Form(models.Model):
         _("incomplete submissions removal method"),
         max_length=50,
         blank=True,
-        choices=RemovalMethods,
+        choices=RemovalMethods.choices,
         help_text=_(
             "How incomplete submissions of this form will be removed after the limit. "
             "Leave blank to use value in General Configuration."
@@ -247,7 +247,7 @@ class Form(models.Model):
         _("errored submission removal limit"),
         max_length=50,
         blank=True,
-        choices=RemovalMethods,
+        choices=RemovalMethods.choices,
         help_text=_(
             "How errored submissions of this form will be removed after the limit. "
             "Leave blank to use value in General Configuration."

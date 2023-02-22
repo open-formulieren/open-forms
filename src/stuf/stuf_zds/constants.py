@@ -1,14 +1,13 @@
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from djchoices import ChoiceItem, DjangoChoices
 
-
-class VertrouwelijkheidsAanduidingen(DjangoChoices):
-    zeer_geheim = ChoiceItem("ZEER GEHEIM", _("Zeer geheim"))
-    geheim = ChoiceItem("GEHEIM", _("Geheim"))
-    confidentieel = ChoiceItem("CONFIDENTIEEL", _("Confidentieel"))
-    vertrouwelijk = ChoiceItem("VERTROUWELIJK", _("Vertrouwelijk"))
-    zaakvertrouwelijk = ChoiceItem("ZAAKVERTROUWELIJK", _("Zaakvertrouwelijk"))
-    intern = ChoiceItem("INTERN", _("Intern"))
-    beperkt_openbaar = ChoiceItem("BEPERKT OPENBAAR", _("Beperkt openbaar"))
-    openbaar = ChoiceItem("OPENBAAR", _("Openbaar"))
+class VertrouwelijkheidsAanduidingen(models.TextChoices):
+    zeer_geheim = "ZEER GEHEIM", _("Zeer geheim")
+    geheim = "GEHEIM", _("Geheim")
+    confidentieel = "CONFIDENTIEEL", _("Confidentieel")
+    vertrouwelijk = "VERTROUWELIJK", _("Vertrouwelijk")
+    zaakvertrouwelijk = "ZAAKVERTROUWELIJK", _("Zaakvertrouwelijk")
+    intern = "INTERN", _("Intern")
+    beperkt_openbaar = "BEPERKT OPENBAAR", _("Beperkt openbaar")
+    openbaar = "OPENBAAR", _("Openbaar")

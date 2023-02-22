@@ -1,36 +1,38 @@
+from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-from djchoices import ChoiceItem, DjangoChoices
 
 EXPORT_META_KEY = "_meta"
 
 
-class LogicActionTypes(DjangoChoices):
-    step_not_applicable = ChoiceItem(
-        "step-not-applicable", _("Mark the form step as not-applicable")
+class LogicActionTypes(models.TextChoices):
+    step_not_applicable = "step-not-applicable", _(
+        "Mark the form step as not-applicable"
     )
-    disable_next = ChoiceItem("disable-next", _("Disable the next step"))
-    property = ChoiceItem("property", _("Modify a component property"))
-    variable = ChoiceItem("variable", _("Set the value of a variable"))
+    disable_next = "disable-next", _("Disable the next step")
+    property = "property", _("Modify a component property")
+    variable = "variable", _("Set the value of a variable")
 
-    requires_component = {property.value}
-    requires_variable = {variable.value}
-
-
-class PropertyTypes(DjangoChoices):
-    bool = ChoiceItem("bool", _("Boolean"))
-    json = ChoiceItem("json", _("JSON"))
+    @classmethod
+    def get_label(cls, value: str) -> str:
+        return dict(cls.choices)[value]
 
 
-class ConfirmationEmailOptions(DjangoChoices):
-    form_specific_email = ChoiceItem("form_specific_email", _("Form specific email"))
-    global_email = ChoiceItem("global_email", _("Global email"))
-    no_email = ChoiceItem("no_email", _("No email"))
+LOGIC_ACTION_TYPES_REQUIRING_COMPONENT: set[str] = {LogicActionTypes.property}
+LOGIC_ACTION_TYPES_REQUIRING_VARIABLE: set[str] = {LogicActionTypes.variable}
 
 
-class SubmissionAllowedChoices(DjangoChoices):
-    yes = ChoiceItem("yes", _("Yes"))
-    no_with_overview = ChoiceItem("no_with_overview", _("No (with overview page)"))
-    no_without_overview = ChoiceItem(
-        "no_without_overview", _("No (without overview page)")
-    )
+class PropertyTypes(models.TextChoices):
+    bool = "bool", _("Boolean")
+    json = "json", _("JSON")
+
+
+class ConfirmationEmailOptions(models.TextChoices):
+    form_specific_email = "form_specific_email", _("Form specific email")
+    global_email = "global_email", _("Global email")
+    no_email = "no_email", _("No email")
+
+
+class SubmissionAllowedChoices(models.TextChoices):
+    yes = "yes", _("Yes")
+    no_with_overview = "no_with_overview", _("No (with overview page)")
+    no_without_overview = "no_without_overview", _("No (without overview page)")

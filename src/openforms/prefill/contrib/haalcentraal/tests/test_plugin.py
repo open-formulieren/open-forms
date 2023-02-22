@@ -109,6 +109,6 @@ class HaalCentraalPrefillTest(TestCase):
 
     def test_get_available_attributes(self):
         attrs = HaalCentraalPrefill.get_available_attributes()
-        self.assertIsInstance(attrs, tuple)
+        self.assertIsInstance(attrs, list)
         self.assertIsInstance(attrs[0], tuple)
         self.assertEqual(len(attrs[0]), 2)

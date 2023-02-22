@@ -107,6 +107,6 @@ class KVKPrefillTest(KVKTestMixin, TestCase):
     def test_get_available_attributes(self):
         plugin = KVK_KVKNumberPrefill(identifier="kvk")
         attrs = plugin.get_available_attributes()
-        self.assertIsInstance(attrs, tuple)
+        self.assertIsInstance(attrs, list)
         self.assertIsInstance(attrs[0], tuple)
         self.assertEqual(len(attrs[0]), 2)

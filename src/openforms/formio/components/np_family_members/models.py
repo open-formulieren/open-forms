@@ -10,7 +10,7 @@ class FamilyMembersTypeConfig(SingletonModel):
     data_api = models.CharField(
         _("data api"),
         help_text=_("Which API to use to retrieve the data of the family members."),
-        choices=FamilyMembersDataAPIChoices,
+        choices=FamilyMembersDataAPIChoices.choices,
         max_length=100,
     )
 
