@@ -10,6 +10,8 @@ on:
       - '*'
   pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: '30 7 * * *'
 
 env:
   IMAGE_NAME: openformulieren/open-forms
