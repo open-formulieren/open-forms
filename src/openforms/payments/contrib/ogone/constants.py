@@ -1,3 +1,5 @@
+from typing import cast
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -58,42 +60,45 @@ class OgoneStatus(models.TextChoices):
         return OGONE_TO_PAYMENT_STATUS[ogone_status]
 
 
-OGONE_TO_PAYMENT_STATUS: dict[str, str] = {
-    OgoneStatus.invalid_or_incomplete: PaymentStatus.failed,
-    OgoneStatus.cancelled_by_customer: PaymentStatus.failed,
-    OgoneStatus.authorisation_declined: PaymentStatus.failed,
-    OgoneStatus.waiting_for_client_payment: PaymentStatus.processing,
-    OgoneStatus.waiting_authentication: PaymentStatus.processing,
-    OgoneStatus.authorised: PaymentStatus.processing,
-    OgoneStatus.authorised_waiting_external_result: PaymentStatus.processing,
-    OgoneStatus.authorisation_waiting: PaymentStatus.processing,
-    OgoneStatus.authorisation_not_known: PaymentStatus.processing,
-    OgoneStatus.standby: PaymentStatus.processing,
-    OgoneStatus.ok_with_scheduled_payments: PaymentStatus.processing,
-    OgoneStatus.not_ok_with_scheduled_payments: PaymentStatus.failed,
-    OgoneStatus.authorised_and_cancelled: PaymentStatus.failed,
-    OgoneStatus.author_deletion_waiting: PaymentStatus.failed,
-    OgoneStatus.author_deletion_uncertain: PaymentStatus.failed,
-    OgoneStatus.author_deletion_refused: PaymentStatus.failed,
-    OgoneStatus.payment_deleted: PaymentStatus.failed,
-    OgoneStatus.payment_deletion_pending: PaymentStatus.failed,
-    OgoneStatus.payment_deletion_uncertain: PaymentStatus.failed,
-    OgoneStatus.payment_deletion_refused: PaymentStatus.failed,
-    OgoneStatus.payment_deleted2: PaymentStatus.failed,  # double
-    OgoneStatus.refund: PaymentStatus.failed,
-    OgoneStatus.refund_pending: PaymentStatus.failed,
-    OgoneStatus.refund_uncertain: PaymentStatus.failed,
-    OgoneStatus.refund_refused: PaymentStatus.failed,
-    OgoneStatus.payment_declined_by_the_acquirer: PaymentStatus.failed,
-    OgoneStatus.refund_processed_by_merchant: PaymentStatus.failed,
-    OgoneStatus.payment_requested: PaymentStatus.completed,
-    OgoneStatus.payment_processing: PaymentStatus.processing,
-    OgoneStatus.payment_uncertain: PaymentStatus.processing,
-    OgoneStatus.payment_refused: PaymentStatus.failed,
-    OgoneStatus.refund_declined_by_the_acquirer: PaymentStatus.failed,
-    OgoneStatus.payment_processed_by_merchant: PaymentStatus.failed,
-    OgoneStatus.being_processed: PaymentStatus.processing,
-}
+OGONE_TO_PAYMENT_STATUS = cast(
+    dict[str, str],
+    {
+        OgoneStatus.invalid_or_incomplete: PaymentStatus.failed.value,
+        OgoneStatus.cancelled_by_customer: PaymentStatus.failed.value,
+        OgoneStatus.authorisation_declined: PaymentStatus.failed.value,
+        OgoneStatus.waiting_for_client_payment: PaymentStatus.processing.value,
+        OgoneStatus.waiting_authentication: PaymentStatus.processing.value,
+        OgoneStatus.authorised: PaymentStatus.processing.value,
+        OgoneStatus.authorised_waiting_external_result: PaymentStatus.processing.value,
+        OgoneStatus.authorisation_waiting: PaymentStatus.processing.value,
+        OgoneStatus.authorisation_not_known: PaymentStatus.processing.value,
+        OgoneStatus.standby: PaymentStatus.processing.value,
+        OgoneStatus.ok_with_scheduled_payments: PaymentStatus.processing.value,
+        OgoneStatus.not_ok_with_scheduled_payments: PaymentStatus.failed.value,
+        OgoneStatus.authorised_and_cancelled: PaymentStatus.failed.value,
+        OgoneStatus.author_deletion_waiting: PaymentStatus.failed.value,
+        OgoneStatus.author_deletion_uncertain: PaymentStatus.failed.value,
+        OgoneStatus.author_deletion_refused: PaymentStatus.failed.value,
+        OgoneStatus.payment_deleted: PaymentStatus.failed.value,
+        OgoneStatus.payment_deletion_pending: PaymentStatus.failed.value,
+        OgoneStatus.payment_deletion_uncertain: PaymentStatus.failed.value,
+        OgoneStatus.payment_deletion_refused: PaymentStatus.failed.value,
+        OgoneStatus.payment_deleted2: PaymentStatus.failed,  # doubl.valuee
+        OgoneStatus.refund: PaymentStatus.failed.value,
+        OgoneStatus.refund_pending: PaymentStatus.failed.value,
+        OgoneStatus.refund_uncertain: PaymentStatus.failed.value,
+        OgoneStatus.refund_refused: PaymentStatus.failed.value,
+        OgoneStatus.payment_declined_by_the_acquirer: PaymentStatus.failed.value,
+        OgoneStatus.refund_processed_by_merchant: PaymentStatus.failed.value,
+        OgoneStatus.payment_requested: PaymentStatus.completed.value,
+        OgoneStatus.payment_processing: PaymentStatus.processing.value,
+        OgoneStatus.payment_uncertain: PaymentStatus.processing.value,
+        OgoneStatus.payment_refused: PaymentStatus.failed.value,
+        OgoneStatus.refund_declined_by_the_acquirer: PaymentStatus.failed.value,
+        OgoneStatus.payment_processed_by_merchant: PaymentStatus.failed.value,
+        OgoneStatus.being_processed: PaymentStatus.processing.value,
+    },
+)
 
 assert set(OgoneStatus.values) == set(
     OGONE_TO_PAYMENT_STATUS.keys()
