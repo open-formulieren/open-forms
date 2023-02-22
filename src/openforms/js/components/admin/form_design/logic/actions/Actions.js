@@ -110,20 +110,14 @@ const ActionVariableValue = ({action, errors, onChange}) => {
 };
 
 const ActionFetchFromService = ({action, errors, onChange}) => {
-  const {allVariables} = useContext(FormContext);
-
   return (
     <>
       <DSLEditorNode errors={errors.variable}>
-        <Select
-          name="variable"
-          choices={getVariableChoices(allVariables)}
-          allowBlank
-          onChange={onChange}
-          value={action.variable}
-        />
+        {/* TODO: ackchyually we want Components ∪ User defined variables */}
+        <ComponentSelection name="variable" value={action.variable} onChange={onChange} />
       </DSLEditorNode>
       <DSLEditorNode errors={errors.action?.value}>
+        {/* TODO: this element loses state on change of the variable sibling right above*/}
         <input
           name="action.value"
           onChange={onChange}
