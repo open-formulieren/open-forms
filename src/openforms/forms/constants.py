@@ -8,7 +8,6 @@ class LogicActionTypes(models.TextChoices):
     step_not_applicable = "step-not-applicable", _(
         "Mark the form step as not-applicable"
     )
-
     disable_next = "disable-next", _("Disable the next step")
     property = "property", _("Modify a component property")
     variable = "variable", _("Set the value of a variable")
