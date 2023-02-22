@@ -106,6 +106,7 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
       </DSLEditorNode>
       <DSLEditorNode errors={errors.action?.value}>
         {/* TODO: this element loses state on change of the variable sibling right above*/}
+        {/* TODO: in #2661 we're building a nicer UI/UX to configure the service fetch action */}
         <input
           name="action.value"
           onChange={onChange}
