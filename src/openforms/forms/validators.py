@@ -1,8 +1,14 @@
+from collections import defaultdict
 from typing import TYPE_CHECKING, Optional
 
 from django.core.exceptions import ValidationError
+from django.utils.text import format_lazy, get_text_list
 from django.utils.translation import gettext_lazy as _
 
+from openforms.formio.utils import (
+    flatten_by_path,
+    get_readable_path_from_configuration_path,
+)
 from openforms.formio.variables import validate_configuration
 from openforms.typing import JSONObject
 
@@ -92,3 +98,48 @@ def validate_template_expressions(configuration: JSONObject) -> None:
         all_errors.append(err)
 
     raise ValidationError(all_errors)
+
+
+def validate_no_duplicate_keys(
+    configuration: JSONObject,
+) -> None:
+    """
+    Validate that there are no duplicate keys in a configuration.
+
+    This is important in the case of repeating groups, because no variables are created for the components inside the
+    repeating group, so there is no database constraint for the keys to be unique. However, non-unique keys cause
+    problems in the case of file components.
+
+    #TODO This is a bandaid, this problem should be fixed properly in #2728
+    """
+    component_path_map = defaultdict(list)
+    duplicate_keys = []
+    for configuration_path, component in flatten_by_path(configuration).items():
+        key = component["key"]
+        component_path_map[key].append(configuration_path)
+
+        if key not in duplicate_keys and len(component_path_map[key]) > 1:
+            duplicate_keys.append(key)
+
+    if not duplicate_keys:
+        return
+
+    # Get readable path for duplicate components
+    errors = []
+    for duplicate_key in duplicate_keys:
+        readable_paths = [
+            get_readable_path_from_configuration_path(configuration, configuration_path)
+            for configuration_path in component_path_map[duplicate_key]
+        ]
+        errors.append(
+            _('"{duplicate_key}" (in components {paths})').format(
+                duplicate_key=duplicate_key, paths=", ".join(readable_paths)
+            )
+        )
+
+    raise ValidationError(
+        format_lazy(
+            "Detected duplicate keys in configuration: {errors}",
+            errors=get_text_list(errors, ", "),
+        )
+    )
