@@ -63,8 +63,19 @@ class ObjectsAPIRegistration(BasePlugin):
     def register_submission(
         self, submission: Submission, options: dict
     ) -> Dict[str, Any]:
+        """Register a submission using the ObjectsAPI backend
+
+        The creation of submission documents (report, attachment, csv) makes use of ZGW
+        service functions (e.g. :func:`create_report_document`) and involves a mapping
+        (and in some cases renaming) of variables which would otherwise not be
+        accessible from here. For example, 'vertrouwelijkheidaanduiding' must be named
+        'doc_vertrouwelijkheidaanduiding' because this is what the ZGW service functions
+        use."""
+
         config = ObjectsAPIConfig.get_solo()
         config.apply_defaults_to(options)
+
+        options["auteur"] = options.get("auteur", "Aanvrager")
 
         submission_report = SubmissionReport.objects.get(submission=submission)
         submission_report_options = build_options(
@@ -72,7 +83,7 @@ class ObjectsAPIRegistration(BasePlugin):
             {
                 "informatieobjecttype": "informatieobjecttype_submission_report",
                 "organisatie_rsin": "organisatie_rsin",
-                "vertrouwelijkheidaanduiding": "vertrouwelijkheidaanduiding",
+                "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
             },
         )
         document = create_report_document(
@@ -91,7 +102,7 @@ class ObjectsAPIRegistration(BasePlugin):
                 {
                     "informatieobjecttype": "informatieobjecttype_attachment",
                     "organisatie_rsin": "organisatie_rsin",
-                    "vertrouwelijkheidaanduiding": "vertrouwelijkheidaanduiding",
+                    "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
                 },
             )
             if attachment.informatieobjecttype:
@@ -127,7 +138,8 @@ class ObjectsAPIRegistration(BasePlugin):
                 {
                     "informatieobjecttype": "informatieobjecttype_submission_csv",
                     "organisatie_rsin": "organisatie_rsin",
-                    "vertrouwelijkheidaanduiding": "vertrouwelijkheidaanduiding",
+                    "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
+                    "auteur": "auteur",
                 },
             )
             submission_csv = create_submission_export(

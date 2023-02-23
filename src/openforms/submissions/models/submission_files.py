@@ -190,14 +190,57 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         """
         Get the informatieobjecttype for this attachment from the configuration
         """
-        formdef_config = self.submission_step.form_step.iter_components()
-        for component in formdef_config:
+        # use configuration wrapper for caching
+        wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
+        for component in wrapper:
             if component["key"] == self.form_key:
                 # Use field-specific override
                 if iotype := glom(
                     component, "registration.informatieobjecttype", default=""
                 ):
                     return iotype
+
+    @property
+    def bronorganisatie(self) -> str | None:
+        """
+        Get the bronorganisatie for this attachment from the configuration
+        """
+        # use configuration wrapper for caching
+        wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
+        for component in wrapper:
+            if component["key"] == self.form_key:
+                if bronorganisatie := glom(
+                    component, "registration.bronorganisatie", default=""
+                ):
+                    return bronorganisatie
+
+    @property
+    def doc_vertrouwelijkheidaanduiding(self) -> str | None:
+        """
+        Get the vertrouwelijkheidaanduiding for this attachment from the configuration
+        """
+        # use configuration wrapper for caching
+        wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
+        for component in wrapper:
+            if component["key"] == self.form_key:
+                if vertrouwelijk := glom(
+                    component,
+                    "registration.docVertrouwelijkheidaanduiding",
+                    default="",
+                ):
+                    return vertrouwelijk
+
+    @property
+    def titel(self) -> str | None:
+        """
+        Get the title for this attachment from the configuration
+        """
+        # use configuration wrapper for caching
+        wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
+        for component in wrapper:
+            if component["key"] == self.form_key:
+                if titel := glom(component, "registration.titel", default=""):
+                    return titel
 
     @property
     def form_key(self):

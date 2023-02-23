@@ -27,6 +27,35 @@ const REGISTRATION = {
       },
       valueProperty: 'url',
     },
+    {
+      type: 'textfield',
+      key: 'registration.bronorganisatie',
+      label: 'Bronorganisatie',
+      description: 'RSIN of the organization which creates the ENKELVOUDIGINFORMATIEOBJECT.',
+    },
+    {
+      type: 'select',
+      key: 'registration.docVertrouwelijkheidaanduiding',
+      label: 'Vertrouwelijkheidaanduiding',
+      widget: 'choicesjs',
+      tableView: true,
+      data: {
+        get values() {
+          return jsonScriptToVar('CONFIDENTIALITY_LEVELS');
+        },
+      },
+      description:
+        'Indication of the level to which extent the INFORMATIEOBJECT is meant to be public.',
+    },
+    {
+      type: 'textfield',
+      key: 'registration.titel',
+      label: 'Title',
+      validate: {
+        maxLength: 200,
+      },
+      description: 'The name under which the INFORMATIEOBJECT is formally known.',
+    },
   ],
 };
 

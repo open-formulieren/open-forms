@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
+from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 from zgw_consumers.constants import APITypes
 
 from openforms.utils.validators import validate_rsin
@@ -57,6 +58,32 @@ class ZgwConfig(SingletonModel):
         validators=[validate_rsin],
         help_text=_("Default RSIN of organization, which creates the ZAAK"),
     )
+    zaak_vertrouwelijkheidaanduiding = models.CharField(
+        _("vertrouwelijkheidaanduiding zaak"),
+        max_length=24,
+        choices=VertrouwelijkheidsAanduidingen.choices,
+        blank=True,
+        help_text=_(
+            "Indication of the level to which extend the ZAAK is meant to be public. "
+            "Can be overridden in the Registration tab of a given form."
+        ),
+    )
+    doc_vertrouwelijkheidaanduiding = models.CharField(
+        _("vertrouwelijkheidaanduiding document"),
+        max_length=24,
+        choices=VertrouwelijkheidsAanduidingen.choices,
+        blank=True,
+        help_text=_(
+            "Indication of the level to which extend the document associated with the "
+            "ZAAK is meant to be public. Can be overridden in the file upload "
+            "component of a given form."
+        ),
+    )
+    auteur = models.CharField(
+        _("auteur"),
+        max_length=200,
+        default="Aanvrager",
+    )
 
     class Meta:
         verbose_name = _("ZGW API's configuration")
@@ -65,6 +92,14 @@ class ZgwConfig(SingletonModel):
         options.setdefault("zaaktype", self.zaaktype)
         options.setdefault("informatieobjecttype", self.informatieobjecttype)
         options.setdefault("organisatie_rsin", self.organisatie_rsin)
+        options.setdefault(
+            "zaak_vertrouwelijkheidaanduiding", self.zaak_vertrouwelijkheidaanduiding
+        )
+        options.setdefault(
+            "doc_vertrouwelijkheidaanduiding",
+            self.doc_vertrouwelijkheidaanduiding,
+        )
+        options.setdefault("auteur", self.auteur)
 
     def clean(self):
         super().clean()
