@@ -239,7 +239,7 @@ class ComponentNode(Node):
         See https://glom.readthedocs.io/en/latest/api.html?highlight=Path#glom.Path
         Using Path("a.b") in glom will not use the nested path, but will look for a key "a.b"
         """
-        return Path(*(self.component["key"].split(".")))
+        return Path.from_text(self.key)
 
 
 @dataclass
