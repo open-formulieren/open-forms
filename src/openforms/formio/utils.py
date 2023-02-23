@@ -35,6 +35,29 @@ def iter_components(
             )
 
 
+def iterate_components_with_configuration_path(
+    configuration: JSONObject, prefix: str = "components", recursive=True
+) -> Iterator[Tuple[str, Component]]:
+    for index, component in enumerate(iter_components(configuration, recursive=False)):
+        full_path = f"{prefix}.{index}"
+        yield full_path, component
+
+        # could be a component, could be something else
+        has_components = "components" in component
+        has_columns = "columns" in component
+
+        if has_columns and recursive:
+            for col_index, column in enumerate(component["columns"]):
+                nested_prefix = f"{full_path}.columns.{col_index}.components"
+                yield from iterate_components_with_configuration_path(
+                    column, prefix=nested_prefix
+                )
+        elif has_components and recursive:
+            yield from iterate_components_with_configuration_path(
+                component, prefix=f"{full_path}.components"
+            )
+
+
 @elasticapm.capture_span(span_type="app.formio.configuration")
 def flatten_by_path(configuration: JSONObject) -> Dict[str, Component]:
     """
@@ -44,27 +67,7 @@ def flatten_by_path(configuration: JSONObject) -> Dict[str, Component]:
     JSON path as key and the component as value in the returned mapping.
     """
 
-    def _generator(
-        _configuration: JSONObject, prefix: str = "components"
-    ) -> Iterator[Tuple[str, Component]]:
-        for index, component in enumerate(
-            iter_components(_configuration, recursive=False)
-        ):
-            full_path = f"{prefix}.{index}"
-            yield full_path, component
-
-            # could be a component, could be something else
-            has_components = "components" in component
-            has_columns = "columns" in component
-
-            if has_columns:
-                for col_index, column in enumerate(component["columns"]):
-                    nested_prefix = f"{full_path}.columns.{col_index}.components"
-                    yield from _generator(column, prefix=nested_prefix)
-            elif has_components:
-                yield from _generator(component, prefix=f"{full_path}.components")
-
-    result = dict(_generator(configuration))
+    result = dict(iterate_components_with_configuration_path(configuration))
     return result
 
 

@@ -30,6 +30,7 @@ from openforms.submissions.models import (
     TemporaryFileUpload,
 )
 from openforms.typing import JSONObject
+from openforms.utils.glom import _glom_path_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -94,19 +95,17 @@ class UploadContext:
     index: int  # one-based
     form_key: str  # formio key
     data_path: str  # The path to the component data in the submission data
+    configuration_path: str  # The path to the component in the configuration JSON
     num_uploads: int
-
-
-def _glom_path_to_str(path: Path) -> str:
-    return ".".join([str(value) for value in path.values()])
 
 
 def _iterate_data_with_components(
     configuration: JSONObject,
     data: JSONObject,
     data_path: Path = Path(),
+    configuration_path: str = "components",
     filter_types: list[str] = None,
-) -> tuple[JSONObject, JSONObject, str] | None:
+) -> tuple[JSONObject, JSONObject, str, str] | None:
     """
     Iterate through a configuration and return a tuple with the component JSON, its value in the submission data
     and the path within the submission data.
@@ -130,9 +129,10 @@ def _iterate_data_with_components(
     ``({"key": "name", "type": "textfield"}, "Qui", "pets.0.name")``.
     """
     if configuration.get("type") == "columns":
-        for column in configuration["columns"]:
+        for index, column in enumerate(configuration["columns"]):
+            child_configuration_path = f"{configuration_path}.columns.{index}"
             yield from _iterate_data_with_components(
-                column, data, data_path, filter_types
+                column, data, data_path, child_configuration_path, filter_types
             )
 
     parent_type = configuration.get("type")
@@ -144,19 +144,23 @@ def _iterate_data_with_components(
                 {"components": configuration.get("components", [])},
                 data,
                 data_path=Path(parent_path, index),
+                configuration_path=f"{configuration_path}.components",
             )
     else:
-        for child_component in configuration.get("components", []):
+        for index, child_component in enumerate(configuration.get("components", [])):
+            child_configuration_path = f"{configuration_path}.{index}"
             yield from _iterate_data_with_components(
-                child_component, data, data_path, filter_types
+                child_component, data, data_path, child_configuration_path, filter_types
             )
 
     filter_out = (parent_type not in filter_types) if filter_types else False
     if "key" in configuration and not filter_out:
-        component_path = Path(data_path, Path.from_text(configuration["key"]))
-        component_data = glom(data, component_path, default=None)
+        component_data_path = Path(data_path, Path.from_text(configuration["key"]))
+        component_data = glom(data, component_data_path, default=None)
         if component_data is not None:
-            yield configuration, component_data, _glom_path_to_str(component_path)
+            yield configuration, component_data, _glom_path_to_str(
+                component_data_path
+            ), configuration_path
 
 
 def iter_step_uploads(
@@ -172,7 +176,7 @@ def iter_step_uploads(
     uploads = resolve_uploads_from_data(
         submission_step.form_step.form_definition.configuration, data
     )
-    for key, (component, upload_instances) in uploads.items():
+    for data_path, (component, upload_instances, configuration_path) in uploads.items():
         # formio sends a list of uploads even with multiple=False
         for i, upload in enumerate(upload_instances, start=1):
             yield UploadContext(
@@ -181,7 +185,8 @@ def iter_step_uploads(
                 component=component,
                 index=i,
                 num_uploads=len(upload_instances),
-                data_path=key,
+                data_path=data_path,
+                configuration_path=configuration_path,
             )
 
 
@@ -238,11 +243,12 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
     step_variables = variable_state.get_variables_in_submission_step(submission_step)
 
     for upload_context in iter_step_uploads(submission_step):
-        upload, component, key, data_path = (
+        upload, component, key, data_path, configuration_path = (
             upload_context.upload,
             upload_context.component,
             upload_context.form_key,
             Path.from_text(upload_context.data_path),
+            upload_context.configuration_path,
         )
 
         submission_variable = step_variables.get(key)
@@ -294,7 +300,12 @@ def attach_uploads_to_submission_step(submission_step: SubmissionStep) -> list:
             attachment,
             created,
         ) = SubmissionFileAttachment.objects.get_or_create_from_upload(
-            submission_step, submission_variable, upload, file_name=file_name
+            submission_step,
+            submission_variable,
+            configuration_path,
+            _glom_path_to_str(data_path),
+            upload,
+            file_name=file_name,
         )
         result.append((attachment, created))
 
@@ -356,9 +367,12 @@ def resolve_uploads_from_data(configuration: JSONObject, data: dict) -> dict:
     """
     result = dict()
 
-    for component, upload_info, data_path in _iterate_data_with_components(
-        configuration, data, filter_types={"file"}
-    ):
+    for (
+        component,
+        upload_info,
+        data_path,
+        configuration_path,
+    ) in _iterate_data_with_components(configuration, data, filter_types={"file"}):
         uploads = list()
         for info in upload_info:
             # lets be careful with malformed user data
@@ -370,7 +384,7 @@ def resolve_uploads_from_data(configuration: JSONObject, data: dict) -> dict:
                 uploads.append(upload)
 
         if uploads:
-            result[data_path] = (component, uploads)
+            result[data_path] = (component, uploads, configuration_path)
 
     return result
 
