@@ -18,3 +18,4 @@ more technical configuration of Open Forms? Check out the
    workflows
    templates
    mtls
+   known_problems
