@@ -1,4 +1,5 @@
 from collections import defaultdict
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional
 
 from django.core.exceptions import ValidationError
@@ -100,9 +101,22 @@ def validate_template_expressions(configuration: JSONObject) -> None:
     raise ValidationError(all_errors)
 
 
+@dataclass
+class FakeFormDefinition:
+    configuration: JSONObject
+    name: str = ""
+
+
 def validate_no_duplicate_keys(
     configuration: JSONObject,
 ) -> None:
+    form_definition = FakeFormDefinition(configuration=configuration)
+    validate_no_duplicate_keys_across_steps(form_definition, other_form_definitions=[])
+
+
+def validate_no_duplicate_keys_across_steps(
+    current_form_definition, other_form_definitions
+):
     """
     Validate that there are no duplicate keys in a configuration.
 
@@ -114,12 +128,15 @@ def validate_no_duplicate_keys(
     """
     component_path_map = defaultdict(list)
     duplicate_keys = []
-    for configuration_path, component in flatten_by_path(configuration).items():
-        key = component["key"]
-        component_path_map[key].append(configuration_path)
+    for form_definition in [current_form_definition] + other_form_definitions:
+        for configuration_path, component in flatten_by_path(
+            form_definition.configuration
+        ).items():
+            key = component["key"]
+            component_path_map[key].append((configuration_path, form_definition))
 
-        if key not in duplicate_keys and len(component_path_map[key]) > 1:
-            duplicate_keys.append(key)
+            if key not in duplicate_keys and len(component_path_map[key]) > 1:
+                duplicate_keys.append(key)
 
     if not duplicate_keys:
         return
@@ -127,19 +144,32 @@ def validate_no_duplicate_keys(
     # Get readable path for duplicate components
     errors = []
     for duplicate_key in duplicate_keys:
+        # If the duplicates are all in other steps, don't raise it here from this step
+        if all(
+            [
+                form_definition != current_form_definition
+                for path, form_definition in component_path_map[duplicate_key]
+            ]
+        ):
+            continue
+
+        # The readable path is in format "prefix > parent component > child component"
         readable_paths = [
-            get_readable_path_from_configuration_path(configuration, configuration_path)
-            for configuration_path in component_path_map[duplicate_key]
+            get_readable_path_from_configuration_path(
+                form_definition.configuration, configuration_path, form_definition.name
+            )
+            for configuration_path, form_definition in component_path_map[duplicate_key]
         ]
         errors.append(
-            _('"{duplicate_key}" (in components {paths})').format(
+            _('"{duplicate_key}" (in {paths})').format(
                 duplicate_key=duplicate_key, paths=", ".join(readable_paths)
             )
         )
 
-    raise ValidationError(
-        format_lazy(
-            "Detected duplicate keys in configuration: {errors}",
-            errors=get_text_list(errors, ", "),
+    if errors:
+        raise ValidationError(
+            format_lazy(
+                "Detected duplicate keys in configuration: {errors}",
+                errors=get_text_list(errors, ", "),
+            )
         )
-    )

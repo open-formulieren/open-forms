@@ -72,7 +72,7 @@ def flatten_by_path(configuration: JSONObject) -> Dict[str, Component]:
 
 
 def get_readable_path_from_configuration_path(
-    configuration: JSONObject, path: str
+    configuration: JSONObject, path: str, prefix: Optional[str] = ""
 ) -> str:
     """
     Get a readable version of the configuration path.
@@ -103,6 +103,9 @@ def get_readable_path_from_configuration_path(
     it returns ``Repeating Group > Item 1``.
     """
     keys_path = []
+    if prefix:
+        keys_path.append(prefix)
+
     previous_path_bit = Path()
     for path_bit in Path.from_text(path).values():
         label_or_key = glom(
