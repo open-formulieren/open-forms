@@ -14,7 +14,6 @@ from django.utils.translation import gettext_lazy as _
 from glom import glom
 from privates.fields import PrivateMediaFileField
 
-from openforms.formio.utils import flatten_by_path
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 
 from .submission import Submission

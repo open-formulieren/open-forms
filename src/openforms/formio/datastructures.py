@@ -70,7 +70,8 @@ class FormioConfigurationWrapper:
     def reverse_flattened(self) -> dict[str, str]:
         if self._reverse_flattened is None:
             self._reverse_flattened = {
-                component["key"]: path for path, component in self.flattened_by_path.items()
+                component["key"]: path
+                for path, component in self.flattened_by_path.items()
             }
         return self._reverse_flattened
 
