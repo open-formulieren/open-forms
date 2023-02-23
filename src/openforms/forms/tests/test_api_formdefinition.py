@@ -554,8 +554,8 @@ class FormDefinitionsAPITests(APITestCase):
 
         self.assertEqual(
             data["invalidParams"][0]["reason"],
-            'Detected duplicate keys in configuration: "duplicate" (in components Duplicate, '
-            'Repeating Group > Duplicate) ,  "anotherDuplicate" (in components Another Duplicate, Accidental Duplicate)',
+            'Detected duplicate keys in configuration: "duplicate" (in Duplicate, '
+            'Repeating Group > Duplicate) ,  "anotherDuplicate" (in Another Duplicate, Accidental Duplicate)',
         )
 
 
