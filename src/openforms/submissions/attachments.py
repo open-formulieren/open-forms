@@ -31,6 +31,7 @@ from openforms.submissions.models import (
     TemporaryFileUpload,
 )
 from openforms.typing import JSONObject
+from openforms.utils.glom import _glom_path_to_str
 
 logger = logging.getLogger(__name__)
 
@@ -97,10 +98,6 @@ class UploadContext:
     data_path: str  # The path to the component data in the submission data
     configuration_path: str  # The path to the component in the configuration JSON
     num_uploads: int
-
-
-def _glom_path_to_str(path: Path) -> str:
-    return ".".join([str(value) for value in path.values()])
 
 
 def _iterate_data_with_components(

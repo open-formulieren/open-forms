@@ -10,8 +10,8 @@ from furl import furl
 from glom import Path
 
 from openforms.emails.utils import strip_tags_plus  # TODO: put somewhere else
-from openforms.submissions.attachments import _glom_path_to_str
 from openforms.submissions.rendering.constants import RenderModes
+from openforms.utils.glom import _glom_path_to_str
 from openforms.utils.urls import build_absolute_uri
 
 from ..utils import is_visible_in_frontend, iterate_components_with_configuration_path
