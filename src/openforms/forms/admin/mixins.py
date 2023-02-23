@@ -29,7 +29,9 @@ class FormioConfigMixin:
                     {"label": label, "value": value}
                     for value, label in UploadFileType.choices
                 ],
-                "feature_flags": {},
+                "feature_flags": {
+                    "of_service_fetch_enabled": config.enable_service_fetch,
+                },
                 "confidentiality_levels": [
                     {"label": label, "value": value}
                     for value, label in VertrouwelijkheidsAanduidingen.choices

@@ -387,6 +387,12 @@ class GlobalConfiguration(SingletonModel):
         help_text=_("If enabled, the admin allows selection of demo backend plugins."),
     )
 
+    enable_service_fetch = models.BooleanField(
+        _("enable service fetch"),
+        default=False,
+        help_text=_("Allow use of unfinished, unstable service fetch feature."),
+    )
+
     default_test_bsn = models.CharField(
         _("default test BSN"),
         blank=True,
