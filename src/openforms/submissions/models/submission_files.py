@@ -14,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from glom import glom
 from privates.fields import PrivateMediaFileField
 
+from openforms.formio.utils import flatten_by_path
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 
 from .submission import Submission
@@ -73,15 +74,17 @@ class SubmissionFileAttachmentQuerySet(DeleteFilesQuerySetMixin, models.QuerySet
     def as_form_dict(self) -> Mapping[str, List["SubmissionFileAttachment"]]:
         files = defaultdict(list)
         for file in self:
-            files[file.form_key].append(file)
+            files[file._component_configuration_path].append(file)
         return dict(files)
 
 
 class SubmissionFileAttachmentManager(models.Manager):
-    def create_from_upload(
+    def get_or_create_from_upload(
         self,
         submission_step: SubmissionStep,
-        form_key: str,
+        form_key: str,  # TODO could be removed?
+        configuration_path: str,
+        data_path: str,
         upload: TemporaryFileUpload,
         file_name: Optional[str] = None,
     ) -> Tuple["SubmissionFileAttachment", bool]:
@@ -90,7 +93,8 @@ class SubmissionFileAttachmentManager(models.Manager):
                 self.get(
                     submission_step=submission_step,
                     temporary_file=upload,
-                    form_key=form_key,
+                    _component_configuration_path=configuration_path,
+                    _component_data_path=data_path,
                 ),
                 False,
             )
@@ -105,6 +109,8 @@ class SubmissionFileAttachmentManager(models.Manager):
                     content_type=upload.content_type,
                     original_name=upload.file_name,
                     file_name=file_name,
+                    _component_configuration_path=configuration_path,
+                    _component_data_path=data_path,
                 )
             return (instance, True)
 
@@ -137,6 +143,22 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         on_delete=models.CASCADE,
         blank=True,
         null=True,
+    )
+    # The whole path and not just the key is needed for nested fields.
+    _component_configuration_path = models.CharField(
+        verbose_name=_("component configuration path"),
+        help_text=_(
+            "Path to the component in the configuration corresponding to this attachment."
+        ),
+        max_length=255,
+        blank=True,
+    )
+    # Needed to distinguish in which iteration of a repeating group a file was attached
+    _component_data_path = models.CharField(
+        verbose_name=_("component data path"),
+        help_text=_("Path to the attachment in the submission data."),
+        max_length=255,
+        blank=True,
     )
 
     content = PrivateMediaFileField(
@@ -188,11 +210,14 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
         """
         Get the informatieobjecttype for this attachment from the configuration
         """
-        formdef_config = self.submission_step.form_step.iter_components()
-        for component in formdef_config:
-            if component["key"] == self.form_key:
-                # Use field-specific override
-                if iotype := glom(
-                    component, "registration.informatieobjecttype", default=""
-                ):
-                    return iotype
+        flat_configuration = flatten_by_path(
+            self.submission_step.form_step.form_definition.configuration
+        )
+        component = flat_configuration.get(self._component_configuration_path)
+
+        if not component:
+            return
+
+        # Use field-specific override
+        if iotype := glom(component, "registration.informatieobjecttype", default=""):
+            return iotype
