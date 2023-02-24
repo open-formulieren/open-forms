@@ -38,6 +38,9 @@ class SubmissionStatusPermissionTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    @freeze_time(
+        "2023-02-24T10:05:00+01:00"
+    )  # between 0-1am this fails because the tokens "roll over""
     def test_expired_token(self):
         # Use empty task ID to not need a real broker
         submission = SubmissionFactory.create(completed=True, on_completion_task_ids=[])
