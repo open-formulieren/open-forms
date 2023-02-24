@@ -15,15 +15,13 @@ import {TextInput} from './Inputs';
 
 # Fieldset
 
-The Fieldset component is typically used to wrap one or more form rows,
-or even content paragraphs.
+The Fieldset component is typically used to wrap one or more form rows, or even content paragraphs.
 
 If a title is provided, it will be styled with the primary color background.
 
-Any additional props provided are forwarded to the underlying `fieldset` HTML
-element.
+Any additional props provided are forwarded to the underlying `fieldset` HTML element.
 
-export const Template = ({title, extraClassName=''}) => (
+export const Template = ({title, extraClassName = ''}) => (
   <Fieldset title={title} extraClassName={extraClassName}>
     {/* typical example of nested content */}
     <FormRow>

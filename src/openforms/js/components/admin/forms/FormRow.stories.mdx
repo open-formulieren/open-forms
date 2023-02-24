@@ -5,11 +5,11 @@ import Fieldset from './Fieldset';
 import FormRow from './FormRow';
 import {TextInput} from './Inputs';
 
-<Meta title="Django admin/FormRow" component={FormRow} />
+<Meta title="Admin/Django/FormRow" component={FormRow} />
 
-# Field
+# Form row
 
-Wrapper for a single Form Row
+The form row acts as a container for one or more nested fields.
 
 export const Template = args => (
   <FormRow {...args}>
@@ -19,14 +19,43 @@ export const Template = args => (
   </FormRow>
 );
 
-## Presentation
+## Single field
 
 <Canvas>
-  <Story name="Default" args={{}}>
+  <Story name="Single field" args={{}}>
     {Template.bind({})}
+  </Story>
+</Canvas>
+
+## Multiple fields
+
+export const FormDecorator = Story => (
+  <form>
+    <Fieldset>
+      <Story />
+    </Fieldset>
+  </form>
+);
+
+<Canvas>
+  <Story name="Multiple fields" decorators={[FormDecorator]} args={{}}>
+    <FormRow>
+      <Field
+        fieldBox
+        errors={['some error']}
+        name="field1"
+        label="Input field 1"
+        helpText="Lorem ipsum"
+      >
+        <TextInput />
+      </Field>
+      <Field fieldBox name="field2" label="Input field 2" helpText="Lorem ipsum">
+        <TextInput />
+      </Field>
+    </FormRow>
   </Story>
 </Canvas>
 
 ### Props
 
-<ArgsTable story="Default" />
+<ArgsTable of={FormRow} />
