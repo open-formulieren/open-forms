@@ -453,8 +453,13 @@ function reducer(draft, action) {
         pathBits.pop();
         const componentPath = `configuration.${pathBits.join('.')}`;
         step.validationErrors = step.validationErrors.filter(
-          ([path]) => !path.startsWith(componentPath)
+          ([path]) =>
+            !path.startsWith(componentPath) && !['formDefinition', 'configuration'].includes(path)
         );
+        const anyStepHasErrors = draft.formSteps.some(step => step.validationErrors.length > 0);
+        if (!anyStepHasErrors && draft.tabsWithErrors.includes('form-steps')) {
+          draft.tabsWithErrors = draft.tabsWithErrors.filter(tab => tab !== 'form-steps');
+        }
       }
 
       // Check if the formVariables need updating
