@@ -5,20 +5,33 @@ import Fieldset from './Fieldset';
 import FormRow from './FormRow';
 import {TextInput} from './Inputs';
 
-<Meta title="Django admin/Fieldset" component={Fieldset} />
+<Meta
+  title="Admin/Django/Fieldset"
+  component={Fieldset}
+  argTypes={{
+    children: {table: {disable: true}},
+  }}
+/>
 
-# Field
+# Fieldset
 
-Wrapper for one or more FormRows
+The Fieldset component is typically used to wrap one or more form rows,
+or even content paragraphs.
 
-export const Template = args => (
-  <Fieldset {...args}>
-    <FormRow {...args}>
+If a title is provided, it will be styled with the primary color background.
+
+Any additional props provided are forwarded to the underlying `fieldset` HTML
+element.
+
+export const Template = ({title, extraClassName=''}) => (
+  <Fieldset title={title} extraClassName={extraClassName}>
+    {/* typical example of nested content */}
+    <FormRow>
       <Field name="Field" label="Input field" helpText="Lorem ipsum">
         <TextInput />
       </Field>
     </FormRow>
-    <FormRow {...args}>
+    <FormRow>
       <Field name="Field2" label="Input field2" helpText="Lorem ipsum">
         <TextInput />
       </Field>
@@ -26,15 +39,14 @@ export const Template = args => (
   </Fieldset>
 );
 
-## Presentation
+## Usage
 
 <Canvas>
   <Story
     name="Default"
     args={{
-      title: 'FieldSet',
-      extraClassName: 'admin-fieldset',
-      extra: {name: 'fieldset'},
+      title: 'The fieldset title',
+      extraClassName: '',
     }}
   >
     {Template.bind({})}
@@ -44,3 +56,17 @@ export const Template = args => (
 ### Props
 
 <ArgsTable story="Default" />
+
+### Without title
+
+<Canvas>
+  <Story
+    name="Without title"
+    args={{
+      title: '',
+      extraClassName: '',
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
