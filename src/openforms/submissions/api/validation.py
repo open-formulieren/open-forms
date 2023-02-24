@@ -32,6 +32,7 @@ class CompletionValidationSerializer(serializers.Serializer):
         choices=SubmissionAllowedChoices.choices,
     )
     privacy_policy_accepted = serializers.BooleanField()
+    contains_blocked_steps = serializers.BooleanField()
 
     def validate_privacy_policy_accepted(self, privacy_policy_accepted: bool) -> None:
         config = GlobalConfiguration.get_solo()
@@ -47,6 +48,14 @@ class CompletionValidationSerializer(serializers.Serializer):
         if submission_allowed != SubmissionAllowedChoices.yes:
             raise serializers.ValidationError(
                 _("Submission of this form is not allowed.")
+            )
+
+    def validate_contains_blocked_steps(self, value):
+        if value:
+            raise serializers.ValidationError(
+                _(
+                    "Submission of this form is not allowed due to the answers submitted in a step."
+                )
             )
 
     def save(self, **kwargs):
@@ -81,6 +90,12 @@ def get_submission_completion_serializer(
             "incomplete_steps": incomplete_steps,
             "submission_allowed": submission.form.submission_allowed,
             "privacy_policy_accepted": request.data.get("privacy_policy_accepted"),
+            "contains_blocked_steps": any(
+                [
+                    not submission_step.can_submit
+                    for submission_step in state.submission_steps
+                ]
+            ),
         },
         context={"request": request, "submission": submission},
     )
