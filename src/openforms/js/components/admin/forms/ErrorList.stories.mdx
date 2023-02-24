@@ -2,23 +2,57 @@ import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
 
 import ErrorList from './ErrorList';
 
-<Meta title="Django admin/ErrorList" component={ErrorList} />
+<Meta
+  title="Admin/Django/ErrorList"
+  component={ErrorList}
+  argTypes={{
+    children: {table: {disable: true}},
+  }}
+/>
 
 # Field
 
 Wrapper for errors in the admin
 
-export const Template = args => <ErrorList {...args}></ErrorList>;
+export const Template = ({errors = [], ...args}) => <ErrorList {...args} children={errors} />;
 
-## Presentation
+## Usage
+
+### List of error-strings
 
 <Canvas>
   <Story
-    name="Default"
+    name="List of error strings"
     args={{
-      classNamePrefix: 'prefix',
-      classNameModifier: 'custom',
-      children: ['Error #1', 'Error #2'],
+      classNamePrefix: '',
+      classNameModifier: '',
+      errors: ['Error #1', 'Error #2'],
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+### Empty errorlist
+
+<Canvas>
+  <Story
+    name="No errors"
+    args={{
+      errors: [],
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+### Single error
+
+<Canvas>
+  <Story
+    name="Single error"
+    args={{
+      errors: 'single error',
     }}
   >
     {Template.bind({})}
@@ -27,4 +61,4 @@ export const Template = args => <ErrorList {...args}></ErrorList>;
 
 ### Props
 
-<ArgsTable story="Default" />
+<ArgsTable of={ErrorList} />

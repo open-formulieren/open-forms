@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const ErrorList = ({classNamePrefix, classNameModifier, children}) => {
+const ErrorList = ({classNamePrefix = '', classNameModifier = '', children}) => {
   const additionalClassName = `${classNamePrefix}__errors`;
   const additionalClassNameModified = `${additionalClassName}--${classNameModifier}`;
   let ulClassNames = classNames(
