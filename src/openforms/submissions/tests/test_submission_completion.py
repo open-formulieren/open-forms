@@ -9,7 +9,7 @@ The backend should perform total-form validation as part of this action.
 from decimal import Decimal
 from unittest.mock import patch
 
-from django.test import override_settings
+from django.test import override_settings, tag
 from django.utils import timezone
 
 from freezegun import freeze_time
@@ -371,6 +371,61 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         )
 
         self.assertEqual(user_defined_variable.value, 1)
+
+    @tag("gh-2096")
+    def test_complete_but_one_step_cant_be_submitted(self):
+        form_step = FormStepFactory.create(
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "someCondition",
+                        "type": "radio",
+                        "values": [
+                            {"label": "A", "value": "a"},
+                            {"label": "B", "value": "b"},
+                        ],
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form_step.form,
+            json_logic_trigger={
+                "==": [
+                    {"var": "someCondition"},
+                    "a",
+                ]
+            },
+            actions=[
+                {
+                    "action": {
+                        "type": "disable-next",
+                    },
+                }
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form_step.form)
+        SubmissionStepFactory.create(
+            submission=submission,
+            data={"someCondition": "a"},
+            form_step=form_step,
+        )
+
+        self._add_submission_to_session(submission)
+        response = self.client.post(
+            reverse("api:submission-complete", kwargs={"uuid": submission.uuid}),
+            {"privacy_policy_accepted": True},
+        )
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        data = response.json()
+
+        self.assertEqual(
+            data["invalidParams"][0]["reason"],
+            "Submission of this form is not allowed due to the answers submitted in a step.",
+        )
 
 
 @temp_private_root()
