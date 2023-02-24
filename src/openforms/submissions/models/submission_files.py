@@ -4,7 +4,7 @@ import os.path
 import uuid
 from collections import defaultdict
 from datetime import date, timedelta
-from typing import TYPE_CHECKING, List, Mapping, Optional, Tuple
+from typing import TYPE_CHECKING, List, Mapping, Optional, Tuple, cast
 
 from django.core.files.base import File
 from django.db import models
@@ -14,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from glom import glom
 from privates.fields import PrivateMediaFileField
 
+from openforms.typing import JSONValue
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 
 from .submission import Submission
@@ -207,71 +208,71 @@ class SubmissionFileAttachment(DeleteFileFieldFilesMixin, models.Model):
                 sha256.update(chunk)
         return sha256.hexdigest()
 
+    def _get_formio_config_property(
+        self, lookup: str, default: JSONValue = ""
+    ) -> JSONValue:
+        """
+        Derive a property from the attached formio configuration.
+        """
+        wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
+        component = wrapper.flattened_by_path.get(self._component_configuration_path)
+        if not component:
+            return None
+
+        if value := glom(component, lookup, default=default):
+            # the cast is what *should* happen here, but due to formio shenanigans it is
+            # not guaranteed at runtime.
+            return cast(JSONValue, value)
+
+        return None
+
     @property
-    def informatieobjecttype(self) -> str | None:
+    def informatieobjecttype(self) -> str:
         """
         Get the informatieobjecttype for this attachment from the configuration
         """
-        # use configuration wrapper for caching
-        wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
-        component = wrapper.flattened_by_path.get(self._component_configuration_path)
-        if not component:
-            return
-
-        # Use field-specific override
-        if iotype := glom(component, "registration.informatieobjecttype", default=""):
-            return iotype
+        if (
+            value := self._get_formio_config_property(
+                "registration.informatieobjecttype"
+            )
+        ) is not None:
+            return str(value)
+        return ""
 
     @property
-    def bronorganisatie(self) -> str | None:
+    def bronorganisatie(self) -> str:
         """
         Get the bronorganisatie for this attachment from the configuration
         """
-        # use configuration wrapper for caching
-        wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
-        component = wrapper.flattened_by_path.get(self._component_configuration_path)
-        if not component:
-            return
-
-        # Use field-specific override
-        if bronorganisatie := glom(
-            component, "registration.bronorganisatie", default=""
-        ):
-            return bronorganisatie
+        if (
+            value := self._get_formio_config_property("registration.bronorganisatie")
+        ) is not None:
+            return str(value)
+        return ""
 
     @property
-    def doc_vertrouwelijkheidaanduiding(self) -> str | None:
+    def doc_vertrouwelijkheidaanduiding(self) -> str:
         """
         Get the vertrouwelijkheidaanduiding for this attachment from the configuration
         """
-        # use configuration wrapper for caching
-        wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
-        component = wrapper.flattened_by_path.get(self._component_configuration_path)
-        if not component:
-            return
-
-        # Use field-specific override
-        if vertrouwelijk := glom(
-            component,
-            "registration.docVertrouwelijkheidaanduiding",
-            default="",
-        ):
-            return vertrouwelijk
+        if (
+            value := self._get_formio_config_property(
+                "registration.docVertrouwelijkheidaanduiding"
+            )
+        ) is not None:
+            return str(value)
+        return ""
 
     @property
-    def titel(self) -> str | None:
+    def titel(self) -> str:
         """
         Get the title for this attachment from the configuration
         """
-        # use configuration wrapper for caching
-        wrapper = self.submission_step.form_step.form_definition.configuration_wrapper
-        component = wrapper.flattened_by_path.get(self._component_configuration_path)
-        if not component:
-            return
-
-        # Use field-specific override
-        if titel := glom(component, "registration.titel", default=""):
-            return titel
+        if (
+            value := self._get_formio_config_property("registration.titel")
+        ) is not None:
+            return str(value)
+        return ""
 
     @property
     def form_key(self):
