@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, {useState} from 'react';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import FormModal from 'components/admin/FormModal';
 import StepSelection from 'components/admin/form_design/StepSelection';
@@ -10,6 +10,7 @@ import {
   STRING_TO_TYPE,
   TYPE_TO_STRING,
 } from 'components/admin/form_design/logic/constants';
+import ActionButton from 'components/admin/forms/ActionButton';
 import ComponentSelection from 'components/admin/forms/ComponentSelection';
 import JsonWidget from 'components/admin/forms/JsonWidget';
 import Select from 'components/admin/forms/Select';
@@ -97,6 +98,7 @@ const ActionVariableValue = ({action, errors, onChange}) => (
 );
 
 const ActionFetchFromService = ({action, errors, onChange}) => {
+  const intl = useIntl();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const closeModal = () => {
@@ -125,18 +127,17 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
           min="1"
         />
       </DSLEditorNode>
-      <button
-        type="button"
-        className="button"
-        onClick={() => {
+      <ActionButton
+        name="_open_service_fetch_modal"
+        onClick={event => {
+          event.preventDefault();
           setIsModalOpen(true);
         }}
-      >
-        <FormattedMessage
-          description="Button to toggle service fetch configuration modal"
-          defaultMessage="Add service fetch configuration"
-        />
-      </button>
+        text={intl.formatMessage({
+          description: 'Button to open service fetch configuration modal',
+          defaultMessage: 'Configure',
+        })}
+      />
 
       <FormModal
         isOpen={isModalOpen}
