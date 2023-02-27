@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useState} from 'react';
+import {FormattedMessage} from 'react-intl';
 
+import FormModal from 'components/admin/FormModal';
 import StepSelection from 'components/admin/form_design/StepSelection';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 import {
@@ -13,6 +15,7 @@ import JsonWidget from 'components/admin/forms/JsonWidget';
 import Select from 'components/admin/forms/Select';
 import VariableSelection from 'components/admin/forms/VariableSelection';
 
+import ServiceFetchConfigurationPicker from '../../variables/ServiceFetchConfigurationPicker';
 import {ActionError, Action as ActionType} from './types';
 
 const ActionProperty = ({action, errors, onChange}) => {
@@ -94,6 +97,12 @@ const ActionVariableValue = ({action, errors, onChange}) => (
 );
 
 const ActionFetchFromService = ({action, errors, onChange}) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <>
       <DSLEditorNode errors={errors.variable}>
@@ -116,6 +125,32 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
           min="1"
         />
       </DSLEditorNode>
+      <button
+        type="button"
+        className="button"
+        onClick={() => {
+          setIsModalOpen(true);
+        }}
+      >
+        <FormattedMessage
+          description="Button to toggle service fetch configuration modal"
+          defaultMessage="Add service fetch configuration"
+        />
+      </button>
+
+      <FormModal
+        isOpen={isModalOpen}
+        closeModal={closeModal}
+        title={
+          <FormattedMessage
+            description="Service fetch configuration selection modal title"
+            defaultMessage="Service fetch configuration"
+          />
+        }
+        extraModifiers={['large']}
+      >
+        <ServiceFetchConfigurationPicker onFormSave={closeModal} onChange={onChange} />
+      </FormModal>
     </>
   );
 };

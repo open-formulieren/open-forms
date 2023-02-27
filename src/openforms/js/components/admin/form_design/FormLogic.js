@@ -9,6 +9,7 @@ import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 
+import {FormLogicContext} from './Context';
 import StepSelection, {useFormStep} from './StepSelection';
 import AdvancedTrigger from './logic/AdvancedTrigger';
 import DSLEditorNode from './logic/DSLEditorNode';
@@ -36,11 +37,18 @@ const FormLogic = ({logicRules = [], onChange, onDelete, onAdd}) => {
   // ensure they're sorted
   logicRules = sortBy(logicRules, ['order']);
   return (
-    <Fieldset
-      title={<FormattedMessage description="Logic fieldset title" defaultMessage="Logic" />}
+    <FormLogicContext.Provider
+      value={{
+        services: [],
+        serviceFetchConfigurations: [],
+      }}
     >
-      <FormLogicRules rules={logicRules} onAdd={onAdd} onChange={onChange} onDelete={onDelete} />
-    </Fieldset>
+      <Fieldset
+        title={<FormattedMessage description="Logic fieldset title" defaultMessage="Logic" />}
+      >
+        <FormLogicRules rules={logicRules} onAdd={onAdd} onChange={onChange} onDelete={onDelete} />
+      </Fieldset>
+    </FormLogicContext.Provider>
   );
 };
 

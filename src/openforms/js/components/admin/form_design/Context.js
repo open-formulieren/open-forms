@@ -22,7 +22,7 @@ const FormLogicContext = React.createContext({
   services: [],
   serviceFetchConfigurations: [],
 });
-FormContext.displayName = 'FormLogicContext';
+FormLogicContext.displayName = 'FormLogicContext';
 
 const APIContext = React.createContext({
   crsftoken: '',

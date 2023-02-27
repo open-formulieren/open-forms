@@ -24,7 +24,7 @@ import {getUniqueRandomString} from 'utils/random';
 
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import Confirmation from './Confirmation';
-import {APIContext, FormContext, FormLogicContext} from './Context';
+import {APIContext, FormContext} from './Context';
 import DataRemoval from './DataRemoval';
 import FormConfigurationFields from './FormConfigurationFields';
 import FormDetailFields from './FormDetailFields';
@@ -1285,19 +1285,12 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
           </TabPanel>
 
           <TabPanel>
-            <FormLogicContext.Provider
-              value={{
-                services: [],
-                serviceFetchConfigurations: [],
-              }}
-            >
-              <FormLogic
-                logicRules={state.logicRules}
-                onChange={onRuleChange}
-                onDelete={index => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
-                onAdd={() => dispatch({type: 'ADD_RULE'})}
-              />
-            </FormLogicContext.Provider>
+            <FormLogic
+              logicRules={state.logicRules}
+              onChange={onRuleChange}
+              onDelete={index => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
+              onAdd={() => dispatch({type: 'ADD_RULE'})}
+            />
           </TabPanel>
 
           <TabPanel>
