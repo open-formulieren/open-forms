@@ -155,6 +155,13 @@ def check_submission_logic(submission, unsaved_data=None):
         form=submission.form,
         actions__contains=[{"action": {"type": LogicActionTypes.step_not_applicable}}],
     )
+    if getattr(submission, "_form_logic_evaluated", False):
+        return
+
+    submission_state = submission.load_execution_state()
+    # if there are no form steps at all, then there's nothing to do
+    if not submission_state.form_steps:
+        return
 
     merged_data = submission.data
     if unsaved_data:
@@ -172,3 +179,5 @@ def check_submission_logic(submission, unsaved_data=None):
                     action["form_step"]
                 )
                 submission_step_to_modify._is_applicable = False
+
+    submission._form_logic_evaluated = True
