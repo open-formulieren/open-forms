@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from django.test import override_settings
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -142,7 +143,14 @@ class FormDefinitionsAPITests(APITestCase):
                 "slug": "updated-slug",
                 "configuration": {
                     "display": "form",
-                    "components": [{"label": "Existing field"}, {"label": "New field"}],
+                    "components": [
+                        {
+                            "key": "somekey",
+                            "type": "textfield",
+                            "label": "Existing field",
+                        },
+                        {"key": "somekey2", "type": "textfield", "label": "New field"},
+                    ],
                 },
                 "login_required": True,
             },
@@ -155,7 +163,10 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual("Updated name", definition.name)
         self.assertEqual("updated-slug", definition.slug)
         self.assertEqual(True, definition.login_required)
-        self.assertIn({"label": "New field"}, definition.configuration["components"])
+        self.assertIn(
+            {"key": "somekey2", "type": "textfield", "label": "New field"},
+            definition.configuration["components"],
+        )
 
     def test_update_is_reusable_unsuccessful_with_multiple_forms(self):
         user = SuperUserFactory.create()
@@ -195,7 +206,13 @@ class FormDefinitionsAPITests(APITestCase):
                 "slug": "a-slug",
                 "configuration": {
                     "display": "form",
-                    "components": [{"label": "New field"}],
+                    "components": [
+                        {
+                            "label": "New field",
+                            "key": "newField",
+                            "type": "textfield",
+                        }
+                    ],
                 },
             },
         )
@@ -207,7 +224,14 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual("Name", definition.name)
         self.assertEqual("a-slug", definition.slug)
         self.assertEqual(
-            [{"label": "New field"}], definition.configuration["components"]
+            [
+                {
+                    "label": "New field",
+                    "key": "newField",
+                    "type": "textfield",
+                }
+            ],
+            definition.configuration["components"],
         )
 
     def test_create_no_camelcase_snakecase_conversion(self):
@@ -340,6 +364,7 @@ class FormDefinitionsAPITests(APITestCase):
                             },
                             {
                                 "type": "content",
+                                "key": "content",
                                 "html": "<p>{{ missingVariable }} hello</p>",
                                 # syntax errors in non-supported properties should be accepted
                                 "unvalidated": "{{ foo ",
@@ -400,6 +425,62 @@ class FormDefinitionsAPITests(APITestCase):
                     "configuration.components.1.components.0.label",
                 )
 
+    @override_settings(LANGUAGE_CODE="en")
+    def test_duplicate_components(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
+
+        url = reverse("api:formdefinition-list")
+        response = self.client.post(
+            url,
+            data={
+                "name": "Name",
+                "slug": "a-slug",
+                "configuration": {
+                    "components": [
+                        {"key": "duplicate", "label": "Duplicate", "type": "textfield"},
+                        {
+                            "key": "repeatingGroup",
+                            "label": "Repeating Group",
+                            "type": "editgrid",
+                            "components": [
+                                {
+                                    "key": "duplicate",
+                                    "label": "Duplicate",
+                                    "type": "textfield",
+                                },
+                                {
+                                    "key": "notDuplicate",
+                                    "label": "Not Duplicate",
+                                    "type": "textfield",
+                                },
+                            ],
+                        },
+                        {
+                            "key": "anotherDuplicate",
+                            "label": "Another Duplicate",
+                            "type": "textfield",
+                        },
+                        {
+                            "key": "anotherDuplicate",
+                            "label": "Accidental Duplicate",
+                            "type": "textfield",
+                        },
+                    ]
+                },
+            },
+        )
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        data = response.json()
+
+        self.assertEqual(
+            data["invalidParams"][0]["reason"],
+            'Detected duplicate keys in configuration: "duplicate" (in Duplicate, '
+            'Repeating Group > Duplicate) ,  "anotherDuplicate" (in Another Duplicate, Accidental Duplicate)',
+        )
+
 
 class FormioCoSignComponentValidationTests(APITestCase):
     """
@@ -421,6 +502,7 @@ class FormioCoSignComponentValidationTests(APITestCase):
             "components": [
                 {
                     "type": "coSign",
+                    "key": "coSign",
                     "label": "Co-sign test",
                 }
             ]
@@ -447,6 +529,7 @@ class FormioCoSignComponentValidationTests(APITestCase):
             "components": [
                 {
                     "type": "coSign",
+                    "key": "coSign",
                     "label": "Co-sign test",
                     "authPlugin": "digid",
                 }
@@ -479,6 +562,7 @@ class FormioCoSignComponentValidationTests(APITestCase):
             "components": [
                 {
                     "type": "coSign",
+                    "key": "coSign",
                     "label": "Co-sign test",
                     "authPlugin": "digid",
                 }
