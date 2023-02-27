@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from django.test import override_settings
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -499,6 +500,62 @@ class FormDefinitionsAPITests(APITestCase):
         self.assertEqual(fd_2["uuid"], str(fd2.uuid))
         self.assertEqual(
             fd_4["uuid"], str(form_2.formstep_set.get().form_definition.uuid)
+        )
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_duplicate_components(self):
+        user = StaffUserFactory.create(user_permissions=["change_form"])
+        self.client.force_authenticate(user=user)
+
+        url = reverse("api:formdefinition-list")
+        response = self.client.post(
+            url,
+            data={
+                "name": "Name",
+                "slug": "a-slug",
+                "configuration": {
+                    "components": [
+                        {"key": "duplicate", "label": "Duplicate", "type": "textfield"},
+                        {
+                            "key": "repeatingGroup",
+                            "label": "Repeating Group",
+                            "type": "editgrid",
+                            "components": [
+                                {
+                                    "key": "duplicate",
+                                    "label": "Duplicate",
+                                    "type": "textfield",
+                                },
+                                {
+                                    "key": "notDuplicate",
+                                    "label": "Not Duplicate",
+                                    "type": "textfield",
+                                },
+                            ],
+                        },
+                        {
+                            "key": "anotherDuplicate",
+                            "label": "Another Duplicate",
+                            "type": "textfield",
+                        },
+                        {
+                            "key": "anotherDuplicate",
+                            "label": "Accidental Duplicate",
+                            "type": "textfield",
+                        },
+                    ]
+                },
+            },
+        )
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        data = response.json()
+
+        self.assertEqual(
+            data["invalidParams"][0]["reason"],
+            'Detected duplicate keys in configuration: "duplicate" (in Duplicate, '
+            'Repeating Group > Duplicate) ,  "anotherDuplicate" (in Another Duplicate, Accidental Duplicate)',
         )
 
 

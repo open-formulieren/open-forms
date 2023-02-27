@@ -356,7 +356,9 @@ FormStepDefinition.propTypes = {
 };
 
 const ConfigurationErrors = ({errors = []}) => {
-  const configurationErrors = errors.filter(([name, err]) => name === 'configuration');
+  const configurationErrors = errors.filter(
+    ([name, err]) => name === 'configuration' || name === 'formDefinition'
+  );
   const [hasConfigurationErrors, formattedConfigurationErrors] =
     normalizeErrors(configurationErrors);
   if (!hasConfigurationErrors) return null;

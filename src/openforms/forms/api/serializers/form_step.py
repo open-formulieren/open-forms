@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from rest_framework import serializers
 from rest_framework_nested.relations import NestedHyperlinkedRelatedField
 
@@ -7,7 +9,8 @@ from openforms.translations.api.serializers import (
     ModelTranslationsSerializer,
 )
 
-from ...models import FormStep
+from ...models import FormDefinition, FormStep
+from ...validators import validate_no_duplicate_keys_across_steps
 from .button_text import ButtonTextSerializer
 
 
@@ -141,3 +144,25 @@ class FormStepSerializer(
     def create(self, validated_data):
         validated_data["form"] = self.context["form"]
         return super().create(validated_data)
+
+    def validate_form_definition(self, current_form_definition):
+        """
+        Check that there are no duplicate keys in a form.
+        Bandaid for #2734
+
+        #TODO: This could cause a race condition if steps are saved in parallel and so their form definitions are not
+        checked against each other.
+        """
+        form = self.context["form"]
+        other_form_definitions_ids = form.formstep_set.filter(
+            ~Q(form_definition__id=current_form_definition.id)
+        ).values_list("form_definition", flat=True)
+        other_form_definitions = FormDefinition.objects.filter(
+            id__in=other_form_definitions_ids
+        )
+
+        validate_no_duplicate_keys_across_steps(
+            current_form_definition, list(other_form_definitions)
+        )
+
+        return current_form_definition

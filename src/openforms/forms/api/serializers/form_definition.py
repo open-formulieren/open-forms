@@ -13,7 +13,10 @@ from openforms.translations.api.serializers import (
 )
 
 from ...models import Form, FormDefinition
-from ...validators import validate_form_definition_is_reusable
+from ...validators import (
+    validate_form_definition_is_reusable,
+    validate_no_duplicate_keys,
+)
 from ..validators import FormIOComponentsValidator, validate_template_expressions
 
 
@@ -96,6 +99,7 @@ class FormDefinitionSerializer(
                 "validators": [
                     FormIOComponentsValidator(),
                     validate_template_expressions,
+                    validate_no_duplicate_keys,
                 ],
             },
         }

@@ -2,7 +2,7 @@ import logging
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 import elasticapm
-from glom import glom
+from glom import Coalesce, Path, glom
 
 from openforms.variables.constants import DEFAULT_INITIAL_VALUE, FormVariableDataTypes
 
@@ -69,6 +69,60 @@ def flatten_by_path(configuration: JSONObject) -> Dict[str, Component]:
 
     result = dict(iterate_components_with_configuration_path(configuration))
     return result
+
+
+def get_readable_path_from_configuration_path(
+    configuration: JSONObject, path: str, prefix: Optional[str] = ""
+) -> str:
+    """
+    Get a readable version of the configuration path.
+
+    For example, for a path ``components.0.components.1`` and a configuration:
+
+        .. code:: json
+
+            {
+              "components": [
+                {
+                  "key": "repeatingGroup",
+                  "label": "Repeating Group",
+                  "components": [
+                    {
+                      "key": "item1",
+                      "label": "Item 1",
+                    },
+                    {
+                      "key": "item2"
+                      "label": "Item 2",
+                    }
+                  ]
+                }
+              ]
+            }
+
+    it returns ``Repeating Group > Item 1``.
+    """
+    keys_path = []
+    if prefix:
+        keys_path.append(prefix)
+
+    previous_path_bit = Path()
+    for path_bit in Path.from_text(path).values():
+        label_or_key = glom(
+            configuration,
+            Coalesce(
+                Path(previous_path_bit, path_bit, "label"),
+                Path(previous_path_bit, path_bit, "key"),
+            ),
+            default=None,
+        )
+
+        if label_or_key:
+            keys_path.append(label_or_key)
+
+        previous_path_bit = Path(previous_path_bit, path_bit)
+
+    return " > ".join(keys_path)
 
 
 def is_layout_component(component):

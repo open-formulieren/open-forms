@@ -606,6 +606,202 @@ class FormsStepsAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_create_duplicate_keys_in_different_form_steps(self):
+        form_definition1 = FormDefinitionFactory.create(
+            name="Form Def 1",
+            configuration={
+                "components": [
+                    {"key": "duplicate", "label": "Duplicate", "type": "textfield"}
+                ]
+            },
+        )
+        form_definition2 = FormDefinitionFactory.create(
+            name="Form Def 2",
+            configuration={
+                "components": [
+                    {
+                        "key": "repeatingGroup",
+                        "label": "Repeating Group",
+                        "type": "editgrid",
+                        "components": [
+                            {
+                                "key": "duplicate",
+                                "label": "Duplicate",
+                                "type": "textfield",
+                            },
+                            {
+                                "key": "notDuplicate",
+                                "label": "Not Duplicate",
+                                "type": "textfield",
+                            },
+                        ],
+                    }
+                ]
+            },
+        )
+        form = FormFactory.create()
+        FormStepFactory.create(form=form, form_definition=form_definition1)
+
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        form_definition2_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": form_definition2.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{form_definition2_url}",
+            "index": 1,
+        }
+
+        response = self.client.post(
+            reverse("api:form-steps-list", kwargs={"form_uuid_or_slug": form.uuid}),
+            data=data,
+        )
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        data = response.json()
+
+        self.assertEqual(
+            data["invalidParams"][0]["reason"],
+            'Detected duplicate keys in configuration: "duplicate" (in '
+            "Form Def 2 > Repeating Group > Duplicate, Form Def 1 > Duplicate)",
+        )
+
+    def test_update_duplicate_keys_in_different_form_steps(self):
+        form_definition1 = FormDefinitionFactory.create(
+            name="Form Def 1",
+            configuration={
+                "components": [
+                    {"key": "duplicate", "label": "Duplicate", "type": "textfield"}
+                ]
+            },
+        )
+        form_definition2 = FormDefinitionFactory.create(
+            name="Form Def 2",
+            configuration={
+                "components": [
+                    {
+                        "key": "repeatingGroup",
+                        "label": "Repeating Group",
+                        "type": "editgrid",
+                        "components": [
+                            {
+                                "key": "duplicate",
+                                "label": "Duplicate",
+                                "type": "textfield",
+                            },
+                            {
+                                "key": "notDuplicate",
+                                "label": "Not Duplicate",
+                                "type": "textfield",
+                            },
+                        ],
+                    }
+                ]
+            },
+        )
+        form = FormFactory.create()
+        FormStepFactory.create(form=form, form_definition=form_definition1)
+        form_step2 = FormStepFactory.create(form=form, form_definition=form_definition2)
+
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        form_definition2_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": form_definition2.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{form_definition2_url}",
+            "index": 1,
+        }
+
+        response = self.client.put(
+            reverse(
+                "api:form-steps-detail",
+                kwargs={"form_uuid_or_slug": form.uuid, "uuid": form_step2.uuid},
+            ),
+            data=data,
+        )
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        data = response.json()
+
+        self.assertEqual(
+            data["invalidParams"][0]["reason"],
+            'Detected duplicate keys in configuration: "duplicate" (in '
+            "Form Def 2 > Repeating Group > Duplicate, Form Def 1 > Duplicate)",
+        )
+
+    def test_duplicate_keys_all_in_other_steps(self):
+        form_definition1 = FormDefinitionFactory.create(
+            name="Form Def 1",
+            configuration={
+                "components": [
+                    {"key": "duplicate", "label": "Duplicate", "type": "textfield"}
+                ]
+            },
+        )
+        form_definition2 = FormDefinitionFactory.create(
+            name="Form Def 2",
+            configuration={
+                "components": [
+                    {
+                        "key": "repeatingGroup",
+                        "label": "Repeating Group",
+                        "type": "editgrid",
+                        "components": [
+                            {
+                                "key": "duplicate",
+                                "label": "Duplicate",
+                                "type": "textfield",
+                            },
+                        ],
+                    }
+                ]
+            },
+        )
+        form_definition3 = FormDefinitionFactory.create(
+            name="Form Def 3",
+            configuration={
+                "components": [
+                    {
+                        "key": "notDuplicate",
+                        "label": "Not Duplicate",
+                        "type": "textfield",
+                    }
+                ]
+            },
+        )
+        form = FormFactory.create()
+        FormStepFactory.create(form=form, form_definition=form_definition1)
+        FormStepFactory.create(form=form, form_definition=form_definition2)
+
+        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
+        self.user.is_staff = True
+        self.user.save()
+
+        form_definition2_url = reverse(
+            "api:formdefinition-detail",
+            kwargs={"uuid": form_definition3.uuid},
+        )
+        data = {
+            "formDefinition": f"http://testserver{form_definition2_url}",
+            "index": 1,
+        }
+
+        response = self.client.post(
+            reverse("api:form-steps-list", kwargs={"form_uuid_or_slug": form.uuid}),
+            data=data,
+        )
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
 
 class FormStepsAPITranslationTests(APITestCase):
     maxDiff = None
