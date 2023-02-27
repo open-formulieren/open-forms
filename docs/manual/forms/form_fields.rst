@@ -228,17 +228,12 @@ Herhalende Groepen
 Bekende problemen
 -----------------
 
-#. De componenten binnen een herhalende groep mogen niet dezelfde eigenschapsnaam hebben als componenten buiten de
-   herhalende groep of als de componenten in andere formulier stappen.
+#. De componenten binnen een herhalende groep mogen niet dezelfde eigenschapsnaam hebben als de componenten buiten de
+   herhalende groep of als de componenten in andere formulierstappen.
 
-   Gedupliceerde eigenschapsnamen zijn een probleem met bestandsupload componenten waarvan de waarde in de inzending moet
-   geëxtraheerd worden en omgezet naar een "inzending bijlage".
+   Als eigenschapsnamen gedupliceerd zijn, dan kan Open Formulieren de bijlagen niet correct aan de inzending koppelen.
 
-   Er is een plakbandje oplossing die voorkomt dat een formulier met gedupliceerde eigenschapsnamen opgeslagen kan worden.
-   Dit probleem moet opgelost worden in `#2758 <https://github.com/open-formulieren/open-forms/issues/2758>`_.
+   Om deze situatie te vermijden is er een tijdelijke oplossing ingevoerd die dubbele eigenschapsnamen blokkeert.
 
-   Het importeren van een formulier waar er gedupliceerde eigenschapsnamen zijn binnen een herhalende groep lijdt tot
-   ontbrekende variabelen (`#2728 <https://github.com/open-formulieren/open-forms/issues/2728>`_).
-
-#. Het automatisch invullen van straatnaam / stad velden werkt niet binnen een herhalende groep (`#2656 <https://github.com/open-formulieren/open-forms/issues/2656>`_).
-#. Het is niet mogelijk om backend logica te gebruiken op elke element binnen een herhalende groep (`#2441 <https://github.com/open-formulieren/open-forms/issues/2441>`_).
+#. Het automatisch invullen van straatnaam / stad in tekstvelden werkt niet binnen een herhalende groep (`#2656 <https://github.com/open-formulieren/open-forms/issues/2656>`_).
+#. Het is niet mogelijk om backend-logica toe te passen op elementen binnen een herhalende groep (`#2441 <https://github.com/open-formulieren/open-forms/issues/2441>`_).

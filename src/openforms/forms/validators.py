@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional
 
 from django.core.exceptions import ValidationError
-from django.utils.text import format_lazy, get_text_list
+from django.utils.text import get_text_list
 from django.utils.translation import gettext_lazy as _
 
 from openforms.formio.utils import (
@@ -168,8 +168,7 @@ def validate_no_duplicate_keys_across_steps(
 
     if errors:
         raise ValidationError(
-            format_lazy(
-                "Detected duplicate keys in configuration: {errors}",
-                errors=get_text_list(errors, ", "),
+            _("Detected duplicate keys in configuration: {errors}").format(
+                errors=get_text_list(errors, ", ")
             )
         )
