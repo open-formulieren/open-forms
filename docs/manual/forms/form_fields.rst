@@ -220,3 +220,25 @@ Basis
      dient u een hiervoor expliciet een optie op te voeren. Als systeemwaarde kunt u
      bijvoorbeeld ``-`` gebruiken. Als weergave kunt u bijvoorbeeld ``-------`` of
      ``- geen keuze -`` gebruiken.
+
+
+Herhalende Groepen
+==================
+
+Bekende problemen
+-----------------
+
+#. De componenten binnen een herhalende groep mogen niet dezelfde eigenschapsnaam hebben als componenten buiten de
+   herhalende groep of als de componenten in andere formulier stappen.
+
+   Gedupliceerde eigenschapsnamen zijn een probleem met bestandsupload componenten waarvan de waarde in de inzending moet
+   geëxtraheerd worden en omgezet naar een "inzending bijlage".
+
+   Er is een plakbandje oplossing die voorkomt dat een formulier met gedupliceerde eigenschapsnamen opgeslagen kan worden.
+   Dit probleem moet opgelost worden in `#2758 <https://github.com/open-formulieren/open-forms/issues/2758>`_.
+
+   Het importeren van een formulier waar er gedupliceerde eigenschapsnamen zijn binnen een herhalende groep lijdt tot
+   ontbrekende variabelen (`#2728 <https://github.com/open-formulieren/open-forms/issues/2728>`_).
+
+#. Het automatisch invullen van straatnaam / stad velden werkt niet binnen een herhalende groep (`#2656 <https://github.com/open-formulieren/open-forms/issues/2656>`_).
+#. Het is niet mogelijk om backend logica te gebruiken op elke element binnen een herhalende groep (`#2441 <https://github.com/open-formulieren/open-forms/issues/2441>`_).
