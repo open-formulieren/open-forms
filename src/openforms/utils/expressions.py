@@ -1,4 +1,4 @@
-from django.db.models import F, Value
+from django.db.models import F, Func, Value
 from django.db.models.functions import Coalesce, NullIf
 
 
@@ -9,3 +9,12 @@ def FirstNotBlank(*fields):
     last = fields.pop()
     args = [NullIf(F(f), Value("")) for f in fields] + [F(last)]
     return Coalesce(*args)
+
+
+class IntervalDays(Func):
+    """
+    create a postgres INTERVAL (eg: duration/timedelta) for amount of days
+    """
+
+    function = "INTERVAL"
+    template = "(%(expressions)s * %(function)s '1 days')"

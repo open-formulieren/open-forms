@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Optional
 
 from django.conf import settings
@@ -10,7 +10,9 @@ from django.utils.translation import gettext_lazy as _
 
 import elasticapm
 from rest_framework import serializers
+from rest_framework.request import Request
 from rest_framework.reverse import reverse
+from rest_framework.serializers import HyperlinkedModelSerializer
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
 from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
@@ -297,30 +299,15 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
         return instance
 
     def notify_suspension(self, instance: Submission, email: str):
-        token = submission_resume_token_generator.make_token(instance)
         config = GlobalConfiguration.get_solo()
 
-        continue_path = reverse(
-            "submissions:resume",
-            kwargs={
-                "token": token,
-                "submission_uuid": instance.uuid,
-            },
-        )
-        continue_url = build_absolute_uri(
-            continue_path, request=self.context.get("request")
-        )
-
-        days_until_removal = (
-            instance.form.incomplete_submissions_removal_limit
-            or config.incomplete_submissions_removal_limit
-        )
-        datetime_removed = instance.created_on + timedelta(days=days_until_removal)
+        continue_url = get_suspension_resume_url(instance, self.context.get("request"))
+        expiration_date = get_suspension_resume_expiration_date(instance)
 
         context = {
             "form_name": instance.form.name,
             "save_date": timezone.now(),
-            "expiration_date": datetime_removed,
+            "expiration_date": expiration_date,
             "continue_url": continue_url,
         }
 
@@ -330,6 +317,33 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
             settings.DEFAULT_FROM_EMAIL,
             [email],
         )
+
+
+def get_suspension_resume_url(
+    instance: Submission, request: Optional[Request] = None
+) -> str:
+
+    token = submission_resume_token_generator.make_token(instance)
+    continue_path = reverse(
+        "submissions:resume",
+        kwargs={
+            "token": token,
+            "submission_uuid": instance.uuid,
+        },
+    )
+    continue_url = build_absolute_uri(continue_path, request=request)
+    return continue_url
+
+
+def get_suspension_resume_expiration_date(instance: Submission) -> datetime:
+    config = GlobalConfiguration.get_solo()
+
+    days_until_removal = (
+        instance.form.incomplete_submissions_removal_limit
+        or config.incomplete_submissions_removal_limit
+    )
+    datetime_removed = instance.created_on + timedelta(days=days_until_removal)
+    return datetime_removed
 
 
 class SubmissionStateLogicSerializer(serializers.Serializer):
@@ -477,3 +491,40 @@ class SubmissionStepSummarySerialzier(serializers.Serializer):
         required=True,
     )
     data = SubmissionComponentSummarySerializer(many=True)
+
+
+class SuspendedSubmissionSerializer(HyperlinkedModelSerializer):
+    # TODO how to make this 100% read-only?
+    naam = serializers.CharField(
+        read_only=True,
+        source="form.name",
+    )
+    datum_laatste_wijziging = serializers.DateTimeField(
+        read_only=True,
+        source="suspended_on",
+    )
+    vervolg_link = serializers.SerializerMethodField()
+    eind_datum_geldigheid = serializers.SerializerMethodField()
+
+    def get_vervolg_link(self, instance) -> str:
+        return get_suspension_resume_url(instance, self.context.get("request"))
+
+    def get_eind_datum_geldigheid(self, instance) -> datetime:
+        return get_suspension_resume_expiration_date(instance)
+
+    class Meta:
+        model = Submission
+        fields = (
+            "url",
+            "uuid",
+            "naam",
+            "vervolg_link",
+            "datum_laatste_wijziging",
+            "eind_datum_geldigheid",
+        )
+        extra_kwargs = {
+            "url": {
+                "view_name": "api:submission-detail",
+                "lookup_field": "uuid",
+            },
+        }
