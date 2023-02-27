@@ -60,9 +60,11 @@ class DataContainer:
         relevant_variables = self.state.get_variables_in_submission_step(
             step, include_unsaved=True
         )
-        return {
-            key: variable.value
-            for key, variable in relevant_variables.items()
-            if not variable.form_variable
-            or variable.value != variable.form_variable.initial_value
-        }
+        updated_data = {}
+        for key, variable in relevant_variables.items():
+            if (
+                not variable.form_variable
+                or variable.value != variable.form_variable.initial_value
+            ):
+                assign(updated_data, key, variable.value, missing=dict)
+        return updated_data
