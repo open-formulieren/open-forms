@@ -132,7 +132,7 @@ class ListWithChildSerializer(serializers.ListSerializer):
 
         for index, data_dict in enumerate(data):
             for field_name, sub_data in data_dict.items():
-                if field_name not in child_fields:  # pragma: no cover
+                if field_name not in child_fields or sub_data is None:
                     continue
                 source = f"{index}.{field_name}"
                 field = child_fields[field_name]

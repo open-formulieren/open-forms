@@ -89,6 +89,7 @@ class FormVariableViewsetTest(APITestCase):
                 "key": form_variable1.key,
                 "name": "Test",
                 "source": form_variable1.source,
+                "service_fetch_configuration": None,
                 "data_type": form_variable1.data_type,
                 "initial_value": form_variable1.initial_value,
             },  # Data of form_variable1
