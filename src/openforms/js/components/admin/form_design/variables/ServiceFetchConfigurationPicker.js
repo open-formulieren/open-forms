@@ -1,3 +1,4 @@
+import {useFormik} from 'formik';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage} from 'react-intl';
@@ -14,7 +15,6 @@ const ServiceFetchConfigurationPicker = ({data = {}, onChange, onFormSave}) => {
 
   const [selectExisting, setSelectExisting] = useState(false);
   const [selectedServiceFetchConfig, setSelectedServiceFetchConfig] = useState(null);
-  const [serviceFetchData, setServiceFetchData] = useState({});
 
   const serviceFetchConfigurationChoices = formLogicContext.serviceFetchConfigurations.map(
     fetchConfig => {
@@ -24,6 +24,22 @@ const ServiceFetchConfigurationPicker = ({data = {}, onChange, onFormSave}) => {
       ];
     }
   );
+
+  const formik = useFormik({
+    initialValues: {
+      method: 'GET',
+      service: '',
+      path: '',
+      queryParams: [['', ['']]],
+      headers: [['', '']],
+      body: '',
+      dataMappingType: '',
+      mappingExpression: '',
+    },
+    onSubmit: (values, {setSubmitting}) => {
+      alert(JSON.stringify(values, null, 2));
+    },
+  });
 
   return (
     <div className="servicefetchconfiguration-picker">
@@ -43,11 +59,9 @@ const ServiceFetchConfigurationPicker = ({data = {}, onChange, onFormSave}) => {
               choices={serviceFetchConfigurationChoices}
               value={selectedServiceFetchConfig}
               onChange={event => {
-                // TODO ensure this onChange sets the state config data to the values of
-                // the selected config
                 onChange(event);
                 setSelectedServiceFetchConfig(event.target.value);
-                setServiceFetchData(
+                formik.setValues(
                   formLogicContext.serviceFetchConfigurations.find(
                     element => element.url === event.target.value
                   )
@@ -63,8 +77,7 @@ const ServiceFetchConfigurationPicker = ({data = {}, onChange, onFormSave}) => {
 
       <div className="servicefetchconfiguration-form">
         <ServiceFetchConfigurationForm
-          stateData={serviceFetchData}
-          setData={setServiceFetchData}
+          formik={formik}
           selectExisting={selectExisting}
           onFormSave={onFormSave}
           onChange={onChange}

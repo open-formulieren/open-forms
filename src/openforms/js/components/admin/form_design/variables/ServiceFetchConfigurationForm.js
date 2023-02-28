@@ -25,28 +25,9 @@ const EXPRESSION_MAPPING_LANGUAGES = [
   ['jq', 'jq'],
 ];
 
-const ServiceFetchConfigurationForm = ({
-  stateData = {},
-  selectExisting = false,
-  setData,
-  onFormSave,
-}) => {
+const ServiceFetchConfigurationForm = ({formik, selectExisting = false, setData, onFormSave}) => {
   const intl = useIntl();
   const formLogicContext = useContext(FormLogicContext);
-
-  const onChange = event => {
-    if (!event.target) return;
-    const [prefix, key] = event.target.name.split('.');
-    let copiedData = Object.assign({}, stateData);
-    copiedData[key] = event.target.value;
-    setData(copiedData);
-  };
-
-  const onMappingChange = (key, value) => {
-    let copiedData = Object.assign({}, stateData);
-    copiedData[key] = value;
-    setData(copiedData);
-  };
 
   const serviceChoices = [['', '-------']].concat(
     formLogicContext.services.map(service => {
@@ -85,7 +66,7 @@ const ServiceFetchConfigurationForm = ({
           >
             <FormRow>
               <Field
-                name={'fetchConfiguration.method'}
+                name={'method'}
                 required
                 label={
                   <FormattedMessage
@@ -95,17 +76,17 @@ const ServiceFetchConfigurationForm = ({
                 }
               >
                 <Select
-                  name="fetchConfiguration.method"
+                  id="method"
                   choices={HTTP_METHODS}
-                  value={stateData.method || 'GET'}
-                  onChange={onChange}
+                  value={formik.values.method}
+                  {...formik.getFieldProps('method')}
                 />
               </Field>
             </FormRow>
 
             <FormRow>
               <Field
-                name={'fetchConfiguration.service'}
+                name={'service'}
                 fieldBox
                 required
                 label={
@@ -116,14 +97,14 @@ const ServiceFetchConfigurationForm = ({
                 }
               >
                 <Select
-                  name="fetchConfiguration.service"
+                  id="service"
                   choices={serviceChoices}
-                  value={stateData.service}
-                  onChange={onChange}
+                  value={formik.values.service}
+                  {...formik.getFieldProps('service')}
                 />
               </Field>
               <Field
-                name={'fetchConfiguration.path'}
+                name={'path'}
                 fieldBox
                 required
                 label={
@@ -133,13 +114,18 @@ const ServiceFetchConfigurationForm = ({
                   />
                 }
               >
-                <TextInput value={stateData.path || ''} onChange={onChange} maxLength="1000" />
+                <TextInput
+                  id="path"
+                  value={formik.values.path}
+                  maxLength="1000"
+                  {...formik.getFieldProps('path')}
+                />
               </Field>
             </FormRow>
 
             <FormRow>
               <Field
-                name={'fetchConfiguration.queryParams'}
+                name={'queryParams'}
                 label={
                   <FormattedMessage
                     defaultMessage="Query parameters"
@@ -148,17 +134,18 @@ const ServiceFetchConfigurationForm = ({
                 }
               >
                 <MappingArrayInput
-                  name="fetchConfiguration.queryParams"
-                  mapping={stateData.queryParams}
+                  name="queryParams"
+                  mapping={formik.values.queryParams}
                   valueArrayInput={true}
-                  onChange={onMappingChange}
+                  {...formik.getFieldProps('queryParams')}
+                  onChange={formik.getFieldHelpers('queryParams').setValue}
                 />
               </Field>
             </FormRow>
 
             <FormRow>
               <Field
-                name={'fetchConfiguration.headers'}
+                name={'headers'}
                 label={
                   <FormattedMessage
                     defaultMessage="Request headers"
@@ -167,17 +154,18 @@ const ServiceFetchConfigurationForm = ({
                 }
               >
                 <MappingArrayInput
-                  name="fetchConfiguration.headers"
-                  mapping={stateData.headers}
-                  onChange={onMappingChange}
+                  name="headers"
+                  mapping={formik.values.headers}
+                  {...formik.getFieldProps('headers')}
+                  onChange={formik.getFieldHelpers('headers').setValue}
                 />
               </Field>
             </FormRow>
 
-            {stateData.method === 'POST' ? (
+            {formik.values.method === 'POST' ? (
               <FormRow>
                 <Field
-                  name={'fetchConfiguration.body'}
+                  name={'body'}
                   label={
                     <FormattedMessage
                       defaultMessage="Request body"
@@ -186,10 +174,10 @@ const ServiceFetchConfigurationForm = ({
                   }
                 >
                   <JsonWidget
-                    name="fetchConfiguration.body"
-                    logic={stateData.body || {}}
+                    name="body"
+                    logic={formik.values.body}
                     cols={20}
-                    onChange={onChange}
+                    {...formik.getFieldProps('body')}
                   />
                 </Field>
               </FormRow>
@@ -207,7 +195,7 @@ const ServiceFetchConfigurationForm = ({
           >
             <FormRow>
               <Field
-                name={'fetchConfiguration.dataMappingType'}
+                name={'dataMappingType'}
                 required
                 label={
                   <FormattedMessage
@@ -217,18 +205,18 @@ const ServiceFetchConfigurationForm = ({
                 }
               >
                 <Select
-                  name="fetchConfiguration.dataMappingType"
+                  name="dataMappingType"
                   choices={EXPRESSION_MAPPING_LANGUAGES}
-                  value={stateData.dataMappingType || ''}
-                  onChange={onChange}
+                  value={formik.values.dataMappingType}
                   allowBlank
+                  {...formik.getFieldProps('dataMappingType')}
                 />
               </Field>
             </FormRow>
 
             <FormRow>
               <Field
-                name={'fetchConfiguration.mappingExpression'}
+                name={'mappingExpression'}
                 required
                 label={
                   <FormattedMessage
@@ -237,27 +225,59 @@ const ServiceFetchConfigurationForm = ({
                   />
                 }
               >
-                {stateData.dataMappingType === 'JsonLogic' ? (
+                {formik.values.dataMappingType === 'JsonLogic' ? (
                   <JsonWidget
-                    name="fetchConfiguration.mappingExpression"
-                    logic={stateData.mappingExpression || {}}
+                    name="mappingExpression"
+                    logic={formik.values.mappingExpression}
                     cols={20}
-                    onChange={onChange}
+                    {...formik.getFieldProps('mappingExpression')}
                   />
                 ) : (
                   <TextInput
                     // Explicitly cast object to strings, in case the JsonWidget was used before
                     value={
-                      typeof stateData.mappingExpression === 'object'
-                        ? JSON.stringify(stateData.mappingExpression)
-                        : stateData.mappingExpression
+                      typeof formik.values.mappingExpression === 'object'
+                        ? JSON.stringify(formik.values.mappingExpression)
+                        : formik.values.mappingExpression
                     }
-                    onChange={onChange}
+                    {...formik.getFieldProps('mappingExpression')}
                   />
                 )}
               </Field>
             </FormRow>
           </Fieldset>
+
+          <SubmitRow>
+            {selectExisting ? (
+              <>
+                <ActionButton
+                  name="_save_as_new"
+                  text={intl.formatMessage({
+                    description: 'Save as new service fetch configuration button label',
+                    defaultMessage: 'Save as new',
+                  })}
+                  onClick={formik.handleSubmit}
+                />
+                <ActionButton
+                  name="_save_config"
+                  text={intl.formatMessage({
+                    description: 'Update service fetch configuration button label',
+                    defaultMessage: 'Update',
+                  })}
+                  onClick={formik.handleSubmit}
+                />
+              </>
+            ) : (
+              <ActionButton
+                name="_save_config"
+                text={intl.formatMessage({
+                  description: 'Save service fetch configuration button label',
+                  defaultMessage: 'Save',
+                })}
+                onClick={formik.handleSubmit}
+              />
+            )}
+          </SubmitRow>
         </TabPanel>
 
         <TabPanel key="try-it-out">
@@ -275,7 +295,7 @@ const ServiceFetchConfigurationForm = ({
               {/* should contain inputs for the user to provide values */}
               {/* for variable interpolation and a button to fire the request */}
               {/* as a result, it should display the value as extracted using the mapping expression */}
-              <Field>
+              <Field name="full-request-preview">
                 <span>...</span>
               </Field>
             </FormRow>
@@ -294,45 +314,13 @@ const ServiceFetchConfigurationForm = ({
               {/* should contain an input for the user to provide a JSON blob */}
               {/* and a button to apply the mapping expression to this data */}
               {/* as a result, it should display the value as extracted using the mapping expression */}
-              <Field>
+              <Field name="data-extraction-preview">
                 <span>...</span>
               </Field>
             </FormRow>
           </Fieldset>
         </TabPanel>
       </Tabs>
-
-      <SubmitRow>
-        {selectExisting ? (
-          <>
-            <ActionButton
-              name="_save_as_new"
-              text={intl.formatMessage({
-                description: 'Save as new service fetch configuration button label',
-                defaultMessage: 'Save as new',
-              })}
-              onClick={onFormSave}
-            />
-            <ActionButton
-              name="_save_config"
-              text={intl.formatMessage({
-                description: 'Update service fetch configuration button label',
-                defaultMessage: 'Update',
-              })}
-              onClick={onFormSave}
-            />
-          </>
-        ) : (
-          <ActionButton
-            name="_save_config"
-            text={intl.formatMessage({
-              description: 'Save service fetch configuration button label',
-              defaultMessage: 'Save',
-            })}
-            onClick={onFormSave}
-          />
-        )}
-      </SubmitRow>
     </div>
   );
 };

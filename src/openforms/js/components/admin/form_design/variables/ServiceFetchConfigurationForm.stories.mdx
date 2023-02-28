@@ -1,11 +1,12 @@
 import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
 
+
 import {FormLogicContext} from '../Context';
 import ServiceFetchConfigurationForm from './ServiceFetchConfigurationForm';
 
 <Meta title="Form design/ServiceFetchConfigurationForm" component={ServiceFetchConfigurationForm} />
 
-# Field
+# ServiceFetchConfigurationForm
 
 Form to edit/create a ServiceFetchConfiguration
 
@@ -38,6 +39,23 @@ export const Template = args => (
   <Story
     name="Default"
     args={{
+      formik: {
+        values: {
+          method: 'GET',
+          service: '',
+          path: '',
+          queryParams: [['', ['']]],
+          headers: [['', '']],
+          body: '',
+          dataMappingType: '',
+          mappingExpression: '',
+        },
+        onSubmit: (values, {setSubmitting}) => {
+          alert(JSON.stringify(values, null, 2));
+        },
+        getFieldProps: ({...args}) => (null),
+        getFieldHelpers: (name) => ({})
+      },
       stateData: {
         service: 'http://openforms.dev/services/foo',
         path: '/foo',
