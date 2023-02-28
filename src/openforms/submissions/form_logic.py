@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from django.utils.functional import empty
 
 import elasticapm
+from glom import assign, glom
 
 from openforms.formio.service import get_dynamic_configuration, inject_variables
 from openforms.formio.utils import (
@@ -161,8 +162,14 @@ def evaluate_form_logic(
         # Iterate over all components instead of `step.data`, to take hidden fields into account (See: #1755)
         for component in iter_components(configuration):
             key = component["key"]
-            new_value = updated_step_data.get(key, empty)
-            original_value = initial_data.get(key, empty)
+
+            # already processed, don't process it again
+            if glom(data_diff, key, default=empty) is not empty:
+                continue
+
+            new_value = glom(updated_step_data, key, default=empty)
+            original_value = glom(initial_data, key, default=empty)
+
             # Reset the value of any field that may have become hidden again after evaluating the logic
             component_empty_value = get_component_empty_value(component)
             if original_value is not empty and original_value != component_empty_value:
@@ -171,12 +178,12 @@ def evaluate_form_logic(
                     and not is_visible_in_frontend(component, data_container.data)
                     and component.get("clearOnHide")
                 ):
-                    data_diff[key] = component_empty_value
+                    assign(data_diff, key, component_empty_value, missing=dict)
                     continue
 
             if new_value is empty or new_value == original_value:
                 continue
-            data_diff[key] = new_value
+            assign(data_diff, key, new_value, missing=dict)
 
         # only return the 'overrides'
         step.data = DirtyData(data_diff)
