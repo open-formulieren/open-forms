@@ -2,6 +2,17 @@
 Changelog
 =========
 
+1.1.10 (2023-02-28)
+===================
+
+Bugfix release with some fixes from newer versions applied.
+
+* [#2520] Fixed bug in mimetype validation for ``application/ms-word`` (and similar) files
+* Bump required SDK version
+* [#2717] Fixed crash on StUF-ZDS when updating the payment status
+* [#2671] Fixed QR code background in dark mode
+* [#2709] Fixed (bandaid) inconsistent dynamic product price logic
+
 1.1.9 (2023-12-23)
 ==================
 
