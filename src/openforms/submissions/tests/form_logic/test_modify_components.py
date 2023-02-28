@@ -914,3 +914,63 @@ class ComponentModificationTests(TestCase):
 
         # Does not raise exception
         evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
+
+    @tag("gh-2781")
+    def test_hiding_nested_field(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "nested.component",
+                        "type": "textfield",
+                        "clearOnHide": True,
+                    },
+                    {
+                        "key": "radio",
+                        "type": "radio",
+                        "values": [
+                            {"label": "A", "value": "a"},
+                            {"label": "B", "value": "b"},
+                        ],
+                    },
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [
+                    {"var": "radio"},
+                    "a",
+                ]
+            },
+            actions=[
+                {
+                    "component": "nested.component",
+                    "action": {
+                        "name": "Hide element",
+                        "type": "property",
+                        "property": {
+                            "type": "bool",
+                            "value": "hidden",
+                        },
+                        "state": True,
+                    },
+                }
+            ],
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+            data={"radio": "a", "nested": {"component": "test"}},
+        )
+
+        self.assertTrue(submission_step.can_submit)
+
+        evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
+
+        self.assertEqual(submission_step.data["nested"]["component"], "")
