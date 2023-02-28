@@ -53,7 +53,6 @@ TableRow.propTypes = {
 };
 
 const ChangelistTable = ({linkColumn = 0, linkProp = '', data = [], rowKey = '', children}) => {
-  const renderLink = linkColumn != null && Boolean(linkProp);
   const tableColumns = [];
 
   // process the configuration of the columns
