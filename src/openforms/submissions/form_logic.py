@@ -207,7 +207,7 @@ def evaluate_form_logic(
 
             if new_value is empty or new_value == original_value:
                 continue
-            data_diff[key] = new_value
+            assign(data_diff, key, new_value, missing=dict)
 
         # only return the 'overrides'
         step.data = DirtyData(data_diff)
