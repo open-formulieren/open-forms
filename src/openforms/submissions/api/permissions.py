@@ -145,3 +145,14 @@ class CanNavigateBetweenSubmissionStepsPermission(permissions.BasePermission):
             return True
 
         return False
+
+
+class CanListSuspendedSubmissionsPermission(permissions.DjangoModelPermissions):
+    _perms = [
+        "submissions.list_suspended_submissions",
+    ]
+    perms_map = {
+        "GET": _perms,
+        "HEAD": _perms,
+        "OPTIONS": _perms,
+    }

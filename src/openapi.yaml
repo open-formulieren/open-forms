@@ -4406,6 +4406,43 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/submissions/suspended:
+    get:
+      operationId: submissions_suspended_list
+      summary: List suspended submissions.
+      parameters:
+      - in: query
+        name: bsn
+        schema:
+          type: string
+        description: BSN number
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - submissions
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSuspendedSubmissionList'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/translations/formio:
     get:
       operationId: translations_formio_retrieve
@@ -7104,6 +7141,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Submission'
+    PaginatedSuspendedSubmissionList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuspendedSubmission'
     PatchedForm:
       type: object
       description: |-
@@ -7829,6 +7886,45 @@ components:
       - _addanother
       - _continue
       type: string
+    SuspendedSubmission:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          readOnly: true
+          description: URL reference to this object. This is the unique identification
+            and location of this object.
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Unique identifier (UUID4)
+        naam:
+          type: string
+          readOnly: true
+          description: Name of the form.
+        vervolgLink:
+          type: string
+          readOnly: true
+          description: Link to continue with an existing submission.
+        datumLaatsteWijziging:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Date that you last changed this submission.
+        eindDatumGeldigheid:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Date when the 'vervolgLink' no longer works.
+      required:
+      - datumLaatsteWijziging
+      - eindDatumGeldigheid
+      - naam
+      - url
+      - uuid
+      - vervolgLink
     TemporaryFileUpload:
       type: object
       description: |-

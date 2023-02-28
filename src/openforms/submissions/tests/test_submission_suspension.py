@@ -23,11 +23,12 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.accounts.tests.factories import UserFactory
+from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.tests.factories import FormFactory, FormStepFactory
 from openforms.utils.tests.cache import clear_caches
 
-from ...authentication.constants import AuthAttribute
 from ..constants import SUBMISSIONS_SESSION_KEY
 from ..tokens import submission_resume_token_generator
 from .factories import SubmissionFactory, SubmissionStepFactory
@@ -223,12 +224,34 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
 
 
 @freeze_time("2022-01-01")
-class SuspendedSubmissionAPITest(SubmissionsMixin, APITestCase):
-    def setUp(self):
-        # clear caches to avoid problems with throttling; @override_settings not working
-        # see https://github.com/encode/django-rest-framework/issues/6030
-        self.addCleanup(clear_caches)
-        super().setUp()
+class SuspendedSubmissionAPITest(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.endpoint = reverse("api:submission-suspended-list")
+
+    def test_api_requires_auth(self):
+        response = self.client.get(self.endpoint)
+        self.assertEqual(response.status_code, 401)
+
+    def test_auth_fails_without_permission(self):
+        user = UserFactory()
+        self.client.force_authenticate(user=user)
+
+        response = self.client.get(self.endpoint)
+        self.assertEqual(response.status_code, 403)
+
+    def test_auth_requires_permission(self):
+        user = UserFactory(user_permissions=["submissions.list_suspended_submissions"])
+        self.client.force_authenticate(user=user)
+
+        with self.subTest("without required URL param"):
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 400)
+
+        with self.subTest("with required URL param"):
+            response = self.client.get(f"{self.endpoint}?bsn=123456789")
+            self.assertEqual(response.status_code, 200)
 
     @patch("openforms.forms.admin.mixins.GlobalConfiguration.get_solo")
     def test_api_lists_suspended_submissions_for_bsn(self, mock_get_solo):
@@ -236,6 +259,9 @@ class SuspendedSubmissionAPITest(SubmissionsMixin, APITestCase):
             incomplete_submissions_removal_limit=7
         )
         bsn = "123456789"
+
+        user = UserFactory(user_permissions=["submissions.list_suspended_submissions"])
+        self.client.force_authenticate(user=user)
 
         good_submissions = [
             SubmissionFactory.create(
@@ -322,10 +348,9 @@ class SuspendedSubmissionAPITest(SubmissionsMixin, APITestCase):
                 auth_info__attribute_hashed=True,
             ),
         ]
-        endpoint = reverse("api:submissions:suspended")
 
-        with self.subTest("with BSN"):
-            response = self.client.get(f"{endpoint}?bsn={bsn}")
+        with self.subTest("with our BSN"):
+            response = self.client.get(f"{self.endpoint}?bsn={bsn}")
             self.assertEqual(response.status_code, 200)
             data = response.json()
 
@@ -362,8 +387,8 @@ class SuspendedSubmissionAPITest(SubmissionsMixin, APITestCase):
                 f"^http://testserver/submissions/{submission.uuid}/[^/]+/resume$",
             )
 
-        with self.subTest("without BSN"):
-            response = self.client.get(f"{endpoint}")
+        with self.subTest("with other BSN"):
+            response = self.client.get(f"{self.endpoint}?bsn=000000000")
             self.assertEqual(response.status_code, 200)
             data = response.json()
 

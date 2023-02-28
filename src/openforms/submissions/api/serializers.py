@@ -498,13 +498,19 @@ class SuspendedSubmissionSerializer(HyperlinkedModelSerializer):
     naam = serializers.CharField(
         read_only=True,
         source="form.name",
+        help_text=_("Name of the form."),
     )
     datum_laatste_wijziging = serializers.DateTimeField(
         read_only=True,
         source="suspended_on",
+        help_text=_("Date that you last changed this submission."),
     )
-    vervolg_link = serializers.SerializerMethodField()
-    eind_datum_geldigheid = serializers.SerializerMethodField()
+    vervolg_link = serializers.SerializerMethodField(
+        help_text=_("Link to continue with an existing submission."),
+    )
+    eind_datum_geldigheid = serializers.SerializerMethodField(
+        help_text=_("Date when the 'vervolgLink' no longer works."),
+    )
 
     def get_vervolg_link(self, instance) -> str:
         return get_suspension_resume_url(instance, self.context.get("request"))
@@ -523,8 +529,16 @@ class SuspendedSubmissionSerializer(HyperlinkedModelSerializer):
             "eind_datum_geldigheid",
         )
         extra_kwargs = {
+            "uuid": {
+                "read_only": True,
+                "help_text": _("Unique identifier (UUID4)"),
+            },
             "url": {
+                # TODO this is not correct and needs to retrieve the suspension (not the submission)
                 "view_name": "api:submission-detail",
                 "lookup_field": "uuid",
+                "help_text": _(
+                    "URL reference to this object. This is the unique identification and location of this object."
+                ),
             },
         }

@@ -7,18 +7,20 @@ from django.utils.translation import gettext_lazy as _
 from django_sendfile import sendfile
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from drf_spectacular.utils import extend_schema, extend_schema_view
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.generics import DestroyAPIView, GenericAPIView, ListAPIView
 
 from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer
-from openforms.authentication.constants import AuthAttribute
 from openforms.config.models import GlobalConfiguration
 from openforms.utils.expressions import IntervalDays
 
 from ..models import Submission, SubmissionReport, TemporaryFileUpload
 from ..utils import remove_upload_from_session
+from .filters import BSNAuthInfoFilter
 from .permissions import (
+    CanListSuspendedSubmissionsPermission,
     DownloadSubmissionReportPermission,
     OwnsTemporaryUploadPermission,
 )
@@ -115,49 +117,39 @@ class TemporaryFileView(DestroyAPIView):
         instance.delete()
 
 
+# TODO use the same operation ID's from the demo OAS?
 @extend_schema(
-    summary=_("View suspended submissions."),
+    summary=_("List suspended submissions."),
 )
-# TODO expand schema docs
 class SuspendedSubmissionListView(ListAPIView):
     serializer_class = SuspendedSubmissionSerializer
     pagination_class = PageNumberPagination
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [CanListSuspendedSubmissionsPermission]
+    filterset_class = BSNAuthInfoFilter
 
     queryset = Submission.objects.filter(
         completed_on__isnull=True,
         suspended_on__isnull=False,
     )
 
-    # TODO authentication? permissions?
-    # TODO we need something here to verify current requests is allowed to access this BSN?
-    #  maybe check if the User has BSN (because API users with TokenAuthentication would not)?
-
     def get_queryset(self):
         config = GlobalConfiguration.get_solo()
-        bsn = self.request.query_params.get("bsn")
         qs = super().get_queryset()
-
-        if not bsn:
-            return qs.none()
-        else:
-            now = timezone.now()
-            qs = qs.filter(
-                auth_info__value=bsn,
-                auth_info__attribute=AuthAttribute.bsn,
-                auth_info__attribute_hashed=False,
-            )
-            qs = qs.annotate(
+        qs = (
+            qs.annotate(
                 remove_after_days=Coalesce(
                     F("form__incomplete_submissions_removal_limit"),
                     Value(config.incomplete_submissions_removal_limit),
                 )
             )
-            qs = qs.annotate(
+            .annotate(
                 remove_after_datetime=ExpressionWrapper(
                     F("suspended_on") + IntervalDays(F("remove_after_days")),
                     output_field=DateTimeField(),
                 ),
             )
-            qs = qs.filter(remove_after_datetime__gt=now)
-            qs = qs.order_by("form__name")
-            return qs
+            .filter(remove_after_datetime__gt=timezone.now())
+            .order_by("form__name")
+        )
+        return qs

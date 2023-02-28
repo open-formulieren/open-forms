@@ -271,6 +271,9 @@ class Submission(models.Model):
                 condition=~models.Q(public_registration_reference=""),
             )
         ]
+        permissions = [
+            ("list_suspended_submissions", _("Can list suspended submissions")),
+        ]
 
     def __str__(self):
         return _("{pk} - started on {started}").format(
