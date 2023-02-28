@@ -440,3 +440,26 @@ class StepModificationTests(TestCase):
         evaluate_form_logic(
             submission, submission_step, submission_step.data, dirty=True
         )
+
+    def test_nested_component_data_diff(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [{"key": "nested.component", "type": "textfield"}]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+            data={"nested": {"component": ""}},
+        )
+
+        self.assertTrue(submission_step.can_submit)
+
+        evaluate_form_logic(submission, submission_step, submission.data)
+
+        self.assertNotIn("nested.component", submission_step.data)
+        self.assertEqual(submission_step.data, {"nested": {"component": ""}})
