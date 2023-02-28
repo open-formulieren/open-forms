@@ -91,7 +91,7 @@ class BatchItem:
         self._sorting_key = (-self.priority, self.model.__name__)
 
     def __lt__(self, other: object) -> bool:
-        if not isinstance(other, BatchItem):
+        if not isinstance(other, BatchItem):  # pragma: no cover
             raise TypeError(f"Can't compare BatchItem to {type(other)}")
         return self._sorting_key < other._sorting_key
 
@@ -116,6 +116,14 @@ class ListWithChildSerializer(serializers.ListSerializer):
         self,
         data: Iterable[MutableMapping[str, Any]],
     ) -> Iterable[BatchItem]:
+        # Helps create() and validate() deal with nested serializers in O(1) db
+        # queries. i.e. one insert per model type.
+        #
+        # It helps by yielding BatchItems of unsafed Model instances. Nested
+        # models should be safed first, so parent gets saved with the new
+        # foreign keys. The order of BatchItems is defined such that high
+        # priority comes first, and models of the same type are grouped
+        # together for a single bulk_create.
 
         child_serializer = self.get_child_serializer_class()
         model = child_serializer.Meta.model
@@ -124,7 +132,7 @@ class ListWithChildSerializer(serializers.ListSerializer):
 
         for index, data_dict in enumerate(data):
             for field_name, sub_data in data_dict.items():
-                if field_name not in child_fields:
+                if field_name not in child_fields:  # pragma: no cover
                     continue
                 source = f"{index}.{field_name}"
                 field = child_fields[field_name]
