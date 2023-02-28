@@ -42,7 +42,6 @@ class FormVariableViewsetTest(APITestCase):
 
         self.assertEqual(status.HTTP_401_UNAUTHORIZED, response.status_code)
 
-
     def test_staff_required(self):
         # add the permissions to verify we specifically check is_staff
         user = UserFactory.create(
@@ -52,7 +51,6 @@ class FormVariableViewsetTest(APITestCase):
         url = reverse(
             "api:form-variables",
             kwargs={"uuid_or_slug": form.uuid},
-
         )
 
         self.client.force_authenticate(user=user)

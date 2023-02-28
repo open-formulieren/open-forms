@@ -166,6 +166,7 @@ class ListWithChildSerializer(serializers.ListSerializer):
         return attrs
 
     def create(self, validated_data):
+        inserted = []
         # sort on (prio, model)
         batch = sorted(self._batch(validated_data))
         # group them by model

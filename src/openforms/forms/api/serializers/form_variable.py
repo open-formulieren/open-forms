@@ -101,7 +101,9 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
         allow_null=True,
         context_name="form_definitions",
     )
-    service_fetch_configuration = ServiceFetchConfigurationSerializer(required=False)
+    service_fetch_configuration = ServiceFetchConfigurationSerializer(
+        required=False, allow_null=True
+    )
 
     class Meta:
         model = FormVariable
