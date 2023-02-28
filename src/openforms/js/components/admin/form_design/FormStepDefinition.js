@@ -69,7 +69,11 @@ const FormStepDefinition = ({
     });
   };
 
-  const {translationEnabled} = useContext(FormContext);
+  const {translationEnabled, formSteps} = useContext(FormContext);
+
+  // A 'total configuration': merging all the configurations from the different steps, so that we can figure out if
+  // a key is unique across steps
+  const componentNamespace = formSteps.map(step => step.configuration?.components || []).flat(1);
 
   const {changed, affectedForms} = useDetectConfigurationChanged(url, configuration);
   const {warnings} = useDetectSimpleLogicErrors(configuration);
@@ -326,6 +330,7 @@ const FormStepDefinition = ({
           onChange={onChange}
           onComponentMutated={onComponentMutated.bind(null, url || generatedId)}
           componentTranslations={componentTranslations}
+          componentNamespace={componentNamespace}
           {...props}
         />
       </div>
