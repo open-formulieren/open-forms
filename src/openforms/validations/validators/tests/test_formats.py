@@ -1,6 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.test import TestCase
-from django.utils.translation import gettext as _
+from django.test import TestCase, override_settings
 
 from openforms.validations.validators.formats import (
     DutchPhoneNumberValidator,
@@ -20,6 +19,7 @@ class ValidatorTestBase(TestCase):
                     validator(value)
 
 
+@override_settings(LANGUAGE_CODE="en")
 class PhoneNumberTestCase(ValidatorTestBase):
     def test_phone_number_international(self):
         validator = InternationalPhoneNumberValidator()
@@ -37,9 +37,7 @@ class PhoneNumberTestCase(ValidatorTestBase):
             "+311234",
             "+3161234566789aaaaa",
         ]
-        message = _("Not a valid %(country)s phone number") % {
-            "country": _("international")
-        }
+        message = "Not a valid international phone number. An example of a valid international phone number is +316123123123"
         self.run_cases(validator, valid, invalid, message)
 
     def test_phone_number_dutch(self):
@@ -62,5 +60,5 @@ class PhoneNumberTestCase(ValidatorTestBase):
             "+441134960000",  # US test number
             "+1 206 555 0100",  # US test number
         ]
-        message = _("Not a valid %(country)s phone number") % {"country": _("Dutch")}
+        message = "Not a valid dutch phone number. An example of a valid dutch phone number is 06123123123"
         self.run_cases(validator, valid, invalid, message)
