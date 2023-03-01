@@ -4408,8 +4408,14 @@ paths:
               $ref: '#/components/headers/Content-Language'
   /api/v2/submissions/suspended:
     get:
-      operationId: submissions_suspended_list
-      summary: List suspended submissions.
+      operationId: suspended_submission_list
+      description: |-
+        API to allow client access to suspended submissions (like for display on a user-portal)
+
+        This API matches with a similar API in e-Suite (although at-this-time there is no offical spec)
+
+        Note it is fully tied to BSN authenticated users only
+      summary: List suspended submissions
       parameters:
       - in: query
         name: bsn
@@ -4433,6 +4439,43 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaginatedSuspendedSubmissionList'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+  /api/v2/submissions/suspended/{uuid}:
+    get:
+      operationId: suspended_submission_read
+      description: |-
+        API to allow client access to suspended submissions (like for display on a user-portal)
+
+        This API matches with a similar API in e-Suite (although at-this-time there is no offical spec)
+
+        Note it is fully tied to BSN authenticated users only
+      summary: Retrieve suspended submission
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - submissions
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuspendedSubmission'
           description: ''
           headers:
             X-Session-Expires-In:

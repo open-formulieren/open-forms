@@ -19,7 +19,11 @@ from openforms.forms.api.viewsets import (
     FormViewSet,
 )
 from openforms.products.api.viewsets import ProductViewSet
-from openforms.submissions.api.viewsets import SubmissionStepViewSet, SubmissionViewSet
+from openforms.submissions.api.viewsets import (
+    SubmissionStepViewSet,
+    SubmissionViewSet,
+    SuspendedSubmissionViewSet,
+)
 from openforms.utils.decorators import never_cache
 from openforms.utils.json_logic.api.views import GenerateLogicDescriptionView
 
@@ -43,11 +47,17 @@ forms_router.register(r"versions", FormVersionViewSet, basename="form-versions")
 router.register(r"categories", CategoryViewSet, basename="categories")
 
 # submissions API
+router.register(
+    r"submissions/suspended",
+    SuspendedSubmissionViewSet,
+    basename="submission-suspended",
+)
 router.register(r"submissions", SubmissionViewSet)
 submissions_router = NestedSimpleRouter(router, r"submissions", lookup="submission")
 submissions_router.register(
     r"steps", SubmissionStepViewSet, basename="submission-steps"
 )
+
 
 # products
 router.register("products", ProductViewSet)

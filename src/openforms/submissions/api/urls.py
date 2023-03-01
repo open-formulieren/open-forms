@@ -1,10 +1,6 @@
 from django.urls import path
 
-from .views import (
-    DownloadSubmissionReportView,
-    SuspendedSubmissionListView,
-    TemporaryFileView,
-)
+from .views import DownloadSubmissionReportView, TemporaryFileView
 
 app_name = "submissions"
 
@@ -19,6 +15,4 @@ urlpatterns = [
         TemporaryFileView.as_view(),
         name="temporary-file",
     ),
-    # TODO do we want this here? it is not a regular UI API? or is it?
-    path("suspended", SuspendedSubmissionListView.as_view(), name="suspended"),
 ]

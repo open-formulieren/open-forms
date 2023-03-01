@@ -4,19 +4,29 @@ from typing import Tuple
 from uuid import UUID
 
 from django.db import transaction
-from django.db.models import Exists, OuterRef
+from django.db.models import (
+    DateTimeField,
+    Exists,
+    ExpressionWrapper,
+    F,
+    OuterRef,
+    Value,
+)
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import mixins, status, viewsets
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from openforms.api import pagination
 from openforms.api.authentication import AnonCSRFSessionAuthentication
@@ -28,6 +38,10 @@ from openforms.logging import logevent
 from openforms.prefill import prefill_variables
 from openforms.utils.patches.rest_framework_nested.viewsets import NestedViewSetMixin
 
+from ...api.pagination import PageNumberPagination
+from ...authentication.constants import AuthAttribute
+from ...config.models import GlobalConfiguration
+from ...utils.expressions import IntervalDays
 from ..attachments import attach_uploads_to_submission_step
 from ..exceptions import FormDeactivated, FormMaintenance
 from ..form_logic import check_submission_logic, evaluate_form_logic
@@ -46,8 +60,10 @@ from ..utils import (
     remove_submission_from_session,
     remove_submission_uploads_from_session,
 )
+from .filters import BSNAuthInfoFilter
 from .permissions import (
     ActiveSubmissionPermission,
+    CanListSuspendedSubmissionsPermission,
     CanNavigateBetweenSubmissionStepsPermission,
     FormAuthenticationPermission,
     SubmissionStatusPermission,
@@ -63,6 +79,7 @@ from .serializers import (
     SubmissionStepSerializer,
     SubmissionStepSummarySerialzier,
     SubmissionSuspensionSerializer,
+    SuspendedSubmissionSerializer,
 )
 from .validation import (
     CompletionValidationSerializer,
@@ -590,3 +607,68 @@ class SubmissionStepViewSet(
             context={"request": request, "unsaved_data": data},
         )
         return Response(submission_state_logic_serializer.data)
+
+
+# TODO use the same operation ID's from the demo OAS?
+@extend_schema(
+    summary=_("Suspended submissions."),
+)
+@extend_schema_view(
+    list=extend_schema(
+        operation_id="suspended_submission_list",
+        summary=_("List suspended submissions"),
+    ),
+    retrieve=extend_schema(
+        operation_id="suspended_submission_read",
+        summary=_("Retrieve suspended submission"),
+    ),
+)
+class SuspendedSubmissionViewSet(ReadOnlyModelViewSet):
+    """
+    API to allow client access to suspended submissions (like for display on a user-portal)
+
+    This API matches with a similar API in e-Suite (although at-this-time there is no offical spec)
+
+    Note it is fully tied to BSN authenticated users only
+    """
+
+    serializer_class = SuspendedSubmissionSerializer
+    pagination_class = PageNumberPagination
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [CanListSuspendedSubmissionsPermission]
+
+    lookup_field = "uuid"
+
+    queryset = Submission.objects.filter(
+        completed_on__isnull=True,
+        suspended_on__isnull=False,
+        auth_info__attribute=AuthAttribute.bsn,
+    )
+
+    @property
+    def filterset_class(self):
+        if self.action == "list":
+            return BSNAuthInfoFilter
+        else:
+            return None
+
+    def get_queryset(self):
+        config = GlobalConfiguration.get_solo()
+        qs = super().get_queryset()
+        qs = (
+            qs.annotate(
+                remove_after_days=Coalesce(
+                    F("form__incomplete_submissions_removal_limit"),
+                    Value(config.incomplete_submissions_removal_limit),
+                )
+            )
+            .annotate(
+                remove_after_datetime=ExpressionWrapper(
+                    F("suspended_on") + IntervalDays(F("remove_after_days")),
+                    output_field=DateTimeField(),
+                ),
+            )
+            .filter(remove_after_datetime__gt=timezone.now())
+            .order_by("form__name")
+        )
+        return qs

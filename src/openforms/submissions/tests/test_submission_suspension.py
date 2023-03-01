@@ -7,6 +7,7 @@ sub-resource.
 The backend collects information to send an e-mail to the user for resuming, for
 example.
 """
+import uuid
 from datetime import datetime, timedelta
 from unittest.mock import patch
 from urllib.parse import urljoin
@@ -223,12 +224,159 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, 403)
 
 
+class SuspendedSubmissionAPIMockData:
+    """
+    re-usable dataset to reduce setup code volume
+    """
+
+    def __init__(self):
+        self.bsn = "123456789"
+
+        self.submission = SubmissionFactory.create(
+            form__name="form ok1 (value not hashed)",
+            uuid="aaaaaaaa-0001-aaaa-aaaa-aaaaaaaaaaaa",
+            suspended_on=timezone.now(),
+            completed_on=None,
+            auth_info__value=self.bsn,
+            auth_info__attribute=AuthAttribute.bsn,
+            # NOTE the suspended submissions aren't hashed
+            auth_info__attribute_hashed=False,
+        )
+        self.listable_for_bsn = [
+            self.submission,
+            # SubmissionFactory.create(
+            #     form__name="form ok2 (value is hashed)",
+            #     uuid="aaaaaaaa-0002-aaaa-aaaa-aaaaaaaaaaaa",
+            #     auth_info__value=self.bsn,
+            #     auth_info__attribute=AuthAttribute.bsn,
+            #     # NOTE the suspended trait sets hashed auth value
+            #     suspended=True,
+            # ),
+        ]
+
+        self.not_retrievable = [
+            SubmissionFactory.create(
+                uuid="bbbbbbbb-0001-bbbb-bbbb-bbbbbbbbbbbb",
+                form__name="form completed",
+                completed=True,
+                auth_info__value=self.bsn,
+                auth_info__attribute=AuthAttribute.bsn,
+            ),
+            SubmissionFactory.create(
+                uuid="bbbbbbbb-0002-bbbb-bbbb-bbbbbbbbbbbb",
+                form__name="suspended too long ago (via global config)",
+                suspended_on=timezone.now() - timedelta(days=10),
+                completed_on=None,
+                auth_info__value=self.bsn,
+                auth_info__attribute=AuthAttribute.bsn,
+            ),
+            SubmissionFactory.create(
+                uuid="bbbbbbbb-0003-bbbb-bbbb-bbbbbbbbbbbb",
+                form__name="suspended too long ago (via form config)",
+                form__incomplete_submissions_removal_limit=1,
+                suspended_on=timezone.now() - timedelta(days=2),
+                completed_on=None,
+                auth_info__value=self.bsn,
+                auth_info__attribute=AuthAttribute.bsn,
+            ),
+            SubmissionFactory.create(
+                uuid="bbbbbbbb-0004-bbbb-bbbb-bbbbbbbbbbbb",
+                form__name="not our auth attribute",
+                suspended_on=timezone.now(),
+                completed_on=None,
+                auth_info__value=self.bsn,
+                auth_info__attribute=AuthAttribute.kvk,
+            ),
+            SubmissionFactory.create(
+                uuid="bbbbbbbb-0005-bbbb-bbbb-bbbbbbbbbbbb",
+                form__name="both dates",
+                suspended_on=timezone.now(),
+                completed_on=timezone.now(),
+                auth_info__value=self.bsn,
+                auth_info__attribute=AuthAttribute.bsn,
+            ),
+            SubmissionFactory.create(
+                uuid="bbbbbbbb-0006-bbbb-bbbb-bbbbbbbbbbbb",
+                form__name="null dates",
+                suspended_on=None,
+                completed_on=None,
+                auth_info__value=self.bsn,
+                auth_info__attribute=AuthAttribute.bsn,
+            ),
+            SubmissionFactory.create(
+                uuid="bbbbbbbb-0007-bbbb-bbbb-bbbbbbbbbbbb",
+                form__name="hashed BSN",
+                suspended_on=None,
+                completed_on=None,
+                auth_info__value="[some hash value]",
+                auth_info__attribute=AuthAttribute.bsn,
+                auth_info__attribute_hashed=True,
+            ),
+        ]
+        self.not_listable_for_bsn = self.not_retrievable + [
+            SubmissionFactory.create(
+                uuid="bbbbbbbb-0008-bbbb-bbbb-bbbbbbbbbbbb",
+                form__name="not our BSN value",
+                suspended_on=timezone.now(),
+                completed_on=None,
+                auth_info__value="999999999",
+                auth_info__attribute=AuthAttribute.bsn,
+            ),
+        ]
+
+
 @freeze_time("2022-01-01")
-class SuspendedSubmissionAPITest(APITestCase):
+class SuspendedSubmissionListAPITest(APITestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         cls.endpoint = reverse("api:submission-suspended-list")
+
+    @patch("openforms.forms.admin.mixins.GlobalConfiguration.get_solo")
+    def test_api_lists_suspended_submissions_for_bsn(self, mock_get_solo):
+        mock_get_solo.return_value = GlobalConfiguration(
+            incomplete_submissions_removal_limit=7
+        )
+
+        data = SuspendedSubmissionAPIMockData()
+
+        user = UserFactory(user_permissions=["submissions.list_suspended_submissions"])
+        self.client.force_authenticate(user=user)
+
+        with self.subTest("with our BSN"):
+            response = self.client.get(f"{self.endpoint}?bsn={data.bsn}")
+            self.assertEqual(response.status_code, 200)
+            data = response.json()
+
+            # check only our suspended submissions for this BSN are listed
+            actual_uuids = {r["naam"] for r in data["results"]}
+            expected_uuids = {s.form.name for s in data.listable_for_bsn}
+            self.assertEqual(actual_uuids, expected_uuids)
+
+            # check we got pagination
+            self.assertEqual(data["count"], len(data.listable_for_bsn))
+            self.assertEqual(data["previous"], None)
+            self.assertEqual(data["next"], None)
+
+            # basic serialisation check (more at retrieve)
+            result = data["results"][0]
+            expected_fields = {
+                "uuid",
+                "naam",
+                "url",
+                "vervolgLink",
+                "datumLaatsteWijziging",
+                "eindDatumGeldigheid",
+            }
+            self.assertEqual(set(result.keys()), expected_fields)
+
+        with self.subTest("with other BSN"):
+            response = self.client.get(f"{self.endpoint}?bsn=000000000")
+            self.assertEqual(response.status_code, 200)
+            data = response.json()
+
+            # no results
+            self.assertEqual(data["results"], [])
 
     def test_api_requires_auth(self):
         response = self.client.get(self.endpoint)
@@ -241,7 +389,7 @@ class SuspendedSubmissionAPITest(APITestCase):
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 403)
 
-    def test_auth_requires_permission(self):
+    def test_auth_requires_permission_and_url_param(self):
         user = UserFactory(user_permissions=["submissions.list_suspended_submissions"])
         self.client.force_authenticate(user=user)
 
@@ -253,144 +401,98 @@ class SuspendedSubmissionAPITest(APITestCase):
             response = self.client.get(f"{self.endpoint}?bsn=123456789")
             self.assertEqual(response.status_code, 200)
 
-    @patch("openforms.forms.admin.mixins.GlobalConfiguration.get_solo")
-    def test_api_lists_suspended_submissions_for_bsn(self, mock_get_solo):
-        mock_get_solo.return_value = GlobalConfiguration(
-            incomplete_submissions_removal_limit=7
-        )
-        bsn = "123456789"
-
+    def test_api_allows_safe_method_only(self):
         user = UserFactory(user_permissions=["submissions.list_suspended_submissions"])
         self.client.force_authenticate(user=user)
 
-        good_submissions = [
-            SubmissionFactory.create(
-                form__name="form ok1",
-                uuid="aaaaaaaa-0001-aaaa-aaaa-aaaaaaaaaaaa",
-                suspended_on=timezone.now(),
-                completed_on=None,
-                auth_info__value=bsn,
-                auth_info__attribute=AuthAttribute.bsn,
-            ),
-            # SubmissionFactory.create(
-            #     form__name="form ok2",
-            #     uuid='aaaaaaaa-0002-aaaa-aaaa-aaaaaaaaaaaa',
-            #     auth_info__value=bsn,
-            #     auth_info__attribute=AuthAttribute.bsn,
-            #     # TODO fix 'suspended' factory trait to work like '_suspend' viewset action (eg: not hash auth value)
-            #     suspended=True,
-            # ),
-        ]
-        bad_submissions = [  # noqa F841
-            SubmissionFactory.create(
-                uuid="bbbbbbbb-0001-bbbb-bbbb-bbbbbbbbbbbb",
-                form__name="form completed",
-                completed=True,
-                auth_info__value=bsn,
-                auth_info__attribute=AuthAttribute.bsn,
-            ),
-            SubmissionFactory.create(
-                uuid="bbbbbbbb-0002-bbbb-bbbb-bbbbbbbbbbbb",
-                form__name="suspended too long ago (via global config)",
-                suspended_on=timezone.now() - timedelta(days=10),
-                completed_on=None,
-                auth_info__value=bsn,
-                auth_info__attribute=AuthAttribute.bsn,
-            ),
-            SubmissionFactory.create(
-                uuid="bbbbbbbb-0003-bbbb-bbbb-bbbbbbbbbbbb",
-                form__name="suspended too long ago (via form config)",
-                form__incomplete_submissions_removal_limit=1,
-                suspended_on=timezone.now() - timedelta(days=2),
-                completed_on=None,
-                auth_info__value=bsn,
-                auth_info__attribute=AuthAttribute.bsn,
-            ),
-            SubmissionFactory.create(
-                uuid="bbbbbbbb-0004-bbbb-bbbb-bbbbbbbbbbbb",
-                form__name="not our BSN value",
-                suspended_on=timezone.now(),
-                completed_on=None,
-                auth_info__value="999999999",
-                auth_info__attribute=AuthAttribute.bsn,
-            ),
-            SubmissionFactory.create(
-                uuid="bbbbbbbb-0005-bbbb-bbbb-bbbbbbbbbbbb",
-                form__name="not our auth attribute",
-                suspended_on=timezone.now(),
-                completed_on=None,
-                auth_info__value=bsn,
-                auth_info__attribute=AuthAttribute.kvk,
-            ),
-            SubmissionFactory.create(
-                uuid="bbbbbbbb-0006-bbbb-bbbb-bbbbbbbbbbbb",
-                form__name="both dates",
-                suspended_on=timezone.now(),
-                completed_on=timezone.now(),
-                auth_info__value=bsn,
-                auth_info__attribute=AuthAttribute.bsn,
-            ),
-            SubmissionFactory.create(
-                uuid="bbbbbbbb-0007-bbbb-bbbb-bbbbbbbbbbbb",
-                form__name="null dates",
-                suspended_on=None,
-                completed_on=None,
-                auth_info__value=bsn,
-                auth_info__attribute=AuthAttribute.bsn,
-            ),
-            SubmissionFactory.create(
-                uuid="bbbbbbbb-0008-bbbb-bbbb-bbbbbbbbbbbb",
-                form__name="hashed BSN",
-                suspended_on=None,
-                completed_on=None,
-                auth_info__value="[some hash value]",
-                auth_info__attribute=AuthAttribute.bsn,
-                auth_info__attribute_hashed=True,
-            ),
-        ]
+        for method in ["GET", "HEAD", "OPTIONS"]:
+            response = self.client.generic(method, f"{self.endpoint}?bsn=123456789")
+            self.assertEqual(response.status_code, 200, method)
 
-        with self.subTest("with our BSN"):
-            response = self.client.get(f"{self.endpoint}?bsn={bsn}")
-            self.assertEqual(response.status_code, 200)
-            data = response.json()
+        for method in ["POST", "PUT", "PATCH", "DELETE"]:
+            response = self.client.generic(method, f"{self.endpoint}?bsn=123456789")
+            self.assertEqual(response.status_code, 405, method)
 
-            # check only our suspended submissions for this BSN are listed
-            actual_uuids = {r["uuid"] for r in data["results"]}
-            expected_uuids = {str(s.uuid) for s in good_submissions}
-            self.assertEqual(actual_uuids, expected_uuids)
 
-            # check we got pagination
-            self.assertEqual(data["count"], len(good_submissions))
-            self.assertEqual(data["previous"], None)
-            self.assertEqual(data["next"], None)
+@freeze_time("2022-01-01")
+class SuspendedSubmissionRetrieveAPITest(APITestCase):
+    def test_api_retrieves_suspended_submissions(self):
+        user = UserFactory(user_permissions=["submissions.list_suspended_submissions"])
+        self.client.force_authenticate(user=user)
 
-            # check serialisation
-            result = data["results"][0]
-            submission = good_submissions[0]
+        submission = SubmissionFactory.create(
+            form__name="form ok1 (value not hashed)",
+            uuid="aaaaaaaa-0001-aaaa-aaaa-aaaaaaaaaaaa",
+            suspended_on=timezone.now(),
+            completed_on=None,
+            auth_info__value="123456789",
+            auth_info__attribute=AuthAttribute.bsn,
+        )
 
-            self.assertEqual(result["uuid"], str(submission.uuid))
-            self.assertEqual(result["naam"], "form ok1")
-            self.assertEqual(
-                result["url"],
-                "http://testserver"
-                + reverse("api:submission-detail", kwargs={"uuid": submission.uuid}),
-            )
-            self.assertEqual(
-                dateutil.parser.parse(result["datumLaatsteWijziging"]), timezone.now()
-            )
-            self.assertEqual(
-                dateutil.parser.parse(result["eindDatumGeldigheid"]),
-                (timezone.now() + timedelta(days=7)),
-            )
-            self.assertRegex(
-                result["vervolgLink"],
-                f"^http://testserver/submissions/{submission.uuid}/[^/]+/resume$",
-            )
+        url = reverse(
+            "api:submission-suspended-detail", kwargs={"uuid": submission.uuid}
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
 
-        with self.subTest("with other BSN"):
-            response = self.client.get(f"{self.endpoint}?bsn=000000000")
-            self.assertEqual(response.status_code, 200)
-            data = response.json()
+        # check serialisation
+        self.assertEqual(data["uuid"], str(submission.uuid))
+        self.assertEqual(data["naam"], "form ok1 (value not hashed)")
+        self.assertEqual(
+            data["url"],
+            "http://testserver"
+            + reverse("api:submission-detail", kwargs={"uuid": submission.uuid}),
+        )
+        self.assertEqual(
+            dateutil.parser.parse(data["datumLaatsteWijziging"]), timezone.now()
+        )
+        self.assertEqual(
+            dateutil.parser.parse(data["eindDatumGeldigheid"]),
+            (timezone.now() + timedelta(days=7)),
+        )
+        self.assertRegex(
+            data["vervolgLink"],
+            f"^http://testserver/submissions/{submission.uuid}/[^/]+/resume$",
+        )
 
-            # no results
-            self.assertEqual(data["results"], [])
+    def test_api_does_not_retrieve_invalid_or_not_suspended(self):
+        user = UserFactory(user_permissions=["submissions.list_suspended_submissions"])
+        self.client.force_authenticate(user=user)
+
+        data = SuspendedSubmissionAPIMockData()
+
+        for submission in data.not_retrievable:
+            with self.subTest(submission.form.name):
+                url = reverse(
+                    "api:submission-suspended-detail", kwargs={"uuid": submission.uuid}
+                )
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 404)
+
+    def test_api_requires_auth(self):
+        url = reverse("api:submission-suspended-detail", kwargs={"uuid": uuid.uuid4()})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 401)
+
+    def test_auth_fails_without_permission(self):
+        user = UserFactory()
+        self.client.force_authenticate(user=user)
+        url = reverse("api:submission-suspended-detail", kwargs={"uuid": uuid.uuid4()})
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_api_allows_safe_method_only(self):
+        user = UserFactory(user_permissions=["submissions.list_suspended_submissions"])
+        self.client.force_authenticate(user=user)
+
+        url = reverse("api:submission-suspended-detail", kwargs={"uuid": uuid.uuid4()})
+
+        for method in ["GET", "HEAD", "OPTIONS"]:
+            response = self.client.generic(method, url)
+            self.assertIn(response.status_code, (200, 404), method)
+
+        for method in ["POST", "PUT", "PATCH", "DELETE"]:
+            response = self.client.generic(method, url)
+            self.assertEqual(response.status_code, 405, method)

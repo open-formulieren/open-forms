@@ -1,31 +1,22 @@
 from django.conf import settings
-from django.db.models import DateTimeField, ExpressionWrapper, F, Value
-from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from django_sendfile import sendfile
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.generics import DestroyAPIView, GenericAPIView, ListAPIView
+from rest_framework.generics import DestroyAPIView, GenericAPIView
 
 from openforms.api.authentication import AnonCSRFSessionAuthentication
-from openforms.api.pagination import PageNumberPagination
 from openforms.api.serializers import ExceptionSerializer
-from openforms.config.models import GlobalConfiguration
-from openforms.utils.expressions import IntervalDays
 
-from ..models import Submission, SubmissionReport, TemporaryFileUpload
+from ..models import SubmissionReport, TemporaryFileUpload
 from ..utils import remove_upload_from_session
-from .filters import BSNAuthInfoFilter
 from .permissions import (
-    CanListSuspendedSubmissionsPermission,
     DownloadSubmissionReportPermission,
     OwnsTemporaryUploadPermission,
 )
 from .renderers import FileRenderer, PDFRenderer
-from .serializers import SuspendedSubmissionSerializer
 
 
 @extend_schema(
@@ -115,41 +106,3 @@ class TemporaryFileView(DestroyAPIView):
     def perform_destroy(self, instance):
         remove_upload_from_session(instance, self.request.session)
         instance.delete()
-
-
-# TODO use the same operation ID's from the demo OAS?
-@extend_schema(
-    summary=_("List suspended submissions."),
-)
-class SuspendedSubmissionListView(ListAPIView):
-    serializer_class = SuspendedSubmissionSerializer
-    pagination_class = PageNumberPagination
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [CanListSuspendedSubmissionsPermission]
-    filterset_class = BSNAuthInfoFilter
-
-    queryset = Submission.objects.filter(
-        completed_on__isnull=True,
-        suspended_on__isnull=False,
-    )
-
-    def get_queryset(self):
-        config = GlobalConfiguration.get_solo()
-        qs = super().get_queryset()
-        qs = (
-            qs.annotate(
-                remove_after_days=Coalesce(
-                    F("form__incomplete_submissions_removal_limit"),
-                    Value(config.incomplete_submissions_removal_limit),
-                )
-            )
-            .annotate(
-                remove_after_datetime=ExpressionWrapper(
-                    F("suspended_on") + IntervalDays(F("remove_after_days")),
-                    output_field=DateTimeField(),
-                ),
-            )
-            .filter(remove_after_datetime__gt=timezone.now())
-            .order_by("form__name")
-        )
-        return qs
