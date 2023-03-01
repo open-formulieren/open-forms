@@ -414,10 +414,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             await page.get_by_role("tab", name="Steps and fields").click()
 
             # Drag and drop a component
-            await page.get_by_text("Keuzelijst").hover()
-            await page.mouse.down()
-            await page.locator('css=[ref="-container"]').hover()
-            await page.mouse.up()
+            await drag_and_drop_component(page, "Keuzelijst")
 
             # Check that the modal is open
             await expect(page.locator("css=.formio-dialog-content")).to_be_visible()

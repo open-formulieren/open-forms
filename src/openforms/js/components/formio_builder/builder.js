@@ -350,12 +350,8 @@ const FormIOBuilder = ({
   // props need to be immutable to not end up in infinite loops
   const [builderOptions] = useState(getBuilderOptions());
 
-  // https://help.form.io/developers/form-renderer#form-events
-  const onBuilderFormChange = (changed, flags, modifiedByHuman) => {
-    const {instance, value: newLiteral} = flags;
-
-    // Call Formio triggerChange
-    instance.root.triggerChange(changed, flags, modifiedByHuman);
+  const getUpdatedTranslations = (flags, changed, modified) => {
+    const {instance, value: newLiteral} = changed;
 
     // get the submission data of the form in the modal, which configures the component
     // itself.
@@ -364,20 +360,6 @@ const FormIOBuilder = ({
     const changedPropertyPath = instance.path;
     const {type: componentType} = newComponentConfiguration;
     const localComponentTranslations = componentTranslationsRef.current;
-
-    const exposeTranslations = translations => {
-      // update the component form submission data, so we have the updated translations
-      // in the component.
-      instance.root.submission = {
-        data: {
-          ...newComponentConfiguration,
-          openForms: {
-            ...(newComponentConfiguration?.openForms || {}),
-            translations: translations,
-          },
-        },
-      };
-    };
 
     // the first builder load/iteration sets the values directly by data.values or values,
     // depending on the component type. Subsequent edits of the literals are caught in the
@@ -390,10 +372,8 @@ const FormIOBuilder = ({
       newLiteral,
       previousLiteralsRef
     );
-    if (newTranslations !== null) {
-      exposeTranslations(newTranslations);
-      return;
-    }
+
+    if (newTranslations !== null) return newTranslations;
 
     if (!isTranslatableProperty(componentType, changedPropertyPath)) return;
 
@@ -405,18 +385,42 @@ const FormIOBuilder = ({
     if (newLiteral == prevLiteral) return;
 
     // update the translations
-    newTranslations = addTranslationForLiteral(
+    return addTranslationForLiteral(
       newComponentConfiguration,
       localComponentTranslations,
       prevLiteral,
       newLiteral
     );
-    exposeTranslations(newTranslations);
-    // update the literal for the next change cycle
-    set(previousLiteralsRef.current, [changedPropertyPath], newLiteral);
   };
+
   // otherwise builder keeps refreshing/remounting
-  builderOptions.onChange = onBuilderFormChange;
+  builderOptions.onChange = (flags, changed, modified) => {
+    const {instance} = changed;
+
+    if (!flags.fromSubmission) {
+      instance.root.triggerChange(flags, changed, modified);
+    }
+
+    const newTranslations = getUpdatedTranslations(flags, changed, modified);
+
+    if (newTranslations) {
+      // update the component form submission data, so we have the updated translations
+      // in the component.
+      return instance.root
+        .setSubmission({
+          data: {
+            ...instance.root.submission.data,
+            openForms: {
+              ...(instance.root.submission.data?.openForms || {}),
+              translations: newTranslations,
+            },
+          },
+        })
+        .then(() => {
+          instance.root.triggerChange(flags, changed, modified);
+        });
+    }
+  };
   set(builderOptions, 'openForms.componentNamespace', componentNamespaceRef.current);
 
   const resetEditFormRefs = () => {
