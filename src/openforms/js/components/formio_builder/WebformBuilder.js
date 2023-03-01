@@ -44,6 +44,18 @@ class WebformBuilder extends WebformBuilderFormio {
     this.schemas = changedComponentSchema;
   }
 
+  // Formio description of this function:
+  // *When a component sets its api key, we need to check if it is unique within its namespace. Find the namespace root
+  // so we can calculate this correctly.*
+  // Since we also need to check the definitions of other form steps, we pass from react the configurations of all the
+  // steps as an option to the webform.
+  findNamespaceRoot(component) {
+    const customNamespace = this.webform?.options?.openForms?.componentNamespace;
+    if (customNamespace) return customNamespace;
+
+    return super.findNamespaceRoot(component);
+  }
+
   editComponent(component, parent, isNew, isJsonEdit, original, flags = {}) {
     const componentCopy = cloneDeep(component);
     const parentEditResult = super.editComponent(

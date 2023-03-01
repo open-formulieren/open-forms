@@ -1,10 +1,10 @@
 import cloneDeep from 'lodash/cloneDeep';
-import isEqual from 'lodash/isEqual';
 import set from 'lodash/set';
 import PropTypes from 'prop-types';
 import React, {useEffect, useRef, useState} from 'react';
 import {FormBuilder, Templates} from 'react-formio';
 
+import {useOnChanged} from 'utils/hooks';
 import jsonScriptToVar from 'utils/json-script';
 
 import customTemplates from './customTemplates';
@@ -311,6 +311,7 @@ const FormIOBuilder = ({
   onChange,
   onComponentMutated,
   componentTranslations = {}, // mapping of language code to (mapping of literal -> translation)
+  componentNamespace = {},
   forceUpdate = false,
 }) => {
   // the deep clone is needed to create a mutable object, as the FormBuilder
@@ -328,17 +329,18 @@ const FormIOBuilder = ({
   const previousLiteralsRef = useRef({});
 
   const componentTranslationsRef = useRef(componentTranslations);
+  const componentNamespaceRef = useRef(componentNamespace);
 
   // ... The onChange event of the builder is only bound once, so while the
   // onBuilderFormChange function identity changes with every render, the formio builder
   // instance actually only knows about the very first one. This means our updated state/
   // props that's checked in the callbacks is an outdated view, which we can fix by using
   // mutable refs :-)
-  useEffect(() => {
-    const localComponentTranslations = componentTranslationsRef.current;
-    if (!isEqual(localComponentTranslations, componentTranslations)) {
-      componentTranslationsRef.current = componentTranslations;
-    }
+  useOnChanged(componentTranslations, () => {
+    componentTranslationsRef.current = componentTranslations;
+  });
+  useOnChanged(componentNamespace, () => {
+    componentNamespaceRef.current = componentNamespace;
   });
 
   // track some state to force re-renders, and we can also keep track of the amount of
@@ -415,6 +417,7 @@ const FormIOBuilder = ({
   };
   // otherwise builder keeps refreshing/remounting
   builderOptions.onChange = onBuilderFormChange;
+  set(builderOptions, 'openForms.componentNamespace', componentNamespaceRef.current);
 
   const resetEditFormRefs = () => {
     previousLiteralsRef.current = {};
@@ -459,6 +462,7 @@ FormIOBuilder.propTypes = {
   onChange: PropTypes.func,
   onComponentMutated: PropTypes.func,
   componentTranslations: PropTypes.objectOf(PropTypes.objectOf(PropTypes.string)),
+  componentNamespace: PropTypes.arrayOf(PropTypes.object),
   forceUpdate: PropTypes.bool,
 };
 
