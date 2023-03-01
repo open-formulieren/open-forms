@@ -23,6 +23,7 @@ TEST_FILES = Path(__file__).parent.resolve() / "files"
 
 
 @temp_private_root()
+@override_settings(LANGUAGE_CODE="en")
 class FormIOTemporaryFileUploadTest(SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
