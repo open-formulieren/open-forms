@@ -4,14 +4,20 @@ about: Checklist for new releases
 title: Prepare release x.y.z
 labels: ''
 assignees: sergei-maertens
-
 ---
 
-- [ ] Fix release blockers
-    - [ ] ...
+- [ ] Resolve release blockers
+  - [ ] ...
+- [ ] Release new SDK version
 - [ ] Correct SDK version pinned in `.sdk-release`
-- [ ] SDK translations checked and updated
-- [ ] Backend translations checked and updated
-- [ ] Check & update version number API
+- [ ] Check translations
+  - [ ] SDK
+  - [ ] Backend
+  - [ ] Frontend
+  - [ ] Formio
+- [ ] Bump API version number
+  - [ ] Version bump
+  - [ ] Regenerate API spec
+  - [ ] Update READMEs with release dates + links
 - [ ] Bump version number (including package-lock.json)
-- [ ] Generate and update changelog
+- [ ] Update changelog
