@@ -417,7 +417,7 @@ const FormIOBuilder = ({
   };
   // otherwise builder keeps refreshing/remounting
   builderOptions.onChange = onBuilderFormChange;
-  builderOptions.componentNamespace = componentNamespaceRef.current;
+  set(builderOptions, 'openForms.componentNamespace', componentNamespaceRef.current);
 
   const resetEditFormRefs = () => {
     previousLiteralsRef.current = {};

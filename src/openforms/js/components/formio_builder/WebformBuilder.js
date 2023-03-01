@@ -50,7 +50,7 @@ class WebformBuilder extends WebformBuilderFormio {
   // Since we also need to check the definitions of other form steps, we pass from react the configurations of all the
   // steps as an option to the webform.
   findNamespaceRoot(component) {
-    const customNamespace = this.webform?.options?.componentNamespace;
+    const customNamespace = this.webform?.options?.openForms?.componentNamespace;
     if (customNamespace) return customNamespace;
 
     return super.findNamespaceRoot(component);
