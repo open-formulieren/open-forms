@@ -806,7 +806,7 @@
   "HpKhVP": [
     {
       "type": 0,
-      "value": "Appointment enabled"
+      "value": "Is afspraakformulier?"
     }
   ],
   "HqVHBq": [
@@ -991,6 +991,12 @@
     {
       "type": 0,
       "value": "Variabele toevoegen"
+    }
+  ],
+  "Ltde29": [
+    {
+      "type": 0,
+      "value": "Haal de waarde op uit een externe registratie"
     }
   ],
   "M0kOz9": [
@@ -1192,7 +1198,7 @@
   "RfbS0v": [
     {
       "type": 0,
-      "value": "Language"
+      "value": "Taal"
     }
   ],
   "Rk13i+": [
@@ -1494,7 +1500,7 @@
   "ZEo3mR": [
     {
       "type": 0,
-      "value": "Form has translation enabled, but is missing "
+      "value": "Formuliervertalingen zijn ingeschakeld, maar er "
     },
     {
       "children": [
@@ -1504,22 +1510,23 @@
             "one": {
               "value": [
                 {
-                  "type": 7
-                },
-                {
                   "type": 0,
-                  "value": " translation"
+                  "value": "ontbreekt een vertaling"
                 }
               ]
             },
             "other": {
               "value": [
                 {
+                  "type": 0,
+                  "value": "ontbreken "
+                },
+                {
                   "type": 7
                 },
                 {
                   "type": 0,
-                  "value": " translations"
+                  "value": " vertalingen"
                 }
               ]
             }
@@ -1830,7 +1837,7 @@
   "i7HknI": [
     {
       "type": 0,
-      "value": "Tab name"
+      "value": "Tabnaam"
     }
   ],
   "iZESbd": [
@@ -1848,7 +1855,7 @@
   "iq0ppL": [
     {
       "type": 0,
-      "value": "Experimental mode. Indicates whether appointments are enabled for this form."
+      "value": "[EXPERIMENTEEL] Gebruik de nieuwe afspraakformulierenimplementatie."
     }
   ],
   "ixiVhj": [
@@ -1954,7 +1961,7 @@
   "lvxPCk": [
     {
       "type": 0,
-      "value": "Component label"
+      "value": "Componentlabel"
     }
   ],
   "mH3X/G": [
@@ -1966,7 +1973,7 @@
   "mL6vhw": [
     {
       "type": 0,
-      "value": "Component key"
+      "value": "Componentsleutel"
     }
   ],
   "mOgTIH": [
@@ -2044,7 +2051,7 @@
   "ooyhQ7": [
     {
       "type": 0,
-      "value": "Form has translation enabled, but is missing "
+      "value": "Formuliervertalingen zijn ingeschakeld, maar er "
     },
     {
       "children": [
@@ -2054,22 +2061,23 @@
             "one": {
               "value": [
                 {
-                  "type": 7
-                },
-                {
                   "type": 0,
-                  "value": " component translation"
+                  "value": "ontbreekt een componentvertaling"
                 }
               ]
             },
             "other": {
               "value": [
                 {
+                  "type": 0,
+                  "value": "ontbreken "
+                },
+                {
                   "type": 7
                 },
                 {
                   "type": 0,
-                  "value": " component translations"
+                  "value": " componentvertalingen"
                 }
               ]
             }
@@ -2185,6 +2193,16 @@
       "value": "Kommagetal (float)"
     }
   ],
+  "rTeZb4": [
+    {
+      "type": 0,
+      "value": "Formuliervertalingen zijn ingeschakeld, maar er ontbreken vertalingen in de stappen: "
+    },
+    {
+      "type": 1,
+      "value": "stepNames"
+    }
+  ],
   "rZfe8Z": [
     {
       "type": 0,
@@ -2280,7 +2298,7 @@
   "vjHM9z": [
     {
       "type": 0,
-      "value": "Literal"
+      "value": "Tekst"
     }
   ],
   "vng/5K": [
@@ -2370,7 +2388,7 @@
   "z0FW+t": [
     {
       "type": 0,
-      "value": "Field name"
+      "value": "Veldnaam"
     }
   ],
   "z0bXZT": [

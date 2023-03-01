@@ -540,7 +540,7 @@
     "originalDefault": "(none)"
   },
   "HpKhVP": {
-    "defaultMessage": "Appointment enabled",
+    "defaultMessage": "Is afspraakformulier?",
     "description": "Form appointment enabled field label",
     "originalDefault": "Appointment enabled"
   },
@@ -683,6 +683,11 @@
     "defaultMessage": "Variabele toevoegen",
     "description": "Add process variable button",
     "originalDefault": "Add variable"
+  },
+  "Ltde29": {
+    "defaultMessage": "Haal de waarde op uit een externe registratie",
+    "description": "action type \"fetch-from-service\" label",
+    "originalDefault": "fetch the value for a variable from a service"
   },
   "M0kOz9": {
     "defaultMessage": "Weet u zeker dat u deze variabele wil verwijderen?",
@@ -835,7 +840,7 @@
     "originalDefault": "Internal name/title of the form"
   },
   "RfbS0v": {
-    "defaultMessage": "Language",
+    "defaultMessage": "Taal",
     "description": "Readable label for the language",
     "originalDefault": "Language"
   },
@@ -1015,7 +1020,7 @@
     "originalDefault": "The variable key must be unique within a form"
   },
   "ZEo3mR": {
-    "defaultMessage": "Form has translation enabled, but is missing <link>{count, plural, one {# translation} other {# translations} }</link>",
+    "defaultMessage": "Formuliervertalingen zijn ingeschakeld, maar er <link>{count, plural, one {ontbreekt een vertaling} other {ontbreken # vertalingen} }</link>",
     "description": "Warning message for missing translations",
     "originalDefault": "Form has translation enabled, but is missing <link>{count, plural, one {# translation} other {# translations} }</link>"
   },
@@ -1265,7 +1270,7 @@
     "originalDefault": "Internal name"
   },
   "i7HknI": {
-    "defaultMessage": "Tab name",
+    "defaultMessage": "Tabnaam",
     "description": "Name of the tab in the Form admin",
     "originalDefault": "Tab name"
   },
@@ -1280,7 +1285,7 @@
     "originalDefault": "years"
   },
   "iq0ppL": {
-    "defaultMessage": "Experimental mode. Indicates whether appointments are enabled for this form.",
+    "defaultMessage": "[EXPERIMENTEEL] Gebruik de nieuwe afspraakformulierenimplementatie.",
     "description": "Form appointment enabled field help text",
     "originalDefault": "Experimental mode. Indicates whether appointments are enabled for this form."
   },
@@ -1365,7 +1370,7 @@
     "originalDefault": "Add item"
   },
   "lvxPCk": {
-    "defaultMessage": "Component label",
+    "defaultMessage": "Componentlabel",
     "description": "Label of the Form component",
     "originalDefault": "Component label"
   },
@@ -1375,7 +1380,7 @@
     "originalDefault": "today"
   },
   "mL6vhw": {
-    "defaultMessage": "Component key",
+    "defaultMessage": "Componentsleutel",
     "description": "Key of the Form component",
     "originalDefault": "Component key"
   },
@@ -1440,7 +1445,7 @@
     "originalDefault": "Whether to include the content of the confirmation page in the PDF."
   },
   "ooyhQ7": {
-    "defaultMessage": "Form has translation enabled, but is missing <link>{count, plural, one {# component translation} other {# component translations} }</link>",
+    "defaultMessage": "Formuliervertalingen zijn ingeschakeld, maar er <link>{count, plural, one {ontbreekt een componentvertaling} other {ontbreken # componentvertalingen} }</link>",
     "description": "Warning message for missing component translations",
     "originalDefault": "Form has translation enabled, but is missing <link>{count, plural, one {# component translation} other {# component translations} }</link>"
   },
@@ -1529,6 +1534,11 @@
     "description": "data type float",
     "originalDefault": "Float"
   },
+  "rTeZb4": {
+    "defaultMessage": "Formuliervertalingen zijn ingeschakeld, maar er ontbreken vertalingen in de stappen: {stepNames}",
+    "description": "Warning message for missing translations",
+    "originalDefault": "Form has translation enabled, but there are missing translations for the following Form Steps: {stepNames}"
+  },
   "rZfe8Z": {
     "defaultMessage": "Excuses, we konden deze actie niet uitvoeren omdat u uitgelogd bent. Uw sessie is waarschijnlijk vervallen.",
     "description": "Session expiry notice - API call failed with 401",
@@ -1595,7 +1605,7 @@
     "originalDefault": "The content of the submission confirmation page. It can contain variables that will be templated from the submitted form data. If not specified, the global template will be used."
   },
   "vjHM9z": {
-    "defaultMessage": "Literal",
+    "defaultMessage": "Tekst",
     "description": "Literal to be translated",
     "originalDefault": "Literal"
   },
@@ -1670,7 +1680,7 @@
     "originalDefault": "Phone Number Component"
   },
   "z0FW+t": {
-    "defaultMessage": "Field name",
+    "defaultMessage": "Veldnaam",
     "description": "Name of the translatable field",
     "originalDefault": "Field name"
   },
