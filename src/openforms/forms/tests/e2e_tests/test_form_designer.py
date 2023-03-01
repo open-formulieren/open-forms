@@ -10,7 +10,7 @@ from playwright.async_api import expect
 from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
-from ..factories import FormFactory
+from ..factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
 
 @contextmanager
@@ -265,6 +265,56 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
 
             # Test that the key also changed
             await expect(key_input).to_have_value("test")
+
+    async def test_key_unique_across_steps(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form with 2 steps
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="First step",
+                formstep__form_definition__configuration={
+                    "components": [{"key": "textField", "type": "textfield"}],
+                },
+            )
+            form_def = FormDefinitionFactory.create(
+                name_nl="Second step",
+                configuration={
+                    "components": [],
+                },
+            )
+            FormStepFactory.create(form=form, form_definition=form_def)
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            # Go to the second form step
+            await page.get_by_text("Second step").click()
+
+            # Drag and drop a component
+            await page.get_by_text("Tekstveld").hover()
+            await page.mouse.down()
+            await page.locator('css=[ref="-container"]').hover()
+            await page.mouse.up()
+
+            # Check that the modal is open
+            await expect(page.locator("css=.formio-dialog-content")).to_have_count(1)
+
+            # Check that the key has been made unique (textField1 vs textField)
+            key_input = page.get_by_label("Eigenschapnaam")
+            await expect(key_input).to_have_value("textField1")
 
 
 class FormDesignerRegressionTests(E2ETestCase):
