@@ -8,8 +8,6 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.utils.tests.cache import clear_caches
-
 from .factories import SubmissionFactory
 from .mixins import SubmissionsMixin
 
@@ -20,10 +18,6 @@ REST_FRAMEWORK_MODIFIED["DEFAULT_THROTTLE_RATES"]["submit"] = "10/minute"
 
 @override_settings(REST_FRAMEWORK=REST_FRAMEWORK_MODIFIED)
 class APIThrottlingTest(SubmissionsMixin, APITestCase):
-    def setUp(self):
-        self.addCleanup(clear_caches)
-        super().setUp()
-
     def test_throttling_submit(self):
         """Assert that the API endpoint for completing submissions is throttled"""
 

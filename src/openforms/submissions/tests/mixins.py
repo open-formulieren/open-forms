@@ -1,12 +1,17 @@
 from rest_framework.reverse import reverse
 
 from openforms.middleware import CSRF_TOKEN_HEADER_NAME
+from openforms.utils.tests.cache import clear_caches
 
 from ..constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from ..models import Submission, TemporaryFileUpload
 
 
 class SubmissionsMixin:
+    def setUp(self):
+        self.addCleanup(clear_caches)
+        super().setUp()
+
     def _add_submission_to_session(self, submission: Submission):
         session = self.client.session
         ids = session.get(SUBMISSIONS_SESSION_KEY, [])

@@ -5532,7 +5532,10 @@ components:
           $ref: '#/components/schemas/SubmissionAllowedEnum'
         privacyPolicyAccepted:
           type: boolean
+        containsBlockedSteps:
+          type: boolean
       required:
+      - containsBlockedSteps
       - incompleteSteps
       - privacyPolicyAccepted
       - submissionAllowed
