@@ -50,6 +50,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_all_required_steps_validated(self):
         step = FormStepFactory.create(form_definition__name="Personal Details")
         submission = SubmissionFactory.create(form=step.form)
@@ -167,6 +168,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertTrue(submission.is_completed)
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_submit_form_with_submission_disabled_with_overview(self):
         submission = SubmissionFactory.create(
             form__submission_allowed=SubmissionAllowedChoices.no_with_overview,
@@ -189,6 +191,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
             ],
         )
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_submit_form_with_submission_disabled_without_overview(self):
         submission = SubmissionFactory.create(
             form__submission_allowed=SubmissionAllowedChoices.no_without_overview,
@@ -263,6 +266,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_submission_privacy_policy_not_accepted(self):
         form = FormFactory.create(
             submission_confirmation_template="Thank you for submitting {{ foo }}."
@@ -373,6 +377,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         self.assertEqual(user_defined_variable.value, 1)
 
     @tag("gh-2096")
+    @override_settings(LANGUAGE_CODE="en")
     def test_complete_but_one_step_cant_be_submitted(self):
         form_step = FormStepFactory.create(
             form_definition__configuration={
