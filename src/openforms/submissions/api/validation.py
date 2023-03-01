@@ -91,10 +91,8 @@ def get_submission_completion_serializer(
             "submission_allowed": submission.form.submission_allowed,
             "privacy_policy_accepted": request.data.get("privacy_policy_accepted"),
             "contains_blocked_steps": any(
-                [
-                    not submission_step.can_submit
-                    for submission_step in state.submission_steps
-                ]
+                not submission_step.can_submit
+                for submission_step in state.submission_steps
             ),
         },
         context={"request": request, "submission": submission},
