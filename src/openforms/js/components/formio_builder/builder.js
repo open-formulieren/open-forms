@@ -385,23 +385,25 @@ const FormIOBuilder = ({
     if (newLiteral == prevLiteral) return;
 
     // update the translations
-    return addTranslationForLiteral(
+    newTranslations = addTranslationForLiteral(
       newComponentConfiguration,
       localComponentTranslations,
       prevLiteral,
       newLiteral
     );
+    set(previousLiteralsRef.current, [changedPropertyPath], newLiteral);
+    return newTranslations;
   };
 
   // otherwise builder keeps refreshing/remounting
-  builderOptions.onChange = (flags, changed, modified) => {
+  builderOptions.onChange = (flags, changed, modifiedByHuman) => {
     const {instance} = changed;
 
     if (!flags.fromSubmission) {
-      instance.root.triggerChange(flags, changed, modified);
+      instance.root.triggerChange(flags, changed, modifiedByHuman);
     }
 
-    const newTranslations = getUpdatedTranslations(flags, changed, modified);
+    const newTranslations = getUpdatedTranslations(flags, changed, modifiedByHuman);
 
     if (newTranslations) {
       // update the component form submission data, so we have the updated translations
@@ -417,7 +419,7 @@ const FormIOBuilder = ({
           },
         })
         .then(() => {
-          instance.root.triggerChange(flags, changed, modified);
+          instance.root.triggerChange(flags, changed, modifiedByHuman);
         });
     }
   };
@@ -454,7 +456,6 @@ const FormIOBuilder = ({
       form={formRef.current}
       options={builderOptions}
       onChange={formSchema => onChange(cloneDeep(formSchema))}
-      onUpdateComponent={() => (previousLiteralsRef.current = {})}
       onCancelComponent={resetEditFormRefs}
       {...extraProps}
     />
