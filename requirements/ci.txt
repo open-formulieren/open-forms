@@ -471,7 +471,7 @@ isodate==0.6.1
     #   zeep
 isort==5.10.1
     # via -r requirements/test-tools.in
-jinja2==2.11.3
+jinja2==3.1.2
     # via sphinx
 josepy==1.8.0
     # via
@@ -519,7 +519,7 @@ mail-parser==3.15.0
     #   django-yubin
 markdown==3.3.4
     # via sphinx-markdown-tables
-markupsafe==1.1.1
+markupsafe==2.1.2
     # via jinja2
 maykin-django-two-factor-auth[phonenumbers]==2.0.4
     # via
