@@ -3311,6 +3311,32 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/services/:
+    get:
+      operationId: services_list
+      description: List configured services.
+      tags:
+      - services
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Service'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
   /api/v2/submissions:
     get:
       operationId: submissions_list
@@ -5402,6 +5428,19 @@ components:
         Note that every subsequent API call resets the expiry.
       required: true
   schemas:
+    ApiTypeEnum:
+      enum:
+      - ac
+      - nrc
+      - zrc
+      - ztc
+      - drc
+      - brc
+      - cmc
+      - kc
+      - vrc
+      - orc
+      type: string
     AppearanceEnum:
       enum:
       - dark
@@ -7515,6 +7554,24 @@ components:
       - failed
       - success
       type: string
+    Service:
+      type: object
+      properties:
+        label:
+          type: string
+          maxLength: 100
+        apiRoot:
+          type: string
+          title: Api root url
+          maxLength: 255
+        apiType:
+          allOf:
+          - $ref: '#/components/schemas/ApiTypeEnum'
+          title: Type
+      required:
+      - apiRoot
+      - apiType
+      - label
     SourceEnum:
       enum:
       - component
