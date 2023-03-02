@@ -4,6 +4,7 @@ import {FormattedMessage} from 'react-intl';
 
 import MessageList from 'components/admin/MessageList';
 import Modal from 'components/admin/Modal';
+import TYPES from 'components/admin/form_design/types';
 import {ChangelistColumn, ChangelistTable} from 'components/admin/tables';
 import jsonScriptToVar from 'utils/json-script';
 
@@ -187,7 +188,7 @@ const MissingTranslationsWarning = ({form, formSteps}) => {
 
 MissingTranslationsWarning.propTypes = {
   form: PropTypes.object.isRequired,
-  formSteps: PropTypes.array.isRequired,
+  formSteps: PropTypes.arrayOf(TYPES.FormStep).isRequired,
 };
 
 export default MissingTranslationsWarning;
