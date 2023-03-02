@@ -32,7 +32,7 @@ const extractTranslatableValues = configuration => {
   return translatableValues;
 };
 
-const extractMissingComponentTranslations = (configuration, componentTranslations) => {
+const extractMissingComponentTranslations = (configuration, componentTranslations = {}) => {
   const languageCodeMapping = Object.fromEntries(LANGUAGES);
 
   const translatableValues = extractTranslatableValues(configuration);
@@ -40,7 +40,7 @@ const extractMissingComponentTranslations = (configuration, componentTranslation
   let missingTranslations = [];
   for (const entry of translatableValues) {
     for (const [languageCode, _languageLabel] of LANGUAGES) {
-      let translations = componentTranslations[languageCode] || {};
+      let translations = componentTranslations?.[languageCode] || {};
       if (!translations[entry.literal])
         missingTranslations.push({language: languageCodeMapping[languageCode], ...entry});
     }

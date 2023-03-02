@@ -1,11 +1,12 @@
 import re
 from contextlib import contextmanager
 
+from django.test import tag
 from django.urls import reverse
 
 from asgiref.sync import sync_to_async
 from furl import furl
-from playwright.async_api import expect
+from playwright.async_api import Page, expect
 
 from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
@@ -16,6 +17,13 @@ from ..factories import FormDefinitionFactory, FormFactory, FormStepFactory
 @contextmanager
 def phase(desc: str):
     yield
+
+
+async def drag_and_drop_component(page: Page, component: str):
+    await page.get_by_text(component, exact=True).hover()
+    await page.mouse.down()
+    await page.locator('css=[ref="-container"]').hover()
+    await page.mouse.up()
 
 
 class FormDesignerComponentTranslationTests(E2ETestCase):
@@ -302,12 +310,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
 
             # Go to the second form step
             await page.get_by_text("Second step").click()
-
-            # Drag and drop a component
-            await page.get_by_text("Tekstveld").hover()
-            await page.mouse.down()
-            await page.locator('css=[ref="-container"]').hover()
-            await page.mouse.up()
+            await drag_and_drop_component(page, "Tekstveld")
 
             # Check that the modal is open
             await expect(page.locator("css=.formio-dialog-content")).to_have_count(1)
@@ -315,6 +318,38 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             # Check that the key has been made unique (textField1 vs textField)
             key_input = page.get_by_label("Eigenschapnaam")
             await expect(key_input).to_have_value("textField1")
+
+    @tag("gh-2805")
+    async def test_enable_translations_and_create_new_step(self):
+        await create_superuser()
+        admin_url = str(furl(self.live_server_url) / reverse("admin:forms_form_add"))
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            # missing translations warning may not crash the form builder
+            await page.get_by_label("Translation enabled").check()
+            # there should be a warning displayed about missing translations
+            await expect(
+                page.get_by_text(
+                    re.compile(
+                        r"Form has translation enabled, but is missing [0-9]+ translations"
+                    )
+                )
+            ).to_be_visible()
+
+            await page.get_by_role("tab", name="Steps and fields").click()
+            await page.get_by_role("button", name="Add step").click()
+            await page.get_by_role(
+                "button", name="Create a new form definition"
+            ).click()
+            await drag_and_drop_component(page, "Wachtwoord")
+            # save with the defaults
+            await page.get_by_role("button", name="Opslaan").first.click()
+
+            # the modal should close
+            await expect(page.locator("css=.formio-dialog-content")).to_be_hidden()
 
 
 class FormDesignerRegressionTests(E2ETestCase):
