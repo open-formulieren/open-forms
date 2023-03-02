@@ -2,48 +2,19 @@
 Changelog
 =========
 
-2.0.4 (2023-02-28)
-==================
+2.1.0-rc.0 (2023-03-03)
+=======================
 
-Periodic maintenance release
+We are proud to announce a release candidate of Open Forms 2.1!
 
-* [#2607] Fixed crash when selecting trigger-from-step in logic editor
-* Fixed crash when importing forms
-* [#2699] Fixed file uploads not resolving when inside fieldsets/repeating groups
-* Stopped link checking JCC links in CI since we're actively being blocked
-* [#2671] Fixed QR code background in dark mode
-* [#2709] Fixed (bandaid) inconsistent dynamic product price logic
-* [#2724] Ensure backport of negative-numbers (#1351) is correctly included
-* [#2734] Added bandaid fix for non-unique keys inside repeating groups
-* Updated to SDK 1.2.6
-* [#2717] Fixed crash on StUF-ZDS when updating the payment status
-* [#2781] Fixed clearing the value of hidden components with a nested key (``nested.key``).
-* [#2759] Fixed handling of file uploads with a nested key (``nested.key``).
-
-1.1.10 (2023-02-28)
-===================
-
-Bugfix release with some fixes from newer versions applied.
-
-* [#2520] Fixed bug in mimetype validation for ``application/ms-word`` (and similar) files
-* Bump required SDK version
-* [#2717] Fixed crash on StUF-ZDS when updating the payment status
-* [#2671] Fixed QR code background in dark mode
-* [#2709] Fixed (bandaid) inconsistent dynamic product price logic
-
-2.1.0-alpha.2 (2023-02-01)
-==========================
-
-Next 2.1.0 preview version.
-
-This alpha release of Open Forms 2.1 is likely to be the last one before the beta
-version(s) and associated feature freeze.
+This release candidate has focused on stability issues compared to the previous alpha
+version and includes some new experimental features.
 
 Major features
 --------------
 
 A quick summary of the new features in version 2.1 compared to 2.0. Scroll down for the
-full list of changes since the *2.1.0-alpha.1* version.
+full list of changes since the *2.1.0-alpha.2* version.
 
 **🌐 Multilingual support**
 
@@ -83,6 +54,163 @@ itself.
 We are increasingly adapting the principles and community components under the NL Design
 System umbrella, which exposes more and more controls to organizations for themeing Open
 Forms to their brand/identity.
+
+**💫 Dynamic options for choice-fields**
+
+You can now use variables as the source of choice options for dropdowns, radio and
+checboxes components. Combined with logic, this means you can make these components
+dependent on earlier inputs.
+
+**⚗️ Retrieve data from external registrations [Experimental]**
+
+Query data from an external registration/JSON-service based on user input, process the
+returned data and subsequently use it in your forms, for example as dynamic dropdown
+options!
+
+We're very excited about this feature, but the UX and implementation are not
+fully polished yet which is why it is not yet enabled by default.
+
+**🦠 Added support for virus scanning**
+
+We now support (opt-in) virus scanning with `ClamAV <https://www.clamav.net/>`_. Files
+uploaded by end-users are passed through the virus scan before they are saved in
+Open Forms.
+
+Detailed changes
+----------------
+
+**New features**
+
+* Multilingual support
+
+  * [#2493] Display warnings for missing translations in the form designer when form
+    translations are enabled.
+  * [#2685] Staff users can now configure their admin UI language preferences.
+
+* [#2623] Improved implementation of dynamic options (select, radio, checkboxes).
+* [#2663] Added ClamAV cirus scanning support. This is disabled by default - you need to
+  deploy a ClamAV service instance and then enable it in the Open Forms configuration.
+* [#2653] Allow more configuration in the ZGW registration plugin:
+
+  * Specify a default bronorganisatie RSIN + allow overriding it per file-component.
+  * Specify a default documentation vertrouwelijkheidaanduiding + allow overriding it
+    per file-component.
+  * File upload components can now specify the document title and auteur fields.
+
+* Data retrieval from external registrations
+
+  * [#2454] Implemented retrieving and processing data from external JSON services.
+  * [#2753] Added opt-in feature flag.
+
+ [#2786] Improved phone number validation error messages.
+
+**Bugfixes**
+
+* [#2601] Disabled autocomplete for username/password in (services) admin.
+* [#2635] Fixed component key not being updated anymore with label changes.
+* [#2643] Fixed description generation for empty ``var`` operations and the ``map``
+  operation.
+* [#2641] Relaxed e-mail URL stripping for subdomains of allow-listed domains.
+* [#2549] Fixed cookie banner overlapping footer links
+* [#2673] Fixed mobile styling (spacing + location of language selection component).
+* [#2676] Fixed more mobile styling spacing issues (header/footer, logo).
+* [#2636] Fixed a number of bugs that appeared in the previous version
+
+  * Fixed saving user defined variables with a falsy initial value.
+  * Fixed broken display of logic rule "trigger from step" selected choice.
+
+* Fixed the API forcing the default language in the admin when a form does not have
+  translations enabled.
+* [#2646] Fixed "privacy policy acceptance" not being recorded/validated in the backend.
+* [#2699] Fixed uploads in repeating groups not being registered in the backend.
+* [#2682] Fixed some date/datetime component issues
+
+  * Fixed editor options not refreshing when selecting a validation method.
+  * Fixed validation min/max value tab settings not having any effect.
+
+* [#2709] Fixed (bandaid) inconsistent dynamic product price logic
+* [#2671] Fixed QR code not being readable in dark mode.
+* [#2742] Fixed the key of file upload components not updating with the label.
+* [#2721] Updated django-simple-certmanager version
+* [#2734] Validate that component keys inside repeating groups cannot duplicate existing
+  form keys.
+* [#2096] Prevented users from being able to bypass steps blocked by logic.
+* [#2781] Fixed the data-clearing/data extraction of (hidden) nested components.
+* [#2770] Fixed formio unique component key generation to take into account keys from
+  other steps.
+* [#2805] Fixed form builder crash when enabling translations and adding a new form step.
+* [#2798] Fixed select/radio/checkboxes option values not being derived from labels
+  anymore.
+* [#2769] Fixed date/datetime components relative validation settings not being
+  registered correctly.
+
+**Documentation**
+
+* Improved SharePoint registration backend documentation.
+* [#2619] Added Storybook documentation for the backend JS/CSS components.
+* [#2481] Updated the screenshots of the translations UI in the manual.
+* [#2696] Updated documentation about dynamic form options and unsupported JSON-logic
+  operators.
+* [#2735] Documented functionalities that don't work (yet) in repeating groups.
+* Added patch release changelog entries from stable branches.
+* Documented Django changelist component in Storybook.
+* Reorganized the component groups in Storybook.
+
+**Project maintenance**
+
+* Bumped dependencies to their latest (security) releases
+* [#2471] Add preparations for new appointments flow.
+* [#388, #965] Refactored the StUF client implementations.
+* Updated Github Actions workflows to use composite actions for duplicated steps.
+* [#2657] Replaced Selenium end-to-end tests with Playwright.
+* [#2665] Update coverage reporting configuration to exclude test files themselves.
+* Fixed ``generate_minimal_setup`` factory trait by adding label to generated components.
+* [#2700] Replaced the last Github dependencies with PyPI versions of them.
+* Enabled opt-in to use X-Forwarded-Host headers [infrastructure].
+* [#2711] Moved ``openforms.utils.api`` utilities to the ``openforms.api`` package.
+* [#2748] Pinned the project to Python 3.10.9 due to a CPython regression.
+* [#2712] Replaced django-choices usage with core Django equivalents.
+* Fixed a test failing between 00:00-01:00 AM.
+
+
+2.0.4 (2023-02-28)
+==================
+
+Periodic maintenance release
+
+* [#2607] Fixed crash when selecting trigger-from-step in logic editor
+* Fixed crash when importing forms
+* [#2699] Fixed file uploads not resolving when inside fieldsets/repeating groups
+* Stopped link checking JCC links in CI since we're actively being blocked
+* [#2671] Fixed QR code background in dark mode
+* [#2709] Fixed (bandaid) inconsistent dynamic product price logic
+* [#2724] Ensure backport of negative-numbers (#1351) is correctly included
+* [#2734] Added bandaid fix for non-unique keys inside repeating groups
+* Updated to SDK 1.2.6
+* [#2717] Fixed crash on StUF-ZDS when updating the payment status
+* [#2781] Fixed clearing the value of hidden components with a nested key (``nested.key``).
+* [#2759] Fixed handling of file uploads with a nested key (``nested.key``).
+
+
+1.1.10 (2023-02-28)
+===================
+
+Bugfix release with some fixes from newer versions applied.
+
+* [#2520] Fixed bug in mimetype validation for ``application/ms-word`` (and similar) files
+* Bump required SDK version
+* [#2717] Fixed crash on StUF-ZDS when updating the payment status
+* [#2671] Fixed QR code background in dark mode
+* [#2709] Fixed (bandaid) inconsistent dynamic product price logic
+
+
+2.1.0-alpha.2 (2023-02-01)
+==========================
+
+Next 2.1.0 preview version.
+
+This alpha release of Open Forms 2.1 is likely to be the last one before the beta
+version(s) and associated feature freeze.
 
 Detailed changes
 ----------------
