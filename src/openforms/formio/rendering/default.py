@@ -14,6 +14,7 @@ from openforms.submissions.rendering.constants import RenderModes
 from openforms.utils.glom import _glom_path_to_str
 from openforms.utils.urls import build_absolute_uri
 
+from ..service import format_value
 from ..utils import is_visible_in_frontend, iterate_components_with_configuration_path
 from .conf import RENDER_CONFIGURATION
 from .nodes import ComponentNode
@@ -309,3 +310,12 @@ class EditGridGroupNode(ContainerMixin, ComponentNode):
 
     def render(self) -> str:
         return f"{self.indent}{self.label}"
+
+
+@register("password")
+class PasswordNode(ComponentNode):
+    @property
+    def display_value(self) -> str:
+        if self.mode not in [RenderModes.pdf, RenderModes.confirmation_email]:
+            return self.value
+        return format_value(self.component, self.value, as_html=self.renderer.as_html)
