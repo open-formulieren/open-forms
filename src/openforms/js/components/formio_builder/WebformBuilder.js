@@ -2,6 +2,7 @@ import {Formio} from 'formiojs';
 import FormioUtils from 'formiojs/utils';
 import BuilderUtils from 'formiojs/utils/builder';
 import cloneDeep from 'lodash/cloneDeep';
+import isEmpty from 'lodash/isEmpty';
 
 import {getComponentEmptyValue} from 'components/utils';
 
@@ -51,7 +52,7 @@ class WebformBuilder extends WebformBuilderFormio {
   // steps as an option to the webform.
   findNamespaceRoot(component) {
     const customNamespace = this.webform?.options?.openForms?.componentNamespace;
-    if (customNamespace) return customNamespace;
+    if (!isEmpty(customNamespace)) return customNamespace;
 
     return super.findNamespaceRoot(component);
   }
