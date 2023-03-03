@@ -26,6 +26,19 @@ async def drag_and_drop_component(page: Page, component: str):
     await page.mouse.up()
 
 
+async def open_component_options_modal(page: Page, label: str):
+    """
+    Find the component in the builder with the given label and click the edit icon
+    to bring up the options modal.
+    """
+    # hover over component to bring up action icons
+    await page.get_by_text(label).hover()
+    # formio doesn't have accessible roles here, so use CSS selector
+    await page.locator('css=[ref="editComponent"]').locator("visible=true").click()
+    # check that the modal is open now
+    await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
+
+
 class FormDesignerComponentTranslationTests(E2ETestCase):
     async def test_editing_translatable_properties(self):
         @sync_to_async
@@ -74,15 +87,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             await page.get_by_role("tab", name="Steps and fields").click()
 
             with phase("Textfield component checks"):
-                # hover over component to bring up action icons
-                await page.get_by_text("Field 1").hover()
-                # formio doesn't have accessible roles here, so use CSS selector
-                await page.locator('css=[ref="editComponent"]').locator(
-                    "visible=true"
-                ).click()
-
-                # check that the modal is open now
-                await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
+                await open_component_options_modal(page, "Field 1")
 
                 # find and click translations tab
                 await page.get_by_role("link", name="Vertalingen").click()
@@ -121,15 +126,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                 await page.get_by_role("button", name="Opslaan").click()
 
             with phase("Select component checks"):
-                await page.get_by_text("Field 2").hover()
-                # formio doesn't have accessible roles here, so use CSS selector
-                await page.locator('css=[ref="editComponent"]').locator(
-                    "visible=true"
-                ).click()
-
-                # check that the modal is open now
-                await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
-
+                await open_component_options_modal(page, "Field 2")
                 # find and click translations tab
                 await page.get_by_role("link", name="Vertalingen").click()
 
@@ -238,13 +235,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             await self._admin_login(page)
             await page.goto(str(admin_url))
             await page.get_by_role("tab", name="Steps and fields").click()
-
-            # Open the edit modal
-            await page.get_by_text("Some Field").hover()
-            await page.locator('css=[ref="editComponent"]').locator(
-                "visible=true"
-            ).click()
-            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
+            await open_component_options_modal(page, "Some Field")
 
             # fill the component key field with an invalid value to trigger validation
             key_input = page.get_by_label("Eigenschapnaam")
@@ -288,10 +279,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             await page.get_by_role("tab", name="Steps and fields").click()
 
             # Drag and drop a component
-            await page.get_by_text("Bestandsupload").hover()
-            await page.mouse.down()
-            await page.locator('css=[ref="-container"]').hover()
-            await page.mouse.up()
+            await drag_and_drop_component(page, "Bestandsupload")
 
             # Check that the modal is open
             await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
@@ -622,6 +610,125 @@ class FormDesignerRegressionTests(E2ETestCase):
 
             self.assertEqual(
                 created_form_logic.trigger_from_step, form.formstep_set.first()
+            )
+
+        await assertState()
+
+    @tag("gh-2769")
+    async def test_max_min_date_validation(self):
+        @sync_to_async
+        def setUpTestData():
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Playwright test",
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "datetime",
+                            "key": "field1",
+                            "label": "Some Field",
+                        },
+                    ],
+                },
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            # Goto "Steps and fields"
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            with phase("Initial set up of datetime validation"):
+                await open_component_options_modal(page, "Some Field")
+                await page.get_by_role("link", name="Validatie").click()
+
+                # select the validation mode in the dropdown
+                label = page.get_by_text("Validatiemethode", exact=True).first
+                field = label.locator("..")  # grab the parent
+                dropdown = field.get_by_role("combobox")
+                await dropdown.click()
+                await dropdown.get_by_text("Ten opzichte van een variabele").click()
+
+                # Fill in years, months, days and submit
+                years = page.get_by_label("Jaren")
+                months = page.get_by_label("Maanden")
+                days = page.get_by_label("Dagen")
+                await years.fill("1")
+                await months.fill("1")
+                await days.fill("1")
+                await page.get_by_role("button", name="Opslaan").click()
+
+                # Navigate back to Validation
+                await open_component_options_modal(page, "Some Field")
+                await page.get_by_role("link", name="Validatie").click()
+
+                # Check expectations
+                await expect(years).to_have_value("1")
+                await expect(months).to_have_value("1")
+                await expect(months).to_have_value("1")
+
+                await page.get_by_role("button", name="Opslaan").click()
+
+            with phase("Change values for datetime validation"):
+                await open_component_options_modal(page, "Some Field")
+                await page.get_by_role("link", name="Validatie").click()
+
+                # Fill in years, months, days and submit
+                years = page.get_by_label("Jaren")
+                months = page.get_by_label("Maanden")
+                days = page.get_by_label("Dagen")
+                await years.fill("8")
+                await months.fill("8")
+                await days.fill("8")
+                await page.get_by_role("button", name="Opslaan").click()
+
+                # Navigate back to Validation
+                await open_component_options_modal(page, "Some Field")
+                await page.get_by_role("link", name="Validatie").click()
+
+                # Check expectations
+                await expect(years).to_have_value("8")
+                await expect(months).to_have_value("8")
+                await expect(months).to_have_value("8")
+
+                # close modal again
+                await page.get_by_role("button", name="Annuleren").click()
+
+            with phase("save form changes to backend"):
+                await page.get_by_role("button", name="Save", exact=True).click()
+                changelist_url = str(
+                    furl(self.live_server_url) / reverse("admin:forms_form_changelist")
+                )
+                await expect(page).to_have_url(changelist_url)
+
+        @sync_to_async
+        def assertState():
+            configuration = form.formstep_set.get().form_definition.configuration
+            component = configuration["components"][0]
+            self.assertEqual(component["key"], "field1")
+            self.assertEqual(
+                component["openForms"]["minDate"],
+                {
+                    "mode": "relativeToVariable",
+                    "variable": "now",
+                    "includeToday": None,
+                    "operator": "add",
+                    "delta": {
+                        "years": 8,
+                        "months": 8,
+                        "days": 8,
+                    },
+                },
             )
 
         await assertState()
