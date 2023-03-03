@@ -229,7 +229,7 @@ const OPTIONS_CHOICES = [
     },
   },
   {
-    label: 'Items',
+    label: 'Items expression',
     key: 'openForms.itemsExpression',
     type: 'textarea',
     tooltip:

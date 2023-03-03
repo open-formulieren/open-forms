@@ -17,7 +17,7 @@ const REGISTRATION = {
       type: 'iotypeSelect',
       key: 'registration.informatieobjecttype',
       label: 'Informatieobjecttype',
-      description: 'Save the attachment in the Documents API with this InformatieObjectType.',
+      tooltip: 'Save the attachment in the Documents API with this InformatieObjectType.',
       dataSrc: 'url',
       data: {
         // if the url starts with '/', then formio will prefix it with the formio
@@ -31,7 +31,7 @@ const REGISTRATION = {
       type: 'textfield',
       key: 'registration.bronorganisatie',
       label: 'Bronorganisatie',
-      description: 'RSIN of the organization which creates the ENKELVOUDIGINFORMATIEOBJECT.',
+      tooltip: 'RSIN of the organization which creates the ENKELVOUDIGINFORMATIEOBJECT.',
     },
     {
       type: 'select',
@@ -44,7 +44,7 @@ const REGISTRATION = {
           return jsonScriptToVar('CONFIDENTIALITY_LEVELS');
         },
       },
-      description:
+      tooltip:
         'Indication of the level to which extent the INFORMATIEOBJECT is meant to be public.',
     },
     {
@@ -54,7 +54,7 @@ const REGISTRATION = {
       validate: {
         maxLength: 200,
       },
-      description: 'The name under which the INFORMATIEOBJECT is formally known.',
+      tooltip: 'The name under which the INFORMATIEOBJECT is formally known.',
     },
   ],
 };

@@ -989,6 +989,12 @@
       "value": "Add variable"
     }
   ],
+  "Ltde29": [
+    {
+      "type": 0,
+      "value": "fetch the value for a variable from a service"
+    }
+  ],
   "M0kOz9": [
     {
       "type": 0,
@@ -2179,6 +2185,16 @@
     {
       "type": 0,
       "value": "Float"
+    }
+  ],
+  "rTeZb4": [
+    {
+      "type": 0,
+      "value": "Form has translation enabled, but there are missing translations for the following Form Steps: "
+    },
+    {
+      "type": 1,
+      "value": "stepNames"
     }
   ],
   "rZfe8Z": [
