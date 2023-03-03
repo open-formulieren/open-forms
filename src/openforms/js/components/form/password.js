@@ -1,16 +1,17 @@
 import {Formio} from 'react-formio';
 
 import {AUTOCOMPLETE, DEFAULT_VALUE} from './edit/options';
-import {
-  ADVANCED,
-  DEFAULT_SENSITIVE_TABS,
-  REGISTRATION,
-  SENSITIVE_BASIC,
-  TRANSLATIONS,
-  VALIDATION,
-} from './edit/tabs';
+import {ADVANCED, REGISTRATION, SENSITIVE_BASIC, TRANSLATIONS, VALIDATION} from './edit/tabs';
 
-class PasswordField extends Formio.Components.components.password {
+const FormioPasswordField = Formio.Components.components.password;
+
+class PasswordField extends FormioPasswordField {
+  get defaultSchema() {
+    // In Formio, the 'protected' attribute is removed from the default schema. This makes it not end up in the
+    // component configuration
+    return PasswordField.schema();
+  }
+
   static editForm() {
     // option
     const extra = [{...AUTOCOMPLETE, placeholder: 'password'}];
