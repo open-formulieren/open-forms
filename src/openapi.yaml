@@ -3314,7 +3314,11 @@ paths:
   /api/v2/services:
     get:
       operationId: services_list
-      description: Configured Services
+      description: |-
+        Return a list of available (JSON) services/registrations configured in the backend.
+
+        Note that this endpoint is **EXPERIMENTAL**.
+      summary: List available services
       tags:
       - services
       security:
@@ -3337,6 +3341,7 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+      x-experimental: true
   /api/v2/submissions:
     get:
       operationId: submissions_list
