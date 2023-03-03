@@ -1,3 +1,4 @@
+from freezegun import freeze_time
 from rest_framework.test import APITestCase
 
 from openforms.config.models import GlobalConfiguration
@@ -149,5 +150,49 @@ class SubmissionConfirmationPageTests(APITestCase):
 
         self.assertEqual(
             "See http://example.com/bla",
+            confirmation_page_content,
+        )
+
+    def test_static_variables_in_submission_template(self):
+        form = FormFactory.create(
+            submission_confirmation_template=(
+                '{% if auth_bsn %}Dear {{ name|title }}, you logged in with BSN on day {{ today|date:"d/m/Y" }}.{% endif %}'
+                "{% if auth_kvk %}Dear {{ name|title }}, you logged in with KVK.{% endif %}"
+            )
+        )
+        form_step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "name",
+                    },
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(
+            form=form,
+            auth_info__plugin="digid",
+            auth_info__value="123456789",
+            completed=True,
+        )
+
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={"name": "John"},
+        )
+
+        with freeze_time("2023-03-03"):
+            confirmation_page_content = submission.render_confirmation_page()
+
+        self.assertIn(
+            "Dear John, you logged in with BSN on day 03/03/2023.",
+            confirmation_page_content,
+        )
+        self.assertNotIn(
+            "Dear John, you logged in with KVK.",
             confirmation_page_content,
         )
