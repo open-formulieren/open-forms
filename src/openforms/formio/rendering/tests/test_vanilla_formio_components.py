@@ -1176,3 +1176,47 @@ class FormNodeTests(TestCase):
         # Check that the fieldset is present
         # Nodes: Form, SubmissionStep, Fieldset, Component (textfield), Component (radio), Variables
         self.assertEqual(6, len(nodes))
+
+    def test_password_component(self):
+        """
+        WYSIWYG is only displayed in confirmation PDF and CLI rendering.
+        """
+        component = {
+            "type": "password",
+            "key": "aSillyPassword",
+            "label": "A silly password",
+            "hidden": False,
+        }
+        submission = SubmissionFactory.create(
+            form__name="public name",
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={"components": [component]},
+        )
+        step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=submission.form.formstep_set.get(),
+            data={"aSillyPassword": "123456"},
+        )
+
+        for render_mode in [RenderModes.pdf, RenderModes.confirmation_email]:
+            with self.subTest(render_mode=render_mode):
+                renderer = Renderer(submission, mode=render_mode, as_html=True)
+                component_node = ComponentNode.build_node(
+                    step=step, component=component, renderer=renderer
+                )
+
+                self.assertEqual(component_node.display_value, "******")
+
+        render_modes = [
+            mode
+            for mode in RenderModes.values
+            if mode not in [RenderModes.pdf, RenderModes.confirmation_email]
+        ]
+        for render_mode in render_modes:
+            with self.subTest(render_mode=render_mode):
+                renderer = Renderer(submission, mode=render_mode, as_html=True)
+                component_node = ComponentNode.build_node(
+                    step=step, component=component, renderer=renderer
+                )
+
+                self.assertEqual(component_node.display_value, "123456")

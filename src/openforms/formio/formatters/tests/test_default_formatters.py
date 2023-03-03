@@ -21,7 +21,7 @@ class DefaultFormatterTestCase(TestCase):
             "radio": "Option 2",
             "number": "42,123",
             "select": "Option 1",
-            "password": "secret",  # "\u25CF\u25CF\u25CF\u25CF\u25CF\u25CF",
+            "password": "******",
             "postcode": "1234 AA",
             "textArea": "Textarea test",
             # "signature": "data:image/png;base64,iVBO[truncated]",

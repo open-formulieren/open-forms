@@ -113,7 +113,7 @@ class DownloadSubmissionReportTests(APITestCase):
             ("licenseplate", "AA-00-13"),
             ("map", "52.193459, 5.279538"),
             ("number", "1"),
-            ("password", "Panda1911!"),  # XXX Why is this widget even an option?
+            ("password", "**********"),  # XXX Why is this widget even an option?
             ("phonenumber", "+49 1234 567 890"),
             ("postcode", "3744 AA"),
             ("radio", "Radio number one"),
@@ -353,7 +353,7 @@ class DownloadSubmissionReportTests(APITestCase):
         self.assertEqual(tested_plugins, plugins, "Untested component plugins!")
 
         # For the lolz, check this again. Fine™ :ok_hand:
-        self.assertIn("Panda1911!", html_report)
+        self.assertIn("**********", html_report)
 
     @patch(
         "celery.result.AsyncResult._get_task_meta", return_value={"status": "SUCCESS"}

@@ -700,7 +700,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         self.assertIn("Translated Repeating Group Item label 2", html_message)
         self.assertIn("Translated Radio option 1", html_message)
         self.assertIn("Translated Select option 2", html_message)
-        self.assertIn("Haveibeenpwned.com123!@#", html_message)
+        self.assertIn("************************", html_message)
 
 
 class RaceConditionTests(TransactionTestCase):
