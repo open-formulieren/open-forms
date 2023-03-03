@@ -292,6 +292,8 @@ class SubmissionSuspensionSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         email = validated_data.pop("email")
         instance.suspended_on = timezone.now()
+        if instance.is_authenticated:
+            instance.auth_info.hash_identifying_attributes()
         instance = super().update(instance, validated_data)
         transaction.on_commit(lambda: self.notify_suspension(instance, email))
         return instance
