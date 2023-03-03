@@ -14,14 +14,15 @@ const MESSAGES = {
 };
 
 const getMinMaxValidationEditForm = (fieldName, componentType) => {
+  const namespace = `openForms.${fieldName}`;
   const panel = {
     type: 'panel',
-    key: `openForms.${fieldName}`,
+    key: `${fieldName}ValidationPanel`,
     title: MESSAGES.panel[fieldName],
     components: [
       {
         type: 'select',
-        key: `openForms.${fieldName}.mode`,
+        key: `${namespace}.mode`,
         label: 'Mode preset',
         defaultValue: '',
         data: {
@@ -62,34 +63,31 @@ const getMinMaxValidationEditForm = (fieldName, componentType) => {
           ) {
             return false;
           }
-          const upperCasedFieldName = fieldName.charAt(0).toUpperCase() + fieldName.substring(1);
-          const attrName = `enable${upperCasedFieldName}Input`;
-          const isFixedValue = data?.openForms[fieldName]?.mode === 'fixedValue';
-          return isFixedValue && !data[attrName];
+          return data?.openForms?.[fieldName]?.mode === 'fixedValue';
         },
       },
       // Only include 'includingToday' for dates, since it doesn't make sense for datetimes when checking if a
       // datetime is in the past/future
       componentType === 'date' && {
         type: 'checkbox',
-        key: `openForms.${fieldName}.includeToday`,
+        key: `${namespace}.includeToday`,
         label: 'Including today',
         tooltip: 'If checked, the current day is an allowed value.',
         conditional: {
           json: {
-            in: [{var: `data.openForms.${fieldName}.mode`}, ['future', 'past']],
+            in: [{var: `data.${namespace}.mode`}, ['future', 'past']],
           },
         },
         defaultValue: false,
       },
       {
         type: 'columns',
-        key: `openForms.${fieldName}.relative`,
+        key: `${fieldName}ValidationRelativeColumns`,
         label: 'Relative to',
         clearOnHide: true,
         conditional: {
           show: true,
-          when: `openForms.${fieldName}.mode`,
+          when: `${namespace}.mode`,
           eq: 'relativeToVariable',
         },
         columns: [
@@ -98,7 +96,7 @@ const getMinMaxValidationEditForm = (fieldName, componentType) => {
             components: [
               {
                 type: 'select',
-                key: `openForms.${fieldName}.operator`,
+                key: `${namespace}.operator`,
                 label: 'Add/subtract duration',
                 tooltip: 'Specify whether to add or subtract a time delta to/from the variable',
                 defaultValue: 'add',
@@ -122,7 +120,7 @@ const getMinMaxValidationEditForm = (fieldName, componentType) => {
             components: [
               {
                 type: 'textfield',
-                key: `openForms.${fieldName}.variable`,
+                key: `${namespace}.variable`,
                 defaultValue: 'now',
                 clearOnHide: true,
                 label: 'Variable',
@@ -134,12 +132,12 @@ const getMinMaxValidationEditForm = (fieldName, componentType) => {
       },
       {
         type: 'columns',
-        key: `openForms.${fieldName}.delta`,
+        key: `${fieldName}ValidationDeltaColumns`,
         label: 'Delta configuration',
         clearOnHide: true,
         conditional: {
           show: true,
-          when: `openForms.${fieldName}.mode`,
+          when: `${namespace}.mode`,
           eq: 'relativeToVariable',
         },
         columns: [
@@ -148,7 +146,7 @@ const getMinMaxValidationEditForm = (fieldName, componentType) => {
             components: [
               {
                 type: 'number',
-                key: 'years',
+                key: `${namespace}.delta.years`,
                 label: 'Years',
                 tooltip: 'Number of years. Empty values are ignored.',
                 validate: {
@@ -162,7 +160,7 @@ const getMinMaxValidationEditForm = (fieldName, componentType) => {
             components: [
               {
                 type: 'number',
-                key: 'months',
+                key: `${namespace}.delta.months`,
                 label: 'Months',
                 tooltip: 'Number of months. Empty values are ignored.',
                 validate: {
@@ -176,7 +174,7 @@ const getMinMaxValidationEditForm = (fieldName, componentType) => {
             components: [
               {
                 type: 'number',
-                key: 'days',
+                key: `${namespace}.delta.days`,
                 label: 'Days',
                 tooltip: 'Number of days. Empty values are ignored.',
                 validate: {
@@ -187,7 +185,7 @@ const getMinMaxValidationEditForm = (fieldName, componentType) => {
           },
         ],
       },
-    ],
+    ].filter(Boolean),
   };
   return panel;
 };

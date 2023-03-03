@@ -23,7 +23,7 @@ class DateConstraintDelta(TypedDict):
 
 
 class DateConstraintConfiguration(TypedDict):
-    mode: Literal["fixedValue", "future", "past", "relativeToVariable"]
+    mode: Literal["", "fixedValue", "future", "past", "relativeToVariable"]
     includeToday: Optional[bool]
     variable: Optional[str]
     delta: Optional[DateConstraintDelta]
