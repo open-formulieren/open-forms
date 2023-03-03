@@ -1,0 +1,45 @@
+from rest_framework import status
+from rest_framework.reverse import reverse
+from rest_framework.test import APITestCase
+
+from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
+from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
+
+
+class AccessControlTests(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.user = UserFactory.create()
+        cls.admin_user = StaffUserFactory.create()
+
+    def test_service_list_is_forbidden_for_normal_users(self):
+        endpoint = reverse("api:service-list")
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_service_list_returns_a_list_to_admin_users(self):
+        endpoint = reverse("api:service-list")
+        self.client.force_authenticate(user=self.admin_user)
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), [])
+
+    def test_returned_services_have_the_right_properties(self):
+        expected_service = ServiceFactory.create()
+        endpoint = reverse("api:service-list")
+        self.client.force_authenticate(user=self.admin_user)
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        service = response.json()[0]
+        self.assertEqual(service["label"], expected_service.label)
+        self.assertEqual(service["apiRoot"], expected_service.api_root)
+        self.assertEqual(service["apiType"], expected_service.api_type)

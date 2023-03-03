@@ -19,6 +19,7 @@ from openforms.forms.api.viewsets import (
     FormViewSet,
 )
 from openforms.products.api.viewsets import ProductViewSet
+from openforms.services.api.viewsets import ServiceViewSet
 from openforms.submissions.api.viewsets import SubmissionStepViewSet, SubmissionViewSet
 from openforms.utils.decorators import never_cache
 from openforms.utils.json_logic.api.views import GenerateLogicDescriptionView
@@ -51,6 +52,9 @@ submissions_router.register(
 
 # products
 router.register("products", ProductViewSet)
+
+# services
+router.register("services", ServiceViewSet)
 
 urlpatterns = [
     path("docs/", RedirectView.as_view(pattern_name="api:api-docs")),
