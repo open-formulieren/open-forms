@@ -208,6 +208,7 @@ const OPTIONS_CHOICES = [
         },
       },
     ],
+    clearOnHide: true,
     conditional: {
       show: true,
       when: 'openForms.dataSrc',
@@ -220,6 +221,7 @@ const OPTIONS_CHOICES = [
     key: 'defaultValue',
     tooltip: 'This will be the initial value for this field, before user interaction.',
     input: true,
+    clearOnHide: true,
     conditional: {
       show: true,
       when: 'openForms.dataSrc',

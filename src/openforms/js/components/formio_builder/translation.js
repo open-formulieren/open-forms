@@ -3,6 +3,7 @@
  */
 import Utils from 'formiojs/utils';
 import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import mapValues from 'lodash/mapValues';
 import merge from 'lodash/merge';
 import pickBy from 'lodash/pickBy';
@@ -241,7 +242,9 @@ export const handleComponentValueLiterals = (
       return null;
   }
   let translations = {};
-  values.forEach(({label}, index) => {
+  const nonEmptyValues = values.filter(item => !isEmpty(item));
+  if (!nonEmptyValues.length) return null;
+  nonEmptyValues.forEach(({label = ''}, index) => {
     merge(
       translations,
       addTranslationForLiteral(component, allComponentTranslations, undefined, label)

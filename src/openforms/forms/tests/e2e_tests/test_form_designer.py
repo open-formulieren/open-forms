@@ -82,9 +82,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                 ).click()
 
                 # check that the modal is open now
-                await expect(page.locator("css=.formio-dialog-content")).to_have_count(
-                    1
-                )
+                await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
 
                 # find and click translations tab
                 await page.get_by_role("link", name="Vertalingen").click()
@@ -130,9 +128,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                 ).click()
 
                 # check that the modal is open now
-                await expect(page.locator("css=.formio-dialog-content")).to_have_count(
-                    1
-                )
+                await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
 
                 # find and click translations tab
                 await page.get_by_role("link", name="Vertalingen").click()
@@ -146,9 +142,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
                         await expect(literal_loc).to_have_value(literal)
 
                 await page.get_by_role("button", name="Annuleren").click()
-                await expect(page.locator("css=.formio-dialog-content")).to_have_count(
-                    0
-                )
+                await expect(page.locator("css=.formio-dialog-content")).to_be_hidden()
 
             with phase("save form changes to backend"):
                 await page.get_by_role("button", name="Save", exact=True).click()
@@ -171,6 +165,46 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             )
 
         await assertState()
+
+    @tag("gh-2800")
+    async def test_editing_translatable_properties_remembers_translations(self):
+        """
+        Assert that entering translations and then changing the source string keeps the translation.
+        """
+        await create_superuser()
+        admin_url = str(furl(self.live_server_url) / reverse("admin:forms_form_add"))
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+            await page.get_by_role("button", name="Add step").click()
+            await page.get_by_role(
+                "button", name="Create a new form definition"
+            ).click()
+            await drag_and_drop_component(page, "Tekstveld")
+            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
+            await page.get_by_label("Label", exact=True).fill("Test")
+
+            # Set an initial translation
+            await page.get_by_role("link", name="Vertalingen").click()
+            literal = page.locator('css=[name="data[openForms.translations.nl][0]"]')
+            translation = page.locator(
+                'css=[name="data[openForms.translations.nl][0][translation]"]'
+            )
+            await expect(literal).to_have_value("Test")
+            await expect(translation).to_have_value("")
+
+            await translation.click()
+            await translation.fill("Vertaald label")
+
+            # Now change the source string & check the translations are still in place
+            await page.get_by_role("link", name="Basis").click()
+            await page.get_by_label("Label", exact=True).fill("Test 2")
+
+            await page.get_by_role("link", name="Vertalingen").click()
+            await expect(literal).to_have_value("Test 2")
+            await expect(translation).to_have_value("Vertaald label")
 
     async def test_regex_validation_key(self):
         @sync_to_async
@@ -210,7 +244,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             await page.locator('css=[ref="editComponent"]').locator(
                 "visible=true"
             ).click()
-            await expect(page.locator("css=.formio-dialog-content")).to_have_count(1)
+            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
 
             # fill the component key field with an invalid value to trigger validation
             key_input = page.get_by_label("Eigenschapnaam")
@@ -260,7 +294,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             await page.mouse.up()
 
             # Check that the modal is open
-            await expect(page.locator("css=.formio-dialog-content")).to_have_count(1)
+            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
 
             # Check the key before modifying the label
             key_input = page.get_by_label("Eigenschapnaam")
@@ -313,7 +347,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             await drag_and_drop_component(page, "Tekstveld")
 
             # Check that the modal is open
-            await expect(page.locator("css=.formio-dialog-content")).to_have_count(1)
+            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
 
             # Check that the key has been made unique (textField1 vs textField)
             key_input = page.get_by_label("Eigenschapnaam")
@@ -350,6 +384,49 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
 
             # the modal should close
             await expect(page.locator("css=.formio-dialog-content")).to_be_hidden()
+
+    @tag("gh-2800")
+    async def test_key_automatically_generated_for_select_options(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Playwright test",
+                formstep__form_definition__configuration={
+                    "components": [],
+                },
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            # Drag and drop a component
+            await drag_and_drop_component(page, "Keuzelijst")
+
+            # Check that the modal is open
+            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
+
+            # Update the label
+            value_label_input = page.locator('css=[name="data[data.values][0][label]"]')
+            await value_label_input.click()
+            await value_label_input.fill("Test")
+
+            # Check that the key has been updated
+            value_key_input = page.locator('css=[name="data[data.values][0][value]"]')
+            await expect(value_key_input).to_have_value("test")
 
 
 class FormDesignerRegressionTests(E2ETestCase):
