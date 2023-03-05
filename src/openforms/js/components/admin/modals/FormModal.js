@@ -10,12 +10,14 @@ const FormModal = ({
   onFormSubmit,
   children,
   extraModifiers = [],
+  ...props
 }) => (
   <Modal
     isOpen={isOpen}
     title={title}
     closeModal={closeModal}
     contentModifiers={['with-form', ...extraModifiers]}
+    {...props}
   >
     <form
       className="aligned react-modal__form"

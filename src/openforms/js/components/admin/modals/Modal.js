@@ -3,11 +3,20 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ReactModal from 'react-modal';
 
-import FAIcon from './FAIcon';
+import FAIcon from 'components/admin/FAIcon';
 
 const CONTENT_CLASS_NAME = 'react-modal__content';
 
-const Modal = ({ isOpen = false, title = '', closeModal, children, contentModifiers = [] }) => {
+export const CONTENT_MODIFIERS = ['small', 'with-form'];
+
+const Modal = ({
+  isOpen = false,
+  title = '',
+  closeModal,
+  children,
+  contentModifiers = [],
+  ...props
+}) => {
   const modifiedClassNames = contentModifiers.map(modifier => `${CONTENT_CLASS_NAME}--${modifier}`);
   const className = classNames(CONTENT_CLASS_NAME, ...modifiedClassNames);
   return (
@@ -16,6 +25,7 @@ const Modal = ({ isOpen = false, title = '', closeModal, children, contentModifi
       onRequestClose={closeModal}
       className={className}
       overlayClassName="react-modal__overlay"
+      {...props}
     >
       <header className="react-modal__header">
         {title ? <h2 className="react-modal__title">{title}</h2> : null}
@@ -36,7 +46,7 @@ Modal.propTypes = {
   title: PropTypes.node,
   closeModal: PropTypes.func.isRequired,
   children: PropTypes.node,
-  contentModifiers: PropTypes.arrayOf(PropTypes.string),
+  contentModifiers: PropTypes.arrayOf(PropTypes.oneOf(CONTENT_MODIFIERS)),
 };
 
 export default Modal;
