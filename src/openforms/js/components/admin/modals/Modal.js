@@ -7,7 +7,7 @@ import FAIcon from './FAIcon';
 
 const CONTENT_CLASS_NAME = 'react-modal__content';
 
-const Modal = ({isOpen = false, title = '', closeModal, children, contentModifiers = []}) => {
+const Modal = ({ isOpen = false, title = '', closeModal, children, contentModifiers = [] }) => {
   const modifiedClassNames = contentModifiers.map(modifier => `${CONTENT_CLASS_NAME}--${modifier}`);
   const className = classNames(CONTENT_CLASS_NAME, ...modifiedClassNames);
   return (
