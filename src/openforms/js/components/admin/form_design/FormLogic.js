@@ -63,6 +63,7 @@ const FormLogic = ({logicRules = [], onChange, onDelete, onAdd}) => {
   const backendDataToLoad = [
     {endpoint: SERVICES_ENDPOINT, stateVar: 'services'},
     // TODO load ServiceFetchConfigurations
+    {endpoint: '/api/v2/service-fetch-configurations', stateVar: 'serviceFetchConfigurations'},
   ];
 
   const {loading} = useAsync(async () => {

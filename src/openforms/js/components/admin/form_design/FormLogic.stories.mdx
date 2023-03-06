@@ -2,7 +2,7 @@ import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
 
 import {FeatureFlagsContext, FormContext} from './Context';
 import {FormLogic} from './FormLogic';
-import {mockLanguageInfoGet, mockServices} from './mocks';
+import {mockLanguageInfoGet, mockServiceFetchConfigurations, mockServices} from './mocks';
 
 <Meta
   title="Form design/FormLogic"
@@ -20,6 +20,35 @@ import {mockLanguageInfoGet, mockServices} from './mocks';
             label: 'Service 2',
             apiRoot: 'http://bar.com/api/v1/',
             apiType: 'ORC',
+          },
+        ]),
+        mockServiceFetchConfigurations([
+          {
+            name: 'Foo fetch',
+            url: 'http://openforms.dev/service-fetch-configurations/foo',
+            service: 'http://foo.com/api/v1/',
+            path: '/some-path',
+            method: 'GET',
+            headers: [['X-Foo', 'foo']],
+            queryParams: [['parameter2', ['value1', 'value2']]],
+            body: {field1: 'value', field2: 'value2'},
+            dataMappingType: 'jq',
+            mappingExpression: '.field.nested',
+          },
+          {
+            name: '', // No name supplied, should fall back to "method path (service)"
+            url: 'http://openforms.dev/service-fetch-configurations/bar',
+            service: 'http://bar.com/api/v1/',
+            path: '/some-other-path',
+            method: 'POST',
+            headers: [['X-Foo', 'bar']],
+            queryParams: [
+              ['parameter', ['value']],
+              ['parameter2', ['value1', 'value2']],
+            ],
+            body: {field1: 'value', field2: 'value2'},
+            dataMappingType: 'JsonLogic',
+            mappingExpression: {var: 'field'},
           },
         ]),
       ],
