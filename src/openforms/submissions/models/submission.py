@@ -448,7 +448,7 @@ class Submission(models.Model):
         return state
 
     def render_confirmation_page(self) -> str:
-        from openforms.variables.service import get_static_variables
+        from openforms.variables.utils import get_variables_for_context
 
         if not (template := self.form.submission_confirmation_template):
             config = GlobalConfiguration.get_solo()
@@ -461,11 +461,7 @@ class Submission(models.Model):
             "_submission": self,
             "_form": self.form,  # should be the same as self.form
             "public_reference": self.public_registration_reference,
-            **self.data,
-            **{
-                variable.key: variable.initial_value
-                for variable in get_static_variables(submission=self)
-            },
+            **get_variables_for_context(submission=self),
         }
         return render_from_string(template, context_data, backend=openforms_backend)
 

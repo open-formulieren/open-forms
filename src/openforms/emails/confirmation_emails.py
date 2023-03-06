@@ -9,6 +9,7 @@ from openforms.appointments.models import AppointmentInfo
 from openforms.config.models import GlobalConfiguration
 from openforms.forms.constants import ConfirmationEmailOptions
 from openforms.utils.urls import build_absolute_uri
+from openforms.variables.utils import get_variables_for_context
 
 from .exceptions import SkipConfirmationEmail
 
@@ -53,9 +54,8 @@ def get_confirmation_email_context_data(submission: "Submission") -> Dict[str, A
             # TODO: this should use the :func:`openforms.formio.service.format_value`
             # but be keyed by component.key instead of the label, which
             # submission.get_printable_data did.
-            **submission.data,
+            **get_variables_for_context(submission),
             "public_reference": submission.public_registration_reference,
-            "form_name": submission.form.name,
         }
 
     # use the ``|date`` filter so that the timestamp is first localized to the correct
