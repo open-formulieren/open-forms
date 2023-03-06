@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from openforms.typing import JSONObject
 from openforms.utils.date import parse_date
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from openforms.submissions.models import Submission
 
 
