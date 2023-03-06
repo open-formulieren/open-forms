@@ -45,32 +45,30 @@ const MAP_DEFAULTS = {
   zoom: 3,
 };
 
-const EDIT_FORM_TABS = [
-  {
-    type: 'tabs',
-    key: 'tabs',
-    components: [
-      {
-        key: 'basic',
-        label: 'Basic',
-        components: [
-          LABEL_REQUIRED,
-          KEY,
-          DESCRIPTION,
-          PRESENTATION,
-          HIDDEN,
-          CLEAR_ON_HIDE,
-          {...IS_SENSITIVE_DATA, defaultValue: true},
-          DEFAULT_VALUE,
-        ],
-      },
-      ADVANCED,
-      VALIDATION,
-      REGISTRATION,
-      TRANSLATIONS,
-    ],
-  },
-];
+const EDIT_FORM_TABS = {
+  type: 'tabs',
+  key: 'tabs',
+  components: [
+    {
+      key: 'basic',
+      label: 'Basic',
+      components: [
+        LABEL_REQUIRED,
+        KEY,
+        DESCRIPTION,
+        PRESENTATION,
+        HIDDEN,
+        CLEAR_ON_HIDE,
+        {...IS_SENSITIVE_DATA, defaultValue: true},
+        DEFAULT_VALUE,
+      ],
+    },
+    ADVANCED,
+    VALIDATION,
+    REGISTRATION,
+    TRANSLATIONS,
+  ],
+};
 
 export default class Map extends TextFieldComponent {
   static schema(...extend) {
