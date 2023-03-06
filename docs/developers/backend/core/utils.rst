@@ -72,3 +72,9 @@ XML
 
 .. automodule:: openforms.utils.xml
    :members:
+
+Variables
+---------
+
+.. automodule:: openforms.variables.utils
+   :members:
