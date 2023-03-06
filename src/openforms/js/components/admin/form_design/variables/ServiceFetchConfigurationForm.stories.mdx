@@ -1,6 +1,5 @@
 import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
 
-
 import {FormLogicContext} from '../Context';
 import ServiceFetchConfigurationForm from './ServiceFetchConfigurationForm';
 
@@ -53,8 +52,8 @@ export const Template = args => (
         onSubmit: (values, {setSubmitting}) => {
           alert(JSON.stringify(values, null, 2));
         },
-        getFieldProps: ({...args}) => (null),
-        getFieldHelpers: (name) => ({})
+        getFieldProps: ({...args}) => null,
+        getFieldHelpers: name => ({}),
       },
       stateData: {
         service: 'http://openforms.dev/services/foo',

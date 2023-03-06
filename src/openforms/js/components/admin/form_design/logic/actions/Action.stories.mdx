@@ -1,0 +1,93 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import {FormLogicContext} from '../../Context';
+import Action from './Action';
+
+<Meta title="Form design/Action" component={Action} />
+
+# Action
+
+Component used to define what action should be taken when a trigger condition (defined in the Form
+logic) is met
+
+export const Template = args => (
+  <FormLogicContext.Provider
+    value={{
+      services: [
+        {
+          url: 'http://openforms.dev/services/foo',
+          label: 'Service 1',
+          type: 'ORC',
+          apiRootUrl: 'https://some-api.com/api/v1/',
+        },
+        {
+          url: 'http://openforms.dev/services/bar',
+          label: 'Service 2',
+          type: 'ORC',
+          apiRootUrl: 'https://some-other-api.com/api/v1/',
+        },
+      ],
+      serviceFetchConfigurations: [
+        {
+          name: 'Foo fetch',
+          url: 'http://openforms.dev/service-fetch-configurations/foo',
+          service: 'http://openforms.dev/services/foo',
+          path: '/some-path',
+          method: 'GET',
+          headers: [['X-Foo', 'foo']],
+          queryParams: [['parameter2', ['value1', 'value2']]],
+          body: {field1: 'value', field2: 'value2'},
+          dataMappingType: 'jq',
+          mappingExpression: '.field.nested',
+        },
+        {
+          name: '', // No name supplied, should fall back to "method path (service)"
+          url: 'http://openforms.dev/service-fetch-configurations/bar',
+          service: 'http://openforms.dev/services/bar',
+          path: '/some-other-path',
+          method: 'POST',
+          headers: [['X-Foo', 'bar']],
+          queryParams: [
+            ['parameter', ['value']],
+            ['parameter2', ['value1', 'value2']],
+          ],
+          body: {field1: 'value', field2: 'value2'},
+          dataMappingType: 'JsonLogic',
+          mappingExpression: {var: 'field'},
+        },
+      ],
+    }}
+  >
+    <Action {...args} />
+  </FormLogicContext.Provider>
+);
+
+## Presentation
+
+<Canvas>
+  <Story
+    name="Default"
+    args={{
+      prefixText: null,
+      action: {
+        component: '',
+        variable: 'bar',
+        formStep: 'foo',
+        formStepUuid: 'foo',
+        action: {
+          type: 'fetch-from-service',
+          value: '',
+        },
+      },
+      errors: {},
+      onChange: ({...args}) => null,
+      onDelete: ({...args}) => null,
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+### Props
+
+<ArgsTable story="Default" />
