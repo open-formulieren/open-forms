@@ -1,0 +1,88 @@
+import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+
+import {FeatureFlagsContext, FormContext} from './Context';
+import {FormLogic} from './FormLogic';
+
+<Meta title="Form design/FormLogic" component={FormLogic} />
+
+# FormLogic
+
+Component used to configure the logic for a given Form. Logic is configured by adding Rules, each of
+which specifies either a single condition (simple) or a JsonLogic condition (advanced). In either
+case, this condition can lead to one or more configured actions that should be taken (e.g. changing
+the value of a variable or component).
+
+export const Template = args => (
+  <FeatureFlagsContext.Provider value={{of_service_fetch_enabled: true}}>
+    <FormContext.Provider
+      value={{
+        staticVariables: [],
+        formVariables: [
+          {
+            dataFormat: '',
+            dataType: 'boolean',
+            form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+            formDefinition: null,
+            initialValue: true,
+            isSensitiveData: false,
+            key: 'foo',
+            name: 'foo',
+            prefillAttribute: '',
+            prefillPlugin: '',
+            source: 'user_defined',
+          },
+        ],
+        formSteps: [{formDefinition: 'foo', internalName: 'foo'}],
+      }}
+    >
+      <FormLogic {...args} />
+    </FormContext.Provider>
+  </FeatureFlagsContext.Provider>
+);
+
+## Presentation
+
+<Canvas>
+  <Story
+    name="Default"
+    args={{
+      logicRules: [
+        {
+          uuid: 'foo',
+          _generatedId: 'foo', // consumers should generate this, as it's used for the React key prop if no uuid exists
+          _logicType: 'simple',
+          form: '',
+          description: '',
+          _mayGenerateDescription: true,
+          order: null,
+          jsonLogicTrigger: {'': [{var: ''}, null]},
+          isAdvanced: false,
+          actions: [
+            {
+              action: {type: 'fetch-from-service', value: ''},
+              component: '',
+              formStep: null,
+              formStepUuid: null,
+              variable: 'bar',
+            },
+          ],
+        },
+      ],
+      onChange: ({...args}) => {
+        null;
+      },
+      onDelete: ({...args}) => {
+        null;
+      },
+      onAdd: ({...args}) => {
+        null;
+      },
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
+
+### Props
+
+<ArgsTable story="Default" />
