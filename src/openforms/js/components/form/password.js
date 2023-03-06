@@ -9,8 +9,22 @@ import {
   TRANSLATIONS,
   VALIDATION,
 } from './edit/tabs';
+import {localiseSchema} from './i18n';
 
-class PasswordField extends Formio.Components.components.password {
+const FormioPasswordField = Formio.Components.components.password;
+
+class PasswordField extends FormioPasswordField {
+  static schema(...extend) {
+    return localiseSchema(FormioPasswordField.schema(...extend));
+  }
+
+  static get builderInfo() {
+    return {
+      ...FormioPasswordField.builderInfo,
+      schema: PasswordField.schema(),
+    };
+  }
+
   static editForm() {
     // option
     const extra = [{...AUTOCOMPLETE, placeholder: 'password'}];

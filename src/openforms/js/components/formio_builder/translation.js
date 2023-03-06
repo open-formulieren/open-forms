@@ -25,7 +25,9 @@ const LANGUAGES = getSupportedLanguages().map(([langCode]) => langCode);
  * the exact component type.
  * @type {string[]}
  */
-const ALWAYS_TRANSLATABLE_PROPERTIES = ['label', 'description', 'placeholder', 'tooltip'];
+const ALWAYS_TRANSLATABLE_PROPERTIES = ['label', 'description', 'placeholder', 'tooltip'].flatMap(
+  prop => [prop, 'basic.' + prop]
+);
 
 /**
  * Mapping of formio component type to a list of additional translatable properties.
