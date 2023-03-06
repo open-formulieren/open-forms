@@ -414,6 +414,45 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             value_key_input = page.locator('css=[name="data[data.values][0][value]"]')
             await expect(value_key_input).to_have_value("test")
 
+    @tag("gh-2820")
+    async def test_editing_content_translations_are_saved(self):
+        """
+        Assert that entering translations and then changing the source string keeps the translation.
+        """
+        await create_superuser()
+        admin_url = str(furl(self.live_server_url) / reverse("admin:forms_form_add"))
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await add_new_step(page)
+
+            # Open the menu for the layout components
+            await page.get_by_text("Opmaak").click()
+            await drag_and_drop_component(page, "Vrije tekst")
+
+            await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
+
+            default_string = page.locator("css=.ck-editor__editable").nth(0)
+            # import bpdb; bpdb.set_trace()
+            await default_string.click()
+            await default_string.fill("This is the default")
+
+            dutch_translation = page.locator("css=.ck-editor__editable").nth(1)
+            await dutch_translation.click()
+            await expect(dutch_translation).to_be_focused()
+            await dutch_translation.fill("This is the translation")
+
+            await expect(dutch_translation).to_contain_text("This is the translation")
+
+            # Save the component
+            await page.get_by_role("button", name="Opslaan").click()
+
+            await open_component_options_modal(page, "This is the default")
+            dutch_translation = page.locator("css=.ck-editor__editable").nth(1)
+
+            await expect(dutch_translation).to_contain_text("This is the translation")
+
 
 class FormDesignerRegressionTests(E2ETestCase):
     async def test_user_defined_variable_boolean_initial_value_false(self):
