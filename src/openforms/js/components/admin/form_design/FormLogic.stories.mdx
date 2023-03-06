@@ -2,8 +2,30 @@ import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
 
 import {FeatureFlagsContext, FormContext} from './Context';
 import {FormLogic} from './FormLogic';
+import {mockLanguageInfoGet, mockServices} from './mocks';
 
-<Meta title="Form design/FormLogic" component={FormLogic} />
+<Meta
+  title="Form design/FormLogic"
+  component={FormLogic}
+  parameters={{
+    msw: {
+      handlers: [
+        mockServices([
+          {
+            label: 'Service 1',
+            apiRoot: 'http://foo.com/api/v1/',
+            apiType: 'ORC',
+          },
+          {
+            label: 'Service 2',
+            apiRoot: 'http://bar.com/api/v1/',
+            apiType: 'ORC',
+          },
+        ]),
+      ],
+    },
+  }}
+/>
 
 # FormLogic
 
