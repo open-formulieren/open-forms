@@ -10,6 +10,7 @@ class ServiceFetchConfigurationAdmin(admin.ModelAdmin):
     ]
     list_display = [
         "service",
+        "name",
         "method",
         "path",
     ]

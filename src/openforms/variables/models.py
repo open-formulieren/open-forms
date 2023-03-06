@@ -20,6 +20,11 @@ class ServiceFetchConfiguration(models.Model):
         on_delete=models.PROTECT,
         verbose_name=_("service"),
     )
+    name = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text=_("human readable name for the configuration"),
+    )
     path = models.CharField(
         _("path"),
         max_length=250,
