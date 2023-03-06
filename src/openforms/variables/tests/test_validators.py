@@ -5,7 +5,8 @@ from django.test import SimpleTestCase
 
 from hypothesis import given, strategies as st
 
-from openforms.typing import JSONPrimitive, JSONValue
+from openforms.tests.search_strategies import json_values
+from openforms.typing import JSONValue
 
 from ..validators import HeaderValidator, ValidationError
 
@@ -18,29 +19,6 @@ CR = "\x0d"
 LF = "\x0a"
 NUL = "\x00"
 FIELD_VALUE_ALPHABET = "".join((VCHAR, OBS_TEXT, SP, HTAB))
-
-
-json_primitives: st.SearchStrategy[JSONPrimitive]
-json_primitives = st.one_of(
-    st.none(),
-    st.booleans(),
-    st.integers(),
-    st.floats(allow_infinity=False, allow_nan=False),
-    st.text(),
-)
-
-
-def json_collections(
-    values,
-) -> st.SearchStrategy[dict[str, JSONValue] | list[JSONValue]]:
-    return st.one_of(
-        st.dictionaries(keys=st.text(), values=values),
-        st.lists(values),
-    )
-
-
-def json_values(*, max_leaves: int = 15) -> st.SearchStrategy[JSONValue]:
-    return st.recursive(json_primitives, json_collections, max_leaves=max_leaves)
 
 
 def field_names() -> st.SearchStrategy[str]:
