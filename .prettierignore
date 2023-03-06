@@ -2,5 +2,8 @@
 build
 coverage
 
+# Generated code
+public/mockServiceWorker.js
+
 # Ignore side-effect imports
 .storybook/preview.js
