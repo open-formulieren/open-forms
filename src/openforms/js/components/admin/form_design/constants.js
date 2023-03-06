@@ -11,3 +11,4 @@ export const PROCESS_DEFINITIONS_ENDPOINT =
 export const STATIC_VARIABLES_ENDPOINT = '/api/v2/variables/static';
 export const LANGUAGE_INFO_ENDPOINT = '/api/v2/i18n/info';
 export const LOGIC_DESCRIPTION_ENDPOINT = '/api/v2/logic/description';
+export const SERVICES_ENDPOINT = '/api/v2/services';

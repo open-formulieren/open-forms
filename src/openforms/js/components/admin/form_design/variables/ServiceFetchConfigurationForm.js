@@ -31,7 +31,7 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false, setData,
 
   const serviceChoices = [['', '-------']].concat(
     formLogicContext.services.map(service => {
-      return [service.url, service.label];
+      return [service.apiRoot, service.label];
     })
   );
 

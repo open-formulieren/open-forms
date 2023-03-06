@@ -14,16 +14,14 @@ export const Template = args => (
     value={{
       services: [
         {
-          url: 'http://openforms.dev/services/foo',
           label: 'Service 1',
-          type: 'ORC',
-          apiRootUrl: 'https://some-api.com/api/v1/',
+          apiRoot: 'http://foo.com/api/v1/',
+          apiType: 'ORC',
         },
         {
-          url: 'http://openforms.dev/services/bar',
           label: 'Service 2',
-          type: 'ORC',
-          apiRootUrl: 'https://some-other-api.com/api/v1/',
+          apiRoot: 'http://bar.com/api/v1/',
+          apiType: 'ORC',
         },
       ],
     }}

@@ -64,7 +64,7 @@ const ServiceFetchConfigurationPicker = ({data = {}, onChange, onFormSave}) => {
                 formik.setValues(
                   formLogicContext.serviceFetchConfigurations.find(
                     element => element.url === event.target.value
-                  )
+                  ) || formik.initialValues
                 );
 
                 setSelectExisting(!!event.target.value);

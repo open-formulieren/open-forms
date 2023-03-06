@@ -18,23 +18,21 @@ export const Template = args => (
     value={{
       services: [
         {
-          url: 'http://openforms.dev/services/foo',
           label: 'Service 1',
-          type: 'ORC',
-          apiRootUrl: 'https://some-api.com/api/v1/',
+          apiRoot: 'http://foo.com/api/v1/',
+          apiType: 'ORC',
         },
         {
-          url: 'http://openforms.dev/services/bar',
           label: 'Service 2',
-          type: 'ORC',
-          apiRootUrl: 'https://some-other-api.com/api/v1/',
+          apiRoot: 'http://bar.com/api/v1/',
+          apiType: 'ORC',
         },
       ],
       serviceFetchConfigurations: [
         {
           name: 'Foo fetch',
           url: 'http://openforms.dev/service-fetch-configurations/foo',
-          service: 'http://openforms.dev/services/foo',
+          service: 'http://foo.com/api/v1/',
           path: '/some-path',
           method: 'GET',
           headers: [['X-Foo', 'foo']],
@@ -46,7 +44,7 @@ export const Template = args => (
         {
           name: '', // No name supplied, should fall back to "method path (service)"
           url: 'http://openforms.dev/service-fetch-configurations/bar',
-          service: 'http://openforms.dev/services/bar',
+          service: 'http://bar.com/api/v1/',
           path: '/some-other-path',
           method: 'POST',
           headers: [['X-Foo', 'bar']],
