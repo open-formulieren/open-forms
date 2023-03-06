@@ -466,7 +466,7 @@ FormIOBuilder.propTypes = {
   configuration: PropTypes.object,
   onChange: PropTypes.func,
   onComponentMutated: PropTypes.func,
-  componentTranslations: PropTypes.objectOf(PropTypes.objectOf(PropTypes.string)),
+  componentTranslations: PropTypes.objectOf(PropTypes.objectOf(PropTypes.string)).isRequired,
   componentNamespace: PropTypes.arrayOf(PropTypes.object),
   forceUpdate: PropTypes.bool,
 };
