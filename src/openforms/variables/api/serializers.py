@@ -20,6 +20,7 @@ class ServiceFetchConfigurationSerializer(serializers.ModelSerializer):
         model = ServiceFetchConfiguration
         fields = (
             "id",
+            "name",
             "service",
             "path",
             "method",
