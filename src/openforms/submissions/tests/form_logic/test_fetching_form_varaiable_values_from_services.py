@@ -284,6 +284,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             st.datetimes(),
         )
     )
+    @example(field_value="0 ")
     def test_it_can_construct_simple_header_parameters(self, field_value):
         "Assert the happy path"
         # https://swagger.io/docs/specification/describing-parameters/#header-parameters
@@ -298,7 +299,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
         )
 
         # force unicode into a str with just characters in [\x00 .. \xff]
-        expected_value = str(field_value).encode("utf-8").decode("iso-8859-1").lstrip()
+        expected_value = str(field_value).encode("utf-8").decode("iso-8859-1").strip()
 
         with requests_mock.Mocker(case_sensitive=True) as m:
             m.get("https://httpbin.org/cache")
@@ -312,7 +313,10 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
         )
         # assert headers we sent were valid RFC 9110 (requests doesn't
         # guarantee this, it just checks for CR but it will happily send \x00)
-        HeaderValidator()(request.headers)
+        try:
+            HeaderValidator()(request.headers)
+        except ValidationError as e:
+            raise self.failureException("Constructed invalid header") from e
 
         # it shouldn't change other parts of the request
         self.assertIs(request.body, None)
