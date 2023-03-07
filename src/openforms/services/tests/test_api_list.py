@@ -40,6 +40,10 @@ class AccessControlTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         service = response.json()[0]
+        self.assertEqual(
+            service["url"],
+            f"http://testserver{reverse('api:service-detail', kwargs={'pk': expected_service.pk})}",
+        )
         self.assertEqual(service["label"], expected_service.label)
         self.assertEqual(service["apiRoot"], expected_service.api_root)
         self.assertEqual(service["apiType"], expected_service.api_type)
