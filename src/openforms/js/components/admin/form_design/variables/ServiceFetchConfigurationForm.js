@@ -25,15 +25,13 @@ const EXPRESSION_MAPPING_LANGUAGES = [
   ['jq', 'jq'],
 ];
 
-const ServiceFetchConfigurationForm = ({formik, selectExisting = false, setData, onFormSave}) => {
+const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
   const intl = useIntl();
   const formLogicContext = useContext(FormLogicContext);
 
-  const serviceChoices = [['', '-------']].concat(
-    formLogicContext.services.map(service => {
-      return [service.apiRoot, service.label];
-    })
-  );
+  const serviceChoices = formLogicContext.services.map(service => {
+    return [service.apiRoot, service.label];
+  });
 
   return (
     <div>
@@ -101,6 +99,7 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false, setData,
                   choices={serviceChoices}
                   value={formik.values.service}
                   {...formik.getFieldProps('service')}
+                  allowBlank
                 />
               </Field>
               <Field
@@ -111,6 +110,12 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false, setData,
                   <FormattedMessage
                     defaultMessage="Path"
                     description="Service fetch configuration modal form Path field label"
+                  />
+                }
+                helpText={
+                  <FormattedMessage
+                    defaultMessage="the path should not have a leading slash"
+                    description="Service fetch configuration modal form Path field help text"
                   />
                 }
               >
@@ -216,7 +221,11 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false, setData,
 
             <FormRow>
               <Field
-                name={'mappingExpression'}
+                name={
+                  formik.values.dataMappingType === 'JsonLogic'
+                    ? 'jsonLogicExpression'
+                    : 'jqExpression'
+                }
                 required
                 label={
                   <FormattedMessage
@@ -227,21 +236,13 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false, setData,
               >
                 {formik.values.dataMappingType === 'JsonLogic' ? (
                   <JsonWidget
-                    name="mappingExpression"
-                    logic={formik.values.mappingExpression}
+                    name="jsonLogicExpression"
+                    logic={formik.values.jsonLogicExpression || ''}
                     cols={20}
-                    {...formik.getFieldProps('mappingExpression')}
+                    {...formik.getFieldProps('jsonLogicExpression')}
                   />
                 ) : (
-                  <TextInput
-                    // Explicitly cast object to strings, in case the JsonWidget was used before
-                    value={
-                      typeof formik.values.mappingExpression === 'object'
-                        ? JSON.stringify(formik.values.mappingExpression)
-                        : formik.values.mappingExpression
-                    }
-                    {...formik.getFieldProps('mappingExpression')}
-                  />
+                  <TextInput name="jqExpression" {...formik.getFieldProps('jqExpression')} />
                 )}
               </Field>
             </FormRow>
@@ -257,6 +258,7 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false, setData,
                     defaultMessage: 'Save as new',
                   })}
                   onClick={formik.handleSubmit}
+                  type="submit"
                 />
                 <ActionButton
                   name="_save_config"
@@ -275,6 +277,7 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false, setData,
                   defaultMessage: 'Save',
                 })}
                 onClick={formik.handleSubmit}
+                type="submit"
               />
             )}
           </SubmitRow>
@@ -326,7 +329,8 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false, setData,
 };
 
 ServiceFetchConfigurationForm.propTypes = {
-  onFormSubmit: PropTypes.func,
+  formik: PropTypes.object,
+  selectExisting: PropTypes.bool,
 };
 
 export default ServiceFetchConfigurationForm;

@@ -24,5 +24,11 @@ export const parameters = {
       date: /Date$/,
     },
   },
+  docs: {
+    source: {
+      type: 'dynamic',
+      excludeDecorators: true,
+    },
+  },
 };
 export const decorators = [mswDecorator];

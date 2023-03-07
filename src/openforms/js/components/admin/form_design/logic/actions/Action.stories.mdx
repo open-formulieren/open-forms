@@ -3,61 +3,77 @@ import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
 import {FormLogicContext} from '../../Context';
 import Action from './Action';
 
-<Meta title="Form design/Action" component={Action} />
+<Meta
+  title="Form design/FormLogic/Action"
+  decorators={[
+    Story => (
+      <FormLogicContext.Provider
+        value={{
+          services: [
+            {
+              label: 'Service 1',
+              apiRoot: 'http://foo.com/api/v1/',
+              apiType: 'ORC',
+            },
+            {
+              label: 'Service 2',
+              apiRoot: 'http://bar.com/api/v1/',
+              apiType: 'ORC',
+            },
+          ],
+          serviceFetchConfigurations: [
+            {
+              name: 'Foo fetch',
+              url: 'http://openforms.dev/service-fetch-configurations/foo',
+              service: 'http://foo.com/api/v1/',
+              path: '/some-path',
+              method: 'GET',
+              headers: [['X-Foo', 'foo']],
+              queryParams: [['parameter2', ['value1', 'value2']]],
+              body: {field1: 'value', field2: 'value2'},
+              dataMappingType: 'jq',
+              mappingExpression: '.field.nested',
+            },
+            {
+              name: '', // No name supplied, should fall back to "method path (service)"
+              url: 'http://openforms.dev/service-fetch-configurations/bar',
+              service: 'http://bar.com/api/v1/',
+              path: '/some-other-path',
+              method: 'POST',
+              headers: [['X-Foo', 'bar']],
+              queryParams: [
+                ['parameter', ['value']],
+                ['parameter2', ['value1', 'value2']],
+              ],
+              body: {field1: 'value', field2: 'value2'},
+              dataMappingType: 'JsonLogic',
+              mappingExpression: {var: 'field'},
+            },
+          ],
+        }}
+      >
+        <Story />
+      </FormLogicContext.Provider>
+    ),
+  ]}
+  component={Action}
+/>
 
 # Action
 
 Component used to define what action should be taken when a trigger condition (defined in the Form
-logic) is met
+logic) is met.
 
-export const Template = args => (
-  <FormLogicContext.Provider
-    value={{
-      services: [
-        {
-          label: 'Service 1',
-          apiRoot: 'http://foo.com/api/v1/',
-          apiType: 'ORC',
-        },
-        {
-          label: 'Service 2',
-          apiRoot: 'http://bar.com/api/v1/',
-          apiType: 'ORC',
-        },
-      ],
-      serviceFetchConfigurations: [
-        {
-          name: 'Foo fetch',
-          url: 'http://openforms.dev/service-fetch-configurations/foo',
-          service: 'http://foo.com/api/v1/',
-          path: '/some-path',
-          method: 'GET',
-          headers: [['X-Foo', 'foo']],
-          queryParams: [['parameter2', ['value1', 'value2']]],
-          body: {field1: 'value', field2: 'value2'},
-          dataMappingType: 'jq',
-          mappingExpression: '.field.nested',
-        },
-        {
-          name: '', // No name supplied, should fall back to "method path (service)"
-          url: 'http://openforms.dev/service-fetch-configurations/bar',
-          service: 'http://bar.com/api/v1/',
-          path: '/some-other-path',
-          method: 'POST',
-          headers: [['X-Foo', 'bar']],
-          queryParams: [
-            ['parameter', ['value']],
-            ['parameter2', ['value1', 'value2']],
-          ],
-          body: {field1: 'value', field2: 'value2'},
-          dataMappingType: 'JsonLogic',
-          mappingExpression: {var: 'field'},
-        },
-      ],
-    }}
-  >
-    <Action {...args} />
-  </FormLogicContext.Provider>
+**Warning**: this component requires the following contexts: `FormLogicContext`.
+
+export const Template = ({prefixText, action, errors, onChange, onDelete}) => (
+  <Action
+    prefixText={prefixText}
+    action={action}
+    errors={errors}
+    onChange={onChange}
+    onDelete={onDelete}
+  />
 );
 
 ## Presentation
@@ -78,8 +94,8 @@ export const Template = args => (
         },
       },
       errors: {},
-      onChange: ({...args}) => null,
-      onDelete: ({...args}) => null,
+      onChange: (index, event) => null,
+      onDelete: () => null,
     }}
   >
     {Template.bind({})}
@@ -88,4 +104,4 @@ export const Template = args => (
 
 ### Props
 
-<ArgsTable story="Default" />
+<ArgsTable of={Action} />

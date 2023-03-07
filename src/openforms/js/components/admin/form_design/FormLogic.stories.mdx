@@ -2,15 +2,44 @@ import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
 
 import {FeatureFlagsContext, FormContext} from './Context';
 import {FormLogic} from './FormLogic';
-import {mockLanguageInfoGet, mockServiceFetchConfigurations, mockServices} from './mocks';
+import {mockLanguageInfoGet, mockServiceFetchConfigurationsGet, mockServicesGet} from './mocks';
 
 <Meta
   title="Form design/FormLogic"
   component={FormLogic}
+  decorators={[
+    Story => (
+      <FeatureFlagsContext.Provider value={{of_service_fetch_enabled: true}}>
+        <FormContext.Provider
+          value={{
+            staticVariables: [],
+            formVariables: [
+              {
+                dataFormat: '',
+                dataType: 'boolean',
+                form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
+                formDefinition: null,
+                initialValue: true,
+                isSensitiveData: false,
+                key: 'foo',
+                name: 'foo',
+                prefillAttribute: '',
+                prefillPlugin: '',
+                source: 'user_defined',
+              },
+            ],
+            formSteps: [{formDefinition: 'foo', internalName: 'foo'}],
+          }}
+        >
+          <Story />
+        </FormContext.Provider>
+      </FeatureFlagsContext.Provider>
+    ),
+  ]}
   parameters={{
     msw: {
       handlers: [
-        mockServices([
+        mockServicesGet([
           {
             label: 'Service 1',
             apiRoot: 'http://foo.com/api/v1/',
@@ -22,7 +51,7 @@ import {mockLanguageInfoGet, mockServiceFetchConfigurations, mockServices} from 
             apiType: 'ORC',
           },
         ]),
-        mockServiceFetchConfigurations([
+        mockServiceFetchConfigurationsGet([
           {
             name: 'Foo fetch',
             url: 'http://openforms.dev/service-fetch-configurations/foo',
@@ -58,37 +87,20 @@ import {mockLanguageInfoGet, mockServiceFetchConfigurations, mockServices} from 
 
 # FormLogic
 
-Component used to configure the logic for a given Form. Logic is configured by adding Rules, each of
-which specifies either a single condition (simple) or a JsonLogic condition (advanced). In either
-case, this condition can lead to one or more configured actions that should be taken (e.g. changing
-the value of a variable or component).
+The component to manage all server-side logic rules for a given form.
 
-export const Template = args => (
-  <FeatureFlagsContext.Provider value={{of_service_fetch_enabled: true}}>
-    <FormContext.Provider
-      value={{
-        staticVariables: [],
-        formVariables: [
-          {
-            dataFormat: '',
-            dataType: 'boolean',
-            form: 'http://localhost:8000/api/v2/forms/ae26e20c-f059-4fdf-bb82-afc377869bb5',
-            formDefinition: null,
-            initialValue: true,
-            isSensitiveData: false,
-            key: 'foo',
-            name: 'foo',
-            prefillAttribute: '',
-            prefillPlugin: '',
-            source: 'user_defined',
-          },
-        ],
-        formSteps: [{formDefinition: 'foo', internalName: 'foo'}],
-      }}
-    >
-      <FormLogic {...args} />
-    </FormContext.Provider>
-  </FeatureFlagsContext.Provider>
+Logic is configured by adding rules. Rules consist of a trigger expression and a collection of
+actions to be executed when the trigger evaluates to be truthy. The logic rule has two flavours -
+simple and advanced, which determines the UI to build the trigger.
+
+Both variants use JsonLogic expressions under the hood. One or more actions will be taken when the
+rule executes (e.g. changing the value of a variable/component).
+
+**Warning**: this component requires the following contexts: `FormLogicContext`,
+`FeatureFlagsContext`.
+
+export const Template = ({logicRules, onChange, onDelete, onAdd}) => (
+  <FormLogic logicRules={logicRules} onChange={onChange} onDelete={onDelete} onAdd={onAdd} />
 );
 
 ## Presentation
@@ -119,15 +131,9 @@ export const Template = args => (
           ],
         },
       ],
-      onChange: ({...args}) => {
-        null;
-      },
-      onDelete: ({...args}) => {
-        null;
-      },
-      onAdd: ({...args}) => {
-        null;
-      },
+      onChange: (index, event) => null,
+      onDelete: index => null,
+      onAdd: () => null,
     }}
   >
     {Template.bind({})}
@@ -136,4 +142,4 @@ export const Template = args => (
 
 ### Props
 
-<ArgsTable story="Default" />
+<ArgsTable of={FormLogic} />

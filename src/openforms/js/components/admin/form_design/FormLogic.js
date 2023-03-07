@@ -67,11 +67,9 @@ const FormLogic = ({logicRules = [], onChange, onDelete, onAdd}) => {
   ];
 
   const {loading} = useAsync(async () => {
-    const promises = [loadFromBackend(backendDataToLoad)];
-
     // TODO: API error handling - this should be done using ErrorBoundary instead of
     // state-changes.
-    const [backendData] = await Promise.all(promises);
+    const backendData = await loadFromBackend(backendDataToLoad);
     const supportingData = Object.fromEntries(
       zip(backendDataToLoad, backendData).map(([plugin, data]) => [plugin.stateVar, data])
     );

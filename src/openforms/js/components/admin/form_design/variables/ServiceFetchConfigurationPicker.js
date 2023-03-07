@@ -10,7 +10,7 @@ import Select from 'components/admin/forms/Select';
 import {FormLogicContext} from './../Context';
 import ServiceFetchConfigurationForm from './ServiceFetchConfigurationForm';
 
-const ServiceFetchConfigurationPicker = ({data = {}, onChange, onFormSave}) => {
+const ServiceFetchConfigurationPicker = ({onChange, onFormSave}) => {
   const formLogicContext = useContext(FormLogicContext);
 
   const [selectExisting, setSelectExisting] = useState(false);
@@ -35,8 +35,22 @@ const ServiceFetchConfigurationPicker = ({data = {}, onChange, onFormSave}) => {
       body: '',
       dataMappingType: '',
       mappingExpression: '',
+      // These fields are mapped to mappingExpression on save
+      jsonLogicExpression: '',
+      jqExpression: '',
     },
     onSubmit: (values, {setSubmitting}) => {
+      switch (values.dataMappingType) {
+        case 'JsonLogic':
+          values.mappingExpression = values.jsonLogicExpression;
+          break;
+        case 'jq':
+          values.mappingExpression = values.jqExpression;
+          break;
+      }
+      delete values.jsonLogicExpression;
+      delete values.jqExpression;
+
       alert(JSON.stringify(values, null, 2));
     },
   });
@@ -46,7 +60,7 @@ const ServiceFetchConfigurationPicker = ({data = {}, onChange, onFormSave}) => {
       <div className="servicefetchconfiguration-select">
         <FormRow>
           <Field
-            name={'fetchConfiguration.existing'}
+            name="fetchConfiguration.existing"
             label={
               <FormattedMessage
                 defaultMessage="Choose existing configuration"
@@ -55,7 +69,6 @@ const ServiceFetchConfigurationPicker = ({data = {}, onChange, onFormSave}) => {
             }
           >
             <Select
-              name="fetchConfiguration.existing"
               choices={serviceFetchConfigurationChoices}
               value={selectedServiceFetchConfig}
               onChange={event => {
@@ -75,20 +88,16 @@ const ServiceFetchConfigurationPicker = ({data = {}, onChange, onFormSave}) => {
         </FormRow>
       </div>
 
-      <div className="servicefetchconfiguration-form">
-        <ServiceFetchConfigurationForm
-          formik={formik}
-          selectExisting={selectExisting}
-          onFormSave={onFormSave}
-          onChange={onChange}
-        />
-      </div>
+      <form className="servicefetchconfiguration-form" onSubmit={formik.handleSubmit}>
+        <ServiceFetchConfigurationForm formik={formik} selectExisting={selectExisting} />
+      </form>
     </div>
   );
 };
 
 ServiceFetchConfigurationPicker.propTypes = {
-  onReplace: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onFormSave: PropTypes.func.isRequired,
 };
 
 export default ServiceFetchConfigurationPicker;

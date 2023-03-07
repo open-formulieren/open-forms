@@ -14,7 +14,7 @@ import ComponentSelection from 'components/admin/forms/ComponentSelection';
 import JsonWidget from 'components/admin/forms/JsonWidget';
 import Select from 'components/admin/forms/Select';
 import VariableSelection from 'components/admin/forms/VariableSelection';
-import {FormModal} from 'components/admin/modals';
+import Modal from 'components/admin/modals/Modal';
 
 import ServiceFetchConfigurationPicker from '../../variables/ServiceFetchConfigurationPicker';
 import {ActionError, Action as ActionType} from './types';
@@ -139,7 +139,7 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
         })}
       />
 
-      <FormModal
+      <Modal
         isOpen={isModalOpen}
         closeModal={closeModal}
         title={
@@ -148,10 +148,10 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
             defaultMessage="Service fetch configuration"
           />
         }
-        extraModifiers={['large']}
+        contentModifiers={['with-form', 'large']}
       >
         <ServiceFetchConfigurationPicker onFormSave={closeModal} onChange={onChange} />
-      </FormModal>
+      </Modal>
     </>
   );
 };
