@@ -112,6 +112,13 @@ div.flatpickr-calendar.open {
     @include ellipsis;
     max-width: 100%;
   }
+
+  ul.list-group {
+    display: block;
+    padding-left: 0;
+    padding-right: 0;
+    margin: 0;
+  }
 }
 
 // bootstrap competing with django admin form styling...
