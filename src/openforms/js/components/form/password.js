@@ -31,13 +31,9 @@ class PasswordField extends FormioPasswordField {
     // lowest tab, extend SENSITIVE_BASIC that is inside DEFAULT_SENSITIVE_TABS
     const BASIC_PASSWORD_TAB = {
       ...SENSITIVE_BASIC,
-      components: [
-        {
-          ...SENSITIVE_BASIC,
-          components: SENSITIVE_BASIC.components.filter(option => option.key !== DEFAULT_VALUE.key),
-        },
-        ...extra,
-      ],
+      components: SENSITIVE_BASIC.components
+        .filter(option => option.key !== DEFAULT_VALUE.key)
+        .concat(extra),
     };
     // replace higher DEFAULT_SENSITIVE_TAB
     const DEFAULT_SENSITIVE_TABS_EXTRA = {
@@ -47,6 +43,10 @@ class PasswordField extends FormioPasswordField {
     };
 
     return {components: [DEFAULT_SENSITIVE_TABS_EXTRA]};
+  }
+
+  get defaultSchema() {
+    return PasswordField.schema();
   }
 }
 
