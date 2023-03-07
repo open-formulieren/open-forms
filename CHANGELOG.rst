@@ -2,6 +2,15 @@
 Changelog
 =========
 
+2.0.5 (2023-03-07)
+==================
+
+Hotfix release
+
+* [#2804] Fixed static variables not being included in template context for submission
+  confirmation template.
+* [#2400] Clean up cached execution state
+
 2.0.4 (2023-02-28)
 ==================
 
