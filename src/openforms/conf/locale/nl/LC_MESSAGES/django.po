@@ -8330,7 +8330,7 @@ msgid ""
 "{header!s}: value '{value!s}' should not start nor end with whitespace, but "
 "it does."
 msgstr ""
-"{header!s}: waarde '{value!s}' mag niet starten of beginnen met whitespace."
+"{header!s}: waarde '{value!s}' mag niet starten of eindigen met whitespace."
 
 #: openforms/variables/validators.py:90
 msgid "{header!s}: value '{value!s}' contains characters that are not allowed."

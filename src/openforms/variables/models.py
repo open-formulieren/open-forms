@@ -118,14 +118,14 @@ class ServiceFetchConfiguration(models.Model):
         #
         # Validating the contents of headers is beyond the scope of this
         # function, we only make sure the requests we send are within the
-        # Internet Standard spec. If some service needs empoji in the header,
+        # Internet Standard spec. If some service needs emoji in the header,
         # we force it into a sequence of bytes that is allowed.
         #
         # extra knowledge not in the RFC: latin1 is a different name for ISO-8859-1
 
         headers = {
-            # map all unicode into what the RFC allows with utf-8; remove leading space
-            header: value.format(**context).encode("utf-8").decode("latin1").lstrip()
+            # map all unicode into what the RFC allows with utf-8; remove padding space
+            header: value.format(**context).encode("utf-8").decode("latin1").strip()
             for header, value in (self.headers or {}).items()
         }
         # before we go further
