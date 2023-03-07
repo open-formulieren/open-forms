@@ -1,14 +1,7 @@
 import {Formio} from 'react-formio';
 
 import {AUTOCOMPLETE, DEFAULT_VALUE} from './edit/options';
-import {
-  ADVANCED,
-  DEFAULT_SENSITIVE_TABS,
-  REGISTRATION,
-  SENSITIVE_BASIC,
-  TRANSLATIONS,
-  VALIDATION,
-} from './edit/tabs';
+import {ADVANCED, REGISTRATION, SENSITIVE_BASIC, TRANSLATIONS, VALIDATION} from './edit/tabs';
 import {localiseSchema} from './i18n';
 
 const FormioPasswordField = Formio.Components.components.password;
