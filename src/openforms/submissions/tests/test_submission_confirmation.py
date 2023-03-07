@@ -156,7 +156,7 @@ class SubmissionConfirmationPageTests(APITestCase):
     def test_static_variables_in_submission_template(self):
         form = FormFactory.create(
             submission_confirmation_template=(
-                '{% if auth_bsn %}Dear {{ name|title }}, you logged in with BSN on day {{ today|date:"d/m/Y" }}.{% endif %}'
+                '{% if auth_bsn %}Dear {{ name|title }}, you logged in with BSN on day {% now "d/m/Y" %}.{% endif %}'
                 "{% if auth_kvk %}Dear {{ name|title }}, you logged in with KVK.{% endif %}"
             )
         )
