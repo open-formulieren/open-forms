@@ -1,22 +1,6 @@
 [
     {
-        "directive" : "script-src",
-        "value": "SITE_URL"
-    },
-    {
-        "directive" : "connect-src",
-        "value": "SITE_URL"
-    },
-    {
-        "directive" : "img-src",
-        "value": "SITE_URL"
-    },
-    {
-        "directive" : "font-src",
-        "value": "SITE_URL"
-    },
-    {
-        "directive" : "style-src",
+        "directive" : "default-src",
         "value": "SITE_URL"
     }
 ]

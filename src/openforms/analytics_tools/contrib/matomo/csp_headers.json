@@ -1,6 +1,6 @@
 [
     {
-        "directive" : "script-src",
+        "directive" : "default-src",
         "value": "SITE_URL"
     }
 ]
