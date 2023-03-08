@@ -1,4 +1,5 @@
 import warnings
+from datetime import date
 
 from django.urls import resolve
 from django.utils.translation import ugettext_lazy as _
@@ -6,10 +7,13 @@ from django.utils.translation import ugettext_lazy as _
 from drf_polymorphic.serializers import PolymorphicSerializer
 from drf_spectacular.utils import extend_schema_serializer
 from furl import furl
+from json_logic.typing import Primitive
 from rest_framework import serializers
 
 from openforms.api.serializers import DummySerializer
 from openforms.submissions.api.fields import URLRelatedField
+from openforms.utils.json_logic.api.validators import JsonLogicValidator
+from openforms.variables.constants import FormVariableDataTypes
 
 from ....constants import (
     LOGIC_ACTION_TYPES_REQUIRING_COMPONENT,
@@ -18,7 +22,6 @@ from ....constants import (
     PropertyTypes,
 )
 from ....models import FormStep
-from ...validators import JsonLogicActionValueValidator
 from .fields import ActionFormStepUUIDField
 
 
@@ -61,7 +64,7 @@ class LogicValueActionSerializer(serializers.Serializer):
             "A valid JsonLogic expression describing the value. This may refer to "
             "(other) Form.io components."
         ),
-        validators=[JsonLogicActionValueValidator()],
+        validators=[JsonLogicValidator()],
     )
 
 
@@ -151,9 +154,11 @@ class LogicComponentActionSerializer(serializers.Serializer):
 
     def validate(self, data: dict) -> dict:
         """
-        Check that the component is supplied depending on the action type.
+        1. Check that the component is supplied depending on the action type.
+        2. Check that the value for date variables has the right format
         """
         action_type = data.get("action", {}).get("type")
+        action_value = data.get("action", {}).get("value")
         component = data.get("component")
         form_step = data.get("form_step")
 
@@ -188,6 +193,27 @@ class LogicComponentActionSerializer(serializers.Serializer):
                 {"variable": self.fields["variable"].error_messages["blank"]},
                 code="blank",
             )
+
+        # validate format of value for date variable
+        if action_type == LogicActionTypes.variable and isinstance(
+            action_value, Primitive
+        ):
+            form_var = self.context["form_variables"].variables[variable]
+
+            if form_var.data_type == FormVariableDataTypes.date:
+                try:
+                    date.fromisoformat(action_value)
+                except (ValueError, TypeError) as ex:
+                    raise serializers.ValidationError(
+                        {
+                            "action": {
+                                "value": _(
+                                    "Value for date variable must be a string in the "
+                                    "format yyyy-mm-dd (e.g. 2023-07-03)"
+                                ),
+                            }
+                        },
+                    ) from ex
 
         if (
             action_type
