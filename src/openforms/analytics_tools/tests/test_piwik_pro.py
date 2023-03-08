@@ -24,7 +24,6 @@ class PiwikProTests(AnalyticsMixin, TestCase):
 
         cls.json_csp = [
             {"directive": "script-src", "value": cls.piwik_pro_url},
-            {"directive": "connect-src", "value": cls.piwik_pro_url},
             {"directive": "img-src", "value": cls.piwik_pro_url},
             {"directive": "font-src", "value": cls.piwik_pro_url},
             {"directive": "style-src", "value": cls.piwik_pro_url},
