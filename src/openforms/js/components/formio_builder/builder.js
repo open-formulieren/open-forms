@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, {useEffect, useRef, useState} from 'react';
 import {FormBuilder, Templates} from 'react-formio';
 
-import {useOnChanged} from 'utils/hooks';
+import useOnChanged from 'hooks/useOnChanged';
 import jsonScriptToVar from 'utils/json-script';
 
 import customTemplates from './customTemplates';

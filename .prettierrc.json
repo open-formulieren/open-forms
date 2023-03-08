@@ -12,7 +12,7 @@
   "tabWidth": 2,
   "trailingComma": "es5",
   "useTabs": false,
-  "importOrder": ["^(components|lang|utils)/(.*)$", "^[./]"],
+  "importOrder": ["^(components|hooks|lang|utils)/(.*)$", "^[./]"],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true
 }

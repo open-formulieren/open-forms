@@ -3,8 +3,8 @@ import React, {useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
 import DeleteIcon from 'components/admin/DeleteIcon';
-import {useOnChanged} from 'components/admin/form_design/logic/hooks';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
+import useOnChanged from 'hooks/useOnChanged';
 
 import {Input} from './Inputs';
 

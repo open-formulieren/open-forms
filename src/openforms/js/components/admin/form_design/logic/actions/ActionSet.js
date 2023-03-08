@@ -4,8 +4,8 @@ import React from 'react';
 import {FormattedMessage} from 'react-intl';
 import {useImmerReducer} from 'use-immer';
 
-import {useOnChanged} from 'components/admin/form_design/logic/hooks';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
+import useOnChanged from 'hooks/useOnChanged';
 
 import Action from './Action';
 import {ActionError} from './types';
