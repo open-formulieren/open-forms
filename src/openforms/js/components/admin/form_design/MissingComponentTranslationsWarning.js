@@ -4,7 +4,7 @@ import React, {useState} from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import MessageList from 'components/admin/MessageList';
-import Modal from 'components/admin/Modal';
+import {Modal} from 'components/admin/modals';
 import {ChangelistColumn, ChangelistTable} from 'components/admin/tables';
 import {
   extractComponentLiterals,

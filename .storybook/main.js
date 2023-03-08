@@ -7,6 +7,9 @@ module.exports = {
     {from: '../static/admin', to: 'static/admin'},
     {from: '../static/fonts', to: 'static/fonts'},
     {from: '../static/img', to: 'static/img'},
+    // required in dev mode due to style-loader usage
+    {from: '../static/fonts', to: 'fonts'},
+    {from: '../static/img', to: 'img'},
   ],
   addons: [
     '@storybook/addon-links',
@@ -18,27 +21,27 @@ module.exports = {
   core: {
     builder: 'webpack5',
   },
-  webpackFinal: async config => {
+  webpackFinal: async (config, {configType}) => {
+    const isEnvProduction = configType === 'PRODUCTION';
+
     config.resolve.modules = [
       ...(config.resolve.modules || []),
       'node_modules',
       path.resolve(__dirname, '../src/openforms/js'),
     ];
 
-    config.plugins = config.plugins.concat([
-      new MiniCssExtractPlugin({
-        filename: 'static/bundles/[name].css',
-      }),
-    ]);
+    if (isEnvProduction) {
+      config.plugins.push(new MiniCssExtractPlugin({filename: 'static/bundles/[name].css'}));
+    }
 
-    config.module.rules = config.module.rules.concat([
+    config.module.rules.push(
       // .scss
       {
         test: /\.scss$/,
         use: [
+          !isEnvProduction && {loader: 'style-loader'},
           // Writes css files.
-          MiniCssExtractPlugin.loader,
-
+          isEnvProduction && MiniCssExtractPlugin.loader,
           // Loads CSS files.
           {
             loader: 'css-loader',
@@ -46,12 +49,8 @@ module.exports = {
               url: false,
             },
           },
-
           // Runs postcss configuration (postcss.config.js).
-          {
-            loader: 'postcss-loader',
-          },
-
+          {loader: 'postcss-loader'},
           // Compiles .scss to .css.
           {
             loader: 'sass-loader',
@@ -63,9 +62,9 @@ module.exports = {
               // sourceMap: argv.sourcemap,
             },
           },
-        ],
-      },
-    ]);
+        ].filter(Boolean),
+      }
+    );
     return config;
   },
 };
