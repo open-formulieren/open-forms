@@ -974,3 +974,38 @@ class ComponentModificationTests(TestCase):
         evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
 
         self.assertEqual(submission_step.data["nested"]["component"], "")
+
+    @tag("gh-2838")
+    def test_hidden_select_component(self):
+        form = FormFactory.create()
+        step = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "key": "selectboxes",
+                        "type": "selectboxes",
+                        "hidden": True,
+                        "values": [
+                            {"label": "A", "value": "a"},
+                            {"label": "B", "value": "b"},
+                        ],
+                        "clearOnHide": True,
+                        "defaultValue": {"a": False, "b": False},
+                    },
+                ]
+            },
+        )
+
+        submission = SubmissionFactory.create(form=form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step,
+            data={},
+        )
+
+        self.assertTrue(submission_step.can_submit)
+
+        evaluate_form_logic(submission, submission_step, submission.data, dirty=True)
+
+        self.assertNotIn("selectboxes", submission_step.data)
