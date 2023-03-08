@@ -19,7 +19,7 @@ const FormStep = ({data, onEdit, onComponentMutated, onFieldChange, onReplace}) 
     isReusable,
     isNew,
     validationErrors = [],
-    componentTranslations = {},
+    componentTranslations,
   } = data;
   const previousFormDefinition = usePrevious(formDefinition);
   let forceBuilderUpdate = false;

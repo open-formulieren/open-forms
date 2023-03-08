@@ -58,40 +58,34 @@ const CONTENT_EDIT_TABS = {
         {
           components: [
             {
-              ...TRANSLATIONS,
-              hideLabel: true,
-              components: [
-                {
-                  key: 'languages',
-                  type: 'tabs',
-                  components: getSupportedLanguages().map(([languageCode, _label]) => {
-                    return {
-                      key: languageCode,
-                      label: languageCode.toUpperCase(),
-                      components: [
-                        {
-                          label: 'Literal',
-                          hideLabel: true,
-                          key: `openForms.translations.${languageCode}[0].literal`,
-                          input: true,
-                          unique: true,
-                          type: 'hidden',
-                        },
-                        {
-                          label: 'Translation',
-                          hideLabel: true,
-                          key: `openForms.translations.${languageCode}[0].translation`,
-                          input: true,
-                          type: 'textarea',
-                          editor: 'ckeditor',
-                          as: 'html',
-                          rows: 3,
-                        },
-                      ],
-                    };
-                  }),
-                },
-              ],
+              key: 'languages',
+              type: 'tabs',
+              components: getSupportedLanguages().map(([languageCode, _label]) => {
+                return {
+                  key: languageCode,
+                  label: languageCode.toUpperCase(),
+                  components: [
+                    {
+                      label: 'Literal',
+                      hideLabel: true,
+                      key: `openForms.translations.${languageCode}[0].literal`,
+                      input: true,
+                      unique: true,
+                      type: 'hidden',
+                    },
+                    {
+                      label: 'Translation',
+                      hideLabel: true,
+                      key: `openForms.translations.${languageCode}[0].translation`,
+                      input: true,
+                      type: 'textarea',
+                      editor: 'ckeditor',
+                      as: 'html',
+                      rows: 3,
+                    },
+                  ],
+                };
+              }),
             },
           ],
         },
