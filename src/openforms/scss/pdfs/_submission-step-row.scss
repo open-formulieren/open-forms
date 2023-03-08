@@ -38,6 +38,7 @@
   &__value {
     @include body();
     width: 60%;
+    word-break: break-all;
 
     // wysiwyg content
     p {
