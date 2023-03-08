@@ -7,7 +7,7 @@ import FAIcon from 'components/admin/FAIcon';
 
 const CONTENT_CLASS_NAME = 'react-modal__content';
 
-export const CONTENT_MODIFIERS = ['small', 'with-form'];
+export const CONTENT_MODIFIERS = ['small', 'large', 'with-form'];
 
 const Modal = ({
   isOpen = false,

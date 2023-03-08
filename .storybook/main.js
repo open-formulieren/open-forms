@@ -10,6 +10,7 @@ module.exports = {
     // required in dev mode due to style-loader usage
     {from: '../static/fonts', to: 'fonts'},
     {from: '../static/img', to: 'img'},
+    {from: '../public', to: ''},
   ],
   addons: [
     '@storybook/addon-links',
@@ -19,7 +20,7 @@ module.exports = {
   ],
   framework: '@storybook/react',
   core: {
-    builder: 'webpack5',
+    builder: '@storybook/builder-webpack5',
   },
   webpackFinal: async (config, {configType}) => {
     const isEnvProduction = configType === 'PRODUCTION';
