@@ -7,8 +7,6 @@
 @import './vendor/tinymce';
 @import './vendor/django-two-factor-auth';
 
-// this violates a check by postcss-selector-lint, but it's the SDK snippet which has no
-// classnames to target.
 #openforms-container {
   @include margin(
     true,
