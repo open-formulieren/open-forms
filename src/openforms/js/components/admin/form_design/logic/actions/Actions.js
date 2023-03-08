@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, {useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import FormModal from 'components/admin/FormModal';
 import StepSelection from 'components/admin/form_design/StepSelection';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 import {
@@ -15,6 +14,7 @@ import ComponentSelection from 'components/admin/forms/ComponentSelection';
 import JsonWidget from 'components/admin/forms/JsonWidget';
 import Select from 'components/admin/forms/Select';
 import VariableSelection from 'components/admin/forms/VariableSelection';
+import {FormModal} from 'components/admin/modals';
 
 import ServiceFetchConfigurationPicker from '../../variables/ServiceFetchConfigurationPicker';
 import {ActionError, Action as ActionType} from './types';
