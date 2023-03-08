@@ -20,7 +20,7 @@ const FormStep = PropTypes.shape({
       nextText: PropTypes.string.isRequired,
     })
   ),
-  componentTranslations: PropTypes.objectOf(PropTypes.objectOf(PropTypes.string)),
+  componentTranslations: PropTypes.objectOf(PropTypes.objectOf(PropTypes.string)).isRequired,
 });
 
 export default FormStep;
