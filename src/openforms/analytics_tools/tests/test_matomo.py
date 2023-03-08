@@ -21,7 +21,7 @@ class MatomoTests(AnalyticsMixin, TestCase):
             {"name": f"_pk_ses.{cls.matomo_site_id}.e5c3", "path": "/"},
         ]
 
-        cls.json_csp = [{"directive": "script-src", "value": cls.matomo_url}]
+        cls.json_csp = [{"directive": "default-src", "value": cls.matomo_url}]
 
     def test_matomo_properly_enabled(self):
 
