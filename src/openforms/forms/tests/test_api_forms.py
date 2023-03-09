@@ -954,12 +954,9 @@ class FormsAPITests(APITestCase):
             },
         )
 
-    def test_configure_form_use_form_template_but_not_usable(self):
-        """
-        Assert that it's not possible to configure a form to use an unusable confirmation
-        email template.
-
-        Unusable is defined as having an empty subject or content.
+    def test_form_specific_confirmation_email_empty_template(self):
+        """Assert that neither subject nor content of the template for a form-specific
+        email is empty
         """
         form = FormFactory.create()
         self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
@@ -986,8 +983,8 @@ class FormsAPITests(APITestCase):
                 self.assertEqual(
                     err_message,
                     _(
-                        "The form specific confirmation email template is not set up correctly and "
-                        "can therefore not be selected."
+                        "The form-specific confirmation email template "
+                        "(subject + content) should not be empty."
                     ),
                 )
 
