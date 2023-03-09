@@ -2,10 +2,15 @@ import uuid
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
+from django.urls import reverse
 
 from cookie_consent.models import Cookie
+from rest_framework import status
+from rest_framework.test import APITestCase
 
 from openforms.config.models import CSPSetting
+from openforms.forms.tests.factories import FormFactory
+from openforms.tests.test_csp import CSPMixin
 
 from .mixin import AnalyticsMixin
 
@@ -23,10 +28,7 @@ class PiwikProTests(AnalyticsMixin, TestCase):
         ]
 
         cls.json_csp = [
-            {"directive": "script-src", "value": cls.piwik_pro_url},
-            {"directive": "img-src", "value": cls.piwik_pro_url},
-            {"directive": "font-src", "value": cls.piwik_pro_url},
-            {"directive": "style-src", "value": cls.piwik_pro_url},
+            {"directive": "default-src", "value": cls.piwik_pro_url},
         ]
 
     def test_piwik_pro_properly_enabled(self):
@@ -84,3 +86,22 @@ class PiwikProTests(AnalyticsMixin, TestCase):
 
         with self.assertRaises(ValidationError):
             self.config.clean()
+
+
+@override_settings(CSP_DEFAULT_SRC=["'self'"], CSP_REPORT_ONLY=False)
+class CanLoadFormWithAnalyticsCSPTests(CSPMixin, APITestCase):
+    def test_loading_form_still_has_self_in_default_src(self):
+        csp_setting = CSPSetting(value="https://piwikpro.com", directive="default-src")
+        csp_setting.save()
+
+        form = FormFactory.create()
+
+        response = self.client.get(
+            reverse("core:form-detail", kwargs={"slug": form.slug})
+        )
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertIn(
+            "default-src 'self' https://piwikpro.com",
+            response.headers["Content-Security-Policy"],
+        )

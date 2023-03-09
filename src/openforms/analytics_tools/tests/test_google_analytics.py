@@ -21,8 +21,7 @@ class GoogleAnalyticsTests(AnalyticsMixin, TestCase):
             {"name": "_gid", "path": "/"},
         ]
         cls.json_csp = [
-            {"directive": "script-src", "value": "https://www.googleanalytics.com"},
-            {"directive": "script-src", "value": "https://www.googletagmanager.com"},
+            {"directive": "default-src", "value": "https://www.googleanalytics.com"},
         ]
 
     def test_google_analytics_properly_enabled(self):
