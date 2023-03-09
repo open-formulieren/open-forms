@@ -4,6 +4,9 @@ import {FormattedMessage, useIntl} from 'react-intl';
 
 import DeleteIcon from 'components/admin/DeleteIcon';
 import {useOnChanged} from 'components/admin/form_design/logic/hooks';
+import ButtonContainer from 'components/admin/forms/ButtonContainer';
+
+import {Input} from './Inputs';
 
 const ArrayInput = ({
   name,
@@ -12,6 +15,7 @@ const ArrayInput = ({
   onChange,
   deleteConfirmationMessage,
   addButtonMessage,
+  wrapEvent = false,
   ...extraProps
 }) => {
   const intl = useIntl();
@@ -34,7 +38,10 @@ const ArrayInput = ({
     setInputs(modifiedInputs);
   };
 
-  useOnChanged(inputs, () => onChange(inputs));
+  useOnChanged(inputs, () => {
+    const event = wrapEvent ? {target: {name, value: inputs}} : inputs;
+    onChange(event);
+  });
 
   return (
     <div className="array-input">
@@ -53,7 +60,8 @@ const ArrayInput = ({
               icon="times"
             />
           </div>
-          <input
+          <Input
+            name={`${name}-${index}`}
             type={inputType}
             value={value}
             onChange={onInputChange.bind(null, index)}
@@ -61,21 +69,16 @@ const ArrayInput = ({
           />
         </div>
       ))}
-      <button type="button" className="button button--plain" onClick={onAdd}>
+      <ButtonContainer onClick={onAdd}>
         {addButtonMessage || (
-          <span className="addlink">
-            <FormattedMessage
-              description="Add item to multi-input field"
-              defaultMessage="Add item"
-            />
-          </span>
+          <FormattedMessage description="Add item to multi-input field" defaultMessage="Add item" />
         )}
-      </button>
+      </ButtonContainer>
     </div>
   );
 };
 
-ArrayInput.prototype = {
+ArrayInput.propTypes = {
   name: PropTypes.string.isRequired,
   inputType: PropTypes.string.isRequired,
   values: PropTypes.arrayOf(PropTypes.string),
