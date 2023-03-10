@@ -2,19 +2,28 @@
 Changelog
 =========
 
-2.1.0-rc.0 (2023-03-03)
-=======================
+2.1.0 "Gers" (2023-03-14)
+=========================
 
-We are proud to announce a release candidate of Open Forms 2.1!
+.. epigraph::
 
-This release candidate has focused on stability issues compared to the previous alpha
-version and includes some new experimental features.
+   **Gers** *[Gers]• Gaaf/mooi/leuk/geweldig/tof/heel goed*
+
+   -- Rotterdams Woordenboek
+
+Upgrade procedure
+-----------------
+
+Ensure that your current version of Open Forms is at least version 2.0.2 before
+upgrading.
+
+Version 2.1.0 does not contain breaking changes and therefore upgrading should be
+straight forward.
 
 Major features
 --------------
 
-A quick summary of the new features in version 2.1 compared to 2.0. Scroll down for the
-full list of changes since the *2.1.0-alpha.2* version.
+A quick summary of the new features in version 2.1 compared to 2.0.
 
 **🌐 Multilingual support**
 
@@ -75,6 +84,39 @@ fully polished yet which is why it is not yet enabled by default.
 We now support (opt-in) virus scanning with `ClamAV <https://www.clamav.net/>`_. Files
 uploaded by end-users are passed through the virus scan before they are saved in
 Open Forms.
+
+Detailed changes
+----------------
+
+Please review the changelog entries for the release candidate and alpha versions of
+2.1.0. The changes listed below are compared to the release candidate ``2.1.0-rc.0``.
+
+**Bugfixes**
+
+* [#2804] Fixed the "static variables" not being available in confirmation template
+  rendering.
+* [#2821] Fixed broken "Map" component configuration screen.
+* [#2822] Fixed date components being interpreted as datetimes instead of dates.
+* [#2819] Fixed the key and translations of the password field not automatically
+  updating with entered content (label and other translatable fields).
+* [#2820] Fixed translations not registering initially when adding a component to a new
+  form step.
+* [#2791] Fixed long words overflowing in the confirmation PDF.
+* [#2850] Fixed a crash in the AVG log viewer when certain log records of deleted
+  submissions are displayed.
+* [#2842] Fixed analytics CSP-integration resulting in a misconfigured policy.
+* [#2851] Fixed importing a form while the admin UI is set to English resulting in
+  incorrect form translation mappings.
+* [#2838] Fixed hidden selectboxes field triggering premature validation of required fields.
+* [#2874] Fixed "repeating group" component group label not being translated.
+
+2.1.0-rc.0 (2023-03-03)
+=======================
+
+We are proud to announce a release candidate of Open Forms 2.1!
+
+This release candidate has focused on stability issues compared to the previous alpha
+version and includes some new experimental features.
 
 Detailed changes
 ----------------
