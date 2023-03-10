@@ -403,6 +403,110 @@ class FormAdminImportExportTests(WebTest):
 
         self.assertEqual(form.name_nl, "Form 000")
 
+    def test_importing_form_with_form_step_url_and_uuid(self):
+        file = BytesIO()
+        with ZipFile(file, mode="w") as zf:
+            with zf.open("forms.json", "w") as f:
+                f.write(
+                    json.dumps(
+                        [
+                            {
+                                "uuid": "b8315e1d-3134-476f-8786-7661d8237c51",
+                                "name": "Form 000",
+                                "internal_name": "Form internal",
+                                "slug": "bed",
+                                "product": None,
+                                "authentication_backends": [],
+                            }
+                        ]
+                    ).encode("utf-8")
+                )
+
+            with zf.open("formSteps.json", "w") as f:
+                f.write(
+                    json.dumps(
+                        [
+                            {
+                                "form": "http://openforms.nl/api/v2/forms/b8315e1d-3134-476f-8786-7661d8237c51",
+                                "form_definition": "http://openforms.nl/api/v2/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                                "index": 0,
+                                "slug": "test-step-1",
+                                "uuid": "3ca01601-cd20-4746-bce5-baab47636823",
+                            }
+                        ]
+                    ).encode("utf-8")
+                )
+
+            with zf.open("formDefinitions.json", "w") as f:
+                f.write(
+                    json.dumps(
+                        [
+                            {
+                                "configuration": {
+                                    "components": [
+                                        {
+                                            "key": "radio",
+                                            "type": "radio",
+                                            "values": [
+                                                {"label": "yes", "value": "yes"},
+                                                {"label": "no", "value": "no"},
+                                            ],
+                                        },
+                                    ]
+                                },
+                                "name": "Def 1 - With condition",
+                                "slug": "test-definition-1",
+                                "url": "http://openforms.nl/api/v2/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                                "uuid": "f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                            }
+                        ]
+                    ).encode("utf-8")
+                )
+
+            with zf.open("formLogic.json", "w") as f:
+                f.write(
+                    json.dumps(
+                        [
+                            {
+                                "actions": [
+                                    {
+                                        "action": {"type": "step-not-applicable"},
+                                        "form_step": (
+                                            "http://openforms.nl/api/v2/forms/b8315e1d-3134-476f-8786-7661d8237c51/steps/f65ab5ac-b9eb-4513-9b41-581e81f3dd2e"
+                                        ),  # UUID different from that of the step!
+                                        "form_step_uuid": "3ca01601-cd20-4746-bce5-baab47636823",
+                                    }
+                                ],
+                                "form": "http://openforms.nl/api/v2/forms/b8315e1d-3134-476f-8786-7661d8237c51",
+                                "json_logic_trigger": {"==": [{"var": "radio"}, "ja"]},
+                                "uuid": "b92342be-05e0-4070-b2cc-1b88af472091",
+                            }
+                        ]
+                    ).encode("utf-8")
+                )
+
+        response = self.app.get(
+            reverse("admin:forms_import"),
+            user=self.user,
+            headers={"Accept-Language": "en"},
+        )
+
+        file.seek(0)
+
+        html_form = response.form
+        html_form["file"] = (
+            "file.zip",
+            file.read(),
+        )
+
+        response = html_form.submit("_import")
+
+        self.assertEqual(response.status_code, 302)
+
+        form = Form.objects.get(slug="bed")
+
+        self.assertEqual(form.name_nl, "Form 000")
+
 
 @disable_2fa
 class FormAdminCopyTests(TestCase):
