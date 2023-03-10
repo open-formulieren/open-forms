@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open Forms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-01 16:36+0100\n"
+"POT-Creation-Date: 2023-03-10 16:18+0100\n"
 "PO-Revision-Date: 2023-03-01 16:35+0018\n"
 "Last-Translator: Sergei Maertens <sergei+local@maykinmedia.nl>\n"
 "Language-Team: Dutch <support@maykinmedia.nl>\n"
@@ -4805,24 +4805,24 @@ msgstr "Geauthenticeerd via plugin {auth}"
 msgid "Anonymous user"
 msgstr "Anonieme gebruiker"
 
-#: openforms/logging/models.py:87 openforms/logging/models.py:111
-#: openforms/logging/models.py:120
+#: openforms/logging/models.py:87 openforms/logging/models.py:115
+#: openforms/logging/models.py:124
 msgid "(unknown)"
 msgstr "(onbekend)"
 
-#: openforms/logging/models.py:146
+#: openforms/logging/models.py:150
 msgid "content object"
 msgstr "object"
 
-#: openforms/logging/models.py:151
+#: openforms/logging/models.py:155
 msgid "message"
 msgstr "bericht"
 
-#: openforms/logging/models.py:173
+#: openforms/logging/models.py:177
 msgid "avg timeline log entry"
 msgstr "AVG logboekvermelding"
 
-#: openforms/logging/models.py:174
+#: openforms/logging/models.py:178
 msgid "avg timeline log entries"
 msgstr "AVG logboekvermeldingen "
 
