@@ -37,12 +37,7 @@ class FormVariableListSerializer(ListWithChildSerializer):
 
         existing_form_key_combinations = []
 
-        try:
-            super().validate(attrs)
-        except ValidationError as e:
-            errors = e.args[0]
-        else:
-            errors = defaultdict(list)
+        errors = defaultdict(list)
 
         for index, item in enumerate(attrs):
             key_form_combination = (item["key"], item["form"].slug)
@@ -67,33 +62,6 @@ class FormVariableListSerializer(ListWithChildSerializer):
                 continue
 
             existing_form_key_combinations.append(key_form_combination)
-
-            if config_data := item.get("service_fetch_configuration"):
-                config_instance = None
-                if config_id := config_data.get("id"):
-                    try:
-                        config_instance = ServiceFetchConfiguration.objects.get(
-                            id=config_id
-                        )
-                    except ServiceFetchConfiguration.DoesNotExist:
-                        errors[f"{index}.service_fetch_configuration"].append(
-                            serializers.ErrorDetail(
-                                _(
-                                    "The service fetch configuration with that identifier does not exist"
-                                ),
-                                code="invalid",
-                            )
-                        )
-                        continue
-
-                config_data["service"] = config_data["service"].id
-                config = ServiceFetchConfigurationSerializer(
-                    data=config_data, instance=config_instance
-                )
-                if not config.is_valid():
-                    errors[f"{index}.service_fetch_configuration"].append(config.errors)
-                else:
-                    attrs[index]["service_fetch_configuration"] = config
 
         if errors:
             raise ValidationError(errors)
@@ -166,6 +134,28 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
         # The (bulk) API endpoint(s) and this ListSerializer are responsible for
         # applying # this validation on the whole collection.
         validators = []
+
+    def validate_service_fetch_configuration(self, value):
+        if value is None:
+            return value
+        config_instance = None
+        if config_id := value.get("id"):
+            try:
+                config_instance = ServiceFetchConfiguration.objects.get(id=config_id)
+            except ServiceFetchConfiguration.DoesNotExist:
+                raise ValidationError(
+                    _(
+                        "The service fetch configuration with identifier {config_id} does not exist"
+                    ).format(config_id=config_id),
+                    code="not_found",
+                )
+
+        value["service"] = value["service"].id
+        config = ServiceFetchConfigurationSerializer(
+            data=value, instance=config_instance
+        )
+        config.is_valid(raise_exception=True)
+        return config
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

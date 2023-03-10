@@ -291,7 +291,7 @@ class FormVariableViewsetTest(APITestCase):
                 {
                     "form": form_url,
                     "form_definition": form_definition_url,
-                    "name": "x",
+                    "name": "faulty_x",
                     "key": "x",
                     "source": FormVariableSources.user_defined,
                     "data_type": FormVariableDataTypes.string,
@@ -303,14 +303,47 @@ class FormVariableViewsetTest(APITestCase):
                         "data_mapping_type": DataMappingTypes.json_logic,
                         "mapping_expression": {"bork": []},
                     },
-                }
+                },
+                {
+                    "form": form_url,
+                    "form_definition": form_definition_url,
+                    "name": "faulty_y",
+                    "key": "y",
+                    "source": FormVariableSources.user_defined,
+                    "data_type": FormVariableDataTypes.string,
+                    "initial_value": None,
+                    "service_fetch_configuration": {
+                        "service": service.id,
+                        "path": form_variables_path,
+                        "method": ServiceFetchMethods.get,
+                        "data_mapping_type": DataMappingTypes.json_logic,
+                        "mapping_expression": {"borkbork": []},
+                    },
+                },
+                {
+                    "form": form_url,
+                    "form_definition": form_definition_url,
+                    "name": "faulty_z",
+                    "key": "z",
+                    "source": FormVariableSources.user_defined,
+                    "data_type": FormVariableDataTypes.string,
+                    "initial_value": None,
+                    "service_fetch_configuration": {
+                        "id": -1,  # does not exist
+                        "service": service.id,
+                        "path": form_variables_path,
+                        "method": ServiceFetchMethods.get,
+                        "data_mapping_type": DataMappingTypes.json_logic,
+                        "mapping_expression": {"var": "x"},
+                    },
+                },
             ],
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         error = response.json()
         self.assertEqual(error["code"], "invalid")
-        self.assertEqual(1, len(error["invalidParams"]))
+        self.assertEqual(len(error["invalidParams"]), 3)
         self.assertEqual(
             error["invalidParams"][0]["name"],
             "0.serviceFetchConfiguration.mappingExpression",
@@ -322,6 +355,32 @@ class FormVariableViewsetTest(APITestCase):
         self.assertEqual(
             error["invalidParams"][0]["reason"],
             "Unrecognized operation bork",
+        )
+
+        self.assertEqual(
+            error["invalidParams"][1]["name"],
+            "1.serviceFetchConfiguration.mappingExpression",
+        )
+        self.assertEqual(
+            error["invalidParams"][1]["code"],
+            "invalid",
+        )
+        self.assertEqual(
+            error["invalidParams"][1]["reason"],
+            "Unrecognized operation borkbork",
+        )
+
+        self.assertEqual(
+            error["invalidParams"][2]["reason"],
+            "The service fetch configuration with identifier -1 does not exist",
+        )
+        self.assertEqual(
+            error["invalidParams"][2]["name"],
+            "2.serviceFetchConfiguration",
+        )
+        self.assertEqual(
+            error["invalidParams"][2]["code"],
+            "not_found",
         )
 
     def test_unique_together_key_form(self):
