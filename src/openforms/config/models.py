@@ -25,8 +25,9 @@ from openforms.emails.validators import URLSanitationValidator
 from openforms.payments.validators import validate_payment_order_id_prefix
 from openforms.template import openforms_backend, render_from_string
 from openforms.template.validators import DjangoTemplateValidator
+from openforms.translations.utils import ensure_default_language
 from openforms.utils.fields import SVGOrImageField
-from openforms.utils.translations import ensure_default_language, runtime_gettext
+from openforms.utils.translations import runtime_gettext
 
 from .constants import CSPDirective, UploadFileType
 from .utils import verify_clamav_connection
