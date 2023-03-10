@@ -7598,6 +7598,9 @@ components:
     ServiceFetchConfiguration:
       type: object
       properties:
+        id:
+          type: integer
+          readOnly: true
         service:
           type: integer
         path:
@@ -7637,6 +7640,7 @@ components:
           nullable: true
           description: For jq, pass a string containing the filter expression
       required:
+      - id
       - service
     SourceEnum:
       enum:
