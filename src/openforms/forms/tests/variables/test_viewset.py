@@ -27,6 +27,8 @@ from openforms.variables.constants import (
     FormVariableSources,
     ServiceFetchMethods,
 )
+from openforms.variables.models import ServiceFetchConfiguration
+from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 
 @override_settings(LANGUAGE_CODE="en")
@@ -183,6 +185,77 @@ class FormVariableViewsetTest(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        fetch_config = FormVariable.objects.get(key="x").service_fetch_configuration
+
+        self.assertEqual(fetch_config.service_id, service.id)
+        self.assertEqual(fetch_config.path, form_variables_path)
+        self.assertEqual(fetch_config.method, ServiceFetchMethods.get)
+
+    def test_it_updates_inline_service_fetch_configs(self):
+        designer = StaffUserFactory.create(user_permissions=["change_form"])
+        service = ServiceFactory.create(
+            api_type=APITypes.orc,
+            api_root="http://testserver/api/v2",
+            auth_type=AuthTypes.no_auth,
+            oas_file=FileField(
+                from_path=str(Path(__file__).parents[4] / "openapi.yaml")
+            ),
+        )
+        form = FormFactory.create(generate_minimal_setup=True)
+        form_path = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_url = f"http://testserver{form_path}"
+        form_definition = form.formstep_set.get().form_definition
+        form_definition_path = reverse(
+            "api:formdefinition-detail", kwargs={"uuid": form_definition.uuid}
+        )
+        form_definition_url = f"http://testserver{form_definition_path}"
+        form_variables_path = reverse(
+            "api:form-variables", kwargs={"uuid_or_slug": form.uuid}
+        )
+
+        service_fetch_config = ServiceFetchConfigurationFactory.create_batch(
+            4,
+            service=service,
+        )[1]
+
+        self.client.force_authenticate(designer)
+        response = self.client.put(
+            form_variables_path,
+            data=[
+                {
+                    "form": form_url,
+                    "form_definition": form_definition_url,
+                    "name": "x",
+                    "key": "x",
+                    "source": FormVariableSources.user_defined,
+                    "data_type": FormVariableDataTypes.object,
+                    "initial_value": None,
+                    "service_fetch_configuration": {
+                        "id": service_fetch_config.id,
+                        "service": service.id,
+                        "path": form_variables_path,
+                        "method": ServiceFetchMethods.get,
+                        "data_mapping_type": DataMappingTypes.json_logic,
+                        "mapping_expression": {
+                            "var": [
+                                0,
+                                {
+                                    "map": [
+                                        {"if": {"==": [{"var": "key"}, "x"]}},
+                                        {"var": ""},
+                                    ]
+                                },
+                            ]
+                        },
+                    },
+                }
+            ],
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # it shouldn't add or delete configs
+        self.assertEqual(ServiceFetchConfiguration.objects.count(), 4)
+
         fetch_config = FormVariable.objects.get(key="x").service_fetch_configuration
 
         self.assertEqual(fetch_config.service_id, service.id)

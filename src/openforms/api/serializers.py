@@ -1,6 +1,5 @@
 from typing import List
 
-from django.db import transaction
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 

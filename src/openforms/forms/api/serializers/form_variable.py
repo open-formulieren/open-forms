@@ -9,6 +9,7 @@ from openforms.api.fields import RelatedFieldFromContext
 from openforms.api.serializers import ListWithChildSerializer
 from openforms.variables.api.serializers import ServiceFetchConfigurationSerializer
 from openforms.variables.constants import FormVariableSources
+from openforms.variables.models import ServiceFetchConfiguration
 from openforms.variables.service import get_static_variables
 
 from ...models import Form, FormDefinition, FormVariable
@@ -68,8 +69,27 @@ class FormVariableListSerializer(ListWithChildSerializer):
             existing_form_key_combinations.append(key_form_combination)
 
             if config_data := item.get("service_fetch_configuration"):
+                config_instance = None
+                if config_id := config_data.get("id"):
+                    try:
+                        config_instance = ServiceFetchConfiguration.objects.get(
+                            id=config_id
+                        )
+                    except ServiceFetchConfiguration.DoesNotExist:
+                        errors[f"{index}.service_fetch_configuration"].append(
+                            serializers.ErrorDetail(
+                                _(
+                                    "The service fetch configuration with that identifier does not exist"
+                                ),
+                                code="invalid",
+                            )
+                        )
+                        continue
+
                 config_data["service"] = config_data["service"].id
-                config = ServiceFetchConfigurationSerializer(data=config_data)
+                config = ServiceFetchConfigurationSerializer(
+                    data=config_data, instance=config_instance
+                )
                 if not config.is_valid():
                     errors[f"{index}.service_fetch_configuration"].append(config.errors)
                 else:
