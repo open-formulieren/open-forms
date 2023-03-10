@@ -920,7 +920,9 @@ class FormLogicAPITests(APITestCase):
         )
         self.assertEqual("blank", response.json()["invalidParams"][0]["code"])
 
-    def test_cant_have_empty_form_step_in_mark_step_as_not_applicable(self):
+    def test_cant_have_both_empty_form_step_uuid_and_form_step_in_mark_step_as_not_applicable(
+        self,
+    ):
         user = SuperUserFactory.create()
         self.client.force_authenticate(user=user)
         form = FormFactory.create(
@@ -947,7 +949,8 @@ class FormLogicAPITests(APITestCase):
                 "json_logic_trigger": {"==": [{"var": "text1"}, {"var": "text2"}]},
                 "actions": [
                     {
-                        "formStep": "",  # Empty form step
+                        "formStep": "",  # Missing form step / form step UUID
+                        "formStepUuid": "",  # Empty form step uuid
                         "action": {
                             "name": "Mark step as not applicable",
                             "type": "step-not-applicable",
