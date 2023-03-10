@@ -5,7 +5,13 @@ from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
+import jq
+from rest_framework.validators import ValidationError as DRFValidationError
+
+from openforms.forms.api.validators import JsonLogicValidator
 from openforms.typing import JSONValue
+
+from .constants import DataMappingTypes, ServiceFetchMethods
 
 
 @deconstructible
@@ -112,6 +118,40 @@ class HeaderValidator:
 
         if errors:
             raise ValidationError(errors)
+
+
+class ServiceFetchConfigurationValidator:
+    def __call__(self, value):
+        errors = {}
+
+        if value["method"] == ServiceFetchMethods.get and value.get("body") not in (
+            None,
+            "",
+        ):
+            errors["body"] = _("GET requests may not have a body")
+
+        if value["data_mapping_type"] == "" and value["mapping_expression"] not in (
+            None,
+            "",
+        ):
+            errors["mapping_expression"] = _("Data mapping type missing for expression")
+        elif value["data_mapping_type"] != "" and value["mapping_expression"] is None:
+            errors["mapping_expression"] = _(
+                "Missing {mapping_type} expression"
+            ).format(mapping_type=value["data_mapping_type"])
+        elif value["data_mapping_type"] == DataMappingTypes.jq:
+            try:
+                jq.compile(value["mapping_expression"])
+            except ValueError as e:
+                errors["mapping_expression"] = str(e)
+        elif value["data_mapping_type"] == DataMappingTypes.json_logic:
+            try:
+                JsonLogicValidator()(value["mapping_expression"])
+            except (DRFValidationError, ValidationError) as e:
+                errors["mapping_expression"] = str(e.__cause__)
+
+        if errors:
+            raise DRFValidationError(errors)
 
 
 def has_whitespace_padding(s: str) -> bool:

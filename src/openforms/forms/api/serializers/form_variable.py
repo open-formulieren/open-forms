@@ -22,6 +22,15 @@ class FormVariableListSerializer(ListWithChildSerializer):
         variable.check_data_type_and_initial_value()
         return variable
 
+    def preprocess_validated_data(self, validated_data):
+        def save_fetch_config(data):
+            if config := data.get("service_fetch_configuration"):
+                config.save()
+                data["service_fetch_configuration"] = config.instance
+            return data
+
+        return map(save_fetch_config, validated_data)
+
     def validate(self, attrs):
         static_data_keys = [item.key for item in get_static_variables()]
 
@@ -57,6 +66,14 @@ class FormVariableListSerializer(ListWithChildSerializer):
                 continue
 
             existing_form_key_combinations.append(key_form_combination)
+
+            if config_data := item.get("service_fetch_configuration"):
+                config_data["service"] = config_data["service"].id
+                config = ServiceFetchConfigurationSerializer(data=config_data)
+                if not config.is_valid():
+                    errors[f"{index}.service_fetch_configuration"].append(config.errors)
+                else:
+                    attrs[index]["service_fetch_configuration"] = config
 
         if errors:
             raise ValidationError(errors)

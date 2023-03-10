@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from ..models import ServiceFetchConfiguration
+from ..validators import ServiceFetchConfigurationValidator
 
 
 class ServiceFetchConfigurationSerializer(serializers.ModelSerializer):
@@ -16,3 +17,4 @@ class ServiceFetchConfigurationSerializer(serializers.ModelSerializer):
             "data_mapping_type",
             "mapping_expression",
         )
+        validators = [ServiceFetchConfigurationValidator()]
