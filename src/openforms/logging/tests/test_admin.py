@@ -1,4 +1,5 @@
 from django.contrib.auth.models import Permission
+from django.test import tag
 from django.urls import reverse
 from django.utils import timezone
 
@@ -8,6 +9,7 @@ from openforms.accounts.tests.factories import StaffUserFactory, SuperUserFactor
 from openforms.logging import logevent
 from openforms.logging.models import TimelineLogProxy
 from openforms.logging.tests.factories import TimelineLogProxyFactory
+from openforms.prefill.registry import register
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
@@ -60,3 +62,24 @@ class AVGAuditLogListViewTests(WebTest):
         )
 
         self.app.get(url, user=user, expect_errors=403)
+
+    @tag("gh-2850")
+    def test_deleted_submission_doesnt_crash_logs(self):
+        url = reverse("admin:logging_avgtimelinelogproxy_changelist")
+
+        user = StaffUserFactory.create(
+            user_permissions=["logging.view_avgtimelinelogproxy"]
+        )
+        self.client.force_login(user)
+
+        submission = SubmissionFactory.create()
+
+        logevent.prefill_retrieve_success(
+            submission, register["haalcentraal"], ["name"]
+        )
+
+        submission.delete()
+
+        response = self.app.get(url, user=user)
+
+        self.assertEqual(200, response.status_code)
