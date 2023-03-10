@@ -5,7 +5,7 @@ from zipfile import ZipFile
 
 from django.apps import apps
 from django.contrib import admin
-from django.test import RequestFactory, TestCase, override_settings
+from django.test import RequestFactory, TestCase, override_settings, tag
 from django.urls import reverse
 from django.utils.module_loading import import_string
 from django.utils.translation import ugettext as _
@@ -351,6 +351,57 @@ class FormAdminImportExportTests(WebTest):
         self.assertEqual(form_definition.name, "testform")
         self.assertEqual(form_definition.internal_name, "test internal")
         self.assertEqual(form_definition.slug, "testform-2")
+
+    @tag("gh-2851")
+    def test_form_admin_import_with_english_default(self):
+        file = BytesIO()
+        with ZipFile(file, mode="w") as zf:
+            with zf.open("forms.json", "w") as f:
+                f.write(
+                    json.dumps(
+                        [
+                            {
+                                "uuid": "b8315e1d-3134-476f-8786-7661d8237c51",
+                                "name": "Form 000",
+                                "internal_name": "Form internal",
+                                "slug": "bed",
+                                "product": None,
+                                "authentication_backends": ["digid"],
+                            }
+                        ]
+                    ).encode("utf-8")
+                )
+
+            with zf.open("formSteps.json", "w") as f:
+                f.write(b"[]")
+
+            with zf.open("formDefinitions.json", "w") as f:
+                f.write(b"[]")
+
+            with zf.open("formLogic.json", "w") as f:
+                f.write(b"[]")
+
+        response = self.app.get(
+            reverse("admin:forms_import"),
+            user=self.user,
+            headers={"Accept-Language": "en"},
+        )
+
+        file.seek(0)
+
+        html_form = response.form
+        html_form["file"] = (
+            "file.zip",
+            file.read(),
+        )
+
+        response = html_form.submit("_import", headers={"Accept-Language": "en"})
+
+        self.assertEqual(response.status_code, 302)
+
+        form = Form.objects.get(slug="bed")
+
+        self.assertEqual(form.name_nl, "Form 000")
 
 
 @disable_2fa
