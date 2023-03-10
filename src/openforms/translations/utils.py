@@ -3,6 +3,7 @@ from typing import Union
 
 from django.conf import settings
 from django.http.response import HttpResponseBase
+from django.utils import translation
 from django.utils.translation import get_language_info
 
 from rest_framework.response import Response
@@ -55,3 +56,26 @@ def get_supported_languages() -> list[LanguageInfo]:
         for code in codes
     ]
     return languages
+
+
+class ensure_default_language(translation.override):
+    """
+    Ensure that the default translation is activated if none is active.
+
+    Sometimes translations are deactivated (e.g. running management commands), but
+    content should be translated anyway. This context manager allows you to force
+    falling back to :attr:`settings.LANGUAGE_CODE`.
+
+    Note that the context manager can also be used as decorator, as it inherits from
+    :class:`django.utils.translation.override`.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(language=settings.LANGUAGE_CODE, **kwargs)
+
+    def __enter__(self):
+        # only set the default if there's no language set
+        current = translation.get_language()
+        if current is not None:
+            self.language = current
+        return super().__enter__()
