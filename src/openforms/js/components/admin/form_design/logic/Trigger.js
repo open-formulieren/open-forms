@@ -9,6 +9,7 @@ import {VARIABLE_SOURCES} from 'components/admin/form_design/variables/constants
 import ArrayInput from 'components/admin/forms/ArrayInput';
 import Select from 'components/admin/forms/Select';
 import VariableSelection from 'components/admin/forms/VariableSelection';
+import useOnChanged from 'hooks/useOnChanged';
 import {getTranslatedChoices} from 'utils/i18n';
 
 import DSLEditorNode from './DSLEditorNode';
@@ -17,7 +18,6 @@ import LiteralValueInput from './LiteralValueInput';
 import OperandTypeSelection from './OperandTypeSelection';
 import Today from './Today';
 import {OPERATORS, TYPE_TO_OPERAND_TYPE, TYPE_TO_OPERATORS} from './constants';
-import {useOnChanged} from './hooks';
 
 const OperatorSelection = ({name, selectedVariableType, operator, onChange}) => {
   const intl = useIntl();

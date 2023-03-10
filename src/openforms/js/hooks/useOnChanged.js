@@ -2,8 +2,6 @@ import isEqual from 'lodash/isEqual';
 import {useEffect} from 'react';
 import usePrevious from 'react-use/esm/usePrevious';
 
-// FIXME: code is duplicated between this file and components/admin/form_design/logic/hooks
-
 /**
  * Invoke a callback if the value has changed (deep equal comparison).
  */
@@ -18,4 +16,4 @@ const useOnChanged = (value, callback) => {
   }, [value]);
 };
 
-export {useOnChanged};
+export default useOnChanged;
