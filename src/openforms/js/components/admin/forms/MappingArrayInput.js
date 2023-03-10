@@ -127,10 +127,11 @@ const MappingArrayInput = ({
 
 MappingArrayInput.propTypes = {
   inputType: PropTypes.string.isRequired,
-  mapping: PropTypes.arrayOf(PropTypes.array),
+  mapping: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.any)),
   onChange: PropTypes.func.isRequired,
   deleteConfirmationMessage: PropTypes.node,
   addButtonMessage: PropTypes.node,
+  valueArrayInput: PropTypes.bool,
 };
 
 export default MappingArrayInput;
