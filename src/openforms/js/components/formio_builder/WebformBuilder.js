@@ -52,7 +52,11 @@ class WebformBuilder extends WebformBuilderFormio {
   // steps as an option to the webform.
   findNamespaceRoot(component) {
     const customNamespace = this.webform?.options?.openForms?.componentNamespace;
-    if (!isEmpty(customNamespace)) return customNamespace;
+    if (!isEmpty(customNamespace)) {
+      // exclude components that don't have an ID yet, otherwise the first component of
+      // a type gets a key suffixed with '1';
+      return customNamespace.filter(comp => !!comp.id);
+    }
 
     return super.findNamespaceRoot(component);
   }
