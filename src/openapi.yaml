@@ -5990,6 +5990,10 @@ components:
         appointmentEnabled:
           type: boolean
           description: This is experimental mode for appointments
+        resumeLinkLifetime:
+          type: integer
+          readOnly: true
+          description: The number of days that the resume link is valid for.
       required:
       - loginOptions
       - loginRequired
@@ -5997,6 +6001,7 @@ components:
       - paymentOptions
       - paymentRequired
       - requiredFieldsWithAsterisk
+      - resumeLinkLifetime
       - slug
       - steps
       - url
@@ -7289,6 +7294,10 @@ components:
         appointmentEnabled:
           type: boolean
           description: This is experimental mode for appointments
+        resumeLinkLifetime:
+          type: integer
+          readOnly: true
+          description: The number of days that the resume link is valid for.
     PatchedFormDefinition:
       type: object
       properties:
