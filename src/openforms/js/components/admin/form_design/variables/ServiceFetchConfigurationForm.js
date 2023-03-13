@@ -143,7 +143,7 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
                   mapping={formik.values.queryParams}
                   valueArrayInput={true}
                   {...formik.getFieldProps('queryParams')}
-                  onChange={formik.getFieldHelpers('queryParams').setValue}
+                  onChange={formik.setFieldValue}
                 />
               </Field>
             </FormRow>
@@ -162,7 +162,7 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
                   name="headers"
                   mapping={formik.values.headers}
                   {...formik.getFieldProps('headers')}
-                  onChange={formik.getFieldHelpers('headers').setValue}
+                  onChange={formik.setFieldValue}
                 />
               </Field>
             </FormRow>

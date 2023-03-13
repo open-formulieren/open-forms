@@ -10,6 +10,7 @@ import ArrayInput from './ArrayInput';
 import {Input, TextInput} from './Inputs';
 
 const MappingArrayInput = ({
+  name,
   inputType,
   mapping,
   onChange,
@@ -24,20 +25,24 @@ const MappingArrayInput = ({
     const newMapping = produce(mapping, draft => {
       draft.push(['', newValue]);
     });
-    onChange(newMapping);
+    onChange(name, newMapping);
   };
 
   const onDelete = index => {
-    return produce(mapping, draft => draft.filter((_, itemIndex) => itemIndex !== index));
+    const newMapping = produce(mapping, draft =>
+      draft.filter((_, itemIndex) => itemIndex !== index)
+    );
+    onChange(name, newMapping);
   };
 
   const onInputChange = (itemIndex, event) => {
-    const {name, value} = event.target;
-    const index = {key: 0, value: 1}[name];
+    const {name: eventName, value} = event.target;
+    const index = {key: 0, value: 1}[eventName];
     const newMapping = produce(mapping, draft => {
       draft[itemIndex][index] = value;
     });
-    onChange(newMapping);
+
+    onChange(name, newMapping);
   };
 
   return (
