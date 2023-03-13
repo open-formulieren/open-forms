@@ -420,6 +420,7 @@ const FormIOBuilder = ({
         })
         .then(() => {
           instance.root.triggerChange(flags, changed, modifiedByHuman);
+          instance.root.redraw();
         });
     }
   };
