@@ -16,10 +16,11 @@ HEADLESS = "NO_E2E_HEADLESS" not in os.environ
 BROWSER: Literal["chromium", "firefox", "webkit"] = os.getenv(
     "E2E_DRIVER", default="chromium"
 )  # type:ignore
+SLOW_MO = int(os.environ.get("SLOW_MO", "100"))
 
 LAUNCH_KWARGS = {
     "headless": HEADLESS,
-    "slow_mo": 100 if HEADLESS else None,
+    "slow_mo": SLOW_MO,
 }
 
 
