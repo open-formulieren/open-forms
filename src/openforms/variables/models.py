@@ -48,10 +48,10 @@ class ServiceFetchConfiguration(models.Model):
         ),
         validators=[HeaderValidator()],
     )
-    query_params = models.TextField(
+    query_params = models.JSONField(
         _("HTTP query string"),
         blank=True,
-        default="",
+        default=dict,
     )
     body = models.JSONField(
         _("HTTP request body"),
