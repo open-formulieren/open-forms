@@ -109,6 +109,11 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     )
     is_deleted = serializers.BooleanField(source="_is_deleted", required=False)
     required_fields_with_asterisk = serializers.SerializerMethodField(read_only=True)
+    resume_link_lifetime = serializers.SerializerMethodField(
+        label=_("Resume link lifetime"),
+        read_only=True,
+        help_text=_("The number of days that the resume link is valid for."),
+    )
 
     translations = ModelTranslationsSerializer()
 
@@ -150,6 +155,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "required_fields_with_asterisk",
             "translations",
             "appointment_enabled",
+            "resume_link_lifetime",
         )
         # allowlist for anonymous users
         public_fields = (
@@ -173,6 +179,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "required_fields_with_asterisk",
             "submission_allowed",
             "appointment_enabled",
+            "resume_link_lifetime",
         )
         extra_kwargs = {
             "uuid": {
@@ -316,6 +323,21 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     def get_required_fields_with_asterisk(self, obj) -> bool:
         config = GlobalConfiguration.get_solo()
         return config.form_display_required_with_asterisk
+
+    def get_resume_link_lifetime(self, obj) -> int:
+        config = GlobalConfiguration.get_solo()
+        lifetime = obj.incomplete_submissions_removal_limit
+
+        if not lifetime:
+            lifetime = config.incomplete_submissions_removal_limit
+
+        if lifetime_all := (
+            obj.all_submissions_removal_limit or config.all_submissions_removal_limit
+        ):
+            if lifetime_all < lifetime:
+                lifetime = lifetime_all
+
+        return lifetime
 
 
 FormSerializer.__doc__ = FormSerializer.__doc__.format(
