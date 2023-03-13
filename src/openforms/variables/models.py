@@ -42,7 +42,7 @@ class ServiceFetchConfiguration(models.Model):
     headers = models.JSONField(
         _("HTTP request headers"),
         blank=True,
-        null=True,
+        default=dict,
         help_text=_(
             "Additions and overrides for the HTTP request headers as defined in the Service."
         ),
