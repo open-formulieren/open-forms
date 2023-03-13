@@ -253,11 +253,11 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
                     {
                         "confirmation_email_option": ErrorDetail(
                             _(
-                                "The form specific confirmation email template is not set up correctly and "
-                                "can therefore not be selected."
+                                "The form-specific confirmation email template "
+                                "(subject + content) should not be empty."
                             ),
                             code="invalid",
-                        )
+                        ),
                     }
                 )
 

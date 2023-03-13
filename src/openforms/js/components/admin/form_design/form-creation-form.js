@@ -151,6 +151,7 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   maintenanceMode: 'form',
   translationEnabled: 'form',
   confirmationEmailTemplate: 'submission-confirmation',
+  confirmationEmailOption: 'submission-confirmation',
   submissionAllowed: 'form',
   registrationBackend: 'registration',
   registrationBackendOptions: 'registration',
