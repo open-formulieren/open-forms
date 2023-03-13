@@ -131,6 +131,7 @@ const MappingArrayInput = ({
 };
 
 MappingArrayInput.propTypes = {
+  name: PropTypes.string.isRequired,
   inputType: PropTypes.string.isRequired,
   mapping: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.any)),
   onChange: PropTypes.func.isRequired,

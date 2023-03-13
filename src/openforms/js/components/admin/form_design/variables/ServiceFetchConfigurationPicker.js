@@ -1,4 +1,5 @@
 import {useFormik} from 'formik';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage} from 'react-intl';
@@ -47,6 +48,8 @@ const ServiceFetchConfigurationPicker = ({onChange, onFormSave}) => {
         case 'jq':
           values.mappingExpression = values.jqExpression;
           break;
+        default:
+          values.mappingExpression = values.jqExpression;
       }
       delete values.jsonLogicExpression;
       delete values.jqExpression;
@@ -74,11 +77,26 @@ const ServiceFetchConfigurationPicker = ({onChange, onFormSave}) => {
               onChange={event => {
                 onChange(event);
                 setSelectedServiceFetchConfig(event.target.value);
-                formik.setValues(
-                  formLogicContext.serviceFetchConfigurations.find(
-                    element => element.url === event.target.value
-                  ) || formik.initialValues
-                );
+
+                let values =
+                  _.cloneDeep(
+                    formLogicContext.serviceFetchConfigurations.find(
+                      element => element.url === event.target.value
+                    )
+                  ) || formik.initialValues;
+
+                switch (values.dataMappingType) {
+                  case 'JsonLogic':
+                    values.jsonLogicExpression = values.mappingExpression;
+                    break;
+                  case 'jq':
+                    values.jqExpression = values.mappingExpression;
+                    break;
+                  default:
+                    values.jqExpression = values.mappingExpression;
+                }
+
+                formik.setValues(values);
 
                 setSelectExisting(!!event.target.value);
               }}

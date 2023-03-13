@@ -144,6 +144,7 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
                   valueArrayInput={true}
                   {...formik.getFieldProps('queryParams')}
                   onChange={formik.setFieldValue}
+                  inputType="text"
                 />
               </Field>
             </FormRow>
@@ -163,6 +164,7 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
                   mapping={formik.values.headers}
                   {...formik.getFieldProps('headers')}
                   onChange={formik.setFieldValue}
+                  inputType="text"
                 />
               </Field>
             </FormRow>
@@ -219,33 +221,42 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
               </Field>
             </FormRow>
 
-            <FormRow>
-              <Field
-                name={
-                  formik.values.dataMappingType === 'JsonLogic'
-                    ? 'jsonLogicExpression'
-                    : 'jqExpression'
-                }
-                required
-                label={
-                  <FormattedMessage
-                    defaultMessage="Mapping expression"
-                    description="Service fetch configuration modal form mapping expression field label"
-                  />
-                }
-              >
-                {formik.values.dataMappingType === 'JsonLogic' ? (
+            {formik.values.dataMappingType === 'JsonLogic' ? (
+              <FormRow>
+                <Field
+                  name="jsonLogicExpression"
+                  required
+                  label={
+                    <FormattedMessage
+                      defaultMessage="Mapping expression"
+                      description="Service fetch configuration modal form mapping expression field label"
+                    />
+                  }
+                >
                   <JsonWidget
                     name="jsonLogicExpression"
                     logic={formik.values.jsonLogicExpression || ''}
                     cols={20}
                     {...formik.getFieldProps('jsonLogicExpression')}
                   />
-                ) : (
+                </Field>
+              </FormRow>
+            ) : (
+              <FormRow>
+                <Field
+                  name="jqExpression"
+                  required
+                  label={
+                    <FormattedMessage
+                      defaultMessage="Mapping expression"
+                      description="Service fetch configuration modal form mapping expression field label"
+                    />
+                  }
+                >
                   <TextInput name="jqExpression" {...formik.getFieldProps('jqExpression')} />
-                )}
-              </Field>
-            </FormRow>
+                </Field>
+              </FormRow>
+            )}
           </Fieldset>
 
           <SubmitRow>

@@ -60,8 +60,9 @@ export const Template = ({formik, selectExisting}) => (
         onSubmit: (values, {setSubmitting}) => {
           alert(JSON.stringify(values, null, 2));
         },
-        getFieldProps: name => ({}),
+        getFieldProps: name => ({name: name, value: '', onChange: event => null}),
         getFieldHelpers: name => ({}),
+        setFieldValue: (name, value) => ({}),
       },
       selectExisting: false,
     }}
