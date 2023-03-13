@@ -9,6 +9,7 @@ from uuid import uuid4
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import override
 
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
@@ -139,6 +140,7 @@ def import_form(import_file, existing_form_instance=None):
 
 
 @transaction.atomic
+@override(language=settings.LANGUAGE_CODE)
 def import_form_data(
     import_data: dict, existing_form_instance: Form = None
 ) -> List[FormDefinition]:
