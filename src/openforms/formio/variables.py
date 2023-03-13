@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 SUPPORTED_TEMPLATE_PROPERTIES = (
     "label",
+    "groupLabel",  # type: editgrid
     "legend",
     "defaultValue",
     "description",

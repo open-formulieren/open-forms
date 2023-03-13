@@ -19,6 +19,7 @@ from rest_framework.test import APITestCase
 
 from openforms.accounts.tests.factories import StaffUserFactory, SuperUserFactory
 from openforms.formio.components.vanilla import SelectBoxes, TextField
+from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.formio.formatters.formio import TextFieldFormatter
 from openforms.formio.registry import BasePlugin, ComponentRegistry
 from openforms.forms.tests.factories import (
@@ -419,6 +420,61 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(textfield["key"], "bar")
         self.assertEqual(textfield["label"], "Kneipe")
+
+    def test_component_properties_are_translated(self):
+        submission = SubmissionFactory.create(
+            language_code="en",
+            form__generate_minimal_setup=True,
+            form__formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "editgrid",
+                        "key": "repeatingGroup1",
+                        "label": "Herhalende groep 1",
+                        "groupLabel": "Element",
+                        "components": [
+                            {"type": "textfield", "label": "Tekst 1", "key": "text1"},
+                        ],
+                    }
+                ],
+            },
+            form__formstep__form_definition__component_translations={
+                "en": {
+                    "Herhalende groep 1": "Repeating group 1",
+                    "Element": "Item",
+                    "Tekst 1": "Text 1",
+                }
+            },
+        )
+        self._add_submission_to_session(submission)
+        form_step = submission.steps[0].form_step
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": form_step.uuid,
+            },
+        )
+
+        configuration = self.client.get(endpoint).json()["formStep"]["configuration"]
+
+        wrapped_configuration = FormioConfigurationWrapper(configuration)
+        expected = {
+            "repeatingGroup1": {
+                "label": "Repeating group 1",
+                "groupLabel": "Item",
+            },
+            "text1": {
+                "label": "Text 1",
+            },
+        }
+
+        for key, translations in expected.items():
+            for prop, text in translations.items():
+                with self.subTest(component=key, property=prop, expected=text):
+                    component = wrapped_configuration[key]
+
+                    self.assertEqual(component[prop], text)
 
     def test_dynamic_date_component_config_based_on_variables(self):
         form = FormFactory.create(
