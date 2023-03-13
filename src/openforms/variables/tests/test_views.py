@@ -10,6 +10,7 @@ from openforms.variables.base import BaseStaticVariable
 from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.registry import Registry
 
+from ..constants import DataMappingTypes, ServiceFetchMethods
 from .factories import ServiceFetchConfigurationFactory
 
 
@@ -111,8 +112,15 @@ class ServiceFetchConfigurationAPITests(APITestCase):
         )
 
     def test_service_fetch_configuration_have_the_right_properties(self):
-        expected_config = ServiceFetchConfigurationFactory.create(
-            name="Service fetch configuration 1"
+        config = ServiceFetchConfigurationFactory.create(
+            name="Service fetch configuration 1",
+            path="/foo",
+            method=ServiceFetchMethods.post,
+            headers={"X-Foo": "bar"},
+            query_params={"param": "value"},
+            body={"foo": "bar"},
+            data_mapping_type=DataMappingTypes.jq,
+            mapping_expression=".foo",
         )
         endpoint = reverse("api:servicefetchconfiguration-list")
         self.client.force_authenticate(user=self.admin_user)
@@ -121,8 +129,18 @@ class ServiceFetchConfigurationAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 1)
-        config = response.data["results"][0]
-        self.assertEqual(
-            config["url"], f"http://testserver{endpoint}/{expected_config.pk}"
-        )
-        self.assertEqual(config["name"], "Service fetch configuration 1")
+
+        expected = {
+            "url": f"http://testserver{endpoint}/{config.pk}",
+            "name": "Service fetch configuration 1",
+            "service": f"http://testserver{reverse('api:service-detail', kwargs={'pk': config.service.pk})}",
+            "path": "/foo",
+            "method": ServiceFetchMethods.post.value,
+            "headers": {"X-Foo": "bar"},
+            "query_params": "{'param': 'value'}",
+            "body": {"foo": "bar"},
+            "data_mapping_type": DataMappingTypes.jq.value,
+            "mapping_expression": ".foo",
+        }
+
+        self.assertEqual(response.data["results"][0], expected)
