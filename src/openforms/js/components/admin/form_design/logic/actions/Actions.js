@@ -9,6 +9,7 @@ import {
   STRING_TO_TYPE,
   TYPE_TO_STRING,
 } from 'components/admin/form_design/logic/constants';
+import ServiceFetchConfigurationPicker from 'components/admin/form_design/variables/ServiceFetchConfigurationPicker';
 import ActionButton from 'components/admin/forms/ActionButton';
 import ComponentSelection from 'components/admin/forms/ComponentSelection';
 import JsonWidget from 'components/admin/forms/JsonWidget';
@@ -16,7 +17,6 @@ import Select from 'components/admin/forms/Select';
 import VariableSelection from 'components/admin/forms/VariableSelection';
 import Modal from 'components/admin/modals/Modal';
 
-import ServiceFetchConfigurationPicker from '../../variables/ServiceFetchConfigurationPicker';
 import {ActionError, Action as ActionType} from './types';
 
 const ActionProperty = ({action, errors, onChange}) => {
