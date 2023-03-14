@@ -183,7 +183,9 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             await add_new_step(page)
             await drag_and_drop_component(page, "Tekstveld")
             await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
-            await page.get_by_label("Label", exact=True).fill("Test")
+            label_locator = page.get_by_label("Label", exact=True)
+            await label_locator.clear()
+            await label_locator.fill("Test")
 
             # Set an initial translation
             await page.get_by_role("link", name="Vertalingen").click()
