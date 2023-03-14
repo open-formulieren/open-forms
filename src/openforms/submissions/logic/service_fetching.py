@@ -1,12 +1,24 @@
+from dataclasses import dataclass
+
 import jq
 from json_logic import jsonLogic
 
 from openforms.forms.models import FormVariable
-from openforms.typing import DataMapping, JSONValue
+from openforms.typing import DataMapping, JSONObject, JSONValue
 from openforms.variables.models import DataMappingTypes, ServiceFetchConfiguration
 
 
-def perform_service_fetch(var: FormVariable, context: DataMapping) -> JSONValue:
+@dataclass
+class FetchResult:
+    value: JSONValue
+    request_parameters: JSONObject
+    response_json: JSONValue
+    # zds Client returns json, we don't have access to
+    # response_body: str  # base64 as services could return any bytearray
+    # response_headers: JSONObject
+
+
+def perform_service_fetch(var: FormVariable, context: DataMapping) -> FetchResult:
     """Fetch a value from a http-service, perform a transformation on it and
     return the result.
 
@@ -36,4 +48,9 @@ def perform_service_fetch(var: FormVariable, context: DataMapping) -> JSONValue:
             value = jsonLogic(expression, raw_value)
         case _:
             value = raw_value
-    return value
+
+    return FetchResult(
+        value=value,
+        request_parameters=request_args,
+        response_json=raw_value,
+    )
