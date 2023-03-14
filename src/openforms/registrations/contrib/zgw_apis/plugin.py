@@ -101,6 +101,7 @@ def wrap_api_errors(func):
 class ZGWRegistration(BasePlugin):
     verbose_name = _("ZGW API's")
     configuration_options = ZaakOptionsSerializer
+    backend_generates_reference = True
 
     rol_mapping = {
         # Initiator

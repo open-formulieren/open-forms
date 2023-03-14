@@ -31,6 +31,11 @@ class BasePlugin(ABC, AbstractBasePlugin):
     """
     Iterable of JSON keys to ignore when converting between snake_case/camelCase.
     """
+    backend_generates_reference = False
+    """
+    Bool indicating whether the registration backend generates a reference that needs to be extracted and used as the
+    submission reference.
+    """
 
     @abstractmethod
     def register_submission(

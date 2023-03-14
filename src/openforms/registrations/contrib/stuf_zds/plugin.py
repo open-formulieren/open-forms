@@ -154,6 +154,7 @@ def _gender_choices(value):
 class StufZDSRegistration(BasePlugin):
     verbose_name = _("StUF-ZDS")
     configuration_options = ZaakOptionsSerializer
+    backend_generates_reference = True
 
     zaak_mapping = {
         # Initiator
