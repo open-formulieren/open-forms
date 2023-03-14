@@ -1,14 +1,10 @@
 [
     {
-        "directive" : "script-src",
+        "directive" : "default-src",
         "value": "https://www.googleanalytics.com"
     },
     {
-        "directive" : "script-src",
-        "value": "https://www.googletagmanager.com"
-    },
-    {
-        "directive": "img-src",
+        "directive" : "default-src",
         "value": "https://www.googletagmanager.com"
     }
 ]
