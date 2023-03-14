@@ -326,16 +326,14 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
 
     def get_resume_link_lifetime(self, obj) -> int:
         config = GlobalConfiguration.get_solo()
-        lifetime = obj.incomplete_submissions_removal_limit
-
-        if not lifetime:
-            lifetime = config.incomplete_submissions_removal_limit
-
-        if lifetime_all := (
+        lifetime = (
+            obj.incomplete_submissions_removal_limit
+            or config.incomplete_submissions_removal_limit
+        )
+        lifetime_all = (
             obj.all_submissions_removal_limit or config.all_submissions_removal_limit
-        ):
-            if lifetime_all < lifetime:
-                lifetime = lifetime_all
+        )
+        lifetime = min(lifetime, lifetime_all)
 
         return lifetime
 
