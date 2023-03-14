@@ -137,7 +137,7 @@ class ServiceFetchConfigurationAPITests(APITestCase):
             "path": "/foo",
             "method": ServiceFetchMethods.post.value,
             "headers": {"X-Foo": "bar"},
-            "query_params": "{'param': 'value'}",
+            "query_params": {"param": "value"},
             "body": {"foo": "bar"},
             "data_mapping_type": DataMappingTypes.jq.value,
             "mapping_expression": ".foo",
