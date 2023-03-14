@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from openforms.template import openforms_backend, render_from_string
+from openforms.template import render_from_string, sandbox_backend
 from openforms.typing import DataMapping
 
 from .constants import DataMappingTypes, ServiceFetchMethods
@@ -118,7 +118,13 @@ class ServiceFetchConfiguration(models.Model):
 
         headers = {
             # map all unicode into what the RFC allows with utf-8; remove leading space
-            header: render_from_string(value, context, backend=openforms_backend)
+            header: render_from_string(
+                value,
+                # Explicitly cast values to strings to avoid localization
+                {k: str(v) for k, v in context.items()},
+                backend=sandbox_backend,
+                disable_autoescape=True,
+            )
             .encode("utf-8")
             .decode("latin1")
             .lstrip()
@@ -136,7 +142,7 @@ class ServiceFetchConfiguration(models.Model):
                 value,
                 # Explicitly cast values to strings to avoid localization
                 {k: str(v) for k, v in context.items()},
-                backend=openforms_backend,
+                backend=sandbox_backend,
                 disable_autoescape=True,
             )
             for param, value in (self.query_params or {}).items()
@@ -144,7 +150,10 @@ class ServiceFetchConfiguration(models.Model):
 
         request_args = dict(
             path=render_from_string(
-                self.path, escaped_for_path, backend=openforms_backend
+                self.path,
+                escaped_for_path,
+                backend=sandbox_backend,
+                disable_autoescape=True,
             ),
             params=query_params,
             method=self.method,
