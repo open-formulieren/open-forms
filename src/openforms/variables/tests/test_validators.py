@@ -19,13 +19,21 @@ LF = "\x0a"
 NUL = "\x00"
 FIELD_VALUE_ALPHABET = "".join((VCHAR, OBS_TEXT, SP, HTAB))
 
+jsonb_text: st.SearchStrategy[JSONPrimitive]
+jsonb_text = st.text().filter(lambda s: "\x00" not in s)
 
-json_primitives: st.SearchStrategy[JSONPrimitive]
-json_primitives = st.one_of(
+jsonb_primitives: st.SearchStrategy[JSONPrimitive]
+jsonb_primitives = st.one_of(
     st.none(),
     st.booleans(),
     st.integers(),
     st.floats(allow_infinity=False, allow_nan=False),
+    jsonb_text,
+)
+
+json_primitives: st.SearchStrategy[JSONPrimitive]
+json_primitives = st.one_of(
+    jsonb_primitives,
     st.text(),
 )
 
@@ -39,8 +47,21 @@ def json_collections(
     )
 
 
+def jsonb_collections(
+    values,
+) -> st.SearchStrategy[dict[str, JSONValue] | list[JSONValue]]:
+    return st.one_of(
+        st.dictionaries(keys=jsonb_text, values=values),
+        st.lists(values),
+    )
+
+
 def json_values(*, max_leaves: int = 15) -> st.SearchStrategy[JSONValue]:
     return st.recursive(json_primitives, json_collections, max_leaves=max_leaves)
+
+
+def jsonb_values(*, max_leaves: int = 15) -> st.SearchStrategy[JSONValue]:
+    return st.recursive(jsonb_primitives, jsonb_collections, max_leaves=max_leaves)
 
 
 def field_names() -> st.SearchStrategy[str]:

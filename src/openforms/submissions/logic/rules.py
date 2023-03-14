@@ -1,10 +1,13 @@
-from dataclasses import dataclass
+import operator
+from dataclasses import dataclass, field
+from functools import partial
 from typing import Callable, Iterable, Iterator, List, Optional
 
 import elasticapm
 from json_logic import jsonLogic
 
 from openforms.forms.models import FormLogic, FormStep
+from openforms.typing import JSONValue
 
 from ..models import Submission, SubmissionStep
 from .actions import ActionOperation
@@ -111,12 +114,18 @@ def get_current_step(submission: Submission) -> Optional[SubmissionStep]:
 class EvaluatedRule:
     rule: FormLogic
     triggered: bool
+    # MutableMapping of ActionOperation index => meta data required for logging
+    # This is a mapping, not a sequence, because operations may not log data.
+    action_log_data: dict[int, JSONValue] = field(default_factory=dict)
+
+    def __post_init__(self):
+        self.action_log_data["context"] = self.action_log_data.get("context", {})
 
 
 def iter_evaluate_rules(
     rules: Iterable[FormLogic],
     data_container: DataContainer,
-    on_rule_check: Optional[Callable[[EvaluatedRule], None]] = None,
+    on_rule_check: Callable[[EvaluatedRule], None] = lambda noop: None,
 ) -> Iterator[ActionOperation]:
     """
     Iterate over the rules and evaluate the trigger, yielding action operations.
@@ -147,13 +156,19 @@ def iter_evaluate_rules(
                     jsonLogic(rule.json_logic_trigger, data_container.data)
                 )
 
-            if on_rule_check is not None:
-                on_rule_check(EvaluatedRule(rule=rule, triggered=triggered))
+            evaluated_rule = EvaluatedRule(
+                rule=rule,
+                triggered=triggered,
+                action_log_data={"context": data_container.data},
+            )
 
             if not triggered:
+                on_rule_check(evaluated_rule)
                 continue
 
-            for operation in rule.action_operations:
-                if mutations := operation.eval(data_container.data):
+            for i, operation in enumerate(rule.action_operations):
+                log = partial(operator.setitem, evaluated_rule.action_log_data, i)
+                if mutations := operation.eval(data_container.data, log=log):
                     data_container.update(mutations)
                 yield operation
+            on_rule_check(evaluated_rule)

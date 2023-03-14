@@ -1,4 +1,5 @@
 import logging
+from dataclasses import asdict
 from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from django.db.models import Model
@@ -498,13 +499,11 @@ def submission_logic_evaluated(
     Convert into JSON-serializable data types and schedule the celery task.
     """
     timestamp = timezone.now().isoformat()
-    _evaluated_rules = [
-        {
-            "rule_id": evaluated_rule.rule.id,
-            "triggered": evaluated_rule.triggered,
-        }
-        for evaluated_rule in evaluated_rules
-    ]
+    _evaluated_rules = []
+    for evaluated_rule in map(asdict, evaluated_rules):
+        evaluated_rule["rule_id"] = evaluated_rule["rule"].id
+        del evaluated_rule["rule"]
+        _evaluated_rules.append(evaluated_rule)
 
     log_logic_evaluation.delay(
         submission_id=submission.id,

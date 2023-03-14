@@ -3,12 +3,13 @@ from typing import List, TypedDict
 
 from openforms.celery import app
 from openforms.forms.models import FormLogic
-from openforms.typing import JSONObject
+from openforms.typing import JSONObject, JSONValue
 
 
 class EvaluatedRuleDict(TypedDict):
     rule_id: int
     triggered: bool
+    action_log_data: dict[int, JSONValue]
 
 
 @app.task(ignore_result=True)
@@ -36,7 +37,11 @@ def log_logic_evaluation(
         )
     }
     _evaluated_rules = [
-        EvaluatedRule(rule=rules[item["rule_id"]], triggered=item["triggered"])
+        EvaluatedRule(
+            rule=rules[item["rule_id"]],
+            triggered=item["triggered"],
+            action_log_data=item["action_log_data"],
+        )
         for item in evaluated_rules
     ]
 

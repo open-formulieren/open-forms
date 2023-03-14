@@ -5,6 +5,7 @@ from json_logic.meta import JSONLogicExpressionTree, Operation
 from json_logic.typing import JSON, Primitive
 
 from openforms.formio.typing import Component
+from openforms.typing import DataMapping
 
 from .descriptions import _generate_description
 
@@ -43,6 +44,7 @@ class ExpressionIntrospection:
         self,
         components_map: ComponentsMap,
         input_data: dict[str, JSON],
+        context: DataMapping,
     ) -> list[InputVar]:
         inputs = []
 
@@ -54,6 +56,11 @@ class ExpressionIntrospection:
 
             # TODO: this *may* be nested var.var expressions
             key = cast(str, node.arguments[0])
+            if key not in components_map:
+                inputs.append(
+                    InputVar(key=key, value=context[key], step_name="", label="")
+                )
+                continue
             component_meta = components_map[key]
             inputs.append(
                 InputVar(
