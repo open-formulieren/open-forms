@@ -1,4 +1,4 @@
-from urllib.parse import quote, quote_plus
+from urllib.parse import quote_plus, urlencode
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -124,12 +124,13 @@ class ServiceFetchConfiguration(models.Model):
         # this catches faults requests doesn't: https://github.com/psf/requests/issues/6359
         HeaderValidator()(headers)
 
-        escaped_for_query = {k: quote(str(v)) for k, v in context.items()}
         escaped_for_path = {k: quote_plus(str(v)) for k, v in context.items()}
 
-        query_params = self.query_params.format(**escaped_for_query)
-        query_params = (
-            query_params[1:] if query_params.startswith("?") else query_params
+        query_params = urlencode(
+            {
+                param: value.format(**context)
+                for param, value in (self.query_params or {}).items()
+            }
         )
 
         request_args = dict(

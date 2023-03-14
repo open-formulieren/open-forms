@@ -177,9 +177,8 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
 
     @given(
         field_value=data_mapping_values(),
-        question_mark=st.one_of(st.just("?"), st.just("")),  # optional
     )
-    def test_it_can_construct_simple_query_parameters(self, field_value, question_mark):
+    def test_it_can_construct_simple_query_parameters(self, field_value):
         # https://swagger.io/docs/specification/describing-parameters/#query-parameters
         context = {"some_field": field_value}
 
@@ -187,7 +186,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
                 service=self.service,
                 path="response-headers",
-                query_params=question_mark + "freeform={some_field}",
+                query_params={"freeform": "{some_field}"},
             )
         )
 
@@ -220,7 +219,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
                 service=self.service,
                 path="redirect-to",
-                query_params="?status_code={code}&url={url}",
+                query_params={"status_code": "{code}", "url": "{url}"},
             )
         )
 
