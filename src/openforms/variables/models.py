@@ -4,11 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-<<<<<<< HEAD
 from openforms.template import render_from_string, sandbox_backend
-=======
-from openforms.template import openforms_backend, render_from_string
->>>>>>> :recycle: [#2694] Switch to double bracket interpolation format for service fetch params
 from openforms.typing import DataMapping
 
 from .constants import DataMappingTypes, ServiceFetchMethods
