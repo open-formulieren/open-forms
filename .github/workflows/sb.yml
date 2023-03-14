@@ -38,6 +38,7 @@ jobs:
           npm run build-storybook
         env:
           DJANGO_SETTINGS_MODULE: openforms.conf.ci
+          SB_BASE_URL: '/open-forms'
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
