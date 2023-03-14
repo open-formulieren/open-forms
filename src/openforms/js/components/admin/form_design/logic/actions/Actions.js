@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useState} from 'react';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import StepSelection from 'components/admin/form_design/StepSelection';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
@@ -8,10 +9,13 @@ import {
   STRING_TO_TYPE,
   TYPE_TO_STRING,
 } from 'components/admin/form_design/logic/constants';
+import ServiceFetchConfigurationPicker from 'components/admin/form_design/variables/ServiceFetchConfigurationPicker';
+import ActionButton from 'components/admin/forms/ActionButton';
 import ComponentSelection from 'components/admin/forms/ComponentSelection';
 import JsonWidget from 'components/admin/forms/JsonWidget';
 import Select from 'components/admin/forms/Select';
 import VariableSelection from 'components/admin/forms/VariableSelection';
+import Modal from 'components/admin/modals/Modal';
 
 import {ActionError, Action as ActionType} from './types';
 
@@ -94,6 +98,13 @@ const ActionVariableValue = ({action, errors, onChange}) => (
 );
 
 const ActionFetchFromService = ({action, errors, onChange}) => {
+  const intl = useIntl();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <>
       <DSLEditorNode errors={errors.variable}>
@@ -116,6 +127,31 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
           min="1"
         />
       </DSLEditorNode>
+      <ActionButton
+        name="_open_service_fetch_modal"
+        onClick={event => {
+          event.preventDefault();
+          setIsModalOpen(true);
+        }}
+        text={intl.formatMessage({
+          description: 'Button to open service fetch configuration modal',
+          defaultMessage: 'Configure',
+        })}
+      />
+
+      <Modal
+        isOpen={isModalOpen}
+        closeModal={closeModal}
+        title={
+          <FormattedMessage
+            description="Service fetch configuration selection modal title"
+            defaultMessage="Service fetch configuration"
+          />
+        }
+        contentModifiers={['with-form', 'large']}
+      >
+        <ServiceFetchConfigurationPicker onFormSave={closeModal} onChange={onChange} />
+      </Modal>
     </>
   );
 };

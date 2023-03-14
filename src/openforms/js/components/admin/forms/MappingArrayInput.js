@@ -10,6 +10,7 @@ import ArrayInput from './ArrayInput';
 import {Input, TextInput} from './Inputs';
 
 const MappingArrayInput = ({
+  name,
   inputType,
   mapping,
   onChange,
@@ -19,25 +20,33 @@ const MappingArrayInput = ({
 }) => {
   const intl = useIntl();
 
+  const emitChange = newValue => {
+    onChange({target: {name, value: newValue}});
+  };
+
   const onAdd = () => {
     const newValue = valueArrayInput ? [''] : '';
     const newMapping = produce(mapping, draft => {
       draft.push(['', newValue]);
     });
-    onChange(newMapping);
+    emitChange(newMapping);
   };
 
   const onDelete = index => {
-    return produce(mapping, draft => draft.filter((_, itemIndex) => itemIndex !== index));
+    const newMapping = produce(mapping, draft => {
+      draft.splice(index, 1);
+    });
+    emitChange(newMapping);
   };
 
   const onInputChange = (itemIndex, event) => {
-    const {name, value} = event.target;
-    const index = {key: 0, value: 1}[name];
+    const {name: eventName, value} = event.target;
+    const index = {key: 0, value: 1}[eventName];
     const newMapping = produce(mapping, draft => {
       draft[itemIndex][index] = value;
     });
-    onChange(newMapping);
+
+    emitChange(newMapping);
   };
 
   return (
@@ -126,6 +135,7 @@ const MappingArrayInput = ({
 };
 
 MappingArrayInput.propTypes = {
+  name: PropTypes.string.isRequired,
   inputType: PropTypes.string.isRequired,
   mapping: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.any)),
   onChange: PropTypes.func.isRequired,

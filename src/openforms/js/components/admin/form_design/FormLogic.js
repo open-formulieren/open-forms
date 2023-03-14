@@ -1,15 +1,23 @@
 import sortBy from 'lodash/sortBy';
+import zip from 'lodash/zip';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
+import useAsync from 'react-use/esm/useAsync';
+import useMountedState from 'react-use/esm/useMountedState';
+import {useImmerReducer} from 'use-immer';
 
 import DeleteIcon from 'components/admin/DeleteIcon';
 import FAIcon from 'components/admin/FAIcon';
+import Loader from 'components/admin/Loader';
 import ButtonContainer from 'components/admin/forms/ButtonContainer';
 import Fieldset from 'components/admin/forms/Fieldset';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 
+import {FormLogicContext} from './Context';
 import StepSelection, {useFormStep} from './StepSelection';
+import {SERVICES_ENDPOINT} from './constants';
+import {loadFromBackend} from './data';
 import AdvancedTrigger from './logic/AdvancedTrigger';
 import DSLEditorNode from './logic/DSLEditorNode';
 import DataPreview from './logic/DataPreview';
@@ -32,15 +40,68 @@ const EMPTY_RULE = {
   actions: [],
 };
 
+const initialState = {
+  services: [],
+  serviceFetchConfigurations: [],
+};
+
+function reducer(draft, action) {
+  switch (action.type) {
+    case 'BACKEND_DATA_LOADED': {
+      const {supportingData} = action.payload;
+
+      for (const [stateVar, data] of Object.entries(supportingData)) {
+        draft[stateVar] = data;
+      }
+      break;
+    }
+  }
+}
+
 const FormLogic = ({logicRules = [], onChange, onDelete, onAdd}) => {
+  const [state, dispatch] = useImmerReducer(reducer, initialState);
+  const isMounted = useMountedState();
+
+  const backendDataToLoad = [
+    {endpoint: SERVICES_ENDPOINT, stateVar: 'services'},
+    // TODO load ServiceFetchConfigurations
+    {endpoint: '/api/v2/service-fetch-configurations', stateVar: 'serviceFetchConfigurations'},
+  ];
+
+  const {loading} = useAsync(async () => {
+    // TODO: API error handling - this should be done using ErrorBoundary instead of
+    // state-changes.
+    const backendData = await loadFromBackend(backendDataToLoad);
+    const supportingData = Object.fromEntries(
+      zip(backendDataToLoad, backendData).map(([plugin, data]) => [plugin.stateVar, data])
+    );
+
+    if (!isMounted()) return;
+    dispatch({
+      type: 'BACKEND_DATA_LOADED',
+      payload: {supportingData},
+    });
+  }, []);
+
+  if (loading) {
+    return <Loader />;
+  }
+
   // ensure they're sorted
   logicRules = sortBy(logicRules, ['order']);
   return (
-    <Fieldset
-      title={<FormattedMessage description="Logic fieldset title" defaultMessage="Logic" />}
+    <FormLogicContext.Provider
+      value={{
+        services: state.services,
+        serviceFetchConfigurations: state.serviceFetchConfigurations,
+      }}
     >
-      <FormLogicRules rules={logicRules} onAdd={onAdd} onChange={onChange} onDelete={onDelete} />
-    </Fieldset>
+      <Fieldset
+        title={<FormattedMessage description="Logic fieldset title" defaultMessage="Logic" />}
+      >
+        <FormLogicRules rules={logicRules} onAdd={onAdd} onChange={onChange} onDelete={onDelete} />
+      </Fieldset>
+    </FormLogicContext.Provider>
   );
 };
 

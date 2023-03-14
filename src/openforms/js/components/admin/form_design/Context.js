@@ -18,9 +18,15 @@ const FormContext = React.createContext({
 });
 FormContext.displayName = 'FormContext';
 
+const FormLogicContext = React.createContext({
+  services: [],
+  serviceFetchConfigurations: [],
+});
+FormLogicContext.displayName = 'FormLogicContext';
+
 const APIContext = React.createContext({
   crsftoken: '',
 });
 APIContext.displayName = 'APIContext';
 
-export {APIContext, FormContext, TinyMceContext, FeatureFlagsContext};
+export {APIContext, FormContext, FormLogicContext, TinyMceContext, FeatureFlagsContext};

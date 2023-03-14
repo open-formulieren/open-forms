@@ -30,7 +30,7 @@ export const Template = ({
       name={name}
       inputType={inputType}
       mapping={currentValue}
-      onChange={newValue => updateArgs({currentValue: newValue})}
+      onChange={event => updateArgs({currentValue: event.target.value})}
       deleteConfirmationMessage={deleteConfirmationMessage}
       addButtonMessage={addButtonMessage}
       valueArrayInput={valueArrayInput}
