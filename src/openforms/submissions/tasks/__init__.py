@@ -31,9 +31,14 @@ def on_completion(submission_id: int) -> None:
     # use immutable signatures so that the result of previous tasks is not passed
     # in as an argument to chained tasks
     register_appointment_task = maybe_register_appointment.si(submission_id)
+    maybe_pre_generate_submission_reference_task = generate_submission_reference.si(
+        submission_id, post_registration=False
+    )
     generate_report_task = generate_submission_report.si(submission_id)
     register_submission_task = register_submission.si(submission_id)
-    obtain_submission_reference_task = obtain_submission_reference.si(submission_id)
+    maybe_post_generate_submission_reference_task = generate_submission_reference.si(
+        submission_id, post_registration=True
+    )
     finalize_completion_task = finalize_completion.si(submission_id)
 
     # for the orchestration with distributed processing and dependencies between
@@ -48,13 +53,14 @@ def on_completion(submission_id: int) -> None:
         # any backend registration happens, as on-failure, the user should get feedback
         # about the failure.
         register_appointment_task,
+        maybe_pre_generate_submission_reference_task,
         # The submission report needs to already have been generated before it can be
         # attached in the registration backend.
         # TODO: can be in parallel with register_appointment_task and if that fails -> delete the report again
         generate_report_task,
         # TODO: ensure that any images that need resizing are done so before this is attempted
         register_submission_task,
-        obtain_submission_reference_task,
+        maybe_post_generate_submission_reference_task,
         # we schedule the finalization so that the ``async_result`` below is marked
         # as done, which is the "signal" to show the confirmation page. Actual payment
         # flow & confirmation e-mail follow later.
