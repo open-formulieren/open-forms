@@ -8,7 +8,7 @@ import Field from 'components/admin/forms/Field';
 import FormRow from 'components/admin/forms/FormRow';
 import Select from 'components/admin/forms/Select';
 
-import {FormLogicContext} from './../Context';
+import {FormLogicContext} from '../Context';
 import ServiceFetchConfigurationForm from './ServiceFetchConfigurationForm';
 
 const ServiceFetchConfigurationPicker = ({onChange, onFormSave}) => {
