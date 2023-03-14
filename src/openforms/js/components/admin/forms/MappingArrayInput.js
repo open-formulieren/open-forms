@@ -20,19 +20,23 @@ const MappingArrayInput = ({
 }) => {
   const intl = useIntl();
 
+  const emitChange = newValue => {
+    onChange({target: {name, value: newValue}});
+  };
+
   const onAdd = () => {
     const newValue = valueArrayInput ? [''] : '';
     const newMapping = produce(mapping, draft => {
       draft.push(['', newValue]);
     });
-    onChange(name, newMapping);
+    emitChange(newMapping);
   };
 
   const onDelete = index => {
-    const newMapping = produce(mapping, draft =>
-      draft.filter((_, itemIndex) => itemIndex !== index)
-    );
-    onChange(name, newMapping);
+    const newMapping = produce(mapping, draft => {
+      draft.splice(index, 1);
+    });
+    emitChange(newMapping);
   };
 
   const onInputChange = (itemIndex, event) => {
@@ -42,7 +46,7 @@ const MappingArrayInput = ({
       draft[itemIndex][index] = value;
     });
 
-    onChange(name, newMapping);
+    emitChange(newMapping);
   };
 
   return (
