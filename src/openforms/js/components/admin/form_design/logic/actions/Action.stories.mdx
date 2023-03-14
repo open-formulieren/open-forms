@@ -1,101 +1,142 @@
 import {ArgsTable, Canvas, Meta, Story} from '@storybook/addon-docs';
+import {useArgs} from '@storybook/client-api';
+import produce from 'immer';
+import set from 'lodash/set';
 
-import {FormLogicContext} from '../../Context';
+import {FeatureFlagsContext, FormLogicContext} from 'components/admin/form_design/Context';
+import {FormDecorator, FormLogicDecorator} from 'components/admin/form_design/story-decorators';
+
 import Action from './Action';
 
 <Meta
   title="Form design/FormLogic/Action"
-  decorators={[
-    Story => (
-      <FormLogicContext.Provider
-        value={{
-          services: [
-            {
-              label: 'Service 1',
-              apiRoot: 'http://foo.com/api/v1/',
-              apiType: 'ORC',
-            },
-            {
-              label: 'Service 2',
-              apiRoot: 'http://bar.com/api/v1/',
-              apiType: 'ORC',
-            },
-          ],
-          serviceFetchConfigurations: [
-            {
-              name: 'Foo fetch',
-              url: 'http://openforms.dev/service-fetch-configurations/foo',
-              service: 'http://foo.com/api/v1/',
-              path: '/some-path',
-              method: 'GET',
-              headers: [['X-Foo', 'foo']],
-              queryParams: [['parameter2', ['value1', 'value2']]],
-              body: {field1: 'value', field2: 'value2'},
-              dataMappingType: 'jq',
-              mappingExpression: '.field.nested',
-            },
-            {
-              name: '', // No name supplied, should fall back to "method path (service)"
-              url: 'http://openforms.dev/service-fetch-configurations/bar',
-              service: 'http://bar.com/api/v1/',
-              path: '/some-other-path',
-              method: 'POST',
-              headers: [['X-Foo', 'bar']],
-              queryParams: [
-                ['parameter', ['value']],
-                ['parameter2', ['value1', 'value2']],
-              ],
-              body: {field1: 'value', field2: 'value2'},
-              dataMappingType: 'JsonLogic',
-              mappingExpression: {var: 'field'},
-            },
-          ],
-        }}
-      >
-        <Story />
-      </FormLogicContext.Provider>
-    ),
-  ]}
+  decorators={[FormDecorator, FormLogicDecorator]}
   component={Action}
+  argTypes={{}}
 />
 
-# Action
+export const AVAILABLE_SERVICES = [
+  {
+    label: 'Service 1',
+    apiRoot: 'http://foo.com/api/v1/',
+    apiType: 'ORC',
+  },
+  {
+    label: 'Service 2',
+    apiRoot: 'http://bar.com/api/v1/',
+    apiType: 'ORC',
+  },
+];
+export const SERVICE_FETCH_CONFIGURATIONS = [
+  {
+    name: 'Foo fetch',
+    url: 'http://openforms.dev/service-fetch-configurations/foo',
+    service: 'http://foo.com/api/v1/',
+    path: '/some-path',
+    method: 'GET',
+    headers: [['X-Foo', 'foo']],
+    queryParams: [['parameter2', ['value1', 'value2']]],
+    body: {field1: 'value', field2: 'value2'},
+    dataMappingType: 'jq',
+    mappingExpression: '.field.nested',
+  },
+  {
+    name: '', // No name supplied, should fall back to "method path (service)"
+    url: 'http://openforms.dev/service-fetch-configurations/bar',
+    service: 'http://bar.com/api/v1/',
+    path: '/some-other-path',
+    method: 'POST',
+    headers: [['X-Foo', 'bar']],
+    queryParams: [
+      ['parameter', ['value']],
+      ['parameter2', ['value1', 'value2']],
+    ],
+    body: {field1: 'value', field2: 'value2'},
+    dataMappingType: 'JsonLogic',
+    mappingExpression: {var: 'field'},
+  },
+];
 
-Component used to define what action should be taken when a trigger condition (defined in the Form
-logic) is met.
+# Logic rule action
+
+One or more actions can be executed when a rule triggers.
+
+Actions are polymorphic in nature - the type of the action determines the remaining configuration
+parameters.
 
 **Warning**: this component requires the following contexts: `FormLogicContext`.
 
-export const Template = ({prefixText, action, errors, onChange, onDelete}) => (
-  <Action
-    prefixText={prefixText}
-    action={action}
-    errors={errors}
-    onChange={onChange}
-    onDelete={onDelete}
-  />
-);
-
-## Presentation
+export const Template = ({prefixText, errors, onDelete}) => {
+  const [{action}, updateArgs] = useArgs();
+  const onChange = event => {
+    const {name, value} = event.target;
+    const newAction = produce(action, draft => {
+      set(draft, name, value);
+    });
+    updateArgs({action: newAction});
+  };
+  return (
+    <FeatureFlagsContext.Provider value={{of_service_fetch_enabled: true}}>
+      <Action
+        prefixText={prefixText}
+        action={action}
+        errors={errors}
+        onChange={onChange}
+        onDelete={onDelete}
+      />
+    </FeatureFlagsContext.Provider>
+  );
+};
 
 <Canvas>
   <Story
-    name="Default"
+    name="Service fetch"
     args={{
       prefixText: 'Action',
       action: {
         component: '',
         variable: 'bar',
-        formStep: 'foo',
-        formStepUuid: 'foo',
+        formStep: '',
+        formStepUuid: '',
         action: {
           type: 'fetch-from-service',
           value: '',
         },
       },
       errors: {},
-      onChange: (index, event) => null,
-      onDelete: () => null,
+      availableServices: AVAILABLE_SERVICES,
+      serviceFetchConfigurations: SERVICE_FETCH_CONFIGURATIONS,
+      availableFormSteps: [
+        {
+          formDefinition:
+            'http://localhost:8000/api/v2/form-definitions/b4de3050-3d55-4d7e-bdec-c4ec2ff330f8',
+          configuration: {display: 'form'},
+          slug: 'step-1',
+          name: 'Step 1',
+          url: 'http://localhost:8000/api/v2/forms/42bda734-de31-4f0a-87c9-bf36085ffc75/steps/8f046d57-ef41-41e0-bb7a-a8dc618b9d43',
+          uuid: '8f046d57-ef41-41e0-bb7a-a8dc618b9d43',
+          _generatedId: '',
+          isNew: false,
+          validationErrors: [],
+        },
+      ],
+      availableStaticVariables: [
+        {
+          form: 'http://localhost:8000/api/v2/forms/42bda734-de31-4f0a-87c9-bf36085ffc75',
+          formDefinition: '',
+          name: 'Foo',
+          key: 'foo',
+        },
+      ],
+      availableFormVariables: [
+        {
+          form: 'http://localhost:8000/api/v2/forms/42bda734-de31-4f0a-87c9-bf36085ffc75',
+          formDefinition:
+            'http://localhost:8000/api/v2/form-definitions/b4de3050-3d55-4d7e-bdec-c4ec2ff330f8',
+          name: 'Bar',
+          key: 'bar',
+        },
+      ],
     }}
   >
     {Template.bind({})}
