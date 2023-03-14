@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 import useAsync from 'react-use/esm/useAsync';
+import useMountedState from 'react-use/esm/useMountedState';
 import {useImmerReducer} from 'use-immer';
 
 import DeleteIcon from 'components/admin/DeleteIcon';
@@ -59,6 +60,7 @@ function reducer(draft, action) {
 
 const FormLogic = ({logicRules = [], onChange, onDelete, onAdd}) => {
   const [state, dispatch] = useImmerReducer(reducer, initialState);
+  const isMounted = useMountedState();
 
   const backendDataToLoad = [
     {endpoint: SERVICES_ENDPOINT, stateVar: 'services'},
@@ -74,6 +76,7 @@ const FormLogic = ({logicRules = [], onChange, onDelete, onAdd}) => {
       zip(backendDataToLoad, backendData).map(([plugin, data]) => [plugin.stateVar, data])
     );
 
+    if (!isMounted()) return;
     dispatch({
       type: 'BACKEND_DATA_LOADED',
       payload: {supportingData},

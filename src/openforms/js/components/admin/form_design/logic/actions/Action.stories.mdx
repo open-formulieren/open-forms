@@ -3,14 +3,17 @@ import {useArgs} from '@storybook/client-api';
 import produce from 'immer';
 import set from 'lodash/set';
 
-import {FeatureFlagsContext, FormLogicContext} from 'components/admin/form_design/Context';
-import {FormDecorator, FormLogicDecorator} from 'components/admin/form_design/story-decorators';
+import {
+  FeatureFlagsDecorator,
+  FormDecorator,
+  FormLogicDecorator,
+} from 'components/admin/form_design/story-decorators';
 
 import Action from './Action';
 
 <Meta
   title="Form design/FormLogic/Action"
-  decorators={[FormDecorator, FormLogicDecorator]}
+  decorators={[FeatureFlagsDecorator, FormDecorator, FormLogicDecorator]}
   component={Action}
   argTypes={{}}
 />
@@ -64,8 +67,6 @@ One or more actions can be executed when a rule triggers.
 Actions are polymorphic in nature - the type of the action determines the remaining configuration
 parameters.
 
-**Warning**: this component requires the following contexts: `FormLogicContext`.
-
 export const Template = ({prefixText, errors, onDelete}) => {
   const [{action}, updateArgs] = useArgs();
   const onChange = event => {
@@ -76,15 +77,13 @@ export const Template = ({prefixText, errors, onDelete}) => {
     updateArgs({action: newAction});
   };
   return (
-    <FeatureFlagsContext.Provider value={{of_service_fetch_enabled: true}}>
-      <Action
-        prefixText={prefixText}
-        action={action}
-        errors={errors}
-        onChange={onChange}
-        onDelete={onDelete}
-      />
-    </FeatureFlagsContext.Provider>
+    <Action
+      prefixText={prefixText}
+      action={action}
+      errors={errors}
+      onChange={onChange}
+      onDelete={onDelete}
+    />
   );
 };
 
@@ -143,6 +142,14 @@ export const Template = ({prefixText, errors, onDelete}) => {
   </Story>
 </Canvas>
 
-### Props
+## Props
 
 <ArgsTable of={Action} />
+
+## Required contexts
+
+**Warning**: this component requires the following contexts:
+
+- `FormLogicContext`, for available services/service fetch configurations
+- `FormContext`, for available form steps and variables
+- `FeatureFlagsDecorator`, to enable service fetch in the UI
