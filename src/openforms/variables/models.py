@@ -4,12 +4,14 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework.serializers import ValidationError as DRFValidationError
-
 from openforms.typing import DataMapping
 
 from .constants import DataMappingTypes, ServiceFetchMethods
-from .validators import HeaderValidator, ServiceFetchConfigurationValidator
+from .validators import (
+    HeaderValidator,
+    validate_mapping_expression,
+    validate_request_body,
+)
 
 
 class ServiceFetchConfiguration(models.Model):
@@ -77,10 +79,16 @@ class ServiceFetchConfiguration(models.Model):
 
     def clean(self):
         super().clean()
-        try:
-            ServiceFetchConfigurationValidator()(self.__dict__)
-        except DRFValidationError as e:
-            raise ValidationError(*e.args)
+
+        # Similar implementation like models.Model.full_clean
+        errors = {}
+        for validator in (validate_request_body, validate_mapping_expression):
+            try:
+                validator(self)
+            except ValidationError as e:
+                errors = e.update_error_dict(errors)
+        if errors:
+            raise ValidationError(errors)
 
     def request_arguments(self, context: DataMapping) -> dict:
         """Return a dictionary with keyword arguments for a

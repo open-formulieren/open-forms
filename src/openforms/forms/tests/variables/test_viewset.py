@@ -350,11 +350,11 @@ class FormVariableViewsetTest(APITestCase):
         )
         self.assertEqual(
             error["invalidParams"][0]["code"],
-            "invalid",
+            "json_logic_invalid",
         )
         self.assertEqual(
             error["invalidParams"][0]["reason"],
-            "Unrecognized operation bork",
+            "The expression could not be compiled (Unrecognized operation bork).",
         )
 
         self.assertEqual(
@@ -363,11 +363,11 @@ class FormVariableViewsetTest(APITestCase):
         )
         self.assertEqual(
             error["invalidParams"][1]["code"],
-            "invalid",
+            "json_logic_invalid",
         )
         self.assertEqual(
             error["invalidParams"][1]["reason"],
-            "Unrecognized operation borkbork",
+            "The expression could not be compiled (Unrecognized operation borkbork).",
         )
 
         self.assertEqual(

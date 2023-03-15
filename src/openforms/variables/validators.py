@@ -1,5 +1,5 @@
 import re
-from typing import Mapping
+from typing import TYPE_CHECKING, Mapping
 
 from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
@@ -12,6 +12,9 @@ from openforms.forms.api.validators import JsonLogicValidator
 from openforms.typing import JSONValue
 
 from .constants import DataMappingTypes, ServiceFetchMethods
+
+if TYPE_CHECKING:
+    from .models import ServiceFetchConfiguration
 
 
 @deconstructible
@@ -120,38 +123,91 @@ class HeaderValidator:
             raise ValidationError(errors)
 
 
-class ServiceFetchConfigurationValidator:
-    def __call__(self, value):
-        errors = {}
+def validate_request_body(configuration: "ServiceFetchConfiguration") -> None:
+    if configuration.body in ("", None):
+        return
 
-        if value["method"] == ServiceFetchMethods.get and value.get("body") not in (
-            None,
-            "",
-        ):
-            errors["body"] = _("GET requests may not have a body")
+    if configuration.method == ServiceFetchMethods.get:
+        raise ValidationError(
+            {
+                "body": ValidationError(
+                    _("GET requests must have an empty body."), code="not_empty"
+                ),
+            }
+        )
 
-        if value["data_mapping_type"] == "" and value["mapping_expression"] not in (
-            None,
-            "",
-        ):
-            errors["mapping_expression"] = _("Data mapping type missing for expression")
-        elif value["data_mapping_type"] != "" and value["mapping_expression"] is None:
-            errors["mapping_expression"] = _(
-                "Missing {mapping_type} expression"
-            ).format(mapping_type=value["data_mapping_type"])
-        elif value["data_mapping_type"] == DataMappingTypes.jq:
-            try:
-                jq.compile(value["mapping_expression"])
-            except ValueError as e:
-                errors["mapping_expression"] = str(e)
-        elif value["data_mapping_type"] == DataMappingTypes.json_logic:
-            try:
-                JsonLogicValidator()(value["mapping_expression"])
-            except (DRFValidationError, ValidationError) as e:
-                errors["mapping_expression"] = str(e.__cause__)
 
-        if errors:
-            raise DRFValidationError(errors)
+def validate_mapping_expression(configuration: "ServiceFetchConfiguration") -> None:
+    mapping_type = configuration.data_mapping_type
+    expression = configuration.mapping_expression
+
+    if not mapping_type and expression not in ("", None):
+        raise ValidationError(
+            {
+                "data_mapping_type": ValidationError(
+                    _(
+                        "An expression was provided, but the expression type was not specified."
+                    ),
+                    code="mapping_type_required",
+                )
+            }
+        )
+
+    if mapping_type and expression is None:
+        raise ValidationError(
+            {
+                "mapping_expression": ValidationError(
+                    _(
+                        "The '{mapping_type}' mapping type is specified, but the "
+                        "mapping expression is missing."
+                    ).format(
+                        mapping_type=configuration.get_data_mapping_type_display()
+                    ),
+                    code="expression_required",
+                )
+            }
+        )
+
+    if mapping_type == DataMappingTypes.jq:
+        if not isinstance(expression, str):
+            raise ValidationError(
+                {
+                    "mapping_expression": ValidationError(
+                        _("A JQ expression must be a string."),
+                        code="jq_invalid_type",
+                    )
+                }
+            )
+
+        try:
+            jq.compile(expression)
+        except ValueError as e:
+            raise ValidationError(
+                {
+                    "mapping_expression": ValidationError(
+                        _("The expression could not be compiled ({err}).").format(
+                            err=str(e)
+                        ),
+                        code="jq_invalid",
+                    )
+                }
+            ) from e
+
+    elif mapping_type == DataMappingTypes.json_logic:
+        try:
+            JsonLogicValidator()(expression)
+        except (DRFValidationError, ValidationError) as e:
+            err = str(e.__cause__)
+            raise ValidationError(
+                {
+                    "mapping_expression": ValidationError(
+                        _("The expression could not be compiled ({err}).").format(
+                            err=err
+                        ),
+                        code="json_logic_invalid",
+                    )
+                }
+            ) from e
 
 
 def has_whitespace_padding(s: str) -> bool:

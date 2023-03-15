@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
 from ..models import ServiceFetchConfiguration
-from ..validators import ServiceFetchConfigurationValidator
+from ..validators import validate_mapping_expression, validate_request_body
+from .validators import WrappedSFCValidator
 
 
 class ServiceFetchConfigurationSerializer(serializers.ModelSerializer):
@@ -27,4 +28,7 @@ class ServiceFetchConfigurationSerializer(serializers.ModelSerializer):
             "data_mapping_type",
             "mapping_expression",
         )
-        validators = [ServiceFetchConfigurationValidator()]
+        validators = [
+            WrappedSFCValidator(validate_mapping_expression),
+            WrappedSFCValidator(validate_request_body),
+        ]
