@@ -55,6 +55,59 @@ class FormSerializerTests(APITestCase):
             with self.subTest(field=field):
                 self.assertIn(field, FormSerializer.Meta.fields)
 
+    def test_get_resume_link_lifetime(self):
+        form1 = FormFactory.create(
+            incomplete_submissions_removal_limit=7, all_submissions_removal_limit=10
+        )
+        form2 = FormFactory.create(
+            incomplete_submissions_removal_limit=7, all_submissions_removal_limit=5
+        )
+
+        url1 = reverse("api:form-detail", kwargs={"uuid_or_slug": form1.slug})
+        url2 = reverse("api:form-detail", kwargs={"uuid_or_slug": form2.slug})
+
+        response_data1 = self.client.get(url1).json()
+        response_data2 = self.client.get(url2).json()
+
+        with self.subTest("All submissions > incomplete submission"):
+            self.assertEqual(response_data1["resumeLinkLifetime"], 7)
+
+        with self.subTest("All submissions < incomplete submission"):
+            self.assertEqual(response_data2["resumeLinkLifetime"], 5)
+
+        form3 = FormFactory.create(incomplete_submissions_removal_limit=7)
+        url3 = reverse("api:form-detail", kwargs={"uuid_or_slug": form3.slug})
+
+        with patch(
+            "openforms.forms.api.serializers.form.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(all_submissions_removal_limit=10),
+        ):
+            response_data3 = self.client.get(url3).json()
+
+        with self.subTest("Global > form specific"):
+            self.assertEqual(response_data3["resumeLinkLifetime"], 7)
+
+        with patch(
+            "openforms.forms.api.serializers.form.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(all_submissions_removal_limit=5),
+        ):
+            response_data4 = self.client.get(url3).json()
+
+        with self.subTest("Global < form specific"):
+            self.assertEqual(response_data4["resumeLinkLifetime"], 5)
+
+        form4 = FormFactory.create()
+        url4 = reverse("api:form-detail", kwargs={"uuid_or_slug": form4.slug})
+
+        with patch(
+            "openforms.forms.api.serializers.form.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(incomplete_submissions_removal_limit=7),
+        ):
+            response_data5 = self.client.get(url4).json()
+
+        with self.subTest("No form specific setting"):
+            self.assertEqual(response_data5["resumeLinkLifetime"], 7)
+
 
 class FormsAPITests(APITestCase):
     def setUp(self):
