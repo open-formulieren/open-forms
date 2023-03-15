@@ -366,6 +366,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             ).to_be_visible()
 
             await add_new_step(page)
+            await page.get_by_text("Verouderd").click()
             await drag_and_drop_component(page, "Wachtwoord")
             # save with the defaults
             await page.get_by_role("button", name="Opslaan").first.click()

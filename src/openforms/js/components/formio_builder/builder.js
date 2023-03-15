@@ -48,7 +48,6 @@ const getBuilderOptions = () => {
           phoneNumber: true,
           postcode: true,
           file: true,
-          password: true,
         },
       },
       custom_special: {
@@ -242,6 +241,7 @@ const getBuilderOptions = () => {
         weight: 15,
         components: {
           postcode: true,
+          password: true,
         },
       },
     },
