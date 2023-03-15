@@ -1317,3 +1317,41 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
             template="logging/events/submission_logic_evaluated.txt",
         )
         self.assertIn("https://httpbin.org/get", str(log_entry.extra_data))
+
+    def test_it_logs_setting_variable(self):
+        var = FormVariableFactory.create(key="myKey")
+        FormLogicFactory.create(
+            form=var.form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": "myKey",
+                    "action": {
+                        "type": LogicActionTypes.variable,
+                        "value": "My new value",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=var.form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+        )
+
+        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
+
+        log_entry = TimelineLogProxy.objects.get(
+            template="logging/events/submission_logic_evaluated.txt",
+        )
+        extra_data = log_entry.extra_data
+        self.assertEqual(extra_data["resolved_data"]["myKey"], "My new value")
+        self.assertEqual(
+            extra_data["evaluated_rules"][0]["targeted_components"],
+            [
+                {
+                    "key": "myKey",
+                    "value": "My new value",
+                    "type_display": "Stel de waarde van een variabele in",
+                }
+            ],
+        )

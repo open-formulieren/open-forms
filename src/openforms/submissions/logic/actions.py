@@ -7,7 +7,7 @@ from openforms.formio.service import FormioConfigurationWrapper
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic, FormVariable
 from openforms.typing import DataMapping, JSONObject, JSONValue
-from openforms.utils.json_logic import ComponentMeta, introspect_json_logic
+from openforms.utils.json_logic import ComponentMeta
 from openforms.variables.models import ServiceFetchConfiguration
 
 from ..models import SubmissionStep
@@ -210,19 +210,10 @@ class VariableAction(ActionOperation):
         initial_data: dict,
         log_data: dict[str, JSONValue],
     ) -> JSONObject:
-        # Check if it's a primitive value, which doesn't require introspection
-        if not isinstance(self.value, (dict, list)):
-            value = self.value
-        else:
-            action_logic_introspection = introspect_json_logic(
-                self.value, component_map, initial_data
-            )
-            value = action_logic_introspection.as_string()
-
         return {
             "key": self.variable,
             "type_display": LogicActionTypes.get_label(LogicActionTypes.variable),
-            "value": value,
+            "value": log_data["value"],
         }
 
 
