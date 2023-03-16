@@ -1481,3 +1481,55 @@ class SubmissionAttachmentTest(TestCase):
         )
 
         self.assertEqual(submission_file_attachment.content_hash, expected_content_hash)
+
+    def test_attach_file_with_hidden_repeating_group(self):
+        upload = TemporaryFileUploadFactory.create()
+        data = {
+            "someAttachment": [
+                {
+                    "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v2/submissions/files/{upload.uuid}",
+                        "form": "",
+                        "name": "my-image.jpg",
+                        "size": 46114,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                    "size": 46114,
+                    "type": "image/jpg",
+                    "storage": "url",
+                    "originalName": "my-image.jpg",
+                }
+            ]
+        }
+        components = [
+            {
+                "type": "file",
+                "key": "someAttachment",
+            },
+            {
+                "key": "repeatingGroup",
+                "type": "editgrid",
+                "hidden": True,
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "someTextField",
+                    },
+                ],
+            },
+        ]
+        form_step = FormStepFactory.create(
+            form_definition__configuration={"components": components}
+        )
+        submission_step = SubmissionStepFactory.create(
+            form_step=form_step, submission__form=form_step.form, data=data
+        )
+
+        # test attaching the file
+        result = attach_uploads_to_submission_step(submission_step)
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(SubmissionFileAttachment.objects.count(), 1)
