@@ -10,10 +10,10 @@
         <StUF:entiteittype>ZAK</StUF:entiteittype>
     </ZKN:stuurgegevens>
     <ZKN:parameters>
-        <StUF:mutatiesoort>T</StUF:mutatiesoort>
+        <StUF:mutatiesoort>W</StUF:mutatiesoort>
         <StUF:indicatorOvername>V</StUF:indicatorOvername>
     </ZKN:parameters>
-    <ZKN:object StUF:verwerkingssoort="T" StUF:entiteittype="ZAK">
+    <ZKN:object StUF:verwerkingssoort="W" StUF:entiteittype="ZAK">
         <ZKN:identificatie>{{ zaak_identificatie }}</ZKN:identificatie>
         {% if betalings_indicatie %}<ZKN:betalingsIndicatie>{{ betalings_indicatie }}</ZKN:betalingsIndicatie>{% endif %}
         {% if laatste_betaaldatum %}<ZKN:laatsteBetaaldatum>{{ laatste_betaaldatum }}</ZKN:laatsteBetaaldatum>{% endif %}
