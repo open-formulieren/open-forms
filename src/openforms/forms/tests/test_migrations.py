@@ -631,3 +631,33 @@ class TestRemoveValueExpression(TestMigrations):
             "itemsExpression",
             self.form_definition.configuration["components"][4]["openForms"],
         )
+
+
+class TestChangeValidateOnSetting(TestMigrations):
+    migrate_from = "0072_check_form_variable_datatype"
+    migrate_to = "0073_change_bsn_validation"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        self.form_definition = FormDefinition.objects.create(
+            name="Definition with BSN",
+            slug="definition-with-bsn",
+            configuration={
+                "components": [
+                    {
+                        "key": "BSNField",
+                        "type": "bsn",
+                        "label": "BSN Field",
+                        "validateOn": "change",
+                    }
+                ]
+            },
+        )
+
+    def test_validate_on_is_blur(self):
+        self.form_definition.refresh_from_db()
+
+        self.assertEqual(
+            "blur", self.form_definition.configuration["components"][0]["validateOn"]
+        )
