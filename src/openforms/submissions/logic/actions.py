@@ -1,13 +1,13 @@
-from dataclasses import dataclass
-from typing import Any, Dict, Mapping, Optional, Type, TypedDict
+from dataclasses import asdict, dataclass
+from typing import Any, Callable, Dict, Mapping, Optional, Type, TypedDict
 
 from json_logic import jsonLogic
 
 from openforms.formio.service import FormioConfigurationWrapper
 from openforms.forms.constants import LogicActionTypes
 from openforms.forms.models import FormLogic, FormVariable
-from openforms.typing import DataMapping, JSONObject
-from openforms.utils.json_logic import ComponentMeta, introspect_json_logic
+from openforms.typing import DataMapping, JSONObject, JSONValue
+from openforms.utils.json_logic import ComponentMeta
 from openforms.variables.models import ServiceFetchConfiguration
 
 from ..models import SubmissionStep
@@ -52,7 +52,9 @@ class ActionOperation:
         """
         pass
 
-    def eval(self, context: DataMapping) -> DataMapping | None:
+    def eval(
+        self, context: DataMapping, log: Callable[[JSONValue], None]
+    ) -> DataMapping | None:
         """
         Return a mapping [name/path -> new_value] with changes that are to be
         applied to the context.
@@ -64,6 +66,7 @@ class ActionOperation:
         component_map: Dict[str, ComponentMeta],
         all_variables: Dict[str, FormVariable],
         initial_data: dict,
+        log_data: dict[str, JSONValue],
     ) -> Optional[JSONObject]:
         """Get action information to log"""
         return None
@@ -96,8 +99,8 @@ class PropertyAction(ActionOperation):
         component_map: Dict[str, ComponentMeta],
         all_variables: Dict[str, FormVariable],
         initial_data: dict,
+        log_data: dict[str, JSONValue],
     ) -> JSONObject:
-
         component_meta = component_map.get(self.component)
 
         # figure out the best possible label
@@ -132,8 +135,8 @@ class DisableNextAction(ActionOperation):
         component_map: Dict[str, ComponentMeta],
         all_variables: Dict[str, FormVariable],
         initial_data: dict,
+        log_data: dict[str, JSONValue],
     ) -> JSONObject:
-
         return {
             "type_display": LogicActionTypes.get_label(LogicActionTypes.disable_next),
         }
@@ -172,6 +175,7 @@ class StepNotApplicableAction(ActionOperation):
         component_map: Dict[str, ComponentMeta],
         all_variables: Dict[str, FormVariable],
         initial_data: dict,
+        log_data: dict[str, JSONValue],
     ) -> JSONObject:
         return {
             "type_display": LogicActionTypes.get_label(
@@ -190,29 +194,26 @@ class VariableAction(ActionOperation):
     def from_action(cls, action: ActionDict) -> "VariableAction":
         return cls(variable=action["variable"], value=action["action"]["value"])
 
-    def eval(self, context: DataMapping) -> DataMapping:
+    def eval(
+        self,
+        context: DataMapping,
+        log: Callable[[JSONValue], None],
+    ) -> DataMapping:
         with log_errors(self.value, self.rule):
-            return {self.variable: jsonLogic(self.value, context)}
+            log({"value": (value := jsonLogic(self.value, context))})
+            return {self.variable: value}
 
     def get_action_log_data(
         self,
         component_map: Dict[str, ComponentMeta],
         all_variables: Dict[str, FormVariable],
         initial_data: dict,
+        log_data: dict[str, JSONValue],
     ) -> JSONObject:
-        # Check if it's a primitive value, which doesn't require introspection
-        if not isinstance(self.value, (dict, list)):
-            value = self.value
-        else:
-            action_logic_introspection = introspect_json_logic(
-                self.value, component_map, initial_data
-            )
-            value = action_logic_introspection.as_string()
-
         return {
             "key": self.variable,
             "type_display": LogicActionTypes.get_label(LogicActionTypes.variable),
-            "value": value,
+            "value": log_data["value"],
         }
 
 
@@ -225,7 +226,11 @@ class ServiceFetchAction(ActionOperation):
     def from_action(cls, action: ActionDict) -> "ServiceFetchAction":
         return cls(variable=action["variable"], fetch_config=action["action"]["value"])
 
-    def eval(self, context: DataMapping) -> DataMapping:
+    def eval(
+        self,
+        context: DataMapping,
+        log: Callable[[JSONValue], None],
+    ) -> DataMapping:
         # XXX perform_service_fetch is expressed in terms of FormVariables
         dummy_var = FormVariable(
             name=self.variable,
@@ -233,8 +238,25 @@ class ServiceFetchAction(ActionOperation):
                 pk=self.fetch_config
             ),
         )
-        with log_errors({}, self.rule):  # TODO proper logging/error handling
-            return {dummy_var.name: perform_service_fetch(dummy_var, context)}
+        with log_errors({}, self.rule):  # TODO proper error handling
+            result = perform_service_fetch(dummy_var, context)
+            log(asdict(result))
+            return {dummy_var.name: result.value}
+
+    def get_action_log_data(
+        self,
+        component_map: Dict[str, ComponentMeta],
+        all_variables: Dict[str, FormVariable],
+        initial_data: dict,
+        log_data: dict[str, JSONValue],
+    ) -> JSONObject:
+        return {
+            "key": self.variable,
+            "type_display": LogicActionTypes.get_label(
+                LogicActionTypes.fetch_from_service
+            ),
+            "value": repr(log_data),
+        }
 
 
 ACTION_TYPE_MAPPING: Mapping[str, Type[ActionOperation]] = {

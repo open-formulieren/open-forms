@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 
 from openforms.forms.models import FormLogic, FormVariable
 from openforms.logging import logevent
-from openforms.typing import JSONObject
+from openforms.typing import JSONObject, JSONValue
 
 logger = logging.getLogger(__name__)
 
@@ -14,17 +14,17 @@ def get_targeted_components(
     components_map: dict,
     all_variables: Dict[str, FormVariable],
     initial_data: dict,
+    action_log_data: dict[int, JSONValue],
 ) -> List[dict]:
-    targeted_components = []
-    for action_operation in rule.action_operations:
-        action_log_data = action_operation.get_action_log_data(
+    return [
+        action_operation.get_action_log_data(
             component_map=components_map,
             all_variables=all_variables,
             initial_data=initial_data,
+            log_data=action_log_data.get(str(i), ""),  # XXX who str'd my int?
         )
-        targeted_components.append(action_log_data)
-
-    return targeted_components
+        for i, action_operation in enumerate(rule.action_operations)
+    ]
 
 
 @contextlib.contextmanager

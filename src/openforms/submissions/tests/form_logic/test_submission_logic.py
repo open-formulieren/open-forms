@@ -1,12 +1,17 @@
+from pathlib import Path
 from unittest import expectedFailure
 
 from django.test import override_settings, tag
 
+import requests_mock
+from factory.django import FileField
 from freezegun import freeze_time
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
+from zgw_consumers.constants import APITypes, AuthTypes
 
+from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
@@ -14,7 +19,8 @@ from openforms.forms.tests.factories import (
     FormVariableFactory,
 )
 from openforms.logging.models import TimelineLogProxy
-from openforms.variables.constants import FormVariableDataTypes
+from openforms.variables.constants import DataMappingTypes, FormVariableDataTypes
+from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory
@@ -1267,3 +1273,85 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
         logged_rule = logs[0].content_object
 
         self.assertEqual(logged_rule, logic_rule)
+
+    @requests_mock.Mocker()
+    def test_it_logs_fetch_requests(self, m):
+        m.get("https://httpbin.org/get", json={"url": "https://httpbin.org/get"})
+
+        var = FormVariableFactory.create(
+            service_fetch_configuration=ServiceFetchConfigurationFactory.create(
+                service__api_type=APITypes.orc,
+                service__api_root="https://httpbin.org/",
+                service__auth_type=AuthTypes.no_auth,
+                service__oas_file=FileField(
+                    from_path=str(
+                        Path(__file__).parent.parent / "files" / "openapi.yaml"
+                    )
+                ),
+                path="get",
+                data_mapping_type=DataMappingTypes.jq,
+                mapping_expression=".url",
+            ),
+        )
+        FormLogicFactory.create(
+            form=var.form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": var.key,
+                    "action": {
+                        "type": LogicActionTypes.fetch_from_service,
+                        "value": var.service_fetch_configuration.id,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=var.form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+        )
+
+        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
+
+        log_entry = TimelineLogProxy.objects.get(
+            template="logging/events/submission_logic_evaluated.txt",
+        )
+        self.assertIn("https://httpbin.org/get", str(log_entry.extra_data))
+
+    def test_it_logs_setting_variable(self):
+        var = FormVariableFactory.create(key="myKey")
+        FormLogicFactory.create(
+            form=var.form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": "myKey",
+                    "action": {
+                        "type": LogicActionTypes.variable,
+                        "value": "My new value",
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=var.form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+        )
+
+        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
+
+        log_entry = TimelineLogProxy.objects.get(
+            template="logging/events/submission_logic_evaluated.txt",
+        )
+        extra_data = log_entry.extra_data
+        self.assertEqual(extra_data["resolved_data"]["myKey"], "My new value")
+        self.assertEqual(
+            extra_data["evaluated_rules"][0]["targeted_components"],
+            [
+                {
+                    "key": "myKey",
+                    "value": "My new value",
+                    "type_display": "Stel de waarde van een variabele in",
+                }
+            ],
+        )
