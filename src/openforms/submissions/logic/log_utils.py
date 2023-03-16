@@ -9,6 +9,8 @@ from openforms.typing import JSONObject, JSONValue
 logger = logging.getLogger(__name__)
 
 
+# TODO: rename this function - more things than components are targeted by logic
+# rule actions (e.g. set variable value, do something with a form step...)
 def get_targeted_components(
     rule: FormLogic,
     components_map: dict,
