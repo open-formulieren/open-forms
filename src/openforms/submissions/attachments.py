@@ -145,6 +145,7 @@ def _iterate_data_with_components(
                 data,
                 data_path=Path(parent_path, index),
                 configuration_path=f"{configuration_path}.components",
+                filter_types=filter_types,
             )
     else:
         for index, child_component in enumerate(configuration.get("components", [])):
