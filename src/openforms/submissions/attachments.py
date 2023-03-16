@@ -138,7 +138,7 @@ def _iterate_data_with_components(
     parent_type = configuration.get("type")
     if parent_type == "editgrid":
         parent_path = Path(data_path, Path.from_text(configuration["key"]))
-        group_data = glom(data, parent_path, default=list)
+        group_data = glom(data, parent_path, default=list())
         for index in range(len(group_data)):
             yield from _iterate_data_with_components(
                 {"components": configuration.get("components", [])},
