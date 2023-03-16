@@ -1,6 +1,7 @@
 from pathlib import Path
 from unittest.mock import patch
 
+from django.conf import settings
 from django.test import override_settings
 
 from factory.django import FileField
@@ -136,7 +137,7 @@ class FormVariableViewsetTest(APITestCase):
             api_root="http://testserver/api/v2",
             auth_type=AuthTypes.no_auth,
             oas_file=FileField(
-                from_path=str(Path(__file__).parents[4] / "openapi.yaml")
+                from_path=Path(settings.BASE_DIR) / "src" / "openapi.yaml"
             ),
         )
         form = FormFactory.create(generate_minimal_setup=True)
@@ -198,7 +199,7 @@ class FormVariableViewsetTest(APITestCase):
             api_root="http://testserver/api/v2",
             auth_type=AuthTypes.no_auth,
             oas_file=FileField(
-                from_path=str(Path(__file__).parents[4] / "openapi.yaml")
+                from_path=Path(settings.BASE_DIR) / "src" / "openapi.yaml"
             ),
         )
         form = FormFactory.create(generate_minimal_setup=True)
@@ -269,7 +270,7 @@ class FormVariableViewsetTest(APITestCase):
             api_root="http://testserver/api/v2",
             auth_type=AuthTypes.no_auth,
             oas_file=FileField(
-                from_path=str(Path(__file__).parents[4] / "openapi.yaml")
+                from_path=Path(settings.BASE_DIR) / "src" / "openapi.yaml"
             ),
         )
         form = FormFactory.create(generate_minimal_setup=True)

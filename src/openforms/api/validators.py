@@ -34,12 +34,29 @@ class AllOrNoneRequiredFieldsValidator:
 MT = TypeVar("MT", bound=models.Model)
 
 
-class WrappedModelValidator(Generic[MT]):
+class ModelValidator(Generic[MT]):
     """
-    Validator for model serializers wrapping around existing django validators.
+    Turn a Django validator of model instances into a DRF validator.
 
-    The validator assigns the data attributes to the model instance so model-instance
-    level validation can take place.
+    For example:
+
+    >>> from django.core.exceptions import ValidationError
+    >>>
+    >>> def validate_service_has_oas(service: Service):
+    ...     "Check the service has an OAS file or OAS url"
+    ...     if not service.oas and not service.oas_file:
+    ...         raise ValidationError({
+    ...             "oas": _("Set either oas or oas_file"),
+    ...             "oas_file": _("Set either oas or oas_file"),
+    ...         })
+    ...
+
+    Then `ModelValidator(validate_service_has_oas)` will be validator you can use on a
+    Serializer.
+
+    You can annotate `ModelValidator` with a type:
+    `ModelValidator[Service](validate_service_has_oas)` should typecheck whether the validator
+    function that is passed takes the right type of Model instance.
     """
 
     requires_context = True

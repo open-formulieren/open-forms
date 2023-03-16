@@ -1,8 +1,9 @@
 from rest_framework import serializers
 
+from openforms.api.validators import ModelValidator
+
 from ..models import ServiceFetchConfiguration
 from ..validators import validate_mapping_expression, validate_request_body
-from .validators import WrappedSFCValidator
 
 
 class ServiceFetchConfigurationSerializer(serializers.ModelSerializer):
@@ -29,6 +30,6 @@ class ServiceFetchConfigurationSerializer(serializers.ModelSerializer):
             "mapping_expression",
         )
         validators = [
-            WrappedSFCValidator(validate_mapping_expression),
-            WrappedSFCValidator(validate_request_body),
+            ModelValidator[ServiceFetchConfiguration](validate_mapping_expression),
+            ModelValidator[ServiceFetchConfiguration](validate_request_body),
         ]
