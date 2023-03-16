@@ -48,3 +48,27 @@ de volgende structuur hebben:
 Deze trigger betekent "Als het vakje ``a`` aangevinkt is".
 
 Als je gebruik maakt van eenvoudige regels, dan wordt deze structuur automatisch gebruikt.
+
+Ogone simulator "Method not allowed"
+====================================
+
+Wanneer je de Igenico/Ogone iDeal betaalsimulator gebruikt kunnen sommige combinaties
+van failure/exception en "Terug"-knop tot fouten leiden in Open Formulieren, zoals:
+
+.. code-block:: json
+
+    {
+        "type": "https://formulieren-xxxxxxxxx.nl/fouten/MethodNotAllowed/",
+        "code": "method_not_allowed",
+        "title": "Methode \"{method}\" niet toegestaan.",
+        "status": 405,
+        "detail": "Methode \"POST\" niet toegestaan.",
+        "instance": "urn:uuid:dd1ce704-e86f-xxxx-xxxx-af9f8e3d740f"
+    }
+
+Dit speelt niet als je op de "Annuleren" knop drukt in plaats van "Terug".
+
+Dit is een bekend probleem in de Ogone simulator wat niet opgelost gaat worden. Ons is
+verzekerd dat dit in de productieomgeving niet speelt.
+
+Technische details voor ontwikkelaars zijn beschikbaar in Github issue #2362.
