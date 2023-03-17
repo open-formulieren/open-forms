@@ -1,7 +1,7 @@
 from django.test import TestCase, override_settings, tag
 from django.utils.translation import gettext as _
 
-from openforms.api.validators import AllOrNoneRequiredFieldsValidator
+from openforms.api.validators import AllOrNoneTruthyFieldsValidator
 
 from ..api.serializers import ConfirmationEmailTemplateSerializer
 from .factories import ConfirmationEmailTemplateFactory
@@ -53,7 +53,7 @@ class ConfirmationTemplateSerializerTests(TestCase):
             error = _find_error(
                 non_field_errors,
                 code="required",
-                message=AllOrNoneRequiredFieldsValidator.message.format(
+                message=AllOrNoneTruthyFieldsValidator.message.format(
                     fields="subject, content"
                 ),
             )

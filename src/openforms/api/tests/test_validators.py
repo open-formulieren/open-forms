@@ -5,34 +5,35 @@ from rest_framework import serializers
 
 from openforms.accounts.models import User
 
-from ..validators import AllOrNoneRequiredFieldsValidator, ModelValidator
+from ..validators import AllOrNoneTruthyFieldsValidator, ModelValidator
 
 
-class AllOrNoneRequiredFieldsValidatorSerializer(serializers.Serializer):
-    foo = serializers.CharField(required=False, allow_null=True)
-    bar = serializers.CharField(required=False, allow_null=True)
+class AllOrNoneTruthyFieldsValidatorSerializer(serializers.Serializer):
+    foo = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    bar = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
     class Meta:
-        validators = [AllOrNoneRequiredFieldsValidator("foo", "bar")]
+        validators = [AllOrNoneTruthyFieldsValidator("foo", "bar")]
 
 
-class AllOrNoneRequiredFieldsValidatorTests(SimpleTestCase):
-    def test_no_fields_provided(self):
+class AllOrNoneTruthyFieldsValidatorTests(SimpleTestCase):
+    def test_it_validates_when_no_values_provided(self):
         empty_data_examples = (
             {"foo": None, "bar": None},
             {"foo": None},
+            {"foo": ""},
             {},
         )
         for empty_data in empty_data_examples:
             with self.subTest(data=empty_data):
-                serializer = AllOrNoneRequiredFieldsValidatorSerializer(data=empty_data)
+                serializer = AllOrNoneTruthyFieldsValidatorSerializer(data=empty_data)
 
                 is_valid = serializer.is_valid()
 
                 self.assertTrue(is_valid)
 
-    def test_all_fields_provided(self):
-        serializer = AllOrNoneRequiredFieldsValidatorSerializer(
+    def test_it_validates_when_values_for_all_fields_provided(self):
+        serializer = AllOrNoneTruthyFieldsValidatorSerializer(
             data={"foo": "foo", "bar": "bar"}
         )
 
@@ -40,22 +41,61 @@ class AllOrNoneRequiredFieldsValidatorTests(SimpleTestCase):
 
         self.assertTrue(is_valid)
 
-    def test_subset_of_fields_provided(self):
+    def test_it_doesnt_validate_when_only_subset_of_values_provided(self):
         partial_data_examples = (
             {"foo": None, "bar": "bar"},
+            {"foo": "", "bar": "bar"},
             {"foo": "foo", "bar": None},
             {"foo": "foo"},
             {"bar": "bar"},
         )
         for incomplete_data in partial_data_examples:
             with self.subTest(data=incomplete_data):
-                serializer = AllOrNoneRequiredFieldsValidatorSerializer(
+                serializer = AllOrNoneTruthyFieldsValidatorSerializer(
                     data=incomplete_data
                 )
 
                 is_valid = serializer.is_valid()
 
                 self.assertFalse(is_valid)
+
+    def test_behaviour_with_boolean_fields(self):
+        class Serializer(serializers.Serializer):
+            bool1 = serializers.BooleanField(required=False, allow_null=True)
+            bool2 = serializers.BooleanField(required=False, allow_null=True)
+
+            class Meta:
+                validators = [AllOrNoneTruthyFieldsValidator("bool1", "bool2")]
+
+        with self.subTest("None provided"):
+            serializer1 = Serializer(data={})
+
+            self.assertTrue(serializer1.is_valid())
+
+        with self.subTest("Both truthy provided"):
+            serializer2 = Serializer(data={"bool1": True, "bool2": True})
+
+            self.assertTrue(serializer2.is_valid())
+
+        with self.subTest("One truthy, one falsy provided"):
+            serializer3 = Serializer(data={"bool1": True, "bool2": False})
+
+            self.assertFalse(serializer3.is_valid())
+
+        with self.subTest("Only one truthy provided"):
+            serializer4 = Serializer(data={"bool1": True})
+
+            self.assertFalse(serializer4.is_valid())
+
+        with self.subTest("Only one false provided"):
+            serializer5 = Serializer(data={"bool2": False})
+
+            self.assertTrue(serializer5.is_valid())
+
+        with self.subTest("Null provided"):
+            serializer6 = Serializer(data={"bool2": False, "bool1": None})
+
+            self.assertTrue(serializer6.is_valid())
 
 
 def validate_not_staff(user: User):

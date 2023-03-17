@@ -976,7 +976,7 @@ class FormsAPITests(APITestCase):
                 self.assertEqual(
                     response.json()["invalidParams"][0]["reason"],
                     _(
-                        "The fields {fields} must all be provided if one of them is provided."
+                        "The fields {fields} must all have a non-empty value as soon as one of them does."
                     ).format(fields="subject, content"),
                 )
 
@@ -1627,7 +1627,7 @@ class FormsAPITranslationTests(APITestCase):
                     "name": "confirmationEmailTemplate.translations.en.nonFieldErrors",
                     "code": "required",
                     "reason": _(
-                        "The fields {fields} must all be provided if one of them is provided."
+                        "The fields {fields} must all have a non-empty value as soon as one of them does."
                     ).format(fields="subject, content"),
                 }
             ],
