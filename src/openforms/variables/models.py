@@ -4,14 +4,14 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-import jq
-from rest_framework.serializers import ValidationError as DRFValidationError
-
-from openforms.forms.api.validators import JsonLogicValidator
 from openforms.typing import DataMapping
 
 from .constants import DataMappingTypes, ServiceFetchMethods
-from .validators import HeaderValidator
+from .validators import (
+    HeaderValidator,
+    validate_mapping_expression,
+    validate_request_body,
+)
 
 
 class ServiceFetchConfiguration(models.Model):
@@ -79,28 +79,14 @@ class ServiceFetchConfiguration(models.Model):
 
     def clean(self):
         super().clean()
+
+        # Similar implementation like models.Model.full_clean
         errors = {}
-
-        if self.method == ServiceFetchMethods.get and self.body not in (None, ""):
-            errors["body"] = _("GET requests may not have a body")
-
-        if self.data_mapping_type == "" and self.mapping_expression not in (None, ""):
-            errors["mapping_expression"] = _("Data mapping type missing for expression")
-        elif self.data_mapping_type != "" and self.mapping_expression is None:
-            errors["mapping_expression"] = _(
-                "Missing {mapping_type} expression"
-            ).format(mapping_type=self.data_mapping_type)
-        elif self.data_mapping_type == DataMappingTypes.jq:
+        for validator in (validate_request_body, validate_mapping_expression):
             try:
-                jq.compile(self.mapping_expression)
-            except ValueError as e:
-                errors["mapping_expression"] = str(e)
-        elif self.data_mapping_type == DataMappingTypes.json_logic:
-            try:
-                JsonLogicValidator()(self.mapping_expression)
-            except (DRFValidationError, ValidationError) as e:
-                errors["mapping_expression"] = str(e.__cause__)
-
+                validator(self)
+            except ValidationError as e:
+                errors = e.update_error_dict(errors)
         if errors:
             raise ValidationError(errors)
 

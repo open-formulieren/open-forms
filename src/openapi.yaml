@@ -5728,6 +5728,11 @@ components:
       required:
       - configuration
       - index
+    DataMappingTypeEnum:
+      enum:
+      - JsonLogic
+      - jq
+      type: string
     DataTypeEnum:
       enum:
       - string
@@ -6653,6 +6658,10 @@ components:
           - $ref: '#/components/schemas/SourceEnum'
           description: Where will the data that will be associated with this variable
             come from
+        serviceFetchConfiguration:
+          allOf:
+          - $ref: '#/components/schemas/ServiceFetchConfiguration'
+          nullable: true
         prefillPlugin:
           type: string
           description: Which, if any, prefill plugin should be used
@@ -7021,6 +7030,11 @@ components:
       - label
       - logo
       - url
+    MethodEnum:
+      enum:
+      - GET
+      - POST
+      type: string
     MinimalFormStep:
       type: object
       properties:
@@ -7590,6 +7604,53 @@ components:
       - apiType
       - label
       x-experimental: true
+    ServiceFetchConfiguration:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        service:
+          type: integer
+        path:
+          type: string
+          description: path relative to the Service API root
+          maxLength: 250
+        method:
+          allOf:
+          - $ref: '#/components/schemas/MethodEnum'
+          title: HTTP method
+          description: POST is allowed, but should not be used to mutate data
+        headers:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          title: HTTP request headers
+          description: Additions and overrides for the HTTP request headers as defined
+            in the Service.
+        queryParams:
+          type: string
+          title: HTTP query string
+        body:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          title: HTTP request body
+          description: Request body for POST requests (only "application/json" is
+            supported)
+        dataMappingType:
+          title: Mapping expression language
+          oneOf:
+          - $ref: '#/components/schemas/DataMappingTypeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        mappingExpression:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: For jq, pass a string containing the filter expression
+      required:
+      - id
+      - service
     SourceEnum:
       enum:
       - component

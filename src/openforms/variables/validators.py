@@ -1,11 +1,20 @@
 import re
-from typing import Mapping
+from typing import TYPE_CHECKING, Mapping
 
 from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
+import jq
+from rest_framework.validators import ValidationError as DRFValidationError
+
+from openforms.forms.api.validators import JsonLogicValidator
 from openforms.typing import JSONValue
+
+from .constants import DataMappingTypes, ServiceFetchMethods
+
+if TYPE_CHECKING:
+    from .models import ServiceFetchConfiguration
 
 
 @deconstructible
@@ -112,6 +121,93 @@ class HeaderValidator:
 
         if errors:
             raise ValidationError(errors)
+
+
+def validate_request_body(configuration: "ServiceFetchConfiguration") -> None:
+    if configuration.body in ("", None):
+        return
+
+    if configuration.method == ServiceFetchMethods.get:
+        raise ValidationError(
+            {
+                "body": ValidationError(
+                    _("GET requests must have an empty body."), code="not_empty"
+                ),
+            }
+        )
+
+
+def validate_mapping_expression(configuration: "ServiceFetchConfiguration") -> None:
+    mapping_type = configuration.data_mapping_type
+    expression = configuration.mapping_expression
+
+    if not mapping_type and expression not in ("", None):
+        raise ValidationError(
+            {
+                "data_mapping_type": ValidationError(
+                    _(
+                        "An expression was provided, but the expression type was not specified."
+                    ),
+                    code="mapping_type_required",
+                )
+            }
+        )
+
+    if mapping_type and expression is None:
+        raise ValidationError(
+            {
+                "mapping_expression": ValidationError(
+                    _(
+                        "The '{mapping_type}' mapping type is specified, but the "
+                        "mapping expression is missing."
+                    ).format(
+                        mapping_type=configuration.get_data_mapping_type_display()
+                    ),
+                    code="expression_required",
+                )
+            }
+        )
+
+    if mapping_type == DataMappingTypes.jq:
+        if not isinstance(expression, str):
+            raise ValidationError(
+                {
+                    "mapping_expression": ValidationError(
+                        _("A JQ expression must be a string."),
+                        code="jq_invalid_type",
+                    )
+                }
+            )
+
+        try:
+            jq.compile(expression)
+        except ValueError as e:
+            raise ValidationError(
+                {
+                    "mapping_expression": ValidationError(
+                        _("The expression could not be compiled ({err}).").format(
+                            err=str(e)
+                        ),
+                        code="jq_invalid",
+                    )
+                }
+            ) from e
+
+    elif mapping_type == DataMappingTypes.json_logic:
+        try:
+            JsonLogicValidator()(expression)
+        except (DRFValidationError, ValidationError) as e:
+            err = str(e.__cause__)
+            raise ValidationError(
+                {
+                    "mapping_expression": ValidationError(
+                        _("The expression could not be compiled ({err}).").format(
+                            err=err
+                        ),
+                        code="json_logic_invalid",
+                    )
+                }
+            ) from e
 
 
 def has_whitespace_padding(s: str) -> bool:

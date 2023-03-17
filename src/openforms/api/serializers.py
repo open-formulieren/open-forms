@@ -85,15 +85,18 @@ class ListWithChildSerializer(serializers.ListSerializer):
     def process_object(self, obj):
         return obj
 
-    def create(self, validated_data):
-        model = self.get_child_serializer_class().Meta.model
+    def preprocess_validated_data(self, validated_data):
+        return validated_data
 
+    def create(self, validated_data):
+        validated_data = self.preprocess_validated_data(validated_data)
+        model = self.get_child_serializer_class().Meta.model
         objects_to_create = []
         for data_dict in validated_data:
             obj = model(**data_dict)
             objects_to_create.append(self.process_object(obj))
 
-        return model.objects.bulk_create(objects_to_create)
+        return model._default_manager.bulk_create(objects_to_create)
 
 
 class PublicFieldsSerializerMixin:

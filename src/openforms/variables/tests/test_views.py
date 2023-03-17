@@ -69,6 +69,7 @@ class GetStaticVariablesViewTest(APITestCase):
                 "name": "Now",
                 "key": "now",
                 "source": "",
+                "service_fetch_configuration": None,
                 "prefill_plugin": "",
                 "prefill_attribute": "",
                 "data_type": FormVariableDataTypes.datetime,

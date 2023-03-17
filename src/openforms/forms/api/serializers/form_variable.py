@@ -7,7 +7,9 @@ from rest_framework.exceptions import ValidationError
 
 from openforms.api.fields import RelatedFieldFromContext
 from openforms.api.serializers import ListWithChildSerializer
+from openforms.variables.api.serializers import ServiceFetchConfigurationSerializer
 from openforms.variables.constants import FormVariableSources
+from openforms.variables.models import ServiceFetchConfiguration
 from openforms.variables.service import get_static_variables
 
 from ...models import Form, FormDefinition, FormVariable
@@ -21,11 +23,22 @@ class FormVariableListSerializer(ListWithChildSerializer):
         variable.check_data_type_and_initial_value()
         return variable
 
+    def preprocess_validated_data(self, validated_data):
+        def save_fetch_config(data):
+            if config := data.get("service_fetch_configuration"):
+                config.save()
+                data["service_fetch_configuration"] = config.instance
+            return data
+
+        return map(save_fetch_config, validated_data)
+
     def validate(self, attrs):
         static_data_keys = [item.key for item in get_static_variables()]
 
         existing_form_key_combinations = []
+
         errors = defaultdict(list)
+
         for index, item in enumerate(attrs):
             key_form_combination = (item["key"], item["form"].slug)
             if key_form_combination in existing_form_key_combinations:
@@ -93,6 +106,9 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
         allow_null=True,
         context_name="form_definitions",
     )
+    service_fetch_configuration = ServiceFetchConfigurationSerializer(
+        required=False, allow_null=True
+    )
 
     class Meta:
         model = FormVariable
@@ -103,6 +119,7 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
             "name",
             "key",
             "source",
+            "service_fetch_configuration",
             "prefill_plugin",
             "prefill_attribute",
             "data_type",
@@ -117,6 +134,28 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
         # The (bulk) API endpoint(s) and this ListSerializer are responsible for
         # applying # this validation on the whole collection.
         validators = []
+
+    def validate_service_fetch_configuration(self, value):
+        if value is None:
+            return value
+        config_instance = None
+        if config_id := value.get("id"):
+            try:
+                config_instance = ServiceFetchConfiguration.objects.get(id=config_id)
+            except ServiceFetchConfiguration.DoesNotExist:
+                raise ValidationError(
+                    _(
+                        "The service fetch configuration with identifier {config_id} does not exist"
+                    ).format(config_id=config_id),
+                    code="not_found",
+                )
+
+        value["service"] = value["service"].id
+        config = ServiceFetchConfigurationSerializer(
+            data=value, instance=config_instance
+        )
+        config.is_valid(raise_exception=True)
+        return config
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

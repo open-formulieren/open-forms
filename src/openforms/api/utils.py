@@ -1,12 +1,14 @@
 import re
 from typing import Any, Union
 
+from django.db import models
+
 from djangorestframework_camel_case.util import (
     camelize_re,
     underscore_to_camel as _underscore_to_camel,
 )
 from drf_spectacular.utils import extend_schema, extend_schema_serializer
-from rest_framework.serializers import Serializer
+from rest_framework.serializers import ModelSerializer, Serializer
 from rest_framework.views import APIView
 
 
@@ -32,6 +34,15 @@ def get_from_serializer_data_or_instance(
 
     serializer_field = serializer.fields[field]
     return serializer_field.get_attribute(instance)
+
+
+def get_model_serializer_instance(serializer: ModelSerializer) -> models.Model:
+    """
+    Return an existing serializer instance or build an empty one.
+    """
+    if serializer.instance:
+        return serializer.instance
+    return serializer.Meta.model()
 
 
 def mark_experimental(func_or_class):
