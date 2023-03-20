@@ -3319,6 +3319,13 @@ paths:
 
         Note that this endpoint is **EXPERIMENTAL**.
       summary: List available service fetch configurations
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
       tags:
       - service-fetch-configurations
       security:
@@ -3328,9 +3335,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ServiceFetchConfiguration'
+                $ref: '#/components/schemas/PaginatedServiceFetchConfigurationList'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -3404,14 +3409,17 @@ paths:
             Content-Language:
               $ref: '#/components/headers/Content-Language'
       x-experimental: true
-  /api/v2/services:
+  /api/v2/services/{id}:
     get:
-      operationId: services_list
-      description: |-
-        Return a list of available (JSON) services/registrations configured in the backend.
-
-        Note that this endpoint is **EXPERIMENTAL**.
-      summary: List available services
+      operationId: services_retrieve
+      description: Configured Services
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this service.
+        required: true
       tags:
       - services
       security:
@@ -3421,102 +3429,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Service'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
-      x-experimental: true
-  /api/v2/services:
-    get:
-      operationId: services_list
-      description: |-
-        Return a list of available (JSON) services/registrations configured in the backend.
-
-        Note that this endpoint is **EXPERIMENTAL**.
-      summary: List available services
-      tags:
-      - services
-      security:
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Service'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
-      x-experimental: true
-  /api/v2/services:
-    get:
-      operationId: services_list
-      description: |-
-        Return a list of available (JSON) services/registrations configured in the backend.
-
-        Note that this endpoint is **EXPERIMENTAL**.
-      summary: List available services
-      tags:
-      - services
-      security:
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Service'
-          description: ''
-          headers:
-            X-Session-Expires-In:
-              $ref: '#/components/headers/X-Session-Expires-In'
-            X-CSRFToken:
-              $ref: '#/components/headers/X-CSRFToken'
-            X-Is-Form-Designer:
-              $ref: '#/components/headers/X-Is-Form-Designer'
-            Content-Language:
-              $ref: '#/components/headers/Content-Language'
-      x-experimental: true
-  /api/v2/services:
-    get:
-      operationId: services_list
-      description: |-
-        Return a list of available (JSON) services/registrations configured in the backend.
-
-        Note that this endpoint is **EXPERIMENTAL**.
-      summary: List available services
-      tags:
-      - services
-      security:
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Service'
+                $ref: '#/components/schemas/Service'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -5495,19 +5408,6 @@ paths:
             X-Is-Form-Designer:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
-    ApiTypeEnum:
-      enum:
-      - ac
-      - nrc
-      - zrc
-      - ztc
-      - drc
-      - brc
-      - cmc
-      - kc
-      - vrc
-      - orc
-      type: string
               $ref: '#/components/headers/Content-Language'
           content:
             application/problem+json:
@@ -5539,19 +5439,6 @@ paths:
       - payment
       security:
       - {}
-    ApiTypeEnum:
-      enum:
-      - ac
-      - nrc
-      - zrc
-      - ztc
-      - drc
-      - brc
-      - cmc
-      - kc
-      - vrc
-      - orc
-      type: string
       responses:
         '302':
           headers:
@@ -5583,19 +5470,6 @@ paths:
               description: Allowed HTTP method(s) for this plugin.
               required: true
             X-Session-Expires-In:
-    ApiTypeEnum:
-      enum:
-      - ac
-      - nrc
-      - zrc
-      - ztc
-      - drc
-      - brc
-      - cmc
-      - kc
-      - vrc
-      - orc
-      type: string
               $ref: '#/components/headers/X-Session-Expires-In'
             X-CSRFToken:
               $ref: '#/components/headers/X-CSRFToken'
@@ -5627,19 +5501,6 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/Exception'
-    ApiTypeEnum:
-      enum:
-      - ac
-      - nrc
-      - zrc
-      - ztc
-      - drc
-      - brc
-      - cmc
-      - kc
-      - vrc
-      - orc
-      type: string
           description: Not found. The slug did not point to a live submission payment
             or the `plugin_id` does not exist.
 components:
@@ -7385,6 +7246,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FormDefinition'
+    PaginatedServiceFetchConfigurationList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceFetchConfiguration'
     PaginatedSubmissionList:
       type: object
       properties:
@@ -7647,39 +7528,6 @@ components:
           type: string
           format: uri
           readOnly: true
-    Service:
-      type: object
-      properties:
-        label:
-          type: string
-          maxLength: 100
-        apiRoot:
-          type: string
-          title: Api root url
-          maxLength: 255
-        apiType:
-          allOf:
-          - $ref: '#/components/schemas/ApiTypeEnum'
-          title: Type
-      required:
-      - apiRoot
-      - apiType
-      - label
-      x-experimental: true
-    ServiceFetchConfiguration:
-      type: object
-      properties:
-        url:
-          type: string
-          format: uri
-          readOnly: true
-        name:
-          type: string
-          description: human readable name for the configuration
-          maxLength: 250
-      required:
-      - url
-      x-experimental: true
         data:
           type: object
           additionalProperties:
@@ -7724,25 +7572,6 @@ components:
           type: object
           additionalProperties: {}
           title: JSON schema
-    Service:
-      type: object
-      properties:
-        label:
-          type: string
-          maxLength: 100
-        apiRoot:
-          type: string
-          title: Api root url
-          maxLength: 255
-        apiType:
-          allOf:
-          - $ref: '#/components/schemas/ApiTypeEnum'
-          title: Type
-      required:
-      - apiRoot
-      - apiType
-      - label
-      x-experimental: true
           description: The generated JSON schema for the plugin options.
       required:
       - id
@@ -7787,25 +7616,6 @@ components:
           description: Of de gebruiker akkoord moet gaan met het privacybeleid voordat
             hij een formulier indient.
         privacyLabel:
-    Service:
-      type: object
-      properties:
-        label:
-          type: string
-          maxLength: 100
-        apiRoot:
-          type: string
-          title: Api root url
-          maxLength: 255
-        apiType:
-          allOf:
-          - $ref: '#/components/schemas/ApiTypeEnum'
-          title: Type
-      required:
-      - apiRoot
-      - apiType
-      - label
-      x-experimental: true
           type: string
           description: Het opgemaakte label dat naast het selectievakje moet worden
             getoond wanneer de gebruiker wordt gevraagd akkoord te gaan met het privacybeleid.
@@ -7850,25 +7660,6 @@ components:
           type: string
           format: decimal
           pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
-    Service:
-      type: object
-      properties:
-        label:
-          type: string
-          maxLength: 100
-        apiRoot:
-          type: string
-          title: Api root url
-          maxLength: 255
-        apiType:
-          allOf:
-          - $ref: '#/components/schemas/ApiTypeEnum'
-          title: Type
-      required:
-      - apiRoot
-      - apiType
-      - label
-      x-experimental: true
         information:
           type: string
           description: Information text to be displayed in the confirmation page and
@@ -7916,6 +7707,10 @@ components:
     Service:
       type: object
       properties:
+        url:
+          type: string
+          format: uri
+          readOnly: true
         label:
           type: string
           maxLength: 100
@@ -7931,6 +7726,7 @@ components:
       - apiRoot
       - apiType
       - label
+      - url
       x-experimental: true
     ServiceFetchConfiguration:
       type: object
@@ -7938,6 +7734,10 @@ components:
         id:
           type: integer
           readOnly: true
+        name:
+          type: string
+          description: human readable name for the configuration
+          maxLength: 250
         service:
           type: integer
         path:
@@ -7952,12 +7752,12 @@ components:
         headers:
           type: object
           additionalProperties: {}
-          nullable: true
           title: HTTP request headers
           description: Additions and overrides for the HTTP request headers as defined
             in the Service.
         queryParams:
-          type: string
+          type: object
+          additionalProperties: {}
           title: HTTP query string
         body:
           type: object

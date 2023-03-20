@@ -8,11 +8,9 @@ from openforms.api import pagination
 from openforms.api.serializers import ExceptionSerializer
 from openforms.api.utils import mark_experimental
 from openforms.api.views import ListMixin
-from openforms.variables.api.serializers import (
-    FormVariableSerializer,
-    ServiceFetchConfigurationSerializer,
-)
+from openforms.forms.api.serializers import FormVariableSerializer
 
+from .api.serializers import ServiceFetchConfigurationSerializer
 from .models import ServiceFetchConfiguration
 from .service import get_static_variables
 
