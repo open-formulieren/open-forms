@@ -16,6 +16,7 @@ class BsnField extends TextField {
         label: 'BSN',
         key: 'bsn',
         inputMask: '999999999',
+        validateOn: 'blur',
       },
       ...extend
     );
