@@ -85,7 +85,7 @@ Formulier maken
 
    * Tab **Weergave**
    
-     * "Voor meer dan 1 hond, vult u `dit formulier <http://example.com>`__ in."" 
+     * "Voor meer dan 1 hond, vult u `dit formulier <http://example.com>`__ in." 
 
    * Tab **Geavanceerd**
      

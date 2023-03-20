@@ -18,3 +18,4 @@ Voorbeelden
    repeating_groups
    decision_tree
    dynamic_options
+   service_fetch
