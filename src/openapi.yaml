@@ -7739,7 +7739,8 @@ components:
           description: human readable name for the configuration
           maxLength: 250
         service:
-          type: integer
+          type: string
+          format: uri
         path:
           type: string
           description: path relative to the Service API root

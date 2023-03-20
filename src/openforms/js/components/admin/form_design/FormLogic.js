@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import sortBy from 'lodash/sortBy';
 import zip from 'lodash/zip';
 import PropTypes from 'prop-types';
@@ -68,7 +67,6 @@ const FormLogic = ({logicRules = [], onChange, onDelete, onAdd}) => {
     {
       endpoint: SERVICE_FETCH_CONFIG_ENDPOINT,
       stateVar: 'serviceFetchConfigurations',
-      // TODO endpoint itself should probably do this?
       reshapeData: data => {
         return data.map((element, index) => {
           element.headers = Object.entries(element.headers);

@@ -75,6 +75,7 @@ export const Template = ({initialValues = {}, selectExisting}) => {
     args={{
       availableServices: [
         {
+          url: 'http://foo.com/services/1',
           label: 'Service 1',
           apiRoot: 'http://foo.com/api/v1/',
           apiType: 'ORC',
@@ -82,7 +83,7 @@ export const Template = ({initialValues = {}, selectExisting}) => {
       ],
       selectExisting: false,
       initialValues: {
-        service: 'http://foo.com/api/v1/',
+        service: 'http://foo.com/services/1',
         path: 'some/{myUserDefinedVariable}/path',
         queryParams: [
           ['bsn', ['{auth_bsn}']],

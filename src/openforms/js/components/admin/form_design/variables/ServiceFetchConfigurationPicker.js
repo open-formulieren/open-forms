@@ -20,7 +20,7 @@ const ServiceFetchConfigurationPicker = ({onChange, onFormSave}) => {
   const serviceFetchConfigurationChoices = formLogicContext.serviceFetchConfigurations.map(
     fetchConfig => {
       return [
-        fetchConfig.url,
+        fetchConfig.id,
         fetchConfig.name || `${fetchConfig.method} ${fetchConfig.path} (${fetchConfig.service})`,
       ];
     }
@@ -81,7 +81,7 @@ const ServiceFetchConfigurationPicker = ({onChange, onFormSave}) => {
                 let values =
                   _.cloneDeep(
                     formLogicContext.serviceFetchConfigurations.find(
-                      element => element.url === event.target.value
+                      element => element.id === parseInt(event.target.value)
                     )
                   ) || formik.initialValues;
 

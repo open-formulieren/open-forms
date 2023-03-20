@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -150,7 +151,9 @@ class FormVariableSerializer(serializers.HyperlinkedModelSerializer):
                     code="not_found",
                 )
 
-        value["service"] = value["service"].id
+        value["service"] = reverse(
+            "api:service-detail", kwargs={"pk": value["service"].pk}
+        )
         config = ServiceFetchConfigurationSerializer(
             data=value, instance=config_instance
         )

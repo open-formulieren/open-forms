@@ -131,7 +131,7 @@ class ServiceFetchConfigurationAPITests(APITestCase):
         self.assertEqual(response.data["count"], 1)
 
         expected = {
-            "url": f"http://testserver{endpoint}/{config.pk}",
+            "id": config.pk,
             "name": "Service fetch configuration 1",
             "service": f"http://testserver{reverse('api:service-detail', kwargs={'pk': config.service.pk})}",
             "path": "/foo",
