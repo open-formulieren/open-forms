@@ -177,14 +177,12 @@ describe('Component value label literals', () => {
     [radioComponent, 'values'],
     [selectBoxesComponent, 'values'],
   ])('are exposed in the translations structure (%#)', (component, path) => {
-    const mockRef = {current: {}};
-
     const translations = handleComponentValueLiterals(
       {...component},
       componentTranslations,
       path,
       values,
-      mockRef
+      {}
     );
 
     expect(translations.nl).toEqual([
