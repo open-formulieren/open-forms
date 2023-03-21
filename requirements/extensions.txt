@@ -46,7 +46,7 @@ cairocffi==1.2.0
     #   -r requirements/base.txt
     #   cairosvg
     #   weasyprint
-cairosvg==2.5.2
+cairosvg==2.7.0
     # via
     #   -r requirements/base.txt
     #   weasyprint

@@ -31,7 +31,7 @@ cairocffi==1.2.0
     # via
     #   cairosvg
     #   weasyprint
-cairosvg==2.5.2
+cairosvg==2.7.0
     # via weasyprint
 celery==5.2.7
     # via
