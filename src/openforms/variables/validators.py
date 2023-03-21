@@ -123,6 +123,54 @@ class HeaderValidator:
             raise ValidationError(errors)
 
 
+@deconstructible
+class QueryParameterValidator:
+    """Validates if headers are well-formed according to RFC 3986.
+
+    ...
+    """
+
+    def __call__(self, value: Mapping[str, str] | JSONValue) -> None:
+        if value is None:
+            return
+        if not isinstance(value, Mapping):
+            raise ValidationError(
+                _(
+                    'Query parameters should have the form {"parameter": "My header value"}'
+                )
+            )
+
+        errors = []
+        for field_name, field_value in value.items():
+            # value checks
+            if not isinstance(field_value, list):
+                errors.append(
+                    _(
+                        "{header!s}: value '{value!s}' should be a list, but isn't."
+                    ).format(
+                        header=field_name,
+                        value=field_value,
+                    )
+                )
+            elif len(field_value):
+                if not all(isinstance(sub_value, str) for sub_value in field_value):
+                    errors.append(
+                        _(
+                            "{parameter!s}: value '{value!s}' should be a list of strings, but isn't."
+                        ).format(parameter=field_name, value=field_value)
+                    )
+
+            if not isinstance(field_name, str):
+                errors.append(
+                    _(
+                        "query parameter key '{parameter!s}' should be a string, but isn't."
+                    ).format(parameter=field_name)
+                )
+
+        if errors:
+            raise ValidationError(errors)
+
+
 def validate_request_body(configuration: "ServiceFetchConfiguration") -> None:
     if configuration.body in ("", None):
         return

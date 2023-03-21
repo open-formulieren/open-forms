@@ -1,4 +1,4 @@
-from urllib.parse import quote_plus, urlencode
+from urllib.parse import quote_plus
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -9,6 +9,7 @@ from openforms.typing import DataMapping
 from .constants import DataMappingTypes, ServiceFetchMethods
 from .validators import (
     HeaderValidator,
+    QueryParameterValidator,
     validate_mapping_expression,
     validate_request_body,
 )
@@ -22,7 +23,6 @@ class ServiceFetchConfiguration(models.Model):
     )
     name = models.CharField(
         max_length=250,
-        blank=True,
         help_text=_("human readable name for the configuration"),
     )
     path = models.CharField(
@@ -52,6 +52,7 @@ class ServiceFetchConfiguration(models.Model):
         _("HTTP query string"),
         blank=True,
         default=dict,
+        validators=[QueryParameterValidator()],
     )
     body = models.JSONField(
         _("HTTP request body"),
@@ -126,12 +127,10 @@ class ServiceFetchConfiguration(models.Model):
 
         escaped_for_path = {k: quote_plus(str(v)) for k, v in context.items()}
 
-        query_params = urlencode(
-            {
-                param: value.format(**context)
-                for param, value in (self.query_params or {}).items()
-            }
-        )
+        query_params = {
+            param: value.format(**context)
+            for param, value in (self.query_params or {}).items()
+        }
 
         request_args = dict(
             path=self.path.format(**escaped_for_path),

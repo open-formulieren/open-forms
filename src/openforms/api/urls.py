@@ -23,7 +23,7 @@ from openforms.services.api.viewsets import ServiceViewSet
 from openforms.submissions.api.viewsets import SubmissionStepViewSet, SubmissionViewSet
 from openforms.utils.decorators import never_cache
 from openforms.utils.json_logic.api.views import GenerateLogicDescriptionView
-from openforms.variables.views import ServiceFetchConfigurationViewSet
+from openforms.variables.api.viewsets import ServiceFetchConfigurationViewSet
 
 from .views import PingView
 

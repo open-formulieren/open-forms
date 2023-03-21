@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import StaticFormVariablesView
+from .api.views import StaticFormVariablesView
 
 app_name = "variables"
 
