@@ -10,21 +10,28 @@ from rest_framework.fields import get_error_detail
 from .utils import get_model_serializer_instance
 
 
-class AllOrNoneRequiredFieldsValidator:
+class AllOrNoneTruthyFieldsValidator:
     """
-    Validate that the set of fields is present as soon as one field is provided.
+    Validate that either none or all fields have a 'non-empty' value.
 
-    Field values are checked to be truthy to determine if they are provided or not.
+    An empty value in this context is different from what DRF considers empty - e.g.
+    an explicitly provided empty string is considered empty by the validator. DRF
+    only considers something empty if no value (or None) was provided in the data dict.
+
+    Note that this does not work as expected when using boolean fields as
+    it'll require them to be ``True`` (meaning ``{"foo": False, "bar": "baz"}``) will
+    not validate.
     """
 
-    message = _("The fields {fields} must all be provided if one of them is provided.")
+    message = _(
+        "The fields {fields} must all have a non-empty value as soon as one of them does."
+    )
     code = "required"
-    requires_context = True
 
     def __init__(self, *fields: str):
         self.fields = fields
 
-    def __call__(self, data: dict, serializer: serializers.Serializer):
+    def __call__(self, data: dict):
         values = [data.get(field) for field in self.fields]
         if any(values) and not all(values):
             err = self.message.format(fields=", ".join(self.fields))
