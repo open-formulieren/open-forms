@@ -78,6 +78,14 @@ In dit tabblad worden de algemene formulier gegevens weergegeven.
   bijvoorbeeld alleen informatie of verwijzingen naar andere formulieren. In dat
   geval vinkt u deze optie uit.
 
+.. note::
+
+  Als de formuliernaam lange woorden bevat, optioneel koppeltekens kunnen ingevoerd worden (`soft hyphens`_) om door
+  te geven waar het woord kan worden afgebroken om naar de volgende regel te gaan. Op Windows, kunt u soft hyphens in
+  de 'Character map' vinden en kopiëren/plakken naar Open Forms velden.
+
+
+.. _soft hyphens: https://en.wikipedia.org/wiki/Soft_hyphen
 
 .. note::
 
@@ -134,14 +142,14 @@ In dit tabblad kan de bevestiging, die te zien is na het afronden van het
 formulier, worden aangepast alsmede de e-mailbevestiging die gestuurd word naar
 de indiener van het formulier.
 
-U kunt in zowel de bevestigingspagina als de e-mailbevestiging gebruik maken 
+U kunt in zowel de bevestigingspagina als de e-mailbevestiging gebruik maken
 van variabelen. Uitleg hierover vind u bij :ref:`manual_templates`
 
 Sjabloon bevestigingspagina
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In het veld **Inhoud** kan een tekst worden opgemaakt die wordt getoond na 
-het indienen van het formulier. Indien dit veld leeg wordt gelaten zal de 
+In het veld **Inhoud** kan een tekst worden opgemaakt die wordt getoond na
+het indienen van het formulier. Indien dit veld leeg wordt gelaten zal de
 globale **Bevestigingspagina tekst** gebruikt worden.
 
 Bevestigingsmailsjabloon
@@ -169,21 +177,21 @@ Knopteksten
 -----------
 
 U kunt de knoppen die standaard in het formulier getoond worden een ander label
-geven. De waarden die hier staan overschrijven de labels die globaal zijn 
+geven. De waarden die hier staan overschrijven de labels die globaal zijn
 geconfigureerd.
 
 
 Product en betaling
 -------------------
 
-Hier kunt u een **Product** kiezen dat gekoppeld is aan het formulier. Het 
+Hier kunt u een **Product** kiezen dat gekoppeld is aan het formulier. Het
 product bevat een prijs die gebruikt kan worden als betaald moet worden voor
 het product. Betaling kan ingesteld worden door de juiste **Betaalprovider** te
 selecteren.
 
-Ten slotte kunt u ervoor kiezen om de prijs van het gekoppeld product te 
-gebruiken of logica regels op te stellen voor het bepalen van de prijs. Dit 
-laatste kunt u instellen onder **Prijslogica**. De **Prijslogica** volgt verder 
+Ten slotte kunt u ervoor kiezen om de prijs van het gekoppeld product te
+gebruiken of logica regels op te stellen voor het bepalen van de prijs. Dit
+laatste kunt u instellen onder **Prijslogica**. De **Prijslogica** volgt verder
 dezelfde regels als reguliere **Logica**.
 
 Zie ook: :ref:`configuration_payment_index`
@@ -199,8 +207,8 @@ overschrijven.
 Logica
 ------
 
-In dit tabblad kunnen regels worden gedefinieerd die, afhankelijk van de 
-gegevens die de gebruikers invult, zowel de inhoud als het gedrag van het 
+In dit tabblad kunnen regels worden gedefinieerd die, afhankelijk van de
+gegevens die de gebruikers invult, zowel de inhoud als het gedrag van het
 formulier kunnen wijzigen.
 
 Logica geeft u krachtige mogelijkheden om het formulier dynamischer te maken.
@@ -217,7 +225,7 @@ afspraaksystemen zijn alle velden verplicht.
 Zie ook: :ref:`configuration_appointment_index`
 
 .. note::
-  
+
    U kunt hier niet kiezen voor een gekoppeld afspraaksysteem. Deze is alleen
    globaal te configureren.
 
@@ -229,7 +237,7 @@ Variabelen
 
 Variabelen vormen een krachtige manier om verschillende gegevens in een formulier
 bij elkaar te laten komen. U kunt :ref:`variabelen gebruiken <manual_forms_form_fields_variables_usage>`
-in logica, in andere velden, of om interne gegevens op te slaan die niet voor 
+in logica, in andere velden, of om interne gegevens op te slaan die niet voor
 de eindgebruiker bedoeld zijn.
 
 Er zijn 3 soorten variabelen:
@@ -237,15 +245,15 @@ Er zijn 3 soorten variabelen:
 Formuliervariabelen
 ~~~~~~~~~~~~~~~~~~~
 
-Alle velden in het formulier zijn beschikbaar als variabele. De 
-eigenschapsnaam van een veld wordt gebruikt als variabele. Dit gebeurt 
+Alle velden in het formulier zijn beschikbaar als variabele. De
+eigenschapsnaam van een veld wordt gebruikt als variabele. Dit gebeurt
 automatisch.
 
 Gebruikersvariabelen
 ~~~~~~~~~~~~~~~~~~~~
 
-Zelf te beheren variabelen die niet gekoppeld zijn aan een specifiek 
-formulierveld. U kunt hier bijvoorbeeld waarden opslaan die door logica worden 
+Zelf te beheren variabelen die niet gekoppeld zijn aan een specifiek
+formulierveld. U kunt hier bijvoorbeeld waarden opslaan die door logica worden
 verkregen of uit externe koppelingen opgehaald worden.
 
 Vaste variabelen
@@ -266,7 +274,7 @@ auth            object                                Een verzameling van authen
 auth.plugin     string    ``digid``                   De systeemnaam van de gebruikte authenticatie plugin.
 auth.attribute  string    ``bsn``                     Kan de waarden ``bsn``, ``kvk`` of ``pseudo`` hebben.
 auth.value      string    ``111222333``               De identificerende waarde in het ``attribute`` van de authenticatie plugin.
-auth.machtigen  object    TODO                        
+auth.machtigen  object    TODO
 auth_bsn        string    ``111222333``               De waarde van ``auth.value`` indien ``auth.attribute`` als waarde ``bsn`` heeft. Anders leeg.
 auth_kvk        string    ``90001354``                De waarde van ``auth.value`` indien ``auth.attribute`` als waarde ``kvk`` heeft. Anders leeg.
 auth_pseudo     string    ``a8bfe7a293dd``...         De waarde van ``auth.value`` indien ``auth.attribute`` als waarde ``pseudo`` heeft. Anders leeg.
