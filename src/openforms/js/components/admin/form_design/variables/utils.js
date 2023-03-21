@@ -42,6 +42,7 @@ const makeNewVariableFromComponent = (component, formDefinition) => {
     formDefinition: formDefinition,
     source: VARIABLE_SOURCES.component,
     isSensitiveData: component.isSensitiveData,
+    serviceFetchConfiguration: null,
     prefillPlugin: component.prefill?.plugin || '',
     prefillAttribute: component.prefill?.attribute || '',
     dataType: getComponentDatatype(component),

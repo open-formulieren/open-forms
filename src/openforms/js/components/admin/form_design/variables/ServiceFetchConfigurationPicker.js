@@ -11,11 +11,31 @@ import Select from 'components/admin/forms/Select';
 import {FormLogicContext} from '../Context';
 import ServiceFetchConfigurationForm from './ServiceFetchConfigurationForm';
 
-const ServiceFetchConfigurationPicker = ({onChange, onFormSave}) => {
+const INITIAL_VALUES = {
+  id: null,
+  method: 'GET',
+  service: '',
+  path: '',
+  queryParams: [['', ['']]],
+  headers: [['', '']],
+  body: '',
+  dataMappingType: '',
+  mappingExpression: '',
+  // These fields are mapped to mappingExpression on save
+  jsonLogicExpression: '',
+  jqExpression: '',
+};
+
+const ServiceFetchConfigurationPicker = ({
+  initialValues = INITIAL_VALUES,
+  variableName,
+  onChange,
+  onFormSave,
+}) => {
   const formLogicContext = useContext(FormLogicContext);
 
-  const [selectExisting, setSelectExisting] = useState(false);
-  const [selectedServiceFetchConfig, setSelectedServiceFetchConfig] = useState(null);
+  const [selectExisting, setSelectExisting] = useState(!!initialValues.id);
+  const [selectedServiceFetchConfig, setSelectedServiceFetchConfig] = useState(initialValues.id);
 
   const serviceFetchConfigurationChoices = formLogicContext.serviceFetchConfigurations.map(
     fetchConfig => {
@@ -27,19 +47,7 @@ const ServiceFetchConfigurationPicker = ({onChange, onFormSave}) => {
   );
 
   const formik = useFormik({
-    initialValues: {
-      method: 'GET',
-      service: '',
-      path: '',
-      queryParams: [['', ['']]],
-      headers: [['', '']],
-      body: '',
-      dataMappingType: '',
-      mappingExpression: '',
-      // These fields are mapped to mappingExpression on save
-      jsonLogicExpression: '',
-      jqExpression: '',
-    },
+    initialValues: initialValues,
     onSubmit: (values, {setSubmitting}) => {
       switch (values.dataMappingType) {
         case 'JsonLogic':
@@ -54,7 +62,8 @@ const ServiceFetchConfigurationPicker = ({onChange, onFormSave}) => {
       delete values.jsonLogicExpression;
       delete values.jqExpression;
 
-      alert(JSON.stringify(values, null, 2));
+      formLogicContext.onServiceFetchAdd(variableName, values);
+      onFormSave();
     },
   });
 
@@ -114,6 +123,7 @@ const ServiceFetchConfigurationPicker = ({onChange, onFormSave}) => {
 };
 
 ServiceFetchConfigurationPicker.propTypes = {
+  variableName: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   onFormSave: PropTypes.func.isRequired,
 };

@@ -21,6 +21,7 @@ FormContext.displayName = 'FormContext';
 const FormLogicContext = React.createContext({
   services: [],
   serviceFetchConfigurations: [],
+  onServiceFetchAdd: () => null,
 });
 FormLogicContext.displayName = 'FormLogicContext';
 

@@ -694,6 +694,12 @@ function reducer(draft, action) {
       );
       break;
     }
+    case 'ADD_SERVICE_FETCH': {
+      const {variableName, values} = action.payload;
+      const variable = draft.formVariables.find(element => element.key === variableName);
+      variable.serviceFetchConfiguration = values;
+      break;
+    }
     /**
      * Form Variables
      */
@@ -1030,6 +1036,13 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
     });
   };
 
+  const onServiceFetchAdd = (variableName, values) => {
+    dispatch({
+      type: 'ADD_SERVICE_FETCH',
+      payload: {variableName, values},
+    });
+  };
+
   const onPriceRuleChange = (index, event) => {
     const {name, value} = event.target;
     dispatch({
@@ -1289,6 +1302,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             <FormLogic
               logicRules={state.logicRules}
               onChange={onRuleChange}
+              onServiceFetchAdd={onServiceFetchAdd}
               onDelete={index => dispatch({type: 'DELETED_RULE', payload: {index: index}})}
               onAdd={() => dispatch({type: 'ADD_RULE'})}
             />

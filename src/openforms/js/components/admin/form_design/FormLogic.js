@@ -58,7 +58,7 @@ function reducer(draft, action) {
   }
 }
 
-const FormLogic = ({logicRules = [], onChange, onDelete, onAdd}) => {
+const FormLogic = ({logicRules = [], onChange, onServiceFetchAdd, onDelete, onAdd}) => {
   const [state, dispatch] = useImmerReducer(reducer, initialState);
   const isMounted = useMountedState();
 
@@ -103,6 +103,7 @@ const FormLogic = ({logicRules = [], onChange, onDelete, onAdd}) => {
       value={{
         services: state.services,
         serviceFetchConfigurations: state.serviceFetchConfigurations,
+        onServiceFetchAdd: onServiceFetchAdd,
       }}
     >
       <Fieldset
@@ -117,6 +118,7 @@ const FormLogic = ({logicRules = [], onChange, onDelete, onAdd}) => {
 FormLogic.propTypes = {
   logicRules: PropTypes.arrayOf(PropTypes.object).isRequired,
   onChange: PropTypes.func.isRequired,
+  onServiceFetchAdd: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
 };

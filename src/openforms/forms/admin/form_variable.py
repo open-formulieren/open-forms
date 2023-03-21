@@ -33,4 +33,5 @@ class FormVariableAdmin(admin.ModelAdmin):
         "data_format",
         "is_sensitive_data",
         "initial_value",
+        "service_fetch_configuration",
     )

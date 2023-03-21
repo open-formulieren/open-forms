@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
+import {FormContext, FormLogicContext} from 'components/admin/form_design/Context';
 import StepSelection from 'components/admin/form_design/StepSelection';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 import {
@@ -105,6 +106,20 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
     setIsModalOpen(false);
   };
 
+  const formContext = useContext(FormContext);
+
+  console.log(formContext.formVariables.find(element => element.key === action.variable));
+
+  const serviceFetchConfigId = formContext.formVariables.find(
+    element => element.key === action.variable
+  )?.serviceFetchConfiguration?.id;
+
+  const formLogicContext = useContext(FormLogicContext);
+
+  const serviceFetchConfig = formLogicContext.serviceFetchConfigurations.find(
+    element => element.id === serviceFetchConfigId
+  );
+
   return (
     <>
       <DSLEditorNode errors={errors.variable}>
@@ -118,14 +133,20 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
       <DSLEditorNode errors={errors.action?.value}>
         {/* TODO: this element loses state on change of the variable sibling right above*/}
         {/* TODO: in #2661 we're building a nicer UI/UX to configure the service fetch action */}
-        <input
-          name="action.value"
-          onChange={onChange}
-          value={action.action.value}
-          placeholder="ServiceFetchConfiguration id"
-          type="number"
-          min="1"
-        />
+        <span>
+          <b>
+            <FormattedMessage
+              description="Currently selected service fetch configuration label"
+              defaultMessage="Fetch configuration:"
+            />
+          </b>
+          &nbsp;
+          {serviceFetchConfig?.name ||
+            intl.formatMessage({
+              description: 'No service fetch configuration configured yet message',
+              defaultMessage: '(not configured yet)',
+            })}
+        </span>
       </DSLEditorNode>
       <ActionButton
         name="_open_service_fetch_modal"
@@ -150,7 +171,12 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
         }
         contentModifiers={['with-form', 'large']}
       >
-        <ServiceFetchConfigurationPicker onFormSave={closeModal} onChange={onChange} />
+        <ServiceFetchConfigurationPicker
+          initialValues={serviceFetchConfig}
+          variableName={action.variable}
+          onFormSave={closeModal}
+          onChange={onChange}
+        />
       </Modal>
     </>
   );

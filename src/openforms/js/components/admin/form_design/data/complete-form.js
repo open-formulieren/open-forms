@@ -247,6 +247,13 @@ const saveVariables = async (state, csrftoken) => {
       // in the backend
       if (variable.dataType === 'boolean' && typeof variable.initialValue != 'boolean')
         variable.initialValue = variable.initialValue === 'true';
+
+      if (variable.serviceFetchConfiguration) {
+        variable.serviceFetchConfiguration.headers = Object.fromEntries(variable.headers || []);
+        variable.serviceFetchConfiguration.queryParams = Object.fromEntries(
+          variable.queryParams || []
+        );
+      }
     }
   });
 

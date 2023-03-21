@@ -11,6 +11,7 @@ const Variable = PropTypes.shape({
   dataType: PropTypes.string,
   dataFormat: PropTypes.string,
   isSensitiveData: PropTypes.bool,
+  serviceFetchConfiguration: PropTypes.object,
   initialValue: PropTypes.oneOfType([
     PropTypes.array,
     PropTypes.bool,
