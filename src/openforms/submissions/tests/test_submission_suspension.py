@@ -13,7 +13,7 @@ from urllib.parse import urljoin
 
 from django.core import mail
 from django.template import defaulttags
-from django.test import override_settings
+from django.test import override_settings, tag
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -218,3 +218,32 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         # Validate the link no longer works
         response = self.client.get(resume_path)
         self.assertEqual(response.status_code, 403)
+
+    @tag("gh-2785")
+    def test_identifying_attributes_hashed_on_suspend(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form_url="http://tests/myform/",
+            auth_info__plugin="digid",
+            auth_info__value="123456789",
+        )
+        form_step = submission.form.formstep_set.first()
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=form_step,
+            data={"foo": "bar"},
+        )
+        self._add_submission_to_session(submission)
+
+        endpoint = reverse("api:submission-suspend", kwargs={"uuid": submission.uuid})
+        response = self.client.post(endpoint, {"email": "hello@open-forms.nl"})
+
+        submission.refresh_from_db()
+
+        # Assert that submission is suspended
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIsNotNone(submission.suspended_on)
+
+        # Assert that identifying attribute is hashed
+        self.assertNotEqual(submission.auth_info.value, "123456789")
+        self.assertTrue(submission.auth_info.attribute_hashed)
