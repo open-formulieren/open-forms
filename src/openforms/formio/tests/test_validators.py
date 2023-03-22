@@ -164,6 +164,16 @@ class MimeTypeValidatorTests(SimpleTestCase):
         except ValidationError as e:
             self.fail(f"Valid file failed validation: {e}")
 
+    def test_heic_brand_heif_files_are_not_recognized_as_png(self):
+        # lib magic has a hard time recognizing the HEVC is used and a heif container actutally is heic
+        validator = validators.MimeTypeValidator({"image/png"})  # accept any
+        sample_2 = SimpleUploadedFile(
+            "sample2.heic", b"\x00\x00\x00\x18ftypheic", content_type="image/heif"
+        )
+
+        with self.assertRaises(ValidationError):
+            validator(sample_2)
+
     def test_validate_files_multiple_mime_types(self):
         """Assert that validation of files associated with multiple mime types works
 
