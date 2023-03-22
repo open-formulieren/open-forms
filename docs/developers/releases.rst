@@ -28,6 +28,24 @@ Preparing a release
 For new releases, a release branch is created, named: ``release/<new-version>``. All
 release-related actions are concentrated in this branch.
 
+**Updating translation strings**
+
+Messages are localized/translated as part of the release process. There exists a wrapper
+script that automates this as much as possible:
+
+.. code-block:: bash
+
+    ./bin/makemessages.sh
+
+This extracts the backend translations in the appropriate ``.po`` files and the
+JavaScript translations into the ``src/openforms/js/lang/[locale].json`` files.
+
+You can use the script ``python ./bin/find_untranslated_js.py`` to scan for (likely)
+missing JS translations.
+
+Note that the translations in ``src/openforms/js/lang/formio/[locale].json`` cannot be
+automatically extracted and requires tedious manual checking and adding translations.
+
 **Updating the changelog**
 
 ``Changelog.rst`` contains a summary of changes compared to the previous release. Use
@@ -162,6 +180,23 @@ the appropriate release branch as well. This can be done via:
 
 The person merging the pull request is responsible for making sure the build on the
 release branch (still) passes.
+
+When backporting commits, please add tags to the resulting (cherry-picked) commits to
+cross reference everything. This should look something like:
+
+.. code-block:: none
+
+    :bug: [#123] -- Fixed a Very Nasty bug
+
+    <elaborate description>
+
+    Backport-Of: open-formulieren/open-forms#987
+
+...so that it points to the original bugfix PR. In the original bugfix PR, add a comment
+with the resulting backport commit hashes.
+
+You can decide to rebase multiple backport commits into a single one - as long as
+everything is linked together this is okay.
 
 Bundling of SDK inside Open Forms backend image
 -----------------------------------------------
