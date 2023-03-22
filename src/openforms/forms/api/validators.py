@@ -1,4 +1,4 @@
-from typing import Any, Union, cast
+from typing import Any, cast
 
 from django.utils.translation import gettext as _
 
@@ -15,24 +15,6 @@ from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.variables.service import get_static_variables
 
 from ..validation.registry import register as formio_validators_registry
-
-
-class JsonLogicActionValueValidator(JsonLogicValidator):
-    code = "invalid"
-    message = _("This field needs to refer to a form component")
-
-    def __call__(self, value: Union[dict, str]) -> None:
-        if isinstance(value, (str, int, bool)):
-            return
-
-        # ensure that the expression itself is valid
-        super().__call__(value)
-
-        expression = JSONLogicExpression.from_expression(value)
-        tree = expression.as_tree()
-        assert isinstance(tree, Operation)
-        if tree.arguments[0] == "":
-            raise serializers.ValidationError(self.message, code=self.code)
 
 
 class JsonLogicTriggerValidator(JsonLogicValidator):
