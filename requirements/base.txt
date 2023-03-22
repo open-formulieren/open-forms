@@ -122,6 +122,7 @@ django==3.2.18
     #   maykin-django-two-factor-auth
     #   mozilla-django-oidc
     #   mozilla-django-oidc-db
+    #   sentry-sdk
     #   zgw-consumers
 django-admin-index==2.0.0
     # via -r requirements/base.in
@@ -395,7 +396,7 @@ self-certifi==1.0.0
     # via -r requirements/base.in
 semantic-version==2.10.0
     # via -r requirements/base.in
-sentry-sdk==0.17.3
+sentry-sdk[django]==1.17.0
     # via -r requirements/base.in
 simplejson==3.17.6
     # via mail-parser
@@ -438,7 +439,7 @@ tzlocal==2.1
     # via o365
 uritemplate==3.0.1
     # via drf-spectacular
-urllib3==1.26.6
+urllib3==1.26.15
     # via
     #   elastic-apm
     #   requests
