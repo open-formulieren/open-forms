@@ -80,9 +80,8 @@ In dit tabblad worden de algemene formulier gegevens weergegeven.
 
 .. note::
 
-  Als de formuliernaam lange woorden bevat, optioneel koppeltekens kunnen ingevoerd worden (`soft hyphens`_) om door
-  te geven waar het woord kan worden afgebroken om naar de volgende regel te gaan. Op Windows, kunt u soft hyphens in
-  de 'Character map' vinden en kopiëren/plakken naar Open Forms velden.
+  Als de formuliernaam lange woorden bevat, kunt u optionele koppeltekens (`soft hyphens`_) invoeren om aan te geven waar het woord mag afgebroken worden naar de volgende regel. Op Windows vindt u deze "soft hyphens" in
+  het 'Speciale tekens'-programma  en kunt u ze kopiëren/plakken naar Open Forms-velden.
 
 
 .. _soft hyphens: https://en.wikipedia.org/wiki/Soft_hyphen
