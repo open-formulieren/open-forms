@@ -225,7 +225,7 @@ export const handleComponentValueLiterals = (
   allComponentTranslations,
   propertyPath,
   values,
-  previousLiteralsRef
+  previousLiterals
 ) => {
   // don't bother doing anything if it's not the right component type.
   switch (component.type) {
@@ -241,17 +241,23 @@ export const handleComponentValueLiterals = (
     default:
       return null;
   }
-  let translations = {};
+  let translations = component?.openForms?.translations || {};
   const nonEmptyValues = values.filter(item => !isEmpty(item));
   if (!nonEmptyValues.length) return null;
   nonEmptyValues.forEach(({label = ''}, index) => {
-    merge(
-      translations,
-      addTranslationForLiteral(component, allComponentTranslations, undefined, label)
+    const componentCopy = {
+      ...component,
+      openForms: {...component.openForms, translations: translations},
+    };
+    translations = addTranslationForLiteral(
+      componentCopy,
+      allComponentTranslations,
+      undefined,
+      label
     );
     // track the value as 'previous literal' in the ref
     const _propertyPath = `${propertyPath}[${index}].label`;
-    set(previousLiteralsRef.current, [_propertyPath], label);
+    set(previousLiterals, [_propertyPath], label);
   });
   return translations;
 };

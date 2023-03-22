@@ -8,11 +8,7 @@ import useOnChanged from 'hooks/useOnChanged';
 import jsonScriptToVar from 'utils/json-script';
 
 import customTemplates from './customTemplates';
-import nlStrings, {
-  addTranslationForLiteral,
-  handleComponentValueLiterals,
-  isTranslatableProperty,
-} from './translation';
+import nlStrings from './translation';
 
 Templates.current = customTemplates;
 
@@ -326,7 +322,6 @@ const FormIOBuilder = ({
   //
   // This approach effectively pins the FormBuilder.form prop reference.
   const formRef = useRef(clone);
-  const previousLiteralsRef = useRef({});
 
   const componentTranslationsRef = useRef(componentTranslations);
   const componentNamespaceRef = useRef(componentNamespace);
@@ -350,85 +345,8 @@ const FormIOBuilder = ({
   // props need to be immutable to not end up in infinite loops
   const [builderOptions] = useState(getBuilderOptions());
 
-  const getUpdatedTranslations = (flags, changed, modified) => {
-    const {instance, value: newLiteral} = changed;
-
-    // get the submission data of the form in the modal, which configures the component
-    // itself.
-    const newComponentConfiguration = instance.root.submission.data;
-    // check which translatable properties are relevant
-    const changedPropertyPath = instance.path;
-    const {type: componentType} = newComponentConfiguration;
-    const localComponentTranslations = componentTranslationsRef.current;
-
-    // the first builder load/iteration sets the values directly by data.values or values,
-    // depending on the component type. Subsequent edits of the literals are caught in the
-    // normal operation, they show up as data.values[<index>].label and for those the
-    // previous literal is properly tracked.
-    let newTranslations = handleComponentValueLiterals(
-      newComponentConfiguration,
-      localComponentTranslations,
-      changedPropertyPath,
-      newLiteral,
-      previousLiteralsRef
-    );
-
-    if (newTranslations !== null) return newTranslations;
-
-    if (!isTranslatableProperty(componentType, changedPropertyPath)) return;
-
-    // figure out the previous value of the translation literal for this specific
-    // component.
-    const prevLiteral = previousLiteralsRef.current?.[changedPropertyPath];
-
-    // prevent infinite event loops
-    if (newLiteral == prevLiteral) return;
-
-    // update the translations
-    newTranslations = addTranslationForLiteral(
-      newComponentConfiguration,
-      localComponentTranslations,
-      prevLiteral,
-      newLiteral
-    );
-    set(previousLiteralsRef.current, [changedPropertyPath], newLiteral);
-    return newTranslations;
-  };
-
-  // otherwise builder keeps refreshing/remounting
-  builderOptions.onChange = (flags, changed, modifiedByHuman) => {
-    const {instance} = changed;
-
-    if (!flags.fromSubmission) {
-      instance.root.triggerChange(flags, changed, modifiedByHuman);
-    }
-
-    const newTranslations = getUpdatedTranslations(flags, changed, modifiedByHuman);
-
-    if (newTranslations) {
-      // update the component form submission data, so we have the updated translations
-      // in the component.
-      return instance.root
-        .setSubmission({
-          data: {
-            ...instance.root.submission.data,
-            openForms: {
-              ...(instance.root.submission.data?.openForms || {}),
-              translations: newTranslations,
-            },
-          },
-        })
-        .then(() => {
-          instance.root.triggerChange(flags, changed, modifiedByHuman);
-          instance.root.redraw();
-        });
-    }
-  };
+  set(builderOptions, 'openForms.componentTranslationsRef', componentTranslationsRef);
   set(builderOptions, 'openForms.componentNamespace', componentNamespaceRef.current);
-
-  const resetEditFormRefs = () => {
-    previousLiteralsRef.current = {};
-  };
 
   // if an update must be forced, we mutate the ref state to point to the new
   // configuration, which causes the form builder to re-render the new configuration.
@@ -443,11 +361,9 @@ const FormIOBuilder = ({
 
   if (onComponentMutated) {
     extraProps.onSaveComponent = (...args) => {
-      resetEditFormRefs();
       onComponentMutated('changed', ...args);
     };
     extraProps.onDeleteComponent = (...args) => {
-      resetEditFormRefs();
       onComponentMutated('removed', ...args);
     };
   }
@@ -457,7 +373,6 @@ const FormIOBuilder = ({
       form={formRef.current}
       options={builderOptions}
       onChange={formSchema => onChange(cloneDeep(formSchema))}
-      onCancelComponent={resetEditFormRefs}
       {...extraProps}
     />
   );
