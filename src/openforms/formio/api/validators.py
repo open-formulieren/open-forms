@@ -65,6 +65,9 @@ class MimeTypeValidator:
             whole_file = head + value.read()
             mime_type = magic.from_buffer(whole_file, mime=True)
 
+        if mime_type == "image/heif":
+            mime_type = "image/heic"
+
         if not (
             self.any_allowed
             or mimetype_allowed(mime_type, self._regular_mimes, self._wildcard_mimes)
@@ -97,6 +100,11 @@ class MimeTypeValidator:
                     filename=value.name, file_type=f".{ext}"
                 )
             )
+        elif mime_type == "image/heic" and value.content_type in (
+            "image/heic",
+            "image/heif",
+        ):
+            return
         elif mime_type != value.content_type:
             raise serializers.ValidationError(
                 _("The file '{filename}' is not a {file_type}.").format(
