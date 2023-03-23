@@ -1,13 +1,16 @@
 import logging
+import traceback
 from typing import Optional
 
 from django.db import IntegrityError, transaction
 from django.utils.crypto import get_random_string
 
 from openforms.celery import app
+from openforms.logging import logevent
 from openforms.registrations.base import BasePlugin
 from openforms.registrations.tasks import register_submission
 
+from ..constants import RegistrationStatuses
 from ..models import Submission
 
 __all__ = [
@@ -17,11 +20,11 @@ __all__ = [
     "obtain_submission_reference",
 ]
 
+
 logger = logging.getLogger(__name__)
 
 
 @app.task
-@transaction.atomic
 def pre_registration(submission_id: int) -> None:
     submission = Submission.objects.get(id=submission_id)
     registration_plugin = get_registration_plugin(submission)
@@ -30,12 +33,24 @@ def pre_registration(submission_id: int) -> None:
         set_submission_reference(submission)
         return
 
-    # TODO add options
-    registration_plugin.pre_register_submission(submission, {})
+    options_serializer = registration_plugin.configuration_options(
+        data=submission.form.registration_backend_options
+    )
+    try:
+        options_serializer.is_valid(raise_exception=True)
+    except Exception as e:
+        submission.save_registration_status(
+            RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
+        )
+        logevent.registration_failure(submission, e, registration_plugin)
+        raise
+
+    registration_plugin.pre_register_submission(
+        submission, options_serializer.validated_data
+    )
 
 
 @app.task
-@transaction.atomic
 def obtain_submission_reference(submission_id: int) -> None:
     submission = Submission.objects.get(id=submission_id)
     registration_plugin = get_registration_plugin(submission)
@@ -43,8 +58,12 @@ def obtain_submission_reference(submission_id: int) -> None:
     if not registration_plugin:
         return
 
-    # TODO add options
-    registration_plugin.obtain_submission_reference(submission, {})
+    # The registration options were validated in the pre-registration task AND in the registration task, so not
+    # validating again. Possible edge case: the options changed between the registration task and the obtain_reference
+    # task?
+    registration_plugin.obtain_submission_reference(
+        submission, submission.form.registration_backend_options
+    )
 
 
 def get_registration_plugin(submission: Submission) -> Optional["BasePlugin"]:
