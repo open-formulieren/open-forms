@@ -7,14 +7,15 @@ from hypothesis import strategies as st
 from openforms.forms.models.form_variable import variable_key_validator
 from openforms.typing import JSONPrimitive, JSONValue
 
-json_primitives: st.SearchStrategy[JSONPrimitive]
-json_primitives = st.one_of(
-    st.none(),
-    st.booleans(),
-    st.integers(),
-    st.floats(allow_infinity=False, allow_nan=False),
-    st.text(),
-)
+
+def json_primitives() -> st.SearchStrategy[JSONPrimitive]:
+    return st.one_of(
+        st.none(),
+        st.booleans(),
+        st.integers(),
+        st.floats(allow_infinity=False, allow_nan=False),
+        st.text(),
+    )
 
 
 def json_collections(
@@ -27,7 +28,7 @@ def json_collections(
 
 
 def json_values(*, max_leaves: int = 15) -> st.SearchStrategy[JSONValue]:
-    return st.recursive(json_primitives, json_collections, max_leaves=max_leaves)
+    return st.recursive(json_primitives(), json_collections, max_leaves=max_leaves)
 
 
 def valid_key(key: str) -> bool:
@@ -38,6 +39,5 @@ def valid_key(key: str) -> bool:
     return True
 
 
-formio_component_key = st.text(min_size=1, alphabet=".-" + ascii_letters).filter(
-    valid_key
-)
+def formio_component_key() -> st.SearchStrategy[str]:
+    return st.text(min_size=1, alphabet=".-" + ascii_letters).filter(valid_key)

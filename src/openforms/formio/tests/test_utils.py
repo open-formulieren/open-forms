@@ -65,8 +65,8 @@ class FormioUtilsTest(SimpleTestCase):
     @given(
         hidden=st.booleans(),
         show=st.one_of(st.none(), st.booleans(), st.just("")),
-        when=st.one_of(st.none(), formio_component_key, st.just("")),
-        eq=json_primitives,
+        when=st.one_of(st.none(), formio_component_key(), st.just("")),
+        eq=json_primitives(),
     )
     # Sentry 326223
     @example(hidden=True, show="", when=None, eq="")
