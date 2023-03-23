@@ -5,7 +5,7 @@ from unittest.mock import patch
 from django.db import close_old_connections
 from django.test import TestCase, TransactionTestCase
 
-from ..tasks.registration import generate_submission_reference
+from ..tasks.registration import obtain_submission_reference, pre_registration
 from .factories import SubmissionFactory
 
 
@@ -45,7 +45,7 @@ class RaceConditionTests(TransactionTestCase):
                 "openforms.submissions.tasks.registration.generate_unique_submission_reference",
                 new=generate_unique_submission_reference,
             ):
-                generate_submission_reference(submission1.id, post_registration=True)
+                obtain_submission_reference(submission1.id)
                 close_old_connections()
 
         race_condition_thread = threading.Thread(target=race_condition)
@@ -77,7 +77,7 @@ class GenerateSubmissionReferenceTests(TestCase):
 
         self.assertEqual(submission.public_registration_reference, "")
 
-        generate_submission_reference(submission.id, post_registration=False)
+        pre_registration(submission.id)
         submission.refresh_from_db()
 
         self.assertEqual(submission.public_registration_reference, "OF-1234")
@@ -96,7 +96,7 @@ class GenerateSubmissionReferenceTests(TestCase):
 
         self.assertEqual(submission.public_registration_reference, "")
 
-        generate_submission_reference(submission.id, post_registration=False)
+        pre_registration(submission.id)
         submission.refresh_from_db()
 
         self.assertEqual(submission.public_registration_reference, "OF-1234")
@@ -113,12 +113,12 @@ class GenerateSubmissionReferenceTests(TestCase):
 
         self.assertEqual(submission.public_registration_reference, "")
 
-        generate_submission_reference(submission.id, post_registration=False)
+        pre_registration(submission.id)
         submission.refresh_from_db()
 
         self.assertEqual(submission.public_registration_reference, "")
 
-        generate_submission_reference(submission.id, post_registration=True)
+        obtain_submission_reference(submission.id)
         submission.refresh_from_db()
 
         self.assertEqual(submission.public_registration_reference, "AEY64")
