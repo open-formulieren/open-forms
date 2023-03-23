@@ -22,6 +22,7 @@ from openforms.contrib.zgw.service import (
 )
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
+from openforms.submissions.tasks import set_submission_reference
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
 
@@ -101,7 +102,6 @@ def wrap_api_errors(func):
 class ZGWRegistration(BasePlugin):
     verbose_name = _("ZGW API's")
     configuration_options = ZaakOptionsSerializer
-    backend_generates_reference = True
 
     rol_mapping = {
         # Initiator
@@ -328,3 +328,11 @@ class ZGWRegistration(BasePlugin):
                 ),
             ),
         ]
+
+    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
+        pass
+
+    def obtain_submission_reference(
+        self, submission: "Submission", options: dict
+    ) -> None:
+        set_submission_reference(submission)

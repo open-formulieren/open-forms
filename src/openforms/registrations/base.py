@@ -31,11 +31,6 @@ class BasePlugin(ABC, AbstractBasePlugin):
     """
     Iterable of JSON keys to ignore when converting between snake_case/camelCase.
     """
-    backend_generates_reference = False
-    """
-    Bool indicating whether the registration backend generates a reference that needs to be extracted and used as the
-    submission reference.
-    """
 
     @abstractmethod
     def register_submission(
@@ -55,4 +50,12 @@ class BasePlugin(ABC, AbstractBasePlugin):
         raise NotImplementedError()
 
     def update_payment_status(self, submission: "Submission", options: dict):
+        raise NotImplementedError()
+
+    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
+        raise NotImplementedError()
+
+    def obtain_submission_reference(
+        self, submission: "Submission", options: dict
+    ) -> None:
         raise NotImplementedError()
