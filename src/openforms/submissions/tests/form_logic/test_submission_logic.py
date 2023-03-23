@@ -1355,3 +1355,24 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
                 }
             ],
         )
+
+    def test_logging_static_variable_use_in_trigger(self):
+        submission = SubmissionFactory.create()
+        json_logic_trigger = {
+            "==": [{"var": "today"}, {"+": [{"today": []}, {"rdelta": [0, 0, 0]}]}]
+        }
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger=json_logic_trigger,
+            actions=[],
+        )
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+        )
+
+        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
+
+        log_entry = TimelineLogProxy.objects.get(
+            template="logging/events/submission_logic_evaluated.txt",
+        )
+        self.assertIn("today", log_entry.extra_data["input_data"])

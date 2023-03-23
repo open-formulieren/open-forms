@@ -118,6 +118,9 @@ class EvaluatedRule:
     # This is a mapping, not a sequence, because operations may not log data.
     action_log_data: dict[int, JSONValue] = field(default_factory=dict)
 
+    def __post_init__(self):
+        self.action_log_data["context"] = self.action_log_data.get("context", {})
+
 
 def iter_evaluate_rules(
     rules: Iterable[FormLogic],
@@ -153,7 +156,11 @@ def iter_evaluate_rules(
                     jsonLogic(rule.json_logic_trigger, data_container.data)
                 )
 
-            evaluated_rule = EvaluatedRule(rule=rule, triggered=triggered)
+            evaluated_rule = EvaluatedRule(
+                rule=rule,
+                triggered=triggered,
+                action_log_data={"context": data_container.data},
+            )
 
             if not triggered:
                 on_rule_check(evaluated_rule)

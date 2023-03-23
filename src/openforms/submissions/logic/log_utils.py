@@ -21,7 +21,7 @@ def get_targeted_components(
             component_map=components_map,
             all_variables=all_variables,
             initial_data=initial_data,
-            log_data=action_log_data.get(str(i), ""),  # XXX who str'd my int?
+            log_data=action_log_data.get(str(i), {}),  # XXX who str'd my int?
         )
         for i, action_operation in enumerate(rule.action_operations)
     ]
