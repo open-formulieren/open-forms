@@ -18,18 +18,18 @@ Globally, the various actions and plugin categories are processed in order:
 #. If applicable, an :ref:`appointment <developers_appointment_plugins>` is
    created. If this fails, the submission is blocked and the user sees an error
    message and can try again.
-#. If no :ref:`registration backend <developers_registration_plugins>` is configured OR
-   a registration backend that does not generate a reference is configured, then an internal ID is
-   generated and set on the submission.
+#. Pre-registration step. Each :ref:`registration plugin <developers_registration_plugins>` can perform
+   pre-registration task, like for example generating and setting a submission reference ID. If no registration backend
+   is configured, then an internal ID is generated and set on the submission.
 #. A PDF is created that the user can download.
    This PDF is also uploaded to most
    :ref:`registration backends <developers_registration_plugins>`, depending
    on the plugin.
 #. If a :ref:`registration backend <developers_registration_plugins>` is configured, the submission is registered.
-#. In case the :ref:`registration backend <developers_registration_plugins>` generates a registration ID, then
-   this is set on the submission. If registration fails for some reason and a registration ID cannot be retrieved,
-   an internal ID is used to not block the process. If an appointment was made, the appointment is
-   updated with the ID.
+#. Post-registration step. Each :ref:`registration plugin <developers_registration_plugins>` can perform
+   post-registration tasks like obtaining a registration ID from the external service and setting it on the submission.
+   If a registration ID cannot be retrieved, an internal ID is used to not block the process.
+   If an appointment was made, the appointment is updated with the ID.
 #. The confirmation page is shown, containing appointment information if
    applicable and the registration or internal ID. If payment is due, a payment
    link is also shown to start the payment process.
