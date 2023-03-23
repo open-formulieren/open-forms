@@ -15,6 +15,7 @@ from openforms.formio.rendering.structured import render_json
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
+from openforms.submissions.tasks import set_submission_reference
 from openforms.translations.utils import to_iso639_2b
 
 from ...base import BasePlugin
@@ -189,3 +190,11 @@ class ObjectsAPIRegistration(BasePlugin):
                 ),
             ),
         ]
+
+    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
+        set_submission_reference(submission)
+
+    def obtain_submission_reference(
+        self, submission: "Submission", options: dict
+    ) -> None:
+        pass

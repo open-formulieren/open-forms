@@ -21,6 +21,7 @@ from openforms.submissions.mapping import (
     get_unmapped_data,
 )
 from openforms.submissions.models import Submission, SubmissionReport
+from openforms.submissions.tasks import set_submission_reference
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from stuf.stuf_zds.constants import VertrouwelijkheidsAanduidingen
 from stuf.stuf_zds.models import StufZDSConfig
@@ -154,7 +155,6 @@ def _gender_choices(value):
 class StufZDSRegistration(BasePlugin):
     verbose_name = _("StUF-ZDS")
     configuration_options = ZaakOptionsSerializer
-    backend_generates_reference = True
 
     zaak_mapping = {
         # Initiator
@@ -366,3 +366,11 @@ class StufZDSRegistration(BasePlugin):
                 ),
             ),
         ]
+
+    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
+        pass
+
+    def obtain_submission_reference(
+        self, submission: "Submission", options: dict
+    ) -> None:
+        set_submission_reference(submission)

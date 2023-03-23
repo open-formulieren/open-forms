@@ -52,10 +52,12 @@ class BasePlugin(ABC, AbstractBasePlugin):
     def update_payment_status(self, submission: "Submission", options: dict):
         raise NotImplementedError()
 
+    @abstractmethod
     def pre_register_submission(self, submission: "Submission", options: dict) -> None:
-        raise NotImplementedError()
+        raise NotImplementedError()  # pragma: nocover
 
+    @abstractmethod
     def obtain_submission_reference(
         self, submission: "Submission", options: dict
     ) -> None:
-        raise NotImplementedError()
+        raise NotImplementedError()  # pragma: nocover

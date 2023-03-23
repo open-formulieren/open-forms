@@ -18,6 +18,7 @@ from django_camunda.tasks import start_process
 from django_camunda.utils import serialize_variables
 
 from openforms.submissions.models import Submission
+from openforms.submissions.tasks import set_submission_reference
 
 from ...base import BasePlugin
 from ...exceptions import NoSubmissionReference, RegistrationFailed
@@ -171,3 +172,11 @@ class CamundaRegistration(BasePlugin):
                 ),
             ),
         ]
+
+    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
+        set_submission_reference(submission)
+
+    def obtain_submission_reference(
+        self, submission: "Submission", options: dict
+    ) -> None:
+        pass
