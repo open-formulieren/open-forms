@@ -80,7 +80,7 @@ drf-spectacular
 
 # WSGI servers & monitoring - production oriented
 uwsgi
-sentry-sdk  # error monitoring
+sentry-sdk[django]  # error monitoring
 elastic-apm  # Elastic APM integration
 flower # task monitoring
 

@@ -223,6 +223,7 @@ django==3.2.18
     #   maykin-django-two-factor-auth
     #   mozilla-django-oidc
     #   mozilla-django-oidc-db
+    #   sentry-sdk
     #   zgw-consumers
 django-admin-index==2.0.0
     # via
@@ -894,7 +895,7 @@ semantic-version==2.10.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-sentry-sdk==0.17.3
+sentry-sdk[django]==1.17.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -1060,7 +1061,7 @@ uritemplate==3.0.1
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   drf-spectacular
-urllib3==1.26.6
+urllib3==1.26.15
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt

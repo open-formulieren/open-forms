@@ -160,6 +160,7 @@ django==3.2.18
     #   mozilla-django-oidc
     #   mozilla-django-oidc-db
     #   open-forms-ext-token-exchange
+    #   sentry-sdk
     #   zgw-consumers
 django-admin-index==2.0.0
     # via
@@ -608,7 +609,7 @@ semantic-version==2.10.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
-sentry-sdk==0.17.3
+sentry-sdk[django]==1.17.0
     # via
     #   -c requirements/base.in
     #   -r requirements/base.txt
@@ -675,7 +676,7 @@ uritemplate==3.0.1
     # via
     #   -r requirements/base.txt
     #   drf-spectacular
-urllib3==1.26.6
+urllib3==1.26.15
     # via
     #   -r requirements/base.txt
     #   elastic-apm
