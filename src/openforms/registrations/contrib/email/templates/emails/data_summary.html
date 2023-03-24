@@ -1,0 +1,47 @@
+{% load i18n %}
+
+{% if renderer.has_children %}
+    <h2 style="margin: 1em 0; font-size: 1.5em;">{% trans "Summary" %}</h2>
+
+    <table style="width: 100%; border: none; border-collapse: collapse; table-layout: fixed;" cellpadding="0" cellspacing="0" width="100%">
+    {% for submission_step_node in renderer.get_children %}
+        {% if submission_step_node.has_children %}
+            {# row for step title #}
+            <tr>
+                <td width="100%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;" colspan="2">
+                    <h3 style="margin: 0 0 1em; font-size: 1.2em;">{{ submission_step_node.render }}</h3>
+                </td>
+            </tr>
+
+            {% if include_header_row %}
+                <tr>
+                    <th width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{% trans "Field" %}</th>
+                    <th width="75%" style="padding: 4px 10px 4px 0; text-align: left;">{% trans "Response" %}</th>
+                </tr>
+            {% endif %}
+
+            {# row for every visible form field within the step #}
+            {% for component_node in submission_step_node.get_children %}
+                {% with add_bottom_margin=forloop.last %}
+                    {% if component_node.label or component_node.display_value %}
+                        <tr>
+                            {% if not component_node.spans_full_width %}
+                            <td width="25%" valign="top" style="padding: {{ padding_top|default:'4px' }} 10px 4px 0; text-align: left;{% if label_font_weight %}font-weight: {{ label_font_weight }};{% endif %}{% if add_bottom_margin %}padding-bottom: 24px;{% endif %}">
+                                {{ component_node.label }}
+                            </td>
+                            {% endif %}
+                            <td
+                                {% if component_node.spans_full_width %}colspan="2" width="100%"{% else %}width="75%"{% endif %}
+                                style="padding: {{ padding_top|default:'4px' }} 10px 4px 0; text-align: left;{% if add_bottom_margin %}padding-bottom: 24px;{% endif %}"
+                            >
+                                {{ component_node.display_value }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endwith %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+    </table>
+
+{% endif %}
