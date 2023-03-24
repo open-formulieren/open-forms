@@ -46,6 +46,17 @@ class GlobalConfigurationAdmin(
             },
         ),
         (
+            _("Registration email"),
+            {
+                "fields": (
+                    "registration_email_subject",
+                    "registration_email_payment_subject",
+                    "registration_email_content_html",
+                    "registration_email_content_text",
+                )
+            },
+        ),
+        (
             _("Button labels"),
             {
                 "fields": (

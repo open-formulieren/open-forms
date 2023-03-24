@@ -41,6 +41,19 @@ def _render(filename):
 get_confirmation_email_subject = partial(_render, "emails/confirmation/subject.txt")
 get_confirmation_email_content = partial(_render, "emails/confirmation/content.html")
 
+get_registration_email_subject = partial(
+    _render, "emails/email_registration_subject.txt"
+)
+get_registration_email_subject_payment = partial(
+    _render, "emails/email_registration_subject_payment.txt"
+)
+get_registration_email_content_html = partial(
+    _render, "emails/email_registration_content.html"
+)
+get_registration_email_content_text = partial(
+    _render, "emails/email_registration_content.txt"
+)
+
 
 class GlobalConfiguration(SingletonModel):
     email_template_netloc_allowlist = ArrayField(
@@ -105,6 +118,51 @@ class GlobalConfiguration(SingletonModel):
         default=partial(_render, "emails/save_form/content.html"),
         validators=[
             DjangoTemplateValidator(backend="openforms.template.openforms_backend"),
+            URLSanitationValidator(),
+        ],
+    )
+
+    registration_email_subject = models.CharField(
+        _("registration email subject"),
+        max_length=1000,
+        help_text=_(
+            "Subject of the registration email message. Can be overridden on the form level"
+        ),
+        default=get_registration_email_subject,
+        validators=[DjangoTemplateValidator()],
+    )
+    registration_email_payment_subject = models.CharField(
+        _("registration email payment subject"),
+        max_length=1000,
+        help_text=_(
+            "Subject of the registration email message that is sent when the payment is received. Can be overridden on the form level"
+        ),
+        default=get_registration_email_subject_payment,
+        validators=[DjangoTemplateValidator()],
+    )
+    registration_email_content_html = HTMLField(
+        _("registration email content HTML"),
+        help_text=_(
+            "Content of the registration email message (as HTML). Can be overridden on the form level."
+        ),
+        default=get_registration_email_content_html,
+        validators=[
+            DjangoTemplateValidator(
+                backend="openforms.template.openforms_backend",
+            ),
+            URLSanitationValidator(),
+        ],
+    )
+    registration_email_content_text = models.TextField(
+        _("registration email content text"),
+        help_text=_(
+            "Content of the registration email message (as text). Can be overridden on the form level."
+        ),
+        default=get_registration_email_content_text,
+        validators=[
+            DjangoTemplateValidator(
+                backend="openforms.template.openforms_backend",
+            ),
             URLSanitationValidator(),
         ],
     )
