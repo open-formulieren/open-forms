@@ -2,21 +2,18 @@ from django.test import TestCase
 
 from hypothesis import given
 from hypothesis.extra.django import TestCase as HypothesisTestCase
-from json_logic.typing import Primitive
 
 from openforms.forms.api.datastructures import FormVariableWrapper
 from openforms.forms.api.serializers.logic.action_serializers import (
     LogicComponentActionSerializer,
 )
 from openforms.forms.tests.factories import FormFactory, FormVariableFactory
-from openforms.tests.search_strategies import json_values
+from openforms.tests.search_strategies import json_primitives
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
-
-json_values_primitive = json_values().filter(lambda j: isinstance(j, Primitive))
 
 
 class LogicComponentActionSerializerPropertyTest(HypothesisTestCase):
-    @given(json_values_primitive)
+    @given(json_primitives())
     def test_date_format_validation_against_primitive_json_values(self, json_value):
         """Assert that serializer is invalid for random Primitive json data types
         (str, int, etc.) as logic action values for date variables
