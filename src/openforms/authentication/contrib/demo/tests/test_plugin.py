@@ -198,6 +198,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
                     "plugin": "demo",
                     "representation": "",
                     "identifier": "111222333",
+                    "co_sign_auth_attribute": "bsn",
                     "fields": {},
                 },
             )

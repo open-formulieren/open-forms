@@ -165,6 +165,7 @@ class SubmissionReportCoSignTests(TestCase):
             submission__co_sign_data={
                 "plugin": "digid",
                 "identifier": "123456782",
+                "co_sign_auth_attribute": "bsn",
                 "fields": {
                     "voornaam": "Tina",
                     "geslachtsnaam": "Shikari",
@@ -172,18 +173,62 @@ class SubmissionReportCoSignTests(TestCase):
                 "representation": "T. Shikari",
             },
         )
-
         rendered: str = report.generate_submission_report_pdf()
-
         report.refresh_from_db()
+
         self.assertTrue(report.content.name.endswith(".pdf"))
+
         expected = format_html(
             """
             <div class="submission-step-row">
                 <div class="submission-step-row__label">{key}</div>
-                <div class="submission-step-row__value">T. Shikari</div>
+                <div class="submission-step-row__value">{co_sign_display}</div>
             </div>
             """,
             key=_("Co-signed by"),
+            co_sign_display=_(
+                "{representation} ({auth_attribute}: {identifier})"
+            ).format(
+                representation="T. Shikari",
+                auth_attribute=_("BSN"),
+                identifier="123456782",
+            ),
         )
         self.assertInHTML(expected, rendered, count=1)
+
+    def test_incomplete_cosign_data_missing_representation(self):
+        report = SubmissionReportFactory.create(
+            content="",
+            submission__completed=True,
+            submission__co_sign_data={
+                "plugin": "digid",
+                "identifier": "123456782",
+                "co_sign_auth_attribute": "bsn",
+                "fields": {
+                    "voornaam": "Tina",
+                    "geslachtsnaam": "Shikari",
+                },
+                "representation": "",
+            },
+        )
+
+        rendered: str = report.generate_submission_report_pdf()
+        report.refresh_from_db()
+
+        identifier = format_html(
+            """
+            <div class="submission-step-row">
+                <div class="submission-step-row__label">{key}</div>
+                <div class="submission-step-row__value">{co_sign_display}</div>
+            </div>
+            """,
+            key=_("Co-signed by"),
+            co_sign_display=_(
+                "{representation} ({auth_attribute}: {identifier})"
+            ).format(
+                representation="",
+                auth_attribute=_("BSN"),
+                identifier="123456782",
+            ),
+        )
+        self.assertIn(identifier, rendered)

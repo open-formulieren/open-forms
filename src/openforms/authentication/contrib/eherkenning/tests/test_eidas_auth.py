@@ -406,6 +406,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
                 "plugin": "eidas",
                 "identifier": "112233445",
                 "representation": "",
+                "co_sign_auth_attribute": "pseudo",
                 "fields": {},
             },
         )

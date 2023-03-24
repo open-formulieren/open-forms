@@ -403,6 +403,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
                 "plugin": "eherkenning",
                 "identifier": "123456782",
                 "representation": "",
+                "co_sign_auth_attribute": "kvk",
                 "fields": {},
             },
         )

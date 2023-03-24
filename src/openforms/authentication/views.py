@@ -329,6 +329,7 @@ class AuthenticationReturnView(AuthenticationFlowBaseView):
             co_sign_data = {
                 **plugin.handle_co_sign(self.request, form),
                 "plugin": plugin.identifier,
+                "co_sign_auth_attribute": plugin.provides_auth,
             }
             serializer = CoSignDataSerializer(data=co_sign_data)
             serializer.is_valid(raise_exception=True)

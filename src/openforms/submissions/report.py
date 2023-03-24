@@ -6,7 +6,9 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from django.utils.safestring import SafeString
+from django.utils.translation import gettext_lazy as _
 
+from openforms.authentication.constants import AuthAttribute
 from openforms.forms.models import Form
 
 if TYPE_CHECKING:
@@ -36,15 +38,26 @@ class Report:
 
     @property
     def co_signer(self) -> str:
-        if not self.submission.co_sign_data:
+        """Retrieve and normalize data about the co-signer of a form"""
+
+        if not (co_sign_data := self.submission.co_sign_data):
             return ""
 
-        if not (co_signer := self.submission.co_sign_data.get("representation", "")):
+        representation = co_sign_data.get("representation") or ""
+        identifier = co_sign_data["identifier"]
+        co_sign_auth_attribute = co_sign_data["co_sign_auth_attribute"]
+        auth_attribute_label = AuthAttribute.labels[co_sign_auth_attribute]
+
+        if not representation:
             logger.warning(
                 "Incomplete co-sign data for submission %s", self.submission.uuid
             )
 
-        return co_signer
+        return _("{representation} ({auth_attribute}: {identifier})").format(
+            representation=representation,
+            auth_attribute=auth_attribute_label,
+            identifier=identifier,
+        )
 
     @property
     def confirmation_page_content(self) -> SafeString:
