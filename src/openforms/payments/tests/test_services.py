@@ -30,6 +30,14 @@ class Plugin(BasePlugin):
     def get_reference_from_result(self, result):
         pass
 
+    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
+        pass
+
+    def obtain_submission_reference(
+        self, submission: "Submission", options: dict
+    ) -> None:
+        pass
+
 
 class UpdatePaymentTests(TestCase):
     def setUp(self):

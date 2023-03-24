@@ -77,6 +77,12 @@ class RegistrationHookTests(TestCase):
             def get_reference_from_result(self, result: dict) -> None:
                 pass
 
+            def pre_register_submission(self, submission, options) -> None:
+                pass
+
+            def obtain_submission_reference(self, submission, options) -> None:
+                pass
+
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
         with patch_registry(model_field, register):
@@ -107,6 +113,12 @@ class RegistrationHookTests(TestCase):
                 raise RegistrationFailed("zerodiv") from err
 
             def get_reference_from_result(self, result: dict) -> None:
+                pass
+
+            def pre_register_submission(self, submission, options) -> None:
+                pass
+
+            def obtain_submission_reference(self, submission, options) -> None:
                 pass
 
         # call the hook for the submission, while patching the model field registry
@@ -148,6 +160,12 @@ class RegistrationHookTests(TestCase):
             def get_reference_from_result(self, result: dict) -> None:
                 pass
 
+            def pre_register_submission(self, submission, options) -> None:
+                pass
+
+            def obtain_submission_reference(self, submission, options) -> None:
+                pass
+
         # call the hook for the submission, while patching the model field registry
         model_field = Form._meta.get_field("registration_backend")
         with patch_registry(model_field, register), self.assertLogs(
@@ -185,6 +203,12 @@ class RegistrationHookTests(TestCase):
                 raise RegistrationFailed("zerodiv") from err
 
             def get_reference_from_result(self, result: dict) -> None:
+                pass
+
+            def pre_register_submission(self, submission, options) -> None:
+                pass
+
+            def obtain_submission_reference(self, submission, options) -> None:
                 pass
 
         # call the hook for the submission, while patching the model field registry
@@ -257,6 +281,12 @@ class RegistrationHookTests(TestCase):
             def get_reference_from_result(self, result: dict) -> None:
                 pass
 
+            def pre_register_submission(self, submission, options) -> None:
+                pass
+
+            def obtain_submission_reference(self, submission, options) -> None:
+                pass
+
         mock_get_solo.return_value = GlobalConfiguration(
             plugin_configuration={"registrations": {"callback": {"enabled": False}}}
         )
@@ -299,6 +329,12 @@ class NumRegistrationsTest(TestCase):
                 raise RegistrationFailed("fake failure")
 
             def get_reference_from_result(self, result: dict) -> None:
+                pass
+
+            def pre_register_submission(self, submission, options) -> None:
+                pass
+
+            def obtain_submission_reference(self, submission, options) -> None:
                 pass
 
         mock_get_solo.return_value = GlobalConfiguration(

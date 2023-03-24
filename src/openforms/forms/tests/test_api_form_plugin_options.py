@@ -29,6 +29,12 @@ class RegistrationPlugin(RegistrationBasePlugin):
     def get_reference_from_result(self, result: dict) -> None:
         pass
 
+    def pre_register_submission(self, submission, options: dict) -> None:
+        pass
+
+    def obtain_submission_reference(self, submission, options: dict) -> None:
+        pass
+
 
 class PaymentPlugin(PaymentBasePlugin):
     configuration_options = EmailOptionsSerializer
