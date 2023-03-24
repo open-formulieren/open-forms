@@ -1,11 +1,15 @@
+import json
 from pathlib import Path
 from unittest import expectedFailure
 
+from django.db import connection
 from django.test import override_settings, tag
 
 import requests_mock
 from factory.django import FileField
 from freezegun import freeze_time
+from hypothesis import assume, example, given
+from hypothesis.extra.django import TestCase as HypothesisTestCase
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -19,6 +23,9 @@ from openforms.forms.tests.factories import (
     FormVariableFactory,
 )
 from openforms.logging.models import TimelineLogProxy
+from openforms.tests.search_strategies import jsonb_values
+from openforms.typing import JSONValue
+from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.variables.constants import DataMappingTypes, FormVariableDataTypes
 from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
@@ -911,8 +918,25 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self.assertEqual(data["step"]["data"], {})
 
 
+def is_valid_expression(expr: dict):
+    try:
+        JsonLogicValidator()(expr)
+    except Exception:
+        return False
+    return True
+
+
+def is_jsonb_invariant(value: JSONValue) -> bool:
+    serialized = json.dumps(value)
+    query = "SELECT %s::jsonb"
+    with connection.cursor() as cursor:
+        cursor.execute(query, params=(serialized,))
+        result = cursor.fetchone()[0]
+    return json.loads(result) == value
+
+
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
+class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase, HypothesisTestCase):
     def test_evaluate_logic_with_default_values(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
@@ -1318,7 +1342,16 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
         )
         self.assertIn("https://httpbin.org/get", str(log_entry.extra_data))
 
-    def test_it_logs_setting_variable(self):
+    @given(jsonb_values())
+    @example({"var": "foo"})
+    @example([])
+    @example(1.801439850948199e16)
+    def test_it_logs_setting_variable(self, new_value: JSONValue):
+        assume(is_jsonb_invariant(new_value))
+
+        if isinstance(new_value, (dict, list)):
+            assume(is_valid_expression(new_value))
+
         var = FormVariableFactory.create(key="myKey")
         FormLogicFactory.create(
             form=var.form,
@@ -1328,7 +1361,7 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
                     "variable": "myKey",
                     "action": {
                         "type": LogicActionTypes.variable,
-                        "value": "My new value",
+                        "value": new_value,
                     },
                 }
             ],
@@ -1344,16 +1377,16 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
             template="logging/events/submission_logic_evaluated.txt",
         )
         extra_data = log_entry.extra_data
-        self.assertEqual(extra_data["resolved_data"]["myKey"], "My new value")
+        if not is_valid_expression(new_value):
+            # is primitive
+            self.assertEqual(extra_data["resolved_data"]["myKey"], new_value)
+
         self.assertEqual(
-            extra_data["evaluated_rules"][0]["targeted_components"],
-            [
-                {
-                    "key": "myKey",
-                    "value": "My new value",
-                    "type_display": "Stel de waarde van een variabele in",
-                }
-            ],
+            extra_data["evaluated_rules"][0]["targeted_components"][0]["key"], "myKey"
+        )
+        self.assertEqual(
+            extra_data["evaluated_rules"][0]["targeted_components"][0]["type_display"],
+            "Stel de waarde van een variabele in",
         )
 
     def test_logging_static_variable_use_in_trigger(self):

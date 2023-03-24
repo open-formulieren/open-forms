@@ -8,27 +8,44 @@ from openforms.forms.models.form_variable import variable_key_validator
 from openforms.typing import JSONPrimitive, JSONValue
 
 
-def json_primitives() -> st.SearchStrategy[JSONPrimitive]:
+def json_primitives(text_strategy=st.text()) -> st.SearchStrategy[JSONPrimitive]:
     return st.one_of(
         st.none(),
         st.booleans(),
         st.integers(),
         st.floats(allow_infinity=False, allow_nan=False),
-        st.text(),
+        text_strategy,
     )
 
 
 def json_collections(
     values,
+    keys_strategy=st.text(),
 ) -> st.SearchStrategy[dict[str, JSONValue] | list[JSONValue]]:
     return st.one_of(
-        st.dictionaries(keys=st.text(), values=values),
+        st.dictionaries(keys=keys_strategy, values=values),
         st.lists(values),
     )
 
 
 def json_values(*, max_leaves: int = 15) -> st.SearchStrategy[JSONValue]:
     return st.recursive(json_primitives(), json_collections, max_leaves=max_leaves)
+
+
+def jsonb_text() -> st.SearchStrategy[str]:
+    return st.text().filter(lambda s: "\x00" not in s)
+
+
+def jsonb_primitives() -> st.SearchStrategy[JSONPrimitive]:
+    return json_primitives(text_strategy=jsonb_text())
+
+
+def jsonb_values(*, max_leaves: int = 15) -> st.SearchStrategy[JSONValue]:
+    return st.recursive(
+        jsonb_primitives(),
+        lambda values: json_collections(values, keys_strategy=jsonb_text()),
+        max_leaves=max_leaves,
+    )
 
 
 def valid_key(key: str) -> bool:
