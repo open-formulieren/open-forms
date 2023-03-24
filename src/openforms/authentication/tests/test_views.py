@@ -341,15 +341,14 @@ class CoSignAuthenticationFlowTests(SubmissionsMixin, APITestCase):
                 "plugin": "plugin1",
                 "identifier": "mock-id",
                 "representation": "",
+                "co_sign_auth_attribute": "bsn",
                 "fields": {
                     "mock_field_1": "field 1",
                     "mock_field_2": "",
                 },
             },
         )
-        mock_add_co_sign_representation.assert_called_once_with(
-            self.submission, "dummy"
-        )
+        mock_add_co_sign_representation.assert_called_once_with(self.submission, "bsn")
 
     @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
     def test_co_sign_flow_invalid_submission_id(self):

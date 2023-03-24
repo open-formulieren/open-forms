@@ -380,6 +380,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, DigiDConfigMixin, TestCas
                 "plugin": "digid",
                 "identifier": "12345678",
                 "representation": "",
+                "co_sign_auth_attribute": "bsn",
                 "fields": {},
             },
         )

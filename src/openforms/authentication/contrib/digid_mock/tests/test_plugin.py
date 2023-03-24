@@ -140,6 +140,7 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, TestCase):
                     "plugin": "digid-mock",
                     "identifier": "111222333",
                     "representation": "",
+                    "co_sign_auth_attribute": "bsn",
                     "fields": {},
                 },
             )
