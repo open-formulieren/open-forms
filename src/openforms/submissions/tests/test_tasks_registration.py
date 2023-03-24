@@ -164,28 +164,6 @@ class GenerateSubmissionReferenceTests(TestCase):
 
         self.assertEqual(submission.public_registration_reference, "OF-1234")
 
-    @patch(
-        "openforms.submissions.tasks.registration.generate_unique_submission_reference",
-        return_value="OF-1234",
-    )
-    def test_pre_registration_for_email_plugin_generates_reference(self, m):
-        """If the registration backend does not generate a reference, then reference is generated before the registration"""
-
-        submission = SubmissionFactory.create(
-            form__registration_backend="email",
-            form__registration_backend_options={
-                "to_emails": ["foo@bar.baz"],
-            },
-            completed=True,
-        )
-
-        self.assertEqual(submission.public_registration_reference, "")
-
-        pre_registration(submission.id)
-        submission.refresh_from_db()
-
-        self.assertEqual(submission.public_registration_reference, "OF-1234")
-
     def test_pre_registration_task_with_invalid_options_gives_error(self):
         submission = SubmissionFactory.create(
             form__registration_backend="email",
@@ -204,22 +182,123 @@ class GenerateSubmissionReferenceTests(TestCase):
 
         self.assertEqual(submission.registration_status, RegistrationStatuses.failed)
 
-    def test_zgw_api_backend_obtains_reference_after_registration(self):
-        submission = SubmissionFactory.create(
-            form__registration_backend="zgw-create-zaak",
-            completed=True,
-            registration_success=True,
-            registration_result={"zaak": {"identificatie": "AEY64"}},
-        )
+    def test_plugins_generating_reference_before_during_pre_registration(self):
+        plugin_data = [
+            ("email", {"to_emails": ["foo@bar.baz"]}),
+            (
+                "camunda",
+                {
+                    "process_definition": "invoice",
+                    "process_definition_version": None,
+                    "process_variables": [],
+                    "complex_process_variables": [],
+                },
+            ),
+            ("demo", {}),
+            ("failing-demo", {}),
+            ("exception-demo", {}),
+            ("microsoft-graph", {}),
+            ("objects_api", {}),
+        ]
 
-        self.assertEqual(submission.public_registration_reference, "")
+        for plugin_name, plugin_options in plugin_data:
+            submission = SubmissionFactory.create(
+                form__registration_backend=plugin_name,
+                form__registration_backend_options=plugin_options,
+                completed=True,
+            )
 
-        pre_registration(submission.id)
-        submission.refresh_from_db()
+            with self.subTest(plugin_name):
+                self.assertEqual(submission.public_registration_reference, "")
 
-        self.assertEqual(submission.public_registration_reference, "")
+                with patch(
+                    "openforms.submissions.tasks.registration.generate_unique_submission_reference",
+                    return_value=f"OF-{plugin_name}",
+                ):
+                    pre_registration(submission.id)
 
-        obtain_submission_reference(submission.id)
-        submission.refresh_from_db()
+                submission.refresh_from_db()
 
-        self.assertEqual(submission.public_registration_reference, "AEY64")
+                self.assertEqual(
+                    submission.public_registration_reference, f"OF-{plugin_name}"
+                )
+
+    def test_plugins_post_registration_reference_missing_result(self):
+        plugin_data = [
+            ("zgw-create-zaak", {}),
+            (
+                "stuf-zds-create-zaak",
+                {
+                    "zds_zaaktype_code": "zt-code",
+                    "zds_documenttype_omschrijving_inzending": "aaabbc",
+                },
+            ),
+        ]
+
+        for plugin_name, plugin_options in plugin_data:
+            submission = SubmissionFactory.create(
+                form__registration_backend=plugin_name,
+                form__registration_backend_options=plugin_options,
+                completed=True,
+                registration_success=True,
+            )
+
+            with self.subTest(plugin_name):
+                self.assertEqual(submission.public_registration_reference, "")
+
+                pre_registration(submission.id)
+                submission.refresh_from_db()
+
+                self.assertEqual(submission.public_registration_reference, "")
+
+                with patch(
+                    "openforms.submissions.tasks.registration.generate_unique_submission_reference",
+                    return_value=f"OF-{plugin_name}",
+                ):
+                    obtain_submission_reference(submission.id)
+                submission.refresh_from_db()
+
+                self.assertEqual(
+                    submission.public_registration_reference, f"OF-{plugin_name}"
+                )
+
+    def test_plugins_post_registration_reference(self):
+        plugin_data = [
+            (
+                "zgw-create-zaak",
+                {},
+                {"zaak": {"identificatie": "ZAAK-zgw-create-zaak"}},
+            ),
+            (
+                "stuf-zds-create-zaak",
+                {
+                    "zds_zaaktype_code": "zt-code",
+                    "zds_documenttype_omschrijving_inzending": "aaabbc",
+                },
+                {"zaak": "ZAAK-stuf-zds-create-zaak"},
+            ),
+        ]
+
+        for plugin_name, plugin_options, registration_result in plugin_data:
+            submission = SubmissionFactory.create(
+                form__registration_backend=plugin_name,
+                form__registration_backend_options=plugin_options,
+                completed=True,
+                registration_success=True,
+                registration_result=registration_result,
+            )
+
+            with self.subTest(plugin_name):
+                self.assertEqual(submission.public_registration_reference, "")
+
+                pre_registration(submission.id)
+                submission.refresh_from_db()
+
+                self.assertEqual(submission.public_registration_reference, "")
+
+                obtain_submission_reference(submission.id)
+                submission.refresh_from_db()
+
+                self.assertEqual(
+                    submission.public_registration_reference, f"ZAAK-{plugin_name}"
+                )
