@@ -55,7 +55,7 @@ def log_logic_evaluation(
         rule_introspection = introspect_json_logic(trigger)
         # Gathering all the input component of each evaluated rule
         input_data += rule_introspection.get_input_components(
-            components_map, initial_data, evaluated_rule.action_log_data["context"]
+            components_map, initial_data
         )
         targeted_components = get_targeted_components(
             rule,

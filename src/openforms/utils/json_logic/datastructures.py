@@ -2,12 +2,10 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Iterator, cast
 
 from glom import glom
-from glom.core import PathAccessError
 from json_logic.meta import JSONLogicExpressionTree, Operation
 from json_logic.typing import JSON, Primitive
 
 from openforms.formio.typing import Component
-from openforms.typing import DataMapping
 
 from .descriptions import _generate_description
 
@@ -46,7 +44,6 @@ class ExpressionIntrospection:
         self,
         components_map: ComponentsMap,
         input_data: dict[str, JSON],
-        context: DataMapping,
     ) -> list[InputVar]:
         inputs = []
 
@@ -58,24 +55,17 @@ class ExpressionIntrospection:
 
             # TODO: this *may* be nested var.var expressions
             key = cast(str, node.arguments[0])
-            if key not in components_map:
-                try:
-                    inputs.append(
-                        InputVar(
-                            key=key, value=glom(context, key), step_name="", label=""
-                        )
-                    )
-                except PathAccessError:
-                    pass  # well, we tried.
-                continue
-            component_meta = components_map[key]
+            step_name = label = ""
+            if component_meta := components_map.get(key):
+                step_name = component_meta.form_step.form_definition.name
+                label = component_meta.component.get("label", "")
             inputs.append(
                 InputVar(
                     key=key,
-                    value=input_data.get(key, ""),
-                    step_name=component_meta.form_step.form_definition.name,
+                    value=glom(input_data, key, default=""),
+                    step_name=step_name,
                     # TODO: take translations into account?
-                    label=component_meta.component.get("label", ""),
+                    label=label,
                 )
             )
 
