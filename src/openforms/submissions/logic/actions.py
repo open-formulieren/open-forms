@@ -213,7 +213,7 @@ class VariableAction(ActionOperation):
         return {
             "key": self.variable,
             "type_display": LogicActionTypes.get_label(LogicActionTypes.variable),
-            "value": log_data["value"],
+            "value": log_data.get("value", ""),  # error caught by log_errors in `eval`
         }
 
 

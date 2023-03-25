@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Iterator, cast
 
+from glom import glom
+from glom.core import PathAccessError
 from json_logic.meta import JSONLogicExpressionTree, Operation
 from json_logic.typing import JSON, Primitive
 
@@ -57,9 +59,14 @@ class ExpressionIntrospection:
             # TODO: this *may* be nested var.var expressions
             key = cast(str, node.arguments[0])
             if key not in components_map:
-                inputs.append(
-                    InputVar(key=key, value=context[key], step_name="", label="")
-                )
+                try:
+                    inputs.append(
+                        InputVar(
+                            key=key, value=glom(context, key), step_name="", label=""
+                        )
+                    )
+                except PathAccessError:
+                    pass  # well, we tried.
                 continue
             component_meta = components_map[key]
             inputs.append(
