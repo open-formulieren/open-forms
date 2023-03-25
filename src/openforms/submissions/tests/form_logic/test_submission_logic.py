@@ -1297,6 +1297,7 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase, HypothesisTestC
 
     @given(jsonb_values())
     @example({"var": "foo"})
+    @example([{"/": None}])
     @example([])
     @example(1.801439850948199e16)  # this is filtered out by the assume
     def test_it_logs_setting_variable(self, new_value: JSONValue):
@@ -1334,11 +1335,7 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase, HypothesisTestC
         if isinstance(new_value, JSONPrimitive):
             # for primitives we know the value
             self.assertEqual(resolved_value, new_value)
-        elif is_valid_expression(new_value):
-            # could be flaky, but it's extremely unlikely to randomly get a valid
-            # "var" expression —like the one from the @example— but nested somewhere.
-            self.assertIn(resolved_value, (None, new_value))
-        else:
+        elif not is_valid_expression(new_value):
             # object but invalid json logic expression
             self.assertEqual(resolved_value, "None")
 
