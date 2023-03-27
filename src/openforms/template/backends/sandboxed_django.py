@@ -62,6 +62,7 @@ def get_openforms_backend():
                     "openforms.emails.templatetags.payment",
                     "openforms.emails.templatetags.products",
                     "openforms.config.templatetags.privacy_policy",
+                    "openforms.registrations.contrib.email.templatetags.data_summary",
                 ],
             }
         }

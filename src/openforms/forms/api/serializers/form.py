@@ -158,6 +158,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "appointment_enabled",
             "resume_link_lifetime",
             "registration_email_subject",
+            "registration_email_payment_subject",
             "registration_email_content_html",
             "registration_email_content_text",
         )
@@ -198,6 +199,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         validators = [
             AllOrNoneTruthyFieldsValidator(
                 "registration_email_subject",
+                "registration_email_payment_subject",
                 "registration_email_content_html",
                 "registration_email_content_text",
             ),

@@ -3,18 +3,22 @@ from mimetypes import types_map
 from typing import Any, List, NoReturn, Optional, Tuple, TypedDict
 
 from django.conf import settings
-from django.template.loader import get_template
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import get_language_info, ugettext, ugettext_lazy as _
+from django.utils.translation import get_language_info, ugettext_lazy as _
 
-from openforms.emails.utils import send_mail_html, strip_tags_plus
+from openforms.emails.utils import (
+    render_email_template,
+    send_mail_html,
+    strip_tags_plus,
+)
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
 from openforms.submissions.rendering.constants import RenderModes
 from openforms.submissions.rendering.renderer import Renderer
 from openforms.submissions.tasks.registration import set_submission_reference
 from openforms.template import render_from_string
+from openforms.variables.utils import get_variables_for_context
 
 from ...base import BasePlugin
 from ...exceptions import NoSubmissionReference
@@ -23,6 +27,7 @@ from .checks import check_config
 from .config import EmailOptionsSerializer
 from .constants import AttachmentFormat
 from .models import EmailConfig
+from .utils import get_registration_email_templates
 
 
 class EmailOptions(TypedDict):
@@ -44,28 +49,19 @@ class EmailRegistration(BasePlugin):
         config = EmailConfig.get_solo()
         config.apply_defaults_to(options)
 
-        subject_template = options.get("email_subject") or ugettext(
-            "[Open Forms] {{ form_name }} - submission {{ submission_reference }}"
-        )
-        subject = render_from_string(
-            subject_template,
-            {
-                "form_name": submission.form.admin_name,
-                "submission_reference": submission.public_registration_reference,
-            },
-            disable_autoescape=True,
-        )
-
-        self.send_registration_email(options["to_emails"], subject, submission, options)
+        self.send_registration_email(options["to_emails"], submission, options)
 
     @staticmethod
-    def render_registration_email(submission, extra_context=None):
+    def render_registration_email(submission, is_payment_update, extra_context=None):
         if extra_context is None:
             extra_context = {}
 
-        # resolve the base templates
-        html_template = get_template("emails/email_registration.html")
-        text_template = get_template("emails/email_registration.txt")
+        (
+            subject_template,
+            subject_payment_template,
+            html_template,
+            text_template,
+        ) = get_registration_email_templates(submission)
 
         # common kwargs and context
         renderer_kwargs = {
@@ -74,51 +70,64 @@ class EmailRegistration(BasePlugin):
         }
         base_context = {
             "public_reference": submission.public_registration_reference,
-            "datetime": timezone.localtime(submission.completed_on).strftime(
+            "completed_on": timezone.localtime(submission.completed_on).strftime(
                 "%H:%M:%S %d-%m-%Y"
             ),
             "submission_language": get_language_info(submission.language_code)[
                 "name_translated"
             ],
+            "co_signer": submission.get_co_signer(),
+            **get_variables_for_context(submission),
+            "_form": submission.form,
+            "_submission": submission,
         }
+
+        # Render the subject
+        subject = render_from_string(
+            subject_payment_template if is_payment_update else subject_template,
+            context={**base_context, **extra_context},
+            disable_autoescape=True,
+        )
 
         # HTML mode
         html_renderer = Renderer(as_html=True, **renderer_kwargs)
-        html_content = html_template.render(
-            {
+        html_content = render_email_template(
+            template=html_template,
+            context={
                 **base_context,
                 "renderer": html_renderer,
                 "rendering_text": False,
                 **extra_context,
-            }
+            },
         )
 
         # Plain text mode
         text_renderer = Renderer(as_html=False, **renderer_kwargs)
-        text_content = text_template.render(
-            {
+        text_content = render_email_template(
+            template=text_template,
+            context={
                 **base_context,
                 "renderer": text_renderer,
                 "rendering_text": True,
                 **extra_context,
-            }
+            },
         )
         # post process since the mail template has html markup and django escaped entities
         text_content = strip_tags_plus(text_content, keep_leading_whitespace=True)
         text_content = html.unescape(text_content)
 
-        return html_content, text_content
+        return subject, html_content, text_content
 
     def send_registration_email(
         self,
         recipients: list[str],
-        subject: str,
         submission: Submission,
         options: EmailOptions,
         extra_context: dict[str, Any] | None = None,
+        is_payment_update: bool = False,
     ) -> None:
-        html_content, text_content = self.render_registration_email(
-            submission, extra_context=extra_context
+        subject, html_content, text_content = self.render_registration_email(
+            submission, extra_context=extra_context, is_payment_update=is_payment_update
         )
 
         attachments = []
@@ -175,12 +184,6 @@ class EmailRegistration(BasePlugin):
         raise NoSubmissionReference("Email plugin does not emit a reference")
 
     def update_payment_status(self, submission: "Submission", options: dict):
-        subject = _(
-            "[Open Forms] {form_name} - submission payment received {public_reference}"
-        ).format(
-            form_name=submission.form.admin_name,
-            public_reference=submission.public_registration_reference,
-        )
         recipients = options.get("payment_emails")
         if not recipients:
             recipients = options["to_emails"]
@@ -194,7 +197,7 @@ class EmailRegistration(BasePlugin):
             ),
         }
         self.send_registration_email(
-            recipients, subject, submission, options, extra_context
+            recipients, submission, options, extra_context, is_payment_update=True
         )
 
     def check_config(self):

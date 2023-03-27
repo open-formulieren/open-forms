@@ -27,12 +27,10 @@
     Submission language: {{ tt_openvariable }} submission_language {{ tt_closevariable }}
     {% endblocktrans %}</p>
 
-{{ tt_openblock }} data_summary {{ tt_closeblock }}
-
+<p>{{ tt_openblock }} data_summary {{ tt_closeblock }}</p>
 
 {{ tt_openblock }} if co_signer {{ tt_closeblock }}
-<tr>
-    <td width="25%" valign="top" style="padding: 4px 10px 4px 0; text-align: left;">{% trans "Co-signed by" %}</td>
-    <td width="75%" style="padding: 4px 10px 4px 0; text-align: left;">{{ co_signer }}</td>
-</tr>
+    <p>{% blocktrans trimmed %}
+        Co-signed by: {{ tt_openvariable }} co_signer {{ tt_closevariable }}
+    {% endblocktrans %}</p>
 {{ tt_openblock }} endif {{ tt_closeblock }}

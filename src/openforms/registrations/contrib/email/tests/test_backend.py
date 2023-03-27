@@ -37,9 +37,30 @@ from ..constants import AttachmentFormat
 from ..models import EmailConfig
 from ..plugin import EmailRegistration
 
+TEST_TEMPLATE_NL = """
+{% if payment_received %}
+
+Betaling ontvangen voor {{ form_name }} (verzonden op {{ completed_on }})
+Betalings-order ID: {{ payment_order_id }}
+
+{% else %}
+
+Inzendingdetails van {{ form_name }} (verzonden op {{ completed_on }})
+
+{% endif %}
+
+Onze referentie: {{ public_reference }}
+
+Inzendingstaal: {{ submission_language }}
+
+{% data_summary %}
+"""
+
 
 @override_settings(
-    DEFAULT_FROM_EMAIL="info@open-forms.nl", BASE_URL="https://example.com"
+    DEFAULT_FROM_EMAIL="info@open-forms.nl",
+    BASE_URL="https://example.com",
+    LANGUAGE_CODE="nl",
 )
 class EmailBackendTests(HTMLAssertMixin, TestCase):
     @classmethod
@@ -127,13 +148,20 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         )
         email_form_options = dict(
             to_emails=["foo@bar.nl", "bar@foo.nl"],
-            email_subject="Test submission custom subject - {{ form_name }} - submission {{ submission_reference }}",
         )
         email_submission = EmailRegistration("email")
 
         set_submission_reference(submission)
 
-        email_submission.register_submission(submission, email_form_options)
+        with patch(
+            "openforms.registrations.contrib.email.utils.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                registration_email_subject="Subject: {{ form_name }} - submission {{ public_reference }}",
+                registration_email_content_html=TEST_TEMPLATE_NL,
+                registration_email_content_text=TEST_TEMPLATE_NL,
+            ),
+        ):
+            email_submission.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -141,7 +169,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         message = mail.outbox[0]
         self.assertEqual(
             message.subject,
-            f"Test submission custom subject - {submission.form.admin_name} - submission {submission.public_registration_reference}",
+            f"Subject: MyName - submission {submission.public_registration_reference}",
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
@@ -156,7 +184,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         detail_line = _(
             "Submission details for %(form_name)s (submitted on %(datetime)s)"
         ) % dict(
-            form_name=self.form.admin_name,
+            form_name=self.form.name,
             datetime="12:00:00 01-01-2021",
         )
         self.assertIn(detail_line, message_html)
@@ -256,17 +284,22 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             components_list=[
                 {"key": "foo", "type": "textfield", "label": "foo"},
             ],
-            form__internal_name="Foo's bar",
+            form__name="Foo's bar",
             form__registration_backend="email",
             public_registration_reference="XYZ",
         )
         email_form_options = dict(
             to_emails=["foo@bar.nl", "bar@foo.nl"],
-            email_subject="Subject: {{ form_name }} - submission {{ submission_reference }}",
         )
         email_submission = EmailRegistration("email")
 
-        email_submission.register_submission(submission, email_form_options)
+        with patch(
+            "openforms.registrations.contrib.email.utils.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                registration_email_subject="Subject: {{ form_name }} - submission {{ public_reference }}"
+            ),
+        ):
+            email_submission.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -324,7 +357,14 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             attachment_formats=[AttachmentFormat.pdf],
         )
         email_submission = EmailRegistration("email")
-        email_submission.update_payment_status(submission, email_form_options)
+
+        with patch(
+            "openforms.registrations.contrib.email.utils.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                registration_email_payment_subject="[Open Forms] {{ form_name }} - submission payment received {{ public_reference }}"
+            ),
+        ):
+            email_submission.update_payment_status(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
@@ -332,12 +372,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         message = mail.outbox[0]
         self.assertEqual(
             message.subject,
-            _(
-                "[Open Forms] {form_name} - submission payment received {public_reference}"
-            ).format(
-                form_name=submission.form.admin_name,
-                public_reference=submission.public_registration_reference,
-            ),
+            "[Open Forms] MyName - submission payment received XYZ",
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
@@ -352,7 +387,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         detail_line = _(
             "Submission payment received for %(form_name)s (submitted on %(datetime)s)"
         ) % dict(
-            form_name=self.form.admin_name,
+            form_name=self.form.name,
             datetime="12:00:00 01-01-2021",
         )
         self.assertIn(detail_line, message_html)
@@ -866,9 +901,17 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         )
 
         email_submission = EmailRegistration("email")
-        email_submission.register_submission(
-            submission, {"to_emails": ["foo@example.com"]}
-        )
+
+        with patch(
+            "openforms.registrations.contrib.email.utils.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                registration_email_content_html=TEST_TEMPLATE_NL,
+                registration_email_content_text=TEST_TEMPLATE_NL,
+            ),
+        ):
+            email_submission.register_submission(
+                submission, {"to_emails": ["foo@example.com"]}
+            )
 
         message = mail.outbox[0]
         self.assertEqual(message.extra_headers["Content-Language"], "en")

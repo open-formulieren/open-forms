@@ -12,8 +12,12 @@ class EmailRegistrationTestView(DevViewMixin, EmailDebugViewMixin, DetailView):
 
     def get_email_content(self):
         mode = self._get_mode()
-        html_content, text_content = EmailRegistration.render_registration_email(
-            self.object
+        (
+            subject,
+            html_content,
+            text_content,
+        ) = EmailRegistration.render_registration_email(
+            self.object, is_payment_update=False
         )
         content = html_content if mode == "html" else text_content
         return content
