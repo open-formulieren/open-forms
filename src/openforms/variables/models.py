@@ -16,6 +16,15 @@ from .validators import (
 )
 
 
+def interpolate_variables(value: str, context: dict) -> str:
+    return render_from_string(
+        value,
+        {k: str(v) for k, v in context.items()},
+        backend=sandbox_backend,
+        disable_autoescape=True,
+    )
+
+
 def interpolate_request_body(body: dict, context: dict) -> dict:
     """Recursively perform variable injection on a JSON request body"""
     if not isinstance(body, dict):
@@ -25,15 +34,13 @@ def interpolate_request_body(body: dict, context: dict) -> dict:
     for key, value in body.items():
         if isinstance(value, dict):
             interpolated[key] = interpolate_request_body(body[key], context)
+        elif isinstance(value, list):
+            interpolated[key] = [
+                interpolate_variables(sub_value, context).strip()
+                for sub_value in body[key]
+            ]
         else:
-            interpolated[key] = (
-                render_from_string(
-                    value, context, backend=sandbox_backend, disable_autoescape=True
-                )
-                .strip()
-                .encode("utf-8")
-                .decode("latin1")
-            )
+            interpolated[key] = interpolate_variables(value, context).strip()
     return interpolated
 
 
@@ -139,13 +146,7 @@ class ServiceFetchConfiguration(models.Model):
 
         headers = {
             # map all unicode into what the RFC allows with utf-8; remove padding space
-            header: render_from_string(
-                value,
-                # Explicitly cast values to strings to avoid localization
-                {k: str(v) for k, v in context.items()},
-                backend=sandbox_backend,
-                disable_autoescape=True,
-            )
+            header: interpolate_variables(value, context)
             .encode("utf-8")
             .decode("latin1")
             .strip()
@@ -159,13 +160,7 @@ class ServiceFetchConfiguration(models.Model):
         escaped_for_path = {k: quote_plus(str(v)) for k, v in context.items()}
 
         query_params = {
-            param: render_from_string(
-                value,
-                # Explicitly cast values to strings to avoid localization
-                {k: str(v) for k, v in context.items()},
-                backend=sandbox_backend,
-                disable_autoescape=True,
-            )
+            param: interpolate_variables(value, context)
             for param, value in (self.query_params or {}).items()
         }
 

@@ -368,6 +368,24 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
         self.assertEqual(request.body, b'{"foo": "bar"}')
 
     @requests_mock.Mocker()
+    def test_it_sends_the_body_as_json_with_variables_lists(self, m):
+        m.get("https://httpbin.org/anything", json={"foo": "bar"})
+
+        var = FormVariableFactory.build(
+            service_fetch_configuration=ServiceFetchConfigurationFactory.build(
+                service=self.service,
+                path="anything",
+                body={"list": ["static value", "{{some_variable}}"]},
+            )
+        )
+
+        _ = perform_service_fetch(var, {"some_variable": "bar"})
+        request = m.last_request
+
+        self.assertIn(("Content-Type", "application/json"), request.headers.items())
+        self.assertEqual(request.body, b'{"list": ["static value", "bar"]}')
+
+    @requests_mock.Mocker()
     def test_it_sends_the_body_as_json_with_variables_nested(self, m):
         m.get("https://httpbin.org/anything", json={"foo": {"nested": "bar"}})
 
