@@ -117,7 +117,7 @@ class ServiceFetchConfiguration(models.Model):
         # extra knowledge not in the RFC: latin1 is a different name for ISO-8859-1
 
         headers = {
-            # map all unicode into what the RFC allows with utf-8; remove leading space
+            # map all unicode into what the RFC allows with utf-8; remove padding space
             header: render_from_string(
                 value,
                 # Explicitly cast values to strings to avoid localization
@@ -127,7 +127,7 @@ class ServiceFetchConfiguration(models.Model):
             )
             .encode("utf-8")
             .decode("latin1")
-            .lstrip()
+            .strip()
             for header, value in (self.headers or {}).items()
         }
         # before we go further
