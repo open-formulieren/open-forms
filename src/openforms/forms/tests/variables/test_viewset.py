@@ -165,6 +165,7 @@ class FormVariableViewsetTest(APITestCase):
                     "data_type": FormVariableDataTypes.object,
                     "initial_value": None,
                     "service_fetch_configuration": {
+                        "name": "GET foo",
                         "service": f"http://testserver{reverse('api:service-detail', kwargs={'pk': service.pk})}",
                         "path": form_variables_path,
                         "method": ServiceFetchMethods.get,
@@ -233,6 +234,7 @@ class FormVariableViewsetTest(APITestCase):
                     "initial_value": None,
                     "service_fetch_configuration": {
                         "id": service_fetch_config.id,
+                        "name": "GET foo",
                         "service": f"http://testserver{reverse('api:service-detail', kwargs={'pk': service.pk})}",
                         "path": form_variables_path,
                         "method": ServiceFetchMethods.get,
@@ -298,6 +300,7 @@ class FormVariableViewsetTest(APITestCase):
                     "data_type": FormVariableDataTypes.string,
                     "initial_value": None,
                     "service_fetch_configuration": {
+                        "name": "GET foo",
                         "service": f"http://testserver{reverse('api:service-detail', kwargs={'pk': service.pk})}",
                         "path": form_variables_path,
                         "method": ServiceFetchMethods.get,
@@ -314,6 +317,7 @@ class FormVariableViewsetTest(APITestCase):
                     "data_type": FormVariableDataTypes.string,
                     "initial_value": None,
                     "service_fetch_configuration": {
+                        "name": "GET foo",
                         "service": f"http://testserver{reverse('api:service-detail', kwargs={'pk': service.pk})}",
                         "path": form_variables_path,
                         "method": ServiceFetchMethods.get,
@@ -331,6 +335,7 @@ class FormVariableViewsetTest(APITestCase):
                     "initial_value": None,
                     "service_fetch_configuration": {
                         "id": -1,  # does not exist
+                        "name": "GET foo",
                         "service": f"http://testserver{reverse('api:service-detail', kwargs={'pk': service.pk})}",
                         "path": form_variables_path,
                         "method": ServiceFetchMethods.get,

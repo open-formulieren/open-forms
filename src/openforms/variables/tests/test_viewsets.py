@@ -14,11 +14,33 @@ class ServiceFetchConfigurationAPITests(APITestCase):
         super().setUpTestData()
 
         cls.user = UserFactory.create()
-        cls.admin_user = StaffUserFactory.create()
+        cls.user_with_perms = UserFactory.create(user_permissions=["forms.change_form"])
+        cls.staff_user_without_perms = StaffUserFactory.create()
+        cls.admin_user = StaffUserFactory(user_permissions=["forms.change_form"])
 
     def test_service_fetch_configuration_list_is_forbidden_for_normal_users(self):
         endpoint = reverse("api:servicefetchconfiguration-list")
         self.client.force_authenticate(user=self.user)
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_service_fetch_configuration_list_is_forbidden_for_normal_users_with_perms(
+        self,
+    ):
+        endpoint = reverse("api:servicefetchconfiguration-list")
+        self.client.force_authenticate(user=self.user_with_perms)
+
+        response = self.client.get(endpoint)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_service_fetch_configuration_list_is_forbidden_for_staff_users_without_perms(
+        self,
+    ):
+        endpoint = reverse("api:servicefetchconfiguration-list")
+        self.client.force_authenticate(user=self.staff_user_without_perms)
 
         response = self.client.get(endpoint)
 

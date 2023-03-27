@@ -190,6 +190,11 @@ class HeaderValidatorTests(SimpleTestCase):
 class QueryParameterValidatorTests(SimpleTestCase):
     validate = QueryParameterValidator()
 
+    def test_validate_none_success(self):
+        value = None
+
+        self.validate(value)
+
     def test_validate_success(self):
         value = {
             "foo": ["bar"],

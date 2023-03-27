@@ -89,12 +89,13 @@ class ServiceFetchConfigurationTests(SimpleTestCase):
 
     def test_http_request_headers(self):
         valid_headers = ServiceFetchConfiguration(
-            headers={"X-Custom-Header": "foo bar 30.0"}
+            name="foo", headers={"X-Custom-Header": "foo bar 30.0"}
         )
         invalid_headers = ServiceFetchConfiguration(
+            name="bar",
             headers={
                 "X-invalid-field-content": 30.0,
-            }
+            },
         )
 
         valid_headers.full_clean(exclude={"service"})
