@@ -18,6 +18,7 @@ from csp_post_processor.fields import CSPPostProcessedWYSIWYGField
 from openforms.authentication.fields import AuthenticationBackendMultiSelectField
 from openforms.authentication.registry import register as authentication_register
 from openforms.data_removal.constants import RemovalMethods
+from openforms.emails.validators import URLSanitationValidator
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
@@ -267,6 +268,52 @@ class Form(models.Model):
         _("appointment enabled"),
         default=False,
         help_text=_("This is experimental mode for appointments"),
+    )
+
+    # Registration email fields
+    registration_email_subject = models.CharField(
+        _("registration email subject"),
+        max_length=1000,
+        help_text=_("Subject of the registration email message."),
+        blank=True,
+        validators=[DjangoTemplateValidator()],
+    )
+    registration_email_payment_subject = models.CharField(
+        _("registration email payment subject"),
+        max_length=1000,
+        help_text=_(
+            "Subject of the registration email message that is sent when the payment is received."
+        ),
+        blank=True,
+        validators=[DjangoTemplateValidator()],
+    )
+    registration_email_content_html = HTMLField(
+        _("registration email content HTML"),
+        help_text=_("Content of the registration email message (as HTML)."),
+        blank=True,
+        validators=[
+            DjangoTemplateValidator(
+                required_template_tags=[
+                    "payment_information",
+                ],
+                backend="openforms.template.openforms_backend",
+            ),
+            URLSanitationValidator(),
+        ],
+    )
+    registration_email_content_text = models.TextField(
+        _("registration email content text"),
+        help_text=_("Content of the registration email message (as text)."),
+        blank=True,
+        validators=[
+            DjangoTemplateValidator(
+                required_template_tags=[
+                    "payment_information",
+                ],
+                backend="openforms.template.openforms_backend",
+            ),
+            URLSanitationValidator(),
+        ],
     )
 
     objects = FormManager()

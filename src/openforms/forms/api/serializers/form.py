@@ -6,6 +6,7 @@ from rest_framework.exceptions import ErrorDetail
 
 from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.api.utils import get_from_serializer_data_or_instance
+from openforms.api.validators import AllOrNoneTruthyFieldsValidator
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
 from openforms.authentication.registry import register as auth_register
 from openforms.config.models import GlobalConfiguration
@@ -156,6 +157,9 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "translations",
             "appointment_enabled",
             "resume_link_lifetime",
+            "registration_email_subject",
+            "registration_email_content_html",
+            "registration_email_content_text",
         )
         # allowlist for anonymous users
         public_fields = (
@@ -191,6 +195,13 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
                 "lookup_url_kwarg": "uuid_or_slug",
             },
         }
+        validators = [
+            AllOrNoneTruthyFieldsValidator(
+                "registration_email_subject",
+                "registration_email_content_html",
+                "registration_email_content_text",
+            ),
+        ]
 
     @transaction.atomic()
     def create(self, validated_data):
