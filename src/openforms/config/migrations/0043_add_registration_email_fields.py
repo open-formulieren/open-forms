@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
                     *("emails/email_registration_subject_payment.txt",),
                     **{}
                 ),
-                help_text="Subject of the registration email message that is sent when the payment is received. Can be overridden on the form level",
+                help_text="Subject of the registration email message that is sent when the payment is received. Can be overridden on the form level.",
                 max_length=1000,
                 validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="registration email payment subject",
@@ -77,7 +77,7 @@ class Migration(migrations.Migration):
                     *("emails/email_registration_subject.txt",),
                     **{}
                 ),
-                help_text="Subject of the registration email message. Can be overridden on the form level",
+                help_text="Subject of the registration email message. Can be overridden on the form level.",
                 max_length=1000,
                 validators=[openforms.template.validators.DjangoTemplateValidator()],
                 verbose_name="registration email subject",

@@ -126,7 +126,7 @@ class GlobalConfiguration(SingletonModel):
         _("registration email subject"),
         max_length=1000,
         help_text=_(
-            "Subject of the registration email message. Can be overridden on the form level"
+            "Subject of the registration email message. Can be overridden on the form level."
         ),
         default=get_registration_email_subject,
         validators=[DjangoTemplateValidator()],
@@ -135,7 +135,7 @@ class GlobalConfiguration(SingletonModel):
         _("registration email payment subject"),
         max_length=1000,
         help_text=_(
-            "Subject of the registration email message that is sent when the payment is received. Can be overridden on the form level"
+            "Subject of the registration email message that is sent when the payment is received. Can be overridden on the form level."
         ),
         default=get_registration_email_subject_payment,
         validators=[DjangoTemplateValidator()],
