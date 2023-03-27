@@ -2,12 +2,10 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Iterator, cast
 
 from glom import glom
-from glom.core import PathAccessError
 from json_logic.meta import JSONLogicExpressionTree, Operation
 from json_logic.typing import JSON, Primitive
 
 from openforms.formio.typing import Component
-from openforms.typing import DataMapping
 
 from .descriptions import _generate_description
 
