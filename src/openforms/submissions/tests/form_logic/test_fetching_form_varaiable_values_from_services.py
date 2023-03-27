@@ -386,8 +386,8 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
         self.assertEqual(request.body, b'{"foo": {"nested": "bar"}}')
 
     @requests_mock.Mocker()
-    def test_it_sends_the_body_as_json_with_variables_escape_quotes(self, m):
-        m.get("https://httpbin.org/anything", json={"foo": "&quot;bar"})
+    def test_it_sends_the_body_as_json_with_variables_escape_characters(self, m):
+        m.get("https://httpbin.org/anything", json={})
 
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
@@ -397,11 +397,44 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             )
         )
 
-        _ = perform_service_fetch(var, {"some_variable": '"bar'})
+        examples = [
+            [r'"bar', rb'{"foo": "\"bar"}'],
+            [r"\bar", rb'{"foo": "\\bar"}'],
+            ["\bbar", rb'{"foo": "\bbar"}'],
+            ["bar\fbar", rb'{"foo": "bar\fbar"}'],
+            ["bar\nbar", rb'{"foo": "bar\nbar"}'],
+            ["bar\rbar", rb'{"foo": "bar\rbar"}'],
+            ["bar\tbar", rb'{"foo": "bar\tbar"}'],
+        ]
+        for input_value, expected_output in examples:
+            with self.subTest(input_value=input_value):
+                _ = perform_service_fetch(var, {"some_variable": input_value})
+                request = m.last_request
+
+                self.assertIn(
+                    ("Content-Type", "application/json"), request.headers.items()
+                )
+                self.assertEqual(request.body, expected_output)
+
+    @requests_mock.Mocker()
+    def test_it_sends_the_body_as_json_with_variables_strip_whitespace_characters(
+        self, m
+    ):
+        m.get("https://httpbin.org/anything", json={})
+
+        var = FormVariableFactory.build(
+            service_fetch_configuration=ServiceFetchConfigurationFactory.build(
+                service=self.service,
+                path="anything",
+                body={"foo": "{{some_variable}}"},
+            )
+        )
+
+        _ = perform_service_fetch(var, {"some_variable": "\n\r\t bar \n\r\t"})
         request = m.last_request
 
         self.assertIn(("Content-Type", "application/json"), request.headers.items())
-        self.assertEqual(request.body, b'{"foo": "&quot;bar"}')
+        self.assertEqual(request.body, b'{"foo": "bar"}')
 
     @requests_mock.Mocker()
     def test_it_applies_jsonlogic_on_response(self, m):

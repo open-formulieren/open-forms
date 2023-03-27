@@ -27,7 +27,9 @@ def interpolate_request_body(body: dict, context: dict) -> dict:
             interpolated[key] = interpolate_request_body(body[key], context)
         else:
             interpolated[key] = (
-                render_from_string(value, context, backend=sandbox_backend)
+                render_from_string(
+                    value, context, backend=sandbox_backend, disable_autoescape=True
+                )
                 .strip()
                 .encode("utf-8")
                 .decode("latin1")
