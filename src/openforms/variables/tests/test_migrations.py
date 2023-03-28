@@ -79,3 +79,77 @@ class ServiceFetchConfigurationQueryParamsBackwardMigrationTests(TestMigrations)
         self.assertEqual(
             parse_qs(self.config.query_params[1:]), {"foo": ["bar"], "bar": ["{{baz}}"]}
         )
+
+
+class ServiceFetchConfigurationInterpolationFormatForwardMigrationTests(TestMigrations):
+    migrate_from = "0010_alter_servicefetchconfiguration_name"
+    migrate_to = "0011_migrate_interpolation_format"
+    app = "variables"
+
+    def setUpBeforeMigration(self, apps):
+        ServiceFetchConfiguration = apps.get_model(
+            "variables", "ServiceFetchConfiguration"
+        )
+        Service = apps.get_model("zgw_consumers", "Service")
+
+        service = Service.objects.create(
+            label="Test",
+            api_type=APITypes.orc,
+            auth_type=AuthTypes.no_auth,
+        )
+
+        self.config = ServiceFetchConfiguration.objects.create(
+            name="GET foo",
+            query_params={"foo": ["bar"], "bar": ["{baz}", "bar"]},
+            headers={"foo": "foo {bar_baz1}"},
+            body={"foo": ["{bar}"], "bar": {"baz": "{bar}"}},
+            service=service,
+        )
+
+    def test_migrate_interpolation_syntax(self):
+        self.config.refresh_from_db()
+
+        self.assertEqual(
+            self.config.query_params, {"foo": ["bar"], "bar": ["{{baz}}", "bar"]}
+        )
+        self.assertEqual(self.config.headers, {"foo": "foo {{bar_baz1}}"})
+        self.assertEqual(
+            self.config.body, {"foo": ["{{bar}}"], "bar": {"baz": "{{bar}}"}}
+        )
+
+
+class ServiceFetchConfigurationInterpolationFormatBackwardMigrationTests(
+    TestMigrations
+):
+    migrate_from = "0011_migrate_interpolation_format"
+    migrate_to = "0010_alter_servicefetchconfiguration_name"
+    app = "variables"
+
+    def setUpBeforeMigration(self, apps):
+        ServiceFetchConfiguration = apps.get_model(
+            "variables", "ServiceFetchConfiguration"
+        )
+        Service = apps.get_model("zgw_consumers", "Service")
+
+        service = Service.objects.create(
+            label="Test",
+            api_type=APITypes.orc,
+            auth_type=AuthTypes.no_auth,
+        )
+
+        self.config = ServiceFetchConfiguration.objects.create(
+            name="GET foo",
+            query_params={"foo": ["bar"], "bar": ["{{baz}}", "bar"]},
+            headers={"foo": "foo {{bar_baz1}}"},
+            body={"foo": ["{{bar}}"], "bar": {"baz": "{{bar}}"}},
+            service=service,
+        )
+
+    def test_migrate_interpolation_syntax(self):
+        self.config.refresh_from_db()
+
+        self.assertEqual(
+            self.config.query_params, {"foo": ["bar"], "bar": ["{baz}", "bar"]}
+        )
+        self.assertEqual(self.config.headers, {"foo": "foo {bar_baz1}"})
+        self.assertEqual(self.config.body, {"foo": ["{bar}"], "bar": {"baz": "{bar}"}})
