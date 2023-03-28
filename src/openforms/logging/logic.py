@@ -58,7 +58,11 @@ def log_logic_evaluation(
             components_map, initial_data
         )
         targeted_components = get_targeted_components(
-            rule, components_map, all_variables, initial_data
+            rule,
+            components_map,
+            all_variables,
+            initial_data,
+            evaluated_rule.action_log_data,
         )
         evaluated_rule_data = {
             "raw_logic_expression": trigger,

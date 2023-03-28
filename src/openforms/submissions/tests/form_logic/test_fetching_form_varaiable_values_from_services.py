@@ -65,7 +65,8 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             )
         )
 
-        value = perform_service_fetch(var, {})
+        result = perform_service_fetch(var, {})
+        value = result.value
 
         self.assertEqual(value["url"], "https://httpbin.org/get")
 
@@ -384,7 +385,8 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             )
         )
 
-        value = perform_service_fetch(var, {})
+        result = perform_service_fetch(var, {})
+        value = result.value
 
         self.assertEqual(value, "https://httpbin.org/get")
 
@@ -401,7 +403,8 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             )
         )
 
-        value = perform_service_fetch(var, {})
+        result = perform_service_fetch(var, {})
+        value = result.value
 
         self.assertEqual(value, "https://httpbin.org/get")
 
@@ -420,7 +423,8 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             )
         )
 
-        value = perform_service_fetch(var, {})
+        result = perform_service_fetch(var, {})
+        value = result.value
 
         self.assertEqual(value, "https://httpbin.org/get")
 

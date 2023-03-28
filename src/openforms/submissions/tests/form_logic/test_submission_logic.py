@@ -1,12 +1,17 @@
+import json
 from unittest import expectedFailure
 
+from django.db import connection
 from django.test import override_settings, tag
 
 from freezegun import freeze_time
+from hypothesis import assume, example, given
+from hypothesis.extra.django import TestCase as HypothesisTestCase
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.forms.constants import LogicActionTypes
 from openforms.forms.tests.factories import (
     FormFactory,
     FormLogicFactory,
@@ -14,7 +19,12 @@ from openforms.forms.tests.factories import (
     FormVariableFactory,
 )
 from openforms.logging.models import TimelineLogProxy
+from openforms.typing import JSONPrimitive, JSONValue
+from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.variables.constants import FormVariableDataTypes
+from openforms.variables.tests.test_validators import (  # NOTE: this is moved in master
+    jsonb_values,
+)
 
 from ...form_logic import evaluate_form_logic
 from ..factories import SubmissionFactory, SubmissionStepFactory
@@ -905,8 +915,25 @@ class CheckLogicSubmissionTest(SubmissionsMixin, APITestCase):
         self.assertEqual(data["step"]["data"], {})
 
 
+def is_valid_expression(expr: dict):
+    try:
+        JsonLogicValidator()(expr)
+    except Exception:
+        return False
+    return True
+
+
+def is_jsonb_invariant(value: JSONValue) -> bool:
+    serialized = json.dumps(value)
+    query = "SELECT %s::jsonb"
+    with connection.cursor() as cursor:
+        cursor.execute(query, params=(serialized,))
+        result = cursor.fetchone()[0]
+    return json.loads(result) == value
+
+
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
+class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase, HypothesisTestCase):
     def test_evaluate_logic_with_default_values(self):
         form = FormFactory.create(
             generate_minimal_setup=True,
@@ -1267,3 +1294,129 @@ class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase):
         logged_rule = logs[0].content_object
 
         self.assertEqual(logged_rule, logic_rule)
+
+    @given(jsonb_values())
+    @example({"var": "foo"})
+    @example([{"/": None}])
+    @example([])
+    @example(1.801439850948199e16)  # this is filtered out by the assume
+    def test_it_logs_setting_variable(self, new_value: JSONValue):
+        assume(is_jsonb_invariant(new_value))
+
+        var = FormVariableFactory.create(key="myKey")
+
+        FormLogicFactory.create(
+            form=var.form,
+            json_logic_trigger=True,
+            actions=[
+                {
+                    "variable": "myKey",
+                    "action": {
+                        "type": LogicActionTypes.variable,
+                        "value": new_value,
+                    },
+                }
+            ],
+        )
+        submission = SubmissionFactory.create(form=var.form)
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+        )
+
+        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
+
+        # should always log
+        log_entry = TimelineLogProxy.objects.get(
+            template="logging/events/submission_logic_evaluated.txt",
+        )
+        extra_data = log_entry.extra_data
+        resolved_value = extra_data["resolved_data"]["myKey"]
+
+        if isinstance(new_value, JSONPrimitive):
+            # for primitives we know the value
+            self.assertEqual(resolved_value, new_value)
+        elif not is_valid_expression(new_value):
+            # object but invalid json logic expression
+            self.assertEqual(resolved_value, "None")
+
+        self.assertEqual(
+            extra_data["evaluated_rules"][0]["targeted_components"][0]["key"], "myKey"
+        )
+        self.assertEqual(
+            extra_data["evaluated_rules"][0]["targeted_components"][0]["type_display"],
+            "Stel de waarde van een variabele in",
+        )
+
+    def test_logging_static_variable_use_in_trigger(self):
+        submission = SubmissionFactory.create()
+        json_logic_trigger = {
+            "==": [{"var": "today"}, {"+": [{"today": []}, {"rdelta": [0, 0, 0]}]}]
+        }
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger=json_logic_trigger,
+            actions=[],
+        )
+        submission_step = SubmissionStepFactory.create(
+            submission=submission,
+        )
+
+        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
+
+        log_entry = TimelineLogProxy.objects.get(
+            template="logging/events/submission_logic_evaluated.txt",
+        )
+        self.assertIn("today", log_entry.extra_data["input_data"])
+
+    def test_logging_structured_components(self):
+        # product type, composite, or nested components like selectBoxes
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "select",
+                    "data": {
+                        "values": [
+                            {"label": "a", "value": "a"},
+                            {"label": "b", "value": "b"},
+                        ]
+                    },
+                    "type": "select",
+                },
+                {
+                    "key": "selectBoxes",
+                    "values": [
+                        {"label": "a", "value": "a"},
+                        {"label": "b", "value": "b"},
+                    ],
+                    "type": "selectboxes",
+                    "defaultValue": {"a": True, "b": False},
+                },
+            ],
+            submitted_data={
+                "select": "a",
+                "selectBoxes": {"a": True, "b": True},
+            },
+        )
+
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"var": "selectBoxes.a"},
+            actions=[],
+        )
+        FormLogicFactory.create(
+            form=submission.form,
+            json_logic_trigger={"==": [{"var": "select"}, "a"]},
+            actions=[],
+        )
+
+        submission_step = submission.steps[0]
+        evaluate_form_logic(submission, submission_step, submission.get_merged_data())
+
+        log_entry = TimelineLogProxy.objects.get(
+            template="logging/events/submission_logic_evaluated.txt",
+        )
+
+        self.assertEqual(
+            [rule["trigger"] for rule in log_entry.extra_data["evaluated_rules"]],
+            [True, True],
+        )
