@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from openforms.template import render_from_string, sandbox_backend
 from openforms.typing import DataMapping
 
 from .constants import DataMappingTypes, ServiceFetchMethods
@@ -117,7 +118,16 @@ class ServiceFetchConfiguration(models.Model):
 
         headers = {
             # map all unicode into what the RFC allows with utf-8; remove padding space
-            header: value.format(**context).encode("utf-8").decode("latin1").strip()
+            header: render_from_string(
+                value,
+                # Explicitly cast values to strings to avoid localization
+                {k: str(v) for k, v in context.items()},
+                backend=sandbox_backend,
+                disable_autoescape=True,
+            )
+            .encode("utf-8")
+            .decode("latin1")
+            .strip()
             for header, value in (self.headers or {}).items()
         }
         # before we go further
@@ -128,12 +138,23 @@ class ServiceFetchConfiguration(models.Model):
         escaped_for_path = {k: quote_plus(str(v)) for k, v in context.items()}
 
         query_params = {
-            param: value.format(**context)
+            param: render_from_string(
+                value,
+                # Explicitly cast values to strings to avoid localization
+                {k: str(v) for k, v in context.items()},
+                backend=sandbox_backend,
+                disable_autoescape=True,
+            )
             for param, value in (self.query_params or {}).items()
         }
 
         request_args = dict(
-            path=self.path.format(**escaped_for_path),
+            path=render_from_string(
+                self.path,
+                escaped_for_path,
+                backend=sandbox_backend,
+                disable_autoescape=True,
+            ),
             params=query_params,
             method=self.method,
             headers=headers,
