@@ -193,8 +193,3 @@ class ObjectsAPIRegistration(BasePlugin):
 
     def pre_register_submission(self, submission: "Submission", options: dict) -> None:
         set_submission_reference(submission)
-
-    def obtain_submission_reference(
-        self, submission: "Submission", options: dict
-    ) -> None:
-        pass

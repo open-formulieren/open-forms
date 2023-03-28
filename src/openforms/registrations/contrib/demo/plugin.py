@@ -37,11 +37,6 @@ class DemoRegistration(BasePlugin):
     def pre_register_submission(self, submission: "Submission", options: dict) -> None:
         set_submission_reference(submission)
 
-    def obtain_submission_reference(
-        self, submission: "Submission", options: dict
-    ) -> None:
-        pass
-
 
 @register("failing-demo")
 class DemoFailRegistration(BasePlugin):
@@ -67,11 +62,6 @@ class DemoFailRegistration(BasePlugin):
     def pre_register_submission(self, submission: "Submission", options: dict) -> None:
         set_submission_reference(submission)
 
-    def obtain_submission_reference(
-        self, submission: "Submission", options: dict
-    ) -> None:
-        pass
-
 
 @register("exception-demo")
 class DemoExceptionRegistration(BasePlugin):
@@ -96,8 +86,3 @@ class DemoExceptionRegistration(BasePlugin):
 
     def pre_register_submission(self, submission: "Submission", options: dict) -> None:
         set_submission_reference(submission)
-
-    def obtain_submission_reference(
-        self, submission: "Submission", options: dict
-    ) -> None:
-        pass

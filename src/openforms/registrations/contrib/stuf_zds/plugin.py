@@ -367,9 +367,6 @@ class StufZDSRegistration(BasePlugin):
             ),
         ]
 
-    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
-        pass
-
     def obtain_submission_reference(
         self, submission: "Submission", options: dict
     ) -> None:
