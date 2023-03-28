@@ -201,64 +201,57 @@ class QueryParameterValidatorTests(SimpleTestCase):
             "bar": ["baz", "qux"],
         }
 
-        self.validate(value)
+        try:
+            self.validate(value)
+        except ValidationError:
+            self.fail("Unexpected ValidationError raised")
 
     def test_validate_is_mapping(self):
         value = "not_a_mapping"
-        try:
+
+        with self.assertRaisesMessage(
+            ValidationError,
+            _(
+                'Query parameters should have the form {"parameter": ["my", "parameter", "values"]}'
+            ),
+        ):
             self.validate(value)
-        except ValidationError as e:
-            self.assertEqual(
-                e.message,
-                _(
-                    'Query parameters should have the form {"parameter": "My header value"}'
-                ),
-            )
 
     def test_validate_keys_are_strings(self):
         value = {
             "foo": ["bar"],
             1: ["baz"],
         }
-        try:
+        with self.assertRaisesMessage(
+            ValidationError,
+            _(
+                "query parameter key '{parameter}' should be a string, but isn't."
+            ).format(parameter=1),
+        ):
             self.validate(value)
-        except ValidationError as e:
-            self.assertEqual(len(e.messages), 1)
-            self.assertEqual(
-                e.messages[0],
-                _(
-                    "query parameter key '{parameter}' should be a string, but isn't."
-                ).format(parameter=1),
-            )
 
     def test_validate_values_are_lists(self):
         value = {
             "foo": ["bar"],
             "bar": "baz",
         }
-        try:
+        with self.assertRaisesMessage(
+            ValidationError,
+            _("{header}: value '{value}' should be a list, but isn't.").format(
+                header="bar", value="baz"
+            ),
+        ):
             self.validate(value)
-        except ValidationError as e:
-            self.assertEqual(len(e.messages), 1)
-            self.assertEqual(
-                e.messages[0],
-                _("{header}: value '{value}' should be a list, but isn't.").format(
-                    header="bar", value="baz"
-                ),
-            )
 
     def test_validate_values_are_lists_of_strings(self):
         value = {
             "foo": ["bar"],
             "bar": ["baz", 1],
         }
-        try:
+        with self.assertRaisesMessage(
+            ValidationError,
+            _(
+                "{parameter}: value '{value}' should be a list of strings, but isn't."
+            ).format(parameter="bar", value=["baz", 1]),
+        ):
             self.validate(value)
-        except ValidationError as e:
-            self.assertEqual(len(e.messages), 1)
-            self.assertEqual(
-                e.messages[0],
-                _(
-                    "{parameter}: value '{value}' should be a list of strings, but isn't."
-                ).format(parameter="bar", value=["baz", 1]),
-            )

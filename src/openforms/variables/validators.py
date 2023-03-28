@@ -125,18 +125,15 @@ class HeaderValidator:
 
 @deconstructible
 class QueryParameterValidator:
-    """Validates if headers are well-formed according to RFC 3986.
+    """Validates if the value is a mapping of strings to lists of strings"""
 
-    ...
-    """
-
-    def __call__(self, value: Mapping[str, str] | JSONValue) -> None:
+    def __call__(self, value: Mapping[str, list[str]] | None) -> None:
         if value is None:
             return
         if not isinstance(value, Mapping):
             raise ValidationError(
                 _(
-                    'Query parameters should have the form {"parameter": "My header value"}'
+                    'Query parameters should have the form {"parameter": ["my", "parameter", "values"]}'
                 )
             )
 
@@ -146,9 +143,9 @@ class QueryParameterValidator:
             if not isinstance(field_value, list):
                 errors.append(
                     _(
-                        "{header!s}: value '{value!s}' should be a list, but isn't."
+                        "{parameter!s}: value '{value!s}' should be a list, but isn't."
                     ).format(
-                        header=field_name,
+                        parameter=field_name,
                         value=field_value,
                     )
                 )
