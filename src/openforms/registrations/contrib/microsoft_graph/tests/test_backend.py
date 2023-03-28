@@ -18,6 +18,7 @@ from openforms.registrations.contrib.microsoft_graph.models import (
 )
 from openforms.registrations.contrib.microsoft_graph.plugin import MSGraphRegistration
 from openforms.registrations.exceptions import RegistrationFailed
+from openforms.submissions.tasks import set_submission_reference
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -89,14 +90,13 @@ class MSGraphRegistrationBackendTests(TestCase):
             content_type="text/bar",
         )
 
+        set_submission_reference(submission)
+
         with patch.object(Account, "is_authenticated", True), patch.object(
             Drive, "get_root_folder", return_value=MockFolder()
         ):
             graph_submission = MSGraphRegistration("microsoft-graph")
             graph_submission.register_submission(submission, self.options)
-
-        # got the reference
-        self.assertNotEqual(submission.public_registration_reference, "")
 
         # made the calls
         self.assertEqual(upload_mock.call_count, 5)
@@ -216,14 +216,13 @@ class MSGraphRegistrationOptionsTests(TestCase):
 
         registration_options = dict(folder_path="/sites/my-site/open-forms/")
 
+        set_submission_reference(submission)
+
         with patch.object(Account, "is_authenticated", True), patch.object(
             Drive, "get_root_folder", return_value=MockFolder()
         ):
             graph_submission = MSGraphRegistration("microsoft-graph")
             graph_submission.register_submission(submission, registration_options)
-
-        # got the reference
-        self.assertNotEqual(submission.public_registration_reference, "")
 
         # made the calls
         self.assertEqual(upload_mock.call_count, 2)
@@ -266,15 +265,14 @@ class MSGraphRegistrationOptionsTests(TestCase):
             folder_path="/open-forms/{{ year }}-{{ month }}-{{ day }}",
         )
 
+        set_submission_reference(submission)
+
         with freeze_time("2021-07-16"):
             with patch.object(Account, "is_authenticated", True), patch.object(
                 Drive, "get_root_folder", return_value=MockFolder()
             ):
                 graph_submission = MSGraphRegistration("microsoft-graph")
                 graph_submission.register_submission(submission, registration_options)
-
-        # got the reference
-        self.assertNotEqual(submission.public_registration_reference, "")
 
         # made the calls
         self.assertEqual(upload_mock.call_count, 3)

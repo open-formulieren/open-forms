@@ -52,9 +52,6 @@ class MSGraphRegistration(BasePlugin):
         )
 
     def register_submission(self, submission: Submission, options: dict) -> None:
-        # explicitly get a reference before registering
-        set_submission_reference(submission)
-
         config = MSGraphRegistrationConfig.get_solo()
         if not config.service:
             raise RegistrationFailed("No service configured.")

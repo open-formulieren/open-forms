@@ -44,9 +44,6 @@ class EmailRegistration(BasePlugin):
         config = EmailConfig.get_solo()
         config.apply_defaults_to(options)
 
-        # explicitly get a reference before registering
-        set_submission_reference(submission)
-
         subject_template = options.get("email_subject") or ugettext(
             "[Open Forms] {{ form_name }} - submission {{ submission_reference }}"
         )

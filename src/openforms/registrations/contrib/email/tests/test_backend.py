@@ -21,6 +21,7 @@ from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
+from openforms.submissions.tasks import set_submission_reference
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -130,13 +131,12 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         )
         email_submission = EmailRegistration("email")
 
+        set_submission_reference(submission)
+
         email_submission.register_submission(submission, email_form_options)
 
         # Verify that email was sent
         self.assertEqual(len(mail.outbox), 1)
-
-        # Verify we've generated a public_registration_reference
-        self.assertNotEqual(submission.public_registration_reference, "")
 
         message = mail.outbox[0]
         self.assertEqual(
