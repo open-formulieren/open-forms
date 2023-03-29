@@ -720,3 +720,34 @@ class TestAddCustomErrorsNumberComponent(TestMigrations):
             },
             self.form_definition.configuration["components"][1]["translatedErrors"],
         )
+
+
+class TestMoveRegistrationEmailOptionsSetting(TestMigrations):
+    migrate_from = "0075_add_registration_email_fields"
+    migrate_to = "0076_move_email_registration_option"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        Form = apps.get_model("forms", "Form")
+        Form.objects.create(
+            slug="form1",
+            registration_backend="not-email",
+            registration_backend_options={"some-option": "some-value"},
+        )
+        Form.objects.create(
+            slug="form2",
+            registration_backend="email",
+            registration_backend_options={"email_subject": "A nice subject"},
+        )
+        Form.objects.create(
+            slug="form3", registration_backend="email", registration_backend_options={}
+        )
+
+    def test_move_settings(self):
+        Form = self.apps.get_model("forms", "Form")
+
+        self.assertEqual(Form.objects.get(slug="form1").registration_email_subject, "")
+        self.assertEqual(
+            Form.objects.get(slug="form2").registration_email_subject, "A nice subject"
+        )
+        self.assertEqual(Form.objects.get(slug="form3").registration_email_subject, "")
