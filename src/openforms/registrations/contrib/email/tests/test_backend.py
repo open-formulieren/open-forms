@@ -40,7 +40,7 @@ from ..plugin import EmailRegistration
 TEST_TEMPLATE_NL = """
 {% if payment_received %}
 
-Betaling ontvangen voor {{ form_name }} (verzonden op {{ completed_on }})
+Betaling ontvangen voor {{ form_name }} (ingezonden op {{ completed_on }})
 Betalings-order ID: {{ payment_order_id }}
 
 {% else %}
@@ -54,6 +54,10 @@ Onze referentie: {{ public_reference }}
 Inzendingstaal: {{ submission_language }}
 
 {% data_summary %}
+
+{% if co_signer %}
+Mede-ondertekend door: {{ co_signer }}
+{% endif %}
 """
 
 
@@ -129,6 +133,13 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             form__name="MyName",
             form__internal_name="MyInternalName",
             form__registration_backend="email",
+            co_sign_data={
+                "plugin": "demo",
+                "representation": "Demo Person",
+                "identifier": "111222333",
+                "fields": {},
+            },
+            language_code="nl",
         )
         submission_file_attachment_1 = SubmissionFileAttachmentFactory.create(
             form_key="file1",
@@ -197,6 +208,18 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertTagWithTextIn("td", "bar", message_html)
         self.assertTagWithTextIn("td", "some_list", message_html)
         self.assertTagWithTextIn("td", "value1; value2", message_html)
+
+        cosigner_line = f"{_('Co-signed by')}: Demo Person"
+
+        self.assertIn(cosigner_line, message_html)
+        self.assertIn(cosigner_line, message_text)
+
+        language_line = _("Submission language: %(submission_language)s") % dict(
+            submission_language="Nederlands"
+        )
+
+        self.assertIn(language_line, message_html)
+        self.assertIn(language_line, message_text)
 
         # files are no longer attached to the e-mail, but links are included instead
         self.assertEqual(len(message.attachments), 0)
@@ -361,7 +384,9 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         with patch(
             "openforms.registrations.contrib.email.utils.GlobalConfiguration.get_solo",
             return_value=GlobalConfiguration(
-                registration_email_payment_subject="[Open Forms] {{ form_name }} - submission payment received {{ public_reference }}"
+                registration_email_payment_subject="[Open Forms] {{ form_name }} - submission payment received {{ public_reference }}",
+                registration_email_content_html=TEST_TEMPLATE_NL,
+                registration_email_content_text=TEST_TEMPLATE_NL,
             ),
         ):
             email_submission.update_payment_status(submission, email_form_options)
