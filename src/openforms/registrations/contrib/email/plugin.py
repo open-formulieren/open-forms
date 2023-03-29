@@ -35,7 +35,6 @@ class EmailOptions(TypedDict):
     attachment_formats: List[str]
     payment_emails: List[str]
     attach_files_to_email: Optional[bool]
-    email_subject: Optional[str]
 
 
 @register("email")
