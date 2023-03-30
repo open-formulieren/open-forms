@@ -20,12 +20,6 @@ class Plugin(BasePlugin):
     def get_reference_from_result(self, result: dict) -> None:
         pass
 
-    def pre_register_submission(self, submission, options) -> None:
-        pass
-
-    def obtain_submission_reference(self, submission, options) -> None:
-        pass
-
 
 class NoConfigPlugin(BasePlugin):
     verbose_name = "some human readable label"
@@ -35,12 +29,6 @@ class NoConfigPlugin(BasePlugin):
         pass
 
     def get_reference_from_result(self, result: dict) -> None:
-        pass
-
-    def pre_register_submission(self, submission, options) -> None:
-        pass
-
-    def obtain_submission_reference(self, submission, options) -> None:
         pass
 
 

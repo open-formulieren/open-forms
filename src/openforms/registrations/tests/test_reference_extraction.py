@@ -30,12 +30,6 @@ class Plugin1(BasePlugin):
     def get_reference_from_result(self, result) -> str:
         return result.get("reference")
 
-    def pre_register_submission(self, submission, options) -> None:
-        pass
-
-    def obtain_submission_reference(self, submission, options) -> None:
-        pass
-
 
 @register("plugin2")
 class Plugin2(BasePlugin):
@@ -46,12 +40,6 @@ class Plugin2(BasePlugin):
 
     def get_reference_from_result(self, result: dict) -> str:
         return str(result["reference"])
-
-    def pre_register_submission(self, submission, options) -> None:
-        pass
-
-    def obtain_submission_reference(self, submission, options) -> None:
-        pass
 
 
 # Define the actual test cases
