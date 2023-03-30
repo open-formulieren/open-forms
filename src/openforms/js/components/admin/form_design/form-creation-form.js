@@ -733,8 +733,10 @@ function reducer(draft, action) {
           );
         }
 
-        // upate logic rules with updated keys
-        draft.logicRules = updateKeyReferencesInLogic(draft.logicRules, key, propertyValue);
+        // update logic rules with updated keys, only if the original key was not ""
+        if (key !== '') {
+          draft.logicRules = updateKeyReferencesInLogic(draft.logicRules, key, propertyValue);
+        }
       }
       break;
     }
