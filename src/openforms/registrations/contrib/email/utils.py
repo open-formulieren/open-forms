@@ -2,20 +2,32 @@ from openforms.config.models import GlobalConfiguration
 
 
 def get_registration_email_templates(submission):
-    templates = (
-        submission.form.registration_email_subject,
-        submission.form.registration_email_payment_subject,
-        submission.form.registration_email_content_html,
-        submission.form.registration_email_content_text,
+    config = GlobalConfiguration.get_solo()
+
+    subject_template = (
+        submission.form.registration_email_subject or config.registration_email_subject
+    )
+    payment_subject_template = (
+        submission.form.registration_email_payment_subject
+        or config.registration_email_payment_subject
     )
 
-    if all(templates):
-        return templates
+    if any(
+        [
+            submission.form.registration_email_content_html,
+            submission.form.registration_email_content_text,
+        ]
+    ):
+        return (
+            subject_template,
+            payment_subject_template,
+            submission.form.registration_email_content_html,
+            submission.form.registration_email_content_text,
+        )
 
-    config = GlobalConfiguration.get_solo()
     return (
-        config.registration_email_subject,
-        config.registration_email_payment_subject,
+        subject_template,
+        payment_subject_template,
         config.registration_email_content_html,
         config.registration_email_content_text,
     )
