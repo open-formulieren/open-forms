@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Iterator, cast
 
+from glom import glom
 from json_logic.meta import JSONLogicExpressionTree, Operation
 from json_logic.typing import JSON, Primitive
 
@@ -54,14 +55,17 @@ class ExpressionIntrospection:
 
             # TODO: this *may* be nested var.var expressions
             key = cast(str, node.arguments[0])
-            component_meta = components_map[key]
+            step_name = label = ""
+            if component_meta := components_map.get(key):
+                step_name = component_meta.form_step.form_definition.name
+                label = component_meta.component.get("label", "")
             inputs.append(
                 InputVar(
                     key=key,
-                    value=input_data.get(key, ""),
-                    step_name=component_meta.form_step.form_definition.name,
+                    value=glom(input_data, key, default=""),
+                    step_name=step_name,
                     # TODO: take translations into account?
-                    label=component_meta.component.get("label", ""),
+                    label=label,
                 )
             )
 
