@@ -11,7 +11,12 @@ from playwright.async_api import Page, expect
 from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
 from openforms.variables.constants import FormVariableDataTypes, FormVariableSources
 
-from ..factories import FormDefinitionFactory, FormFactory, FormStepFactory
+from ..factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormLogicFactory,
+    FormStepFactory,
+)
 
 
 @contextmanager
@@ -786,3 +791,52 @@ class FormDesignerRegressionTests(E2ETestCase):
 
             await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
             await expect(page.get_by_label("Label")).to_be_visible()
+
+    @tag("gh-2945")
+    async def test_creating_user_defined_variables_doesnt_wrongly_update_logic(self):
+        @sync_to_async
+        def setUpTestData():
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Playwright test",
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "textfield",
+                            "key": "textfield",
+                            "label": "Some Field",
+                        },
+                    ],
+                },
+            )
+            FormLogicFactory.create(
+                form=form,
+                json_logic_trigger={"==": [{"var": "textfield"}, "test"]},
+                actions=[],
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            with phase("Create a user defined variable"):
+                await page.get_by_role("tab", name="Variables").click()
+                await page.get_by_role("tab", name="User defined").click()
+                await page.get_by_role("button", name="Add variable").click()
+                await page.locator("css=[name=name]").fill("Foo")
+
+            with phase("Check logic rule is not broken"):
+                await page.get_by_role("tab", name="Logic").click()
+
+                # If the operand is still visible, the logic rule has not changed
+                await expect(page.locator("css=[name=operand]")).to_be_visible()
