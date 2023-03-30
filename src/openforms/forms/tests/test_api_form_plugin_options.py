@@ -151,3 +151,89 @@ class FormPluginOptionTest(APITestCase):
                 self.assertEqual(
                     json["invalidParams"][0]["name"], "paymentBackendOptions.email"
                 )
+
+    def test_overwrite_only_registration_email_subject_templates(self):
+        form = FormFactory.create(
+            registration_backend="email",
+            registration_backend_options={"to_emails": ["test@test.nl"]},
+        )
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.patch(
+            url,
+            data={
+                "registration_email_subject": "Custom subject",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        data = response.json()
+
+        self.assertEqual(data["registrationEmailSubject"], "Custom subject")
+        self.assertEqual(data["registrationEmailPaymentSubject"], "")
+        self.assertEqual(
+            data["registrationEmailContentHtml"],
+            "",
+        )
+        self.assertEqual(
+            data["registrationEmailContentText"],
+            "",
+        )
+
+    def test_overwrite_both_registration_email_html_and_text_templates(self):
+        form = FormFactory.create(
+            registration_backend="email",
+            registration_backend_options={"to_emails": ["test@test.nl"]},
+        )
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.patch(
+            url,
+            data={
+                "registration_email_content_html": "Custom HTML template {% payment_information %}",
+                "registration_email_content_text": "Custom text template {% payment_information %}",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        data = response.json()
+
+        self.assertEqual(data["registrationEmailSubject"], "")
+        self.assertEqual(data["registrationEmailPaymentSubject"], "")
+        self.assertEqual(
+            data["registrationEmailContentHtml"],
+            "Custom HTML template {% payment_information %}",
+        )
+        self.assertEqual(
+            data["registrationEmailContentText"],
+            "Custom text template {% payment_information %}",
+        )
+
+    def test_cannot_overwrite_only_registration_email_html_template(self):
+        form = FormFactory.create(
+            registration_backend="email",
+            registration_backend_options={"to_emails": ["test@test.nl"]},
+        )
+
+        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.patch(
+            url,
+            data={
+                "registration_email_content_html": "Custom HTML template {% payment_information %}",
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+        data = response.json()
+
+        self.assertEqual(
+            data["invalidParams"][0]["reason"],
+            "The fields registration_email_content_html, registration_email_content_text must all have a "
+            "non-empty value as soon as one of them does.",
+        )
