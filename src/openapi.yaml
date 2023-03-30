@@ -1040,6 +1040,10 @@ paths:
         - `displayMainWebsiteLink`
         - `includeConfirmationPageContentInPdf`
         - `translations`
+        - `registrationEmailSubject`
+        - `registrationEmailPaymentSubject`
+        - `registrationEmailContentHtml`
+        - `registrationEmailContentText`
       summary: List forms
       parameters:
       - in: header
@@ -1105,6 +1109,10 @@ paths:
         - `displayMainWebsiteLink`
         - `includeConfirmationPageContentInPdf`
         - `translations`
+        - `registrationEmailSubject`
+        - `registrationEmailPaymentSubject`
+        - `registrationEmailContentHtml`
+        - `registrationEmailContentText`
       summary: Create form
       parameters:
       - in: header
@@ -1614,6 +1622,10 @@ paths:
         - `displayMainWebsiteLink`
         - `includeConfirmationPageContentInPdf`
         - `translations`
+        - `registrationEmailSubject`
+        - `registrationEmailPaymentSubject`
+        - `registrationEmailContentHtml`
+        - `registrationEmailContentText`
 
         Wanneer meertaligheid niet ingeschakeld is voor het formulier, dan wordt de standaardtaal (`settings.LANGUAGE_CODE`) geforceerd gezet in een language cookie. De actieve taal wordt gecommuniceerd in de Content-Language response header. De gebruikelijke HTTP Content Negotiation principes zijn van toepassing.
       summary: Retrieve form details
@@ -1685,6 +1697,10 @@ paths:
         - `displayMainWebsiteLink`
         - `includeConfirmationPageContentInPdf`
         - `translations`
+        - `registrationEmailSubject`
+        - `registrationEmailPaymentSubject`
+        - `registrationEmailContentHtml`
+        - `registrationEmailContentText`
       summary: Update all details of a form
       parameters:
       - in: header
@@ -1760,6 +1776,10 @@ paths:
         - `displayMainWebsiteLink`
         - `includeConfirmationPageContentInPdf`
         - `translations`
+        - `registrationEmailSubject`
+        - `registrationEmailPaymentSubject`
+        - `registrationEmailContentHtml`
+        - `registrationEmailContentText`
       summary: Update given details of a form
       parameters:
       - in: header
@@ -5963,7 +5983,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `registrationEmailSubject`, `registrationEmailPaymentSubject`, `registrationEmailContentHtml`, `registrationEmailContentText`.
       properties:
         uuid:
           type: string
@@ -6098,6 +6118,21 @@ components:
           type: integer
           readOnly: true
           description: The number of days that the resume link is valid for.
+        registrationEmailSubject:
+          type: string
+          description: Subject of the registration email message.
+          maxLength: 1000
+        registrationEmailPaymentSubject:
+          type: string
+          description: Subject of the registration email message that is sent when
+            the payment is received.
+          maxLength: 1000
+        registrationEmailContentHtml:
+          type: string
+          description: Content of the registration email message (as HTML).
+        registrationEmailContentText:
+          type: string
+          description: Content of the registration email message (as text).
       required:
       - loginOptions
       - loginRequired
@@ -6340,7 +6375,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `registrationEmailSubject`, `registrationEmailPaymentSubject`, `registrationEmailContentHtml`, `registrationEmailContentText`.
       properties:
         name:
           type: string
@@ -6507,7 +6542,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `registrationEmailSubject`, `registrationEmailPaymentSubject`, `registrationEmailContentHtml`, `registrationEmailContentText`.
       properties:
         name:
           type: string
@@ -7296,7 +7331,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`, `registrationEmailSubject`, `registrationEmailPaymentSubject`, `registrationEmailContentHtml`, `registrationEmailContentText`.
       properties:
         uuid:
           type: string
@@ -7431,6 +7466,21 @@ components:
           type: integer
           readOnly: true
           description: The number of days that the resume link is valid for.
+        registrationEmailSubject:
+          type: string
+          description: Subject of the registration email message.
+          maxLength: 1000
+        registrationEmailPaymentSubject:
+          type: string
+          description: Subject of the registration email message that is sent when
+            the payment is received.
+          maxLength: 1000
+        registrationEmailContentHtml:
+          type: string
+          description: Content of the registration email message (as HTML).
+        registrationEmailContentText:
+          type: string
+          description: Content of the registration email message (as text).
     PatchedFormDefinition:
       type: object
       properties:
