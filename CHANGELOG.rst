@@ -2,6 +2,22 @@
 Changelog
 =========
 
+2.1.1 (2023-03-31)
+==================
+
+Periodic maintenance release
+
+* [#2945] Prevent the addition of user defined variables from breaking the logic rules.
+* [#2893] A minimal fix to prevent crashes of the celery task logging the evaluation of logic rules.
+* Upgrade of the SDK version
+* [#2911] Make validation of .heic and .heif files more lenient.
+* [#2889] Fix the focus jumps of the content component in the admin by re-implement the component translations machinery.
+* [#2888] Change the validation of BSN components from 'on change' to 'on blur'.
+* [#2888] Fix uploading documents inside a repeating group when a number component is also present in the repeating group.
+* [#2888] Fix uploading documents when there is a hidden repeating group.
+* Change the type of mutation from "T" to "W" when making Zaak update calls in the StUF registration backend.
+* A note was added to the documentation on how to use soft hyphens when configuring form or form step names.
+
 2.1.0 "Gers" (2023-03-14)
 =========================
 
