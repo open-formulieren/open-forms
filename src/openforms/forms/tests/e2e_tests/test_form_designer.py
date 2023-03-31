@@ -841,3 +841,72 @@ class FormDesignerRegressionTests(E2ETestCase):
 
                 # If the operand is still visible, the logic rule has not changed
                 await expect(page.locator("css=[name=operand]")).to_be_visible()
+
+    @tag("gh-2947")
+    async def test_number_components_have_custom_error_fields(self):
+        @sync_to_async
+        def setUpTestData():
+            return FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Playwright test",
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "number",
+                            "key": "numberField",
+                            "label": "Number Field",
+                        },
+                    ],
+                },
+            )
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            # Go to the validation tab of the number component
+            await page.get_by_role("tab", name="Steps and fields").click()
+            await open_component_options_modal(page, "Number Field")
+            await page.get_by_role("link", name="Validatie").click()
+
+            # Check the custom errors for the number component
+            await page.get_by_text("Foutmeldingen").click()
+            await expect(
+                page.locator(
+                    'css=[name="data[translations][translatedErrors.nl][0][__key]"]'
+                )
+            ).to_be_visible()
+            await expect(
+                page.locator(
+                    'css=[name="data[translations][translatedErrors.nl][0][__key]"]'
+                )
+            ).to_have_value("required")
+            await expect(
+                page.locator(
+                    'css=[name="data[translations][translatedErrors.nl][1][__key]"]'
+                )
+            ).to_be_visible()
+            await expect(
+                page.locator(
+                    'css=[name="data[translations][translatedErrors.nl][1][__key]"]'
+                )
+            ).to_have_value("min")
+            await expect(
+                page.locator(
+                    'css=[name="data[translations][translatedErrors.nl][2][__key]"]'
+                )
+            ).to_be_visible()
+            await expect(
+                page.locator(
+                    'css=[name="data[translations][translatedErrors.nl][2][__key]"]'
+                )
+            ).to_have_value("max")
