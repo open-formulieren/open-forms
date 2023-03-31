@@ -3,6 +3,7 @@ import {Utils} from 'formiojs';
 import {getSupportedLanguages} from 'components/formio_builder/translation';
 import {getFullyQualifiedUrl} from 'utils/urls';
 
+import {MAX_VALUE, MIN_VALUE} from './components';
 import {
   AUTOCOMPLETE,
   CLEAR_ON_HIDE,
@@ -265,6 +266,12 @@ const TEXT_VALIDATION = getValidationEditForm({
   ],
 });
 
+const NUMBER_VALIDATION = getValidationEditForm({
+  key: 'validation',
+  label: 'Validation',
+  components: [...VALIDATION.components, MIN_VALUE, MAX_VALUE],
+});
+
 const PREFILL = {
   key: 'prefill',
   label: 'Pre-fill',
@@ -395,6 +402,7 @@ export {
   ADVANCED,
   VALIDATION,
   TEXT_VALIDATION,
+  NUMBER_VALIDATION,
   PREFILL,
   REGISTRATION,
   VALIDATION_BASIC,
