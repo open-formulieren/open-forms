@@ -661,3 +661,62 @@ class TestChangeValidateOnSetting(TestMigrations):
         self.assertEqual(
             "blur", self.form_definition.configuration["components"][0]["validateOn"]
         )
+
+
+class TestAddCustomErrorsNumberComponent(TestMigrations):
+    migrate_from = "0073_change_bsn_validation"
+    migrate_to = "0074_add_custom_errors_numbers"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        self.form_definition = FormDefinition.objects.create(
+            name="Definition with number component",
+            slug="definition-with-number",
+            configuration={
+                "components": [
+                    {
+                        "key": "Number",
+                        "type": "number",
+                        "translatedErrors": {
+                            "en": {"required": ""},
+                            "nl": {"required": ""},
+                        },
+                    },
+                    {
+                        "key": "Text Field",
+                        "type": "textfield",
+                        "translatedErrors": {
+                            "en": {"pattern": "", "required": "", "maxLength": ""},
+                            "nl": {"pattern": "", "required": "", "maxLength": ""},
+                        },
+                    },
+                ]
+            },
+        )
+
+    def test_translated_errors_are_udpated(self):
+        self.form_definition.refresh_from_db()
+
+        self.assertEqual(
+            {
+                "en": {
+                    "required": "",
+                    "max": "",
+                    "min": "",
+                },
+                "nl": {
+                    "required": "",
+                    "max": "",
+                    "min": "",
+                },
+            },
+            self.form_definition.configuration["components"][0]["translatedErrors"],
+        )
+        self.assertEqual(
+            {
+                "en": {"pattern": "", "required": "", "maxLength": ""},
+                "nl": {"pattern": "", "required": "", "maxLength": ""},
+            },
+            self.form_definition.configuration["components"][1]["translatedErrors"],
+        )
