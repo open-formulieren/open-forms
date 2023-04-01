@@ -21,6 +21,11 @@ asgiref==3.5.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   django
+async-timeout==4.0.2
+    # via
+    #   -c requirements/ci.txt
+    #   -r requirements/ci.txt
+    #   redis
 attrs==20.3.0
     # via
     #   -c requirements/ci.txt
@@ -840,7 +845,7 @@ recommonmark==0.7.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-redis==3.5.3
+redis==4.5.4
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
