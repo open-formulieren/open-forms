@@ -123,6 +123,17 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
         serviceFetchConfigFromVar.queryParams || []
       );
     }
+
+    switch (serviceFetchConfigFromVar.dataMappingType) {
+      case 'JsonLogic':
+        serviceFetchConfigFromVar.jsonLogicExpression = serviceFetchConfigFromVar.mappingExpression;
+        break;
+      case 'jq':
+        serviceFetchConfigFromVar.jqExpression = serviceFetchConfigFromVar.mappingExpression;
+        break;
+      default:
+        serviceFetchConfigFromVar.jqExpression = serviceFetchConfigFromVar.mappingExpression;
+    }
   }
 
   return (

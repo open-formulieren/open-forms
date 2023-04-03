@@ -77,7 +77,9 @@ async def fill_in_service_fetch_form(page: Page, data: dict, save_text: str = "S
             data["mapping_expression"]
         )
     else:
-        ...
+        await page.get_by_label("Mapping expression", exact=True).fill(
+            data["mapping_expression"]
+        )
 
     await page.get_by_role("button", name=save_text).click()
 
@@ -118,7 +120,9 @@ async def check_service_fetch_form_values(page: Page, data: dict):
             page.locator('textarea[name="jsonLogicExpression"]')
         ).to_have_value(data["mapping_expression"])
     else:
-        ...
+        await expect(page.get_by_label("Mapping expression", exact=True)).to_have_value(
+            data["mapping_expression"]
+        )
 
 
 class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
@@ -178,7 +182,91 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                 "headers": {"header": "headervalue"},
                 "request_body": '{\n  "foo": "bar"\n}',
                 "data_mapping_type": DataMappingTypes.json_logic,
-                "mapping_expression": '""',
+                "mapping_expression": '{\n  "==": [\n    1,\n    1\n  ]\n}',
+            }
+
+            await fill_in_service_fetch_form(page, data)
+
+            # TODO check if name is shown
+            # TODO reopen modal and check if proper info filled
+            await expect(
+                page.get_by_text("Fetch configuration: Service fetch config #1")
+            ).to_be_visible()
+            await page.get_by_role("button", name="Configure").click()
+            await check_service_fetch_form_values(page, data)
+            await page.get_by_title("Sluiten").click()
+
+            await page.get_by_text("Save and continue editing").click()
+            await page.get_by_role("tab", name="Logic").click()
+
+            await expect(
+                page.get_by_text("Fetch configuration: Service fetch config #1")
+            ).to_be_visible()
+            await page.get_by_role("button", name="Configure").click()
+            await check_service_fetch_form_values(page, data)
+
+            @sync_to_async
+            def assertState():
+                self.assertEqual(ServiceFetchConfiguration.objects.count(), 1)
+
+                user_defined_vars = form.formvariable_set.filter(
+                    source=FormVariableSources.user_defined
+                )
+
+                self.assertEqual(user_defined_vars.count(), 1)
+
+                created_var = user_defined_vars.first()
+
+                self.assertEqual(
+                    created_var.service_fetch_configuration.name,
+                    "Service fetch config #1",
+                )
+
+            await assertState()
+
+    async def test_service_fetch_configuration_create_new_jq(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Playwright test",
+                formstep__form_definition__configuration={
+                    "components": [],
+                },
+            )
+            FormVariableFactory.create(
+                form=form, name="Variable 1", key="variable1", user_defined=True
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            await add_new_variable_with_service_fetch(page)
+
+            await page.get_by_role("button", name="Configure").click()
+
+            data = {
+                "name": "Service fetch config #1",
+                "method": "POST",
+                "service": "Test",
+                "path": "bar",
+                "query_params": {"param": ["paramvalue"]},
+                "headers": {"header": "headervalue"},
+                "request_body": '{\n  "foo": "bar"\n}',
+                "data_mapping_type": DataMappingTypes.jq,
+                "mapping_expression": ".foo",
             }
 
             await fill_in_service_fetch_form(page, data)
