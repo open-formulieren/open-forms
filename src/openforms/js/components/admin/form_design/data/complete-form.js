@@ -249,10 +249,17 @@ const saveVariables = async (state, csrftoken) => {
         variable.initialValue = variable.initialValue === 'true';
 
       if (variable.serviceFetchConfiguration) {
-        variable.serviceFetchConfiguration.headers = Object.fromEntries(variable.headers || []);
-        variable.serviceFetchConfiguration.queryParams = Object.fromEntries(
-          variable.queryParams || []
-        );
+        if (Array.isArray(variable.serviceFetchConfiguration.headers)) {
+          variable.serviceFetchConfiguration.headers = Object.fromEntries(
+            variable.serviceFetchConfiguration.headers || []
+          );
+        }
+
+        if (Array.isArray(variable.serviceFetchConfiguration.queryParams)) {
+          variable.serviceFetchConfiguration.queryParams = Object.fromEntries(
+            variable.serviceFetchConfiguration.queryParams || []
+          );
+        }
       }
     }
   });
