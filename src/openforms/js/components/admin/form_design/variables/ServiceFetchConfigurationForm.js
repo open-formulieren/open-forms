@@ -64,6 +64,27 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
           >
             <FormRow>
               <Field
+                name={'name'}
+                fieldBox
+                required
+                label={
+                  <FormattedMessage
+                    defaultMessage="Name"
+                    description="Service fetch configuration modal form name field label"
+                  />
+                }
+              >
+                <TextInput
+                  id="name"
+                  value={formik.values.name}
+                  maxLength="1000"
+                  {...formik.getFieldProps('name')}
+                />
+              </Field>
+            </FormRow>
+
+            <FormRow>
+              <Field
                 name={'method'}
                 required
                 label={

@@ -13,6 +13,7 @@ import ServiceFetchConfigurationForm from './ServiceFetchConfigurationForm';
 
 const INITIAL_VALUES = {
   id: null,
+  name: '',
   method: 'GET',
   service: '',
   path: '',
