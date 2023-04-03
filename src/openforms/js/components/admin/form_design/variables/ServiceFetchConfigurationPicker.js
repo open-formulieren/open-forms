@@ -65,6 +65,7 @@ const ServiceFetchConfigurationPicker = ({
 
       formLogicContext.onServiceFetchAdd(variableName, values);
       onFormSave();
+      setSubmitting(false);
     },
   });
 

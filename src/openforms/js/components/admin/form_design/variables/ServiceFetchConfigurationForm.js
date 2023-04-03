@@ -287,7 +287,11 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
                     description: 'Save as new service fetch configuration button label',
                     defaultMessage: 'Save as new',
                   })}
-                  onClick={formik.handleSubmit}
+                  onClick={e => {
+                    // Remove ID to ensure that new entry is created
+                    formik.setFieldValue('id', null);
+                    return formik.handleSubmit(e);
+                  }}
                   type="submit"
                 />
                 <ActionButton
