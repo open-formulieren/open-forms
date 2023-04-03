@@ -128,12 +128,13 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
   return (
     <>
       <DSLEditorNode errors={errors.variable}>
-        {/*
-          TODO: should we filter this to only allow user defined variables?
-
-          const filter = variable => variable.source === 'user_defined'
-        */}
-        <VariableSelection name="variable" value={action.variable} onChange={onChange} />
+        <VariableSelection
+          name="variable"
+          value={action.variable}
+          onChange={onChange}
+          // Only values of user defined values can be set
+          filter={variable => variable.source === 'user_defined'}
+        />
       </DSLEditorNode>
       <DSLEditorNode errors={errors.action?.value}>
         {/* TODO: this element loses state on change of the variable sibling right above*/}
