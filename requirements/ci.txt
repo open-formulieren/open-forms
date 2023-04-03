@@ -18,6 +18,11 @@ asgiref==3.5.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django
+async-timeout==4.0.2
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
+    #   redis
 attrs==20.3.0
     # via
     #   -c requirements/base.txt
@@ -708,7 +713,7 @@ qrcode==6.1
     #   maykin-django-two-factor-auth
 recommonmark==0.7.1
     # via -r requirements/docs.in
-redis==3.5.3
+redis==4.5.4
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt

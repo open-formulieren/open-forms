@@ -10,6 +10,8 @@ amqp==5.0.9
     # via kombu
 asgiref==3.5.0
     # via django
+async-timeout==4.0.2
+    # via redis
 attrs==20.3.0
     # via
     #   glom
@@ -366,7 +368,7 @@ pyyaml==5.4.1
     #   gemma-zds-client
 qrcode==6.1
     # via maykin-django-two-factor-auth
-redis==3.5.3
+redis==4.5.4
     # via
     #   celery-once
     #   django-redis
