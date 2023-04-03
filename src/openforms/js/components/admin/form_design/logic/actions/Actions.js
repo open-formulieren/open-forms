@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
@@ -108,17 +109,21 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
 
   const formContext = useContext(FormContext);
 
-  console.log(formContext.formVariables.find(element => element.key === action.variable));
+  let serviceFetchConfigFromVar =
+    _.cloneDeep(formContext.formVariables.find(element => element.key === action.variable))
+      ?.serviceFetchConfiguration || undefined;
 
-  const serviceFetchConfigId = formContext.formVariables.find(
-    element => element.key === action.variable
-  )?.serviceFetchConfiguration?.id;
+  if (serviceFetchConfigFromVar) {
+    if (!Array.isArray(serviceFetchConfigFromVar.headers)) {
+      serviceFetchConfigFromVar.headers = Object.entries(serviceFetchConfigFromVar.headers || []);
+    }
 
-  const formLogicContext = useContext(FormLogicContext);
-
-  const serviceFetchConfig = formLogicContext.serviceFetchConfigurations.find(
-    element => element.id === serviceFetchConfigId
-  );
+    if (!Array.isArray(serviceFetchConfigFromVar.queryParams)) {
+      serviceFetchConfigFromVar.queryParams = Object.entries(
+        serviceFetchConfigFromVar.queryParams || []
+      );
+    }
+  }
 
   return (
     <>
@@ -141,7 +146,7 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
             />
           </b>
           &nbsp;
-          {serviceFetchConfig?.name ||
+          {serviceFetchConfigFromVar?.name ||
             intl.formatMessage({
               description: 'No service fetch configuration configured yet message',
               defaultMessage: '(not configured yet)',
@@ -172,7 +177,7 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
         contentModifiers={['with-form', 'large']}
       >
         <ServiceFetchConfigurationPicker
-          initialValues={serviceFetchConfig}
+          initialValues={serviceFetchConfigFromVar}
           variableName={action.variable}
           onFormSave={closeModal}
           onChange={onChange}

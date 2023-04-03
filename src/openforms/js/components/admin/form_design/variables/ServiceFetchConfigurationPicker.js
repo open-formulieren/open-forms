@@ -94,7 +94,7 @@ const ServiceFetchConfigurationPicker = ({
                     formLogicContext.serviceFetchConfigurations.find(
                       element => element.id === parseInt(event.target.value)
                     )
-                  ) || formik.initialValues;
+                  ) || _.cloneDeep(formik.initialValues);
 
                 switch (values.dataMappingType) {
                   case 'JsonLogic':

@@ -185,9 +185,12 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
 
             # TODO check if name is shown
             # TODO reopen modal and check if proper info filled
-            # await expect(page.get_by_text("Fetch configuration: Service fetch config #1")).to_be_visible()
-            # await page.get_by_role("button", name="Configure").click()
-            # await check_service_fetch_form_values(page, data)
+            await expect(
+                page.get_by_text("Fetch configuration: Service fetch config #1")
+            ).to_be_visible()
+            await page.get_by_role("button", name="Configure").click()
+            await check_service_fetch_form_values(page, data)
+            await page.get_by_title("Sluiten").click()
 
             await page.get_by_text("Save and continue editing").click()
             await page.get_by_role("tab", name="Logic").click()
@@ -302,19 +305,23 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
 
             # TODO check if name is shown
             # TODO reopen modal and check if proper info filled
-            # await expect(page.get_by_text("Fetch configuration: foo2")).to_be_visible()
-            # await page.get_by_role("button", name="Configure").click()
-            # await check_service_fetch_form_values(page, dict(
-            #     name="foo2",
-            #     method="POST",
-            #     service="Test service 2",
-            #     path="foo",
-            #     query_params={"foo": ["bar"]},
-            #     headers={"header1": "value1"},
-            #     request_body='{\n  "foo": "bar"\n}',
-            #     data_mapping_type=DataMappingTypes.jq,
-            #     mapping_expression=".bar",
-            # ))
+            await expect(page.get_by_text("Fetch configuration: foo2")).to_be_visible()
+            await page.get_by_role("button", name="Configure").click()
+            await check_service_fetch_form_values(
+                page,
+                dict(
+                    name="foo2",
+                    method="POST",
+                    service="Test service 2",
+                    path="foo",
+                    query_params={"foo": ["bar"]},
+                    headers={"header1": "value1"},
+                    request_body='{\n  "foo": "bar"\n}',
+                    data_mapping_type=DataMappingTypes.jq,
+                    mapping_expression=".bar",
+                ),
+            )
+            await page.get_by_title("Sluiten").click()
 
             await page.get_by_text("Save and continue editing").click()
             await page.get_by_role("tab", name="Logic").click()
@@ -437,19 +444,23 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
 
             # TODO check if name is shown
             # TODO reopen modal and check if proper info filled
-            # await expect(page.get_by_text("Fetch configuration: foo2")).to_be_visible()
-            # await page.get_by_role("button", name="Configure").click()
-            # await check_service_fetch_form_values(page, dict(
-            #     name="foo2",
-            #     method="POST",
-            #     service="Test service 2",
-            #     path="foo",
-            #     query_params={"foo": ["bar"]},
-            #     headers={"header1": "value1"},
-            #     request_body='{\n  "foo": "bar"\n}',
-            #     data_mapping_type=DataMappingTypes.jq,
-            #     mapping_expression=".bar",
-            # ))
+            await expect(page.get_by_text("Fetch configuration: foo2")).to_be_visible()
+            await page.get_by_role("button", name="Configure").click()
+            await check_service_fetch_form_values(
+                page,
+                dict(
+                    name="foo2",
+                    method="POST",
+                    service="Test service 2",
+                    path="foo",
+                    query_params={"foo": ["bar"]},
+                    headers={"header1": "value1"},
+                    request_body='{\n  "foo": "bar"\n}',
+                    data_mapping_type=DataMappingTypes.jq,
+                    mapping_expression=".bar",
+                ),
+            )
+            await page.get_by_title("Sluiten").click()
 
             await page.get_by_text("Save and continue editing").click()
             await page.get_by_role("tab", name="Logic").click()
