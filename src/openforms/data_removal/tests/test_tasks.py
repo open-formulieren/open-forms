@@ -1,10 +1,13 @@
 from datetime import timedelta
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.utils import timezone
 
+from freezegun import freeze_time
+
 from openforms.config.models import GlobalConfiguration
+from openforms.forms.models.form_step import FormStep
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -56,6 +59,32 @@ class DeleteSubmissionsTask(TestCase):
         self.assertEqual(Submission.objects.count(), 3)
         with self.assertRaises(ObjectDoesNotExist):
             submission_to_be_deleted.refresh_from_db()
+
+    @tag("gh-2632")
+    def test_delete_successful_submission_with_deleted_form_step(self):
+        config = GlobalConfiguration.get_solo()
+
+        # submission to be deleted
+        before_limit = timezone.now() - timedelta(
+            days=config.successful_submissions_removal_limit + 1
+        )
+        with freeze_time(before_limit):
+            sub = SubmissionFactory.create(completed=True)
+
+        # create a form step to then delete which introduces the RecursionError
+        form_step = FormStepFactory.create(form=sub.form)
+        SubmissionStepFactory.create(submission=sub, form_step=form_step)
+
+        # delete form step - this causes the recursion error
+        form_step.delete()
+
+        assert sub.submissionstep_set.count() == 1
+        assert isinstance(sub.submissionstep_set.get().form_step, FormStep)
+        assert not FormStep.objects.exists()
+
+        delete_submissions()
+
+        self.assertFalse(Submission.objects.exists())
 
     def test_successful_submissions_with_form_settings_override_global_configuration(
         self,
