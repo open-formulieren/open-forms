@@ -1,10 +1,11 @@
 from datetime import timedelta
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.utils import timezone
 
 from openforms.config.models import GlobalConfiguration
+from openforms.forms.models.form_step import FormStep
 from openforms.forms.tests.factories import (
     FormDefinitionFactory,
     FormFactory,
@@ -56,6 +57,57 @@ class DeleteSubmissionsTask(TestCase):
         self.assertEqual(Submission.objects.count(), 3)
         with self.assertRaises(ObjectDoesNotExist):
             submission_to_be_deleted.refresh_from_db()
+
+    @tag("gh-2632")
+    def test_delete_successful_submission_with_deleted_form_step(self):
+        config = GlobalConfiguration.get_solo()
+
+        # submission to be deleted
+        sub = SubmissionFactory.create(
+            registration_status=RegistrationStatuses.success,
+        )
+        sub.created_on = timezone.now() - timedelta(
+            days=config.successful_submissions_removal_limit + 1
+        )
+        sub.save()
+
+        # sanity check: create one additional submission that should not be deleted
+        SubmissionFactory.create(
+            registration_status=RegistrationStatuses.pending,
+        )
+
+        # additional setup: formsteps + submission steps
+        form_step_1 = FormStepFactory.create(
+            form=FormFactory.create(
+                successful_submissions_removal_method=RemovalMethods.delete_permanently,
+            ),
+            form_definition=FormDefinitionFactory.create(),
+        )
+        form_step_2 = FormStepFactory.create(
+            form=FormFactory.create(
+                successful_submissions_removal_method=RemovalMethods.delete_permanently,
+            ),
+            form_definition=FormDefinitionFactory.create(),
+        )
+        SubmissionStepFactory.create(
+            form_step=form_step_1,
+            submission=sub,
+        )
+        SubmissionStepFactory.create(
+            form_step=form_step_2,
+            submission=sub,
+        )
+
+        # delete form step
+        form_steps = FormStep.objects.all()
+        form_steps.filter(id=form_step_1.pk).delete()
+
+        delete_submissions()
+
+        self.assertEqual(Submission.objects.count(), 1)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            sub.refresh_from_db()
 
     def test_successful_submissions_with_form_settings_override_global_configuration(
         self,

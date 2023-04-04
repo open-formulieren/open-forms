@@ -138,7 +138,11 @@ class SubmissionStep(models.Model):
         return f"SubmissionStep {self.pk}: Submission {self.submission_id} submitted on {self.created_on}"
 
     def _load_form_step_from_history(self):
-        history = deepcopy(self.form_step_history)
+        try:
+            history = deepcopy(self.form_step_history)
+        except RecursionError:
+            return None
+
         if not history:
             return None
 
