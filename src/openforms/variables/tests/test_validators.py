@@ -225,7 +225,7 @@ class QueryParameterValidatorTests(SimpleTestCase):
         with self.assertRaisesMessage(
             ValidationError,
             _(
-                "query parameter key '{parameter}' should be a string, but isn't."
+                "query parameter key '{parameter!s}' should be a string, but isn't."
             ).format(parameter=1),
         ):
             self.validate(value)
@@ -237,8 +237,9 @@ class QueryParameterValidatorTests(SimpleTestCase):
         }
         with self.assertRaisesMessage(
             ValidationError,
-            _("{header}: value '{value}' should be a list, but isn't.").format(
-                header="bar", value="baz"
+            _("{parameter!s}: value '{value!s}' should be a list, but isn't.").format(
+                parameter="bar",
+                value="baz",
             ),
         ):
             self.validate(value)
@@ -251,7 +252,7 @@ class QueryParameterValidatorTests(SimpleTestCase):
         with self.assertRaisesMessage(
             ValidationError,
             _(
-                "{parameter}: value '{value}' should be a list of strings, but isn't."
+                "{parameter!s}: value '{value!s}' should be a list of strings, but isn't."
             ).format(parameter="bar", value=["baz", 1]),
         ):
             self.validate(value)

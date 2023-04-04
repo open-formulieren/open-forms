@@ -4,11 +4,8 @@ import re
 
 from django.db import migrations
 
-MATCH_SINGLE_BRACKETS = r"{([A-z0-9_]*)}"
+MATCH_SINGLE_BRACKETS = r"{([A-z0-9_\.]*)}"
 REPL_SINGLE_BRACKETS = r"{{\1}}"
-
-MATCH_DOUBLE_BRACKETS = r"{{([A-z0-9_]*)}}"
-REPL_DOUBLE_BRACKETS = r"{\1}"
 
 
 def apply_regex_nested(data, pattern, repl):
@@ -42,30 +39,10 @@ def forwards(apps, _):
         config.save()
 
 
-def backwards(apps, _):
-    ServiceFetchConfiguration = apps.get_model("variables", "ServiceFetchConfiguration")
-
-    for config in ServiceFetchConfiguration.objects.all():
-        if config.body:
-            config.body = apply_regex_nested(
-                config.body, MATCH_DOUBLE_BRACKETS, REPL_DOUBLE_BRACKETS
-            )
-        if config.headers:
-            config.headers = apply_regex_nested(
-                config.headers, MATCH_DOUBLE_BRACKETS, REPL_DOUBLE_BRACKETS
-            )
-        if config.query_params:
-            config.query_params = apply_regex_nested(
-                config.query_params, MATCH_DOUBLE_BRACKETS, REPL_DOUBLE_BRACKETS
-            )
-
-        config.save()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
         ("variables", "0010_alter_servicefetchconfiguration_name"),
     ]
 
-    operations = [migrations.RunPython(forwards, backwards)]
+    operations = [migrations.RunPython(forwards, migrations.RunPython.noop)]
