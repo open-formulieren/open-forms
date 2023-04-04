@@ -16,7 +16,7 @@ import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
 
 import {FormLogicContext} from './Context';
 import StepSelection, {useFormStep} from './StepSelection';
-import {SERVICES_ENDPOINT} from './constants';
+import {SERVICES_ENDPOINT, SERVICE_FETCH_CONFIG_ENDPOINT} from './constants';
 import {loadFromBackend} from './data';
 import AdvancedTrigger from './logic/AdvancedTrigger';
 import DSLEditorNode from './logic/DSLEditorNode';
@@ -64,8 +64,17 @@ const FormLogic = ({logicRules = [], onChange, onDelete, onAdd}) => {
 
   const backendDataToLoad = [
     {endpoint: SERVICES_ENDPOINT, stateVar: 'services'},
-    // TODO load ServiceFetchConfigurations
-    {endpoint: '/api/v2/service-fetch-configurations', stateVar: 'serviceFetchConfigurations'},
+    {
+      endpoint: SERVICE_FETCH_CONFIG_ENDPOINT,
+      stateVar: 'serviceFetchConfigurations',
+      reshapeData: data => {
+        return data.map((element, index) => {
+          element.headers = Object.entries(element.headers);
+          element.queryParams = Object.entries(element.queryParams);
+          return element;
+        });
+      },
+    },
   ];
 
   const {loading} = useAsync(async () => {

@@ -9,6 +9,7 @@ class ServiceFetchConfigurationAdmin(admin.ModelAdmin):
         "service",
     ]
     list_display = [
+        "name",
         "service",
         "method",
         "path",
@@ -17,6 +18,7 @@ class ServiceFetchConfigurationAdmin(admin.ModelAdmin):
         "service",
     ]
     search_fields = [
+        "name",
         "service__api_root",
         "path",
     ]

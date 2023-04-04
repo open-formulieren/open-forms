@@ -1,7 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import authentication, mixins, permissions, viewsets
+from rest_framework import authentication, permissions, viewsets
 from zgw_consumers.models import Service
 
 from openforms.api.utils import mark_experimental
@@ -20,7 +20,7 @@ from . import serializers
     )
 )
 @mark_experimental
-class ServiceViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Configured Services
     """

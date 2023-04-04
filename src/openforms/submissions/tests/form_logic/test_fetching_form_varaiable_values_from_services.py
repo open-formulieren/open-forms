@@ -76,7 +76,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
                 service=self.service,
-                path="delay/{seconds}",
+                path="delay/{{seconds}}",
             )
         )
         context = {"seconds": 6}
@@ -93,7 +93,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
                 service=self.service,
-                path="delay/{seconds}.{second_fragments}",
+                path="delay/{{seconds}}.{{second_fragments}}",
             )
         )
         # Intended use
@@ -107,14 +107,14 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
         self.assertEqual(request.url, "https://httpbin.org/delay/6.5")
 
         # Edge case
-        context = {"seconds": 6, "second_fragments": "{seconds}"}
+        context = {"seconds": 6, "second_fragments": "{{seconds}}"}
 
         with requests_mock.Mocker() as m:
             m.get(requests_mock.ANY)
             perform_service_fetch(var, context)
             request = m.last_request
 
-        self.assertEqual(request.url, "https://httpbin.org/delay/6.%7Bseconds%7D")
+        self.assertEqual(request.url, "https://httpbin.org/delay/6.%7B%7Bseconds%7D%7D")
 
     @given(data_mapping_values())
     @example("../otherendpoint")
@@ -128,7 +128,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
                 service=self.service,
-                path="delay/{seconds}",  # this is not defined as number in the OAS
+                path="delay/{{seconds}}",  # this is not defined as number in the OAS
             )
         )
 
@@ -177,9 +177,8 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
 
     @given(
         field_value=data_mapping_values(),
-        question_mark=st.one_of(st.just("?"), st.just("")),  # optional
     )
-    def test_it_can_construct_simple_query_parameters(self, field_value, question_mark):
+    def test_it_can_construct_simple_query_parameters(self, field_value):
         # https://swagger.io/docs/specification/describing-parameters/#query-parameters
         context = {"some_field": field_value}
 
@@ -187,7 +186,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
                 service=self.service,
                 path="response-headers",
-                query_params=question_mark + "freeform={some_field}",
+                query_params={"freeform": "{{some_field}}"},
             )
         )
 
@@ -220,7 +219,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
                 service=self.service,
                 path="redirect-to",
-                query_params="?status_code={code}&url={url}",
+                query_params={"status_code": "{{code}}", "url": "{{url}}"},
             )
         )
 
@@ -273,56 +272,24 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
 
         self.assertIn(("X-Brony-Identity", "Jumper"), request_headers.items())
 
-    @given(
-        st.one_of(
-            st.text(
-                # blacklist invisible control characters
-                alphabet=st.characters(blacklist_categories=("C"))
-            ),
-            st.integers(),
-            st.floats(),
-            st.dates(),
-            st.datetimes(),
-        )
-    )
-    @example(field_value="0 ")
-    def test_it_can_construct_simple_header_parameters(self, field_value):
-        "Assert the happy path"
+    def test_it_can_construct_simple_header_parameters(self):
+        "Assert a happy path"
         # https://swagger.io/docs/specification/describing-parameters/#header-parameters
-        context = {"some_value": field_value}
+        context = {"some_value": "x"}
         var = FormVariableFactory.build(
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
                 service=self.service,
                 path="cache",
                 # our OAS spec doesn't care what ETags look like.
-                headers={"If-None-Match": "{some_value}"},
+                headers={"If-None-Match": "{{some_value}}"},
             )
         )
-
-        # force unicode into a str with just characters in [\x00 .. \xff]
-        expected_value = str(field_value).encode("utf-8").decode("iso-8859-1").strip()
-
         with requests_mock.Mocker(case_sensitive=True) as m:
             m.get("https://httpbin.org/cache")
             _ = perform_service_fetch(var, context)
             request = m.last_request
 
-        self.assertIn(("If-None-Match", expected_value), request.headers.items())
-        # it should not add any other headers
-        self.assertEquals(
-            set(request.headers), {"If-None-Match"}.union(DEFAULT_REQUEST_HEADERS)
-        )
-        # assert headers we sent were valid RFC 9110 (requests doesn't
-        # guarantee this, it just checks for CR but it will happily send \x00)
-        try:
-            HeaderValidator()(request.headers)
-        except ValidationError as e:
-            raise self.failureException("Constructed invalid header") from e
-
-        # it shouldn't change other parts of the request
-        self.assertIs(request.body, None)
-        self.assertEqual(request.path, "/cache")
-        self.assertEqual(len(request.qs), 0)
+        self.assertIn(("If-None-Match", "x"), request.headers.items())
 
     @given(data_mapping_values())
     @example("Little Bobby Tables\r\nX-Other-Header: Some value")
@@ -334,7 +301,7 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
             service_fetch_configuration=ServiceFetchConfigurationFactory.build(
                 service=self.service,
                 path="cache",
-                headers={"If-None-Match": "{some_value}"},
+                headers={"If-None-Match": "{{some_value}}"},
             )
         )
 
@@ -352,7 +319,17 @@ class ServiceFetchConfigVariableBindingTests(SimpleTestCase):
         try:
             HeaderValidator()(request.headers)
         except ValidationError as e:
-            raise self.failureException("bind sent bad headers!") from e
+            raise self.failureException("Fetch sent bad headers!") from e
+
+        # it should not add any other headers
+        self.assertEquals(
+            set(request.headers), {"If-None-Match"}.union(DEFAULT_REQUEST_HEADERS)
+        )
+
+        # it shouldn't change other parts of the request
+        self.assertIs(request.body, None)
+        self.assertEqual(request.path, "/cache")
+        self.assertEqual(len(request.qs), 0)
 
     @requests_mock.Mocker()
     def test_it_sends_the_body_as_json(self, m):

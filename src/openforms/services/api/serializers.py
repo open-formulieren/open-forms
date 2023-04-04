@@ -5,11 +5,18 @@ from openforms.api.utils import mark_experimental
 
 
 @mark_experimental
-class ServiceSerializer(serializers.ModelSerializer):
+class ServiceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Service
         fields = (
+            "url",
             "label",
             "api_root",
             "api_type",
         )
+        extra_kwargs = {
+            "url": {
+                "lookup_field": "pk",
+                "view_name": "api:service-detail",
+            }
+        }

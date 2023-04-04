@@ -1,14 +1,16 @@
-from urllib.parse import quote, quote_plus
+from urllib.parse import quote_plus
 
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from openforms.template import render_from_string, sandbox_backend
 from openforms.typing import DataMapping
 
 from .constants import DataMappingTypes, ServiceFetchMethods
 from .validators import (
     HeaderValidator,
+    QueryParameterValidator,
     validate_mapping_expression,
     validate_request_body,
 )
@@ -19,6 +21,10 @@ class ServiceFetchConfiguration(models.Model):
         "zgw_consumers.Service",
         on_delete=models.PROTECT,
         verbose_name=_("service"),
+    )
+    name = models.CharField(
+        max_length=250,
+        help_text=_("human readable name for the configuration"),
     )
     path = models.CharField(
         _("path"),
@@ -37,16 +43,17 @@ class ServiceFetchConfiguration(models.Model):
     headers = models.JSONField(
         _("HTTP request headers"),
         blank=True,
-        null=True,
+        default=dict,
         help_text=_(
             "Additions and overrides for the HTTP request headers as defined in the Service."
         ),
         validators=[HeaderValidator()],
     )
-    query_params = models.TextField(
+    query_params = models.JSONField(
         _("HTTP query string"),
         blank=True,
-        default="",
+        default=dict,
+        validators=[QueryParameterValidator()],
     )
     body = models.JSONField(
         _("HTTP request body"),
@@ -111,7 +118,16 @@ class ServiceFetchConfiguration(models.Model):
 
         headers = {
             # map all unicode into what the RFC allows with utf-8; remove padding space
-            header: value.format(**context).encode("utf-8").decode("latin1").strip()
+            header: render_from_string(
+                value,
+                # Explicitly cast values to strings to avoid localization
+                {k: str(v) for k, v in context.items()},
+                backend=sandbox_backend,
+                disable_autoescape=True,
+            )
+            .encode("utf-8")
+            .decode("latin1")
+            .strip()
             for header, value in (self.headers or {}).items()
         }
         # before we go further
@@ -119,16 +135,26 @@ class ServiceFetchConfiguration(models.Model):
         # this catches faults requests doesn't: https://github.com/psf/requests/issues/6359
         HeaderValidator()(headers)
 
-        escaped_for_query = {k: quote(str(v)) for k, v in context.items()}
         escaped_for_path = {k: quote_plus(str(v)) for k, v in context.items()}
 
-        query_params = self.query_params.format(**escaped_for_query)
-        query_params = (
-            query_params[1:] if query_params.startswith("?") else query_params
-        )
+        query_params = {
+            param: render_from_string(
+                value,
+                # Explicitly cast values to strings to avoid localization
+                {k: str(v) for k, v in context.items()},
+                backend=sandbox_backend,
+                disable_autoescape=True,
+            )
+            for param, value in (self.query_params or {}).items()
+        }
 
         request_args = dict(
-            path=self.path.format(**escaped_for_path),
+            path=render_from_string(
+                self.path,
+                escaped_for_path,
+                backend=sandbox_backend,
+                disable_autoescape=True,
+            ),
             params=query_params,
             method=self.method,
             headers=headers,

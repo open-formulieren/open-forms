@@ -8,7 +8,7 @@ from openforms.api.serializers import ExceptionSerializer
 from openforms.api.views import ListMixin
 from openforms.forms.api.serializers import FormVariableSerializer
 
-from .service import get_static_variables
+from ..service import get_static_variables
 
 
 @extend_schema_view(

@@ -165,7 +165,8 @@ class FormVariableViewsetTest(APITestCase):
                     "data_type": FormVariableDataTypes.object,
                     "initial_value": None,
                     "service_fetch_configuration": {
-                        "service": service.id,
+                        "name": "GET foo",
+                        "service": f"http://testserver{reverse('api:service-detail', kwargs={'pk': service.pk})}",
                         "path": form_variables_path,
                         "method": ServiceFetchMethods.get,
                         "data_mapping_type": DataMappingTypes.json_logic,
@@ -233,7 +234,8 @@ class FormVariableViewsetTest(APITestCase):
                     "initial_value": None,
                     "service_fetch_configuration": {
                         "id": service_fetch_config.id,
-                        "service": service.id,
+                        "name": "GET foo",
+                        "service": f"http://testserver{reverse('api:service-detail', kwargs={'pk': service.pk})}",
                         "path": form_variables_path,
                         "method": ServiceFetchMethods.get,
                         "data_mapping_type": DataMappingTypes.json_logic,
@@ -298,7 +300,8 @@ class FormVariableViewsetTest(APITestCase):
                     "data_type": FormVariableDataTypes.string,
                     "initial_value": None,
                     "service_fetch_configuration": {
-                        "service": service.id,
+                        "name": "GET foo",
+                        "service": f"http://testserver{reverse('api:service-detail', kwargs={'pk': service.pk})}",
                         "path": form_variables_path,
                         "method": ServiceFetchMethods.get,
                         "data_mapping_type": DataMappingTypes.json_logic,
@@ -314,7 +317,8 @@ class FormVariableViewsetTest(APITestCase):
                     "data_type": FormVariableDataTypes.string,
                     "initial_value": None,
                     "service_fetch_configuration": {
-                        "service": service.id,
+                        "name": "GET foo",
+                        "service": f"http://testserver{reverse('api:service-detail', kwargs={'pk': service.pk})}",
                         "path": form_variables_path,
                         "method": ServiceFetchMethods.get,
                         "data_mapping_type": DataMappingTypes.json_logic,
@@ -331,7 +335,8 @@ class FormVariableViewsetTest(APITestCase):
                     "initial_value": None,
                     "service_fetch_configuration": {
                         "id": -1,  # does not exist
-                        "service": service.id,
+                        "name": "GET foo",
+                        "service": f"http://testserver{reverse('api:service-detail', kwargs={'pk': service.pk})}",
                         "path": form_variables_path,
                         "method": ServiceFetchMethods.get,
                         "data_mapping_type": DataMappingTypes.json_logic,

@@ -3311,6 +3311,73 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+  /api/v2/service-fetch-configurations:
+    get:
+      operationId: service_fetch_configurations_list
+      description: |-
+        Return a list of available services fetch configurations configured in the backend.
+
+        Note that this endpoint is **EXPERIMENTAL**.
+      summary: List available service fetch configurations
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - service-fetch-configurations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedServiceFetchConfigurationList'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+      x-experimental: true
+  /api/v2/service-fetch-configurations/{id}:
+    get:
+      operationId: service_fetch_configurations_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this service fetch configuration.
+        required: true
+      tags:
+      - service-fetch-configurations
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceFetchConfiguration'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+      x-experimental: true
   /api/v2/services:
     get:
       operationId: services_list
@@ -3331,6 +3398,38 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Service'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
+      x-experimental: true
+  /api/v2/services/{id}:
+    get:
+      operationId: services_retrieve
+      description: Configured Services
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this service.
+        required: true
+      tags:
+      - services
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
           description: ''
           headers:
             X-Session-Expires-In:
@@ -7147,6 +7246,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FormDefinition'
+    PaginatedServiceFetchConfigurationList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceFetchConfiguration'
     PaginatedSubmissionList:
       type: object
       properties:
@@ -7588,6 +7707,10 @@ components:
     Service:
       type: object
       properties:
+        url:
+          type: string
+          format: uri
+          readOnly: true
         label:
           type: string
           maxLength: 100
@@ -7603,6 +7726,7 @@ components:
       - apiRoot
       - apiType
       - label
+      - url
       x-experimental: true
     ServiceFetchConfiguration:
       type: object
@@ -7610,8 +7734,13 @@ components:
         id:
           type: integer
           readOnly: true
+        name:
+          type: string
+          description: human readable name for the configuration
+          maxLength: 250
         service:
-          type: integer
+          type: string
+          format: uri
         path:
           type: string
           description: path relative to the Service API root
@@ -7624,12 +7753,12 @@ components:
         headers:
           type: object
           additionalProperties: {}
-          nullable: true
           title: HTTP request headers
           description: Additions and overrides for the HTTP request headers as defined
             in the Service.
         queryParams:
-          type: string
+          type: object
+          additionalProperties: {}
           title: HTTP query string
         body:
           type: object
@@ -7650,6 +7779,7 @@ components:
           description: For jq, pass a string containing the filter expression
       required:
       - id
+      - name
       - service
     SourceEnum:
       enum:

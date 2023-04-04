@@ -20,11 +20,13 @@ import Action from './Action';
 
 export const AVAILABLE_SERVICES = [
   {
+    url: 'http://foo.com/services/1',
     label: 'Service 1',
     apiRoot: 'http://foo.com/api/v1/',
     apiType: 'ORC',
   },
   {
+    url: 'http://foo.com/services/2',
     label: 'Service 2',
     apiRoot: 'http://bar.com/api/v1/',
     apiType: 'ORC',
@@ -33,8 +35,8 @@ export const AVAILABLE_SERVICES = [
 export const SERVICE_FETCH_CONFIGURATIONS = [
   {
     name: 'Foo fetch',
-    url: 'http://openforms.dev/service-fetch-configurations/foo',
-    service: 'http://foo.com/api/v1/',
+    id: 1,
+    service: 'http://foo.com/services/1',
     path: '/some-path',
     method: 'GET',
     headers: [['X-Foo', 'foo']],
@@ -45,8 +47,8 @@ export const SERVICE_FETCH_CONFIGURATIONS = [
   },
   {
     name: '', // No name supplied, should fall back to "method path (service)"
-    url: 'http://openforms.dev/service-fetch-configurations/bar',
-    service: 'http://bar.com/api/v1/',
+    id: 2,
+    service: 'http://foo.com/services/2',
     path: '/some-other-path',
     method: 'POST',
     headers: [['X-Foo', 'bar']],

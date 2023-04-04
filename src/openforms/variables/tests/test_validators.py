@@ -2,13 +2,14 @@ from string import ascii_letters
 from typing import Any, Literal
 
 from django.test import SimpleTestCase
+from django.utils.translation import gettext as _
 
 from hypothesis import given, strategies as st
 
 from openforms.tests.search_strategies import json_values
 from openforms.typing import JSONValue
 
-from ..validators import HeaderValidator, ValidationError
+from ..validators import HeaderValidator, QueryParameterValidator, ValidationError
 
 FIELD_NAME_ALPHABET = "!#$%&'*+-.^_`|~0123456789" + ascii_letters
 VCHAR = "".join((chr(i) for i in range(0x21, 0x7F)))
@@ -184,3 +185,74 @@ class HeaderValidatorTests(SimpleTestCase):
 
         with self.assertRaisesMessage(ValidationError, unquoted_repr(faulty_name)):
             self.validate(faulty_input)
+
+
+class QueryParameterValidatorTests(SimpleTestCase):
+    validate = QueryParameterValidator()
+
+    def test_validate_none_success(self):
+        value = None
+
+        self.validate(value)
+
+    def test_validate_success(self):
+        value = {
+            "foo": ["bar"],
+            "bar": ["baz", "qux"],
+        }
+
+        try:
+            self.validate(value)
+        except ValidationError:
+            self.fail("Unexpected ValidationError raised")
+
+    def test_validate_is_mapping(self):
+        value = "not_a_mapping"
+
+        with self.assertRaisesMessage(
+            ValidationError,
+            _(
+                'Query parameters should have the form {"parameter": ["my", "parameter", "values"]}'
+            ),
+        ):
+            self.validate(value)
+
+    def test_validate_keys_are_strings(self):
+        value = {
+            "foo": ["bar"],
+            1: ["baz"],
+        }
+        with self.assertRaisesMessage(
+            ValidationError,
+            _(
+                "query parameter key '{parameter!s}' should be a string, but isn't."
+            ).format(parameter=1),
+        ):
+            self.validate(value)
+
+    def test_validate_values_are_lists(self):
+        value = {
+            "foo": ["bar"],
+            "bar": "baz",
+        }
+        with self.assertRaisesMessage(
+            ValidationError,
+            _("{parameter!s}: value '{value!s}' should be a list, but isn't.").format(
+                parameter="bar",
+                value="baz",
+            ),
+        ):
+            self.validate(value)
+
+    def test_validate_values_are_lists_of_strings(self):
+        value = {
+            "foo": ["bar"],
+            "bar": ["baz", 1],
+        }
+        with self.assertRaisesMessage(
+            ValidationError,
+            _(
+                "{parameter!s}: value '{value!s}' should be a list of strings, but isn't."
+            ).format(parameter="bar", value=["baz", 1]),
+        ):
+            self.validate(value)
