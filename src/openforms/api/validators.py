@@ -32,10 +32,25 @@ class AllOrNoneTruthyFieldsValidator:
         self.fields = fields
 
     def __call__(self, data: dict):
-        values = [data.get(field) for field in self.fields]
-        if any(values) and not all(values):
-            err = self.message.format(fields=", ".join(self.fields))
-            raise serializers.ValidationError(err, code=self.code)
+        fields_data = {field: data.get(field) for field in self.fields}
+        unfilled_fields = [
+            field_name
+            for field_name, field_value in fields_data.items()
+            if not field_value
+        ]
+        number_unfilled_fields = len(unfilled_fields)
+        if number_unfilled_fields == 0 or number_unfilled_fields == len(self.fields):
+            return
+
+        err = self.message.format(fields=", ".join(self.fields))
+        raise serializers.ValidationError(
+            {
+                field_name: err
+                for field_name, field_value in fields_data.items()
+                if not field_value
+            },
+            code=self.code,
+        )
 
 
 MT = TypeVar("MT", bound=models.Model)
