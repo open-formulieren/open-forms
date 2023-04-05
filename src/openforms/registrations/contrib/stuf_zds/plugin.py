@@ -21,7 +21,6 @@ from openforms.submissions.mapping import (
     get_unmapped_data,
 )
 from openforms.submissions.models import Submission, SubmissionReport
-from openforms.submissions.tasks import set_submission_reference
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from stuf.stuf_zds.constants import VertrouwelijkheidsAanduidingen
 from stuf.stuf_zds.models import StufZDSConfig
@@ -366,8 +365,3 @@ class StufZDSRegistration(BasePlugin):
                 ),
             ),
         ]
-
-    def obtain_submission_reference(
-        self, submission: "Submission", options: dict
-    ) -> None:
-        set_submission_reference(submission)

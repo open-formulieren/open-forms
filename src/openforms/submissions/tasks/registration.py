@@ -51,19 +51,13 @@ def pre_registration(submission_id: int) -> None:
 
 
 @app.task
+@transaction.atomic
 def obtain_submission_reference(submission_id: int) -> None:
+    """
+    Task wrapper for set_submission_reference()
+    """
     submission = Submission.objects.get(id=submission_id)
-    registration_plugin = get_registration_plugin(submission)
-
-    if not registration_plugin:
-        return
-
-    # The registration options were validated in the pre-registration task AND in the registration task, so not
-    # validating again. Possible edge case: the options changed between the registration task and the obtain_reference
-    # task?
-    registration_plugin.obtain_submission_reference(
-        submission, submission.form.registration_backend_options
-    )
+    set_submission_reference(submission)
 
 
 def get_registration_plugin(submission: Submission) -> Optional["BasePlugin"]:

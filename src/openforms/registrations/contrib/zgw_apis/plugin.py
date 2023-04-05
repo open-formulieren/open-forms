@@ -22,7 +22,6 @@ from openforms.contrib.zgw.service import (
 )
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
-from openforms.submissions.tasks import set_submission_reference
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
 
@@ -328,8 +327,3 @@ class ZGWRegistration(BasePlugin):
                 ),
             ),
         ]
-
-    def obtain_submission_reference(
-        self, submission: "Submission", options: dict
-    ) -> None:
-        set_submission_reference(submission)
