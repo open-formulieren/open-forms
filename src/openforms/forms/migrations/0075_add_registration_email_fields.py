@@ -20,10 +20,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 help_text="Content of the registration email message (as HTML).",
                 validators=[
-                    openforms.template.validators.DjangoTemplateValidator(
-                        backend="openforms.template.openforms_backend",
-                        required_template_tags=["payment_information"],
-                    ),
+                    openforms.template.validators.DjangoTemplateValidator(),
                     openforms.emails.validators.URLSanitationValidator(),
                 ],
                 verbose_name="registration email content HTML",
@@ -36,10 +33,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 help_text="Content of the registration email message (as text).",
                 validators=[
-                    openforms.template.validators.DjangoTemplateValidator(
-                        backend="openforms.template.openforms_backend",
-                        required_template_tags=["payment_information"],
-                    ),
+                    openforms.template.validators.DjangoTemplateValidator(),
                     openforms.emails.validators.URLSanitationValidator(),
                 ],
                 verbose_name="registration email content text",

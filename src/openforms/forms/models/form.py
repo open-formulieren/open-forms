@@ -292,12 +292,7 @@ class Form(models.Model):
         help_text=_("Content of the registration email message (as HTML)."),
         blank=True,
         validators=[
-            DjangoTemplateValidator(
-                required_template_tags=[
-                    "payment_information",
-                ],
-                backend="openforms.template.openforms_backend",
-            ),
+            DjangoTemplateValidator(),
             URLSanitationValidator(),
         ],
     )
@@ -306,12 +301,7 @@ class Form(models.Model):
         help_text=_("Content of the registration email message (as text)."),
         blank=True,
         validators=[
-            DjangoTemplateValidator(
-                required_template_tags=[
-                    "payment_information",
-                ],
-                backend="openforms.template.openforms_backend",
-            ),
+            DjangoTemplateValidator(),
             URLSanitationValidator(),
         ],
     )

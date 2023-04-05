@@ -196,8 +196,8 @@ class FormPluginOptionTest(APITestCase):
         response = self.client.patch(
             url,
             data={
-                "registration_email_content_html": "Custom HTML template {% payment_information %}",
-                "registration_email_content_text": "Custom text template {% payment_information %}",
+                "registration_email_content_html": "Custom HTML template",
+                "registration_email_content_text": "Custom text template",
             },
         )
 
@@ -214,11 +214,11 @@ class FormPluginOptionTest(APITestCase):
         )
         self.assertEqual(
             data["registrationEmailContentHtml"],
-            "Custom HTML template {% payment_information %}",
+            "Custom HTML template",
         )
         self.assertEqual(
             data["registrationEmailContentText"],
-            "Custom text template {% payment_information %}",
+            "Custom text template",
         )
 
     def test_cannot_overwrite_only_registration_email_html_template(self):
@@ -232,7 +232,7 @@ class FormPluginOptionTest(APITestCase):
         response = self.client.patch(
             url,
             data={
-                "registration_email_content_html": "Custom HTML template {% payment_information %}",
+                "registration_email_content_html": "Custom HTML template",
             },
         )
 
