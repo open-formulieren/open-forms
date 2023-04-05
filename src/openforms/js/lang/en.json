@@ -9,6 +9,11 @@
     "description": "Manage complex process vars configure link text",
     "originalDefault": "Configure"
   },
+  "+DztEl": {
+    "defaultMessage": "Path",
+    "description": "Service fetch configuration modal form Path field label",
+    "originalDefault": "Path"
+  },
   "+hAGg7": {
     "defaultMessage": "Users will not be able to start the form if it is in maintenance mode.",
     "description": "Form maintenance mode field help text",
@@ -28,6 +33,11 @@
     "defaultMessage": "Dates Component",
     "description": "Dates Component field label",
     "originalDefault": "Dates Component"
+  },
+  "/rF8P0": {
+    "defaultMessage": "Configuration",
+    "description": "Service fetch config configuration tab title",
+    "originalDefault": "Configuration"
   },
   "0RXE97": {
     "defaultMessage": "Literals",
@@ -54,6 +64,11 @@
     "description": "Incomplete Submissions Removal Method field label",
     "originalDefault": "Incomplete Submissions Removal Method"
   },
+  "20K9To": {
+    "defaultMessage": "Service fetch configuration",
+    "description": "Service fetch configuration selection modal title",
+    "originalDefault": "Service fetch configuration"
+  },
   "294MCM": {
     "defaultMessage": "Is deleted",
     "description": "Form deleted field label",
@@ -68,6 +83,11 @@
     "defaultMessage": "Type",
     "description": "Camunda complex process var 'type' label",
     "originalDefault": "Type"
+  },
+  "2boL55": {
+    "defaultMessage": "Query parameters",
+    "description": "Service fetch configuration modal form query parameters field label",
+    "originalDefault": "Query parameters"
   },
   "2d5RfI": {
     "defaultMessage": "Registration backend options",
@@ -134,6 +154,11 @@
     "description": "add step button",
     "originalDefault": "Add step"
   },
+  "5QLG/6": {
+    "defaultMessage": "Add another value",
+    "description": "Label for add button used in MappingArrayInput",
+    "originalDefault": "Add another value"
+  },
   "5uaKBM": {
     "defaultMessage": "minus",
     "description": "\"-\" operator description",
@@ -153,6 +178,11 @@
     "defaultMessage": "Authentication",
     "description": "Auth plugin field label",
     "originalDefault": "Authentication"
+  },
+  "6ZW12a": {
+    "defaultMessage": "Request body",
+    "description": "Service fetch configuration modal form request body field label",
+    "originalDefault": "Request body"
   },
   "6hApJ7": {
     "defaultMessage": "Stay logged in",
@@ -209,6 +239,11 @@
     "description": "\"<=\" operator description",
     "originalDefault": "is less than or equal to"
   },
+  "7izgdj": {
+    "defaultMessage": "Overwrites the globally configured subject for the registration email.",
+    "description": "registration email subject help text",
+    "originalDefault": "Overwrites the globally configured subject for the registration email."
+  },
   "89fqYz": {
     "defaultMessage": "Is reusable?",
     "description": "Form step is reusable label",
@@ -248,6 +283,11 @@
     "defaultMessage": "Please select the logic type:",
     "description": "Logic type selection label",
     "originalDefault": "Please select the logic type:"
+  },
+  "9LflJr": {
+    "defaultMessage": "Key",
+    "description": "Label for 'key' in MappingArrayInput table column",
+    "originalDefault": "Key"
   },
   "9N67XB": {
     "defaultMessage": "Invalid JSON syntax",
@@ -294,6 +334,11 @@
     "description": "\">\" operator description",
     "originalDefault": "is greater than"
   },
+  "AHfeW/": {
+    "defaultMessage": "Configure",
+    "description": "Button to open service fetch configuration modal",
+    "originalDefault": "Configure"
+  },
   "APOVFs": {
     "defaultMessage": "Form details",
     "description": "Form details fieldset title",
@@ -303,6 +348,11 @@
     "defaultMessage": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration.",
     "description": "literals.changeText help text",
     "originalDefault": "The text that will be displayed in the overview page to change a certain step. Leave blank to get value from global configuration."
+  },
+  "AV5FlV": {
+    "defaultMessage": "Overwrites the globally configured text for the registration email. This should contain the same information as the HTML template, in case the email client does not render the HTML.",
+    "description": "registration email text content help text",
+    "originalDefault": "Overwrites the globally configured text for the registration email. This should contain the same information as the HTML template, in case the email client does not render the HTML."
   },
   "AtBVAV": {
     "defaultMessage": "Confirm",
@@ -339,6 +389,11 @@
     "description": "Static variables tab title",
     "originalDefault": "Static"
   },
+  "BqA9of": {
+    "defaultMessage": "Try it out",
+    "description": "Service fetch config try it out tab title",
+    "originalDefault": "Try it out"
+  },
   "BrGg65": {
     "defaultMessage": "plus",
     "description": "\"+\" operator description",
@@ -348,6 +403,11 @@
     "defaultMessage": "Then the price is",
     "description": "Price logic prefix",
     "originalDefault": "Then the price is"
+  },
+  "C+91tl": {
+    "defaultMessage": "Data extraction",
+    "description": "Service fetch configuration modal data extraction fieldset title",
+    "originalDefault": "Data extraction"
   },
   "C4Zn+R": {
     "defaultMessage": "Internal name of the form definition used in this form step",
@@ -413,6 +473,11 @@
     "defaultMessage": "Field",
     "description": "Manage process vars component column title",
     "originalDefault": "Field"
+  },
+  "Ekld1h": {
+    "defaultMessage": "Save as new",
+    "description": "Save as new service fetch configuration button label",
+    "originalDefault": "Save as new"
   },
   "EtAvFF": {
     "defaultMessage": "Duplicate this form",
@@ -614,6 +679,11 @@
     "description": "Successful Submissions Removal Limit field label",
     "originalDefault": "Successful Submissions Removal Limit"
   },
+  "JaZBSN": {
+    "defaultMessage": "Registration email subject",
+    "description": "Registration email subject name",
+    "originalDefault": "Registration email subject"
+  },
   "JtOgcq": {
     "defaultMessage": "Last Name Component",
     "description": "Last Name Component field label",
@@ -679,10 +749,20 @@
     "description": "Copy form button",
     "originalDefault": "Copy"
   },
+  "LWsV/H": {
+    "defaultMessage": "Registration email content (HTML)",
+    "description": "Registration email HTML content name",
+    "originalDefault": "Registration email content (HTML)"
+  },
   "LaovNg": {
     "defaultMessage": "Add variable",
     "description": "Add process variable button",
     "originalDefault": "Add variable"
+  },
+  "LrlAVD": {
+    "defaultMessage": "Data extraction",
+    "description": "Service fetch configuration try it out tabpanel data extraction fieldset title",
+    "originalDefault": "Data extraction"
   },
   "Ltde29": {
     "defaultMessage": "fetch the value for a variable from a service",
@@ -698,6 +778,11 @@
     "defaultMessage": "Change text",
     "description": "literals.changeText form label",
     "originalDefault": "Change text"
+  },
+  "M5KI1y": {
+    "defaultMessage": "Form specific registration email templates",
+    "description": "Registration email template options label",
+    "originalDefault": "Form specific registration email templates"
   },
   "MEkGHD": {
     "defaultMessage": "Component",
@@ -753,6 +838,11 @@
     "defaultMessage": "Advanced",
     "description": "Advanced logic type",
     "originalDefault": "Advanced"
+  },
+  "Orf0vr": {
+    "defaultMessage": "Update",
+    "description": "Update service fetch configuration button label",
+    "originalDefault": "Update"
   },
   "OvqnXR": {
     "defaultMessage": "Yes",
@@ -894,6 +984,11 @@
     "description": "Session status modal close button",
     "originalDefault": "Back to login"
   },
+  "TH62Jn": {
+    "defaultMessage": "the path should not have a leading slash",
+    "description": "Service fetch configuration modal form Path field help text",
+    "originalDefault": "the path should not have a leading slash"
+  },
   "TR5xSY": {
     "defaultMessage": "Are you sure you want to delete this rule?",
     "description": "Logic rule deletion confirm message",
@@ -913,6 +1008,11 @@
     "defaultMessage": "All Submissions Removal Limit",
     "description": "All Submissions Removal Limit field label",
     "originalDefault": "All Submissions Removal Limit"
+  },
+  "V/1My+": {
+    "defaultMessage": "Registration email payment subject",
+    "description": "Registration email payment subject name",
+    "originalDefault": "Registration email payment subject"
   },
   "V21YkS": {
     "defaultMessage": "Confirm",
@@ -964,6 +1064,11 @@
     "description": "Product fieldset title",
     "originalDefault": "Product"
   },
+  "WUTOwp": {
+    "defaultMessage": "Service",
+    "description": "Service fetch configuration modal form Service field label",
+    "originalDefault": "Service"
+  },
   "WdVKZw": {
     "defaultMessage": "Logic",
     "description": "Form logic tab title",
@@ -993,6 +1098,11 @@
     "defaultMessage": "Invalid JSON logic expression",
     "description": "Advanced logic rule invalid JSON-logic message",
     "originalDefault": "Invalid JSON logic expression"
+  },
+  "Xe+CCn": {
+    "defaultMessage": "Basic",
+    "description": "Service fetch configuration modal basic fieldset title",
+    "originalDefault": "Basic"
   },
   "YQ/Vx0": {
     "defaultMessage": "Save",
@@ -1054,6 +1164,11 @@
     "description": "Form step login required label",
     "originalDefault": "Login required?"
   },
+  "auZOcD": {
+    "defaultMessage": "Mapping expression",
+    "description": "Service fetch configuration modal form mapping expression field label",
+    "originalDefault": "Mapping expression"
+  },
   "b9D64D": {
     "defaultMessage": "Is sensitive",
     "description": "Is sensitive icon title",
@@ -1068,6 +1183,11 @@
     "defaultMessage": "There are validation errors",
     "description": "Tab validation errors icon title",
     "originalDefault": "There are validation errors"
+  },
+  "bnxtnX": {
+    "defaultMessage": "Full request",
+    "description": "Service fetch configuration try it out tabpanel full request fieldset title",
+    "originalDefault": "Full request"
   },
   "bzVhb6": {
     "defaultMessage": "Move up",
@@ -1204,10 +1324,20 @@
     "description": "data type object",
     "originalDefault": "Object"
   },
+  "fpX4ei": {
+    "defaultMessage": "Mapping expression language",
+    "description": "Service fetch configuration modal form mapping expression language field label",
+    "originalDefault": "Mapping expression language"
+  },
   "ftzF/n": {
     "defaultMessage": "When",
     "description": "Logic trigger prefix",
     "originalDefault": "When"
+  },
+  "fv74On": {
+    "defaultMessage": "Choose existing configuration",
+    "description": "Service fetch configuration modal select existing field label",
+    "originalDefault": "Choose existing configuration"
   },
   "g+ppJj": {
     "defaultMessage": "Do nothing",
@@ -1243,6 +1373,11 @@
     "defaultMessage": "The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration.",
     "description": "Form step previous text field help text",
     "originalDefault": "The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration."
+  },
+  "hMkldi": {
+    "defaultMessage": "Registration email content (text)",
+    "description": "Registration email text content name",
+    "originalDefault": "Registration email content (text)"
   },
   "hWRRHx": {
     "defaultMessage": "Form design",
@@ -1314,6 +1449,11 @@
     "description": "Component property boolean value \"false\"",
     "originalDefault": "No"
   },
+  "jitewC": {
+    "defaultMessage": "HTTP method",
+    "description": "Service fetch configuration modal form HTTP method field label",
+    "originalDefault": "HTTP method"
+  },
   "jo1PVg": {
     "defaultMessage": "Session will expire",
     "description": "Model title session expiry warning",
@@ -1364,10 +1504,20 @@
     "description": "action type \"step-not-applicable\" label",
     "originalDefault": "Mark the form step as not-applicable"
   },
+  "lDFtNM": {
+    "defaultMessage": "Value",
+    "description": "Label for 'value' in MappingArrayInput table column",
+    "originalDefault": "Value"
+  },
   "lcR5L6": {
     "defaultMessage": "Add item",
     "description": "Add item to multi-input field",
     "originalDefault": "Add item"
+  },
+  "ltON+g": {
+    "defaultMessage": "Overwrites the globally configured HTML for the registration email.",
+    "description": "registration email HTML content help text",
+    "originalDefault": "Overwrites the globally configured HTML for the registration email."
   },
   "lvxPCk": {
     "defaultMessage": "Component label",
@@ -1438,6 +1588,16 @@
     "defaultMessage": "String",
     "description": "JSON variable type \"string\" representation",
     "originalDefault": "String"
+  },
+  "oCo2mP": {
+    "defaultMessage": "Save",
+    "description": "Save service fetch configuration button label",
+    "originalDefault": "Save"
+  },
+  "oPpYWC": {
+    "defaultMessage": "Overwrites the globally configured subject for the registration email sent after payment.",
+    "description": "registration email payment subject help text",
+    "originalDefault": "Overwrites the globally configured subject for the registration email sent after payment."
   },
   "oYmpN5": {
     "defaultMessage": "Whether to include the content of the confirmation page in the PDF.",
@@ -1523,6 +1683,11 @@
     "defaultMessage": "Manage complex process variables",
     "description": "Camunda complex process vars modal title",
     "originalDefault": "Manage complex process variables"
+  },
+  "r9MTrz": {
+    "defaultMessage": "Request headers",
+    "description": "Service fetch configuration modal form request headers field label",
+    "originalDefault": "Request headers"
   },
   "rF90xM": {
     "defaultMessage": "Data type",

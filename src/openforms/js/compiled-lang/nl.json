@@ -11,6 +11,12 @@
       "value": "Configureren"
     }
   ],
+  "+DztEl": [
+    {
+      "type": 0,
+      "value": "Path"
+    }
+  ],
   "+hAGg7": [
     {
       "type": 0,
@@ -33,6 +39,12 @@
     {
       "type": 0,
       "value": "Datum veld"
+    }
+  ],
+  "/rF8P0": [
+    {
+      "type": 0,
+      "value": "Configuration"
     }
   ],
   "0RXE97": [
@@ -73,6 +85,12 @@
       "value": "Opschoonmethode voor niet voltooide inzendingen"
     }
   ],
+  "20K9To": [
+    {
+      "type": 0,
+      "value": "Service fetch configuration"
+    }
+  ],
   "294MCM": [
     {
       "type": 0,
@@ -89,6 +107,12 @@
     {
       "type": 0,
       "value": "Type"
+    }
+  ],
+  "2boL55": [
+    {
+      "type": 0,
+      "value": "Query parameters"
     }
   ],
   "2d5RfI": [
@@ -177,6 +201,12 @@
       "value": "Stap toevoegen"
     }
   ],
+  "5QLG/6": [
+    {
+      "type": 0,
+      "value": "Add another value"
+    }
+  ],
   "5uaKBM": [
     {
       "type": 0,
@@ -199,6 +229,12 @@
     {
       "type": 0,
       "value": "Authenticatiemethode"
+    }
+  ],
+  "6ZW12a": [
+    {
+      "type": 0,
+      "value": "Request body"
     }
   ],
   "6hApJ7": [
@@ -307,6 +343,12 @@
       "value": "is kleiner dan of gelijk aan"
     }
   ],
+  "7izgdj": [
+    {
+      "type": 0,
+      "value": "Overwrites the globally configured subject for the registration email."
+    }
+  ],
   "89fqYz": [
     {
       "type": 0,
@@ -381,6 +423,12 @@
     {
       "type": 0,
       "value": "Kies het soort logica:"
+    }
+  ],
+  "9LflJr": [
+    {
+      "type": 0,
+      "value": "Key"
     }
   ],
   "9N67XB": [
@@ -469,6 +517,12 @@
       "value": "is groter dan"
     }
   ],
+  "AHfeW/": [
+    {
+      "type": 0,
+      "value": "Configure"
+    }
+  ],
   "APOVFs": [
     {
       "type": 0,
@@ -479,6 +533,12 @@
     {
       "type": 0,
       "value": "De tekst op de overzichtspagina om de gegevens van een bepaalde formulierstap te wijzigen. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "AV5FlV": [
+    {
+      "type": 0,
+      "value": "Overwrites the globally configured text for the registration email. This should contain the same information as the HTML template, in case the email client does not render the HTML."
     }
   ],
   "AtBVAV": [
@@ -555,6 +615,12 @@
       "value": "Vaste variabelen"
     }
   ],
+  "BqA9of": [
+    {
+      "type": 0,
+      "value": "Try it out"
+    }
+  ],
   "BrGg65": [
     {
       "type": 0,
@@ -565,6 +631,12 @@
     {
       "type": 0,
       "value": "dan is de prijs"
+    }
+  ],
+  "C+91tl": [
+    {
+      "type": 0,
+      "value": "Data extraction"
     }
   ],
   "C4Zn+R": [
@@ -643,6 +715,12 @@
     {
       "type": 0,
       "value": "Veld"
+    }
+  ],
+  "Ekld1h": [
+    {
+      "type": 0,
+      "value": "Save as new"
     }
   ],
   "EtAvFF": [
@@ -901,6 +979,12 @@
       "value": "bewaartermijn voor voltooide inzendingen."
     }
   ],
+  "JaZBSN": [
+    {
+      "type": 0,
+      "value": "Registration email subject"
+    }
+  ],
   "JtOgcq": [
     {
       "type": 0,
@@ -987,10 +1071,22 @@
       "value": "Kopiëren"
     }
   ],
+  "LWsV/H": [
+    {
+      "type": 0,
+      "value": "Registration email content (HTML)"
+    }
+  ],
   "LaovNg": [
     {
       "type": 0,
       "value": "Variabele toevoegen"
+    }
+  ],
+  "LrlAVD": [
+    {
+      "type": 0,
+      "value": "Data extraction"
     }
   ],
   "Ltde29": [
@@ -1009,6 +1105,12 @@
     {
       "type": 0,
       "value": "'Wijzigen' tekst"
+    }
+  ],
+  "M5KI1y": [
+    {
+      "type": 0,
+      "value": "Form specific registration email templates"
     }
   ],
   "MEkGHD": [
@@ -1083,6 +1185,12 @@
     {
       "type": 0,
       "value": "Geavanceerd"
+    }
+  ],
+  "Orf0vr": [
+    {
+      "type": 0,
+      "value": "Update"
     }
   ],
   "OvqnXR": [
@@ -1295,6 +1403,12 @@
       "value": "Terug naar loginscherm"
     }
   ],
+  "TH62Jn": [
+    {
+      "type": 0,
+      "value": "the path should not have a leading slash"
+    }
+  ],
   "TR5xSY": [
     {
       "type": 0,
@@ -1317,6 +1431,12 @@
     {
       "type": 0,
       "value": "Bewaartermijn van inzendingen"
+    }
+  ],
+  "V/1My+": [
+    {
+      "type": 0,
+      "value": "Registration email payment subject"
     }
   ],
   "V21YkS": [
@@ -1395,6 +1515,12 @@
       "value": "Product"
     }
   ],
+  "WUTOwp": [
+    {
+      "type": 0,
+      "value": "Service"
+    }
+  ],
   "WdVKZw": [
     {
       "type": 0,
@@ -1429,6 +1555,12 @@
     {
       "type": 0,
       "value": "Ongeldige JSON-logic expressie. Zie https://jsonlogic.com/operations.html voor beschikbare operaties."
+    }
+  ],
+  "Xe+CCn": [
+    {
+      "type": 0,
+      "value": "Basic"
     }
   ],
   "YQ/Vx0": [
@@ -1576,6 +1708,12 @@
       "value": "Vereist authenticatie"
     }
   ],
+  "auZOcD": [
+    {
+      "type": 0,
+      "value": "Mapping expression"
+    }
+  ],
   "b9D64D": [
     {
       "type": 0,
@@ -1592,6 +1730,12 @@
     {
       "type": 0,
       "value": "Er zijn validatiefouten"
+    }
+  ],
+  "bnxtnX": [
+    {
+      "type": 0,
+      "value": "Full request"
     }
   ],
   "bzVhb6": [
@@ -1756,10 +1900,22 @@
       "value": "Sleutel-waarde paar (object)"
     }
   ],
+  "fpX4ei": [
+    {
+      "type": 0,
+      "value": "Mapping expression language"
+    }
+  ],
   "ftzF/n": [
     {
       "type": 0,
       "value": "Als"
+    }
+  ],
+  "fv74On": [
+    {
+      "type": 0,
+      "value": "Choose existing configuration"
     }
   ],
   "g+ppJj": [
@@ -1802,6 +1958,12 @@
     {
       "type": 0,
       "value": "De tekst op de knop om naar de vorige stap terug te keren in het formulier. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "hMkldi": [
+    {
+      "type": 0,
+      "value": "Registration email content (text)"
     }
   ],
   "hWRRHx": [
@@ -1892,6 +2054,12 @@
       "value": "Nee"
     }
   ],
+  "jitewC": [
+    {
+      "type": 0,
+      "value": "HTTP method"
+    }
+  ],
   "jo1PVg": [
     {
       "type": 0,
@@ -1952,10 +2120,22 @@
       "value": "markeer de formulierstap als niet van toepassing"
     }
   ],
+  "lDFtNM": [
+    {
+      "type": 0,
+      "value": "Value"
+    }
+  ],
   "lcR5L6": [
     {
       "type": 0,
       "value": "Item toevoegen"
+    }
+  ],
+  "ltON+g": [
+    {
+      "type": 0,
+      "value": "Overwrites the globally configured HTML for the registration email."
     }
   ],
   "lvxPCk": [
@@ -2040,6 +2220,18 @@
     {
       "type": 0,
       "value": "Tekst (string)"
+    }
+  ],
+  "oCo2mP": [
+    {
+      "type": 0,
+      "value": "Save"
+    }
+  ],
+  "oPpYWC": [
+    {
+      "type": 0,
+      "value": "Overwrites the globally configured subject for the registration email sent after payment."
     }
   ],
   "oYmpN5": [
@@ -2179,6 +2371,12 @@
     {
       "type": 0,
       "value": "Beheer complexe procesvariabelen"
+    }
+  ],
+  "r9MTrz": [
+    {
+      "type": 0,
+      "value": "Request headers"
     }
   ],
   "rF90xM": [
