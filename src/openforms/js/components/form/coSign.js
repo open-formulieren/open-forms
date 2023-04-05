@@ -34,7 +34,7 @@ const EDIT_FORM_TABS = [
               url: getFullyQualifiedUrl('/api/v2/authentication/plugins'),
             },
             valueProperty: 'id',
-            template: `<span>{{ item.label }}, provides: {{ item.providesAuth.join(', ') }}</span>`,
+            template: `<span>{{ item.label }}, provides: {{ item.providesAuth }}</span>`,
           },
         ],
       },
