@@ -130,45 +130,45 @@ class JsonLogicInferenceTests(TestCase):
         json_logic_arithmetic(),
         json_logic_arithmetic(),
     )
-    def test_conditionals_with_single_return_type(self, bool_exp, then_exp, other_exp):
+    def test_conditionals_with_single_return_type(self, bool_exp, then_exp, else_exp):
         # if :: forall a. Bool -> a -> a -> a
         #
         # or in Python notation:
         #
         # def if(condition: bool, then: T, otherwise: T) -> T:
         #     ...
-        conditional_exp = {"if": [bool_exp, then_exp, other_exp]}
+        conditional_exp = {"if": [bool_exp, then_exp, else_exp]}
         s, t = type_check(conditional_exp)
 
         self.assertEqual(str(t), "Number")
 
+        # So this should also type_check
+
+        one_more_thing = {"+": [conditional_exp, 1]}
+        more_s, more_t = type_check(one_more_thing)
+
+        self.assertEqual(str(more_t), "Number")
+
     @given(
         json_logic_vars(),
-        json_logic_arithmetic(),
-        json_logic_arithmetic(),
+        json_logic_expressions(),
+        json_logic_expressions(),
     )
     def test_conditionals_infers_the_condition_is_a_boolean(
-        self, condition, then_exp, other_exp
+        self, condition, then_exp, else_exp
     ):
-        # if :: forall a. Bool -> a -> a -> a
-        #
-        # or in Python notation:
-        #
-        # def if(condition: bool, then: T, otherwise: T) -> T:
-        #     ...
-
         def contains(exp, var):
             "exp contains var"
             s, t = type_check(exp)
             return var["var"] in s
 
-        # ensure our condition var is not reused somewhere in the arithmetic
-        # that would result in Boolean and Number which are not unifiable
+        # ensure our condition var is not bound somewhere in the then or other
+        # that would result in Boolean and some other types which may not unify
         assume(not contains(then_exp, condition))
-        assume(not contains(other_exp, condition))
+        assume(not contains(else_exp, condition))
 
-        conditional_exp = {"if": [condition, then_exp, other_exp]}
+        conditional_exp = {"if": [condition, then_exp, else_exp]}
+
         s, t = type_check(conditional_exp)
 
-        self.assertEqual(str(t), "Number")
         self.assertEqual(str(s[condition["var"]]), "Bool")

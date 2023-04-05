@@ -51,6 +51,11 @@ def unify(a: MonoType, b: MonoType) -> Substitution:
                 return Substitution()
 
         case TypeApplication(ca, ta), TypeApplication(cb, tb):
+            # if ca == "Either":
+            #     a == unify(*ta)(ta[0])
+            # if cb == "Either":
+            #     b == unify(*tb)(tb[0])
+
             if ca != cb:
                 raise TypeError(
                     f"Can't unify types {a} and {b}: different type functions"

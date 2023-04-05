@@ -97,6 +97,13 @@ class TypeApplication(MonoType):
     def __contains__(self, a: TypeVariable):
         return any(a in t for t in self.taus)
 
+    # def __post_init__(self):
+    #     match self:
+    #         case TypeApplication("Either", (a, b)):
+    #             if a == b:
+    #                 self.C = self.taus[0].C
+    #                 self.taus = self.taus[0].taus
+
     def __str__(self) -> str:
         match self.C, [str(t) for t in self.taus]:
             case C, []:
