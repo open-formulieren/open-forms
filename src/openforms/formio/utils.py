@@ -377,6 +377,11 @@ def is_visible_in_frontend(component: JSONObject, data: DataMapping) -> bool:
             else not conditional_show
         )
 
+    # Issue #2900 - The values of checkboxes are bools, but in the Formio frontend logic, the compare value is a
+    # string ('true'/'false'). In Formio they cast it to a bool.
+    if isinstance(trigger_component_value, bool):
+        compare_value = {"true": True, "false": False}.get(compare_value, False)
+
     return (
         conditional_show
         if trigger_component_value == compare_value
