@@ -9,16 +9,8 @@ import FormRow from 'components/admin/forms/FormRow';
 import Select from 'components/admin/forms/Select';
 
 import {BACKEND_OPTIONS_FORMS} from './registrations';
-
-const BackendType = PropTypes.shape({
-  id: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  schema: PropTypes.shape({
-    type: PropTypes.oneOf(['object']), // it's the JSON schema root, it has to be
-    properties: PropTypes.object,
-    required: PropTypes.arrayOf(PropTypes.string),
-  }),
-});
+import GlobalConfigurationOverrides from './registrations/GlobalConfigurationOverrides';
+import {BackendType} from './registrations/types';
 
 const BackendOptionsFormRow = ({backend = null, currentOptions = {}, onChange}) => {
   if (!backend) return null;
@@ -30,22 +22,26 @@ const BackendOptionsFormRow = ({backend = null, currentOptions = {}, onChange}) 
     return null;
   }
   return (
-    <FormRow>
-      <OptionsFormComponent
-        name="form.registrationBackendOptions"
-        label={
-          <FormattedMessage
-            defaultMessage="Registration backend options"
-            description="Registration backend options label"
-          />
-        }
-        schema={backend.schema}
-        formData={currentOptions}
-        onChange={({formData}) =>
-          onChange({target: {name: 'form.registrationBackendOptions', value: formData}})
-        }
-      />
-    </FormRow>
+    <>
+      <FormRow>
+        <OptionsFormComponent
+          name="form.registrationBackendOptions"
+          label={
+            <FormattedMessage
+              defaultMessage="Registration backend options"
+              description="Registration backend options label"
+            />
+          }
+          schema={backend.schema}
+          formData={currentOptions}
+          onChange={({formData}) =>
+            onChange({target: {name: 'form.registrationBackendOptions', value: formData}})
+          }
+        />
+      </FormRow>
+
+      <GlobalConfigurationOverrides backend={backend} onChange={onChange} />
+    </>
   );
 };
 

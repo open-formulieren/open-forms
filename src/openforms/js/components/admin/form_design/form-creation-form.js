@@ -1133,7 +1133,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
 
       <FormContext.Provider
         value={{
-          form: {url: state.form.url},
+          form: state.form,
           components: availableComponents,
           formSteps: state.formSteps,
           formDefinitions: state.formDefinitions,
