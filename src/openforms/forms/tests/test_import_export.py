@@ -11,10 +11,12 @@ from freezegun import freeze_time
 
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
+from openforms.forms.constants import LogicActionTypes
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 from openforms.products.tests.factories import ProductFactory
 from openforms.translations.tests.utils import make_translated
 from openforms.variables.constants import FormVariableSources
+from openforms.variables.tests.factories import ServiceFetchConfigurationFactory
 
 from ..constants import EXPORT_META_KEY
 from ..models import Form, FormDefinition, FormLogic, FormStep, FormVariable
@@ -137,6 +139,21 @@ class ImportExportTests(TestCase):
         FormVariableFactory.create(
             form=form, user_defined=True, key="test-user-defined"
         )
+
+        # fetch configurations are not exported (yet)
+        # but shouldn't break export - import
+        fetch_config = ServiceFetchConfigurationFactory.create()
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={"!": {"var": "test-user-defined"}},
+            actions=[
+                {
+                    "action": {"type": "fetch-from-service", "value": fetch_config.pk},
+                    "variable": "test-user-defined",
+                }
+            ],
+        )
+
         form_logic = FormLogicFactory.create(
             form=form,
             json_logic_trigger={"==": [{"var": "test-user-defined"}, 1]},
@@ -156,6 +173,9 @@ class ImportExportTests(TestCase):
         )
 
         call_command("export", form.pk, self.filepath)
+
+        # attempt to break ForeignKey constraint
+        fetch_config.delete()
 
         old_form_definition_slug = form_definition.slug
         form_definition.slug = "modified"
@@ -210,7 +230,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(2, user_defined_vars.count())
 
         form_logics = FormLogic.objects.all()
-        self.assertEqual(2, form_logics.count())
+        self.assertEqual(4, form_logics.count())
         form_logic_2 = form_logics.last()
         self.assertNotEqual(form_logic_2.pk, form_logic_pk)
         self.assertNotEqual(form_logic_2.uuid, str(form_logic.uuid))
