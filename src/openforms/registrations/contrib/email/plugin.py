@@ -44,9 +44,6 @@ class EmailRegistration(BasePlugin):
         config = EmailConfig.get_solo()
         config.apply_defaults_to(options)
 
-        # explicitly get a reference before registering
-        set_submission_reference(submission)
-
         subject_template = options.get("email_subject") or ugettext(
             "[Open Forms] {{ form_name }} - submission {{ submission_reference }}"
         )
@@ -207,3 +204,6 @@ class EmailRegistration(BasePlugin):
         return [
             (_("Test"), reverse("admin_email_test")),
         ]
+
+    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
+        set_submission_reference(submission)
