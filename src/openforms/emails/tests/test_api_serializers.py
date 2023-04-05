@@ -46,18 +46,16 @@ class ConfirmationTemplateSerializerTests(TestCase):
             )
             self.assertIsNotNone(content_error)
 
-        with self.subTest("non field errors"):
-            non_field_errors = serializer.errors["translations"]["en"][
-                "non_field_errors"
-            ]
-            error = _find_error(
-                non_field_errors,
+        with self.subTest("en specific errors"):
+            errors = serializer.errors["translations"]["en"]["content"]
+            content_error = _find_error(
+                errors,
                 code="required",
                 message=AllOrNoneTruthyFieldsValidator.message.format(
                     fields="subject, content"
                 ),
             )
-            self.assertIsNotNone(error)
+            self.assertIsNotNone(content_error)
 
     @tag("gh-2418")
     def test_valid_data(self):

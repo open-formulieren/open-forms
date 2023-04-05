@@ -1624,7 +1624,7 @@ class FormsAPITranslationTests(APITestCase):
             invalid_params,
             [
                 {
-                    "name": "confirmationEmailTemplate.translations.en.nonFieldErrors",
+                    "name": "confirmationEmailTemplate.translations.en.subject",
                     "code": "required",
                     "reason": _(
                         "The fields {fields} must all have a non-empty value as soon as one of them does."
