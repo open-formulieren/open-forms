@@ -26,17 +26,12 @@ class RenderRegistrationEmailTests(TestCase):
                 registration_email_content_text="Global text template",
             ),
         ):
-            (
-                subject_template,
-                subject_payment_template,
-                html_template,
-                text_template,
-            ) = get_registration_email_templates(submission)
+            templates = get_registration_email_templates(submission)
 
-        self.assertEqual(subject_template, "Global Subject")
-        self.assertEqual(subject_payment_template, "Global Payment Subject")
-        self.assertEqual(html_template, "Global HTML template")
-        self.assertEqual(text_template, "Global text template")
+        self.assertEqual(templates.subject, "Global Subject")
+        self.assertEqual(templates.payment_subject, "Global Payment Subject")
+        self.assertEqual(templates.content_html, "Global HTML template")
+        self.assertEqual(templates.content_text, "Global text template")
 
     def test_can_overwrite_just_subject(self):
         submission = SubmissionFactory.create(
@@ -55,17 +50,12 @@ class RenderRegistrationEmailTests(TestCase):
                 registration_email_content_text="Global text template",
             ),
         ):
-            (
-                subject_template,
-                subject_payment_template,
-                html_template,
-                text_template,
-            ) = get_registration_email_templates(submission)
+            templates = get_registration_email_templates(submission)
 
-        self.assertEqual(subject_template, "Custom subject")
-        self.assertEqual(subject_payment_template, "Global Payment Subject")
-        self.assertEqual(html_template, "Global HTML template")
-        self.assertEqual(text_template, "Global text template")
+        self.assertEqual(templates.subject, "Custom subject")
+        self.assertEqual(templates.payment_subject, "Global Payment Subject")
+        self.assertEqual(templates.content_html, "Global HTML template")
+        self.assertEqual(templates.content_text, "Global text template")
 
     def test_can_overwrite_all_templates(self):
         submission = SubmissionFactory.create(
@@ -84,14 +74,9 @@ class RenderRegistrationEmailTests(TestCase):
                 registration_email_content_text="Global text template",
             ),
         ):
-            (
-                subject_template,
-                subject_payment_template,
-                html_template,
-                text_template,
-            ) = get_registration_email_templates(submission)
+            templates = get_registration_email_templates(submission)
 
-        self.assertEqual(subject_template, "Custom subject")
-        self.assertEqual(subject_payment_template, "Custom Payment Subject")
-        self.assertEqual(html_template, "Custom HTML template")
-        self.assertEqual(text_template, "Custom text template")
+        self.assertEqual(templates.subject, "Custom subject")
+        self.assertEqual(templates.payment_subject, "Custom Payment Subject")
+        self.assertEqual(templates.content_html, "Custom HTML template")
+        self.assertEqual(templates.content_text, "Custom text template")

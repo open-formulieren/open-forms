@@ -56,12 +56,7 @@ class EmailRegistration(BasePlugin):
         if extra_context is None:
             extra_context = {}
 
-        (
-            subject_template,
-            subject_payment_template,
-            html_template,
-            text_template,
-        ) = get_registration_email_templates(submission)
+        templates = get_registration_email_templates(submission)
 
         # common kwargs and context
         renderer_kwargs = {
@@ -84,7 +79,7 @@ class EmailRegistration(BasePlugin):
 
         # Render the subject
         subject = render_from_string(
-            subject_payment_template if is_payment_update else subject_template,
+            templates.payment_subject if is_payment_update else templates.subject,
             context={**base_context, **extra_context},
             disable_autoescape=True,
         )
@@ -92,7 +87,7 @@ class EmailRegistration(BasePlugin):
         # HTML mode
         html_renderer = Renderer(as_html=True, **renderer_kwargs)
         html_content = render_email_template(
-            template=html_template,
+            template=templates.content_html,
             context={
                 **base_context,
                 "renderer": html_renderer,
@@ -104,7 +99,7 @@ class EmailRegistration(BasePlugin):
         # Plain text mode
         text_renderer = Renderer(as_html=False, **renderer_kwargs)
         text_content = render_email_template(
-            template=text_template,
+            template=templates.content_text,
             context={
                 **base_context,
                 "renderer": text_renderer,

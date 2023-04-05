@@ -9,7 +9,7 @@ import tinymce.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("forms", "0073_change_bsn_validation"),
+        ("forms", "0074_add_custom_errors_numbers"),
     ]
 
     operations = [

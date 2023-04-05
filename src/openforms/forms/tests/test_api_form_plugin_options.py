@@ -172,14 +172,17 @@ class FormPluginOptionTest(APITestCase):
         data = response.json()
 
         self.assertEqual(data["registrationEmailSubject"], "Custom subject")
-        self.assertEqual(data["registrationEmailPaymentSubject"], "")
+        self.assertEqual(
+            data["registrationEmailPaymentSubject"],
+            form.registration_email_payment_subject,
+        )
         self.assertEqual(
             data["registrationEmailContentHtml"],
-            "",
+            form.registration_email_content_html,
         )
         self.assertEqual(
             data["registrationEmailContentText"],
-            "",
+            form.registration_email_content_text,
         )
 
     def test_overwrite_both_registration_email_html_and_text_templates(self):
@@ -202,8 +205,13 @@ class FormPluginOptionTest(APITestCase):
 
         data = response.json()
 
-        self.assertEqual(data["registrationEmailSubject"], "")
-        self.assertEqual(data["registrationEmailPaymentSubject"], "")
+        self.assertEqual(
+            data["registrationEmailSubject"], form.registration_email_subject
+        )
+        self.assertEqual(
+            data["registrationEmailPaymentSubject"],
+            form.registration_email_payment_subject,
+        )
         self.assertEqual(
             data["registrationEmailContentHtml"],
             "Custom HTML template {% payment_information %}",
