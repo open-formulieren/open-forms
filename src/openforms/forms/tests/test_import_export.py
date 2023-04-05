@@ -11,7 +11,6 @@ from freezegun import freeze_time
 
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
-from openforms.forms.constants import LogicActionTypes
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
 from openforms.products.tests.factories import ProductFactory
 from openforms.translations.tests.utils import make_translated
