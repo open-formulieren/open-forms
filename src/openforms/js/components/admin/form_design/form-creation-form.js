@@ -163,6 +163,10 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   priceRules: 'product-payment',
   variables: 'variables',
   appointmentEnabled: 'form',
+  registrationEmailSubject: 'registration',
+  registrationEmailPaymentSubject: 'registration',
+  registrationEmailContentHtml: 'registration',
+  registrationEmailContentText: 'registration',
 };
 
 const TRANSLATION_FIELD_TO_TAB_NAMES = {
