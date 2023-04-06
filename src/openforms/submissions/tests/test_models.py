@@ -428,6 +428,7 @@ class SubmissionTests(TestCase):
             {
                 "plugin": "digid",
                 "identifier": "123456782",
+                "co_sign_auth_attribute": "bsn",
                 "fields": {
                     "name": "Jane Doe",
                 },

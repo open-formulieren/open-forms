@@ -10,7 +10,7 @@ from ..registry import Registry
 
 class Plugin(BasePlugin):
     verbose_name = "some human readable label"
-    provides_auth = "dummy"
+    provides_auth = AuthAttribute.bsn
 
     def start_login(self, request, form, form_url):
         return HttpResponse("start")
