@@ -2,6 +2,8 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
+from openforms.api.validators import AllOrNoneTruthyFieldsValidator
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
@@ -38,7 +40,7 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         ),
     )
     email_subject = serializers.CharField(
-        label=_("Email subject"),
+        label=_("email subject"),
         help_text=_(
             "Subject of the email sent to the registration backend. You can use the expressions "
             "'{{ form_name }}' and '{{ submission_reference }}' to include the form name and the reference "
@@ -47,3 +49,31 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         required=False,
         validators=[DjangoTemplateValidator()],
     )
+    email_payment_subject = serializers.CharField(
+        label=_("email payment subject"),
+        help_text=_(
+            "Subject of the email sent to the registration backend to notify a change in the payment status."
+        ),
+        required=False,
+        validators=[DjangoTemplateValidator()],
+    )
+    email_content_template_html = CSPPostProcessedHTMLField(
+        label=_("email content template HTML"),
+        help_text=_("Content of the registration email message (as text)."),
+        required=False,
+        validators=[DjangoTemplateValidator()],
+    )
+    email_content_template_text = serializers.CharField(
+        label=_("email content template text"),
+        help_text=_("Content of the registration email message (as text)."),
+        required=False,
+        validators=[DjangoTemplateValidator()],
+    )
+
+    class Meta:
+        validators = [
+            AllOrNoneTruthyFieldsValidator(
+                "email_content_template_html",
+                "email_content_template_text",
+            ),
+        ]
