@@ -239,11 +239,17 @@ class SubmissionReportCoSignTests(TestCase):
             """
             <div class="submission-step-row">
                 <div class="submission-step-row__label">{key}</div>
-                <div class="submission-step-row__value">T. Shikari ({auth_attribute}: 123456782)</div>
+                <div class="submission-step-row__value">{co_sign_display}</div>
             </div>
             """,
             key=_("Co-signed by"),
-            auth_attribute=_("BSN"),
+            co_sign_display=_(
+                "{representation} ({auth_attribute}: {identifier})"
+            ).format(
+                representation="T. Shikari",
+                auth_attribute=_("BSN"),
+                identifier="123456782",
+            ),
         )
         self.assertInHTML(expected, rendered, count=1)
 
@@ -270,10 +276,16 @@ class SubmissionReportCoSignTests(TestCase):
             """
             <div class="submission-step-row">
                 <div class="submission-step-row__label">{key}</div>
-                <div class="submission-step-row__value"> ({auth_attribute}: 123456782)</div>
+                <div class="submission-step-row__value">{co_sign_display}</div>
             </div>
             """,
             key=_("Co-signed by"),
-            auth_attribute=_("BSN"),
+            co_sign_display=_(
+                "{representation} ({auth_attribute}: {identifier})"
+            ).format(
+                representation="",
+                auth_attribute=_("BSN"),
+                identifier="123456782",
+            ),
         )
         self.assertIn(identifier, rendered)
