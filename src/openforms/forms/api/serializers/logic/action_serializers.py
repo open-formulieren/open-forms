@@ -11,7 +11,6 @@ from json_logic.typing import Primitive
 from rest_framework import serializers
 
 from openforms.api.serializers import DummySerializer
-from openforms.submissions.api.fields import URLRelatedField
 from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.variables.constants import FormVariableDataTypes
 
@@ -21,7 +20,6 @@ from ....constants import (
     LogicActionTypes,
     PropertyTypes,
 )
-from ....models import FormStep
 from .fields import ActionFormStepUUIDField
 
 
@@ -126,13 +124,10 @@ class LogicComponentActionSerializer(serializers.Serializer):
             )
         ),
     )
-    form_step = URLRelatedField(
-        allow_null=True,
+    # Deprecated field! form_step_uuid should be used instead
+    form_step = serializers.URLField(
         required=False,  # validated against the action.type
-        queryset=FormStep.objects,
-        view_name="api:form-steps-detail",
-        lookup_field="uuid",
-        parent_lookup_kwargs={"form_uuid_or_slug": "form__uuid"},
+        allow_blank=True,
         label=_("form step"),
         help_text=_(
             "The form step that will be affected by the action. This field is "
