@@ -30,7 +30,7 @@
   "homepage": "https://maykinmedia.nl",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.1.1",
-    "@open-formulieren/design-tokens": "^0.23.0",
+    "@open-formulieren/design-tokens": "^0.25.0",
     "@rjsf/core": "^4.2.1",
     "@tinymce/tinymce-react": "^3.12.6",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
@@ -39,6 +39,7 @@
     "classnames": "^2.3.1",
     "copy-to-clipboard": "^3.3.1",
     "core-js": "^3.11.1",
+    "design-token-editor": "^0.5.0",
     "flatpickr": "^4.6.9",
     "formik": "^2.2.9",
     "formiojs": "~4.13.0",
