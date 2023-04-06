@@ -179,7 +179,7 @@ django-privates==1.5.0
     #   django-simple-certmanager
 django-redis==5.2.0
     # via -r requirements/base.in
-django-relativedelta==1.1.1
+django-relativedelta==2.0.0
     # via zgw-consumers
 django-sendfile2==0.7.0
     # via django-privates
@@ -466,7 +466,7 @@ xmltodict==0.12.0
     # via -r requirements/base.in
 zeep==4.1.0
     # via -r requirements/base.in
-zgw-consumers==0.26.0
+zgw-consumers==0.26.1
     # via -r requirements/base.in
 
 # The following packages are considered to be unsafe in a requirements file:
