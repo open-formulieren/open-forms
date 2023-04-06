@@ -163,7 +163,10 @@ class FormPluginOptionTest(APITestCase):
         response = self.client.patch(
             url,
             data={
-                "registration_email_subject": "Custom subject",
+                "registration_backend_options": {
+                    "to_emails": ["test@test.nl"],
+                    "email_subject": "Custom subject",
+                }
             },
         )
 
@@ -171,18 +174,9 @@ class FormPluginOptionTest(APITestCase):
 
         data = response.json()
 
-        self.assertEqual(data["registrationEmailSubject"], "Custom subject")
         self.assertEqual(
-            data["registrationEmailPaymentSubject"],
-            form.registration_email_payment_subject,
-        )
-        self.assertEqual(
-            data["registrationEmailContentHtml"],
-            form.registration_email_content_html,
-        )
-        self.assertEqual(
-            data["registrationEmailContentText"],
-            form.registration_email_content_text,
+            data["registrationBackendOptions"]["emailSubject"],
+            "Custom subject",
         )
 
     def test_overwrite_both_registration_email_html_and_text_templates(self):
@@ -196,8 +190,11 @@ class FormPluginOptionTest(APITestCase):
         response = self.client.patch(
             url,
             data={
-                "registration_email_content_html": "Custom HTML template",
-                "registration_email_content_text": "Custom text template",
+                "registration_backend_options": {
+                    "to_emails": ["test@test.nl"],
+                    "email_content_template_html": "Custom HTML template",
+                    "email_content_template_text": "Custom text template",
+                }
             },
         )
 
@@ -205,19 +202,14 @@ class FormPluginOptionTest(APITestCase):
 
         data = response.json()
 
+        self.assertNotIn("emailSubject", data["registrationBackendOptions"])
+        self.assertNotIn("paymentSubject", data["registrationBackendOptions"])
         self.assertEqual(
-            data["registrationEmailSubject"], form.registration_email_subject
-        )
-        self.assertEqual(
-            data["registrationEmailPaymentSubject"],
-            form.registration_email_payment_subject,
-        )
-        self.assertEqual(
-            data["registrationEmailContentHtml"],
+            data["registrationBackendOptions"]["emailContentTemplateHtml"],
             "Custom HTML template",
         )
         self.assertEqual(
-            data["registrationEmailContentText"],
+            data["registrationBackendOptions"]["emailContentTemplateText"],
             "Custom text template",
         )
 
@@ -232,7 +224,10 @@ class FormPluginOptionTest(APITestCase):
         response = self.client.patch(
             url,
             data={
-                "registration_email_content_html": "Custom HTML template",
+                "registration_backend_options": {
+                    "to_emails": ["test@test.nl"],
+                    "email_content_template_html": "Custom HTML template",
+                },
             },
         )
 
@@ -242,6 +237,6 @@ class FormPluginOptionTest(APITestCase):
 
         self.assertEqual(
             data["invalidParams"][0]["reason"],
-            "The fields registration_email_content_html, registration_email_content_text must all have a "
+            "The fields email_content_template_html, email_content_template_text must all have a "
             "non-empty value as soon as one of them does.",
         )

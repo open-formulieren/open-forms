@@ -165,11 +165,11 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         set_submission_reference(submission)
 
         with patch(
-            "openforms.registrations.contrib.email.utils.GlobalConfiguration.get_solo",
-            return_value=GlobalConfiguration(
-                registration_email_subject="Subject: {{ form_name }} - submission {{ public_reference }}",
-                registration_email_content_html=TEST_TEMPLATE_NL,
-                registration_email_content_text=TEST_TEMPLATE_NL,
+            "openforms.registrations.contrib.email.utils.EmailConfig.get_solo",
+            return_value=EmailConfig(
+                subject="Subject: {{ form_name }} - submission {{ public_reference }}",
+                content_html=TEST_TEMPLATE_NL,
+                content_text=TEST_TEMPLATE_NL,
             ),
         ):
             email_submission.register_submission(submission, email_form_options)
@@ -317,9 +317,9 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         email_submission = EmailRegistration("email")
 
         with patch(
-            "openforms.registrations.contrib.email.utils.GlobalConfiguration.get_solo",
-            return_value=GlobalConfiguration(
-                registration_email_subject="Subject: {{ form_name }} - submission {{ public_reference }}"
+            "openforms.registrations.contrib.email.utils.EmailConfig.get_solo",
+            return_value=EmailConfig(
+                subject="Subject: {{ form_name }} - submission {{ public_reference }}",
             ),
         ):
             email_submission.register_submission(submission, email_form_options)
@@ -382,11 +382,11 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         email_submission = EmailRegistration("email")
 
         with patch(
-            "openforms.registrations.contrib.email.utils.GlobalConfiguration.get_solo",
-            return_value=GlobalConfiguration(
-                registration_email_payment_subject="[Open Forms] {{ form_name }} - submission payment received {{ public_reference }}",
-                registration_email_content_html=TEST_TEMPLATE_NL,
-                registration_email_content_text=TEST_TEMPLATE_NL,
+            "openforms.registrations.contrib.email.utils.EmailConfig.get_solo",
+            return_value=EmailConfig(
+                payment_subject="[Open Forms] {{ form_name }} - submission payment received {{ public_reference }}",
+                content_html=TEST_TEMPLATE_NL,
+                content_text=TEST_TEMPLATE_NL,
             ),
         ):
             email_submission.update_payment_status(submission, email_form_options)
@@ -928,10 +928,10 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         email_submission = EmailRegistration("email")
 
         with patch(
-            "openforms.registrations.contrib.email.utils.GlobalConfiguration.get_solo",
-            return_value=GlobalConfiguration(
-                registration_email_content_html=TEST_TEMPLATE_NL,
-                registration_email_content_text=TEST_TEMPLATE_NL,
+            "openforms.registrations.contrib.email.utils.EmailConfig.get_solo",
+            return_value=EmailConfig(
+                content_html=TEST_TEMPLATE_NL,
+                content_text=TEST_TEMPLATE_NL,
             ),
         ):
             email_submission.register_submission(
