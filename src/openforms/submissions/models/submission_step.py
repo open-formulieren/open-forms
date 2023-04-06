@@ -129,16 +129,37 @@ class SubmissionStep(models.Model):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # load the form step from historical data if the FK has been broken (due to a
-        # deleted form step in the form designer/import functionality)
-        if not self.form_step_id:
-            self.form_step = self._load_form_step_from_history()
+        # See #2632, and a long story here on what happens:
+        #
+        # When the Submission queryset is deleted, this happens through the
+        # django.db.models.deletion.Collector which takes care of finding all related
+        # objects to manage the cascade delete.
+        #
+        # It does this (apparently) in an optimized way where only the primary keys of
+        # records (SubmssionStep in this case) are being loaded (via
+        # ``get_candidate_relations_to_delete`` and Collector.related_objects). The
+        # details are not exactly clear, but it *appears* that the form_step_id
+        # field/description is deferred. This means that when you *access* this field,
+        # Django will actually perform a separate query to load the (full) record with
+        # the additional information from the database row, which in turn leads to a new
+        # instance of the model being created, which in turn causes the __init__ method
+        # to be called again and that cycle then repeats (since that field is probably
+        # again deferred?).
+        #
+        # We can check if the field was loaded or not by checking in self.__dict__. Note
+        # that this is far from public API and a structural fix is still recommended.
+        if "form_step_id" in self.__dict__:
+            # load the form step from historical data if the FK has been broken (due to a
+            # deleted form step in the form designer/import functionality)
+            if not self.form_step_id:
+                self.form_step = self._load_form_step_from_history()
 
     def __str__(self):
         return f"SubmissionStep {self.pk}: Submission {self.submission_id} submitted on {self.created_on}"
 
     def _load_form_step_from_history(self):
         history = deepcopy(self.form_step_history)
+
         if not history:
             return None
 
