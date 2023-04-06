@@ -7,6 +7,7 @@ import jsonScriptToVar from 'utils/json-script';
 
 import SessionStatus from './SessionStatus';
 import Debug from './debug';
+import './design_token_values';
 import setE2EMarker from './e2e-marker';
 import './form-category';
 import {APIContext, FeatureFlagsContext, TinyMceContext} from './form_design/Context';
