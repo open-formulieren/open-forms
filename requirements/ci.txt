@@ -308,7 +308,7 @@ django-redis==5.2.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-django-relativedelta==1.1.1
+django-relativedelta==2.0.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
@@ -937,7 +937,7 @@ zeep==4.1.0
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
-zgw-consumers==0.26.0
+zgw-consumers==0.26.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.txt
