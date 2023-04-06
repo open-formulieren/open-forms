@@ -9,6 +9,11 @@
     "description": "Manage complex process vars configure link text",
     "originalDefault": "Configure"
   },
+  "+DztEl": {
+    "defaultMessage": "Path",
+    "description": "Service fetch configuration modal form Path field label",
+    "originalDefault": "Path"
+  },
   "+hAGg7": {
     "defaultMessage": "Gebruikers kunnen dit formulier niet starten als het in onderhoud is",
     "description": "Form maintenance mode field help text",
@@ -28,6 +33,11 @@
     "defaultMessage": "Datum veld",
     "description": "Dates Component field label",
     "originalDefault": "Dates Component"
+  },
+  "/rF8P0": {
+    "defaultMessage": "Configuration",
+    "description": "Service fetch config configuration tab title",
+    "originalDefault": "Configuration"
   },
   "0RXE97": {
     "defaultMessage": "Knopteksten",
@@ -54,6 +64,11 @@
     "description": "Incomplete Submissions Removal Method field label",
     "originalDefault": "Incomplete Submissions Removal Method"
   },
+  "20K9To": {
+    "defaultMessage": "Service fetch configuration",
+    "description": "Service fetch configuration selection modal title",
+    "originalDefault": "Service fetch configuration"
+  },
   "294MCM": {
     "defaultMessage": "Verwijderd",
     "description": "Form deleted field label",
@@ -68,6 +83,11 @@
     "defaultMessage": "Type",
     "description": "Camunda complex process var 'type' label",
     "originalDefault": "Type"
+  },
+  "2boL55": {
+    "defaultMessage": "Query parameters",
+    "description": "Service fetch configuration modal form query parameters field label",
+    "originalDefault": "Query parameters"
   },
   "2d5RfI": {
     "defaultMessage": "Opties",
@@ -134,6 +154,11 @@
     "description": "add step button",
     "originalDefault": "Add step"
   },
+  "5QLG/6": {
+    "defaultMessage": "Add another value",
+    "description": "Label for add button used in MappingArrayInput",
+    "originalDefault": "Add another value"
+  },
   "5uaKBM": {
     "defaultMessage": "minus",
     "description": "\"-\" operator description",
@@ -153,6 +178,11 @@
     "defaultMessage": "Authenticatiemethode",
     "description": "Auth plugin field label",
     "originalDefault": "Authentication"
+  },
+  "6ZW12a": {
+    "defaultMessage": "Request body",
+    "description": "Service fetch configuration modal form request body field label",
+    "originalDefault": "Request body"
   },
   "6hApJ7": {
     "defaultMessage": "Ingelogd blijven",
@@ -249,6 +279,11 @@
     "description": "Logic type selection label",
     "originalDefault": "Please select the logic type:"
   },
+  "9LflJr": {
+    "defaultMessage": "Key",
+    "description": "Label for 'key' in MappingArrayInput table column",
+    "originalDefault": "Key"
+  },
   "9N67XB": {
     "defaultMessage": "Ongeldige JSON-syntaxis",
     "description": "Advanced logic rule invalid json message",
@@ -294,6 +329,11 @@
     "description": "\">\" operator description",
     "originalDefault": "is greater than"
   },
+  "AHfeW/": {
+    "defaultMessage": "Configure",
+    "description": "Button to open service fetch configuration modal",
+    "originalDefault": "Configure"
+  },
   "APOVFs": {
     "defaultMessage": "Formuliergegevens",
     "description": "Form details fieldset title",
@@ -334,10 +374,20 @@
     "description": "data type boolean",
     "originalDefault": "Boolean"
   },
+  "Bin/vM": {
+    "defaultMessage": "Opslaan",
+    "description": "Text on button in modal to save design token values",
+    "originalDefault": "Save changes"
+  },
   "Bl2NMf": {
     "defaultMessage": "Vaste variabelen",
     "description": "Static variables tab title",
     "originalDefault": "Static"
+  },
+  "BqA9of": {
+    "defaultMessage": "Try it out",
+    "description": "Service fetch config try it out tab title",
+    "originalDefault": "Try it out"
   },
   "BrGg65": {
     "defaultMessage": "plus",
@@ -348,6 +398,11 @@
     "defaultMessage": "dan is de prijs",
     "description": "Price logic prefix",
     "originalDefault": "Then the price is"
+  },
+  "C+91tl": {
+    "defaultMessage": "Data extraction",
+    "description": "Service fetch configuration modal data extraction fieldset title",
+    "originalDefault": "Data extraction"
   },
   "C4Zn+R": {
     "defaultMessage": "Interne naam van de formulierdefinitie voor deze stap",
@@ -413,6 +468,11 @@
     "defaultMessage": "Veld",
     "description": "Manage process vars component column title",
     "originalDefault": "Field"
+  },
+  "Ekld1h": {
+    "defaultMessage": "Save as new",
+    "description": "Save as new service fetch configuration button label",
+    "originalDefault": "Save as new"
   },
   "EtAvFF": {
     "defaultMessage": "Maak een kopie van dit formulier",
@@ -684,6 +744,11 @@
     "description": "Add process variable button",
     "originalDefault": "Add variable"
   },
+  "LrlAVD": {
+    "defaultMessage": "Data extraction",
+    "description": "Service fetch configuration try it out tabpanel data extraction fieldset title",
+    "originalDefault": "Data extraction"
+  },
   "Ltde29": {
     "defaultMessage": "Haal de waarde op uit een externe registratie",
     "description": "action type \"fetch-from-service\" label",
@@ -739,6 +804,11 @@
     "description": "JSON datatype selector label",
     "originalDefault": "Type"
   },
+  "OB48En": {
+    "defaultMessage": "Design token waarden",
+    "description": "Title of modal to edit design token values",
+    "originalDefault": "Design token values"
+  },
   "OFAJVW": {
     "defaultMessage": "Registratie",
     "description": "Form registration options tab title",
@@ -753,6 +823,11 @@
     "defaultMessage": "Geavanceerd",
     "description": "Advanced logic type",
     "originalDefault": "Advanced"
+  },
+  "Orf0vr": {
+    "defaultMessage": "Update",
+    "description": "Update service fetch configuration button label",
+    "originalDefault": "Update"
   },
   "OvqnXR": {
     "defaultMessage": "Ja",
@@ -874,6 +949,11 @@
     "description": "JSON editor: add object key-value pair button",
     "originalDefault": "Add key-value pair"
   },
+  "T1VnMs": {
+    "defaultMessage": "Editor openen",
+    "description": "Text on button to open design token editor in modal.",
+    "originalDefault": "Open editor"
+  },
   "TB/ku3": {
     "defaultMessage": "Variabele toevoegen",
     "description": "Add user defined variable button label",
@@ -893,6 +973,11 @@
     "defaultMessage": "Terug naar loginscherm",
     "description": "Session status modal close button",
     "originalDefault": "Back to login"
+  },
+  "TH62Jn": {
+    "defaultMessage": "the path should not have a leading slash",
+    "description": "Service fetch configuration modal form Path field help text",
+    "originalDefault": "the path should not have a leading slash"
   },
   "TR5xSY": {
     "defaultMessage": "Weet u zeker dat u deze regel wil verwijderen?",
@@ -964,6 +1049,11 @@
     "description": "Product fieldset title",
     "originalDefault": "Product"
   },
+  "WUTOwp": {
+    "defaultMessage": "Service",
+    "description": "Service fetch configuration modal form Service field label",
+    "originalDefault": "Service"
+  },
   "WdVKZw": {
     "defaultMessage": "Logica",
     "description": "Form logic tab title",
@@ -993,6 +1083,11 @@
     "defaultMessage": "Ongeldige JSON-logic expressie. Zie https://jsonlogic.com/operations.html voor beschikbare operaties.",
     "description": "Advanced logic rule invalid JSON-logic message",
     "originalDefault": "Invalid JSON logic expression"
+  },
+  "Xe+CCn": {
+    "defaultMessage": "Basic",
+    "description": "Service fetch configuration modal basic fieldset title",
+    "originalDefault": "Basic"
   },
   "YQ/Vx0": {
     "defaultMessage": "Opslaan",
@@ -1054,6 +1149,11 @@
     "description": "Form step login required label",
     "originalDefault": "Login required?"
   },
+  "auZOcD": {
+    "defaultMessage": "Mapping expression",
+    "description": "Service fetch configuration modal form mapping expression field label",
+    "originalDefault": "Mapping expression"
+  },
   "b9D64D": {
     "defaultMessage": "Privacy-gevoelig",
     "description": "Is sensitive icon title",
@@ -1068,6 +1168,11 @@
     "defaultMessage": "Er zijn validatiefouten",
     "description": "Tab validation errors icon title",
     "originalDefault": "There are validation errors"
+  },
+  "bnxtnX": {
+    "defaultMessage": "Full request",
+    "description": "Service fetch configuration try it out tabpanel full request fieldset title",
+    "originalDefault": "Full request"
   },
   "bzVhb6": {
     "defaultMessage": "Verplaats omhoog",
@@ -1204,10 +1309,20 @@
     "description": "data type object",
     "originalDefault": "Object"
   },
+  "fpX4ei": {
+    "defaultMessage": "Mapping expression language",
+    "description": "Service fetch configuration modal form mapping expression language field label",
+    "originalDefault": "Mapping expression language"
+  },
   "ftzF/n": {
     "defaultMessage": "Als",
     "description": "Logic trigger prefix",
     "originalDefault": "When"
+  },
+  "fv74On": {
+    "defaultMessage": "Choose existing configuration",
+    "description": "Service fetch configuration modal select existing field label",
+    "originalDefault": "Choose existing configuration"
   },
   "g+ppJj": {
     "defaultMessage": "Negeren",
@@ -1314,6 +1429,11 @@
     "description": "Component property boolean value \"false\"",
     "originalDefault": "No"
   },
+  "jitewC": {
+    "defaultMessage": "HTTP method",
+    "description": "Service fetch configuration modal form HTTP method field label",
+    "originalDefault": "HTTP method"
+  },
   "jo1PVg": {
     "defaultMessage": "Sessie gaat vervallen",
     "description": "Model title session expiry warning",
@@ -1363,6 +1483,11 @@
     "defaultMessage": "markeer de formulierstap als niet van toepassing",
     "description": "action type \"step-not-applicable\" label",
     "originalDefault": "Mark the form step as not-applicable"
+  },
+  "lDFtNM": {
+    "defaultMessage": "Value",
+    "description": "Label for 'value' in MappingArrayInput table column",
+    "originalDefault": "Value"
   },
   "lcR5L6": {
     "defaultMessage": "Item toevoegen",
@@ -1438,6 +1563,11 @@
     "defaultMessage": "Tekst (string)",
     "description": "JSON variable type \"string\" representation",
     "originalDefault": "String"
+  },
+  "oCo2mP": {
+    "defaultMessage": "Save",
+    "description": "Save service fetch configuration button label",
+    "originalDefault": "Save"
   },
   "oYmpN5": {
     "defaultMessage": "Vink aan om de inhoud toe te voegen aan de PDF die mensen op het eind kunnen downloaden.",
@@ -1523,6 +1653,11 @@
     "defaultMessage": "Beheer complexe procesvariabelen",
     "description": "Camunda complex process vars modal title",
     "originalDefault": "Manage complex process variables"
+  },
+  "r9MTrz": {
+    "defaultMessage": "Request headers",
+    "description": "Service fetch configuration modal form request headers field label",
+    "originalDefault": "Request headers"
   },
   "rF90xM": {
     "defaultMessage": "Datatype",

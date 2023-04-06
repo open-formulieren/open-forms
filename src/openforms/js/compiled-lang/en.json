@@ -11,6 +11,12 @@
       "value": "Configure"
     }
   ],
+  "+DztEl": [
+    {
+      "type": 0,
+      "value": "Path"
+    }
+  ],
   "+hAGg7": [
     {
       "type": 0,
@@ -33,6 +39,12 @@
     {
       "type": 0,
       "value": "Dates Component"
+    }
+  ],
+  "/rF8P0": [
+    {
+      "type": 0,
+      "value": "Configuration"
     }
   ],
   "0RXE97": [
@@ -73,6 +85,12 @@
       "value": "Incomplete Submissions Removal Method"
     }
   ],
+  "20K9To": [
+    {
+      "type": 0,
+      "value": "Service fetch configuration"
+    }
+  ],
   "294MCM": [
     {
       "type": 0,
@@ -89,6 +107,12 @@
     {
       "type": 0,
       "value": "Type"
+    }
+  ],
+  "2boL55": [
+    {
+      "type": 0,
+      "value": "Query parameters"
     }
   ],
   "2d5RfI": [
@@ -177,6 +201,12 @@
       "value": "Add step"
     }
   ],
+  "5QLG/6": [
+    {
+      "type": 0,
+      "value": "Add another value"
+    }
+  ],
   "5uaKBM": [
     {
       "type": 0,
@@ -199,6 +229,12 @@
     {
       "type": 0,
       "value": "Authentication"
+    }
+  ],
+  "6ZW12a": [
+    {
+      "type": 0,
+      "value": "Request body"
     }
   ],
   "6hApJ7": [
@@ -379,6 +415,12 @@
       "value": "Please select the logic type:"
     }
   ],
+  "9LflJr": [
+    {
+      "type": 0,
+      "value": "Key"
+    }
+  ],
   "9N67XB": [
     {
       "type": 0,
@@ -465,6 +507,12 @@
       "value": "is greater than"
     }
   ],
+  "AHfeW/": [
+    {
+      "type": 0,
+      "value": "Configure"
+    }
+  ],
   "APOVFs": [
     {
       "type": 0,
@@ -545,10 +593,22 @@
       "value": "Boolean"
     }
   ],
+  "Bin/vM": [
+    {
+      "type": 0,
+      "value": "Save changes"
+    }
+  ],
   "Bl2NMf": [
     {
       "type": 0,
       "value": "Static"
+    }
+  ],
+  "BqA9of": [
+    {
+      "type": 0,
+      "value": "Try it out"
     }
   ],
   "BrGg65": [
@@ -561,6 +621,12 @@
     {
       "type": 0,
       "value": "Then the price is"
+    }
+  ],
+  "C+91tl": [
+    {
+      "type": 0,
+      "value": "Data extraction"
     }
   ],
   "C4Zn+R": [
@@ -639,6 +705,12 @@
     {
       "type": 0,
       "value": "Field"
+    }
+  ],
+  "Ekld1h": [
+    {
+      "type": 0,
+      "value": "Save as new"
     }
   ],
   "EtAvFF": [
@@ -989,6 +1061,12 @@
       "value": "Add variable"
     }
   ],
+  "LrlAVD": [
+    {
+      "type": 0,
+      "value": "Data extraction"
+    }
+  ],
   "Ltde29": [
     {
       "type": 0,
@@ -1055,6 +1133,12 @@
       "value": "Type"
     }
   ],
+  "OB48En": [
+    {
+      "type": 0,
+      "value": "Design token values"
+    }
+  ],
   "OFAJVW": [
     {
       "type": 0,
@@ -1079,6 +1163,12 @@
     {
       "type": 0,
       "value": "Advanced"
+    }
+  ],
+  "Orf0vr": [
+    {
+      "type": 0,
+      "value": "Update"
     }
   ],
   "OvqnXR": [
@@ -1267,6 +1357,12 @@
       "value": "Add key-value pair"
     }
   ],
+  "T1VnMs": [
+    {
+      "type": 0,
+      "value": "Open editor"
+    }
+  ],
   "TB/ku3": [
     {
       "type": 0,
@@ -1289,6 +1385,12 @@
     {
       "type": 0,
       "value": "Back to login"
+    }
+  ],
+  "TH62Jn": [
+    {
+      "type": 0,
+      "value": "the path should not have a leading slash"
     }
   ],
   "TR5xSY": [
@@ -1391,6 +1493,12 @@
       "value": "Product"
     }
   ],
+  "WUTOwp": [
+    {
+      "type": 0,
+      "value": "Service"
+    }
+  ],
   "WdVKZw": [
     {
       "type": 0,
@@ -1425,6 +1533,12 @@
     {
       "type": 0,
       "value": "Invalid JSON logic expression"
+    }
+  ],
+  "Xe+CCn": [
+    {
+      "type": 0,
+      "value": "Basic"
     }
   ],
   "YQ/Vx0": [
@@ -1571,6 +1685,12 @@
       "value": "Login required?"
     }
   ],
+  "auZOcD": [
+    {
+      "type": 0,
+      "value": "Mapping expression"
+    }
+  ],
   "b9D64D": [
     {
       "type": 0,
@@ -1587,6 +1707,12 @@
     {
       "type": 0,
       "value": "There are validation errors"
+    }
+  ],
+  "bnxtnX": [
+    {
+      "type": 0,
+      "value": "Full request"
     }
   ],
   "bzVhb6": [
@@ -1751,10 +1877,22 @@
       "value": "Object"
     }
   ],
+  "fpX4ei": [
+    {
+      "type": 0,
+      "value": "Mapping expression language"
+    }
+  ],
   "ftzF/n": [
     {
       "type": 0,
       "value": "When"
+    }
+  ],
+  "fv74On": [
+    {
+      "type": 0,
+      "value": "Choose existing configuration"
     }
   ],
   "g+ppJj": [
@@ -1887,6 +2025,12 @@
       "value": "No"
     }
   ],
+  "jitewC": [
+    {
+      "type": 0,
+      "value": "HTTP method"
+    }
+  ],
   "jo1PVg": [
     {
       "type": 0,
@@ -1945,6 +2089,12 @@
     {
       "type": 0,
       "value": "Mark the form step as not-applicable"
+    }
+  ],
+  "lDFtNM": [
+    {
+      "type": 0,
+      "value": "Value"
     }
   ],
   "lcR5L6": [
@@ -2035,6 +2185,12 @@
     {
       "type": 0,
       "value": "String"
+    }
+  ],
+  "oCo2mP": [
+    {
+      "type": 0,
+      "value": "Save"
     }
   ],
   "oYmpN5": [
@@ -2173,6 +2329,12 @@
     {
       "type": 0,
       "value": "Manage complex process variables"
+    }
+  ],
+  "r9MTrz": [
+    {
+      "type": 0,
+      "value": "Request headers"
     }
   ],
   "rF90xM": [
