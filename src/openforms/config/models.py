@@ -205,7 +205,15 @@ class GlobalConfiguration(SingletonModel):
         default=list,
         blank=True,
     )
-
+    hide_non_applicable_steps = models.BooleanField(
+        verbose_name=_("Hide non-applicable form steps"),
+        default=False,
+        help_text=_(
+            "If checked, form steps that become non-applicable as a result of user "
+            "input are hidden from the progress indicator display (by default, they "
+            "are displayed but marked as non-applicable.)"
+        ),
+    )
     # 'subdomain' styling & content configuration
     # FIXME: do not expose this field via the API to non-admin users! There is not
     # sufficient input validation to protect against the SVG attack surface. The SVG
