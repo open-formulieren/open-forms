@@ -28,6 +28,9 @@ class GlobalConfigurationAdminForm(forms.ModelForm):
         }
         widgets = {
             "plugin_configuration": PluginConfigurationTextAreaReact,
+            "design_token_values": forms.Textarea(
+                attrs={"class": "react-design-token-values"}
+            ),
         }
 
     def clean_design_token_values(self):

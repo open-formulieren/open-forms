@@ -1,0 +1,45 @@
+@use 'microscope-sass/lib/bem';
+
+@import 'design-token-editor/lib/css/dte';
+@import 'design-token-editor/lib/css/root';
+
+:root {
+  --dte-typography-body-font-family: Roboto, Lucida Grande, Dejavu Sans, Bitstream Vera Sans,
+    Verdana, Arial, sans-serif;
+}
+
+body {
+  --dte-color-text: var(--body-fg);
+  --dte-tokens-block-context-row-color: var(--primary);
+}
+
+.dte-token-filters {
+  box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+  border-color: var(--hairline-color);
+  border-bottom-width: 1px;
+  border-bottom-color: var(--hairline-color);
+
+  label {
+    display: inline;
+    padding: initial;
+    float: none;
+    width: auto;
+    word-wrap: initial;
+    line-height: initial;
+  }
+
+  input[type='radio'] {
+    margin-right: 0.5em;
+  }
+}
+
+.dte-tokens-block {
+  @include bem.element('context-row') {
+    box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: none;
+    border-color: var(--hairline-color);
+    border-bottom-width: 1px;
+    border-bottom-color: var(--hairline-color);
+  }
+}

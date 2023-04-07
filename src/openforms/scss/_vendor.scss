@@ -6,6 +6,7 @@
 @import './vendor/rjsf-field';
 @import './vendor/tinymce';
 @import './vendor/django-two-factor-auth';
+@import './vendor/design-token-editor';
 
 #openforms-container {
   @include margin(

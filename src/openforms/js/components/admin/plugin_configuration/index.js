@@ -19,7 +19,6 @@ const init = async () => {
   for (const node of nodes) {
     const {name, value} = node.dataset;
 
-    const attrs = jsonScriptToVar(`${name}-attrs-react`);
     const modulesAndPlugins = jsonScriptToVar(`${name}-modules-and-plugins`);
 
     const mountNode = node.querySelector(`${CLASSNAME}__widget`);
