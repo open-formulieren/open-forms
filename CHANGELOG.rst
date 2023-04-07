@@ -2,6 +2,25 @@
 Changelog
 =========
 
+2.0.6 (2023-04-??)
+==================
+
+
+.. warning:: Manual intervention required if analytics tools are enabled
+
+   When enabling analytics tools, CSP directives were automatically added to the admin under  **Configuratie** > **CSP settings**.
+   The directive ``connect-src <domain of the analytic tool>`` was causing forms to no longer load.
+
+   In order to fix this issue:
+
+   1. Go to  **Configuratie** > **CSP settings**
+   2. Delete any directive that is not ``default-src``
+   3. If not present, add a directive ``default-src <domain of the analytic tool>``
+
+
+Hotfix release
+
+
 2.0.5 (2023-03-07)
 ==================
 
