@@ -43,13 +43,24 @@ class SandboxedDjangoTemplates(DjangoTemplates):
         This prevents user-content from loading and using the libraries that are
         private API to Open Forms.
         """
-        return {}
+        return custom_libraries
 
 
 backend = SandboxedDjangoTemplates({})
 """
 An instance of the 'sandboxed' Django templates backend.
 """
+
+
+def get_registration_custom_libraries() -> list[str]:
+    """Get all the custom templatetag libraries defined in the registration backends"""
+    from openforms.registrations.registry import register as registry
+
+    # Add any custom templatetags libraries from the registration plugins
+    libraries = []
+    for plugin_name, plugin in registry.items():
+        libraries += plugin.get_custom_templatetags_libraries()
+    return libraries
 
 
 def get_openforms_backend():
@@ -62,8 +73,8 @@ def get_openforms_backend():
                     "openforms.emails.templatetags.payment",
                     "openforms.emails.templatetags.products",
                     "openforms.config.templatetags.privacy_policy",
-                    "openforms.registrations.contrib.email.templatetags.data_summary",
-                ],
+                ]
+                + get_registration_custom_libraries(),
             }
         }
     )

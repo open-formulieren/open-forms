@@ -205,3 +205,6 @@ class EmailRegistration(BasePlugin):
 
     def pre_register_submission(self, submission: "Submission", options: dict) -> None:
         set_submission_reference(submission)
+
+    def get_custom_templatetags_libraries(self) -> list[str]:
+        return ["openforms.registrations.contrib.email.templatetags.data_summary"]
