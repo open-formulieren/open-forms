@@ -92,6 +92,12 @@ COPY ./bin/celery_flower.sh /celery_flower.sh
 COPY ./bin/dump_configuration.sh /dump_configuration.sh
 RUN mkdir /app/bin /app/log /app/media /app/private_media /app/certifi_ca_bundle
 
+RUN useradd -M -u 1000 maykin
+RUN chown -R maykin /app
+
+# drop privileges
+USER maykin
+
 # prevent writing to the container layer, which would degrade performance.
 # This also serves as a hint for the intended volumes.
 VOLUME ["/app/log", "/app/media", "/app/private_media", "/app/certifi_ca_bundle"]
@@ -110,14 +116,8 @@ COPY --from=frontend-build /app/node_modules/@fortawesome/fontawesome-free/webfo
 COPY --from=sdk-image /sdk /app/src/openforms/static/sdk
 
 # copy source code
-COPY ./src /app/src
+COPY --chown=maykin ./src /app/src
 COPY ./.sdk-release /app/.sdk-release
-
-RUN useradd -M -u 1000 maykin
-RUN chown -R maykin /app
-
-# drop privileges
-USER maykin
 
 ARG RELEASE ARG SDK_RELEASE=latest COMMIT_HASH
 ENV GIT_SHA=${COMMIT_HASH}
