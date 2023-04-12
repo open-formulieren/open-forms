@@ -1,0 +1,36 @@
+{% load i18n capture_tags registrations.contrib.email.registration_summary %}
+{% capture as tt_openblock silent %}{% templatetag openblock %}{% endcapture %}
+{% capture as tt_closeblock silent %}{% templatetag closeblock %}{% endcapture %}
+{% capture as tt_openvariable silent %}{% templatetag openvariable %}{% endcapture %}
+{% capture as tt_closevariable silent %}{% templatetag closevariable %}{% endcapture %}
+
+{{ tt_openblock }} if payment_received {{ tt_closeblock }}
+    <p>{% blocktrans trimmed %}
+        Submission payment received for {{ tt_openvariable }} form_name {{ tt_closevariable }} (submitted on {{ tt_openvariable }} completed_on {{ tt_closevariable }})
+    {% endblocktrans %}</p>
+
+    <p>{% blocktrans trimmed %}
+        Payment order ID: {{ tt_openvariable }} payment_order_id {{ tt_closevariable }}
+    {% endblocktrans %}</p>
+{{ tt_openblock }} else {{ tt_closeblock }}
+    <p>{% blocktrans trimmed %}
+        Submission details for {{ tt_openvariable }} form_name {{ tt_closevariable }} (submitted on {{ tt_openvariable }} completed_on {{ tt_closevariable }})
+        {% endblocktrans %}</p>
+{{ tt_openblock }} endif {{ tt_closeblock }}
+
+<p>{% blocktrans trimmed %}
+    Our reference: {{ tt_openvariable }} public_reference {{ tt_closevariable }}
+    {% endblocktrans %}</p>
+</br>
+
+<p>{% blocktrans trimmed %}
+    Submission language: {{ tt_openvariable }} submission_language {{ tt_closevariable }}
+    {% endblocktrans %}</p>
+
+<p>{{ tt_openblock }} registration_summary {{ tt_closeblock }}</p>
+
+{{ tt_openblock }} if co_signer {{ tt_closeblock }}
+    <p>{% blocktrans trimmed %}
+        Co-signed by: {{ tt_openvariable }} co_signer {{ tt_closevariable }}
+    {% endblocktrans %}</p>
+{{ tt_openblock }} endif {{ tt_closeblock }}

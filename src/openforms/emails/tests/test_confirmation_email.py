@@ -691,3 +691,51 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
 
         message = mail.outbox[0]
         self.assertEqual(message.subject, "Subject: Foo's bar")
+
+    def test_templatetag_alias(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "test",
+                    "type": "textfield",
+                    "label": "Test",
+                    "showInEmail": True,
+                },
+                {
+                    "key": "email",
+                    "type": "email",
+                    "label": "Email",
+                    "showInEmail": False,
+                    "confirmationRecipient": True,
+                },
+            ],
+            {"test": "This is a test", "email": "test@test.nl"},
+            registration_success=True,
+        )
+
+        template = inspect.cleandoc("{% confirmation_summary %}")
+        ConfirmationEmailTemplateFactory.create(
+            form=submission.form, subject="My Subject", content=template
+        )
+        first_step_name = submission.submissionstep_set.all()[
+            0
+        ].form_step.form_definition.name
+
+        send_confirmation_email(submission)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        # process to keep tests sane (random tokens)
+        text = message.body.rstrip()
+        expected_text = inspect.cleandoc(
+            f"""
+            {_("Summary")}
+
+            {first_step_name}
+
+            - Test: This is a test
+            """
+        ).lstrip()
+
+        self.assertEquals(expected_text, text)

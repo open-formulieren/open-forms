@@ -37,6 +37,9 @@ def summary(context):
     return get_template(name).render(context.flatten())
 
 
+register.simple_tag(name="confirmation_summary", takes_context=True)(summary)
+
+
 @register.simple_tag()
 def whitespace(amount: int, base=" ") -> str:
     return base * amount

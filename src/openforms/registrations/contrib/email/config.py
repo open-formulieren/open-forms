@@ -2,6 +2,8 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
+from openforms.api.validators import AllOrNoneTruthyFieldsValidator
+from openforms.emails.validators import URLSanitationValidator
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
@@ -38,12 +40,54 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         ),
     )
     email_subject = serializers.CharField(
-        label=_("Email subject"),
+        label=_("email subject"),
         help_text=_(
             "Subject of the email sent to the registration backend. You can use the expressions "
             "'{{ form_name }}' and '{{ submission_reference }}' to include the form name and the reference "
             "number to the submission in the subject."
         ),
         required=False,
-        validators=[DjangoTemplateValidator()],
+        validators=[
+            DjangoTemplateValidator(backend="openforms.template.openforms_backend")
+        ],
     )
+    email_payment_subject = serializers.CharField(
+        label=_("email payment subject"),
+        help_text=_(
+            "Subject of the email sent to the registration backend to notify a change in the payment status."
+        ),
+        required=False,
+        validators=[
+            DjangoTemplateValidator(backend="openforms.template.openforms_backend")
+        ],
+    )
+    email_content_template_html = serializers.CharField(
+        label=_("email content template HTML"),
+        help_text=_("Content of the registration email message (as text)."),
+        required=False,
+        validators=[
+            DjangoTemplateValidator(
+                backend="openforms.template.openforms_backend",
+            ),
+            URLSanitationValidator(),
+        ],
+    )
+    email_content_template_text = serializers.CharField(
+        label=_("email content template text"),
+        help_text=_("Content of the registration email message (as text)."),
+        required=False,
+        validators=[
+            DjangoTemplateValidator(
+                backend="openforms.template.openforms_backend",
+            ),
+            URLSanitationValidator,
+        ],
+    )
+
+    class Meta:
+        validators = [
+            AllOrNoneTruthyFieldsValidator(
+                "email_content_template_html",
+                "email_content_template_text",
+            ),
+        ]

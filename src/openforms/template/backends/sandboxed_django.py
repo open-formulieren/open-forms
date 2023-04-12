@@ -52,6 +52,18 @@ An instance of the 'sandboxed' Django templates backend.
 """
 
 
+def get_registration_custom_libraries() -> list[str]:
+    """Get all the custom templatetag libraries defined in the registration backends"""
+    from openforms.registrations.registry import register as registry
+
+    # Add any custom templatetags libraries from the registration plugins
+    libraries = []
+    # Iterate over both enabled/not-enabled plugins, since the backend is initialised once
+    for plugin_name, plugin in registry.items():
+        libraries += plugin.get_custom_templatetags_libraries()
+    return libraries
+
+
 def get_openforms_backend():
     return SandboxedDjangoTemplates(
         {
@@ -62,7 +74,8 @@ def get_openforms_backend():
                     "openforms.emails.templatetags.payment",
                     "openforms.emails.templatetags.products",
                     "openforms.config.templatetags.privacy_policy",
-                ],
+                ]
+                + get_registration_custom_libraries(),
             }
         }
     )

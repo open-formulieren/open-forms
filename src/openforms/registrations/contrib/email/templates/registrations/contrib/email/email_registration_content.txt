@@ -1,0 +1,22 @@
+{% load i18n registrations.contrib.email.registration_summary capture_tags %}
+{% capture as tt_openblock silent %}{% templatetag openblock %}{% endcapture %}
+{% capture as tt_closeblock silent %}{% templatetag closeblock %}{% endcapture %}
+{% capture as tt_openvariable silent %}{% templatetag openvariable %}{% endcapture %}
+{% capture as tt_closevariable silent %}{% templatetag closevariable %}{% endcapture %}
+{% autoescape off %}
+
+{% blocktrans trimmed %}Submission details for {{ tt_openvariable }} form_name {{ tt_closevariable }} (submitted on {{ tt_openvariable }} completed_on {{ tt_closevariable }}){% endblocktrans %}
+
+{% blocktrans trimmed %}Our reference: {{ tt_openvariable }} public_reference {{ tt_closevariable }}{% endblocktrans %}
+
+{{ tt_openblock }} if payment_received {{ tt_closeblock }}
+{% blocktrans trimmed %}Submission payment received for {{ tt_openvariable }} form_name {{ tt_closevariable }} (submitted on {{ tt_openvariable }} completed_on {{ tt_closevariable }}){% endblocktrans %}
+{% blocktrans trimmed %}Payment order ID: {{ tt_openvariable }} payment_order_id {{ tt_closevariable }}{% endblocktrans %}
+{{ tt_openblock }} endif {{ tt_closeblock }}
+
+{% blocktrans trimmed %}Submission language: {{ tt_openvariable }} submission_language {{ tt_closevariable }}{% endblocktrans %}
+
+{{ tt_openblock }} registration_summary {{ tt_closeblock }}
+
+{{ tt_openblock }} if co_signer {{ tt_closeblock }}- {% trans "Co-signed by" %}: {{ tt_openvariable }} co_signer {{ tt_closevariable }}{{ tt_openblock }} endif {{ tt_closeblock }}
+{% endautoescape %}

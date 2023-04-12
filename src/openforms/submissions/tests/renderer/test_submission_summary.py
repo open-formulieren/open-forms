@@ -113,7 +113,7 @@ class SubmissionSummaryRendererTests(TestCase):
 
         cls.submission = submission
 
-    def test_get_data_summary_page(self):
+    def test_get_registration_summary_page(self):
         data = self.submission.render_summary_page()
 
         self.assertEqual(2, len(data))
