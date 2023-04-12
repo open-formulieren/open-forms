@@ -114,6 +114,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         read_only=True,
         help_text=_("The number of days that the resume link is valid for."),
     )
+    hide_non_applicable_steps = serializers.SerializerMethodField(read_only=True)
 
     translations = ModelTranslationsSerializer()
 
@@ -156,6 +157,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "translations",
             "appointment_enabled",
             "resume_link_lifetime",
+            "hide_non_applicable_steps",
         )
         # allowlist for anonymous users
         public_fields = (
@@ -180,6 +182,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "submission_allowed",
             "appointment_enabled",
             "resume_link_lifetime",
+            "hide_non_applicable_steps",
         )
         extra_kwargs = {
             "uuid": {
@@ -323,6 +326,10 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
     def get_required_fields_with_asterisk(self, obj) -> bool:
         config = GlobalConfiguration.get_solo()
         return config.form_display_required_with_asterisk
+
+    def get_hide_non_applicable_steps(self, obj) -> bool:
+        config = GlobalConfiguration.get_solo()
+        return config.hide_non_applicable_steps
 
     def get_resume_link_lifetime(self, obj) -> int:
         config = GlobalConfiguration.get_solo()

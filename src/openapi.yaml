@@ -6098,7 +6098,11 @@ components:
           type: integer
           readOnly: true
           description: The number of days that the resume link is valid for.
+        hideNonApplicableSteps:
+          type: boolean
+          readOnly: true
       required:
+      - hideNonApplicableSteps
       - loginOptions
       - loginRequired
       - name
@@ -7431,6 +7435,9 @@ components:
           type: integer
           readOnly: true
           description: The number of days that the resume link is valid for.
+        hideNonApplicableSteps:
+          type: boolean
+          readOnly: true
     PatchedFormDefinition:
       type: object
       properties:
