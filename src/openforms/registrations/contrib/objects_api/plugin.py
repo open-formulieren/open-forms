@@ -100,15 +100,22 @@ class ObjectsAPIRegistration(BasePlugin):
             attachment_options = build_options(
                 options,
                 {
-                    "informatieobjecttype": "informatieobjecttype_attachment",
+                    "informatieobjecttype": "informatieobjecttype_attachment",  # Different IOT than for the report
                     "organisatie_rsin": "organisatie_rsin",
                     "doc_vertrouwelijkheidaanduiding": "doc_vertrouwelijkheidaanduiding",
                 },
             )
-            if attachment.informatieobjecttype:
-                attachment_options[
-                    "informatieobjecttype"
-                ] = attachment.informatieobjecttype
+
+            component_overwrites = {
+                "doc_vertrouwelijkheidaanduiding": attachment.doc_vertrouwelijkheidaanduiding,
+                "titel": attachment.titel,
+                "organisatie_rsin": attachment.bronorganisatie,
+                "informatieobjecttype": attachment.informatieobjecttype,
+            }
+
+            for key, value in component_overwrites.items():
+                if value:
+                    attachment_options[key] = value
 
             attachment_document = create_attachment_document(
                 submission.form.admin_name,
