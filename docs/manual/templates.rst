@@ -330,8 +330,8 @@ Registratie
 ===========
 
 De registratie email is een optionele e-mail die wordt verzonden wanneer een formulier is geconfigureerd om de
-'registratie backend' te gebruiken. De registratie email heeft toegang tot alle
-gegevens uit het formulier en de waarden ingevuld door de gebruiker.
+'e-mailregistratie-backend' te gebruiken. De registratie e-mail heeft toegang tot alle gegevens uit het formulier en
+de waarden ingevuld door de gebruiker.
 
 **Speciale instructies**
 
@@ -343,12 +343,12 @@ sjabloon, dan wordt deze niet getoond.
 Variabele                           Beschrijving
 ==================================  ===========================================================================
 ``{{ form_name }}``                 De naam van het formulier.
-``{{ completed_on }}``              De tijdstip waarop het formulier werd ingezonden.
-``{{ public_reference }}``          De openbare referentie van de inzending.
+``{{ completed_on }}``              Het moment (datumtijd) waarop het formulier werd ingezonden.
+``{{ public_reference }}``          De publieke referentie van de inzending.
 ``{{ payment_received }}``          Indicatie of de gebruiker wel of niet heeft betaald.
 ``{{ payment_order_id }}``          De referentie van de betaling.
-``{{ submission_language }}``       De taal van het formulier die werd ingezonden.
-``{{ co_signer }}``                 De voorletters en de achternaam van de persoon die het formulier heeft mede-ondertekend.
+``{{ submission_language }}``       De taal van het formulier die werd ingezonden, bijvoorbeeld 'nl'.
+``{{ co_signer }}``                 De voorletters, achternaam en ID (bijvoorbeeld het BSN) van de persoon die het formulier heeft mede-ondertekend.
 ``{% registration_summary %}``      Kop "Samenvatting" gevolgd door een volledige samenvatting van alle formuliervelden en gebruikersvariabelen.
 ==================================  ===========================================================================
 
@@ -410,4 +410,4 @@ Voorbeeld
          - totaalSchuld: 500,0
 
 
-         Mede-ondertekend door: N. Doe
+         Mede-ondertekend door: N. Doe (BSN: 123456789)
