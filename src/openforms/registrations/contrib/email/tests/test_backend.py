@@ -53,7 +53,7 @@ Onze referentie: {{ public_reference }}
 
 Inzendingstaal: {{ submission_language }}
 
-{% data_summary %}
+{% registration_summary %}
 
 {% if co_signer %}
 Mede-ondertekend door: {{ co_signer }}

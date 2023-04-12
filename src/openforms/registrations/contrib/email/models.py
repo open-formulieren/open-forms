@@ -18,15 +18,18 @@ def render_with_language(filename):
     return render_to_string(filename).strip()
 
 
-get_subject = partial(render_with_language, "emails/email_registration_subject.txt")
+get_subject = partial(
+    render_with_language, "registrations/contrib/email/email_registration_subject.txt"
+)
 get_subject_payment = partial(
-    render_with_language, "emails/email_registration_subject_payment.txt"
+    render_with_language,
+    "registrations/contrib/email/email_registration_subject_payment.txt",
 )
 get_content_html = partial(
-    render_with_language, "emails/email_registration_content.html"
+    render_with_language, "registrations/contrib/email/email_registration_content.html"
 )
 get_content_text = partial(
-    render_with_language, "emails/email_registration_content.txt"
+    render_with_language, "registrations/contrib/email/email_registration_content.txt"
 )
 
 

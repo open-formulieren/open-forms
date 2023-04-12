@@ -1,4 +1,4 @@
-{% load i18n capture_tags data_summary %}
+{% load i18n capture_tags registrations.contrib.email.registration_summary %}
 {% capture as tt_openblock silent %}{% templatetag openblock %}{% endcapture %}
 {% capture as tt_closeblock silent %}{% templatetag closeblock %}{% endcapture %}
 {% capture as tt_openvariable silent %}{% templatetag openvariable %}{% endcapture %}
@@ -27,7 +27,7 @@
     Submission language: {{ tt_openvariable }} submission_language {{ tt_closevariable }}
     {% endblocktrans %}</p>
 
-<p>{{ tt_openblock }} data_summary {{ tt_closeblock }}</p>
+<p>{{ tt_openblock }} registration_summary {{ tt_closeblock }}</p>
 
 {{ tt_openblock }} if co_signer {{ tt_closeblock }}
     <p>{% blocktrans trimmed %}

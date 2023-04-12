@@ -2,8 +2,8 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
-from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
 from openforms.api.validators import AllOrNoneTruthyFieldsValidator
+from openforms.emails.validators import URLSanitationValidator
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 
@@ -47,7 +47,9 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "number to the submission in the subject."
         ),
         required=False,
-        validators=[DjangoTemplateValidator()],
+        validators=[
+            DjangoTemplateValidator(backend="openforms.template.openforms_backend")
+        ],
     )
     email_payment_subject = serializers.CharField(
         label=_("email payment subject"),
@@ -55,19 +57,31 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             "Subject of the email sent to the registration backend to notify a change in the payment status."
         ),
         required=False,
-        validators=[DjangoTemplateValidator()],
+        validators=[
+            DjangoTemplateValidator(backend="openforms.template.openforms_backend")
+        ],
     )
-    email_content_template_html = CSPPostProcessedHTMLField(
+    email_content_template_html = serializers.CharField(
         label=_("email content template HTML"),
         help_text=_("Content of the registration email message (as text)."),
         required=False,
-        validators=[DjangoTemplateValidator()],
+        validators=[
+            DjangoTemplateValidator(
+                backend="openforms.template.openforms_backend",
+            ),
+            URLSanitationValidator(),
+        ],
     )
     email_content_template_text = serializers.CharField(
         label=_("email content template text"),
         help_text=_("Content of the registration email message (as text)."),
         required=False,
-        validators=[DjangoTemplateValidator()],
+        validators=[
+            DjangoTemplateValidator(
+                backend="openforms.template.openforms_backend",
+            ),
+            URLSanitationValidator,
+        ],
     )
 
     class Meta:

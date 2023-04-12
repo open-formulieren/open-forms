@@ -207,4 +207,6 @@ class EmailRegistration(BasePlugin):
         set_submission_reference(submission)
 
     def get_custom_templatetags_libraries(self) -> list[str]:
-        return ["openforms.registrations.contrib.email.templatetags.data_summary"]
+        return [
+            "openforms.registrations.contrib.email.templatetags.registrations.contrib.email.registration_summary"
+        ]

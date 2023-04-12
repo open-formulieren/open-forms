@@ -5,11 +5,11 @@ register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
-def data_summary(context):
+def registration_summary(context):
     as_text = context.get("rendering_text")
     if as_text:
-        name = "emails/data_summary.txt"
+        name = "registrations/contrib/email/registration_summary.txt"
     else:
-        name = "emails/data_summary.html"
+        name = "registrations/contrib/email/registration_summary.html"
 
     return get_template(name).render(context.flatten())
