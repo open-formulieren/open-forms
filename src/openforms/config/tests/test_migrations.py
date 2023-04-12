@@ -1,4 +1,5 @@
 from django.test import override_settings
+from django.utils.translation import gettext_lazy as _
 
 from openforms.utils.tests.test_migrations import TestMigrations
 
@@ -154,3 +155,29 @@ class RemovePrefixDesignTokenMigrationRenameLinkPropertiesTests(TestMigrations):
         }
 
         self.assertEqual(config.design_token_values, expected)
+
+
+@override_settings(SOLO_CACHE=None)
+class ConfigTemplatesMigrationTest(TestMigrations):
+    app = "config"
+    migrate_from = "0001_initial_squashed_0022_merge_20210903_1228"
+    migrate_to = "0044_globalconfiguration_confirmation_templates"
+
+    def setUpBeforeMigration(self, apps):
+        GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
+        GlobalConfiguration.objects.create(
+            submission_confirmation_template=_("Inzending ontvangen"),
+            form_previous_text=_("Vorige stap"),
+        )
+
+    def test_config_templates(self):
+        GlobalConfiguration = self.apps.get_model("config", "GlobalConfiguration")
+        config = GlobalConfiguration.objects.get()
+        template = config.submission_confirmation_template
+        template_nl = config.submission_confirmation_template_nl
+
+        form_previous_text = config.form_previous_text
+        form_previous_text_nl = config.form_previous_text_nl
+
+        self.assertEqual(template_nl, template)
+        self.assertEqual(form_previous_text_nl, form_previous_text)
