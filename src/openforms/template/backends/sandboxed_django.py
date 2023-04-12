@@ -43,7 +43,7 @@ class SandboxedDjangoTemplates(DjangoTemplates):
         This prevents user-content from loading and using the libraries that are
         private API to Open Forms.
         """
-        return custom_libraries
+        return {}
 
 
 backend = SandboxedDjangoTemplates({})
