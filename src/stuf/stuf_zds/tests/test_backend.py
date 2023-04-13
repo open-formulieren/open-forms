@@ -1,3 +1,5 @@
+from django.test import tag
+
 import requests_mock
 from freezegun import freeze_time
 from lxml import etree
@@ -553,3 +555,41 @@ class StufZDSClientTests(StUFZDSTestBase):
             ).count(),
             1,
         )
+
+    @tag("gh-2983", "sentry-324640")
+    def test_unpack_valueerror(self, m):
+        """
+        Regression test where the XML response structure caused unpack errors.
+
+        In tests this appears to be fine due to the XML structure being so that an
+        element had two children(?) which could be unpacked, however in real
+        integrations this appears not to be the case at all times.
+
+        The mocked response was extracted from Celery task container logs and is kept
+        exactly as it was received (including newlines, spaces...) except for
+        identifying information.
+        """
+        content_bits = (
+            b"<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/",
+            b'soap/envelope/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">',
+            b'<S:Body><ZKN:genereerZaakIdentificatie_Du02 xmlns:BG="http://www.egem.nl/StUF/sector/bg/0310" ',
+            b'xmlns:StUF="http://www.egem.nl/StUF/StUF0301" xmlns:ZKN="http://www.egem.nl/StUF/sector/zkn/0310"',
+            b' xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" ',
+            b'xmlns:xmime="http://www.w3.org/2005/05/xmlmime">\n   <ZKN:stuurgegevens>\n      ',
+            b"<StUF:berichtcode>Du02</StUF:berichtcode>\n      <StUF:zender>\n         ",
+            b"<StUF:applicatie>REDACTED</StUF:applicatie>\n      </StUF:zender>\n      <StUF:ontvanger>\n         ",
+            b"<StUF:organisatie/>\n         <StUF:applicatie>REDACTED</StUF:applicatie>\n         ",
+            b"<StUF:administratie/>\n         <StUF:gebruiker/>\n      </StUF:ontvanger>\n      ",
+            b"<StUF:referentienummer>99999999999999999999999999999999999999</StUF:referentienummer>\n      ",
+            b"<StUF:tijdstipBericht>20230413113141</StUF:tijdstipBericht>\n      ",
+            b"<StUF:crossRefnummer>916bf799-38ee-45b0-b859-c2f656433e93</StUF:crossRefnummer>\n      ",
+            b"<StUF:functie>genereerZaakidentificatie</StUF:functie>\n   </ZKN:stuurgegevens>\n   ",
+            b'<ZKN:zaak StUF:entiteittype="ZAK" StUF:functie="entiteit">\n      ',
+            b"<ZKN:identificatie>1234567</ZKN:identificatie>\n   </ZKN:zaak>\n",
+            b"</ZKN:genereerZaakIdentificatie_Du02></S:Body></S:Envelope>",
+        )
+        m.post(self.service.soap_service.url, content=b"".join(content_bits))
+
+        identificatie = self.client.create_zaak_identificatie()
+
+        self.assertEqual(identificatie, "1234567")
