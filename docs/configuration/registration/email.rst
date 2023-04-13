@@ -15,6 +15,28 @@ building the form.
     Email should be configured by the Open Forms supplier and also requires
     proper setup of SPF and/or DMARC-records.
 
+Templates
+---------
+
+By default, Open Forms uses the templates configured in the admin, under
+**Configuratie** > **Algemene configuratie** > **Registratie email**. Here it is possible to specify:
+
+* The subject of the registration email
+* The subject of the email sent once there is an update to the payment status
+* The HTML template for the body of the email
+* The text template for the body of the email
+
+.. note::
+
+   The text template is needed in case the email client used to read the registration email does not support rendering
+   HTML. Therefore, it should contain the same information of the HTML template.
+
+Both in the templates for the subject and the body, one can use the Django template syntax. For more information on how
+to use this syntax and which variables/expressions are available, see the section :ref:`manual_templates`.
+
+It is also possible to specify a template for each form. This can be configured in the form editor, under the tab
+**Registratie** and then selecting **E-mail registratie** in the drop down menu.
+
 File uploads/attachments
 ------------------------
 

@@ -15,6 +15,7 @@ Momenteel worden sjablonen gebruikt voor:
 * Bevestigingsmail
 * Formulier opslaan e-mail
 * Bevestigingspagina
+* Registratie e-mail
 
 De tekst kan in deze elementen aangepast worden met **variabelen** en
 **voorwaardelijke weergave**. De variabelen die beschikbaar zijn, zijn
@@ -125,10 +126,10 @@ Voorbeeld
 Formattering van variabelen
 ---------------------------
 
-Vaak wilt u :ref:`variabelen <manual_forms_basics_variables>` op een bepaalde manier formatteren. 
-Dit is mogelijk met behulp van de *sjabloonfilters* die standaard ingebouwd 
-zijn. Alle beschikbare filters zijn gedocumenteerd op de 
-`Django defaultfilters reference`_. Het patroon is typisch: 
+Vaak wilt u :ref:`variabelen <manual_forms_basics_variables>` op een bepaalde manier formatteren.
+Dit is mogelijk met behulp van de *sjabloonfilters* die standaard ingebouwd
+zijn. Alle beschikbare filters zijn gedocumenteerd op de
+`Django defaultfilters reference`_. Het patroon is typisch:
 ``{{ <variable>|<sjabloonfilter> }}``
 
 Hieronder vindt u een tabel met vaak-voorkomende patronen.
@@ -171,7 +172,7 @@ sjabloon, dan wordt deze niet getoond.
 ==================================  ===========================================================================
 Variabele                           Beschrijving
 ==================================  ===========================================================================
-``{% summary %}``                   Kop "Samenvatting" gevolgd door een volledige samenvatting van alle formuliervelden die zijn gemarkeerd om in de e-mail weer te geven.
+``{% confirmation_summary %}``      Kop "Samenvatting" gevolgd door een volledige samenvatting van alle formuliervelden die zijn gemarkeerd om in de e-mail weer te geven.
 ``{{ form_name }}``                 De naam van het formulier.
 ``{{ submission_date }}``           De datum waarop het formulier is verzonden.
 ``{{ public_reference }}``          De openbare referentie van de inzending, bijvoorbeeld het zaaknummer.
@@ -179,6 +180,10 @@ Variabele                           Beschrijving
 ``{% product_information %}``       Zonder kop, geeft dit de tekst weer uit het optionele veld "informatie" van het product dat aan dit formulier is gekoppeld.
 ``{% payment_information %}``       Kop "Betaalinformatie" gevolgd door een betaallink indien nog niet is betaald en anders de betalingsbevestiging.
 ==================================  ===========================================================================
+
+.. note::
+
+   De speciale instructie ``{% summary %}`` is verouderd en zal vanaf versie 3.0.0 niet meer beschikbaar zijn.
 
 Voorbeeld
 ---------
@@ -199,7 +204,7 @@ Voorbeeld
 
          {% product_information %}
 
-         {% summary %}
+         {% confirmation_summary %}
          {% appointment_information %}
          {% payment_information %}
 
@@ -319,3 +324,90 @@ Voorbeeld
          Neem alstublieft uw afspraakbevestiging mee.
 
 .. _Django defaultfilters reference: https://docs.djangoproject.com/en/3.2/ref/templates/builtins/#built-in-filter-reference
+
+
+Registratie
+===========
+
+De registratie-e-mail is een optionele e-mail die wordt verzonden wanneer een formulier is geconfigureerd om de
+'e-mailregistratie-backend' te gebruiken. De registratie-e-mail heeft toegang tot alle gegevens uit het formulier en
+de waarden ingevuld door de gebruiker.
+
+**Speciale instructies**
+
+Dit zijn aanvullende variabelen en instructies die beschikbaar zijn voor het
+sjabloon. Als een variabele niet beschikbaar maar wel aanwezig is in het
+sjabloon, dan wordt deze niet getoond.
+
+==================================  ===========================================================================
+Variabele                           Beschrijving
+==================================  ===========================================================================
+``{{ form_name }}``                 De naam van het formulier.
+``{{ completed_on }}``              Het moment (datumtijd) waarop het formulier werd ingezonden.
+``{{ public_reference }}``          De publieke referentie van de inzending.
+``{{ payment_received }}``          Indicatie of de gebruiker wel of niet heeft betaald.
+``{{ payment_order_id }}``          De referentie van de betaling.
+``{{ submission_language }}``       De taal van het formulier die werd ingezonden, bijvoorbeeld 'nl'.
+``{{ co_signer }}``                 De voorletters, achternaam en ID (bijvoorbeeld het BSN) van de persoon die het formulier heeft mede-ondertekend.
+``{% registration_summary %}``      Kop "Samenvatting" gevolgd door een volledige samenvatting van alle formuliervelden en gebruikersvariabelen.
+==================================  ===========================================================================
+
+Voorbeeld
+---------
+
+.. tabs::
+
+   .. tab:: Sjabloon (zonder opmaak)
+
+      .. code:: django
+
+        {% if payment_received %}
+
+        Betaling ontvangen voor {{ form_name }} (verzonden op {{ completed_on }})
+        Betalings-order ID: {{ payment_order_id }}
+
+        {% else %}
+
+        Inzendingdetails van {{ form_name }} (verzonden op {{ completed_on }})
+
+        {% endif %}
+
+        Onze referentie: {{ public_reference }}
+        Inzendingstaal: {{ submission_language }}
+
+        {% registration_summary %}
+
+        {% if co_signer %}
+        Mede-ondertekend door: {{ co_signer }}
+        {% endif %}
+
+   .. tab:: Weergave (impressie)
+
+      .. code:: markdown
+
+         Inzendingdetails van Aanvraag stadspas (verzonden op 10:50:25 29-03-2023)
+
+         Onze referentie: OF-H7S6BE
+         Inzendingstaal: Nederlands
+
+         **Samenvatting**
+
+         **Uw gegevens**
+
+         - Voornaam: John
+         - Achternaam: Doe
+         - Postcode: 1111 AA
+         - Huisnummer: 1
+
+         **Uw Situatie**
+
+         - Heeft u een uitkering: Nee
+         - Heeft u een werkgever: Ja
+
+         **Variabelen**
+
+         - nettoInkomen: 490,0
+         - totaalSchuld: 500,0
+
+
+         Mede-ondertekend door: N. Doe (BSN: 123456789)

@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import FAIcon from './FAIcon';
+import TinyMCEEditor from './form_design/Editor';
 import Field from './forms/Field';
 
 /*
@@ -135,7 +136,23 @@ CustomCheckboxWidget.propTypes = {
   onChange: PropTypes.func,
 };
 
-const FormRjsfWrapper = ({name, label, schema, formData, onChange, errors}) => {
+const WysiwygWidget = ({value, onChange}) => {
+  return (
+    <TinyMCEEditor
+      content={value}
+      onEditorChange={(newValue, editor) => {
+        onChange(newValue);
+      }}
+    />
+  );
+};
+
+WysiwygWidget.propTypes = {
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+};
+
+const FormRjsfWrapper = ({name, label, schema, uiSchema, formData, onChange, errors}) => {
   let extraErrors = {};
 
   /*
@@ -168,6 +185,7 @@ const FormRjsfWrapper = ({name, label, schema, formData, onChange, errors}) => {
     <Field name={name} label={label} errors={extraErrors ? [] : errors}>
       <Form
         schema={schema}
+        uiSchema={uiSchema}
         formData={formData}
         onChange={onChange}
         FieldTemplate={CustomFieldTemplate}
@@ -188,10 +206,11 @@ FormRjsfWrapper.propTypes = {
     properties: PropTypes.object,
     required: PropTypes.arrayOf(PropTypes.string),
   }),
+  uiSchema: PropTypes.object,
   formData: PropTypes.object,
   onChange: PropTypes.func.isRequired,
   errors: PropTypes.array,
 };
 
-export {CustomFieldTemplate};
+export {CustomFieldTemplate, WysiwygWidget};
 export default FormRjsfWrapper;
