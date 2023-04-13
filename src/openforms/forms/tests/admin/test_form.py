@@ -454,7 +454,7 @@ class FormAdminImportExportTests(WebTest):
 
         form = Form.objects.get(slug="bed")
 
-        self.assertEqual(form.name_nl, "Form 000")
+        self.assertEqual(form.name, "Form 000")
 
 
 @disable_2fa
