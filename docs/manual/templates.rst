@@ -329,8 +329,8 @@ Voorbeeld
 Registratie
 ===========
 
-De registratie email is een optionele e-mail die wordt verzonden wanneer een formulier is geconfigureerd om de
-'e-mailregistratie-backend' te gebruiken. De registratie e-mail heeft toegang tot alle gegevens uit het formulier en
+De registratie-e-mail is een optionele e-mail die wordt verzonden wanneer een formulier is geconfigureerd om de
+'e-mailregistratie-backend' te gebruiken. De registratie-e-mail heeft toegang tot alle gegevens uit het formulier en
 de waarden ingevuld door de gebruiker.
 
 **Speciale instructies**
