@@ -28,6 +28,8 @@ class StufZDSClientTests(StUFZDSTestBase):
     test the client class directly
     """
 
+    client: StufZDSClient
+
     def setUp(self):
         self.service = StufServiceFactory.create(
             zender_organisatie="ZenOrg",
@@ -81,7 +83,8 @@ class StufZDSClientTests(StUFZDSTestBase):
             ),
             additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
         )
-        self.client.create_zaak_identificatie()
+        zaaknr = self.client.create_zaak_identificatie()
+        self.assertEqual(zaaknr, "foo")
 
         request = m.request_history[0]
         self.assertEqual(request.headers["Content-Type"], "application/soap+xml")
