@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 import requests
 from lxml import etree
-from lxml.etree import Element
+from lxml.etree import _Element
 from requests import RequestException
 
 from openforms.config.models import GlobalConfiguration
@@ -111,7 +111,7 @@ class StufZDSClient(BaseClient):
         )
         self.options = options
 
-    def execute_call(self, *args, **kwargs) -> Element:
+    def execute_call(self, *args, **kwargs) -> _Element:
         """
         Method actual performing the SOAP call, with error handling.
 
@@ -171,7 +171,7 @@ class StufZDSClient(BaseClient):
         return xml
 
     def create_zaak_identificatie(self) -> str:
-        _, xml = self.execute_call(
+        xml = self.execute_call(
             soap_action="genereerZaakIdentificatie_Di02",
             template="stuf_zds/soap/genereerZaakIdentificatie.xml",
             endpoint_type=EndpointType.vrije_berichten,
@@ -243,7 +243,7 @@ class StufZDSClient(BaseClient):
         return self.partial_update_zaak(zaak_identificatie, data)
 
     def create_document_identificatie(self) -> str:
-        _, xml = self.execute_call(
+        xml = self.execute_call(
             soap_action="genereerDocumentIdentificatie_Di02",
             template="stuf_zds/soap/genereerDocumentIdentificatie.xml",
             endpoint_type=EndpointType.vrije_berichten,
