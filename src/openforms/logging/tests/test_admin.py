@@ -49,6 +49,6 @@ class AVGAuditLogListViewTests(TestCase):
 
         submission.delete()
 
-        response = self.app.get(url, user=user)
+        response = self.client.get(url)
 
         self.assertEqual(200, response.status_code)
