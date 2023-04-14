@@ -1,57 +1,103 @@
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
-import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
+import {FormattedMessage} from 'react-intl';
 
 import ErrorList from 'components/admin/forms/ErrorList';
 import Field from 'components/admin/forms/Field';
 import Fieldset from 'components/admin/forms/Fieldset';
 import FormRow from 'components/admin/forms/FormRow';
 import {Checkbox, TextInput} from 'components/admin/forms/Inputs';
-import Select from 'components/admin/forms/Select';
 import {ValidationErrorContext} from 'components/admin/forms/ValidationErrors';
-import {getTranslatedChoices} from 'utils/i18n';
 
-import {FormContext} from './Context';
 import TinyMCEEditor from './Editor';
 import LanguageTabs from './LanguageTabs';
 import {parseValidationErrors} from './utils';
 
-const EMAIL_OPTIONS = [
-  [
-    'global_email',
-    defineMessage({
-      description: 'global_email option label',
-      defaultMessage: 'Global email',
-    }),
-  ],
-  [
-    'form_specific_email',
-    defineMessage({
-      description: 'form_specific_email option label',
-      defaultMessage: 'Form specific email',
-    }),
-  ],
-  [
-    'no_email',
-    defineMessage({
-      description: 'no_email option label',
-      defaultMessage: 'No email',
-    }),
-  ],
-];
+const ConfirmationEmailTemplate = ({
+  erroredLanguages,
+  emailTranslationErrors,
+  emailTemplate,
+  onChange,
+}) => {
+  return (
+    <div className="confirmation-email-template">
+      <div className="confirmation-email-template__help-text">
+        <FormattedMessage
+          defaultMessage="Below you can specify a custom template for the configuration email. If not specified, the globally configured template will be used."
+          description="Custom confirmation email template explanation"
+        />
+      </div>
+      <LanguageTabs haveErrors={erroredLanguages.email} forceRenderTabPanel>
+        {(langCode, defaultLang) => (
+          <>
+            {emailTranslationErrors?.[langCode]?.nonFieldErrors && (
+              <ErrorList classNamePrefix="confirmation-page">
+                {emailTranslationErrors[langCode].nonFieldErrors}
+              </ErrorList>
+            )}
+            <FormRow>
+              <Field
+                name={`form.confirmationEmailTemplate.translations.${langCode}.subject`}
+                label={
+                  <FormattedMessage
+                    defaultMessage="Subject"
+                    description="Confirmation Email Subject label"
+                  />
+                }
+              >
+                <TextInput
+                  value={emailTemplate.translations[langCode].subject}
+                  onChange={onChange}
+                  maxLength="1000"
+                />
+              </Field>
+            </FormRow>
+            <FormRow>
+              <Field
+                name={`form.confirmationEmailTemplate.translations.${langCode}.content`}
+                label={
+                  <FormattedMessage
+                    defaultMessage="Content"
+                    description="Confirmation Email Content label"
+                  />
+                }
+              >
+                <TinyMCEEditor
+                  content={emailTemplate.translations[langCode].content}
+                  onEditorChange={(newValue, editor) =>
+                    onChange({
+                      target: {
+                        name: `form.confirmationEmailTemplate.translations.${langCode}.content`,
+                        value: newValue,
+                      },
+                    })
+                  }
+                />
+              </Field>
+            </FormRow>
+          </>
+        )}
+      </LanguageTabs>
+    </div>
+  );
+};
+
+ConfirmationEmailTemplate.propTypes = {
+  onChange: PropTypes.func.isRequired,
+  erroredLanguages: PropTypes.object,
+  emailTranslationErrors: PropTypes.objectOf(PropTypes.shape({languageCode: PropTypes.object})),
+  emailTemplate: PropTypes.object,
+};
 
 const Confirmation = ({
   displayMainWebsiteLink = false,
   includeConfirmationPageContentInPdf = false,
-  emailOption = 'global_email',
+  sendConfirmationEmail = true,
   emailTemplate = {},
   onChange,
   translations,
 }) => {
-  const intl = useIntl();
-  const {languages} = useContext(FormContext);
   const allValidationErrors = useContext(ValidationErrorContext);
-  const emailOptions = getTranslatedChoices(intl, EMAIL_OPTIONS);
 
   const onCheckboxChange = (event, currentValue) => {
     const {
@@ -76,7 +122,7 @@ const Confirmation = ({
     {
       key: 'email',
       container: formValidationErrors?.confirmationEmailTemplate?.translations,
-      fieldList: ['subject', 'content', 'confirmationEmailOption', 'nonFieldErrors'],
+      fieldList: ['subject', 'content', 'sendConfirmationEmail', 'nonFieldErrors'],
     },
   ];
 
@@ -188,82 +234,47 @@ const Confirmation = ({
           />
         }
       >
-        <LanguageTabs haveErrors={erroredLanguages.email} forceRenderTabPanel>
-          {(langCode, defaultLang) => (
-            <>
-              {emailTranslationErrors?.[langCode]?.nonFieldErrors && (
-                <ErrorList classNamePrefix="confirmation-page">
-                  {emailTranslationErrors[langCode].nonFieldErrors}
-                </ErrorList>
-              )}
-              <FormRow>
-                <Field
-                  name={`form.confirmationEmailTemplate.translations.${langCode}.subject`}
-                  label={
-                    <FormattedMessage
-                      defaultMessage="Subject"
-                      description="Confirmation Email Subject label"
-                    />
-                  }
-                >
-                  <TextInput
-                    value={emailTemplate.translations[langCode].subject}
-                    onChange={onChange}
-                    maxLength="1000"
-                  />
-                </Field>
-              </FormRow>
-              <FormRow>
-                <Field
-                  name={`form.confirmationEmailTemplate.translations.${langCode}.content`}
-                  label={
-                    <FormattedMessage
-                      defaultMessage="Content"
-                      description="Confirmation Email Content label"
-                    />
-                  }
-                >
-                  <TinyMCEEditor
-                    content={emailTemplate.translations[langCode].content}
-                    onEditorChange={(newValue, editor) =>
-                      onChange({
-                        target: {
-                          name: `form.confirmationEmailTemplate.translations.${langCode}.content`,
-                          value: newValue,
-                        },
-                      })
-                    }
-                  />
-                </Field>
-              </FormRow>
-              <FormRow>
-                <Field
-                  name="form.confirmationEmailOption"
-                  label={
-                    <FormattedMessage
-                      defaultMessage="Email option"
-                      description="Form confirmation email label"
-                    />
-                  }
-                  helpText={
-                    <FormattedMessage
-                      defaultMessage="Will send the email specified."
-                      description="Form confirmation email help text"
-                    />
-                  }
-                  disabled={langCode !== defaultLang}
-                >
-                  <Select
-                    name="form.confirmationEmailOption"
-                    choices={emailOptions}
-                    value={emailOption}
-                    onChange={onChange}
-                  />
-                </Field>
-              </FormRow>
-            </>
-          )}
-        </LanguageTabs>
+        <FormRow>
+          <Checkbox
+            name="form.sendConfirmationEmail"
+            label={
+              <FormattedMessage
+                defaultMessage="Send confirmation email"
+                description="Label of form field 'Send the confirmation email'"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                defaultMessage="Whether to send a confirmation email to the end-user who submitted the form."
+                description="Help text of form field 'Send the confirmation email'"
+              />
+            }
+            checked={sendConfirmationEmail}
+            onChange={event => {
+              onCheckboxChange(event, sendConfirmationEmail);
+
+              let emptiedTranslations = {};
+              Object.keys(emailTemplate.translations).map(
+                langCode => (emptiedTranslations[langCode] = {subject: '', content: ''})
+              );
+
+              onChange({
+                target: {
+                  name: 'form.confirmationEmailTemplate',
+                  value: {subject: '', content: '', translations: emptiedTranslations},
+                },
+              });
+            }}
+          />
+        </FormRow>
+        {sendConfirmationEmail && (
+          <ConfirmationEmailTemplate
+            emailTemplate={emailTemplate}
+            emailTranslationErrors={emailTranslationErrors}
+            erroredLanguages={erroredLanguages}
+            onChange={onChange}
+          />
+        )}
       </Fieldset>
     </div>
   );
@@ -271,7 +282,7 @@ const Confirmation = ({
 
 Confirmation.propTypes = {
   displayMainPage: PropTypes.bool,
-  emailOption: PropTypes.string,
+  sendConfirmationEmail: PropTypes.bool,
   emailTemplate: PropTypes.object,
   includeConfirmationPageContentInPdf: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
