@@ -451,7 +451,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "voornaam": "Foo",
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
-                "postcode": "1000 AA",
+                "postcode": "1000 aa",
                 "geboortedatum": "2000-12-31",
                 "coordinaat": [52.36673378967122, 4.893164274470299],
                 "voorletters": "J.W.",
@@ -556,6 +556,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
+        # postcode should also be converted (through template filters) to uppercase (#2977)
         with self.subTest("#2422: postcode must be normalized"):
             self.assertXPathEquals(
                 xml_doc,
