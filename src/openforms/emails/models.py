@@ -19,12 +19,7 @@ class ConfirmationEmailTemplateManager(models.Manager):
 
 
 class ConfirmationEmailTemplate(models.Model):
-    """Template of email to be sent on completion of submission
-
-    Subject and content fields are validated independently. If the confirmation email
-    is specific to a particular form, both fields must be filled in or `is_usable` will
-    return `False`.
-    """
+    """Template of email to be sent on completion of submission"""
 
     subject = models.CharField(
         _("subject"),
