@@ -26,19 +26,18 @@ def get_confirmation_email_templates(submission: "Submission") -> Tuple[str, str
         raise SkipConfirmationEmail("Confirmation e-mail sending is disabled.")
 
     with translation.override(submission.language_code):
-        if template_option == ConfirmationEmailOptions.form_specific_email:
-            email_template = submission.form.confirmation_email_template
-            return (
-                email_template.subject,
-                email_template.content,
-            )
+        config = GlobalConfiguration.get_solo()
+        if not hasattr(submission.form, "confirmation_email_template"):
+            return config.confirmation_email_subject, config.confirmation_email_content
 
-        if template_option == ConfirmationEmailOptions.global_email:
-            config = GlobalConfiguration.get_solo()
-            return (
-                config.confirmation_email_subject,
-                config.confirmation_email_content,
-            )
+        subject_template = (
+            submission.form.confirmation_email_template.subject
+            or config.confirmation_email_subject
+        )
+        content_template = (
+            submission.form.confirmation_email_template.content
+            or config.confirmation_email_content
+        )
 
     raise ValueError(f"Unexpected option '{template_option}'")  # noqa
 

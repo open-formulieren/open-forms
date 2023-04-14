@@ -27,7 +27,7 @@ from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 from openforms.variables.constants import FormVariableSources
 
-from ..constants import ConfirmationEmailOptions, SubmissionAllowedChoices
+from ..constants import SubmissionAllowedChoices
 from .utils import literal_getter
 
 User = get_user_model()
@@ -125,11 +125,12 @@ class Form(models.Model):
         default=True,
         help_text=_("Display the instruction from the confirmation page in the PDF."),
     )
-    confirmation_email_option = models.CharField(
-        _("confirmation email option"),
-        choices=ConfirmationEmailOptions.choices,
-        default=ConfirmationEmailOptions.global_email,
-        max_length=20,
+    send_confirmation_email = models.BooleanField(
+        _("send confirmation email"),
+        help_text=_(
+            "Whether a confirmation email should be sent to the end user filling in the form."
+        ),
+        default=True,
     )
     begin_text = models.CharField(
         _("begin text"),

@@ -17,7 +17,6 @@ from openforms.products.models import Product
 from openforms.registrations.registry import register as registration_register
 from openforms.translations.api.serializers import ModelTranslationsSerializer
 
-from ...constants import ConfirmationEmailOptions
 from ...models import Category, Form
 from .button_text import ButtonTextSerializer
 from .form_step import MinimalFormStepSerializer
@@ -150,7 +149,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "submission_allowed",
             "submissions_removal_options",
             "confirmation_email_template",
-            "confirmation_email_option",
+            "send_confirmation_email",
             "display_main_website_link",
             "include_confirmation_page_content_in_pdf",
             "required_fields_with_asterisk",
@@ -243,34 +242,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         )
 
         self.validate_auto_login_backend(attrs)
-
-        confirmation_email_option = get_from_serializer_data_or_instance(
-            "confirmation_email_option", attrs, self
-        )
-        confirmation_email_template = (
-            get_from_serializer_data_or_instance(
-                "confirmation_email_template", attrs, self
-            )
-            or {}
-        )
-        if confirmation_email_option == ConfirmationEmailOptions.form_specific_email:
-            if isinstance(confirmation_email_template, ConfirmationEmailTemplate):
-                _template = confirmation_email_template
-            else:
-                _template = ConfirmationEmailTemplate(**confirmation_email_template)
-            if not _template.is_usable:
-                raise serializers.ValidationError(
-                    {
-                        "confirmation_email_option": ErrorDetail(
-                            _(
-                                "The form-specific confirmation email template "
-                                "(subject + content) should not be empty."
-                            ),
-                            code="invalid",
-                        ),
-                    }
-                )
-
         return attrs
 
     def validate_backend_options(self, attrs, backend_field, options_field, registry):
