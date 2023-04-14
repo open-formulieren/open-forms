@@ -1,5 +1,6 @@
 from rest_framework.reverse import reverse
 
+from openforms.forms.constants import ConfirmationEmailOptions
 from openforms.utils.tests.test_migrations import TestMigrations
 
 CONFIGURATION = {
@@ -719,4 +720,88 @@ class TestAddCustomErrorsNumberComponent(TestMigrations):
                 "nl": {"pattern": "", "required": "", "maxLength": ""},
             },
             self.form_definition.configuration["components"][1]["translatedErrors"],
+        )
+
+
+class TestRemoveConfirmationEmailForwardOptions(TestMigrations):
+    migrate_from = "0075_form_send_confirmation_email"
+    migrate_to = "0076_move_confirmation_email_setting"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        Form = apps.get_model("forms", "Form")
+        self.form1 = Form.objects.create(
+            name="Form with no confirmation email",
+            slug="form-with-no-confirmation-email",
+            confirmation_email_option=ConfirmationEmailOptions.no_email,
+        )
+        self.form2 = Form.objects.create(
+            name="Form with confirmation email global",
+            slug="form-with-confirmation-email-global",
+            confirmation_email_option=ConfirmationEmailOptions.global_email,
+        )
+        self.form3 = Form.objects.create(
+            name="Form with confirmation email custom",
+            slug="form-with-confirmation-email-custom",
+            confirmation_email_option=ConfirmationEmailOptions.form_specific_email,
+        )
+
+    def test_forward_migration(self):
+        self.form1.refresh_from_db()
+        self.form2.refresh_from_db()
+        self.form3.refresh_from_db()
+
+        self.assertFalse(self.form1.send_confirmation_email)
+        self.assertTrue(self.form2.send_confirmation_email)
+        self.assertTrue(self.form3.send_confirmation_email)
+
+
+class TestRemoveConfirmationEmailBackwardsOptions(TestMigrations):
+    migrate_to = "0075_form_send_confirmation_email"
+    migrate_from = "0076_move_confirmation_email_setting"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        Form = apps.get_model("forms", "Form")
+        self.form1 = Form.objects.create(
+            name="Form with no confirmation email",
+            slug="form-with-no-confirmation-email",
+            send_confirmation_email=False,
+        )
+        self.form2 = Form.objects.create(
+            name="Form with confirmation email global",
+            slug="form-with-confirmation-email-global",
+            send_confirmation_email=True,
+        )
+        self.form3 = Form.objects.create(
+            name="Form with confirmation email custom",
+            slug="form-with-confirmation-email-custom",
+            send_confirmation_email=True,
+        )
+
+        ConfirmationEmailTemplate = apps.get_model(
+            "emails", "ConfirmationEmailTemplate"
+        )
+
+        ConfirmationEmailTemplate.objects.create(
+            content="Custom content", form=self.form2
+        )  # Incomplete template
+        ConfirmationEmailTemplate.objects.create(
+            subject="Custom subject", content="Custom content", form=self.form3
+        )  # Complete template
+
+    def test_forward_migration(self):
+        self.form1.refresh_from_db()
+        self.form2.refresh_from_db()
+        self.form3.refresh_from_db()
+
+        self.assertEqual(
+            self.form1.confirmation_email_option, ConfirmationEmailOptions.no_email
+        )
+        self.assertEqual(
+            self.form2.confirmation_email_option, ConfirmationEmailOptions.global_email
+        )
+        self.assertEqual(
+            self.form3.confirmation_email_option,
+            ConfirmationEmailOptions.form_specific_email,
         )

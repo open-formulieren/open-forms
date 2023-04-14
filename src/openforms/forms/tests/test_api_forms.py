@@ -17,7 +17,6 @@ from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.translations.tests.utils import make_translated
 
 from ..api.serializers import FormSerializer
-from ..constants import ConfirmationEmailOptions
 from ..models import Form
 from .factories import FormDefinitionFactory, FormFactory, FormStepFactory
 
@@ -909,7 +908,6 @@ class FormsAPITests(APITestCase):
         url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
         data = {
             "confirmation_email_template": None,
-            "confirmation_email_option": ConfirmationEmailOptions.global_email,
         }
 
         response = self.client.patch(url, data=data)
@@ -926,7 +924,6 @@ class FormsAPITests(APITestCase):
             form=form,
             subject="Initial subject",
             content="Initial content",
-            update_form_confirmation_email_option=False,
         )
         self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
         self.user.is_staff = True
@@ -940,45 +937,6 @@ class FormsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         form.refresh_from_db()
         self.assertFalse(form.confirmation_email_template.is_usable)
-
-    def test_sending_partial_confirmation_email_template_raises_an_exception(
-        self,
-    ):
-        patcher = patch(
-            "openforms.template.validators.DjangoTemplateValidator.check_required_tags",
-            return_value=None,
-        )
-        patcher.start()
-        self.addCleanup(patcher.stop)
-        template = ConfirmationEmailTemplateFactory.create(
-            subject="Initial subject",
-            content="Initial content",
-        )
-        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
-        self.user.is_staff = True
-        self.user.save()
-
-        url = reverse("api:form-detail", kwargs={"uuid_or_slug": template.form.uuid})
-        data_to_test = [
-            {
-                "confirmation_email_template": {
-                    "subject": "Updated subject",
-                }
-            },
-            {"confirmation_email_template": {"subject": "", "content": "The content"}},
-        ]
-
-        for data in data_to_test:
-            with self.subTest(data=data):
-                response = self.client.patch(url, data=data)
-
-                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-                self.assertEqual(
-                    response.json()["invalidParams"][0]["reason"],
-                    _(
-                        "The fields {fields} must all have a non-empty value as soon as one of them does."
-                    ).format(fields="subject, content"),
-                )
 
     def test_getting_a_form_with_a_confirmation_email_template(self):
         form = FormFactory.create()
@@ -1006,40 +964,6 @@ class FormsAPITests(APITestCase):
                 },
             },
         )
-
-    def test_form_specific_confirmation_email_empty_template(self):
-        """Assert that neither subject nor content of the template for a form-specific
-        email is empty
-        """
-        form = FormFactory.create()
-        self.user.user_permissions.add(Permission.objects.get(codename="change_form"))
-        self.user.is_staff = True
-        self.user.save()
-
-        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        invalid_templates = [
-            None,
-            {"subject": "", "content": ""},
-        ]
-
-        for invalid_template in invalid_templates:
-            with self.subTest(invalid_template_data=invalid_template):
-                data = {
-                    "confirmation_email_template": invalid_template,
-                    "confirmation_email_option": ConfirmationEmailOptions.form_specific_email,
-                }
-
-                response = self.client.patch(url, data)
-
-                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-                err_message = response.json()["invalidParams"][0]["reason"]
-                self.assertEqual(
-                    err_message,
-                    _(
-                        "The form-specific confirmation email template "
-                        "(subject + content) should not be empty."
-                    ),
-                )
 
     def test_submission_confirmation_template_invalid_template(self):
         """
@@ -1588,47 +1512,6 @@ class FormsAPITranslationTests(APITestCase):
                     "reason": _("Missing required template-tag {tag}").format(
                         tag="{% appointment_information %}"
                     ),
-                }
-            ],
-        )
-
-    def test_update_with_translations_confirmation_email_template_validate_all_or_none(
-        self,
-    ):
-        self.client.force_authenticate(user=self.user)
-
-        form = FormFactory.create()
-
-        url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
-        data = {
-            "confirmation_email_template": {
-                "subject": "foo",
-                "content": "{% appointment_information %} {% payment_information %}",
-                "translations": {
-                    "en": {
-                        "subject": "",
-                        "content": "Content {% appointment_information %} {% payment_information %}",
-                    },
-                    "nl": {
-                        "subject": "Onderwerp",
-                        "content": "Inhoud {% appointment_information %} {% payment_information %}",
-                    },
-                },
-            },
-        }
-        response = self.client.patch(url, data=data)
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        invalid_params = response.json()["invalidParams"]
-        self.assertEqual(
-            invalid_params,
-            [
-                {
-                    "name": "confirmationEmailTemplate.translations.en.nonFieldErrors",
-                    "code": "required",
-                    "reason": _(
-                        "The fields {fields} must all have a non-empty value as soon as one of them does."
-                    ).format(fields="subject, content"),
                 }
             ],
         )

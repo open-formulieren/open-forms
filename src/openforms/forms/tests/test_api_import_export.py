@@ -15,7 +15,7 @@ from openforms.accounts.tests.factories import TokenFactory, UserFactory
 from openforms.variables.constants import FormVariableSources
 
 from ...emails.tests.factories import ConfirmationEmailTemplateFactory
-from ..constants import EXPORT_META_KEY, ConfirmationEmailOptions
+from ..constants import EXPORT_META_KEY
 from ..models import Form, FormDefinition, FormStep
 from .factories import (
     FormDefinitionFactory,
@@ -137,9 +137,7 @@ class ImportExportAPITests(APITestCase):
         self.user.is_staff = True
         self.user.save()
 
-        form1 = FormFactory.create(
-            confirmation_email_option=ConfirmationEmailOptions.form_specific_email
-        )
+        form1 = FormFactory.create(send_confirmation_email=True)
         form2 = FormFactory.create()
         form_definition1, form_definition2 = FormDefinitionFactory.create_batch(2)
         form_step1 = FormStepFactory.create(

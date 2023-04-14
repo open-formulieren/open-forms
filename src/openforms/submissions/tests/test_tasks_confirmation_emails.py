@@ -15,7 +15,6 @@ from openforms.appointments.tests.factories import AppointmentInfoFactory
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
-from openforms.forms.constants import ConfirmationEmailOptions
 from openforms.forms.tests.factories import FormStepFactory
 from openforms.utils.tests.html_assert import HTMLAssertMixin
 
@@ -359,44 +358,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         self.assertEqual(message.subject, "The Subject")
         self.assertEqual(message.body.strip(), "The Content")
 
-    def test_completed_submission_sends_global_configuration_email_when_custom_email_exists_but_is_not_selected(
-        self,
-    ):
-        config = GlobalConfiguration.get_solo()
-        config.confirmation_email_subject = "The Subject"
-        config.confirmation_email_content = "The Content"
-        config.save()
-
-        submission = SubmissionFactory.from_components(
-            completed=True,
-            components_list=[
-                {
-                    "key": "email",
-                    "confirmationRecipient": True,
-                },
-            ],
-            submitted_data={"email": "test@test.nl"},
-            form__product__price=Decimal("12.34"),
-            form__payment_backend="test",
-        )
-        ConfirmationEmailTemplateFactory.create(
-            form=submission.form, subject="Custom subject", content="Custom content"
-        )
-        submission.form.confirmation_email_option = (
-            ConfirmationEmailOptions.global_email
-        )
-        submission.form.save(update_fields=["confirmation_email_option"])
-
-        with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
-            # "execute" the celery task
-            send_confirmation_email(submission.id)
-
-        # Verify that email was sent
-        self.assertEqual(len(mail.outbox), 1)
-        message = mail.outbox[0]
-        self.assertEqual(message.subject, "The Subject")
-        self.assertEqual(message.body.strip(), "The Content")
-
     def test_completed_submission_sends_form_specific_email_and_not_global_email(
         self,
     ):
@@ -416,6 +377,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             submitted_data={"email": "test@test.nl"},
             form__product__price=Decimal("12.34"),
             form__payment_backend="test",
+            form__send_confirmation_email=True,
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form, subject="Custom subject", content="Custom content"
@@ -454,8 +416,8 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         ConfirmationEmailTemplateFactory.create(
             form=submission.form, subject="Custom subject", content="Custom content"
         )
-        submission.form.confirmation_email_option = ConfirmationEmailOptions.no_email
-        submission.form.save(update_fields=["confirmation_email_option"])
+        submission.form.send_confirmation_email = False
+        submission.form.save(update_fields=["send_confirmation_email"])
 
         with override_settings(CELERY_TASK_ALWAYS_EAGER=True):
             # "execute" the celery task

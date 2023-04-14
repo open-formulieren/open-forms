@@ -1,8 +1,6 @@
 from django.test import TestCase, override_settings, tag
 from django.utils.translation import gettext as _
 
-from openforms.api.validators import AllOrNoneTruthyFieldsValidator
-
 from ..api.serializers import ConfirmationEmailTemplateSerializer
 from .factories import ConfirmationEmailTemplateFactory
 
@@ -45,19 +43,6 @@ class ConfirmationTemplateSerializerTests(TestCase):
                 ),
             )
             self.assertIsNotNone(content_error)
-
-        with self.subTest("non field errors"):
-            non_field_errors = serializer.errors["translations"]["en"][
-                "non_field_errors"
-            ]
-            error = _find_error(
-                non_field_errors,
-                code="required",
-                message=AllOrNoneTruthyFieldsValidator.message.format(
-                    fields="subject, content"
-                ),
-            )
-            self.assertIsNotNone(error)
 
     @tag("gh-2418")
     def test_valid_data(self):
