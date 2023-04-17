@@ -44,7 +44,10 @@ def rewrite_formio_components_for_request(
     Loop over the formio configuration and inject request-specific configuration.
     """
     for component in configuration_wrapper:
-        register.update_config_for_request(component, request=request)
+        # prevent multiple overwrites of content components (bandaid for #2895)
+        html = component.get("html", None)
+        if component["type"] != "content" or (html and "nonce" not in html):
+            register.update_config_for_request(component, request=request)
     return configuration_wrapper
 
 
