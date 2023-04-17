@@ -148,8 +148,11 @@ def _iterate_data_with_components(
                 filter_types=filter_types,
             )
     else:
+        base_configuration_path = configuration_path
+        if parent_type == "fieldset":
+            base_configuration_path += ".components"
         for index, child_component in enumerate(configuration.get("components", [])):
-            child_configuration_path = f"{configuration_path}.{index}"
+            child_configuration_path = f"{base_configuration_path}.{index}"
             yield from _iterate_data_with_components(
                 child_component, data, data_path, child_configuration_path, filter_types
             )
