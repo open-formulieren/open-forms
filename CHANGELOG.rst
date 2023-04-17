@@ -2,6 +2,48 @@
 Changelog
 =========
 
+2.0.6 (2023-04-17)
+==================
+
+Periodic bugfix release
+
+Note that there is a manual intervention below if you make use of analytics providers
+integration.
+
+* [#2791] Fixed long words overflowing in the confirmation PDF.
+* [#2838] Fixed hidden selectboxes triggering validation of required fields too early
+* [#2850] Fixed a crash in the AVG log viewer when certain log records of deleted
+  submissions are displayed.
+* [#2842] Fixed the Content Security Policy breaking when enabling analytics provider
+  configurations
+* [#2888] Fixed a crash when using file fields and hidden repeating groups at the same
+  time
+* [#2888] Fixed a crash when using file fields and repeating groups with numbers inside
+* [#2945] Fixed logic rule variables inadvertedly being cleared when adding a new
+  user defined variable
+* Fixed mutatiesoort when doing StUF ``UpdateZaak`` calls
+* [#2716] Added missing co-sign identifier (BSN) to PDF submission report
+* [#2900] Fixed inconsistent frontend logic involving checkboxes
+* [#2632] Fixed crash during submission data pruning when submissions point to form
+  steps that have been deleted
+* [#2977] Fixed StUF postcode not being uppercase
+* [#2849] Restored ability to import forms using form logic in the pre-2.0 format
+* Updated the bundled SDK version to 1.2.8
+* CI no longer installs the codecov package from PyPI (obsolete)
+
+
+.. warning:: Manual intervention required if analytics tools are enabled
+
+   When enabling analytics tools, CSP directives were automatically added to the admin
+   under  **Configuratie** > **CSP settings**. The directive
+   ``connect-src <domain of the analytic tool>`` was causing forms to no longer load.
+
+   In order to fix this issue:
+
+   1. Go to  **Configuratie** > **CSP settings**
+   2. Delete any directive that is not ``default-src``, for example ``connect-src``, ``script-src``...
+   3. If not present, add a directive ``default-src <domain of the analytic tool>``
+
 1.1.11 (2023-04-17)
 ===================
 
