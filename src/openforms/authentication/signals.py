@@ -10,6 +10,7 @@ from openforms.logging import logevent
 from openforms.submissions.models import Submission
 from openforms.submissions.signals import (
     submission_complete,
+    submission_cosigned,
     submission_resumed,
     submission_start,
 )
@@ -113,6 +114,16 @@ def set_auth_attribute_on_session(
             store_registrator_details(instance, registrator_save)
     else:
         store_auth_details(instance, form_auth)
+
+
+@receiver([submission_cosigned], dispatch_uid="auth.set_submission_form_auth")
+def set_cosign_data_on_submission(
+    sender, instance: Submission, request: Request, **kwargs
+):
+    form_auth = request.session.get(FORM_AUTH_SESSION_KEY)
+
+    instance.co_sign_data = form_auth
+    instance.save()
 
 
 @receiver(submission_complete, dispatch_uid="auth.clean_submission_auth")

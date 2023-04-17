@@ -458,6 +458,11 @@ class Form(models.Model):
     def admin_name(self) -> str:
         return self.internal_name or self.name
 
+    def get_cosign_component(self):
+        for component in self.iter_components():
+            if component["type"] == "cosign":
+                return component
+
 
 class FormsExportQuerySet(DeleteFilesQuerySetMixin, models.QuerySet):
     pass

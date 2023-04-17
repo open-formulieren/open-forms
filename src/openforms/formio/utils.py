@@ -58,6 +58,31 @@ def iterate_components_with_configuration_path(
             )
 
 
+def iterate_components_with_data_path(
+    configuration: JSONObject, prefix="", recursive=True
+):
+    for component in iter_components(configuration, recursive=False):
+        full_path = f"{prefix}.{component['key']}" if prefix else component["key"]
+        yield full_path, component
+
+        # could be a component, could be something else
+        has_components = "components" in component
+        has_columns = "columns" in component
+
+        if not has_columns or not has_components or not recursive:
+            continue
+
+        if component["type"] == "columns":
+            for column in component["columns"]:
+                yield from iterate_components_with_configuration_path(
+                    column, prefix=full_path
+                )
+        elif component["type"] == "fieldset":
+            yield from iterate_components_with_configuration_path(
+                component["component"], prefix=full_path
+            )
+
+
 @elasticapm.capture_span(span_type="app.formio.configuration")
 def flatten_by_path(configuration: JSONObject) -> Dict[str, Component]:
     """

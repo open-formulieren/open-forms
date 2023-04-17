@@ -40,12 +40,20 @@ def register_submission(submission_id: int) -> None:
     to the underlying registration backend (if set).
     """
     submission = Submission.objects.select_related("auth_info").get(id=submission_id)
+
+    if submission.waiting_on_cosign:
+        logger.debug(
+            "Skipping registration for submission '%s' as it hasn't been co-signed yet.",
+            submission,
+        )
+        return
+
     is_retrying = submission.needs_on_completion_retry
 
     logger.debug("Register submission '%s'", submission)
 
     if submission.registration_status == RegistrationStatuses.success:
-        # if it's already succesfully registered, do not overwrite that.
+        # if it's already successfully registered, do not overwrite that.
         return
 
     config = GlobalConfiguration.get_solo()

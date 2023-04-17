@@ -40,6 +40,9 @@ Provides:
     :arg request: the HttpRequest instance (or DRF wrapper around it).
 """
 
+submission_cosigned = Signal()
+# TODO document
+
 
 @receiver(post_delete, sender=SubmissionReport)
 def delete_submission_report_files(

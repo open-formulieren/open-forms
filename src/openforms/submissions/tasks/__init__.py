@@ -12,6 +12,7 @@ from openforms.celery import app
 
 from ..models import Submission
 from .cleanup import *  # noqa
+from .co_sign import *  # noqa
 from .emails import *  # noqa
 from .payments import *  # noqa
 from .pdf import *  # noqa
@@ -32,6 +33,7 @@ def on_completion(submission_id: int) -> None:
     # in as an argument to chained tasks
     register_appointment_task = maybe_register_appointment.si(submission_id)
     pre_registration_task = pre_registration.si(submission_id)
+    send_email_cosigner_task = send_email_cosigner.si(submission_id)
     generate_report_task = generate_submission_report.si(submission_id)
     register_submission_task = register_submission.si(submission_id)
     obtain_submission_reference_task = obtain_submission_reference.si(submission_id)
@@ -54,6 +56,7 @@ def on_completion(submission_id: int) -> None:
         # attached in the registration backend.
         # TODO: can be in parallel with register_appointment_task and if that fails -> delete the report again
         generate_report_task,
+        send_email_cosigner_task,
         # TODO: ensure that any images that need resizing are done so before this is attempted
         register_submission_task,
         obtain_submission_reference_task,

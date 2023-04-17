@@ -125,6 +125,14 @@ class Submission(models.Model):
     completed_on = models.DateTimeField(_("completed on"), blank=True, null=True)
     suspended_on = models.DateTimeField(_("suspended on"), blank=True, null=True)
 
+    waiting_on_cosign = models.BooleanField(
+        _("waiting on co-sign"),
+        default=False,
+        help_text=_(
+            "Is the registration of this submission blocked because the co-signer has not co-signed yet?"
+        ),
+    )
+
     co_sign_data = models.JSONField(
         _("co-sign data"),
         blank=True,

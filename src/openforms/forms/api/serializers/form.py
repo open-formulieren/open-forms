@@ -7,6 +7,7 @@ from rest_framework.exceptions import ErrorDetail
 from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
+from openforms.authentication.api.serializers import LoginOptionSerializer
 from openforms.authentication.registry import register as auth_register
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
@@ -71,6 +72,13 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "The authentication backend to which the user will be automatically "
             "redirected upon starting the form. The chosen backend must be present in "
             "`authentication_backends`"
+        ),
+    )
+    cosign_login_options = serializers.SerializerMethodField(
+        label=_("cosign_login_options"),
+        read_only=True,
+        help_text=_(
+            "Options of available authentication methods for logging in to cosign a form."
         ),
     )
 
@@ -157,6 +165,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "appointment_enabled",
             "resume_link_lifetime",
             "hide_non_applicable_steps",
+            "cosign_login_options",
         )
         # allowlist for anonymous users
         public_fields = (
@@ -182,6 +191,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "appointment_enabled",
             "resume_link_lifetime",
             "hide_non_applicable_steps",
+            "cosign_login_options",
         )
         extra_kwargs = {
             "uuid": {
@@ -314,6 +324,19 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         lifetime = min(lifetime, lifetime_all)
 
         return lifetime
+
+    # TODO do properly
+    def get_cosign_login_options(self, obj) -> list:
+        from openforms.authentication.registry import register as auth_register
+
+        component = obj.get_cosign_component()
+
+        if not component:
+            return []
+
+        auth_plugin = auth_register[component["authPlugin"]]
+        info = auth_plugin.get_login_info(self.context["request"], obj)
+        return [LoginOptionSerializer(instance=info).data]
 
 
 FormSerializer.__doc__ = FormSerializer.__doc__.format(

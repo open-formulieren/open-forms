@@ -1,6 +1,10 @@
 from django.urls import path
 
-from .views import DownloadSubmissionReportView, TemporaryFileView
+from .views import (
+    DownloadSubmissionReportView,
+    RetrieveSubmissionForCosignView,
+    TemporaryFileView,
+)
 
 app_name = "submissions"
 
@@ -14,5 +18,10 @@ urlpatterns = [
         "files/<uuid:uuid>",
         TemporaryFileView.as_view(),
         name="temporary-file",
+    ),
+    path(
+        "retrieve-submission-for-cosign",
+        RetrieveSubmissionForCosignView.as_view(),
+        name="retrieve-submission-for-cosign",
     ),
 ]

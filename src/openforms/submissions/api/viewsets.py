@@ -34,7 +34,7 @@ from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep
 from ..models.submission_step import DirtyData
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser, IgnoreDataJSONRenderer
-from ..signals import submission_complete, submission_start
+from ..signals import submission_complete, submission_cosigned, submission_start
 from ..status import SubmissionProcessingStatus
 from ..tasks import on_completion
 from ..tokens import submission_status_token_generator
@@ -357,6 +357,26 @@ class SubmissionViewSet(
         submission = self.get_object()
         summary_data = submission.render_summary_page()
         return Response(summary_data)
+
+    @action(
+        detail=True,
+        methods=["post"],
+        url_name="cosign",
+    )
+    def cosign(self, request, *args, **kwargs):
+        submission = self.get_object()
+
+        # TODO Do some checks that the user is logged in
+
+        # dispatch signal for modules to tap into
+        submission_cosigned.send(
+            sender=self.__class__, instance=submission, request=self.request
+        )
+
+        remove_submission_from_session(submission, self.request.session)
+
+        # TODO
+        return Response({})
 
 
 @extend_schema(

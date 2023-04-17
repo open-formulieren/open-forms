@@ -5,18 +5,23 @@ from django.utils.translation import gettext_lazy as _
 from django_sendfile import sendfile
 from djangorestframework_camel_case.render import CamelCaseJSONRenderer
 from drf_spectacular.utils import extend_schema, extend_schema_view
+from rest_framework import serializers
+from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.generics import DestroyAPIView, GenericAPIView
+from rest_framework.response import Response
 
 from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.serializers import ExceptionSerializer
+from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 
-from ..models import SubmissionReport, TemporaryFileUpload
-from ..utils import remove_upload_from_session
+from ..models import Submission, SubmissionReport, TemporaryFileUpload
+from ..utils import add_submmission_to_session, remove_upload_from_session
 from .permissions import (
     DownloadSubmissionReportPermission,
     OwnsTemporaryUploadPermission,
 )
 from .renderers import FileRenderer, PDFRenderer
+from .serializers import SubmissionSerializer
 
 
 @extend_schema(
@@ -106,3 +111,41 @@ class TemporaryFileView(DestroyAPIView):
     def perform_destroy(self, instance):
         remove_upload_from_session(instance, self.request.session)
         instance.delete()
+
+
+class RetrieveSubmissionSerializer(serializers.Serializer):
+    form_slug = serializers.CharField()
+    # TODO validate code is valid, the submission exists and needs cosign, the submission is for the right form
+    submission_reference_code = serializers.CharField()
+
+
+class RetrieveSubmissionForCosignView(GenericAPIView):
+    authentication_classes = (AnonCSRFSessionAuthentication,)
+    serializer_class = RetrieveSubmissionSerializer
+
+    def post(self, request, *args, **kwargs):
+        # TODO add permissions to view?
+        # Check that the person is logged in through an authentication backend
+        auth_info = request.session.get(FORM_AUTH_SESSION_KEY)
+        if not auth_info:
+            raise PermissionDenied
+
+        serializer = RetrieveSubmissionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            submission = Submission.objects.get(
+                public_registration_reference=serializer.validated_data[
+                    "submission_reference_code"
+                ]
+            )
+        except Submission.DoesNotExist:
+            raise NotFound
+
+        add_submmission_to_session(submission, self.request.session)
+
+        submission_serializer = SubmissionSerializer(
+            instance=submission, context={"request": request}
+        )
+
+        return Response(submission_serializer.data)
