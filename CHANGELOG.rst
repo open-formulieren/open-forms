@@ -2,6 +2,22 @@
 Changelog
 =========
 
+2.1.2 (2023-04-18)
+==================
+
+* [#2947] Added missing translatable error messages for number components
+* [#2908] Documented limitations of import/export for forms with service fetch config
+* [#2900] Fixed inconsistent frontend logic involving checkboxes
+* [#2632] Fixed crash during submission data pruning when submissions point to form
+  steps that have been deleted
+* [#2849] Restored ability to import forms using form logic in the pre-2.0 format
+* [#2983] Fixed broken StUF-ZDS registration for some vendors due to bad refactor
+* [#2963] Fixed global configuration templates being reset to their default values
+* [#2977] Fixed StUF postcode not being uppercase
+* Updated the bundled SDK version to 1.3.2
+* [#2980] Fixed file upload component not using config overwrites when registering
+  with the objects API backend.
+
 2.1.1 (2023-03-31)
 ==================
 
