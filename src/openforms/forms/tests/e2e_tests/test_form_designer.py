@@ -442,7 +442,6 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             await expect(page.locator("css=.formio-dialog-content")).to_be_visible()
 
             default_string = page.locator("css=.ck-editor__editable").nth(0)
-            # import bpdb; bpdb.set_trace()
             await default_string.click()
             await default_string.fill("This is the default")
 
