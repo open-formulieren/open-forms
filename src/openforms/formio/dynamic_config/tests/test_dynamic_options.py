@@ -1,9 +1,19 @@
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
+from django.urls import reverse
 
+from rest_framework.test import APITestCase
+
+from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.formio.dynamic_config import rewrite_formio_components
+from openforms.forms.tests.factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormStepFactory,
+)
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.mixins import SubmissionsMixin
 
 
 @override_settings(LANGUAGE_CODE="en")
@@ -743,3 +753,42 @@ class TestDynamicConfigAddingOptions(TestCase):
                 {"label": "Test2", "value": "987654321"},
             ],
         )
+
+
+class TestDynamicConfigAddingOptionsForRequest(SubmissionsMixin, APITestCase):
+    @tag("gh-2895")
+    def test_overwrite_html_in_content_component(self):
+        """Assert that style tag remains and nonce is added to content component"""
+        configuration = {
+            "components": [
+                {
+                    "key": "content",
+                    "type": "content",
+                    "html": '<p><span style="color:#e64c4c;">Test</span></p>',
+                },
+            ]
+        }
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration=configuration,
+        )
+        step = FormStepFactory.create(form=form, form_definition=form_definition)
+        submission = SubmissionFactory.create(form=form)
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step.uuid,
+            },
+        )
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+
+        response = self.client.get(endpoint, HTTP_X_CSP_NONCE="dGvsa==")
+        formio_component = response.json()["formStep"]["configuration"]["components"][0]
+        html = formio_component["html"]
+
+        self.assertIn("nonce", html)
+        self.assertIn("color:#e64c4c", html)
