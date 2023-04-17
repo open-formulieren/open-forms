@@ -47,6 +47,8 @@ class SubmissionAttachmentTest(TestCase):
     def test_resolve_uploads_from_formio_data(self):
         upload = TemporaryFileUploadFactory.create()
         upload_in_column = TemporaryFileUploadFactory.create()
+        upload_in_fieldset = TemporaryFileUploadFactory.create()
+
         data = {
             "my_normal_key": "foo",
             "my_file": [
@@ -85,6 +87,24 @@ class SubmissionAttachmentTest(TestCase):
                     "originalName": "my-image.jpg",
                 }
             ],
+            "fileInFieldset": [
+                {
+                    "url": f"http://server/api/v2/submissions/files/{upload_in_fieldset.uuid}",
+                    "data": {
+                        "url": f"http://server/api/v2/submissions/files/{upload_in_fieldset.uuid}",
+                        "form": "",
+                        "name": "my-image.jpg",
+                        "size": 46114,
+                        "baseUrl": "http://server",
+                        "project": "",
+                    },
+                    "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                    "size": 46114,
+                    "type": "image/jpg",
+                    "storage": "url",
+                    "originalName": "my-image.jpg",
+                }
+            ],
         }
         components = [
             {"key": "my_normal_key", "type": "text"},
@@ -93,6 +113,11 @@ class SubmissionAttachmentTest(TestCase):
                 "key": "columnWithFile",
                 "type": "columns",
                 "columns": [{"key": "fileInColumn", "type": "file"}],
+            },
+            {
+                "type": "fieldset",
+                "key": "aFieldsetWithFile",
+                "components": [{"key": "fileInFieldset", "type": "file"}],
             },
         ]
         actual = resolve_uploads_from_data({"components": components}, data)
@@ -104,6 +129,11 @@ class SubmissionAttachmentTest(TestCase):
                     components[2]["columns"][0],
                     [upload_in_column],
                     "components.2.columns.0",
+                ),
+                "fileInFieldset": (
+                    components[3]["components"][0],
+                    [upload_in_fieldset],
+                    "components.3.components.0",
                 ),
             },
         )

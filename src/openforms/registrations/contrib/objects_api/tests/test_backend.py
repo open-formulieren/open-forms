@@ -1674,3 +1674,178 @@ class ObjectsAPIBackendTests(TestCase):
             document_create_attachment_body["vertrouwelijkheidaanduiding"], "geheim"
         )
         self.assertEqual(document_create_attachment_body["titel"], "A Custom Title")
+
+    def test_submission_with_objects_api_backend_attachments_component_inside_fieldset_overwrites(
+        self, m
+    ):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "fieldset",
+                    "type": "fieldset",
+                    "label": "A fieldset",
+                    "components": [
+                        {
+                            "key": "fileUpload",
+                            "type": "file",
+                            "registration": {
+                                "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/10",
+                                "bronorganisatie": "123123123",
+                                "docVertrouwelijkheidaanduiding": "geheim",
+                                "titel": "A Custom Title",
+                            },
+                        },
+                    ],
+                },
+            ],
+            submitted_data={
+                "fileUpload": [
+                    {
+                        "url": "http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
+                        "data": {
+                            "url": "http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
+                            "form": "",
+                            "name": "some-attachment.jpg",
+                            "size": 46114,
+                            "baseUrl": "http://server/form",
+                            "project": "",
+                        },
+                        "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                        "size": 46114,
+                        "type": "image/jpg",
+                        "storage": "url",
+                        "originalName": "some-attachment.jpg",
+                    }
+                ],
+            },
+            language_code="en",
+        )
+
+        submission_step = submission.steps[0]
+        step_slug = submission_step.form_step.form_definition.slug
+
+        SubmissionFileAttachmentFactory.create(
+            submission_step=SubmissionStep.objects.first(),
+            file_name="some-attachment.jpg",
+            form_key="fileUpload",
+            _component_configuration_path="components.0.components.0",
+        )
+
+        mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
+        mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
+
+        expected_result = {
+            "url": "https://objecten.nl/api/v1/objects/1",
+            "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+            "type": "https://objecttypen.nl/api/v1/objecttypes/1",
+            "record": {
+                "index": 0,
+                "typeVersion": 1,
+                "data": {
+                    "data": {
+                        f"{step_slug}": {
+                            "fieldSet": {
+                                "fileUpload": [
+                                    {
+                                        "url": "http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
+                                        "data": {
+                                            "url": "http://server/api/v2/submissions/files/62f2ec22-da7d-4385-b719-b8637c1cd483",
+                                            "form": "",
+                                            "name": "some-attachment.jpg",
+                                            "size": 46114,
+                                            "baseUrl": "http://server/form",
+                                            "project": "",
+                                        },
+                                        "name": "my-image-12305610-2da4-4694-a341-ccb919c3d543.jpg",
+                                        "size": 46114,
+                                        "type": "image/jpg",
+                                        "storage": "url",
+                                        "originalName": "some-attachment.jpg",
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "type": "terugbelnotitie",
+                    "submission_id": str(submission.uuid),
+                    "attachments": [
+                        "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+                    ],
+                    "pdf_url": "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+                },
+                "geometry": {"type": "Point", "coordinates": [0, 0]},
+                "startAt": date.today().isoformat(),
+                "endAt": date.today().isoformat(),
+                "registrationAt": date.today().isoformat(),
+                "correctionFor": 0,
+                "correctedBy": "",
+            },
+        }
+        expected_document_result = generate_oas_component(
+            "documenten",
+            "schemas/EnkelvoudigInformatieObject",
+            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+        )
+        expected_attachment = generate_oas_component(
+            "documenten",
+            "schemas/EnkelvoudigInformatieObject",
+            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+        )
+
+        def match_pdf_document(request):
+            if request.json()["bestandsnaam"].endswith(".pdf"):
+                return True
+            return False
+
+        def match_attachment(request):
+            if request.json()["bestandsnaam"] == "some-attachment.jpg":
+                return True
+            return False
+
+        m.post(
+            "https://objecten.nl/api/v1/objects",
+            status_code=201,
+            json=expected_result,
+        )
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=201,
+            json=expected_document_result,
+            additional_matcher=match_pdf_document,
+        )
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=201,
+            json=expected_attachment,
+            additional_matcher=match_attachment,
+        )
+
+        plugin = ObjectsAPIRegistration("objects_api")
+        plugin.register_submission(submission, {})
+
+        (
+            documenten_oas_get,
+            document_create_pdf,
+            document_create_attachment,
+            objecten_oas_get,
+            object_create,
+        ) = m.request_history
+
+        document_create_attachment_body = document_create_attachment.json()
+        self.assertEqual(document_create_attachment.method, "POST")
+        self.assertEqual(
+            document_create_attachment.url,
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+        )
+        # Check use of override settings
+        self.assertEqual(
+            document_create_attachment_body["informatieobjecttype"],
+            "https://catalogi.nl/api/v1/informatieobjecttypen/10",
+        )
+        self.assertEqual(
+            document_create_attachment_body["bronorganisatie"], "123123123"
+        )
+        self.assertEqual(
+            document_create_attachment_body["vertrouwelijkheidaanduiding"], "geheim"
+        )
+        self.assertEqual(document_create_attachment_body["titel"], "A Custom Title")
