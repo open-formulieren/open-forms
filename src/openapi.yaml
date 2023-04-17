@@ -1036,7 +1036,7 @@ paths:
         - `submissionConfirmationTemplate`
         - `submissionsRemovalOptions`
         - `confirmationEmailTemplate`
-        - `confirmationEmailOption`
+        - `sendConfirmationEmail`
         - `displayMainWebsiteLink`
         - `includeConfirmationPageContentInPdf`
         - `translations`
@@ -1101,7 +1101,7 @@ paths:
         - `submissionConfirmationTemplate`
         - `submissionsRemovalOptions`
         - `confirmationEmailTemplate`
-        - `confirmationEmailOption`
+        - `sendConfirmationEmail`
         - `displayMainWebsiteLink`
         - `includeConfirmationPageContentInPdf`
         - `translations`
@@ -1610,7 +1610,7 @@ paths:
         - `submissionConfirmationTemplate`
         - `submissionsRemovalOptions`
         - `confirmationEmailTemplate`
-        - `confirmationEmailOption`
+        - `sendConfirmationEmail`
         - `displayMainWebsiteLink`
         - `includeConfirmationPageContentInPdf`
         - `translations`
@@ -1681,7 +1681,7 @@ paths:
         - `submissionConfirmationTemplate`
         - `submissionsRemovalOptions`
         - `confirmationEmailTemplate`
-        - `confirmationEmailOption`
+        - `sendConfirmationEmail`
         - `displayMainWebsiteLink`
         - `includeConfirmationPageContentInPdf`
         - `translations`
@@ -1756,7 +1756,7 @@ paths:
         - `submissionConfirmationTemplate`
         - `submissionsRemovalOptions`
         - `confirmationEmailTemplate`
-        - `confirmationEmailOption`
+        - `sendConfirmationEmail`
         - `displayMainWebsiteLink`
         - `includeConfirmationPageContentInPdf`
         - `translations`
@@ -5734,12 +5734,6 @@ components:
           type: object
           additionalProperties:
             type: string
-    ConfirmationEmailOptionEnum:
-      enum:
-      - form_specific_email
-      - global_email
-      - no_email
-      type: string
     ConfirmationEmailTemplate:
       type: object
       properties:
@@ -5963,7 +5957,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -6077,8 +6071,10 @@ components:
           allOf:
           - $ref: '#/components/schemas/ConfirmationEmailTemplate'
           nullable: true
-        confirmationEmailOption:
-          $ref: '#/components/schemas/ConfirmationEmailOptionEnum'
+        sendConfirmationEmail:
+          type: boolean
+          description: Whether a confirmation email should be sent to the end user
+            filling in the form.
         displayMainWebsiteLink:
           type: boolean
           description: Display the link to the main website on the submission confirmation
@@ -6344,7 +6340,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -6511,7 +6507,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -7299,7 +7295,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `confirmationEmailOption`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -7413,8 +7409,10 @@ components:
           allOf:
           - $ref: '#/components/schemas/ConfirmationEmailTemplate'
           nullable: true
-        confirmationEmailOption:
-          $ref: '#/components/schemas/ConfirmationEmailOptionEnum'
+        sendConfirmationEmail:
+          type: boolean
+          description: Whether a confirmation email should be sent to the end user
+            filling in the form.
         displayMainWebsiteLink:
           type: boolean
           description: Display the link to the main website on the submission confirmation
