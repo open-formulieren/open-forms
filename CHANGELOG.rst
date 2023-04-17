@@ -2,6 +2,25 @@
 Changelog
 =========
 
+1.1.11 (2023-04-17)
+===================
+
+This release marks the end-of-life (EOL) of the 1.1.x series per our versioning policy.
+
+**Bugfixes**
+
+* [#2791] Fixed long words overflowing in the confirmation PDF.
+* [#2850] Fixed a crash in the AVG log viewer when certain log records of deleted
+  submissions are displayed.
+* Fixed mutatiesoort when doing StUF ``UpdateZaak`` calls
+* [#2977] Fixed StUF postcode not being uppercase
+* Updated the bundled SDK version to 1.1.4
+
+**Project maintenance**
+
+* CI no longer installs the codecov package from PyPI (obsolete)
+* Ignored deleted branch in changelog during docs link checking
+
 1.1.10 (2023-02-28)
 ===================
 
