@@ -5,6 +5,8 @@ Changelog
 2.1.2 (2023-04-18)
 ==================
 
+Periodic bugfix release
+
 * [#2947] Added missing translatable error messages for number components
 * [#2908] Documented limitations of import/export for forms with service fetch config
 * [#2900] Fixed inconsistent frontend logic involving checkboxes
