@@ -17,7 +17,13 @@ class FormCamelCaseMixin:
            while we'd rather be able to just validate this depending on the applicable
            registration backend. Future improvement!
         """
-        ignore_fields = []
+        ignore_fields = [
+            # ServiceFetchConfiguration attributes
+            "body",
+            "headers",
+            "mapping_expression",
+            "query_params",
+        ]
         for plugin in register:
             if not plugin.camel_case_ignore_fields:
                 continue
