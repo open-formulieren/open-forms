@@ -12,7 +12,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -317,6 +317,7 @@ class SubmissionViewSet(
         request=SubmissionSuspensionSerializer,
         responses={
             201: SubmissionSuspensionSerializer,
+            403: ExceptionSerializer,
             # 400: TODO - schema for errors
             FormDeactivated.status_code: ExceptionSerializer,
             FormMaintenance.status_code: ExceptionSerializer,
@@ -332,6 +333,10 @@ class SubmissionViewSet(
         resume the submission (possibly from another device).
         """
         submission = self.get_object()
+
+        if not submission.form.suspension_allowed:
+            raise PermissionDenied(_("Suspending this form is not allowed."))
+
         serializer = SubmissionSuspensionSerializer(
             instance=submission,
             data=request.data,

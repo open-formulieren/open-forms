@@ -93,6 +93,7 @@ const initialFormState = {
     maintenanceMode: false,
     translationEnabled: false,
     submissionAllowed: 'yes',
+    suspensionAllowed: true,
     registrationBackend: '',
     registrationBackendOptions: {},
     product: null,

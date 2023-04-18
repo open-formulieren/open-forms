@@ -69,6 +69,21 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         submissions_in_session = response.wsgi_request.session[SUBMISSIONS_SESSION_KEY]
         self.assertIn(str(submission.uuid), submissions_in_session)
 
+    @freeze_time("2020-12-11T10:53:19+01:00")
+    @override_settings(LANGUAGE_CODE="en")
+    def test_suspended_submission_not_allowed(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form__suspension_allowed=False,
+        )
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-suspend", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint, {"email": "hello@open-forms.nl"})
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["code"], "permission_denied")
+
     @patch(
         "openforms.api.exception_handling.uuid.uuid4",
         return_value="95a55a81-d316-44e8-b090-0519dd21be5f",

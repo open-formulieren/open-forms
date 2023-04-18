@@ -106,6 +106,11 @@ class Form(models.Model):
         ),
         max_length=100,
     )
+    suspension_allowed = models.BooleanField(
+        _("suspension allowed"),
+        default=True,
+        help_text=_("Whether the user is allowed to suspend this form or not."),
+    )
     show_progress_indicator = models.BooleanField(
         _("show progress indicator"),
         default=True,
