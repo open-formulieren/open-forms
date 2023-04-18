@@ -4278,6 +4278,21 @@ paths:
               $ref: '#/components/headers/X-Is-Form-Designer'
             Content-Language:
               $ref: '#/components/headers/Content-Language'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+          headers:
+            X-Session-Expires-In:
+              $ref: '#/components/headers/X-Session-Expires-In'
+            X-CSRFToken:
+              $ref: '#/components/headers/X-CSRFToken'
+            X-Is-Form-Designer:
+              $ref: '#/components/headers/X-Is-Form-Designer'
+            Content-Language:
+              $ref: '#/components/headers/Content-Language'
         '422':
           content:
             application/json:
@@ -6065,6 +6080,9 @@ components:
           - $ref: '#/components/schemas/SubmissionAllowedEnum'
           description: Whether the user is allowed to submit this form or not, and
             whether the overview page should be shown if they are not.
+        suspensionAllowed:
+          type: boolean
+          description: Whether the user is allowed to suspend this form or not.
         submissionsRemovalOptions:
           $ref: '#/components/schemas/SubmissionsRemovalOptions'
         confirmationEmailTemplate:
@@ -7404,6 +7422,9 @@ components:
           - $ref: '#/components/schemas/SubmissionAllowedEnum'
           description: Whether the user is allowed to submit this form or not, and
             whether the overview page should be shown if they are not.
+        suspensionAllowed:
+          type: boolean
+          description: Whether the user is allowed to suspend this form or not.
         submissionsRemovalOptions:
           $ref: '#/components/schemas/SubmissionsRemovalOptions'
         confirmationEmailTemplate:
