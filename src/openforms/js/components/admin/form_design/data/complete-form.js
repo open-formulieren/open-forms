@@ -274,7 +274,13 @@ const saveVariables = async (state, csrftoken) => {
     });
   } catch (e) {
     if (e instanceof ValidationErrors) {
-      e.context = 'variables';
+      if (e.errors.some(error => error.name.includes('serviceFetchConfiguration'))) {
+        // this marks the logicRules tab if *any* of the errors was fetch config related
+        // XXX: Should this construct a new error?
+        e.context = 'logicRules';
+      } else {
+        e.context = 'variables';
+      }
       // TODO: convert in list of errors for further processing?
       errors = [e];
     } else {

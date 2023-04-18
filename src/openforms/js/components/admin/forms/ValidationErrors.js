@@ -22,6 +22,7 @@ const errorArray = props => {
 };
 
 ValidationErrorsProvider.propTypes = {
+  children: PropTypes.node,
   errors: PropTypes.arrayOf(PropTypes.arrayOf(errorArray)),
 };
 
