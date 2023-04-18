@@ -149,7 +149,7 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
               </Field>
             </FormRow>
 
-            <FormRow>
+            <FormRow fields={['queryParams']}>
               <Field
                 name={'queryParams'}
                 label={
@@ -169,7 +169,7 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
               </Field>
             </FormRow>
 
-            <FormRow>
+            <FormRow fields={['headers']}>
               <Field
                 name={'headers'}
                 label={

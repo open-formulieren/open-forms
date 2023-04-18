@@ -17,8 +17,8 @@ const INITIAL_VALUES = {
   method: 'GET',
   service: '',
   path: '',
-  queryParams: [['', ['']]],
-  headers: [['', '']],
+  queryParams: [],
+  headers: [],
   body: '',
   dataMappingType: '',
   mappingExpression: '',
@@ -128,6 +128,7 @@ ServiceFetchConfigurationPicker.propTypes = {
   variableName: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   onFormSave: PropTypes.func.isRequired,
+  initialValues: PropTypes.object,
 };
 
 export default ServiceFetchConfigurationPicker;

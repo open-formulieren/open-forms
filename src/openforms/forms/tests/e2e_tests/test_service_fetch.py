@@ -55,13 +55,20 @@ async def fill_in_service_fetch_form(page: Page, data: dict, save_text: str = "S
     await page.get_by_label("Service").select_option(label=data["service"])
     await page.get_by_label("Path").fill(data["path"])
 
-    await page.locator('input[name="key"]').first.fill(
+    if not await page.locator(
+        'div.form-row.field-queryParams input[name="key"]'
+    ).count():
+        await page.locator("div.form-row.field-queryParams span.addlink").click()
+    await page.locator('div.form-row.field-queryParams input[name="key"]').fill(
         list(data["query_params"].items())[0][0]
     )
     await page.locator('input[name="value-0"]').fill(
         list(data["query_params"].items())[0][1][0]
     )
-    await page.locator('input[name="key"]').last.fill(
+
+    if not await page.locator('div.form-row.field-headers input[name="key"]').count():
+        await page.locator("div.form-row.field-headers span.addlink").click()
+    await page.locator('div.form-row.field-headers input[name="key"]').last.fill(
         list(data["headers"].items())[0][0]
     )
     await page.locator('input[name="value"]').fill(list(data["headers"].items())[0][1])
@@ -88,10 +95,11 @@ async def check_service_fetch_form_values(page: Page, data: dict):
     await expect(page.get_by_label("Name")).to_have_value(data["name"])
     await expect(page.get_by_label("HTTP method")).to_have_value(data["method"])
 
-    # TODO fix this
-    # await expect(page.get_by_label(
-    #     "Service"
-    # )).to_have_text(data["service"])
+    await expect(
+        page.get_by_role("combobox", name="Service").get_by_role(
+            "option", selected="true"
+        )
+    ).to_have_text(data["service"])
     await expect(page.get_by_label("Path")).to_have_value(data["path"])
 
     await expect(page.locator('input[name="key"]').first).to_have_value(
@@ -187,8 +195,6 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
 
             await fill_in_service_fetch_form(page, data)
 
-            # TODO check if name is shown
-            # TODO reopen modal and check if proper info filled
             await expect(
                 page.get_by_text("Fetch configuration: Service fetch config #1")
             ).to_be_visible()
@@ -271,8 +277,6 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
 
             await fill_in_service_fetch_form(page, data)
 
-            # TODO check if name is shown
-            # TODO reopen modal and check if proper info filled
             await expect(
                 page.get_by_text("Fetch configuration: Service fetch config #1")
             ).to_be_visible()
@@ -391,8 +395,6 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                 save_text="Save as new",
             )
 
-            # TODO check if name is shown
-            # TODO reopen modal and check if proper info filled
             await expect(page.get_by_text("Fetch configuration: foo2")).to_be_visible()
             await page.get_by_role("button", name="Configure").click()
             await check_service_fetch_form_values(
@@ -530,8 +532,6 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                 save_text="Update",
             )
 
-            # TODO check if name is shown
-            # TODO reopen modal and check if proper info filled
             await expect(page.get_by_text("Fetch configuration: foo2")).to_be_visible()
             await page.get_by_role("button", name="Configure").click()
             await check_service_fetch_form_values(
