@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
-import {FormContext, FormLogicContext} from 'components/admin/form_design/Context';
+import {FormContext} from 'components/admin/form_design/Context';
 import StepSelection from 'components/admin/form_design/StepSelection';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 import {
@@ -148,8 +148,6 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
         />
       </DSLEditorNode>
       <DSLEditorNode errors={errors.action?.value}>
-        {/* TODO: this element loses state on change of the variable sibling right above*/}
-        {/* TODO: in #2661 we're building a nicer UI/UX to configure the service fetch action */}
         <span>
           <b>
             <FormattedMessage
@@ -238,10 +236,15 @@ const ActionComponent = ({action, errors, onChange}) => {
   return <Component action={action} errors={errors} onChange={onChange} />;
 };
 
-ActionComponent.propTypes = {
-  action: ActionType.isRequired,
-  errors: ActionError,
-  onChange: PropTypes.func.isRequired,
-};
+ActionComponent.propTypes =
+  ActionProperty.propTypes =
+  ActionVariableValue.propTypes =
+  ActionFetchFromService.propTypes =
+  ActionStepNotApplicable.propTypes =
+    {
+      action: ActionType.isRequired,
+      errors: ActionError,
+      onChange: PropTypes.func.isRequired,
+    };
 
 export {ActionComponent};

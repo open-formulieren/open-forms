@@ -231,17 +231,19 @@ class ServiceFetchAction(ActionOperation):
         context: DataMapping,
         log: Callable[[JSONValue], None],
     ) -> DataMapping:
-        # XXX perform_service_fetch is expressed in terms of FormVariables
-        dummy_var = FormVariable(
-            name=self.variable,
-            service_fetch_configuration=ServiceFetchConfiguration.objects.get(
-                pk=self.fetch_config
-            ),
-        )
+        if self.fetch_config:  # the old way
+            var = FormVariable(
+                name=self.variable,
+                service_fetch_configuration=ServiceFetchConfiguration.objects.get(
+                    pk=self.fetch_config
+                ),
+            )
+        else:  # the current way
+            var = self.rule.form.formvariable_set.get(key=self.variable)
         with log_errors({}, self.rule):  # TODO proper error handling
-            result = perform_service_fetch(dummy_var, context)
+            result = perform_service_fetch(var, context)
             log(asdict(result))
-            return {dummy_var.name: result.value}
+            return {var.name: result.value}
 
     def get_action_log_data(
         self,
