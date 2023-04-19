@@ -65,7 +65,3 @@ class ConfirmationEmailTemplate(models.Model):
     def __str__(self):
         form_str = str(self.form) if self.form_id else _("(unsaved form)")
         return _("Confirmation email template - {form}").format(form=form_str)
-
-    @property
-    def is_usable(self) -> bool:
-        return bool(self.subject and self.content)

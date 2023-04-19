@@ -913,8 +913,11 @@ class FormsAPITests(APITestCase):
         response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
         form.refresh_from_db()
-        self.assertFalse(form.confirmation_email_template.is_usable)
+
+        self.assertEqual(form.confirmation_email_template.content, "")
+        self.assertEqual(form.confirmation_email_template.subject, "")
 
     def test_sending_empty_confirmation_email_template_removes_the_confirmation_email_template(
         self,
@@ -935,8 +938,11 @@ class FormsAPITests(APITestCase):
         response = self.client.patch(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
         form.refresh_from_db()
-        self.assertFalse(form.confirmation_email_template.is_usable)
+
+        self.assertEqual(form.confirmation_email_template.content, "")
+        self.assertEqual(form.confirmation_email_template.subject, "")
 
     def test_getting_a_form_with_a_confirmation_email_template(self):
         form = FormFactory.create()

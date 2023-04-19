@@ -3,45 +3,42 @@
 from django.db import migrations
 
 from openforms.forms.constants import ConfirmationEmailOptions
+from django.db.models import Case, When, Value, Q
 
 
 def forward(apps, schema_editor):
     """Change the setting for the confirmation email from a choices field to a boolean field"""
     Form = apps.get_model("forms", "Form")
-
-    forms = Form.objects.all()
-
-    for form in forms:
-        form.send_confirmation_email = (
-            form.confirmation_email_option != ConfirmationEmailOptions.no_email
+    Form.objects.update(
+        send_confirmation_email=Case(
+            When(
+                confirmation_email_option=Value(ConfirmationEmailOptions.no_email),
+                then=False,
+            ),
+            default=True,
         )
-
-    Form.objects.bulk_update(forms, fields=["send_confirmation_email"])
+    )
 
 
 def backwards(apps, schema_editor):
     """Change the setting for the confirmation email from a boolean field to a choices field."""
     Form = apps.get_model("forms", "Form")
-
-    forms = Form.objects.all().select_related("confirmation_email_template")
-    for form in forms:
-        if not form.send_confirmation_email:
-            form.confirmation_email_option = ConfirmationEmailOptions.no_email
-            continue
-
-        # Does it have a custom template or is the custom template usable?
-        if hasattr(form, "confirmation_email_template") and bool(
-            form.confirmation_email_template.subject
-            and form.confirmation_email_template.content
-        ):
-            form.confirmation_email_option = (
-                ConfirmationEmailOptions.form_specific_email
-            )
-            continue
-
-        form.confirmation_email_option = ConfirmationEmailOptions.global_email
-
-    Form.objects.bulk_update(forms, fields=["confirmation_email_option"])
+    Form.objects.update(
+        confirmation_email_option=Case(
+            When(
+                send_confirmation_email=Value(False),
+                then=Value(ConfirmationEmailOptions.no_email),
+            ),
+            default=Value(ConfirmationEmailOptions.global_email),
+        )
+    )
+    Form.objects.filter(
+        Q(confirmation_email_template__isnull=False)
+        & (
+            ~Q(confirmation_email_template__subject="")
+            & ~Q(confirmation_email_template__content="")
+        )
+    ).update(confirmation_email_option=ConfirmationEmailOptions.form_specific_email)
 
 
 class Migration(migrations.Migration):

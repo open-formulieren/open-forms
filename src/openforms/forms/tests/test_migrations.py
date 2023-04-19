@@ -790,7 +790,7 @@ class TestRemoveConfirmationEmailBackwardsOptions(TestMigrations):
             subject="Custom subject", content="Custom content", form=self.form3
         )  # Complete template
 
-    def test_forward_migration(self):
+    def test_backwards_migration(self):
         self.form1.refresh_from_db()
         self.form2.refresh_from_db()
         self.form3.refresh_from_db()
