@@ -298,6 +298,9 @@ class MSGraphRegistrationOptionsTests(TestCase):
 
 class MSGraphRegistrationBackendFailureTests(TestCase):
     def test_no_service_configured_raises_registration_error(self):
+        # clear potential MSGraphRegistrationConfig instance from cache
+        clear_caches()
+
         submission = SubmissionFactory.create(
             form__registration_backend="microsoft-graph",
         )
@@ -312,4 +315,4 @@ class MSGraphRegistrationBackendFailureTests(TestCase):
                 Drive, "get_root_folder", return_value=MockFolder()
             ):
                 graph_submission = MSGraphRegistration("microsoft-graph")
-                graph_submission.register_submission(submission, None)
+                graph_submission.register_submission(submission, {})
