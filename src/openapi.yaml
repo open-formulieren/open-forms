@@ -7004,6 +7004,7 @@ components:
         formStep:
           type: string
           format: uri
+          nullable: true
           description: De formulierstap die wordt beïnvloed door de actie. Dit veld
             is verplicht als het actietype `step-not-applicable` is, anders optioneel.
           deprecated: true
