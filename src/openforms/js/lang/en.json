@@ -104,11 +104,6 @@
     "description": "Camunda 'process definition' help text",
     "originalDefault": "The process definition for which to start a process instance."
   },
-  "2utbek": {
-    "defaultMessage": "Email option",
-    "description": "Form confirmation email label",
-    "originalDefault": "Email option"
-  },
   "3FxzLm": {
     "defaultMessage": "When {desc}",
     "description": "Logic expression generated description",
@@ -514,6 +509,11 @@
     "description": "Interpolation expression field label",
     "originalDefault": "Text"
   },
+  "Fz4U73": {
+    "defaultMessage": "Send confirmation email",
+    "description": "Label of form field 'Send the confirmation email'",
+    "originalDefault": "Send confirmation email"
+  },
   "G1JHUM": {
     "defaultMessage": "Cancel rule creation",
     "description": "Cancel link help",
@@ -604,11 +604,6 @@
     "description": "Form appointment enabled field label",
     "originalDefault": "Appointment enabled"
   },
-  "HqVHBq": {
-    "defaultMessage": "Will send the email specified.",
-    "description": "Form confirmation email help text",
-    "originalDefault": "Will send the email specified."
-  },
   "HuAm1K": {
     "defaultMessage": "and the step \"{step}\" has been reached",
     "description": "Additional 'trigger from step' condition",
@@ -623,11 +618,6 @@
     "defaultMessage": "Select form definition",
     "description": "Form definition select label",
     "originalDefault": "Select form definition"
-  },
-  "ICW7rb": {
-    "defaultMessage": "Global email",
-    "description": "global_email option label",
-    "originalDefault": "Global email"
   },
   "Ika4IH": {
     "defaultMessage": "Submissions will be deleted",
@@ -678,11 +668,6 @@
     "defaultMessage": "Last Name Component",
     "description": "Last Name Component field label",
     "originalDefault": "Last Name Component"
-  },
-  "JuVh63": {
-    "defaultMessage": "Form specific email",
-    "description": "form_specific_email option label",
-    "originalDefault": "Form specific email"
   },
   "K1A6QK": {
     "defaultMessage": "Component {label} requires login, but this form step doesn't have the login marked as required.",
@@ -768,6 +753,11 @@
     "defaultMessage": "Component",
     "description": "Formio component selection label",
     "originalDefault": "Component"
+  },
+  "MXKqVO": {
+    "defaultMessage": "Below you can specify a custom template for the configuration email. If not specified, the globally configured template will be used.",
+    "description": "Custom confirmation email template explanation",
+    "originalDefault": "Below you can specify a custom template for the configuration email. If not specified, the globally configured template will be used."
   },
   "Mv8yjC": {
     "defaultMessage": "Form variables configuration",
@@ -1218,11 +1208,6 @@
     "defaultMessage": "Integer",
     "description": "data type int",
     "originalDefault": "Integer"
-  },
-  "cpiYVw": {
-    "defaultMessage": "No email",
-    "description": "no_email option label",
-    "originalDefault": "No email"
   },
   "d1W41c": {
     "defaultMessage": "From form field",
@@ -1678,6 +1663,11 @@
     "defaultMessage": "Sorry, we couldn't do that because you are logged out - this may be because your session expired.",
     "description": "Session expiry notice - API call failed with 401",
     "originalDefault": "Sorry, we couldn't do that because you are logged out - this may be because your session expired."
+  },
+  "sFHD3/": {
+    "defaultMessage": "Whether to send a confirmation email to the end-user who submitted the form.",
+    "description": "Help text of form field 'Send the confirmation email'",
+    "originalDefault": "Whether to send a confirmation email to the end-user who submitted the form."
   },
   "t99ynC": {
     "defaultMessage": "Component where the last name should be entered",

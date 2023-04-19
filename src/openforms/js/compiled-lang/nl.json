@@ -133,12 +133,6 @@
       "value": "De procesdefinitie waarvoor een proces instantie gestart moet worden."
     }
   ],
-  "2utbek": [
-    {
-      "type": 0,
-      "value": "E-mailsjabloon"
-    }
-  ],
   "3FxzLm": [
     {
       "type": 0,
@@ -765,6 +759,12 @@
       "value": "Tekst"
     }
   ],
+  "Fz4U73": [
+    {
+      "type": 0,
+      "value": "Send confirmation email"
+    }
+  ],
   "G1JHUM": [
     {
       "type": 0,
@@ -881,12 +881,6 @@
       "value": "Is afspraakformulier?"
     }
   ],
-  "HqVHBq": [
-    {
-      "type": 0,
-      "value": "Gebruikt het bevestigingsmailsjabloon zoals hier is opgegeven."
-    }
-  ],
   "HuAm1K": [
     {
       "type": 0,
@@ -911,12 +905,6 @@
     {
       "type": 0,
       "value": "Selecteer formulierdefinitie"
-    }
-  ],
-  "ICW7rb": [
-    {
-      "type": 0,
-      "value": "Globale e-mail"
     }
   ],
   "Ika4IH": [
@@ -977,12 +965,6 @@
     {
       "type": 0,
       "value": "Achternaam veld"
-    }
-  ],
-  "JuVh63": [
-    {
-      "type": 0,
-      "value": "Formulierspecifieke e-mail"
     }
   ],
   "K1A6QK": [
@@ -1093,6 +1075,12 @@
     {
       "type": 0,
       "value": "Veld"
+    }
+  ],
+  "MXKqVO": [
+    {
+      "type": 0,
+      "value": "Below you can specify a custom template for the configuration email. If not specified, the globally configured template will be used."
     }
   ],
   "Mv8yjC": [
@@ -1774,12 +1762,6 @@
       "value": "Geheel getal (integer)"
     }
   ],
-  "cpiYVw": [
-    {
-      "type": 0,
-      "value": "Geen e-mail"
-    }
-  ],
   "d1W41c": [
     {
       "type": 0,
@@ -2369,6 +2351,12 @@
     {
       "type": 0,
       "value": "Excuses, we konden deze actie niet uitvoeren omdat u uitgelogd bent. Uw sessie is waarschijnlijk vervallen."
+    }
+  ],
+  "sFHD3/": [
+    {
+      "type": 0,
+      "value": "Whether to send a confirmation email to the end-user who submitted the form."
     }
   ],
   "t99ynC": [

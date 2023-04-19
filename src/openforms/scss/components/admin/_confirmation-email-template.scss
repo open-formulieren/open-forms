@@ -1,0 +1,8 @@
+@use 'microscope-sass/lib/bem';
+@import '../../../ui/static/ui/scss/settings';
+
+.confirmation-email-template {
+  @include bem.element('help-text') {
+    padding: $grid-margin-1 0;
+  }
+}

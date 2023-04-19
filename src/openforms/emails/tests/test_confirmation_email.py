@@ -35,7 +35,10 @@ from openforms.tests.utils import NOOP_CACHES
 from openforms.utils.tests.html_assert import HTMLAssertMixin, strip_all_attributes
 from openforms.utils.urls import build_absolute_uri
 
-from ..confirmation_emails import get_confirmation_email_context_data
+from ..confirmation_emails import (
+    get_confirmation_email_context_data,
+    get_confirmation_email_templates,
+)
 from ..models import ConfirmationEmailTemplate
 from ..utils import render_email_template
 from .factories import ConfirmationEmailTemplateFactory
@@ -321,6 +324,61 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         rendered_content = render_email_template("{% summary %}", context)
 
         self.assertIn("Value 1; Value 2", rendered_content)
+
+    def test_get_confirmation_email_templates(self):
+        email_template1 = ConfirmationEmailTemplateFactory.create(
+            form__send_confirmation_email=True,
+            subject="Custom subject",
+            content="Custom content {% appointment_information %} {% payment_information %}",
+        )
+        email_template2 = ConfirmationEmailTemplateFactory.create(
+            form__send_confirmation_email=True,
+            subject="",
+            content="Custom content {% appointment_information %} {% payment_information %}",
+        )
+        email_template3 = ConfirmationEmailTemplateFactory.create(
+            form__send_confirmation_email=True, subject="Custom subject", content=""
+        )
+        email_template4 = ConfirmationEmailTemplateFactory.create(
+            form__send_confirmation_email=True, subject="", content=""
+        )
+
+        submission1 = SubmissionFactory.create(form=email_template1.form)
+        submission2 = SubmissionFactory.create(form=email_template2.form)
+        submission3 = SubmissionFactory.create(form=email_template3.form)
+        submission4 = SubmissionFactory.create(form=email_template4.form)
+
+        with patch(
+            "openforms.emails.confirmation_emails.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                confirmation_email_subject="Global subject",
+                confirmation_email_content="Global content {% appointment_information %} {% payment_information %}",
+            ),
+        ):
+
+            with self.subTest("Custom subject + custom content"):
+                subject, content = get_confirmation_email_templates(submission1)
+
+                self.assertEqual(subject, "Custom subject")
+                self.assertIn("Custom content", content)
+
+            with self.subTest("Global subject + custom content"):
+                subject, content = get_confirmation_email_templates(submission2)
+
+                self.assertEqual(subject, "Global subject")
+                self.assertIn("Custom content", content)
+
+            with self.subTest("Custom subject + global content"):
+                subject, content = get_confirmation_email_templates(submission3)
+
+                self.assertEqual(subject, "Custom subject")
+                self.assertIn("Global content", content)
+
+            with self.subTest("Global subject + global content"):
+                subject, content = get_confirmation_email_templates(submission4)
+
+                self.assertEqual(subject, "Global subject")
+                self.assertIn("Global content", content)
 
 
 @override_settings(

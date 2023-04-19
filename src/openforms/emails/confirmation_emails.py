@@ -7,7 +7,6 @@ from django.utils import translation
 
 from openforms.appointments.models import AppointmentInfo
 from openforms.config.models import GlobalConfiguration
-from openforms.forms.constants import ConfirmationEmailOptions
 from openforms.utils.urls import build_absolute_uri
 from openforms.variables.utils import get_variables_for_context
 
@@ -21,26 +20,24 @@ logger = logging.getLogger(__name__)
 
 
 def get_confirmation_email_templates(submission: "Submission") -> Tuple[str, str]:
-    template_option = submission.form.confirmation_email_option
-    if template_option == ConfirmationEmailOptions.no_email:
+    if not submission.form.send_confirmation_email:
         raise SkipConfirmationEmail("Confirmation e-mail sending is disabled.")
 
     with translation.override(submission.language_code):
-        if template_option == ConfirmationEmailOptions.form_specific_email:
-            email_template = submission.form.confirmation_email_template
-            return (
-                email_template.subject,
-                email_template.content,
-            )
+        config = GlobalConfiguration.get_solo()
+        if not hasattr(submission.form, "confirmation_email_template"):
+            return config.confirmation_email_subject, config.confirmation_email_content
 
-        if template_option == ConfirmationEmailOptions.global_email:
-            config = GlobalConfiguration.get_solo()
-            return (
-                config.confirmation_email_subject,
-                config.confirmation_email_content,
-            )
+        subject_template = (
+            submission.form.confirmation_email_template.subject
+            or config.confirmation_email_subject
+        )
+        content_template = (
+            submission.form.confirmation_email_template.content
+            or config.confirmation_email_content
+        )
 
-    raise ValueError(f"Unexpected option '{template_option}'")  # noqa
+        return (subject_template, content_template)
 
 
 def get_confirmation_email_context_data(submission: "Submission") -> Dict[str, Any]:

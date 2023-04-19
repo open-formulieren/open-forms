@@ -99,8 +99,8 @@ const initialFormState = {
     paymentBackend: '',
     paymentBackendOptions: {},
     submissionsRemovalOptions: {},
-    confirmationEmailTemplate: {translations: {}},
-    confirmationEmailOption: 'global_email',
+    sendConfirmationEmail: true,
+    confirmationEmailTemplate: {subject: '', content: '', translations: {}},
     autoLoginAuthenticationBackend: '',
     translations: {},
     appointmentEnabled: false,
@@ -151,7 +151,6 @@ const FORM_FIELDS_TO_TAB_NAMES = {
   maintenanceMode: 'form',
   translationEnabled: 'form',
   confirmationEmailTemplate: 'submission-confirmation',
-  confirmationEmailOption: 'submission-confirmation',
   submissionAllowed: 'form',
   registrationBackend: 'registration',
   registrationBackendOptions: 'registration',
@@ -201,7 +200,7 @@ function reducer(draft, action) {
       if (priceRules) draft.priceRules = priceRules;
 
       if (!draft.form.confirmationEmailTemplate) {
-        draft.form.confirmationEmailTemplate = {translations: {}};
+        draft.form.confirmationEmailTemplate = {subject: '', content: '', translations: {}};
       }
 
       // set initial translations if needed
@@ -1243,8 +1242,8 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             <Confirmation
               displayMainWebsiteLink={state.form.displayMainWebsiteLink}
               includeConfirmationPageContentInPdf={state.form.includeConfirmationPageContentInPdf}
-              emailOption={state.form.confirmationEmailOption}
-              emailTemplate={state.form.confirmationEmailTemplate || {}}
+              sendConfirmationEmail={state.form.sendConfirmationEmail}
+              emailTemplate={state.form.confirmationEmailTemplate}
               onChange={onFieldChange}
               translations={state.form.translations}
             />
