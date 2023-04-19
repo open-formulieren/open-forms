@@ -2,6 +2,16 @@
 Changelog
 =========
 
+2.1.3 (2023-04-19)
+==================
+
+Hotfix - 2.1.2 unfortunately broke saving forms from previous minor version exports
+
+* [#2877] Backported admin crash on misconfigured ZGW services.
+* [#3007] Fixed worfklows where < 2.1 form exports are imported and edited in the admin.
+* [#2875] Fixed SiteImprove analytics integration (for real now)
+* [#2895] Fixed WYSIWYG colors missing when filling out a form while logged in as staff user.
+
 2.1.2 (2023-04-18)
 ==================
 
