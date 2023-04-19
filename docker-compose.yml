@@ -98,6 +98,12 @@ services:
     image: openformulieren/open-forms:${TAG:-latest}
     environment: *web_env
     command: /celery_worker.sh
+    healthcheck:
+      test: ["CMD", "python", "/app/bin/check_celery_worker_liveness.py"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     depends_on:
       - db
       - redis

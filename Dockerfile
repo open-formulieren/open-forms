@@ -94,7 +94,8 @@ COPY ./bin/celery_worker.sh /celery_worker.sh
 COPY ./bin/celery_beat.sh /celery_beat.sh
 COPY ./bin/celery_flower.sh /celery_flower.sh
 COPY ./bin/dump_configuration.sh /dump_configuration.sh
-RUN mkdir /app/log /app/media /app/bin
+RUN mkdir /app/bin /app/log /app/media /app/tmp
+COPY ./bin/check_celery_worker_liveness.py ./bin/check_celery_worker_liveness.py
 
 # copy backend build deps
 COPY --from=backend-build /usr/local/lib/python3.8 /usr/local/lib/python3.8
