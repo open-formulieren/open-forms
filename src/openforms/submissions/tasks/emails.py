@@ -10,7 +10,7 @@ from openforms.celery import app
 from ..models import Submission
 from ..utils import send_confirmation_email as _send_confirmation_email
 
-__all__ = ["maybe_send_confirmation_email"]
+__all__ = ["maybe_send_confirmation_email", "send_confirmation_email"]
 
 logger = logging.getLogger(__name__)
 

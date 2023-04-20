@@ -611,6 +611,21 @@ class Submission(models.Model):
 
         return list(recipient_emails)
 
+    def get_cosigner_email(self) -> str | None:
+        from ..attachments import _iterate_data_with_components
+
+        for form_step in self.form.formstep_set.select_related("form_definition"):
+            for (
+                component,
+                upload_info,
+                data_path,
+                configuration_path,
+            ) in _iterate_data_with_components(
+                form_step.form_definition.configuration, self.data
+            ):
+                if component["type"] == "cosign":
+                    return glom(self.data, data_path, default=None)
+
     def calculate_price(self, save=True) -> None:
         """
         Calculate and save the price of this particular submission.

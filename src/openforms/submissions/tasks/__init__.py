@@ -84,6 +84,21 @@ def on_completion(submission_id: int) -> None:
     Submission.objects.filter(id=submission_id).update(on_completion_task_ids=task_ids)
 
 
+def on_cosign(submission_id: int) -> None:
+    register_submission_task = register_submission.si(submission_id)
+    obtain_submission_reference_task = obtain_submission_reference.si(submission_id)
+    send_confirmation_email_task = send_confirmation_email.si(submission_id)
+
+    on_cosign_chain = chain(
+        register_submission_task,
+        obtain_submission_reference_task,
+        send_confirmation_email_task,
+    )
+
+    # TODO deal with the results?
+    on_cosign_chain.delay()
+
+
 @app.task(ignore_result=False)
 def finalize_completion(submission_id: int) -> None:
     """

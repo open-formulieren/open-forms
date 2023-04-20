@@ -36,7 +36,7 @@ from ..models.submission_step import DirtyData
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser, IgnoreDataJSONRenderer
 from ..signals import submission_complete, submission_cosigned, submission_start
 from ..status import SubmissionProcessingStatus
-from ..tasks import on_completion
+from ..tasks import on_completion, on_cosign
 from ..tokens import submission_status_token_generator
 from ..utils import (
     add_submmission_to_session,
@@ -358,6 +358,7 @@ class SubmissionViewSet(
         summary_data = submission.render_summary_page()
         return Response(summary_data)
 
+    @transaction.atomic()
     @action(
         detail=True,
         methods=["post"],
@@ -368,12 +369,18 @@ class SubmissionViewSet(
 
         # TODO Do some checks that the user is logged in
 
+        submission.waiting_on_cosign = False
+        submission.save()
+
         # dispatch signal for modules to tap into
         submission_cosigned.send(
             sender=self.__class__, instance=submission, request=self.request
         )
 
         remove_submission_from_session(submission, self.request.session)
+
+        transaction.on_commit(lambda: on_cosign(submission.id))
+        on_cosign(submission.id)
 
         # TODO
         return Response({})
