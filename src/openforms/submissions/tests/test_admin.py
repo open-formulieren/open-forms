@@ -51,6 +51,7 @@ class TestSubmissionAdmin(WebTest):
 
     def setUp(self):
         super().setUp()
+        TimelineLogProxy.objects.all().delete()
         self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)
 
     def test_displaying_merged_data_formio_formatters(self):

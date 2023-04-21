@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TransactionTestCase
 from django.utils import timezone
 
 from openforms.logging.models import TimelineLogProxy
@@ -6,7 +6,7 @@ from openforms.logging.tasks import log_logic_evaluation
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
-class TestLogTask(TestCase):
+class TestLogTask(TransactionTestCase):
     def test_no_logged_rules(self):
         submission = SubmissionFactory.create()
         timestamp = timezone.now().isoformat()
