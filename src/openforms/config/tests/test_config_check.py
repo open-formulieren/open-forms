@@ -19,6 +19,12 @@ from stuf.tests.factories import StufServiceFactory
 class ConfigCheckTests(TestCase):
     url = reverse("config:overview")
 
+    def tearDown(self):
+        super().tearDown()
+        config = GlobalConfiguration.get_solo()
+        config.plugin_configuration = {}
+        config.save()
+
     def test_access_permission(self):
         with self.subTest("anon"):
             response = self.client.get(self.url)
