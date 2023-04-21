@@ -95,7 +95,7 @@ COPY ./bin/celery_test_worker.py ./bin/celery_test_worker.py
 
 # prevent writing to the container layer, which would degrade performance.
 # This also serves as a hint for the intended volumes.
-VOLUME ["/app/log", "/app/media", "/app/private_media", "/app/certifi_ca_bundle", /app/tmp]
+VOLUME ["/app/log", "/app/media", "/app/private_media", "/app/certifi_ca_bundle"]
 
 # copy backend build deps
 COPY --from=backend-build /usr/local/lib/python3.10 /usr/local/lib/python3.10

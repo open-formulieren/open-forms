@@ -1,4 +1,5 @@
 # script for checking readiness + liveness of celery worker
+# with kubernetes: kubectl exec -it `my_pod_name` -- bash -c "python bin/celery_test_worker.py"
 
 import sys
 import time
@@ -9,7 +10,7 @@ READINESS_FILE = Path(__file__).parent.parent / "tmp" / "celery_worker_ready"
 TIME_CONSTRAINT = 60  # seconds
 
 
-# check of worker is ready
+# check if worker is ready
 if not READINESS_FILE.is_file():
     print("Celery worker not ready.")
     sys.exit(1)

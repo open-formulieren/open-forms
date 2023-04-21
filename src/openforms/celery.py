@@ -33,11 +33,11 @@ class LivenessProbe(bootsteps.StartStopStep):
     requires = {"celery.worker.components:Timer"}
 
     def __init__(self, worker, **kwargs):
-        self.requests = []
-        self.tref = None
+        self.requests = []  # pragma: no cover
+        self.tref = None  # pragma: no cover
 
     def start(self, worker):
-        self.tref = worker.timer.call_repeatedly(
+        self.tref = worker.timer.call_repeatedly(  # pragma: no cover
             10.0,
             self.update_heartbeat_file,
             (worker,),
