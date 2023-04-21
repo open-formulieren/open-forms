@@ -68,6 +68,9 @@ def get_confirmation_email_context_data(submission: "Submission") -> Dict[str, A
         )
         context["payment_price"] = submission.price
 
+    if submission.waiting_on_cosign:
+        context["co_signer_email"] = submission.get_cosigner_email()
+
     try:
         context["_appointment_id"] = submission.appointment_info.appointment_id
     except AppointmentInfo.DoesNotExist:

@@ -87,12 +87,15 @@ def on_completion(submission_id: int) -> None:
 def on_cosign(submission_id: int) -> None:
     register_submission_task = register_submission.si(submission_id)
     obtain_submission_reference_task = obtain_submission_reference.si(submission_id)
-    send_confirmation_email_task = send_confirmation_email.si(submission_id)
+    send_cosign_confirmation_email_task = send_cosign_confirmation_email.si(
+        submission_id
+    )
+    # TODO hash identifying attributes
 
     on_cosign_chain = chain(
         register_submission_task,
         obtain_submission_reference_task,
-        send_confirmation_email_task,
+        send_cosign_confirmation_email_task,
     )
 
     # TODO deal with the results?

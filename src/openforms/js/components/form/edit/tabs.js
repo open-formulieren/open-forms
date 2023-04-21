@@ -33,22 +33,6 @@ const BASIC = {
     LABEL_REQUIRED,
     KEY,
     DESCRIPTION,
-    {
-      type: 'select',
-      key: 'authPlugin',
-      label: 'Authentication method',
-      description:
-        'Which authentication method the co-signer must use. Note that this must be an authentication method available on the form.',
-      dataSrc: 'url',
-      data: {
-        // if the url starts with '/', then formio will prefix it with the formio
-        // base URL, which is of course wrong. We there explicitly use the detected
-        // host.
-        url: getFullyQualifiedUrl('/api/v2/authentication/plugins'),
-      },
-      valueProperty: 'id',
-      template: `<span>{{ item.label }}, provides: {{ item.providesAuth }}</span>`,
-    },
     PRESENTATION,
     MULTIPLE,
     HIDDEN,

@@ -2,15 +2,25 @@ import logging
 
 from django.conf import settings
 from django.db import DatabaseError, transaction
+from django.utils import translation
 
 from celery_once import QueueOnce
+from mail_cleaner.text import strip_tags_plus
 
+from openforms.appointments.utils import get_confirmation_mail_suffix
 from openforms.celery import app
+from openforms.emails.confirmation_emails import get_confirmation_email_context_data
+from openforms.emails.utils import render_email_template, send_mail_html
+from openforms.logging import logevent
 
 from ..models import Submission
 from ..utils import send_confirmation_email as _send_confirmation_email
 
-__all__ = ["maybe_send_confirmation_email", "send_confirmation_email"]
+__all__ = [
+    "maybe_send_confirmation_email",
+    "send_confirmation_email",
+    "send_cosign_confirmation_email",
+]
 
 logger = logging.getLogger(__name__)
 
@@ -81,3 +91,82 @@ def send_confirmation_email(submission_id: int) -> None:
         return
 
     _send_confirmation_email(submission)
+
+
+@app.task()
+def send_cosign_confirmation_email(submission_id: int) -> None:
+    submission = Submission.objects.get(id=submission_id)
+
+    # TODO logs
+
+    # TODO templates
+    subject_template, content_template = (
+        "The form {{ form_name }} was co-signed.",
+        "Dear, the form {{ form_name }} was co-signed and has been processed.",
+    )
+
+    to_emails = submission.get_email_confirmation_recipients(submission.data)
+    context = get_confirmation_email_context_data(submission)
+
+    if to_emails:
+        # render the templates with the submission context
+        with translation.override(submission.language_code):
+            subject = render_email_template(
+                subject_template, context, rendering_text=True, disable_autoescape=True
+            ).strip()
+
+            if subject_suffix := get_confirmation_mail_suffix(submission):
+                subject = f"{subject} {subject_suffix}"
+
+            html_content = render_email_template(content_template, context)
+            text_content = strip_tags_plus(
+                render_email_template(content_template, context, rendering_text=True),
+                keep_leading_whitespace=True,
+            )
+
+            try:
+                send_mail_html(
+                    subject,
+                    html_content,
+                    settings.DEFAULT_FROM_EMAIL,  # TODO: add config option to specify sender e-mail
+                    to_emails,
+                    text_message=text_content,
+                )
+            except Exception as e:
+                logevent.confirmation_email_failure(submission, e)
+                logger.error("Couldn't send the confirmation email after co-sign")
+    else:
+        logger.warning(
+            "Could not determine the recipient e-mail address for submission %d, "
+            "skipping the confirmation e-mail.",
+            submission.id,
+        )
+        logevent.confirmation_email_skip(submission)
+
+    co_signer_email = submission.get_cosigner_email()
+
+    subject_template, content_template = (
+        "You co-signed {{ form_name }}",
+        "Dear, thank you for co-signing the form {{ form_name }}. The form has been processed.",
+    )
+
+    subject = render_email_template(
+        subject_template, context, rendering_text=True, disable_autoescape=True
+    ).strip()
+    html_content = render_email_template(content_template, context)
+    text_content = strip_tags_plus(
+        render_email_template(content_template, context, rendering_text=True),
+        keep_leading_whitespace=True,
+    )
+
+    try:
+        send_mail_html(
+            subject,
+            html_content,
+            settings.DEFAULT_FROM_EMAIL,  # TODO: add config option to specify sender e-mail
+            [co_signer_email],
+            text_message=text_content,
+        )
+    except Exception:
+        logger.error("Couldn't send the confirmation email to the co-signer.")
+        raise

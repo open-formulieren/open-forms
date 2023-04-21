@@ -106,10 +106,6 @@ def send_confirmation_email(submission: Submission):
         return
 
     to_emails = submission.get_email_confirmation_recipients(submission.data)
-
-    if submission.co_sign_data:
-        to_emails.append(submission.get_cosigner_email())
-
     if not to_emails:
         logger.warning(
             "Could not determine the recipient e-mail address for submission %d, "
