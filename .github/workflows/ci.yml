@@ -283,6 +283,18 @@ jobs:
       target_env: ${{ matrix.target.env }}
       extensions: ${{ matrix.target.extensions }}
 
+  podman_build:
+    name: Build podman image
+    runs-on: ubuntu-latest
+    container:
+      image: mattermost/podman:1.8.0
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build the Podman image
+        run: |
+          podman build .
+
   oas-up-to-date:
     needs: tests
     name: Check for unexepected OAS changes
