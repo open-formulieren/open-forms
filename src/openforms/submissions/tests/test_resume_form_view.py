@@ -381,3 +381,32 @@ class SubmissionResumeViewTests(TestCase):
 
         self.assertEqual(403, response.status_code)
         self.assertNotIn(SUBMISSIONS_SESSION_KEY, self.client.session)
+
+    def test_resume_creates_valid_url(self):
+        submission = SubmissionFactory.from_components(
+            completed=True,
+            components_list=[],
+            form_url="http://maykinmedia.nl/some-form/startpagina",
+        )
+
+        endpoint = reverse(
+            "submissions:resume",
+            kwargs={
+                "token": submission_resume_token_generator.make_token(submission),
+                "submission_uuid": submission.uuid,
+            },
+        )
+
+        response = self.client.get(endpoint)
+
+        f = furl("http://maykinmedia.nl/some-form/")
+        # furl adds paths with the /= operator
+        f /= "stap"
+        f /= submission.get_last_completed_step().form_step.form_definition.slug
+        # Add the submission uuid to the query param
+        f.add({"submission_uuid": submission.uuid})
+
+        expected_redirect_url = f.url
+        self.assertRedirects(
+            response, expected_redirect_url, fetch_redirect_response=False
+        )
