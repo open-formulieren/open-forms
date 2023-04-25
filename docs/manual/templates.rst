@@ -270,7 +270,9 @@ Variabele                           Beschrijving
 ``{{ form_name }}``                 De naam van het formulier.
 ``{{ save_date }}``                 De datum waarop het formulier is opgeslagen.
 ``{{ expiration_date }}``           De datum waarop het formulier zal vervallen.
-``{{ continue_url }}``              De URL om het formulier te hervatten.
+``{{ continue_url }}``              De URL om het formulier te hervatten. Deze URL begint al met ``https://``,
+                                    dus u kunt 'Nee' kiezen wanneer de pop-up in de editor vraagt om dit toe te
+                                    voegen.
 ==================================  ===========================================================================
 
 
