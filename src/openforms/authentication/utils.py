@@ -17,11 +17,16 @@ class FormAuth(TypedDict):
     machtigen: Optional[dict]
 
 
-def store_auth_details(submission: Submission, form_auth: FormAuth) -> None:
+def store_auth_details(
+    submission: Submission, form_auth: FormAuth, attribute_hashed: bool = False
+) -> None:
     attribute = form_auth["attribute"]
 
     assert (
         attribute in AuthAttribute.values
     ), f"Unexpected auth attribute {attribute} specified"
 
-    AuthInfo.objects.update_or_create(submission=submission, defaults=form_auth)
+    AuthInfo.objects.update_or_create(
+        submission=submission,
+        defaults={**form_auth, **{"attribute_hashed": attribute_hashed}},
+    )
