@@ -77,7 +77,7 @@ class KVKRemoteBaseValidator:
                 return True
 
 
-@register("kvk-kvkNumber", verbose_name=_("KvK number"))
+@register("kvk-kvkNumber", verbose_name=_("KvK number"), component="textfield")
 @deconstructible
 class KVKNumberRemoteValidator(KVKRemoteBaseValidator):
     query_param = "kvkNummer"
@@ -88,7 +88,7 @@ class KVKNumberRemoteValidator(KVKRemoteBaseValidator):
         super().__call__(value)
 
 
-@register("kvk-rsin", verbose_name=_("KvK RSIN"))
+@register("kvk-rsin", verbose_name=_("KvK RSIN"), component="textfield")
 @deconstructible
 class KVKRSINRemoteValidator(KVKRemoteBaseValidator):
     query_param = "rsin"
@@ -99,7 +99,9 @@ class KVKRSINRemoteValidator(KVKRemoteBaseValidator):
         super().__call__(value)
 
 
-@register("kvk-branchNumber", verbose_name=_("KvK branch number"))
+@register(
+    "kvk-branchNumber", verbose_name=_("KvK branch number"), component="textfield"
+)
 @deconstructible
 class KVKBranchNumberRemoteValidator(KVKRemoteBaseValidator):
     query_param = "vestigingsnummer"

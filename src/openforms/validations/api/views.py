@@ -29,7 +29,11 @@ class ValidatorsListView(ListMixin, APIView):
     serializer_class = ValidationPluginSerializer
 
     def get_objects(self):
-        return list(register.iter_enabled_plugins())
+        param_component = self.request.query_params["component"]
+        filtered = filter(
+            lambda x: x.component == param_component, register.iter_enabled_plugins()
+        )
+        return [item for item in filtered]
 
 
 class ValidationView(APIView):
