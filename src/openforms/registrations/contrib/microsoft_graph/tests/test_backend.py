@@ -41,9 +41,6 @@ class MockFolder:
 class MSGraphRegistrationBackendTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        config = MSGraphRegistrationConfig.get_solo()
-        config.service = MSGraphServiceFactory.create()
-        config.save()
 
         cls.options = dict(folder_path="/open-forms/")
 
@@ -54,253 +51,271 @@ class MSGraphRegistrationBackendTests(TestCase):
 
     @patch.object(MockFolder, "upload_file", return_value=None)
     def test_submission(self, upload_mock):
-        data = {"foo": "bar", "some_list": ["value1", "value2"]}
-
-        components = [
-            {
-                "key": "foo",
-                "type": "textfield",
-            },
-            {
-                "key": "some_list",
-                "type": "textfield",
-                "multiple": True,
-            },
-        ]
-        submission = SubmissionFactory.from_components(
-            components,
-            data,
-            completed=True,
-            with_report=True,
-            form__name="MyName",
-            form__internal_name="MyInternalName: with (extra)",
-            form__registration_backend="microsoft-graph",
-            form__product__price=Decimal("11.35"),
-            form__payment_backend="demo",
-        )
-        submission_step = submission.steps[0]
-        SubmissionFileAttachmentFactory.create(
-            submission_step=submission_step,
-            file_name="my-foo.bin",
-            content_type="application/foo",
-        )
-        SubmissionFileAttachmentFactory.create(
-            submission_step=submission_step,
-            file_name="my-bar.txt",
-            content_type="text/bar",
-        )
-
-        set_submission_reference(submission)
-
-        with patch.object(Account, "is_authenticated", True), patch.object(
-            Drive, "get_root_folder", return_value=MockFolder()
+        with patch(
+            "openforms.registrations.contrib.microsoft_graph.models.MSGraphRegistrationConfig.get_solo",
+            return_value=MSGraphRegistrationConfig(
+                service=MSGraphServiceFactory.create()
+            ),
         ):
-            graph_submission = MSGraphRegistration("microsoft-graph")
-            graph_submission.register_submission(submission, self.options)
+            data = {"foo": "bar", "some_list": ["value1", "value2"]}
 
-        # made the calls
-        self.assertEqual(upload_mock.call_count, 5)
-
-        folder = f"/open-forms/myinternalname-with-extra/{submission.public_registration_reference}"
-        calls = upload_mock.call_args_list
-
-        with self.subTest("report"):
-            call = calls[0]
-            path = f"{folder}/report.pdf"
-            self.assertEqual(call.args[1], path)
-
-        with self.subTest("data"):
-            call = calls[1]
-            path = f"{folder}/data.json"
-            self.assertEqual(call.args[1], path)
-
-        with self.subTest("data contains submission language code"):
-            call = calls[1]
-            data = json.load(call[1]["stream"])
-
-            self.assertEqual(
-                data["__metadata__"]["submission_language"], submission.language_code
+            components = [
+                {
+                    "key": "foo",
+                    "type": "textfield",
+                },
+                {
+                    "key": "some_list",
+                    "type": "textfield",
+                    "multiple": True,
+                },
+            ]
+            submission = SubmissionFactory.from_components(
+                components,
+                data,
+                completed=True,
+                with_report=True,
+                form__name="MyName",
+                form__internal_name="MyInternalName: with (extra)",
+                form__registration_backend="microsoft-graph",
+                form__product__price=Decimal("11.35"),
+                form__payment_backend="demo",
+            )
+            submission_step = submission.steps[0]
+            SubmissionFileAttachmentFactory.create(
+                submission_step=submission_step,
+                file_name="my-foo.bin",
+                content_type="application/foo",
+            )
+            SubmissionFileAttachmentFactory.create(
+                submission_step=submission_step,
+                file_name="my-bar.txt",
+                content_type="text/bar",
             )
 
-        with self.subTest("attachment 1"):
-            call = calls[2]
-            path = f"{folder}/attachments/my-foo.bin"
-            self.assertEqual(call.args[1], path)
+            set_submission_reference(submission)
 
-        with self.subTest("attachment 2"):
-            call = calls[3]
-            path = f"{folder}/attachments/my-bar.txt"
-            self.assertEqual(call.args[1], path)
+            with patch.object(Account, "is_authenticated", True), patch.object(
+                Drive, "get_root_folder", return_value=MockFolder()
+            ):
+                graph_submission = MSGraphRegistration("microsoft-graph")
+                graph_submission.register_submission(submission, self.options)
 
-        with self.subTest("payment status"):
-            call = calls[4]
-            path = f"{folder}/payment_status.txt"
-            self.assertEqual(call.args[1], path)
-            content = call.kwargs["stream"].read().decode("utf8")
-            self.assertEqual(content, f"{_('payment required')}: € 11.35")
+            # made the calls
+            self.assertEqual(upload_mock.call_count, 5)
+
+            folder = f"/open-forms/myinternalname-with-extra/{submission.public_registration_reference}"
+            calls = upload_mock.call_args_list
+
+            with self.subTest("report"):
+                call = calls[0]
+                path = f"{folder}/report.pdf"
+                self.assertEqual(call.args[1], path)
+
+            with self.subTest("data"):
+                call = calls[1]
+                path = f"{folder}/data.json"
+                self.assertEqual(call.args[1], path)
+
+            with self.subTest("data contains submission language code"):
+                call = calls[1]
+                data = json.load(call[1]["stream"])
+
+                self.assertEqual(
+                    data["__metadata__"]["submission_language"],
+                    submission.language_code,
+                )
+
+            with self.subTest("attachment 1"):
+                call = calls[2]
+                path = f"{folder}/attachments/my-foo.bin"
+                self.assertEqual(call.args[1], path)
+
+            with self.subTest("attachment 2"):
+                call = calls[3]
+                path = f"{folder}/attachments/my-bar.txt"
+                self.assertEqual(call.args[1], path)
+
+            with self.subTest("payment status"):
+                call = calls[4]
+                path = f"{folder}/payment_status.txt"
+                self.assertEqual(call.args[1], path)
+                content = call.kwargs["stream"].read().decode("utf8")
+                self.assertEqual(content, f"{_('payment required')}: € 11.35")
 
     @patch.object(MockFolder, "upload_file", return_value=None)
     def test_update_payment_status(self, upload_mock):
-        data = {"foo": "bar", "some_list": ["value1", "value2"]}
-
-        submission = SubmissionFactory.create(
-            form__name="MyName",
-            form__internal_name="MyInternalName",
-            form__registration_backend="microsoft-graph",
-            form__product__price=Decimal("11.35"),
-            form__payment_backend="demo",
-            public_registration_reference="abc123",
-            registration_success=True,
-        )
-        SubmissionStepFactory.create(submission=submission, data=data)
-        submission.save()
-
-        SubmissionPaymentFactory.for_submission(
-            submission, status=PaymentStatus.completed
-        )
-
-        with patch.object(Account, "is_authenticated", True), patch.object(
-            Drive, "get_root_folder", return_value=MockFolder()
+        with patch(
+            "openforms.registrations.contrib.microsoft_graph.models.MSGraphRegistrationConfig.get_solo",
+            return_value=MSGraphRegistrationConfig(
+                service=MSGraphServiceFactory.create()
+            ),
         ):
-            graph_submission = MSGraphRegistration("microsoft-graph")
-            graph_submission.update_payment_status(submission, self.options)
+            data = {"foo": "bar", "some_list": ["value1", "value2"]}
 
-        # got the reference
-        self.assertNotEqual(submission.public_registration_reference, "")
+            submission = SubmissionFactory.create(
+                form__name="MyName",
+                form__internal_name="MyInternalName",
+                form__registration_backend="microsoft-graph",
+                form__product__price=Decimal("11.35"),
+                form__payment_backend="demo",
+                public_registration_reference="abc123",
+                registration_success=True,
+            )
+            SubmissionStepFactory.create(submission=submission, data=data)
+            submission.save()
 
-        # made the calls
-        self.assertEqual(upload_mock.call_count, 1)
+            SubmissionPaymentFactory.for_submission(
+                submission, status=PaymentStatus.completed
+            )
 
-        folder = (
-            f"/open-forms/myinternalname/{submission.public_registration_reference}"
-        )
-        calls = upload_mock.call_args_list
+            with patch.object(Account, "is_authenticated", True), patch.object(
+                Drive, "get_root_folder", return_value=MockFolder()
+            ):
+                graph_submission = MSGraphRegistration("microsoft-graph")
+                graph_submission.update_payment_status(submission, self.options)
 
-        with self.subTest("payment status"):
-            call = calls[0]
-            path = f"{folder}/payment_status.txt"
-            self.assertEqual(call.args[1], path)
-            content = call.kwargs["stream"].read().decode("utf8")
-            self.assertEqual(content, f"{_('payment received')}: € 11.35")
+            # got the reference
+            self.assertNotEqual(submission.public_registration_reference, "")
+
+            # made the calls
+            self.assertEqual(upload_mock.call_count, 1)
+
+            folder = (
+                f"/open-forms/myinternalname/{submission.public_registration_reference}"
+            )
+            calls = upload_mock.call_args_list
+
+            with self.subTest("payment status"):
+                call = calls[0]
+                path = f"{folder}/payment_status.txt"
+                self.assertEqual(call.args[1], path)
+                content = call.kwargs["stream"].read().decode("utf8")
+                self.assertEqual(content, f"{_('payment received')}: € 11.35")
 
 
 @temp_private_root()
 @patch.object(MockFolder, "upload_file", return_value=None)
 class MSGraphRegistrationOptionsTests(TestCase):
     @classmethod
-    def setUpTestData(cls):
-        config = MSGraphRegistrationConfig.get_solo()
-        config.service = MSGraphServiceFactory.create()
-        config.save()
-
-    @classmethod
     def addClassCleanup(cls):
         # clear the config from cache
         clear_caches()
 
     def test_folder_path(self, upload_mock):
-        submission = SubmissionFactory.from_components(
-            components_list=[
-                {
-                    "key": "foo",
-                    "type": "textfield",
-                }
-            ],
-            submitted_data={"foo": "bar"},
-            completed=True,
-            with_report=True,
-            form__name="Test Form",
-            form__internal_name="Internal Test Form (with extra)",
-            form__registration_backend="microsoft-graph",
-        )
-
-        registration_options = dict(folder_path="/sites/my-site/open-forms/")
-
-        set_submission_reference(submission)
-
-        with patch.object(Account, "is_authenticated", True), patch.object(
-            Drive, "get_root_folder", return_value=MockFolder()
+        with patch(
+            "openforms.registrations.contrib.microsoft_graph.models.MSGraphRegistrationConfig.get_solo",
+            return_value=MSGraphRegistrationConfig(
+                service=MSGraphServiceFactory.create()
+            ),
         ):
-            graph_submission = MSGraphRegistration("microsoft-graph")
-            graph_submission.register_submission(submission, registration_options)
+            submission = SubmissionFactory.from_components(
+                components_list=[
+                    {
+                        "key": "foo",
+                        "type": "textfield",
+                    }
+                ],
+                submitted_data={"foo": "bar"},
+                completed=True,
+                with_report=True,
+                form__name="Test Form",
+                form__internal_name="Internal Test Form (with extra)",
+                form__registration_backend="microsoft-graph",
+            )
 
-        # made the calls
-        self.assertEqual(upload_mock.call_count, 2)
+            registration_options = dict(folder_path="/sites/my-site/open-forms/")
 
-        folder = f"/sites/my-site/open-forms/internal-test-form-with-extra/{submission.public_registration_reference}"
-        calls = upload_mock.call_args_list
+            set_submission_reference(submission)
 
-        with self.subTest("report"):
-            call = calls[0]
-            path = f"{folder}/report.pdf"
-            self.assertEqual(call.args[1], path)
-
-        with self.subTest("data"):
-            call = calls[1]
-            path = f"{folder}/data.json"
-            self.assertEqual(call.args[1], path)
-
-    def test_folder_path_with_date(self, upload_mock):
-        submission = SubmissionFactory.from_components(
-            components_list=[
-                {
-                    "key": "foo",
-                    "type": "textfield",
-                }
-            ],
-            submitted_data={"foo": "bar"},
-            completed=True,
-            with_report=True,
-            form__name="Test Form",
-            form__internal_name="Internal Test Form (with extra)",
-            form__registration_backend="microsoft-graph",
-        )
-        SubmissionFileAttachmentFactory.create(
-            submission_step=submission.steps[0],
-            file_name="my-foo.bin",
-            content_type="application/foo",
-        )
-
-        registration_options = dict(
-            folder_path="/open-forms/{{ year }}-{{ month }}-{{ day }}",
-        )
-
-        set_submission_reference(submission)
-
-        with freeze_time("2021-07-16"):
             with patch.object(Account, "is_authenticated", True), patch.object(
                 Drive, "get_root_folder", return_value=MockFolder()
             ):
                 graph_submission = MSGraphRegistration("microsoft-graph")
                 graph_submission.register_submission(submission, registration_options)
 
-        # made the calls
-        self.assertEqual(upload_mock.call_count, 3)
+            # made the calls
+            self.assertEqual(upload_mock.call_count, 2)
 
-        folder = f"/open-forms/2021-07-16/internal-test-form-with-extra/{submission.public_registration_reference}"
-        calls = upload_mock.call_args_list
+            folder = f"/sites/my-site/open-forms/internal-test-form-with-extra/{submission.public_registration_reference}"
+            calls = upload_mock.call_args_list
 
-        with self.subTest("report"):
-            call = calls[0]
-            path = f"{folder}/report.pdf"
-            self.assertEqual(call.args[1], path)
+            with self.subTest("report"):
+                call = calls[0]
+                path = f"{folder}/report.pdf"
+                self.assertEqual(call.args[1], path)
 
-        with self.subTest("data"):
-            call = calls[1]
-            path = f"{folder}/data.json"
-            self.assertEqual(call.args[1], path)
+            with self.subTest("data"):
+                call = calls[1]
+                path = f"{folder}/data.json"
+                self.assertEqual(call.args[1], path)
 
-        with self.subTest("attachment"):
-            call = calls[2]
-            path = f"{folder}/attachments/my-foo.bin"
-            self.assertEqual(call.args[1], path)
+    def test_folder_path_with_date(self, upload_mock):
+        with patch(
+            "openforms.registrations.contrib.microsoft_graph.models.MSGraphRegistrationConfig.get_solo",
+            return_value=MSGraphRegistrationConfig(
+                service=MSGraphServiceFactory.create()
+            ),
+        ):
+            submission = SubmissionFactory.from_components(
+                components_list=[
+                    {
+                        "key": "foo",
+                        "type": "textfield",
+                    }
+                ],
+                submitted_data={"foo": "bar"},
+                completed=True,
+                with_report=True,
+                form__name="Test Form",
+                form__internal_name="Internal Test Form (with extra)",
+                form__registration_backend="microsoft-graph",
+            )
+            SubmissionFileAttachmentFactory.create(
+                submission_step=submission.steps[0],
+                file_name="my-foo.bin",
+                content_type="application/foo",
+            )
+
+            registration_options = dict(
+                folder_path="/open-forms/{{ year }}-{{ month }}-{{ day }}",
+            )
+
+            set_submission_reference(submission)
+
+            with freeze_time("2021-07-16"):
+                with patch.object(Account, "is_authenticated", True), patch.object(
+                    Drive, "get_root_folder", return_value=MockFolder()
+                ):
+                    graph_submission = MSGraphRegistration("microsoft-graph")
+                    graph_submission.register_submission(
+                        submission, registration_options
+                    )
+
+            # made the calls
+            self.assertEqual(upload_mock.call_count, 3)
+
+            folder = f"/open-forms/2021-07-16/internal-test-form-with-extra/{submission.public_registration_reference}"
+            calls = upload_mock.call_args_list
+
+            with self.subTest("report"):
+                call = calls[0]
+                path = f"{folder}/report.pdf"
+                self.assertEqual(call.args[1], path)
+
+            with self.subTest("data"):
+                call = calls[1]
+                path = f"{folder}/data.json"
+                self.assertEqual(call.args[1], path)
+
+            with self.subTest("attachment"):
+                call = calls[2]
+                path = f"{folder}/attachments/my-foo.bin"
+                self.assertEqual(call.args[1], path)
 
 
 class MSGraphRegistrationBackendFailureTests(TestCase):
     def test_no_service_configured_raises_registration_error(self):
-        # clear potential MSGraphRegistrationConfig instance from cache
-        clear_caches()
-
         submission = SubmissionFactory.create(
             form__registration_backend="microsoft-graph",
         )

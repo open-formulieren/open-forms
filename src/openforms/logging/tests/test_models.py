@@ -1,6 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import capfirst
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
 from django.utils.translation import gettext as _
 
 from freezegun import freeze_time
@@ -234,7 +234,7 @@ class TimelineLogProxyTests(TestCase):
             self.assertFalse(log.is_submission)
 
 
-class AVGProxyModelTest(LoggingTestMixin, TransactionTestCase):
+class AVGProxyModelTest(LoggingTestMixin, TestCase):
     def test_model_and_proxy(self):
         user = StaffUserFactory.create()
         submission = SubmissionFactory.create()
