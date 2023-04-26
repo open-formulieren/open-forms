@@ -40,6 +40,11 @@ class BookAppointmentForSubmissionTest(TestCase):
 
         setup_jcc()
 
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
+
     def test_creating_appointment_with_no_appointment_information_does_nothing(self):
         submission = SubmissionFactory.create()
         book_appointment_for_submission(submission)

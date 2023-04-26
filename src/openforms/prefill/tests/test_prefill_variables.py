@@ -191,6 +191,10 @@ class PrefillVariablesTests(TestCase):
 
 
 class PrefillVariablesTransactionTests(TransactionTestCase):
+    def tearDown(cls):
+        super().tearDown()
+        TimelineLogProxy.objects.all().delete()
+
     @requests_mock.Mocker()
     @patch("openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo")
     def test_no_success_message_on_failure(self, m, m_solo):

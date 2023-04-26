@@ -19,6 +19,11 @@ from .factories import StaffUserFactory, SuperUserFactory
 class HijackTests(WebTest):
     csrf_checks = False
 
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
+
     def _hijack_user(self, hijacked):
         url = reverse("hijack:acquire")
         response = self.app.post(

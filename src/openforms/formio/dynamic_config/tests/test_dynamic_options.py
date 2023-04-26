@@ -8,6 +8,11 @@ from openforms.submissions.tests.factories import SubmissionFactory
 
 @override_settings(LANGUAGE_CODE="en")
 class TestDynamicConfigAddingOptions(TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
+
     def test_manual_options_not_updated(self):
         configuration = {
             "components": [

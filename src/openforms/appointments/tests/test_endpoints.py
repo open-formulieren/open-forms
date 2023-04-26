@@ -339,6 +339,11 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
 
 @freeze_time("2021-07-15T21:15:00Z")
 class VerifyChangeAppointmentLinkViewTests(TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
+
     def test_good_token_and_submission_redirect_and_add_submission_to_session(self):
         submission = SubmissionFactory.from_components(
             completed=True,

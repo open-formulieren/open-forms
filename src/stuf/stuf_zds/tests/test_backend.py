@@ -54,6 +54,10 @@ class StufZDSClientTests(StUFZDSTestBase):
         }
         self.client = StufZDSClient(self.service, self.options)
 
+    def tearDown(self):
+        super().tearDown()
+        TimelineLogProxy.objects.all().delete()
+
     def assertStuurgegevens(self, xml_doc):
         self.assertXPathEqualDict(
             xml_doc,

@@ -31,6 +31,11 @@ class ProvidesEmployeePlugin(Plugin):
 
 
 class SetSubmissionIdentifyingAttributesTests(APITestCase):
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
+
     def test_attributes_not_set_for_demo_plugin_without_staff(self):
         register = Registry()
         register("plugin1")(RequiresAdminPlugin)

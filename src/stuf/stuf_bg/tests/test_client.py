@@ -35,6 +35,10 @@ class StufBGConfigTests(TestCase):
         self.config.save()
         self.client = self.config.get_client()
 
+    def tearDown(self):
+        super().tearDown()
+        TimelineLogProxy.objects.all().delete()
+
     @freeze_time("2020-12-11T10:53:19+01:00")
     @patch(
         "stuf.client.uuid.uuid4",

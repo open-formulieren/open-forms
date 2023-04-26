@@ -210,6 +210,11 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
         config = QmaticConfigFactory.create()
         cls.api_root = config.service.api_root
 
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
+
     @requests_mock.Mocker()
     def test_cancel_appointment_deletes_the_appointment(self, m):
         submission = SubmissionFactory.from_components(

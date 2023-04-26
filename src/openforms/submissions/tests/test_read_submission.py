@@ -51,6 +51,11 @@ class SubmissionReadTests(SubmissionsMixin, APITestCase):
             "api:submission-detail", kwargs={"uuid": cls.submission.uuid}
         )
 
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
+
     def test_invalid_submission_id(self):
         response = self.client.get(self.endpoint)
 

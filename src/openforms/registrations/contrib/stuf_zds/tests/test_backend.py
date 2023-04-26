@@ -137,6 +137,10 @@ class StufZDSPluginTests(StUFZDSTestBase):
         config.service = self.service
         config.save()
 
+    def tearDown(self):
+        super().tearDown()
+        TimelineLogProxy.objects.all().delete()
+
     @patch("celery.app.task.Task.request")
     def test_plugin(self, m, mock_task):
         submission = SubmissionFactory.from_components(

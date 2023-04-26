@@ -116,6 +116,11 @@ def apply_prefill(configuration: dict, submission: "Submission", register=None) 
 
 
 class PrefillHookTests(TransactionTestCase):
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
+
     def test_applying_prefill_plugins(self):
         form_step = FormStepFactory.create(form_definition__configuration=CONFIGURATION)
         submission = SubmissionFactory.create(form=form_step.form)

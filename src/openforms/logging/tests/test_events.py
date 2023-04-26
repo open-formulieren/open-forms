@@ -12,6 +12,10 @@ from openforms.submissions.tests.factories import SubmissionFactory
 
 
 class EventTests(TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
 
     # test for specific events
     def test_submission_start(self):

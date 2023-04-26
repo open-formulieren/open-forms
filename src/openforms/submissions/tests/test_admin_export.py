@@ -70,6 +70,11 @@ class TestSubmissionExportAdmin(WebTest):
             },
         )
 
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
+
     def setUp(self):
         super().setUp()
         self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)

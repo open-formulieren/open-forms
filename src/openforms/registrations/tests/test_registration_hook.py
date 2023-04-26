@@ -278,6 +278,10 @@ class RegistrationHookTests(TestCase):
 
 
 class NumRegistrationsTest(TestCase):
+    def tearDown(self):
+        super().tearDown()
+        TimelineLogProxy.objects.all().delete()
+
     @patch("openforms.plugins.registry.GlobalConfiguration.get_solo")
     def test_limit_registration_attempts(self, mock_get_solo):
         submission = SubmissionFactory.create(

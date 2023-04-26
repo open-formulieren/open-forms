@@ -246,6 +246,11 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
         config.service = SoapServiceFactory.create(url=wsdl)
         config.save()
 
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
+
     @requests_mock.Mocker()
     def test_cancel_appointment_cancels_the_appointment(self, m):
         submission = SubmissionFactory.from_components(

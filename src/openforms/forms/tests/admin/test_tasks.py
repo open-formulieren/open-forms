@@ -70,6 +70,11 @@ class ExportFormsTaskTests(TestCase):
 @temp_private_root()
 class ImportFormsTaskTests(TestCase):
     @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
+
+    @classmethod
     def setUpTestData(cls):
         form1, form2 = FormFactory.create_batch(2)
         user = SuperUserFactory.create(email="test@email.nl")

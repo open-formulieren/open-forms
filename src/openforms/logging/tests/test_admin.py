@@ -3,7 +3,7 @@ from django.test import tag
 from django.urls import reverse
 from django.utils import timezone
 
-from django_webtest import WebTest
+from django_webtest import TransactionWebTest
 
 from openforms.accounts.tests.factories import StaffUserFactory, SuperUserFactory
 from openforms.logging import logevent
@@ -13,7 +13,12 @@ from openforms.prefill.registry import register
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
-class AVGAuditLogListViewTests(WebTest):
+class AVGAuditLogListViewTests(TransactionWebTest):
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
+
     def test_view(self):
         url = reverse("admin:logging_avgtimelinelogproxy_changelist")
 

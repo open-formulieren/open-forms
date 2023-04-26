@@ -49,6 +49,11 @@ class TestSubmissionAdmin(WebTest):
 
         cls.submission_step_1 = cls.submission_1.steps[0]
 
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
+
     def setUp(self):
         super().setUp()
         self.user = UserFactory.create(is_superuser=True, is_staff=True, app=self.app)

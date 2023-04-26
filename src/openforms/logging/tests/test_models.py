@@ -9,7 +9,7 @@ from openforms.accounts.tests.factories import StaffUserFactory, UserFactory
 from openforms.forms.models import Form
 from openforms.forms.tests.factories import FormFactory
 from openforms.logging import logevent
-from openforms.logging.models import AVGTimelineLogProxy
+from openforms.logging.models import AVGTimelineLogProxy, TimelineLogProxy
 from openforms.logging.tests.base import LoggingTestMixin
 from openforms.logging.tests.factories import TimelineLogProxyFactory
 from openforms.submissions.models import Submission
@@ -17,6 +17,11 @@ from openforms.submissions.tests.factories import SubmissionFactory
 
 
 class TimelineLogProxyTests(TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
+
     def test_is_submission(self):
         log = TimelineLogProxyFactory.create(content_object=None)
         self.assertFalse(log.is_submission)
@@ -235,6 +240,11 @@ class TimelineLogProxyTests(TestCase):
 
 
 class AVGProxyModelTest(LoggingTestMixin, TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
+
     def test_model_and_proxy(self):
         user = StaffUserFactory.create()
         submission = SubmissionFactory.create()
@@ -249,6 +259,11 @@ class AVGProxyModelTest(LoggingTestMixin, TestCase):
 
 
 class LoggingTestMixinTest(LoggingTestMixin, TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        TimelineLogProxy.objects.all().delete()
+
     def test_assertLogExtraDataEquals(self):
         log = TimelineLogProxyFactory.create(extra_data={"foo": "good"})
         self.assertLogExtraDataEquals(log, foo="good")

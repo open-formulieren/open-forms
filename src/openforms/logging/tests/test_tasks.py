@@ -7,6 +7,10 @@ from openforms.submissions.tests.factories import SubmissionFactory
 
 
 class TestLogTask(TransactionTestCase):
+    def tearDown(cls):
+        super().tearDown()
+        TimelineLogProxy.objects.all().delete()
+
     def test_no_logged_rules(self):
         submission = SubmissionFactory.create()
         timestamp = timezone.now().isoformat()
