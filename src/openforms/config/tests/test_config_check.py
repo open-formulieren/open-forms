@@ -19,12 +19,6 @@ from stuf.tests.factories import StufServiceFactory
 class ConfigCheckTests(TestCase):
     url = reverse("config:overview")
 
-    def tearDown(self):
-        super().tearDown()
-        config = GlobalConfiguration.get_solo()
-        config.plugin_configuration = {}
-        config.save()
-
     def test_access_permission(self):
         with self.subTest("anon"):
             response = self.client.get(self.url)
@@ -47,35 +41,38 @@ class ConfigCheckTests(TestCase):
             self.assertEqual(response.status_code, 200)
 
     def test_disabled_plugins_are_skipped(self):
-        config = GlobalConfiguration.get_solo()
-        config.plugin_configuration = {
-            "registrations": {
-                "stuf-zds-create-zaak": {"enabled": False},
-                "email": {"enabled": True},
-            },
-            "prefill": {
-                "kvk-kvknumber": {"enabled": False},
-            },
-        }
-        config.save()
+        with patch(
+            "openforms.formio.api.validators.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                plugin_configuration={
+                    "registrations": {
+                        "stuf-zds-create-zaak": {"enabled": False},
+                        "email": {"enabled": True},
+                    },
+                    "prefill": {
+                        "kvk-kvknumber": {"enabled": False},
+                    },
+                }
+            ),
+        ):
 
-        user = StaffUserFactory(user_permissions=["configuration_overview"])
-        self.client.force_login(user)
+            user = StaffUserFactory(user_permissions=["configuration_overview"])
+            self.client.force_login(user)
 
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-        self.assertNotContains(
-            response,
-            _("StUF-ZDS"),
-        )
-        self.assertNotContains(
-            response,
-            _("KvK Company by KvK number"),
-        )
-        self.assertContains(
-            response,
-            _("Email registration"),
-        )
+            response = self.client.get(self.url)
+            self.assertEqual(response.status_code, 200)
+            self.assertNotContains(
+                response,
+                _("StUF-ZDS"),
+            )
+            self.assertNotContains(
+                response,
+                _("KvK Company by KvK number"),
+            )
+            self.assertContains(
+                response,
+                _("Email registration"),
+            )
 
     @requests_mock.Mocker()
     @patch(

@@ -937,10 +937,6 @@ def is_jsonb_invariant(value: JSONValue) -> bool:
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class EvaluateLogicSubmissionTest(SubmissionsMixin, APITestCase, HypothesisTestCase):
-    def setUp(self):
-        super().setUp()
-        TimelineLogProxy.objects.all().delete()
-
     def test_evaluate_logic_with_default_values(self):
         form = FormFactory.create(
             generate_minimal_setup=True,

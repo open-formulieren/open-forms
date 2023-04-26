@@ -19,10 +19,6 @@ from .factories import StaffUserFactory, SuperUserFactory
 class HijackTests(WebTest):
     csrf_checks = False
 
-    def setUp(self):
-        super().setUp()
-        TimelineLogProxy.objects.all().delete()
-
     def _hijack_user(self, hijacked):
         url = reverse("hijack:acquire")
         response = self.app.post(
