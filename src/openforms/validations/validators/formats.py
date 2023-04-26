@@ -44,7 +44,7 @@ class PhoneNumberBaseValidator:
 @register(
     "phonenumber-international",
     verbose_name=_("International phone number"),
-    component="phoneNumber",
+    for_components=("phoneNumber",),
 )
 class InternationalPhoneNumberValidator(PhoneNumberBaseValidator):
     country = None
@@ -69,7 +69,9 @@ class InternationalPhoneNumberValidator(PhoneNumberBaseValidator):
 
 
 @register(
-    "phonenumber-nl", verbose_name=_("Dutch phone number"), component="phoneNumber"
+    "phonenumber-nl",
+    verbose_name=_("Dutch phone number"),
+    for_components=("phoneNumber",),
 )
 class DutchPhoneNumberValidator(PhoneNumberBaseValidator):
     country = "NL"

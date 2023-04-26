@@ -4589,6 +4589,12 @@ paths:
       operationId: validation_plugins_list
       description: List all prefill plugins that have been registered.
       summary: List available validation plugins
+      parameters:
+      - in: query
+        name: component
+        schema:
+          type: string
+        description: The formio component for which the validation plugin is intended.
       tags:
       - validation
       security:
@@ -8254,7 +8260,13 @@ components:
         label:
           type: string
           description: The human-readable name for a plugin.
+        components:
+          type: array
+          items:
+            type: string
+          description: The components for which the plugin is relevant.
       required:
+      - components
       - id
       - label
     ValidationResult:

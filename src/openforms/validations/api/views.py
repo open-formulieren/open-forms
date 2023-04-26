@@ -11,13 +11,25 @@ from openforms.api.views import ListMixin
 from openforms.validations.api.serializers import (
     ValidationInputSerializer,
     ValidationPluginSerializer,
+    ValidationRequestParamSerializer,
     ValidationResultSerializer,
 )
 from openforms.validations.registry import register
 
 
 @extend_schema_view(
-    get=extend_schema(summary=_("List available validation plugins")),
+    get=extend_schema(
+        summary=_("List available validation plugins"),
+        parameters=[
+            OpenApiParameter(
+                "component",
+                OpenApiTypes.STR,
+                description=_(
+                    "The formio component for which the validation plugin is intended."
+                ),
+            )
+        ],
+    ),
 )
 class ValidatorsListView(ListMixin, APIView):
     """
@@ -29,11 +41,16 @@ class ValidatorsListView(ListMixin, APIView):
     serializer_class = ValidationPluginSerializer
 
     def get_objects(self):
-        param_component = self.request.query_params["component"]
-        filtered = filter(
-            lambda x: x.component == param_component, register.iter_enabled_plugins()
-        )
-        return [item for item in filtered]
+        plugins = register.iter_enabled_plugins()
+
+        param_component = self.request.query_params.get("component", None)
+        if param_component is None:
+            return plugins
+        serializer = ValidationRequestParamSerializer(data=self.request.query_params)
+        if not serializer.is_valid():
+            return []
+
+        return [plugin for plugin in plugins if param_component in plugin.components]
 
 
 class ValidationView(APIView):

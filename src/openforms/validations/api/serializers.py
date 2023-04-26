@@ -9,6 +9,10 @@ class ValidationInputSerializer(serializers.Serializer):
     )
 
 
+class ValidationRequestParamSerializer(serializers.Serializer):
+    component = serializers.CharField()
+
+
 class ValidationResultSerializer(serializers.Serializer):
     is_valid = serializers.BooleanField(
         label=_("Is valid"), help_text=_("Boolean indicating value passed validation.")
@@ -32,4 +36,9 @@ class ValidationPluginSerializer(serializers.Serializer):
         source="verbose_name",
         label=_("Label"),
         help_text=_("The human-readable name for a plugin."),
+    )
+    components = serializers.ListField(
+        label=_("Components"),
+        help_text=_("The components for which the plugin is relevant."),
+        child=serializers.CharField(),
     )
