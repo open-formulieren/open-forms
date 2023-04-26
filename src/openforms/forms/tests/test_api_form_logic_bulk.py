@@ -972,6 +972,53 @@ class FormLogicAPITests(APITestCase):
         )
         self.assertEqual("blank", response.json()["invalidParams"][0]["code"])
 
+    def test_can_null_form_step_and_form_step_uuid(
+        self,
+    ):
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "text1",
+                    },
+                    {
+                        "type": "textfield",
+                        "key": "text2",
+                    },
+                ]
+            },
+        )
+
+        form_url = reverse("api:form-detail", kwargs={"uuid_or_slug": form.uuid})
+        form_logic_data = [
+            {
+                "form": f"http://testserver{form_url}",
+                "order": 0,
+                "json_logic_trigger": {"==": [{"var": "text1"}, "test"]},
+                "actions": [
+                    {
+                        "formStep": None,
+                        "formStepUuid": None,
+                        "variable": "text2",
+                        "action": {
+                            "type": "variable",
+                            "value": "test2",
+                        },
+                    }
+                ],
+                "is_advanced": False,
+            }
+        ]
+        url = reverse("api:form-logic-rules", kwargs={"uuid_or_slug": form.uuid})
+
+        response = self.client.put(url, data=form_logic_data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_mark_step_as_not_applicable_action_works_with_uuid(self):
         user = SuperUserFactory.create()
         self.client.force_authenticate(user=user)

@@ -109,6 +109,7 @@ class LogicComponentActionSerializer(serializers.Serializer):
     )
     # Deprecated field! form_step_uuid should be used instead
     form_step = serializers.URLField(
+        allow_null=True,
         required=False,  # validated against the action.type
         allow_blank=True,
         label=_("form step"),
