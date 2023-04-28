@@ -42,6 +42,13 @@ const EDIT_FORM_TABS = [
           HIDDEN,
           CLEAR_ON_HIDE,
           IS_SENSITIVE_DATA,
+          {
+            type: 'checkbox',
+            label: 'Hide Label',
+            tooltip: 'Hide the title of this component in the form.',
+            key: 'hideLabel',
+            input: true,
+          },
         ],
       },
       {
