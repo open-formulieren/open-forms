@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
-from django.test import override_settings
+from django.test import override_settings, tag
 from django.test.client import RequestFactory
 
 from rest_framework.request import Request
@@ -244,3 +244,36 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
 
             self.assertEqual(response.status_code, 302)
             m_send.assert_not_called()
+
+    @tag("gh-1959")
+    def test_setting_auth_attributes_flips_hashed_flag(self):
+        submission = SubmissionFactory.create(
+            form__generate_minimal_setup=True,
+            form_url="http://tests/myform/",
+            auth_info__plugin="digid",
+            auth_info__value="123456789",
+            auth_info__attribute="bsn",
+        )
+
+        submission.auth_info.hash_identifying_attributes()
+
+        self.assertTrue(submission.auth_info.attribute_hashed)
+
+        user = StaffUserFactory()
+
+        request = factory.get("/foo")
+        request.user = user
+        request.session = {
+            FORM_AUTH_SESSION_KEY: {
+                "plugin": "digid",
+                "attribute": "bsn",
+                "value": "123456789",
+            }
+        }
+
+        set_auth_attribute_on_session(sender=None, instance=submission, request=request)
+
+        submission.refresh_from_db()
+
+        self.assertEqual(submission.auth_info.value, "123456789")
+        self.assertFalse(submission.auth_info.attribute_hashed)

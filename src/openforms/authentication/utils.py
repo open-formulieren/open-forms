@@ -21,24 +21,25 @@ class FormAuth(BaseAuth):
     machtigen: Optional[dict]
 
 
-def store_auth_details(submission: Submission, form_auth: FormAuth) -> None:
+def store_auth_details(
+    submission: Submission, form_auth: FormAuth, attribute_hashed: bool = False
+) -> None:
     attribute = form_auth["attribute"]
+    if attribute not in AuthAttribute.values:
+        raise ValueError(f"Unexpected auth attribute {attribute} specified")
 
-    assert (
-        attribute in AuthAttribute.values
-    ), f"Unexpected auth attribute {attribute} specified"
-
-    AuthInfo.objects.update_or_create(submission=submission, defaults=form_auth)
+    AuthInfo.objects.update_or_create(
+        submission=submission,
+        defaults={**form_auth, **{"attribute_hashed": attribute_hashed}},
+    )
 
 
 def store_registrator_details(
     submission: Submission, registrator_auth: BaseAuth
 ) -> None:
     attribute = registrator_auth["attribute"]
-
-    assert (
-        attribute in AuthAttribute.values
-    ), f"Unexpected auth attribute {attribute} specified"
+    if attribute not in AuthAttribute.values:
+        raise ValueError(f"Unexpected auth attribute {attribute} specified")
 
     RegistratorInfo.objects.update_or_create(
         submission=submission, defaults=registrator_auth
