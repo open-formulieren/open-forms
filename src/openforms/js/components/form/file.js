@@ -1,8 +1,8 @@
 import {Formio} from 'formiojs';
 
 import jsonScriptToVar from 'utils/json-script';
+import {getFullyQualifiedUrl} from 'utils/urls';
 
-import {getFullyQualifiedUrl} from '../../utils/urls';
 import {DEFAULT_VALUE} from './edit/options';
 import {ADVANCED, SENSITIVE_BASIC, TRANSLATIONS, VALIDATION_BASIC} from './edit/tabs';
 import {localiseSchema} from './i18n';
@@ -87,6 +87,18 @@ const FILE_TAB = {
         },
       },
       weight: 30,
+    },
+    {
+      type: 'hidden',
+      key: 'file.allowedTypesLabels',
+      calculateValue(context) {
+        const labelValueMap = jsonScriptToVar('config-UPLOAD_FILETYPES');
+        if (!Array.isArray(context.data?.file?.type)) return '';
+
+        return labelValueMap
+          .filter(item => context.data.file.type.includes(item.value))
+          .map(item => item.label);
+      },
     },
     {
       type: 'checkbox',
