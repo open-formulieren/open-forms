@@ -24,6 +24,7 @@ app.autodiscover_tasks()
 HEARTBEAT_FILE = Path(settings.BASE_DIR) / "tmp" / "celery_worker_heartbeat"
 READINESS_FILE = Path(settings.BASE_DIR) / "tmp" / "celery_worker_ready"
 
+
 #
 # Utilities for checking the health of celery workers
 #
