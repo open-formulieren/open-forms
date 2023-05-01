@@ -2,6 +2,14 @@
 Changelog
 =========
 
+2.0.7 (2023-05-01)
+==================
+
+Periodic bugfix release
+
+* [#1959] Fixed invalid link to resume form after pausing and resuming multiple times.
+* [#3007] Fixed worfklows where < 2.1 form exports are imported and edited in the admin.
+
 2.0.6 (2023-04-17)
 ==================
 
