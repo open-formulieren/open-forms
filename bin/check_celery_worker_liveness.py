@@ -15,7 +15,7 @@
 #         exec:
 #           command:
 #           - python
-#           - /app/bin/celery_test_worker.py
+#           - /app/bin/check_celery_worker_liveness.py
 #         initialDelaySeconds: 10
 #         periodSeconds: 30  # must be smaller than `MAX_WORKER_LIVENESS_DELTA`
 #
