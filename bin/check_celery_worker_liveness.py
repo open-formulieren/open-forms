@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # Check the health of a Celery worker.
 #
