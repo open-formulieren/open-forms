@@ -1,3 +1,4 @@
+import os
 import subprocess
 import time
 from pathlib import Path
@@ -5,10 +6,9 @@ from pathlib import Path
 from django.conf import settings
 from django.test import TestCase
 
-from openforms.celery import app
+from openforms.celery import READINESS_FILE, app
 
-READINESS_FILE = Path(settings.BASE_DIR) / "tmp" / "celery_worker_ready"
-WORKER = Path(settings.BASE_DIR) / "bin" / "celery_worker.sh"
+START_WORKER_SCRIPT = Path(settings.BASE_DIR) / "bin" / "celery_worker.sh"
 
 
 class CeleryTest(TestCase):
@@ -29,41 +29,35 @@ class CeleryTest(TestCase):
         ), "Celery worker not started but READINESS_FILE found"
 
         # start Celery worker
-        subprocess.Popen(
-            [WORKER],
+        process = subprocess.Popen(
+            [START_WORKER_SCRIPT],
             cwd=settings.BASE_DIR,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
+            env={**os.environ, "ENABLE_COVERAGE": os.environ.get("COVERAGE_RUN", "")},
         )
 
         # wait for READINESS_FILE to be created, break out as soon as possible
-        for i in range(60):
-            try:
-                assert (
-                    READINESS_FILE.is_file()
-                ), "Celery worker started but READINESS_FILE not found"
-            except AssertionError as ex:
-                if i == 59:
-                    app.control.shutdown()
-                    raise ex
-                else:
-                    time.sleep(0.1)
-            else:
+        start = time.time()
+        while (time.time() - start) <= 60:
+            if READINESS_FILE.is_file():
                 break
+            # wait a bit longer...
+            time.sleep(1)
+        else:
+            self.fail("READINESS_FILE was not created within 60 seconds")
 
-        app.control.shutdown()
+        # stop the worker process
+        process.terminate()  # sends SIGTERM, (warm) shutting down the worker.
+        process.wait(timeout=60)  # wait for process to terminate
 
-        # wait for READINESS_FILE to be deleted, break out as soon as possible
-        for i in range(60):
-            try:
-                assert (
-                    not READINESS_FILE.is_file()
-                ), "Celery worker terminated but READINESS_FILE not deleted"
-            except AssertionError as ex:
-                if i == 59:
-                    app.control.shutdown()
-                    raise ex
-                else:
-                    time.sleep(0.1)
-            else:
+        # now assert that the READINESS FILE was deleted as part of the shutdown
+        # procedure
+        start = time.time()
+        while (time.time() - start) <= 60:
+            if not READINESS_FILE.is_file():
                 break
+            # wait a bit longer...
+            time.sleep(1)
+        else:
+            self.fail("READINESS_FILE was not cleaned up within 60 seconds")
