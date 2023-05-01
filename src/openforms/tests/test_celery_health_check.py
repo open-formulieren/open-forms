@@ -29,7 +29,12 @@ class CeleryTest(TestCase):
         ), "Celery worker not started but READINESS_FILE found"
 
         # start Celery worker
-        subprocess.Popen([WORKER], shell=True, cwd=settings.BASE_DIR)
+        subprocess.Popen(
+            [WORKER],
+            cwd=settings.BASE_DIR,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
 
         # wait for READINESS_FILE to be created, break out as soon as possible
         for i in range(60):
