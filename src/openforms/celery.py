@@ -7,10 +7,6 @@ from celery.signals import worker_ready, worker_shutdown
 
 from .setup import setup_env
 
-HEARTBEAT_FILE = Path(__file__).parent.parent.parent / "tmp" / "celery_worker_heartbeat"
-READINESS_FILE = Path(__file__).parent.parent.parent / "tmp" / "celery_worker_ready"
-
-
 setup_env()
 
 app = Celery("open-forms")
@@ -25,6 +21,8 @@ app.conf.ONCE = {
 
 app.autodiscover_tasks()
 
+HEARTBEAT_FILE = Path(settings.BASE_DIR) / "tmp" / "celery_worker_heartbeat"
+READINESS_FILE = Path(settings.BASE_DIR) / "tmp" / "celery_worker_ready"
 
 #
 # Utilities for checking the health of celery workers
