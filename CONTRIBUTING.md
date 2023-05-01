@@ -56,6 +56,20 @@ format your commit message like
 that the changes implement the new feature/fix the issue, make sure to also add 
 tests to the existing Django testsuite.
 
+#### Refactoring
+
+You can refactor existing code as part of any issue. For example when fixing a
+bug or extending an existing feature. The refactored code should be about the
+issue though. Please document in the commit why you refactored the code.
+The part of the refactored code should typically be a separate commit before
+the commit that tackles the actual issue, so they can be reviewed separately.
+
+#### Small textual changes
+
+For small textual changes like fixing incorrect spelling, hyperlinks, outdated
+information, code documentation, etc. you don't need to create an issue. Simply
+create a Pull Request (see below) that does the update.
+
 ### Making a pull request
 
 If all changes have been committed, you can push the branch to your fork of the 
