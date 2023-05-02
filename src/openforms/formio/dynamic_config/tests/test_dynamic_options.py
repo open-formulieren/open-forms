@@ -1,9 +1,20 @@
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
+from django.urls import reverse
 
+from pyquery import PyQuery as pq
+from rest_framework.test import APITestCase
+
+from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.formio.datastructures import FormioConfigurationWrapper
 from openforms.formio.dynamic_config import rewrite_formio_components
+from openforms.forms.tests.factories import (
+    FormDefinitionFactory,
+    FormFactory,
+    FormStepFactory,
+)
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.mixins import SubmissionsMixin
 
 
 @override_settings(LANGUAGE_CODE="en")
@@ -743,3 +754,98 @@ class TestDynamicConfigAddingOptions(TestCase):
                 {"label": "Test2", "value": "987654321"},
             ],
         )
+
+
+class TestDynamicConfigAddingOptionsForRequest(SubmissionsMixin, APITestCase):
+    @tag("gh-2895")
+    def test_overwrite_html_in_content_component(self):
+        """Assert that inline style is converted to style tag and nonce is added to content component
+
+        Sanity checks:
+            - Malicious HTML is changed
+            - HTML with style tag + correct nonce attribute is not changed
+            - HTML without style tag or attribute is not changed
+            - Empty HTML does not cause error and remains unchanged
+        """
+        configuration = {
+            "components": [
+                {
+                    "key": "content1",
+                    "type": "content",
+                    "html": '<p><span style="color:#e64c4c;">Test nonce</span></p>',
+                },
+                {
+                    "key": "content2",
+                    "type": "content",
+                    "html": """
+                    <div>
+                        <style nonce="my-malicious-and-bad-nonce"></style>
+                        <script>alert('xss')</script>
+                    </div> 
+                    """,
+                },
+                {
+                    "key": "content3",
+                    "type": "content",
+                    "html": "<p><span>Test nonce</span></p>",
+                },
+                {
+                    "key": "content4",
+                    "type": "content",
+                    "html": "",
+                },
+            ]
+        }
+        form = FormFactory.create()
+        form_definition = FormDefinitionFactory.create(
+            configuration=configuration, login_required=False
+        )
+        step1 = FormStepFactory.create(form=form, form_definition=form_definition)
+        submission = SubmissionFactory.create(form=form)
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse(
+            "api:submission-steps-detail",
+            kwargs={
+                "submission_uuid": submission.uuid,
+                "step_uuid": step1.uuid,
+            },
+        )
+        user = SuperUserFactory.create()
+        self.client.force_authenticate(user=user)
+
+        response = self.client.get(endpoint, HTTP_X_CSP_NONCE="dGvsa==")
+        formio_components = response.json()["formStep"]["configuration"]["components"]
+
+        with self.subTest("HTML of content component with inline style"):
+            component1 = next(
+                (item for item in formio_components if item["key"] == "content1"), None
+            )
+            doc = pq(component1["html"])
+            style = doc.find("style")
+            id = doc.find("span").attr("id")
+
+            self.assertIn("color:#e64c4c", style.html())
+            self.assertIsNotNone(style.attr("nonce"))
+            self.assertIn("nonce", id)
+
+        with self.subTest("Malicious HTML with html_nonce != request_nonce"):
+            component2 = next(
+                (item for item in formio_components if item["key"] == "content2"), None
+            )
+            doc = pq(component2["html"])
+            scripts = doc.find("script")
+
+            self.assertEqual(scripts, [])
+
+        with self.subTest("HTML of content component without style tag/attribute "):
+            component3 = next(
+                (item for item in formio_components if item["key"] == "content3"), None
+            )
+            self.assertEqual(component3["html"], "<p><span>Test nonce</span></p>\n")
+
+        with self.subTest("Empty HTML"):
+            component4 = next(
+                (item for item in formio_components if item["key"] == "content4"), None
+            )
+            self.assertEqual(component4["html"], "")
