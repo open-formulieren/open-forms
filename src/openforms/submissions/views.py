@@ -171,6 +171,13 @@ class ResumeSubmissionView(ResumeFormMixin, RedirectView):
         last_completed_step = state.get_last_completed_step()
         target_step = last_completed_step or state.submission_steps[0]
 
+        # If the URL ends with "startpagina" we need to remove it before adding the path of the step
+        if (
+            form_resume_url.path.segments
+            and form_resume_url.path.segments[-1] == "startpagina"
+        ):
+            form_resume_url.path.segments = form_resume_url.path.segments[:-1]
+
         # furl adds paths with the /= operator
         form_resume_url /= "stap"
         form_resume_url /= target_step.form_step.form_definition.slug
