@@ -34,6 +34,8 @@ class CompletionValidationSerializer(serializers.Serializer):
     privacy_policy_accepted = serializers.BooleanField()
     contains_blocked_steps = serializers.BooleanField()
 
+    # TODO: Move permission check-like validators to view?
+
     def validate_privacy_policy_accepted(self, privacy_policy_accepted: bool) -> None:
         config = GlobalConfiguration.get_solo()
         privacy_policy_valid = (

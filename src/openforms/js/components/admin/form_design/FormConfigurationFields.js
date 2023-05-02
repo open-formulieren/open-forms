@@ -75,6 +75,7 @@ const FormConfigurationFields = ({
     maintenanceMode,
     translationEnabled,
     submissionAllowed,
+    suspensionAllowed,
     appointmentEnabled,
   } = form;
 
@@ -310,6 +311,25 @@ const FormConfigurationFields = ({
       </FormRow>
       <FormRow>
         <Checkbox
+          name="form.suspensionAllowed"
+          label={
+            <FormattedMessage
+              defaultMessage="Suspension allowed"
+              description="Form suspensionAllowed field label"
+            />
+          }
+          helpText={
+            <FormattedMessage
+              defaultMessage="Whether the user is allowed to suspend this form or not."
+              description="Form suspensionAllowed field help text"
+            />
+          }
+          checked={suspensionAllowed}
+          onChange={event => onCheckboxChange(event, suspensionAllowed)}
+        />
+      </FormRow>
+      <FormRow>
+        <Checkbox
           name="form.appointmentEnabled"
           label={
             <FormattedMessage
@@ -341,6 +361,7 @@ FormConfigurationFields.propTypes = {
     maintenanceMode: PropTypes.bool.isRequired,
     translationEnabled: PropTypes.bool.isRequired,
     submissionAllowed: PropTypes.oneOf(SUMBISSION_ALLOWED_CHOICES.map(opt => opt[0])),
+    suspensionAllowed: PropTypes.bool.isRequired,
     appointmentEnabled: PropTypes.bool.isRequired,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
