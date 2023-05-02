@@ -262,3 +262,99 @@ class SubmissionSuspensionTests(SubmissionsMixin, APITestCase):
         # Assert that identifying attribute is hashed
         self.assertNotEqual(submission.auth_info.value, "123456789")
         self.assertTrue(submission.auth_info.attribute_hashed)
+
+    def test_email_with_default_design_token(self, *mocks):
+        with patch(
+            "openforms.config.models.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(logo="https://logo.png"),
+        ):
+            submission = SubmissionFactory.create()
+            self._add_submission_to_session(submission)
+            endpoint = reverse(
+                "api:submission-suspend", kwargs={"uuid": submission.uuid}
+            )
+
+            with self.captureOnCommitCallbacks(execute=True) as callbacks:
+                response = self.client.post(endpoint, {"email": "hello@open-forms.nl"})
+
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            self.assertEqual(len(callbacks), 1)
+            self.assertEqual(len(mail.outbox), 1)
+
+            raw_html = mail.outbox[0].alternatives[0][0]
+
+            # Header
+            self.assertIn(
+                '<td align="left" style="padding: 20px; color: #000000; background-color: #ffffff;">',
+                raw_html,
+            )
+            # Footer
+            self.assertIn(
+                '<td align="left" style="padding: 20px 30px; font-size: 11px; color: #ffffff; background-color: #2980b9;">',
+                raw_html,
+            )
+            # Logo
+            self.assertIn(
+                '<img height="50" style="width: auto;  height: 50px;" src="https://open-forms.test.maykin.opengem.nl/media/https%3A/logo.png"/>',
+                raw_html,
+            )
+            # Layout
+            self.assertIn(
+                '<body style="border: none; margin: 0; padding: 0; background-color: #e6e6e6;">',
+                raw_html,
+            )
+
+    def test_email_with_custom_design_token(self, *mocks):
+        design_token = {
+            "of": {
+                "page-header": {"fg": {"value": "#a020f0"}, "bg": {"value": "#ffff00"}},
+                "page-footer": {"fg": {"value": "#00ff00"}, "bg": {"value": "#ff0000"}},
+                "header-logo": {
+                    "width": {"value": "20000px"},
+                    "height": {"value": "70000px"},
+                },
+                "layout": {"bg": {"value": "#ffc0cb"}},
+            },
+        }
+
+        with patch(
+            "openforms.config.models.GlobalConfiguration.get_solo",
+            return_value=GlobalConfiguration(
+                design_token_values=design_token, logo="https://logo.png"
+            ),
+        ):
+            submission = SubmissionFactory.create()
+            self._add_submission_to_session(submission)
+            endpoint = reverse(
+                "api:submission-suspend", kwargs={"uuid": submission.uuid}
+            )
+
+            with self.captureOnCommitCallbacks(execute=True) as callbacks:
+                response = self.client.post(endpoint, {"email": "hello@open-forms.nl"})
+
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            self.assertEqual(len(callbacks), 1)
+            self.assertEqual(len(mail.outbox), 1)
+
+            raw_html = mail.outbox[0].alternatives[0][0]
+
+            # Header
+            self.assertIn(
+                '<td align="left" style="padding: 20px; color: #a020f0; background-color: #ffff00;">',
+                raw_html,
+            )
+            # Footer
+            self.assertIn(
+                '<td align="left" style="padding: 20px 30px; font-size: 11px; color: #00ff00; background-color: #ff0000;">',
+                raw_html,
+            )
+            # Logo
+            self.assertIn(
+                '<img width="20000" height="70000" style="width: 20000px;  height: 70000px;" src="https://open-forms.test.maykin.opengem.nl/media/https%3A/logo.png"/>',
+                raw_html,
+            )
+            # Layout
+            self.assertIn(
+                '<body style="border: none; margin: 0; padding: 0; background-color: #ffc0cb;">',
+                raw_html,
+            )

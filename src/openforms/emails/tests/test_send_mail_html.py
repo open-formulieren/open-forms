@@ -113,9 +113,11 @@ class DesignTokenFilterTest(TestCase):
 
     def test_strip_px_unit(self):
         self.design_tokens = {
-            "header-logo": {
-                "height": {"value": "100px"},
-                "width": {"value": "100px"},
+            "of": {
+                "header-logo": {
+                    "height": {"value": "100px"},
+                    "width": {"value": "100px"},
+                }
             }
         }
         result = _get_design_token_values(self.design_tokens)
@@ -126,9 +128,11 @@ class DesignTokenFilterTest(TestCase):
 
     def test_return_empty_string_for_non_px_unit(self):
         self.design_tokens = {
-            "header-logo": {
-                "height": {"value": "100em"},
-                "width": {"value": "100em"},
+            "of": {
+                "header-logo": {
+                    "height": {"value": "100em"},
+                    "width": {"value": "100em"},
+                }
             }
         }
         result = _get_design_token_values(self.design_tokens)
