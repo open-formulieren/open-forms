@@ -16,11 +16,6 @@
             "hasExtensionsVariant": true
         },
         {
-            "gitRef": "stable/1.1.x",
-            "tag": null,
-            "hasExtensionsVariant": true
-        },
-        {
             "gitRef": "master",
             "tag": "test",
             "hasExtensionsVariant": false
