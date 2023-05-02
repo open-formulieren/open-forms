@@ -46,6 +46,9 @@ repository is forked, you can clone it to your local machine.
 On your local machine, create a new branch, and name it like:
 - `feature/some-new-feature`, if the changes implement a new feature
 - `issue/some-issue`, if the changes fix an issue
+- `refactor/some-change`, if the change consists in refactoring or cleaning up
+existing code
+- `docs/some-change`, if the change concerns documentation
 
 Once you have made changes or additions to the code, you can commit them (try 
 to keep the commit message descriptive but short). If an issue already exists 
@@ -55,6 +58,10 @@ format your commit message like
 `<issue_id>` corresponds to the number of the issue on GitHub. To demonstrate 
 that the changes implement the new feature/fix the issue, make sure to also add 
 tests to the existing Django testsuite.
+
+For refactoring or cleaning up code (like correcting spelling mistakes or type
+annotations) as well as changes to the documentation, there is no need to create
+a separate issue; just make a pull request to the master branch.
 
 ### Making a pull request
 
