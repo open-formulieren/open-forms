@@ -103,6 +103,7 @@ django==3.2.19
     #   django-filter
     #   django-formtools
     #   django-hijack
+    #   django-log-outgoing-requests
     #   django-modeltranslation
     #   django-otp
     #   django-phonenumber-field
@@ -131,6 +132,7 @@ django-admin-index==2.0.0
 django-appconf==1.0.4
     # via
     #   django-cookie-consent
+    #   django-log-outgoing-requests
     #   django-timeline-logger
 django-autoslug==1.9.8
     # via -r requirements/base.in
@@ -166,6 +168,8 @@ django-hijack==3.1.6
     # via -r requirements/base.in
 django-ipware==3.0.1
     # via django-axes
+django-log-outgoing-requests==0.4.0
+    # via -r requirements/base.in
 django-modeltranslation==0.18.5
     # via -r requirements/base.in
 django-ordered-model==3.6
@@ -197,6 +201,7 @@ django-solo==2.0.0
     #   -r requirements/base.in
     #   django-camunda
     #   django-digid-eherkenning
+    #   django-log-outgoing-requests
     #   mozilla-django-oidc-db
     #   zgw-consumers
 django-timeline-logger==2.1.0
@@ -376,6 +381,7 @@ redis==4.5.4
 requests==2.31.0
     # via
     #   django-camunda
+    #   django-log-outgoing-requests
     #   gemma-zds-client
     #   maykin-python3-saml
     #   mozilla-django-oidc
