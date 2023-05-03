@@ -231,6 +231,8 @@ class ServiceFetchAction(ActionOperation):
         context: DataMapping,
         log: Callable[[JSONValue], None],
     ) -> DataMapping:
+        # FIXME
+        # https://github.com/open-formulieren/open-forms/issues/3052
         if self.fetch_config:  # the old way
             var = FormVariable(
                 name=self.variable,

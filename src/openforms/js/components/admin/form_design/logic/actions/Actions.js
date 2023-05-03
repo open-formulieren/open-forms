@@ -136,6 +136,7 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
     }
   }
 
+  const actionButtonId = `open_service_fetch_modal_for_${action.variable}`;
   return (
     <>
       <DSLEditorNode errors={errors.variable}>
@@ -148,32 +149,30 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
         />
       </DSLEditorNode>
       <DSLEditorNode errors={errors.action?.value}>
-        <span>
-          <b>
-            <FormattedMessage
-              description="Currently selected service fetch configuration label"
-              defaultMessage="Fetch configuration:"
-            />
-          </b>
-          &nbsp;
-          {serviceFetchConfigFromVar?.name ||
-            intl.formatMessage({
-              description: 'No service fetch configuration configured yet message',
-              defaultMessage: '(not configured yet)',
-            })}
-        </span>
+        <label className="required" htmlFor={actionButtonId}>
+          <FormattedMessage
+            description="Currently selected service fetch configuration label"
+            defaultMessage="Fetch configuration:"
+          />
+        </label>
+        {serviceFetchConfigFromVar?.name ||
+          intl.formatMessage({
+            description: 'No service fetch configuration configured yet message',
+            defaultMessage: '(not configured yet)',
+          })}
+        <ActionButton
+          id={actionButtonId}
+          name="_open_service_fetch_modal"
+          onClick={event => {
+            event.preventDefault();
+            setIsModalOpen(true);
+          }}
+          text={intl.formatMessage({
+            description: 'Button to open service fetch configuration modal',
+            defaultMessage: 'Configure',
+          })}
+        />
       </DSLEditorNode>
-      <ActionButton
-        name="_open_service_fetch_modal"
-        onClick={event => {
-          event.preventDefault();
-          setIsModalOpen(true);
-        }}
-        text={intl.formatMessage({
-          description: 'Button to open service fetch configuration modal',
-          defaultMessage: 'Configure',
-        })}
-      />
 
       <Modal
         isOpen={isModalOpen}

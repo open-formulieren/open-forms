@@ -17,6 +17,17 @@
       max-width: 30em;
     }
 
+    label {
+      display: inline !important;
+      float: none !important;
+      padding: 0 0.5em 0 0 !important;
+    }
+
+    input[type='submit'] {
+      margin-left: 0.5em;
+      margin-right: 0.5em;
+    }
+
     &--errors {
       input,
       select,

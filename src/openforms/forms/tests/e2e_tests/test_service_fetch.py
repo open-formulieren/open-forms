@@ -45,7 +45,7 @@ async def add_new_variable_with_service_fetch(page: Page):
     )
 
     await expect(
-        page.get_by_text("Fetch configuration: (not configured yet)")
+        page.get_by_text("Fetch configuration:(not configured yet)")
     ).to_have_count(1)
 
 
@@ -195,7 +195,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
             await fill_in_service_fetch_form(page, data)
 
             await expect(
-                page.get_by_text("Fetch configuration: Service fetch config #1")
+                page.get_by_text("Fetch configuration:Service fetch config #1")
             ).to_be_visible()
             await page.get_by_role("button", name="Configure").click()
             await check_service_fetch_form_values(page, data)
@@ -205,7 +205,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
             await page.get_by_role("tab", name="Logic").click()
 
             await expect(
-                page.get_by_text("Fetch configuration: Service fetch config #1")
+                page.get_by_text("Fetch configuration:Service fetch config #1")
             ).to_be_visible()
             await page.get_by_role("button", name="Configure").click()
             await check_service_fetch_form_values(page, data)
@@ -277,7 +277,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
             await fill_in_service_fetch_form(page, data)
 
             await expect(
-                page.get_by_text("Fetch configuration: Service fetch config #1")
+                page.get_by_text("Fetch configuration:Service fetch config #1")
             ).to_be_visible()
             await page.get_by_role("button", name="Configure").click()
             await check_service_fetch_form_values(page, data)
@@ -287,7 +287,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
             await page.get_by_role("tab", name="Logic").click()
 
             await expect(
-                page.get_by_text("Fetch configuration: Service fetch config #1")
+                page.get_by_text("Fetch configuration:Service fetch config #1")
             ).to_be_visible()
             await page.get_by_role("button", name="Configure").click()
             await check_service_fetch_form_values(page, data)
@@ -394,7 +394,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                 save_text="Save as new",
             )
 
-            await expect(page.get_by_text("Fetch configuration: foo2")).to_be_visible()
+            await expect(page.get_by_text("Fetch configuration:foo2")).to_be_visible()
             await page.get_by_role("button", name="Configure").click()
             await check_service_fetch_form_values(
                 page,
@@ -415,7 +415,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
             await page.get_by_text("Save and continue editing").click()
             await page.get_by_role("tab", name="Logic").click()
 
-            await expect(page.get_by_text("Fetch configuration: foo2")).to_be_visible()
+            await expect(page.get_by_text("Fetch configuration:foo2")).to_be_visible()
             await page.get_by_role("button", name="Configure").click()
             await check_service_fetch_form_values(
                 page,
@@ -531,7 +531,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
                 save_text="Update",
             )
 
-            await expect(page.get_by_text("Fetch configuration: foo2")).to_be_visible()
+            await expect(page.get_by_text("Fetch configuration:foo2")).to_be_visible()
             await page.get_by_role("button", name="Configure").click()
             await check_service_fetch_form_values(
                 page,
@@ -552,7 +552,7 @@ class FormDesignerServiceFetchConfigurationTests(E2ETestCase):
             await page.get_by_text("Save and continue editing").click()
             await page.get_by_role("tab", name="Logic").click()
 
-            await expect(page.get_by_text("Fetch configuration: foo2")).to_be_visible()
+            await expect(page.get_by_text("Fetch configuration:foo2")).to_be_visible()
             await page.get_by_role("button", name="Configure").click()
             await check_service_fetch_form_values(
                 page,
