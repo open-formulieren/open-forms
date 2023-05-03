@@ -8,7 +8,7 @@ class FormVariableAdmin(admin.ModelAdmin):
     list_display = ("name", "key", "form", "source")
     list_filter = ("source", "data_type", "is_sensitive_data", "form")
     search_fields = ("name", "form__slug", "form__uuid")
-    raw_id_fields = ("form_definition",)
+    raw_id_fields = ("form_definition", "service_fetch_configuration")
 
     readonly_fields = (
         "form",

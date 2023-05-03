@@ -23,7 +23,7 @@ const INITIAL_VALUES = {
   dataMappingType: '',
   mappingExpression: '',
   // These fields are mapped to mappingExpression on save
-  jsonLogicExpression: '',
+  jsonLogicExpression: {},
   jqExpression: '',
 };
 
@@ -89,7 +89,7 @@ const ServiceFetchConfigurationPicker = ({
                 onChange(event);
                 setSelectedServiceFetchConfig(event.target.value);
 
-                let values =
+                const values =
                   _.cloneDeep(
                     formLogicContext.serviceFetchConfigurations.find(
                       element => element.id === parseInt(event.target.value)
@@ -128,7 +128,27 @@ ServiceFetchConfigurationPicker.propTypes = {
   variableName: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   onFormSave: PropTypes.func.isRequired,
-  initialValues: PropTypes.object,
+  initialValues: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    name: PropTypes.string.isRequired,
+    method: PropTypes.oneOf(['GET', 'POST']),
+    service: PropTypes.string.isRequired,
+    path: PropTypes.string.isRequired,
+    queryParams: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.array), PropTypes.object])
+      .isRequired,
+    headers: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.array), PropTypes.object]).isRequired,
+    body: PropTypes.oneOfType([
+      PropTypes.bool,
+      PropTypes.number,
+      PropTypes.string,
+      PropTypes.array,
+      PropTypes.object,
+    ]),
+    dataMappingType: PropTypes.string.isRequired,
+    mappingExpression: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
+    jsonLogicExpression: PropTypes.object,
+    jqExpression: PropTypes.string,
+  }),
 };
 
 export default ServiceFetchConfigurationPicker;

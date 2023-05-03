@@ -109,18 +109,18 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
 
   const formContext = useContext(FormContext);
 
-  let serviceFetchConfigFromVar =
+  const serviceFetchConfigFromVar =
     _.cloneDeep(formContext.formVariables.find(element => element.key === action.variable))
       ?.serviceFetchConfiguration || undefined;
 
   if (serviceFetchConfigFromVar) {
     if (!Array.isArray(serviceFetchConfigFromVar.headers)) {
-      serviceFetchConfigFromVar.headers = Object.entries(serviceFetchConfigFromVar.headers || []);
+      serviceFetchConfigFromVar.headers = Object.entries(serviceFetchConfigFromVar.headers || {});
     }
 
     if (!Array.isArray(serviceFetchConfigFromVar.queryParams)) {
       serviceFetchConfigFromVar.queryParams = Object.entries(
-        serviceFetchConfigFromVar.queryParams || []
+        serviceFetchConfigFromVar.queryParams || {}
       );
     }
 

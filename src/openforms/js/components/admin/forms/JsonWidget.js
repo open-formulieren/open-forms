@@ -85,6 +85,7 @@ const JsonWidget = ({name, logic, onChange, cols = 60, isExpanded = true}) => {
       <div className="json-widget__input">
         <TextArea
           name={name}
+          id={`id_${name}`}
           value={editorValue}
           onChange={onJsonChange}
           cols={cols}

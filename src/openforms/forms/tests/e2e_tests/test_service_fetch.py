@@ -73,8 +73,7 @@ async def fill_in_service_fetch_form(page: Page, data: dict, save_text: str = "S
     )
     await page.locator('input[name="value"]').fill(list(data["headers"].items())[0][1])
 
-    # FIXME doesn't seem to work with `get_by_label`
-    await page.locator('textarea[name="body"]').fill(data["request_body"])
+    await page.get_by_label("Request body", exact=True).fill(data["request_body"])
 
     await page.get_by_label("Mapping expression language").select_option(
         data["data_mapping_type"]

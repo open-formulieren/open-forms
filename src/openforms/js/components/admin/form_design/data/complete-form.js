@@ -251,13 +251,13 @@ const saveVariables = async (state, csrftoken) => {
       if (variable.serviceFetchConfiguration) {
         if (Array.isArray(variable.serviceFetchConfiguration.headers)) {
           variable.serviceFetchConfiguration.headers = Object.fromEntries(
-            variable.serviceFetchConfiguration.headers || []
+            variable.serviceFetchConfiguration.headers
           );
         }
 
         if (Array.isArray(variable.serviceFetchConfiguration.queryParams)) {
           variable.serviceFetchConfiguration.queryParams = Object.fromEntries(
-            variable.serviceFetchConfiguration.queryParams || []
+            variable.serviceFetchConfiguration.queryParams
           );
         }
       }
