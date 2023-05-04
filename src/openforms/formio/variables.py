@@ -15,12 +15,14 @@ logger = logging.getLogger(__name__)
 
 SUPPORTED_TEMPLATE_PROPERTIES = (
     "label",
-    "groupLabel",  # type: editgrid
+    "groupLabel",  # component-type: editgrid
     "legend",
     "defaultValue",
     "description",
     "html",
     "placeholder",
+    "values",  # component-types: radio/selectBoxes
+    "data",  # component-type: select
 )
 
 
@@ -118,14 +120,23 @@ def inject_variables(
             if not property_value:
                 continue
 
-            try:
-                if isinstance(property_value, str):
+            match property_value:
+                case str():
                     property_value = translate(property_value)
-                elif isinstance(property_value, list) and isinstance(
-                    property_value[0], str
-                ):
-                    property_value = [translate(s) for s in property_value]
+                case [str(), *_]:
+                    property_value = [
+                        translate(s) for s in property_value if isinstance(s, str)
+                    ]
+                case [{"label": _}, *_]:
+                    for item in property_value:
+                        if "label" in item:
+                            item["label"] = translate(item["label"])
+                case {"values": [*defined_values]}:
+                    for item in defined_values:
+                        if "label" in item:
+                            item["label"] = translate(item["label"])
 
+            try:
                 templated_value = render(property_value, values)
             except TemplateSyntaxError as exc:
                 logger.debug(

@@ -435,7 +435,19 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                         "components": [
                             {"type": "textfield", "label": "Tekst 1", "key": "text1"},
                         ],
-                    }
+                    },
+                    {
+                        "type": "radio",
+                        "key": "radio1",
+                        "values": [{"value": 1, "label": "Een"}, {"value": 2}],
+                    },
+                    {
+                        "type": "select",
+                        "key": "select1",
+                        "data": {
+                            "values": [{"value": 1, "label": "Keuze 1"}, {"value": 2}]
+                        },
+                    },
                 ],
             },
             form__formstep__form_definition__component_translations={
@@ -443,6 +455,8 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                     "Herhalende groep 1": "Repeating group 1",
                     "Element": "Item",
                     "Tekst 1": "Text 1",
+                    "Een": "One",
+                    "Keuze 1": "1st Choice",
                 }
             },
         )
@@ -475,6 +489,15 @@ class IntegrationTests(SubmissionsMixin, APITestCase):
                     component = wrapped_configuration[key]
 
                     self.assertEqual(component[prop], text)
+
+        self.assertEqual(wrapped_configuration["radio1"]["values"][0]["label"], "One")
+        self.assertEqual(
+            wrapped_configuration["select1"]["data"]["values"][0]["label"], "1st Choice"
+        )
+
+        # assert translation doesn't invent attributes.
+        self.assertNotIn("label", wrapped_configuration["radio1"]["values"][1])
+        self.assertNotIn("label", wrapped_configuration["select1"]["data"]["values"][1])
 
     def test_dynamic_date_component_config_based_on_variables(self):
         form = FormFactory.create(
