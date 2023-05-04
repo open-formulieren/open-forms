@@ -27,6 +27,7 @@ class RegisteredValidator:
     identifier: str
     verbose_name: str
     callable: ValidatorType
+    for_components: tuple[str]
     is_demo_plugin: bool = False
     # TODO always enabled for now, see: https://github.com/open-formulieren/open-forms/issues/1149
     is_enabled: bool = True
@@ -55,6 +56,8 @@ class Registry(BaseRegistry):
 
     The plugins can be any Django or DRF style validator;
         eg: a function or callable class (or instance thereof) that raises either a Django or DRF ValidationError
+    The validation plugin must be relevant to the component(s);
+        eg: the KvKNumberValidator is relevant for textfields but not phoneNumber fields
     """
 
     module = "validations"
@@ -64,6 +67,7 @@ class Registry(BaseRegistry):
         identifier: str,
         verbose_name: str,
         is_demo_plugin: bool = False,
+        for_components: tuple[str] = tuple(),
         *args,
         **kwargs,
     ) -> Callable:
@@ -84,6 +88,7 @@ class Registry(BaseRegistry):
                 identifier=identifier,
                 verbose_name=verbose_name,
                 callable=call,
+                for_components=for_components,
                 is_demo_plugin=is_demo_plugin,
             )
             return validator

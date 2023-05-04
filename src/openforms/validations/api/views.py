@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from django.utils.translation import ugettext_lazy as _
 
 from drf_spectacular.types import OpenApiTypes
@@ -12,12 +14,17 @@ from openforms.validations.api.serializers import (
     ValidationInputSerializer,
     ValidationPluginSerializer,
     ValidationResultSerializer,
+    ValidatorsFilterSerializer,
 )
-from openforms.validations.registry import register
+
+from ..registry import RegisteredValidator, register
 
 
 @extend_schema_view(
-    get=extend_schema(summary=_("List available validation plugins")),
+    get=extend_schema(
+        summary=_("List available validation plugins"),
+        parameters=[*ValidatorsFilterSerializer.as_openapi_params()],
+    ),
 )
 class ValidatorsListView(ListMixin, APIView):
     """
@@ -28,8 +35,23 @@ class ValidatorsListView(ListMixin, APIView):
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = ValidationPluginSerializer
 
-    def get_objects(self):
-        return list(register.iter_enabled_plugins())
+    def get_objects(self) -> list[RegisteredValidator]:
+        filter_serializer = ValidatorsFilterSerializer(data=self.request.query_params)
+        if not filter_serializer.is_valid(raise_exception=False):
+            return []
+
+        plugins: Iterable[RegisteredValidator] = register.iter_enabled_plugins()
+        for_component = filter_serializer.validated_data.get("component_type") or ""
+
+        def _iter_plugins():
+            for plugin in plugins:
+                # filter value provided but plugin does not apply for this component
+                # -> do not return it in the results
+                if for_component and for_component not in plugin.for_components:
+                    continue
+                yield plugin
+
+        return list(_iter_plugins())
 
 
 class ValidationView(APIView):

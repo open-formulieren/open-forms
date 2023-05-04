@@ -239,7 +239,7 @@ const VALIDATION = getValidationEditForm({
         // if the url starts with '/', then formio will prefix it with the formio
         // base URL, which is of course wrong. We there explicitly use the detected
         // host.
-        url: getFullyQualifiedUrl('/api/v2/validation/plugins'),
+        url: getFullyQualifiedUrl('/api/v2/validation/plugins?component={{ data.type }}'),
       },
       valueProperty: 'id',
       template: '<span>{{ item.label }}</span>',

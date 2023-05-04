@@ -9,6 +9,7 @@ from openforms.validations.registry import Registry
 
 class DjangoValidator:
     is_enabled = True
+    components = ("textfield",)
 
     def __call__(self, value):
         if value != "VALID":
@@ -17,6 +18,7 @@ class DjangoValidator:
 
 class DRFValidator:
     is_enabled = True
+    components = ("phoneNumber",)
 
     def __call__(self, value):
         if value != "VALID":
@@ -25,6 +27,7 @@ class DRFValidator:
 
 class DisabledValidator:
     is_enabled = False
+    components = ("textfield",)
 
     def __call__(self, value):
         if value != "VALID":

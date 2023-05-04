@@ -35,4 +35,5 @@ class ListMixin(SerializerContextMixin):
     def get(self, request, *args, **kwargs):
         objects = self.get_objects()
         serializer = self.get_serializer(instance=objects)
+
         return Response(serializer.data)

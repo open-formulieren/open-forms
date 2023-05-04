@@ -4589,6 +4589,13 @@ paths:
       operationId: validation_plugins_list
       description: List all prefill plugins that have been registered.
       summary: List available validation plugins
+      parameters:
+      - in: query
+        name: componentType
+        schema:
+          type: string
+        description: Only return validators applicable for the specified component
+          type.
       tags:
       - validation
       security:
@@ -8254,7 +8261,14 @@ components:
         label:
           type: string
           description: The human-readable name for a plugin.
+        forComponents:
+          type: array
+          items:
+            type: string
+          title: Components
+          description: The components for which the plugin is relevant.
       required:
+      - forComponents
       - id
       - label
     ValidationResult:

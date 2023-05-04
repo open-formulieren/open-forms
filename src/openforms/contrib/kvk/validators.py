@@ -13,7 +13,7 @@ from openforms.validations.registry import register
 @deconstructible
 class NumericBaseValidator:
     value_size: int = NotImplemented
-    value_label: str = NotImplemented
+    value_label: int = NotImplemented
     error_messages = {
         "too_short": _("%(type)s should have %(size)i characters."),
     }
@@ -77,7 +77,7 @@ class KVKRemoteBaseValidator:
                 return True
 
 
-@register("kvk-kvkNumber", verbose_name=_("KvK number"))
+@register("kvk-kvkNumber", verbose_name=_("KvK number"), for_components=("textfield",))
 @deconstructible
 class KVKNumberRemoteValidator(KVKRemoteBaseValidator):
     query_param = "kvkNummer"
@@ -88,7 +88,7 @@ class KVKNumberRemoteValidator(KVKRemoteBaseValidator):
         super().__call__(value)
 
 
-@register("kvk-rsin", verbose_name=_("KvK RSIN"))
+@register("kvk-rsin", verbose_name=_("KvK RSIN"), for_components=("textfield",))
 @deconstructible
 class KVKRSINRemoteValidator(KVKRemoteBaseValidator):
     query_param = "rsin"
@@ -99,7 +99,11 @@ class KVKRSINRemoteValidator(KVKRemoteBaseValidator):
         super().__call__(value)
 
 
-@register("kvk-branchNumber", verbose_name=_("KvK branch number"))
+@register(
+    "kvk-branchNumber",
+    verbose_name=_("KvK branch number"),
+    for_components=("textfield",),
+)
 @deconstructible
 class KVKBranchNumberRemoteValidator(KVKRemoteBaseValidator):
     query_param = "vestigingsnummer"
