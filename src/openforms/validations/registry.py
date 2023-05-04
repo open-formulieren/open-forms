@@ -27,7 +27,7 @@ class RegisteredValidator:
     identifier: str
     verbose_name: str
     callable: ValidatorType
-    components: tuple[str]
+    for_components: tuple[str]
     is_demo_plugin: bool = False
     # TODO always enabled for now, see: https://github.com/open-formulieren/open-forms/issues/1149
     is_enabled: bool = True
@@ -67,7 +67,7 @@ class Registry(BaseRegistry):
         identifier: str,
         verbose_name: str,
         is_demo_plugin: bool = False,
-        for_components: tuple[str] = (),
+        for_components: tuple[str] = tuple(),
         *args,
         **kwargs,
     ) -> Callable:
@@ -88,7 +88,7 @@ class Registry(BaseRegistry):
                 identifier=identifier,
                 verbose_name=verbose_name,
                 callable=call,
-                components=for_components,
+                for_components=for_components,
                 is_demo_plugin=is_demo_plugin,
             )
             return validator

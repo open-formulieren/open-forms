@@ -4591,10 +4591,11 @@ paths:
       summary: List available validation plugins
       parameters:
       - in: query
-        name: component
+        name: componentType
         schema:
           type: string
-        description: The formio component for which the validation plugin is intended.
+        description: Only return validators applicable for the specified component
+          type.
       tags:
       - validation
       security:
@@ -8260,13 +8261,14 @@ components:
         label:
           type: string
           description: The human-readable name for a plugin.
-        components:
+        forComponents:
           type: array
           items:
             type: string
+          title: Components
           description: The components for which the plugin is relevant.
       required:
-      - components
+      - forComponents
       - id
       - label
     ValidationResult:

@@ -2,7 +2,6 @@ from unittest.mock import patch
 
 from django.urls import reverse
 
-from furl import furl
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -64,25 +63,25 @@ class ValidationsAPITests(APITestCase):
                     {
                         "id": "django",
                         "label": "Django Test Validator",
-                        "components": ["textfield"],
+                        "for_components": ["textfield"],
                     },
                     {
                         "id": "drf",
                         "label": "DRF Test Validator",
-                        "components": ["phoneNumber"],
+                        "for_components": ["phoneNumber"],
                     },
                     {
                         "id": "func",
                         "label": "Django function Validator",
-                        "components": [],
+                        "for_components": [],
                     },
                 ],
             )
 
         with self.subTest("Validators for textfield component"):
-            query_params = {"component": "textfield"}
-            url = furl(reverse("api:validators-list")).add(query_params).url
-            response = self.client.get(url)
+            query_params = {"component_type": "textfield"}
+
+            response = self.client.get(reverse("api:validators-list"), query_params)
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(
@@ -91,15 +90,15 @@ class ValidationsAPITests(APITestCase):
                     {
                         "id": "django",
                         "label": "Django Test Validator",
-                        "components": ["textfield"],
+                        "for_components": ["textfield"],
                     },
                 ],
             )
 
         with self.subTest("Validators for phoneNumber component"):
-            query_params = {"component": "phoneNumber"}
-            url = furl(reverse("api:validators-list")).add(query_params).url
-            response = self.client.get(url)
+            query_params = {"component_type": "phoneNumber"}
+
+            response = self.client.get(reverse("api:validators-list"), query_params)
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(
@@ -108,15 +107,42 @@ class ValidationsAPITests(APITestCase):
                     {
                         "id": "drf",
                         "label": "DRF Test Validator",
-                        "components": ["phoneNumber"],
+                        "for_components": ["phoneNumber"],
+                    },
+                ],
+            )
+
+        with self.subTest("Optional query param"):
+            query_params = {"component_type": ""}
+
+            response = self.client.get(reverse("api:validators-list"), query_params)
+
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(
+                response.data,
+                [
+                    {
+                        "id": "django",
+                        "label": "Django Test Validator",
+                        "for_components": ["textfield"],
+                    },
+                    {
+                        "id": "drf",
+                        "label": "DRF Test Validator",
+                        "for_components": ["phoneNumber"],
+                    },
+                    {
+                        "id": "func",
+                        "label": "Django function Validator",
+                        "for_components": [],
                     },
                 ],
             )
 
         with self.subTest("Invalid query params"):
-            query_params = {"component": None}
-            url = furl(reverse("api:validators-list")).add(query_params).url
-            response = self.client.get(url)
+            query_params = {"component_type": 123}
+
+            response = self.client.get(reverse("api:validators-list"), query_params)
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(response.data, [])
