@@ -801,7 +801,9 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
     def test_email_with_default_design_token(self):
         with patch(
             "openforms.config.models.GlobalConfiguration.get_solo",
-            return_value=GlobalConfiguration(logo="https://logo.png"),
+            return_value=GlobalConfiguration(
+                logo="https://logo.png", design_token_values={}
+            ),
         ):
             submission = SubmissionFactory.from_components(
                 [
