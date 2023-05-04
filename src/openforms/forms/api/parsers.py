@@ -16,6 +16,28 @@ class IgnoreConfigurationFieldCamelCaseJSONParser(CamelCaseJSONParser):
     json_underscoreize = {"ignore_fields": ("configuration", "component_translations")}
 
 
+class FormVariableJSONParser(CamelCaseJSONParser):
+    json_underscoreize = {
+        "ignore_fields": (
+            "body",
+            "headers",
+            "mapping_expression",
+            "query_params",
+        )
+    }
+
+
+class FormVariableJSONRenderer(CamelCaseJSONRenderer):
+    json_underscoreize = {
+        "ignore_fields": (
+            "body",
+            "headers",
+            "mapping_expression",
+            "query_params",
+        )
+    }
+
+
 class IgnoreConfigurationFieldCamelCaseJSONRenderer(CamelCaseJSONRenderer):
     # This is needed for fields in the JSON configuration that have an underscore
     # For example: time_24hr in the date component. See github issue

@@ -34,6 +34,8 @@ from .documentation import get_admin_fields_markdown
 from .filters import FormDefinitionFilter, FormVariableFilter
 from .parsers import (
     FormCamelCaseJSONParser,
+    FormVariableJSONParser,
+    FormVariableJSONRenderer,
     IgnoreConfigurationFieldCamelCaseJSONParser,
     IgnoreConfigurationFieldCamelCaseJSONRenderer,
 )
@@ -522,6 +524,8 @@ class FormViewSet(viewsets.ModelViewSet):
         methods=["put"],
         url_path="variables",
         url_name="variables",
+        parser_classes=(FormVariableJSONParser,),
+        renderer_classes=(FormVariableJSONRenderer,),
     )
     @transaction.atomic
     def variables_bulk_update(self, request, *args, **kwargs):

@@ -64,7 +64,23 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
           >
             <FormRow>
               <Field
-                name={'method'}
+                name="name"
+                fieldBox
+                required
+                label={
+                  <FormattedMessage
+                    defaultMessage="Name"
+                    description="Service fetch configuration modal form name field label"
+                  />
+                }
+              >
+                <TextInput id="name" maxLength="1000" {...formik.getFieldProps('name')} />
+              </Field>
+            </FormRow>
+
+            <FormRow>
+              <Field
+                name="method"
                 required
                 label={
                   <FormattedMessage
@@ -84,7 +100,7 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
 
             <FormRow>
               <Field
-                name={'service'}
+                name="service"
                 fieldBox
                 required
                 label={
@@ -103,7 +119,7 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
                 />
               </Field>
               <Field
-                name={'path'}
+                name="path"
                 fieldBox
                 required
                 label={
@@ -128,9 +144,9 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
               </Field>
             </FormRow>
 
-            <FormRow>
+            <FormRow fields={['queryParams']}>
               <Field
-                name={'queryParams'}
+                name="queryParams"
                 label={
                   <FormattedMessage
                     defaultMessage="Query parameters"
@@ -148,9 +164,9 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
               </Field>
             </FormRow>
 
-            <FormRow>
+            <FormRow fields={['headers']}>
               <Field
-                name={'headers'}
+                name="headers"
                 label={
                   <FormattedMessage
                     defaultMessage="Request headers"
@@ -170,7 +186,7 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
             {formik.values.method === 'POST' ? (
               <FormRow>
                 <Field
-                  name={'body'}
+                  name="body"
                   label={
                     <FormattedMessage
                       defaultMessage="Request body"
@@ -180,6 +196,7 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
                 >
                   <JsonWidget
                     name="body"
+                    id="id_body"
                     logic={formik.values.body}
                     cols={20}
                     {...formik.getFieldProps('body')}
@@ -200,7 +217,7 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
           >
             <FormRow>
               <Field
-                name={'dataMappingType'}
+                name="dataMappingType"
                 required
                 label={
                   <FormattedMessage
@@ -266,7 +283,11 @@ const ServiceFetchConfigurationForm = ({formik, selectExisting = false}) => {
                     description: 'Save as new service fetch configuration button label',
                     defaultMessage: 'Save as new',
                   })}
-                  onClick={formik.handleSubmit}
+                  onClick={e => {
+                    // Remove ID to ensure that new entry is created
+                    formik.setFieldValue('id', null);
+                    return formik.handleSubmit(e);
+                  }}
                   type="submit"
                 />
                 <ActionButton

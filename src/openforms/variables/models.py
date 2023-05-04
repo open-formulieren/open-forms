@@ -82,7 +82,7 @@ class ServiceFetchConfiguration(models.Model):
         verbose_name_plural = _("service fetch configurations")
 
     def __str__(self):
-        return f"{self.service} {self.path}"
+        return self.name or f"{self.service} {self.path}"
 
     def clean(self):
         super().clean()

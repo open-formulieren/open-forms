@@ -168,19 +168,12 @@ class FormVariableViewsetTest(APITestCase):
                         "name": "GET foo",
                         "service": f"http://testserver{reverse('api:service-detail', kwargs={'pk': service.pk})}",
                         "path": form_variables_path,
-                        "method": ServiceFetchMethods.get,
-                        "data_mapping_type": DataMappingTypes.json_logic,
-                        "mapping_expression": {
-                            "var": [
-                                0,
-                                {
-                                    "map": [
-                                        {"if": {"==": [{"var": "key"}, "x"]}},
-                                        {"var": ""},
-                                    ]
-                                },
-                            ]
-                        },
+                        "method": ServiceFetchMethods.post,
+                        "headers": {"X-Header": "someValue"},
+                        "queryParams": {"X-It": ["someThings", "some_things"]},
+                        "body": {"X-Something": "someValue"},
+                        "dataMappingType": DataMappingTypes.jq,
+                        "mappingExpression": '{"X-It": "someThing"}',
                     },
                 }
             ],
@@ -191,7 +184,14 @@ class FormVariableViewsetTest(APITestCase):
 
         self.assertEqual(fetch_config.service_id, service.id)
         self.assertEqual(fetch_config.path, form_variables_path)
-        self.assertEqual(fetch_config.method, ServiceFetchMethods.get)
+        self.assertEqual(fetch_config.method, ServiceFetchMethods.post)
+        self.assertEqual(fetch_config.data_mapping_type, DataMappingTypes.jq)
+        self.assertEqual(fetch_config.mapping_expression, '{"X-It": "someThing"}')
+        self.assertEqual(fetch_config.body, {"X-Something": "someValue"})
+        self.assertEqual(
+            fetch_config.query_params, {"X-It": ["someThings", "some_things"]}
+        )
+        self.assertEqual(fetch_config.headers, {"X-Header": "someValue"})
 
     def test_it_updates_inline_service_fetch_configs(self):
         designer = StaffUserFactory.create(user_permissions=["change_form"])

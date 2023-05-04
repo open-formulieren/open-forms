@@ -48,15 +48,15 @@ const Message = PropTypes.shape({
 });
 
 const Label = PropTypes.oneOfType([PropTypes.string, Message]);
+const Value = PropTypes.oneOfType([PropTypes.string, PropTypes.number]);
+
+// Not excatly the 2-tuple we mean, but hey...
+const Choice = PropTypes.arrayOf(PropTypes.oneOfType([Value, Label]));
 
 Select.propTypes = {
   name: PropTypes.string, // typically injected by the wrapping <Field> component
   allowBlank: PropTypes.bool,
-  choices: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
-    PropTypes.arrayOf(PropTypes.arrayOf(Label)),
-    PropTypes.objectOf(Label),
-  ]).isRequired,
+  choices: PropTypes.oneOfType([PropTypes.arrayOf(Choice), PropTypes.objectOf(Label)]).isRequired,
   translateChoices: PropTypes.bool,
 };
 

@@ -94,6 +94,7 @@ const EMPTY_VARIABLE = {
   isSensitiveData: false,
   dataType: 'string',
   initial_value: '',
+  serviceFetchConfiguration: null,
 };
 
 export {COMPONENT_DATATYPES, VARIABLE_SOURCES, DATATYPES_CHOICES, EMPTY_VARIABLE};

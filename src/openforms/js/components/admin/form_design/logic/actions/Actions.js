@@ -1,7 +1,9 @@
+import _ from 'lodash';
 import PropTypes from 'prop-types';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {FormattedMessage, useIntl} from 'react-intl';
 
+import {FormContext} from 'components/admin/form_design/Context';
 import StepSelection from 'components/admin/form_design/StepSelection';
 import DSLEditorNode from 'components/admin/form_design/logic/DSLEditorNode';
 import {
@@ -105,39 +107,72 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
     setIsModalOpen(false);
   };
 
+  const formContext = useContext(FormContext);
+
+  const serviceFetchConfigFromVar =
+    _.cloneDeep(formContext.formVariables.find(element => element.key === action.variable))
+      ?.serviceFetchConfiguration || undefined;
+
+  if (serviceFetchConfigFromVar) {
+    if (!Array.isArray(serviceFetchConfigFromVar.headers)) {
+      serviceFetchConfigFromVar.headers = Object.entries(serviceFetchConfigFromVar.headers || {});
+    }
+
+    if (!Array.isArray(serviceFetchConfigFromVar.queryParams)) {
+      serviceFetchConfigFromVar.queryParams = Object.entries(
+        serviceFetchConfigFromVar.queryParams || {}
+      );
+    }
+
+    switch (serviceFetchConfigFromVar.dataMappingType) {
+      case 'JsonLogic':
+        serviceFetchConfigFromVar.jsonLogicExpression = serviceFetchConfigFromVar.mappingExpression;
+        break;
+      case 'jq':
+        serviceFetchConfigFromVar.jqExpression = serviceFetchConfigFromVar.mappingExpression;
+        break;
+      default:
+        serviceFetchConfigFromVar.jqExpression = serviceFetchConfigFromVar.mappingExpression;
+    }
+  }
+
+  const actionButtonId = `open_service_fetch_modal_for_${action.variable}`;
   return (
     <>
       <DSLEditorNode errors={errors.variable}>
-        {/*
-          TODO: should we filter this to only allow user defined variables?
-
-          const filter = variable => variable.source === 'user_defined'
-        */}
-        <VariableSelection name="variable" value={action.variable} onChange={onChange} />
-      </DSLEditorNode>
-      <DSLEditorNode errors={errors.action?.value}>
-        {/* TODO: this element loses state on change of the variable sibling right above*/}
-        {/* TODO: in #2661 we're building a nicer UI/UX to configure the service fetch action */}
-        <input
-          name="action.value"
+        <VariableSelection
+          name="variable"
+          value={action.variable}
           onChange={onChange}
-          value={action.action.value}
-          placeholder="ServiceFetchConfiguration id"
-          type="number"
-          min="1"
+          // Only values of user defined values can be set
+          filter={variable => variable.source === 'user_defined'}
         />
       </DSLEditorNode>
-      <ActionButton
-        name="_open_service_fetch_modal"
-        onClick={event => {
-          event.preventDefault();
-          setIsModalOpen(true);
-        }}
-        text={intl.formatMessage({
-          description: 'Button to open service fetch configuration modal',
-          defaultMessage: 'Configure',
-        })}
-      />
+      <DSLEditorNode errors={errors.action?.value}>
+        <label className="required" htmlFor={actionButtonId}>
+          <FormattedMessage
+            description="Currently selected service fetch configuration label"
+            defaultMessage="Fetch configuration:"
+          />
+        </label>
+        {serviceFetchConfigFromVar?.name ||
+          intl.formatMessage({
+            description: 'No service fetch configuration configured yet message',
+            defaultMessage: '(not configured yet)',
+          })}
+        <ActionButton
+          id={actionButtonId}
+          name="_open_service_fetch_modal"
+          onClick={event => {
+            event.preventDefault();
+            setIsModalOpen(true);
+          }}
+          text={intl.formatMessage({
+            description: 'Button to open service fetch configuration modal',
+            defaultMessage: 'Configure',
+          })}
+        />
+      </DSLEditorNode>
 
       <Modal
         isOpen={isModalOpen}
@@ -150,7 +185,12 @@ const ActionFetchFromService = ({action, errors, onChange}) => {
         }
         contentModifiers={['with-form', 'large']}
       >
-        <ServiceFetchConfigurationPicker onFormSave={closeModal} onChange={onChange} />
+        <ServiceFetchConfigurationPicker
+          initialValues={serviceFetchConfigFromVar}
+          variableName={action.variable}
+          onFormSave={closeModal}
+          onChange={onChange}
+        />
       </Modal>
     </>
   );
@@ -195,10 +235,15 @@ const ActionComponent = ({action, errors, onChange}) => {
   return <Component action={action} errors={errors} onChange={onChange} />;
 };
 
-ActionComponent.propTypes = {
-  action: ActionType.isRequired,
-  errors: ActionError,
-  onChange: PropTypes.func.isRequired,
-};
+ActionComponent.propTypes =
+  ActionProperty.propTypes =
+  ActionVariableValue.propTypes =
+  ActionFetchFromService.propTypes =
+  ActionStepNotApplicable.propTypes =
+    {
+      action: ActionType.isRequired,
+      errors: ActionError,
+      onChange: PropTypes.func.isRequired,
+    };
 
 export {ActionComponent};
