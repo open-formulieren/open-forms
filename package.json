@@ -38,7 +38,6 @@
     "bem.js": "^1.0.10",
     "classnames": "^2.3.1",
     "copy-to-clipboard": "^3.3.1",
-    "core-js": "^3.11.1",
     "design-token-editor": "^0.5.0",
     "flatpickr": "^4.6.9",
     "formik": "^2.2.9",
