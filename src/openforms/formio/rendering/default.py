@@ -146,7 +146,6 @@ class WYSIWYGNode(ComponentNode):
         if self.mode in (
             RenderModes.registration,
             RenderModes.export,
-            RenderModes.summary,
         ):
             return False
         return super().is_visible

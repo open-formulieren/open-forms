@@ -109,7 +109,7 @@ class ComponentNode(Node):
 
         - wysiwyg:
 
-          - in PDF if visible
+          - in PDF and summary if visible
 
         These exceptions are handled in more specific subclasses to avoid massive if-else
         branches again, see :mod:`openforms.formio.rendering.default`.
