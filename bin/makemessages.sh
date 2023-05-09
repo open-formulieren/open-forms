@@ -15,8 +15,7 @@ python manage.py makemessages \
 cd ..
 
 echo "Extracting messages for Javascript code..."
+./bin/makemessages_js.sh
 
-npm run makemessages
-
-echo "Make sure to run 'npm run compilemessages' when done translating."
+echo "Make sure to run './bin/compilemessages_js.sh' when done translating."
 echo "Done."
