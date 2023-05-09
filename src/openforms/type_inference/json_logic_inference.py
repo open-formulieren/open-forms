@@ -4,7 +4,7 @@ from json_logic.meta import expressions
 
 from openforms.typing import JSONObject, JSONPrimitive
 
-from . import M
+from . import M, W
 from .models import (
     Application,
     Context,
@@ -74,7 +74,9 @@ DEFAULT_CONTEXT = Context(
         "false": Bool,
         "true": Bool,
         "null": Null,
+        # type constructors
         "[]": TypeQuantifier("a", array(A)),
+        "Either": TypeQuantifier("a", TypeQuantifier("b", f(A, B, either(A, B)))),
         # Accessing Data
         # Each "var" should have a TypeVariable in the Context and a Variable in the Expression
         # TODO record types
@@ -190,16 +192,27 @@ def parse(json_logic_expression: AnyJSONObject) -> tuple[Context, Expression]:
 
 def type_check(
     json_logic_expression: JSONObject,
+    using: Literal["M", "W"] = "W",
 ) -> tuple[Mapping[str, MonoType], MonoType]:
+    "Type check a json_logic_expression using Algoritm"
     type_vars = gen_type_vars()
     context, expression = parse(json_logic_expression)
-    t = next(type_vars)
-    s = M(
-        Context(**DEFAULT_CONTEXT, **context),
-        expression,
-        t,
-        type_vars,
-    )
+
+    if using == "M":
+        t = next(type_vars)
+        s = M(
+            Context(**DEFAULT_CONTEXT, **context),
+            expression,
+            t,
+            type_vars,
+        )
+    else:
+        s, t = W(
+            Context(**DEFAULT_CONTEXT, **context),
+            expression,
+            type_vars,
+        )
+
     return (
         {
             (k[5:] if k.startswith("var: ") else k): v

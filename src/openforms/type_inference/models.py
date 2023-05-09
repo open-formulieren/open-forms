@@ -79,7 +79,7 @@ class TypeVariable(MonoType):
 TypeFunction = Literal[
     "->",  # function
     "[]",  # array
-    "Either",  # Union type to support function overloading and return type polymorphism
+    "Either",  # Union type to support return type polymorphism
     # Primitives
     "Bool",  # "true" / "false"
     "Null",  # "null" aka None aka unit aka ()
@@ -97,12 +97,13 @@ class TypeApplication(MonoType):
     def __contains__(self, a: TypeVariable):
         return any(a in t for t in self.taus)
 
-    # def __post_init__(self):
-    #     match self:
-    #         case TypeApplication("Either", (a, b)):
-    #             if a == b:
-    #                 self.C = self.taus[0].C
-    #                 self.taus = self.taus[0].taus
+    def __post_init__(self):
+        match self:
+            case TypeApplication("Either", (a, b)) if a == b:
+                # simplify Either a a to a
+                if isinstance(a, TypeApplication):
+                    self.C = a.C
+                    self.taus = a.taus
 
     def __str__(self) -> str:
         match self.C, [str(t) for t in self.taus]:
@@ -112,12 +113,11 @@ class TypeApplication(MonoType):
                 return " -> ".join(taus)
             case "[]", [t]:
                 return f"[{t}]"
-            case "Either", [a, b]:
-                if a == b:
-                    return a  # XXX or is this confusing?
-                return f"Either {a} {b}"
             case _:
-                return f"{self.C} {self.taus}"
+                return f"{self.C} {' '.join(map(str, self.taus))}"
+
+    def __repr__(self) -> str:
+        return str(self)
 
 
 @dataclass
@@ -133,6 +133,9 @@ class TypeQuantifier(PolyType):
 
     def __str__(self):
         return f"∀{self.alpha}.{self.sigma}"
+
+    def __repr__(self) -> str:
+        return str(self)
 
 
 class Context(dict[str, PolyType]):

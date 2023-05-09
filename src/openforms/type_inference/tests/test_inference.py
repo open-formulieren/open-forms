@@ -125,6 +125,17 @@ class JsonLogicInferenceTests(TestCase):
         s, t = type_check(expression)
         self.assertEqual(str(t), "Bool")
 
+    def test_either_type_constructor_with_different_types(self):
+        expression = {"Either": [1, "1"]}
+        s, t = type_check(expression)
+        self.assertEqual(str(t), "Either Number String")
+
+    def test_either_type_constructor_with_single_type(self):
+        # Either Number Number should be simplified to Number
+        expression = {"Either": [1, 2]}
+        s, t = type_check(expression)
+        self.assertEqual(str(t), "Number")
+
     @given(
         json_logic_boolean_logic(),
         json_logic_arithmetic(),
@@ -148,6 +159,27 @@ class JsonLogicInferenceTests(TestCase):
         more_s, more_t = type_check(one_more_thing)
 
         self.assertEqual(str(more_t), "Number")
+
+    @given(
+        bool_exp=json_logic_boolean_logic(),
+        then_exp=json_logic_arithmetic(),
+    )
+    def test_conditionals_with_mismatching_return_types(self, bool_exp, then_exp):
+        # if :: forall a.b. Bool -> a -> b -> Either a b
+        #
+        # in Python notation:
+        #
+        # def if(condition: bool, then: T, otherwise: None) -> Optional[T]:
+        #     ...
+        conditional_exp = {"if": [bool_exp, then_exp, None]}
+        s, t = type_check(conditional_exp)
+        self.assertEqual(str(t), "Either Number Null")
+
+        # So this should not type_check
+
+        maybe_num_plus_1 = {"+": [conditional_exp, 1]}
+        with self.assertRaises(TypeError):
+            s2, t2 = type_check(maybe_num_plus_1)
 
     @given(
         json_logic_vars(),

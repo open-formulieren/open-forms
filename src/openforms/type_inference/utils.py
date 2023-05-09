@@ -50,12 +50,20 @@ def unify(a: MonoType, b: MonoType) -> Substitution:
                 # same typevar -> empty substitution
                 return Substitution()
 
+        # XXX: lazy handling of Either for M
+        # case TypeApplication("Either", taus), _:
+        #     if any(isinstance(t, TypeVariable) for t in taus):
+        #         # postpone unification until types are inferred
+        #         return Substitution()
+        #     s1 = unify(taus[0], b)
+        #     s2 = unify(taus[1], b)
+        #     return s1(s2)
+        # case _, TypeApplication("Either", taus):
+        #     # flip a and b
+        #     return unify(b, a)
+        #
+        # TODO: Either a b should unify with Either b a
         case TypeApplication(ca, ta), TypeApplication(cb, tb):
-            # if ca == "Either":
-            #     a == unify(*ta)(ta[0])
-            # if cb == "Either":
-            #     b == unify(*tb)(tb[0])
-
             if ca != cb:
                 raise TypeError(
                     f"Can't unify types {a} and {b}: different type functions"
