@@ -13,6 +13,7 @@ from zgw_consumers.test.schema_mock import mock_service_oas_get
 from openforms.authentication.tests.factories import RegistratorInfoFactory
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import SubmissionStep
+from openforms.submissions.tasks import pre_registration
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -251,6 +252,7 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
+        plugin.pre_register_submission(submission, zgw_form_options)
         result = plugin.register_submission(submission, zgw_form_options)
         self.assertEqual(
             result["document"]["url"],
@@ -438,6 +440,7 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
+        plugin.pre_register_submission(submission, zgw_form_options)
         result = plugin.register_submission(submission, zgw_form_options)
         self.assertEqual(
             result["document"]["url"],
@@ -612,6 +615,7 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
+        plugin.pre_register_submission(submission, zgw_form_options)
         plugin.register_submission(submission, zgw_form_options)
 
         create_rol = m.request_history[7]
@@ -680,6 +684,7 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
+        plugin.pre_register_submission(submission, zgw_form_options)
         result = plugin.register_submission(submission, zgw_form_options)
         self.assertEqual(
             result["document"]["url"],
@@ -865,6 +870,7 @@ class ZGWBackendTests(TestCase):
         )
 
         plugin = ZGWRegistration("zgw")
+        plugin.pre_register_submission(submission, zgw_form_options)
         result = plugin.register_submission(submission, zgw_form_options)
 
         self.assertIn("medewerker_rol", result)
@@ -907,6 +913,7 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
+        plugin.pre_register_submission(submission, zgw_form_options)
         plugin.register_submission(submission, zgw_form_options)
 
         create_zaak = m.request_history[1]
@@ -954,6 +961,7 @@ class ZGWBackendTests(TestCase):
         )
 
         plugin = ZGWRegistration("zgw")
+        plugin.pre_register_submission(submission, zgw_form_options)
         result = plugin.register_submission(submission, zgw_form_options)
         self.assertEqual(result["zaak"]["url"], "https://zaken.nl/api/v1/zaken/1")
         submission.registration_result = result
@@ -1042,6 +1050,7 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
+        plugin.pre_register_submission(submission, zgw_form_options)
         plugin.register_submission(submission, zgw_form_options)
 
         document_create_attachment1 = m.request_history[-4]
@@ -1128,6 +1137,7 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
+        plugin.pre_register_submission(submission, zgw_form_options)
         plugin.register_submission(submission, zgw_form_options)
 
         # zaak
@@ -1209,12 +1219,41 @@ class ZGWBackendTests(TestCase):
         self.install_mocks(m)
 
         plugin = ZGWRegistration("zgw")
+        plugin.pre_register_submission(submission, zgw_form_options)
         plugin.register_submission(submission, zgw_form_options)
 
         document_create_attachment = m.request_history[-2]
         document_create_attachment_body = document_create_attachment.json()
 
         self.assertEqual(document_create_attachment_body["auteur"], "Aanvrager")
+
+    def test_zgw_backend_has_reference_after_pre_submission(self, m):
+        mock_service_oas_get(m, "https://zaken.nl/api/v1/", "zaken")
+        m.post(
+            "https://zaken.nl/api/v1/zaken",
+            status_code=201,
+            json=generate_oas_component(
+                "zaken",
+                "schemas/Zaak",
+                url="https://zaken.nl/api/v1/zaken/1",
+                zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+                identificatie="ZAAK-OF-TEST",
+            ),
+        )
+
+        submission = SubmissionFactory.create(
+            form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={},
+            completed=True,
+            registration_success=True,
+        )
+
+        self.assertEqual(submission.public_registration_reference, "")
+
+        pre_registration(submission.id)
+        submission.refresh_from_db()
+
+        self.assertEqual(submission.public_registration_reference, "ZAAK-OF-TEST")
 
 
 @tag("gh-1183")
@@ -1306,6 +1345,7 @@ class PartialRegistrationFailureTests(TestCase):
         )
 
         with self.subTest("Initial document creation fails"):
+            pre_registration(self.submission.id)
             register_submission(self.submission.id)
 
             self.submission.refresh_from_db()
@@ -1465,6 +1505,7 @@ class PartialRegistrationFailureTests(TestCase):
         )
 
         with self.subTest("First try, attachment relation fails"):
+            pre_registration(self.submission.id)
             register_submission(self.submission.id)
 
             self.submission.refresh_from_db()

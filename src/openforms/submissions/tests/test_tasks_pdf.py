@@ -212,6 +212,26 @@ class SubmissionReportGenerationTests(TestCase):
 
         self.assertEqual(inclusive_tag.text(), "")
 
+    def test_public_reference_included(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "input",
+                    "label": "Input",
+                    "type": "textfield",
+                },
+            ],
+            with_report=True,
+            public_registration_reference="OF-12345",
+        )
+
+        html = submission.report.generate_submission_report_pdf()
+
+        doc = pq(html)
+        reference_node = doc(".metadata").children()[1]
+
+        self.assertEqual(reference_node.text, "Your reference is: OF-12345")
+
 
 @temp_private_root()
 class SubmissionReportCoSignTests(TestCase):
