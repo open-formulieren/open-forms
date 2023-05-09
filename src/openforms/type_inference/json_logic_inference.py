@@ -84,7 +84,6 @@ DEFAULT_CONTEXT = Context(
         # "missing_some": f(Number, array(String), array(String)
         # Logic and Boolean Operations
         "if": TypeQuantifier("a", TypeQuantifier("b", f(Bool, A, B, either(A, B)))),
-        # "if": TypeQuantifier("a", f(Bool, A, A, A)),
         "==": TypeQuantifier("a", TypeQuantifier("b", f(A, B, Bool))),
         "!=": TypeQuantifier("a", TypeQuantifier("b", f(A, B, Bool))),
         "===": TypeQuantifier("a", TypeQuantifier("b", f(A, B, Bool))),
@@ -98,9 +97,8 @@ DEFAULT_CONTEXT = Context(
         ">=": f(Number, Number, Bool),
         "<": f(Number, Number, Bool),
         "<=": f(Number, Number, Bool),
-        # TODO Between special cases
-        # "<": f(Number, Number, Number, Bool),
-        # "<=": f(Number, Number, Number, Bool),
+        "3-ary <": f(Number, Number, Number, Bool),
+        "3-ary <=": f(Number, Number, Number, Bool),
         "max": f(array(A), A),
         "min": f(array(A), A),
         # Arithmatic
@@ -108,13 +106,10 @@ DEFAULT_CONTEXT = Context(
         "-": f(Number, Number, Number),
         "*": f(Number, Number, Number),
         "/": f(Number, Number, Number),
-        # TODO sum and product array
-        # "+": f(array(Number)),
-        # "*": f(array(Number)),
-        # TODO unary - (additive inverse)
-        # "-": f(Number, Number),
-        # TODO casting to Number
-        # "+": TypeQuantifier("a", f(a, Number)),
+        # additive inverse
+        "1-ary -": f(Number, Number),
+        # casting to Number
+        "1-ary +": TypeQuantifier("a", f(A, Number)),
         "%": f(Number, Number, Number),
         # Array Operations
         # forall a b. :: [a] -> (a -> b) -> [b]
@@ -160,6 +155,7 @@ def parse(json_logic_expression: AnyJSONObject) -> tuple[Context, Expression]:
     if not isinstance(normal_form, dict):
         raise NotImplementedError("Syntactic sugar not implemented yet")  # TODO
     operator, params = expressions.destructure(normal_form)
+    context = Context()
 
     if operator == "var":
         assert isinstance(params[0], str)
@@ -168,8 +164,15 @@ def parse(json_logic_expression: AnyJSONObject) -> tuple[Context, Expression]:
             Context({var: TypeVariable(var)}),
             Variable(var),
         )
+    elif operator in ("<", "<=") and len(params) == 3:
+        operator = f"3-ary {operator}"
+    elif operator in ("-", "+") and len(params) == 1:
+        operator = f"1-ary {operator}"
+    elif operator in ("+", "*") and (arity := len(params)) > 2:
+        operator = f"{arity}-ary {operator}"
+        # add n-ary function to the context
+        context[operator] = f(*((arity + 1) * (Number,)))
 
-    context = Context()
     args: list[Expression] = []
     for param in params:
         if isinstance(param, bool):

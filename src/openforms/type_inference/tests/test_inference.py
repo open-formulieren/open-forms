@@ -17,11 +17,12 @@ def json_logic_expressions(
     if not operators and not values:
         return (
             json_logic_vars()
-            | json_logic_arithmetic()
-            | st.deferred(json_logic_boolean_logic)  # defer mutual recursion
+            | st.deferred(json_logic_boolean_logic)
+            | st.deferred(json_logic_arithmetic)
         )
+    keys = st.sampled_from(operators) if len(operators) > 1 else st.just(operators[0])
     return st.dictionaries(
-        keys=st.sampled_from(operators),
+        keys=keys,
         values=values,
         min_size=1,
         max_size=1,
@@ -37,6 +38,19 @@ def json_logic_vars() -> st.SearchStrategy[dict[Literal["var"], str]]:
 def json_logic_arithmetic() -> st.SearchStrategy[JSONObject]:
     return st.deferred(
         lambda: json_logic_expressions(
+            # unary - (inverse)
+            operators=("-",),
+            values=st.lists(
+                st.integers()
+                | st.floats()
+                | json_logic_vars()
+                | json_logic_arithmetic(),
+                min_size=1,
+                max_size=1,
+            ),
+        )
+        | json_logic_expressions(
+            # binary operators
             operators=("+", "-", "*", "/", "%"),
             values=st.lists(
                 st.integers()
@@ -47,6 +61,26 @@ def json_logic_arithmetic() -> st.SearchStrategy[JSONObject]:
                 max_size=2,
             ),
         )
+        | json_logic_expressions(
+            # n-ary + and *
+            operators=("+", "*"),
+            values=st.lists(
+                st.integers()
+                | st.floats()
+                | json_logic_vars()
+                | json_logic_arithmetic(),
+                min_size=3,
+            ),
+        )
+        | json_logic_expressions(
+            # unary + (cast to Number)
+            operators=("+",),
+            values=st.lists(
+                json_primitives() | json_logic_expressions(),  # any type
+                min_size=1,
+                max_size=1,
+            ),
+        )
     )
 
 
@@ -55,15 +89,35 @@ def json_logic_boolean_logic() -> st.SearchStrategy[JSONObject]:
 
     e.g. {"==", "!==", "!", "!!", "or", "and", ...}
     """
+    # NB the order of one_of is from simple to complex values
     return st.one_of(
-        # binary equivalence operators
+        # binary logic operators
         json_logic_expressions(
-            operators=("==", "!=", "===", "!=="),
+            operators=("or", "and"),
             values=st.lists(
-                # any two types
-                json_primitives() | json_logic_expressions(),
+                st.booleans() | st.deferred(json_logic_boolean_logic),
                 min_size=2,
                 max_size=2,
+            ),
+        ),
+        # binary numeric operators
+        json_logic_expressions(
+            operators=(">", ">=", "<", "<="),
+            values=st.lists(
+                # numeric types
+                st.integers() | st.floats() | json_logic_arithmetic(),
+                min_size=2,
+                max_size=2,
+            ),
+        ),
+        # ternary numeric "between" operators
+        json_logic_expressions(
+            operators=("<", "<="),
+            values=st.lists(
+                # numeric types
+                st.integers() | st.floats() | json_logic_arithmetic(),
+                min_size=3,
+                max_size=3,
             ),
         ),
         # unary operators
@@ -76,11 +130,12 @@ def json_logic_boolean_logic() -> st.SearchStrategy[JSONObject]:
                 max_size=1,
             ),
         ),
-        # binary operators
+        # binary equivalence operators
         json_logic_expressions(
-            operators=("or", "and"),
+            operators=("==", "!=", "===", "!=="),
             values=st.lists(
-                st.booleans() | st.deferred(json_logic_boolean_logic),
+                # any two types
+                json_primitives() | json_logic_expressions(),
                 min_size=2,
                 max_size=2,
             ),
