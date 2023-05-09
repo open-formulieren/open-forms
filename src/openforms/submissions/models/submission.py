@@ -182,6 +182,13 @@ class Submission(models.Model):
             "Indication whether the registration in the configured backend was successful."
         ),
     )
+    pre_registration_completed = models.BooleanField(
+        _("pre-registration completed"),
+        default=False,
+        help_text=_(
+            "Indicates whether the pre-registration task completed successfully."
+        ),
+    )
     public_registration_reference = models.CharField(
         _("public registration reference"),
         max_length=100,
@@ -642,3 +649,13 @@ class Submission(models.Model):
                 variable.key: variable.value for variable in prefill_vars
             }
         return self._prefilled_data
+
+    def get_registration_plugin(self):
+        from ..tasks.registration import get_registration_plugin
+
+        return get_registration_plugin(self)
+
+    def set_submission_reference(self):
+        from ..tasks.registration import set_submission_reference
+
+        set_submission_reference(self)

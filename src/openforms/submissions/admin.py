@@ -203,6 +203,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         "on_completion_task_ids",
         "confirmation_email_sent",
         "registration_attempts",
+        "pre_registration_completed",
     ]
     raw_id_fields = ("form", "previous_submission")
     actions = [
