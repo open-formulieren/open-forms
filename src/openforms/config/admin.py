@@ -140,6 +140,7 @@ class GlobalConfigurationAdmin(
                     "display_sdk_information",
                     "enable_demo_plugins",
                     "enable_service_fetch",
+                    "enable_react_formio_builder",
                     "default_test_bsn",
                     "default_test_kvk",
                     "allow_empty_initiator",
