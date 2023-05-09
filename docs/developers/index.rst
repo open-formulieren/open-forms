@@ -24,6 +24,7 @@ familiarize yourself with the design principles.
    architecture
    installation
    backend/index
+   frontend/index
    sdk/index
    plugins/index
    extending
