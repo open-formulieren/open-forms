@@ -14,11 +14,14 @@ import jsonScriptToVar from 'utils/json-script';
 export const nlStrings = require('lang/formio/nl.json');
 export default nlStrings;
 
+let _supportedLanguages = undefined;
 export const getSupportedLanguages = () => {
-  return jsonScriptToVar('languages', {default: []});
+  if (_supportedLanguages !== undefined) return _supportedLanguages;
+  _supportedLanguages = jsonScriptToVar('languages', {default: []});
+  return _supportedLanguages;
 };
 
-const LANGUAGES = getSupportedLanguages().map(([langCode]) => langCode);
+export const LANGUAGES = getSupportedLanguages().map(([langCode]) => langCode);
 
 /**
  * Name of translatable Formio component properties that are generic and independent of

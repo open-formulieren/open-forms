@@ -1,14 +1,29 @@
+import {ComponentConfiguration} from '@open-formulieren/formio-builder';
+import BUILDER_REGISTRY from '@open-formulieren/formio-builder/esm/registry';
 import {Formio} from 'formiojs';
+import Components from 'formiojs/components/Components';
 import FormioUtils from 'formiojs/utils';
 import BuilderUtils from 'formiojs/utils/builder';
+import produce from 'immer';
 import cloneDeep from 'lodash/cloneDeep';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
 import set from 'lodash/set';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {IntlProvider} from 'react-intl';
 
+import {getIntlProviderProps} from 'components/admin/i18n';
 import {getComponentEmptyValue} from 'components/utils';
 
 import {
+  getPrefillAttributes,
+  getPrefillPlugins,
+  getRegistrationAttributes,
+  getValidatorPlugins,
+} from './plugins';
+import {
+  LANGUAGES,
   addTranslationForLiteral,
   handleComponentValueLiterals,
   isTranslatableProperty,
@@ -57,7 +72,14 @@ class WebformBuilder extends WebformBuilderFormio {
     return super.findNamespaceRoot(component);
   }
 
-  editComponent(component, parent, isNew, isJsonEdit, original, flags = {}) {
+  /*
+    The legacy editComponent implementation, with our own overrides. This uses the
+    Formio builder/renderer rendering inside the modal.
+
+    Remove this method once all component types are supported in
+    @open-formulieren/formio-builder for React-based rendering.
+   */
+  LEGACY_editComponent(component, parent, isNew, isJsonEdit, original, flags = {}) {
     const componentCopy = cloneDeep(component);
     const parentEditResult = super.editComponent(
       component,
@@ -264,6 +286,199 @@ class WebformBuilder extends WebformBuilderFormio {
         modifiedOnChangeCallback;
     }
     return parentEditResult;
+  }
+
+  // Custom react-based implementation
+  editComponent(component, parent, isNew, isJsonEdit, original, flags = {}) {
+    const {react_formio_builder_enabled = false} = this.options.openForms.featureFlags;
+    if (
+      !component.key ||
+      !react_formio_builder_enabled ||
+      !BUILDER_REGISTRY.hasOwnProperty(component.type)
+    ) {
+      return this.LEGACY_editComponent(component, parent, isNew, isJsonEdit, original, flags);
+    }
+
+    if (!component.key) {
+      return;
+    }
+
+    if (!component.id) {
+      component.id = FormioUtils.getRandomComponentId();
+    }
+
+    let saved = false;
+    // using only produce seems to affect component itself, which crashes the preview
+    // rebuild of formio...
+    // const componentCopy = produce(component, draft => draft);
+    const componentCopy = produce(FormioUtils.fastCloneDeep(component), draft => draft);
+    const ComponentClass = Components.components[componentCopy.type];
+
+    // Make sure we only have one dialog open at a time.
+    if (this.dialog) {
+      this.dialog.close();
+      this.highlightInvalidComponents();
+    }
+
+    this.componentEdit = this.ce('div', {class: 'component-edit-container'});
+
+    const onCancel = event => {
+      event.preventDefault();
+      ReactDOM.unmountComponentAtNode(this.componentEdit);
+      this.emit('cancelComponent', component);
+      this.dialog.close();
+      this.highlightInvalidComponents();
+    };
+
+    const onRemove = event => {
+      event.preventDefault();
+      // Since we are already removing the component, don't trigger another remove.
+      saved = true;
+      ReactDOM.unmountComponentAtNode(this.componentEdit);
+      this.removeComponent(component, parent, original);
+      this.dialog.close();
+      this.highlightInvalidComponents();
+    };
+
+    const onSubmit = componentData => {
+      saved = true;
+      ReactDOM.unmountComponentAtNode(this.componentEdit);
+      // we can't use the original saveComponent, as it relies on this.editForm being
+      // a thing, which it isn't anymore here.
+      this.dialog.close();
+      this.saveComponentReact(componentData, parent, isNew, original);
+      this.highlightInvalidComponents();
+    };
+
+    const uniquifyKey = key => {
+      const temp = {key};
+      const formComponents = this.findNamespaceRoot(parent.formioComponent).filter(
+        comp => comp.id !== component.id
+      );
+      // this mutates instead of returning a unique key...
+      BuilderUtils.uniquify(formComponents, temp);
+      return temp.key;
+    };
+
+    const {componentTranslationsRef} = this.options.openForms;
+
+    // hand contents of modal over to React
+    (async () => {
+      const intlProviderProps = await getIntlProviderProps();
+      ReactDOM.render(
+        <IntlProvider {...intlProviderProps}>
+          <ComponentConfiguration
+            // Context binding
+            uniquifyKey={uniquifyKey}
+            supportedLanguageCodes={LANGUAGES}
+            componentTranslationsRef={componentTranslationsRef}
+            getFormComponents={() => parent.formioContainer}
+            getValidatorPlugins={getValidatorPlugins}
+            getRegistrationAttributes={getRegistrationAttributes}
+            getPrefillPlugins={getPrefillPlugins}
+            getPrefillAttributes={getPrefillAttributes}
+            // Component/builder state
+            isNew={isNew}
+            component={componentCopy}
+            builderInfo={ComponentClass.builderInfo}
+            onCancel={onCancel}
+            onRemove={onRemove}
+            onSubmit={onSubmit}
+          />
+        </IntlProvider>,
+        this.componentEdit
+      );
+      // Create and open the modal - contents are managed by React component.
+      this.dialog = this.createModal(this.componentEdit, get(this.options, 'dialogAttr', {}));
+
+      const dialogClose = () => {
+        if (isNew && !saved) {
+          this.removeComponent(component, parent, original);
+          this.highlightInvalidComponents();
+        }
+        // Clean up.
+        this.removeEventListener(this.dialog, 'close', dialogClose);
+        this.dialog = null;
+      };
+      this.addEventListener(this.dialog, 'close', dialogClose);
+
+      // Called when we edit a component.
+      this.emit('editComponent', component);
+    })();
+  }
+
+  /**
+   * saveComponent method when triggered from React events/formio builder.
+   *
+   * This mostly replicates the logic of saveComponent, but doesn't support
+   * submissionData/json editing.
+   */
+  saveComponentReact(componentData, parent, isNew, original) {
+    const parentContainer = parent ? parent.formioContainer : this.container;
+    const parentComponent = parent ? parent.formioComponent : this;
+    const path = parentContainer
+      ? this.getComponentsPath(componentData, parentComponent.component)
+      : '';
+    if (!original) {
+      original = parent.formioContainer.find(comp => comp.id === componentData.id);
+    }
+    const index = parentContainer ? parentContainer.indexOf(original) : 0;
+    // not found, abort early
+    if (index === -1) {
+      this.highlightInvalidComponents();
+      return NativePromise.resolve();
+    }
+
+    // not-so-elegant input sanitation that formio does... FIXME: can't we just escape
+    // this with \" instead?
+    if (componentData) {
+      ['label', 'tooltip', 'placeholder'].forEach(property => {
+        if (!componentData[property]) return;
+        componentData[property] = componentData[property].replace(/"/g, "'");
+      });
+    }
+
+    // look up the component instance with the parent
+    let componentInstance = null;
+    parentComponent.getComponents().forEach(childComponent => {
+      // Changed from Formio. We do the check on id and not on key
+      // (as this causes problems in the case of duplicate keys)
+      if (childComponent.component.id === original.id) {
+        componentInstance = childComponent;
+      }
+    });
+    const originalComp = componentInstance.component;
+    const originalComponentSchema = componentInstance.schema;
+    const isParentSaveChildMethod = this.isParentSaveChildMethod(parent.formioComponent);
+
+    if (parentContainer && !isParentSaveChildMethod) {
+      parentContainer[index] = componentData;
+      if (componentInstance) {
+        componentInstance.component = componentData;
+      }
+    } else if (isParentSaveChildMethod) {
+      parent.formioComponent.saveChildComponent(componentData);
+    }
+
+    const rebuild = parentComponent.rebuild() || Promise.resolve();
+    return rebuild.then(() => {
+      const schema = parentContainer
+        ? parentContainer[index]
+        : componentInstance
+        ? componentInstance.schema
+        : [];
+      this.emitSaveComponentEvent(
+        schema,
+        originalComp,
+        parentComponent.schema,
+        path,
+        index,
+        isNew,
+        originalComponentSchema
+      );
+      this.emit('change', this.form);
+      this.highlightInvalidComponents();
+    });
   }
 
   saveComponent(component, parent, isNew, original) {

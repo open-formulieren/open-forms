@@ -1,9 +1,10 @@
 import cloneDeep from 'lodash/cloneDeep';
 import set from 'lodash/set';
 import PropTypes from 'prop-types';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {FormBuilder, Templates} from 'react-formio';
 
+import {FeatureFlagsContext} from 'components/admin/form_design/Context';
 import useOnChanged from 'hooks/useOnChanged';
 import jsonScriptToVar from 'utils/json-script';
 
@@ -342,11 +343,14 @@ const FormIOBuilder = ({
   // re-renders that way for debugging purposes.
   const [rerenders, setRerenders] = useState(0);
 
+  const featureFlags = useContext(FeatureFlagsContext);
+
   // props need to be immutable to not end up in infinite loops
   const [builderOptions] = useState(getBuilderOptions());
 
   set(builderOptions, 'openForms.componentTranslationsRef', componentTranslationsRef);
   set(builderOptions, 'openForms.componentNamespace', componentNamespaceRef.current);
+  set(builderOptions, 'openForms.featureFlags', featureFlags);
 
   // if an update must be forced, we mutate the ref state to point to the new
   // configuration, which causes the form builder to re-render the new configuration.
