@@ -1,4 +1,10 @@
 {
+  "+0eHh2": [
+    {
+      "type": 0,
+      "value": "Eigenschapnaam"
+    }
+  ],
   "+8EnHh": [
     {
       "type": 0,
@@ -17,6 +23,12 @@
       "value": "Path"
     }
   ],
+  "+XwAuT": [
+    {
+      "type": 0,
+      "value": "Verwijderen"
+    }
+  ],
   "+hAGg7": [
     {
       "type": 0,
@@ -29,10 +41,28 @@
       "value": "is gelijk aan"
     }
   ],
+  "+q3LGC": [
+    {
+      "type": 0,
+      "value": "Reguliere expressie"
+    }
+  ],
+  "/XbK4W": [
+    {
+      "type": 0,
+      "value": "Standaardwaarde"
+    }
+  ],
   "/c2LWu": [
     {
       "type": 0,
       "value": "Locatie veld"
+    }
+  ],
+  "/gcLcC": [
+    {
+      "type": 0,
+      "value": "Maak dit component alleen-lezen"
     }
   ],
   "/hIJ8m": [
@@ -45,6 +75,12 @@
     {
       "type": 0,
       "value": "Configuration"
+    }
+  ],
+  "/yDnA3": [
+    {
+      "type": 0,
+      "value": "Geef aan of deze waarde in de (bevestigings-)PDF moet getoond worden. Deze PDF wordt vaak ook als bijlage meegestuurd tijdens de registratie."
     }
   ],
   "0RXE97": [
@@ -77,6 +113,12 @@
     {
       "type": 0,
       "value": "Bevestigen"
+    }
+  ],
+  "1WxO/D": [
+    {
+      "type": 0,
+      "value": "Reguliere expressie"
     }
   ],
   "1fD+K4": [
@@ -127,6 +169,12 @@
       "value": "Annuleren"
     }
   ],
+  "2k+Mca": [
+    {
+      "type": 0,
+      "value": "Validatie"
+    }
+  ],
   "2uIYst": [
     {
       "type": 0,
@@ -143,10 +191,22 @@
       "value": "desc"
     }
   ],
+  "3LdlNv": [
+    {
+      "type": 0,
+      "value": "Dit component moet worden weergegeven"
+    }
+  ],
   "3W3Px9": [
     {
       "type": 0,
       "value": "Nog één toevoegen"
+    }
+  ],
+  "4/cCvG": [
+    {
+      "type": 0,
+      "value": "Locatie"
     }
   ],
   "4FQxD/": [
@@ -183,6 +243,18 @@
       "value": "De ingevulde veldwaarde wordt gebruikt als waarde voor de procesvariabele."
     }
   ],
+  "5DyU8e": [
+    {
+      "type": 0,
+      "value": "De maximale toegestane lengte voor dit veld."
+    }
+  ],
+  "5LxMj7": [
+    {
+      "type": 0,
+      "value": "Toon live het aantal karakters gebruikt in het veld."
+    }
+  ],
   "5OXIff": [
     {
       "type": 0,
@@ -201,6 +273,40 @@
       "value": "Add another value"
     }
   ],
+  "5dp5j+": [
+    {
+      "type": 1,
+      "value": "length"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "karakter"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "karakters"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "length"
+    }
+  ],
   "5uaKBM": [
     {
       "type": 0,
@@ -213,6 +319,12 @@
       "value": "Naam van de formulierdefinitie die in deze stap gebruikt wordt."
     }
   ],
+  "6F2H6H": [
+    {
+      "type": 0,
+      "value": "De waarde heeft:"
+    }
+  ],
   "6IAwkJ": [
     {
       "type": 0,
@@ -223,6 +335,12 @@
     {
       "type": 0,
       "value": "Authenticatiemethode"
+    }
+  ],
+  "6T2dvP": [
+    {
+      "type": 0,
+      "value": "Een verplicht veld moet ingevuld worden voor het formulier verstuurd kan worden."
     }
   ],
   "6ZW12a": [
@@ -279,6 +397,12 @@
       "value": "Globaal uniek ID voor het formulier"
     }
   ],
+  "7T23Pq": [
+    {
+      "type": 0,
+      "value": "Verplicht"
+    }
+  ],
   "7X6yT4": [
     {
       "type": 0,
@@ -323,6 +447,12 @@
     {
       "type": 0,
       "value": "."
+    }
+  ],
+  "7XdV9f": [
+    {
+      "type": 0,
+      "value": "Meerdere waarden"
     }
   ],
   "7YqZOp": [
@@ -511,6 +641,12 @@
       "value": "Configure"
     }
   ],
+  "ALLoNx": [
+    {
+      "type": 0,
+      "value": "Eenvoudig"
+    }
+  ],
   "APOVFs": [
     {
       "type": 0,
@@ -633,10 +769,22 @@
       "value": "Interne naam van de formulierdefinitie voor deze stap"
     }
   ],
+  "C64ptd": [
+    {
+      "type": 0,
+      "value": "Maximale lengte"
+    }
+  ],
   "CN9j+L": [
     {
       "type": 0,
       "value": "Verwijderen"
+    }
+  ],
+  "CRN74c": [
+    {
+      "type": 0,
+      "value": "Placeholder"
     }
   ],
   "CXKQZZ": [
@@ -669,6 +817,22 @@
       "value": "Inzenden toegestaan"
     }
   ],
+  "D0hDzV": [
+    {
+      "type": 1,
+      "value": "componentType"
+    },
+    {
+      "type": 0,
+      "value": "-component"
+    }
+  ],
+  "D5DCv0": [
+    {
+      "type": 0,
+      "value": "Foutmeldingen specifiek voor dit component, inclusief vertalingen"
+    }
+  ],
   "DEAqyQ": [
     {
       "type": 0,
@@ -687,6 +851,18 @@
       "value": "Sessie vervallen"
     }
   ],
+  "Dm3S1P": [
+    {
+      "type": 0,
+      "value": "Placeholder"
+    }
+  ],
+  "Do20MZ": [
+    {
+      "type": 0,
+      "value": "Basis"
+    }
+  ],
   "DqG0YS": [
     {
       "type": 0,
@@ -699,16 +875,34 @@
       "value": "Logica"
     }
   ],
+  "E5FZz/": [
+    {
+      "type": 0,
+      "value": "Vertalingen"
+    }
+  ],
   "EBsxTk": [
     {
       "type": 0,
       "value": "Veld"
     }
   ],
+  "EacF3m": [
+    {
+      "type": 0,
+      "value": "Registratie-attribuut"
+    }
+  ],
   "Ekld1h": [
     {
       "type": 0,
       "value": "Save as new"
+    }
+  ],
+  "ErwGIQ": [
+    {
+      "type": 0,
+      "value": "Opslaan"
     }
   ],
   "EtAvFF": [
@@ -747,10 +941,22 @@
       "value": "Eenvoudig"
     }
   ],
+  "Fc/emc": [
+    {
+      "type": 0,
+      "value": "Nog één toevoegen"
+    }
+  ],
   "FceidS": [
     {
       "type": 0,
       "value": "is niet gelijk aan"
+    }
+  ],
+  "FffJxu": [
+    {
+      "type": 0,
+      "value": "De beginwaarde voor dit veld, vóór dat gebruikersinteractie plaats vindt."
     }
   ],
   "FyNxJn": [
@@ -845,6 +1051,12 @@
       "value": "Vink aan om het veld op te nemen als procesvariabele"
     }
   ],
+  "H4sILo": [
+    {
+      "type": 0,
+      "value": "Stad afleiden"
+    }
+  ],
   "H6VxhG": [
     {
       "type": 0,
@@ -855,6 +1067,12 @@
     {
       "type": 0,
       "value": "Aantal dagen dat een niet voltooide inzendingen (door fouten in de afhandeling) bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken."
+    }
+  ],
+  "HNoGb8": [
+    {
+      "type": 0,
+      "value": "Alleen-lezen"
     }
   ],
   "HXE3Mm": [
@@ -949,6 +1167,12 @@
       "value": "Authenticatiefout"
     }
   ],
+  "JDYF2q": [
+    {
+      "type": 0,
+      "value": "Gegevens opgevoerd in dit component worden geschoond volgens de privacy-instellingen."
+    }
+  ],
   "JRGs/Q": [
     {
       "type": 0,
@@ -959,6 +1183,18 @@
     {
       "type": 0,
       "value": "bewaartermijn voor voltooide inzendingen."
+    }
+  ],
+  "JdwEl7": [
+    {
+      "type": 0,
+      "value": "JSON"
+    }
+  ],
+  "JneaQM": [
+    {
+      "type": 0,
+      "value": "Verborgen"
     }
   ],
   "JtOgcq": [
@@ -1151,6 +1387,12 @@
       "value": ". Verleng uw sessie indien u wenst door te gaan."
     }
   ],
+  "OlPsaw": [
+    {
+      "type": 0,
+      "value": "Foutcode"
+    }
+  ],
   "OobRu3": [
     {
       "type": 0,
@@ -1161,6 +1403,12 @@
     {
       "type": 0,
       "value": "Update"
+    }
+  ],
+  "OtGsP8": [
+    {
+      "type": 0,
+      "value": "Label"
     }
   ],
   "OvqnXR": [
@@ -1259,6 +1507,12 @@
     {
       "type": 0,
       "value": "Nee (met overzichtspagina)"
+    }
+  ],
+  "Qjl92W": [
+    {
+      "type": 0,
+      "value": "Voorbeeld"
     }
   ],
   "Qr2wnR": [
@@ -1403,16 +1657,46 @@
       "value": "dagen"
     }
   ],
+  "TtqZa0": [
+    {
+      "type": 0,
+      "value": "De placeholder-tekst die verschijnt als dit veld leeg is."
+    }
+  ],
+  "UCGSib": [
+    {
+      "type": 0,
+      "value": "Plugin(s)"
+    }
+  ],
+  "UGLnLd": [
+    {
+      "type": 0,
+      "value": "Selecteer de plugin(s) om te gebruiken voor validatie."
+    }
+  ],
   "UKTqb8": [
     {
       "type": 0,
       "value": "Bewaartermijn van inzendingen"
     }
   ],
+  "Uv58uI": [
+    {
+      "type": 0,
+      "value": "Postcodecomponent"
+    }
+  ],
   "V21YkS": [
     {
       "type": 0,
       "value": "Bevestigen"
+    }
+  ],
+  "V6ClU9": [
+    {
+      "type": 0,
+      "value": "Indien de postcode en huisnummer ingevuld zijn, dan wordt automatisch de stad ingevuld."
     }
   ],
   "VMMOA0": [
@@ -1461,6 +1745,12 @@
       "value": "verplicht"
     }
   ],
+  "VekFY+": [
+    {
+      "type": 0,
+      "value": "Automatisch aanvullen"
+    }
+  ],
   "Vi0+dd": [
     {
       "type": 0,
@@ -1471,6 +1761,24 @@
     {
       "type": 0,
       "value": "Gevoelige gegevens"
+    }
+  ],
+  "VyA4fK": [
+    {
+      "type": 0,
+      "value": "Weergeven in bevestigingsmail"
+    }
+  ],
+  "W4PizY": [
+    {
+      "type": 0,
+      "value": "Indien de postcode en huisnummer ingevuld zijn, dan wordt automatisch de straatnaam ingevuld."
+    }
+  ],
+  "WDRqIp": [
+    {
+      "type": 0,
+      "value": "Zijn er voor dit veld meerdere waarden mogelijk?"
     }
   ],
   "WHqkYA": [
@@ -1533,6 +1841,18 @@
       "value": "Basic"
     }
   ],
+  "YBY95E": [
+    {
+      "type": 0,
+      "value": "Handleiding"
+    }
+  ],
+  "YJpESX": [
+    {
+      "type": 0,
+      "value": "Geavanceerd"
+    }
+  ],
   "YQ/Vx0": [
     {
       "type": 0,
@@ -1585,6 +1905,12 @@
     {
       "type": 0,
       "value": "Item toevoegen"
+    }
+  ],
+  "YmWeGZ": [
+    {
+      "type": 0,
+      "value": "Selecteer de plugin om te gebruiken voor prefill."
     }
   ],
   "YzLSHY": [
@@ -1678,10 +2004,22 @@
       "value": "Vereist authenticatie"
     }
   ],
+  "asZV7t": [
+    {
+      "type": 0,
+      "value": "Straatnaam afleiden"
+    }
+  ],
   "auZOcD": [
     {
       "type": 0,
       "value": "Mapping expression"
+    }
+  ],
+  "b/AHC/": [
+    {
+      "type": 0,
+      "value": "Weergave in overzichten en bevestigingen"
     }
   ],
   "b9D64D": [
@@ -1700,6 +2038,12 @@
     {
       "type": 0,
       "value": "Er zijn validatiefouten"
+    }
+  ],
+  "bYBFBc": [
+    {
+      "type": 0,
+      "value": "Geef aan of deze waarde in het bevestigscherm moet getoond worden."
     }
   ],
   "bnxtnX": [
@@ -1724,6 +2068,12 @@
     {
       "type": 0,
       "value": "Component"
+    }
+  ],
+  "cAC5kL": [
+    {
+      "type": 0,
+      "value": "Verwijder de waarde van dit veld van de inzending als dit veld verborgen is. Let op: De waarde van dit veld wordt dan ook niet gebruikt in logica regels!"
     }
   ],
   "cDbGU2": [
@@ -1756,6 +2106,12 @@
       "value": "Inhoud die op de formulierstartpagina wordt getoond, onder de titel en boven de startknop(pen)."
     }
   ],
+  "ce1N0I": [
+    {
+      "type": 0,
+      "value": "Plugin"
+    }
+  ],
   "cpJErE": [
     {
       "type": 0,
@@ -1774,16 +2130,40 @@
       "value": "Exporteer dit formulier"
     }
   ],
+  "d5SKAT": [
+    {
+      "type": 0,
+      "value": "Item verwijderen"
+    }
+  ],
+  "dJNdhr": [
+    {
+      "type": 0,
+      "value": "Annuleren"
+    }
+  ],
   "dWNClE": [
     {
       "type": 0,
       "value": "Optionele categorie om formulieren in te groeperen."
     }
   ],
+  "dazu9j": [
+    {
+      "type": 0,
+      "value": "Het verplichte veld Label is niet ingevuld."
+    }
+  ],
   "ddDA6+": [
     {
       "type": 0,
       "value": "Lijst (array)"
+    }
+  ],
+  "ddDLRu": [
+    {
+      "type": 0,
+      "value": "Als de formuliercomponent"
     }
   ],
   "ddR92A": [
@@ -1828,6 +2208,12 @@
       "value": "Geavanceerde opties"
     }
   ],
+  "etny39": [
+    {
+      "type": 0,
+      "value": "Toon opties om dit veld in te vullen, gebaseerd op eerder ingetypte waarden."
+    }
+  ],
   "evbysh": [
     {
       "type": 0,
@@ -1856,6 +2242,18 @@
     {
       "type": 0,
       "value": "Prijslogica"
+    }
+  ],
+  "fRMCJI": [
+    {
+      "type": 0,
+      "value": "Prefill"
+    }
+  ],
+  "fT6Gtt": [
+    {
+      "type": 0,
+      "value": "Sla de waarde op onder het geselecteerde attribuut in de geselecteerde registratieplugin."
     }
   ],
   "fWcg7I": [
@@ -1918,10 +2316,22 @@
       "value": "Ja"
     }
   ],
+  "h0B9Fr": [
+    {
+      "type": 0,
+      "value": "De eigenschapsnaam mag alleen alfanumerieke tekens, onderstrepingstekens, punten en streepjes bevatten en mag niet worden afgesloten met een streepje of punt."
+    }
+  ],
   "h1EURI": [
     {
       "type": 0,
       "value": "De tekst op de knop om naar de vorige stap terug te keren in het formulier. Laat dit veld leeg om de standaardinstelling te gebruiken."
+    }
+  ],
+  "hJtTwo": [
+    {
+      "type": 0,
+      "value": "Formulierveld"
     }
   ],
   "hWRRHx": [
@@ -1960,6 +2370,36 @@
       "value": "Tabnaam"
     }
   ],
+  "iOADkJ": [
+    {
+      "type": 0,
+      "value": "Weergeven in overzicht"
+    }
+  ],
+  "iX0YPY": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Inklappen"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Uitklappen"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "collapsed"
+    }
+  ],
   "iZESbd": [
     {
       "type": 0,
@@ -1978,6 +2418,12 @@
       "value": "[EXPERIMENTEEL] Gebruik de nieuwe afspraakformulierenimplementatie."
     }
   ],
+  "iqAbXt": [
+    {
+      "type": 0,
+      "value": "Wissen als veld verborgen is"
+    }
+  ],
   "ixiVhj": [
     {
       "type": 1,
@@ -1992,6 +2438,12 @@
     {
       "type": 0,
       "value": "(Herbruikbare) stapgegevens"
+    }
+  ],
+  "jLg5l6": [
+    {
+      "type": 0,
+      "value": "Huisnummercomponent"
     }
   ],
   "jU/t8O": [
@@ -2048,6 +2500,12 @@
       "value": "Toon op de formulierbevestigingspagina een link om terug te gaan naar de hoofdwebsite. Deze is enkel zichtbaar als er geen betaling vereist is."
     }
   ],
+  "k9tAyW": [
+    {
+      "type": 0,
+      "value": "Foutmelding"
+    }
+  ],
   "kHn5Yw": [
     {
       "type": 0,
@@ -2060,10 +2518,22 @@
       "value": "uitgeschakeld"
     }
   ],
+  "kkTfpu": [
+    {
+      "type": 0,
+      "value": "Beschrijving"
+    }
+  ],
   "koVh3m": [
     {
       "type": 0,
       "value": "Categorie"
+    }
+  ],
+  "ktjLJK": [
+    {
+      "type": 0,
+      "value": "Toon aantal karakters"
     }
   ],
   "l1fi1t": [
@@ -2094,6 +2564,12 @@
     {
       "type": 0,
       "value": "Componentlabel"
+    }
+  ],
+  "m2oZCk": [
+    {
+      "type": 0,
+      "value": "(Privacy)gevoelige gegevens"
     }
   ],
   "mH3X/G": [
@@ -2283,6 +2759,12 @@
       "value": "Formulierdefinitie"
     }
   ],
+  "pq7q6N": [
+    {
+      "type": 0,
+      "value": "Weergeven in PDF"
+    }
+  ],
   "pyX2Tl": [
     {
       "type": 0,
@@ -2311,6 +2793,12 @@
     {
       "type": 0,
       "value": "URL-deel"
+    }
+  ],
+  "r+9rju": [
+    {
+      "type": 0,
+      "value": "Registratie"
     }
   ],
   "r5Olb9": [
@@ -2359,6 +2847,12 @@
       "value": "Whether to send a confirmation email to the end-user who submitted the form."
     }
   ],
+  "sgmcmf": [
+    {
+      "type": 0,
+      "value": "Pluginattribuut"
+    }
+  ],
   "t99ynC": [
     {
       "type": 0,
@@ -2383,6 +2877,12 @@
       "value": "Bevestingsmailsjabloon"
     }
   ],
+  "tnDJ58": [
+    {
+      "type": 0,
+      "value": "Geef aan of deze waarde in de bevestigingsmail moet opgenomen worden."
+    }
+  ],
   "twWsC2": [
     {
       "type": 0,
@@ -2393,6 +2893,12 @@
     {
       "type": 0,
       "value": "Kies een stap om te bekijken of aan te passen."
+    }
+  ],
+  "uDSxtY": [
+    {
+      "type": 0,
+      "value": "Vertalingen"
     }
   ],
   "uG5kOq": [
@@ -2439,6 +2945,12 @@
       "value": "Maak een nieuwe formulierdefinitie"
     }
   ],
+  "ve3rsH": [
+    {
+      "type": 0,
+      "value": "Foutmeldingen"
+    }
+  ],
   "viEfGU": [
     {
       "type": 0,
@@ -2463,6 +2975,12 @@
       "value": "De variabelenaam om te gebruiken in de procesinstantie."
     }
   ],
+  "vzhWgR": [
+    {
+      "type": 0,
+      "value": "Geef het attribuut op wat de prefill-gegevens bevat."
+    }
+  ],
   "wIaGgb": [
     {
       "type": 0,
@@ -2473,6 +2991,12 @@
     {
       "type": 0,
       "value": "Bron"
+    }
+  ],
+  "wZ99FU": [
+    {
+      "type": 0,
+      "value": "Het patroon van reguliere expressie waar de waarde aan moet voldoen voor het formulier kan verstuurd worden."
     }
   ],
   "wjwFwT": [
@@ -2521,6 +3045,18 @@
     {
       "type": 0,
       "value": "Formulierdefinitie selecteren"
+    }
+  ],
+  "yD4X2y": [
+    {
+      "type": 0,
+      "value": "Maximale lengte"
+    }
+  ],
+  "yQtFln": [
+    {
+      "type": 0,
+      "value": "Verberg een veld in het formulier."
     }
   ],
   "yTpHh0": [
