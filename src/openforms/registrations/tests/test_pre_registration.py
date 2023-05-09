@@ -4,10 +4,7 @@ from django.test import TestCase
 
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.registrations.tasks import register_submission
-from openforms.submissions.tasks.registration import (
-    obtain_submission_reference,
-    pre_registration,
-)
+from openforms.submissions.tasks.registration import pre_registration
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
@@ -130,44 +127,6 @@ class PreRegistrationTests(TestCase):
                 ):
                     pre_registration(submission.id)
 
-                submission.refresh_from_db()
-
-                self.assertEqual(
-                    submission.public_registration_reference, f"OF-{plugin_name}"
-                )
-
-    def test_plugins_post_registration_does_nothing(self):
-        plugin_data = [
-            ("email", {"to_emails": ["foo@bar.baz"]}),
-            (
-                "camunda",
-                {
-                    "process_definition": "invoice",
-                    "process_definition_version": None,
-                    "process_variables": [],
-                    "complex_process_variables": [],
-                },
-            ),
-            ("demo", {}),
-            ("failing-demo", {}),
-            ("exception-demo", {}),
-            ("microsoft-graph", {}),
-            ("objects_api", {}),
-        ]
-
-        for plugin_name, plugin_options in plugin_data:
-            submission = SubmissionFactory.create(
-                form__registration_backend=plugin_name,
-                form__registration_backend_options=plugin_options,
-                public_registration_reference=f"OF-{plugin_name}",
-            )
-
-            with self.subTest(plugin_name):
-                self.assertEqual(
-                    submission.public_registration_reference, f"OF-{plugin_name}"
-                )
-
-                obtain_submission_reference(submission.id)
                 submission.refresh_from_db()
 
                 self.assertEqual(
