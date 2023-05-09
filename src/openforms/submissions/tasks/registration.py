@@ -4,7 +4,6 @@ from typing import Optional
 from django.db import IntegrityError, transaction
 from django.utils.crypto import get_random_string
 
-from openforms.celery import app
 from openforms.registrations.base import BasePlugin
 from openforms.registrations.tasks import pre_registration, register_submission
 
@@ -15,21 +14,10 @@ __all__ = [
     "set_submission_reference",
     "get_registration_plugin",
     "pre_registration",
-    "obtain_submission_reference",
 ]
 
 
 logger = logging.getLogger(__name__)
-
-
-@app.task
-@transaction.atomic
-def obtain_submission_reference(submission_id: int) -> None:
-    """
-    Task wrapper for set_submission_reference()
-    """
-    submission = Submission.objects.get(id=submission_id)
-    set_submission_reference(submission)
 
 
 def get_registration_plugin(submission: Submission) -> Optional["BasePlugin"]:

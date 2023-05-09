@@ -34,7 +34,6 @@ def on_completion(submission_id: int) -> None:
     pre_registration_task = pre_registration.si(submission_id)
     generate_report_task = generate_submission_report.si(submission_id)
     register_submission_task = register_submission.si(submission_id)
-    obtain_submission_reference_task = obtain_submission_reference.si(submission_id)
     finalize_completion_task = finalize_completion.si(submission_id)
 
     # for the orchestration with distributed processing and dependencies between
@@ -56,7 +55,6 @@ def on_completion(submission_id: int) -> None:
         generate_report_task,
         # TODO: ensure that any images that need resizing are done so before this is attempted
         register_submission_task,
-        obtain_submission_reference_task,
         # we schedule the finalization so that the ``async_result`` below is marked
         # as done, which is the "signal" to show the confirmation page. Actual payment
         # flow & confirmation e-mail follow later.
