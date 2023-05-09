@@ -1,53 +1,25 @@
 import logging
-import traceback
 from typing import Optional
 
 from django.db import IntegrityError, transaction
 from django.utils.crypto import get_random_string
 
 from openforms.celery import app
-from openforms.logging import logevent
 from openforms.registrations.base import BasePlugin
-from openforms.registrations.tasks import register_submission
+from openforms.registrations.tasks import pre_registration, register_submission
 
-from ..constants import RegistrationStatuses
 from ..models import Submission
 
 __all__ = [
     "register_submission",
     "set_submission_reference",
+    "get_registration_plugin",
     "pre_registration",
     "obtain_submission_reference",
 ]
 
 
 logger = logging.getLogger(__name__)
-
-
-@app.task
-def pre_registration(submission_id: int) -> None:
-    submission = Submission.objects.get(id=submission_id)
-    registration_plugin = get_registration_plugin(submission)
-
-    if not registration_plugin:
-        set_submission_reference(submission)
-        return
-
-    options_serializer = registration_plugin.configuration_options(
-        data=submission.form.registration_backend_options
-    )
-    try:
-        options_serializer.is_valid(raise_exception=True)
-    except Exception as e:
-        submission.save_registration_status(
-            RegistrationStatuses.failed, {"traceback": traceback.format_exc()}
-        )
-        logevent.registration_failure(submission, e, registration_plugin)
-        raise
-
-    registration_plugin.pre_register_submission(
-        submission, options_serializer.validated_data
-    )
 
 
 @app.task
