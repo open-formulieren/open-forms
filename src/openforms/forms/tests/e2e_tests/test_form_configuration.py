@@ -45,9 +45,10 @@ class FormDesignerComponentDefinitionTests(E2ETestCase):
 
             # Save component
             await page.get_by_role("button", name="Opslaan").click()
+            await expect(page.locator("css=.formio-dialog-content")).to_be_hidden()
 
             # Save form
-            await page.locator('css=[name="_save"]').click()
+            await page.get_by_role("button", name="Save", exact=True).click()
             changelist_url = str(
                 furl(self.live_server_url) / reverse("admin:forms_form_changelist")
             )
