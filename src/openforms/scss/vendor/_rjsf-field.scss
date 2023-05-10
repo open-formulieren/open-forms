@@ -13,6 +13,10 @@
   &__field {
     display: flex;
     align-items: center;
+
+    input[type="url"], input[type="text"] {
+      width: $input-field-size;
+    }
   }
 
   &__field--error {

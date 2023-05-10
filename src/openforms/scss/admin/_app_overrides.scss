@@ -202,14 +202,6 @@ $djai-border-width: 8px;
     color: #999; // same color as django forms.css
   }
 
-  input#root_objecttype.form-control,
-  input#root_productaanvraagType.form-control,
-  input#root_informatieobjecttypeSubmissionReport.form-control,
-  input#root_informatieobjecttypeSubmissionCsv.form-control,
-  input#root_informatieobjecttypeAttachment.form-control,
-  input#root_organisatieRsin.form-control {
-    width: 25em;
-  }
 
   select.form-control {
     $properties: display, width, font-size, font-weight, line-height, color, background-clip,
