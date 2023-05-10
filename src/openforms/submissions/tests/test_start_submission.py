@@ -13,6 +13,8 @@ Functional requirements are:
 
 See ``test_disabled_forms.py`` for more extensive tests around maintenance mode.
 """
+from unittest.mock import patch
+
 from django.test import override_settings
 
 from rest_framework import status
@@ -45,12 +47,6 @@ class SubmissionStartTests(APITestCase):
         # ensure there is a form definition
         cls.form = FormFactory.create()
         cls.step = FormStepFactory.create(form=cls.form)
-        cls.form_variable = FormVariableFactory.create(
-            form=cls.form,
-            form_definition=cls.step.form_definition,
-            prefill_plugin="demo",
-            prefill_attribute="random_string",
-        )
         cls.form_url = reverse(
             "api:form-detail", kwargs={"uuid_or_slug": cls.form.uuid}
         )
@@ -162,7 +158,14 @@ class SubmissionStartTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_start_submission_with_prefill(self):
+    @patch("openforms.logging.logevent._create_log")
+    def test_start_submission_with_prefill(self, mock_logevent):
+        FormVariableFactory.create(
+            form=self.form,
+            form_definition=self.step.form_definition,
+            prefill_plugin="demo",
+            prefill_attribute="random_string",
+        )
         body = {
             "form": f"http://testserver.com{self.form_url}",
             "formUrl": "http://testserver.com/my-form",
