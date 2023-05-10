@@ -14,7 +14,6 @@
   "unsavedRowsError": "Bewaar alle rijen voordat u doorgaat.",
   "Processing file, Please wait...": "Bezig met verwerken. Even geduld alstublieft...",
   "File with the same name is already uploaded": "Bestand met dezelfde naam is reeds ge\u00fcpload",
-  "File is the wrong type; it must be {{ pattern }}": "Bestand is van het verkeerde type; het moet zijn {{ pattern }}",
   "File is too small; it must be at least {{ size }}": "Bestand is te klein; het moet minimaal {{ size }} zijn",
   "File is too big; it must be at most {{ size }}": "Bestand is te groot; het mag maximaal {{ size }} zijn",
   "File Service not provided": "Bestandservice niet opgegeven",
@@ -390,5 +389,7 @@
   "Translations for literals used in this component.": "Vertalingen voor teksten die in dit component gebruikt worden.",
   "Literal": "Brontekst",
   "Translation": "Vertaling",
+  "The uploaded file is not of an allowed type. It must be: {{ pattern }}.": "Het geuploaded bestand is niet van een toegestaan type. Het moet {{ pattern }} zijn.",
+  "{{ labels }} or {{ lastLabel }}": "{{ labels }} of {{ lastLabel }}",
   "": ""
 }
