@@ -33,6 +33,13 @@ async def add_new_step(page: Page):
 async def drag_and_drop_component(page: Page, component: str):
     await page.get_by_text(component, exact=True).hover()
     await page.mouse.down()
+    # This is added to make it work for when there is already a component in the container.
+    # Idea taken from: https://playwright.dev/python/docs/input#dragging-manually
+    # It says:
+    # "If your page relies on the dragover event being dispatched, you need at least two mouse moves to trigger it in
+    # all browsers. To reliably issue the second mouse move, repeat your mouse.move() or locator.hover() twice."
+    # ... but repeating the hover didn't work. Hence, the extra move.
+    await page.mouse.move(0, 0)
     await page.locator('css=[ref="-container"]').hover()
     await page.mouse.up()
 
