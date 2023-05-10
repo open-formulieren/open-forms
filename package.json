@@ -38,7 +38,6 @@
     "bem.js": "^1.0.10",
     "classnames": "^2.3.1",
     "copy-to-clipboard": "^3.3.1",
-    "core-js": "^3.11.1",
     "design-token-editor": "^0.5.0",
     "flatpickr": "^4.6.9",
     "formik": "^2.2.9",
@@ -70,6 +69,11 @@
       "<rootDir>/src/openforms/js"
     ]
   },
+  "browserslist": [
+    ">0.5%",
+    "not dead",
+    "not op_mini all"
+  ],
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/polyfill": "^7.12.1",
@@ -89,6 +93,7 @@
     "autoprefixer": "^10.2.4",
     "babel-loader": "^8.2.2",
     "babel-plugin-formatjs": "^10.3.4",
+    "browserslist": "^4.21.5",
     "copy-webpack-plugin": "^6.4.1",
     "css-loader": "^5.0.2",
     "cssnano": "^5.0.17",
