@@ -73,9 +73,7 @@ class MimeTypeValidator:
             or mimetype_allowed(mime_type, self._regular_mimes, self._wildcard_mimes)
         ):
             raise serializers.ValidationError(
-                _("The file '{filename}' is not a valid file type.").format(
-                    filename=value.name
-                ),
+                _("The provided file is not a valid file type.")
             )
 
         # Contents is allowed. Do extension or submitted content_type agree?
@@ -96,9 +94,7 @@ class MimeTypeValidator:
                 return
 
             raise serializers.ValidationError(
-                _("The file '{filename}' is not a {file_type}.").format(
-                    filename=value.name, file_type=f".{ext}"
-                )
+                _("The provided file is not a {file_type}.").format(file_type=f".{ext}")
             )
         elif mime_type == "image/heic" and value.content_type in (
             "image/heic",
@@ -107,7 +103,7 @@ class MimeTypeValidator:
             return
         elif mime_type != value.content_type:
             raise serializers.ValidationError(
-                _("The file '{filename}' is not a {file_type}.").format(
+                _("The provided file is not a {file_type}.").format(
                     filename=value.name, file_type=f".{ext}"
                 )
             )
