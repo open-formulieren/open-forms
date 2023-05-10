@@ -85,8 +85,10 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
     )
     @patch("mozilla_django_oidc_db.models.OpenIDConnectConfig.get_solo")
     @patch("openforms.prefill.contrib.haalcentraal.models.HaalCentraalConfig.get_solo")
+    @patch("openforms.logging.logevent._create_log")
     def test_flow(
         self,
+        mock_create_log,
         mock_haalcentraal_solo,
         mock_get_solo,
         mock_get_token,
