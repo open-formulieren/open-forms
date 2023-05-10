@@ -1,9 +1,10 @@
 import BsnField from './components/form/bsn';
 import CheckboxField from './components/form/checkbox';
-import CoSignField from './components/form/coSign';
+import CoSignFieldOld from './components/form/coSignOld';
 import ColumnField from './components/form/columns';
 import Component from './components/form/component';
 import ContentField from './components/form/content';
+import CoSignField from './components/form/cosign';
 import CurrencyField from './components/form/currency';
 import Datamap from './components/form/datamap';
 import DateField from './components/form/date';
@@ -55,7 +56,8 @@ const FormIOModule = {
     password: PasswordField,
     fieldset: FieldSet,
     licenseplate: LicensePlate,
-    coSign: CoSignField,
+    coSign: CoSignFieldOld,
+    cosign: CoSignField,
     npFamilyMembers: NpFamilyMembers,
     columns: ColumnField,
     content: ContentField,
