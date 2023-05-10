@@ -2,6 +2,7 @@ from django.urls import reverse
 
 from asgiref.sync import sync_to_async
 from furl import furl
+from playwright.async_api import expect
 
 from openforms.tests.e2e.base import E2ETestCase, browser_page, create_superuser
 
@@ -47,6 +48,10 @@ class FormDesignerComponentDefinitionTests(E2ETestCase):
 
             # Save form
             await page.locator('css=[name="_save"]').click()
+            changelist_url = str(
+                furl(self.live_server_url) / reverse("admin:forms_form_changelist")
+            )
+            await expect(page).to_have_url(changelist_url)
 
         @sync_to_async
         def assertConfigurationHasLabels():
