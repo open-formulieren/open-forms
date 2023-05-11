@@ -23,6 +23,7 @@ from openforms.conf.utils import Filesize
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.api.validators import MimeTypeValidator
 from openforms.formio.typing import Component
+from openforms.formio.utils import iterate_data_with_components
 from openforms.submissions.models import (
     Submission,
     SubmissionFileAttachment,
@@ -97,74 +98,6 @@ class UploadContext:
     data_path: str  # The path to the component data in the submission data
     configuration_path: str  # The path to the component in the configuration JSON
     num_uploads: int
-
-
-def _iterate_data_with_components(
-    configuration: JSONObject,
-    data: JSONObject,
-    data_path: Path = Path(),
-    configuration_path: str = "components",
-    filter_types: list[str] = None,
-) -> tuple[JSONObject, JSONObject, str, str] | None:
-    """
-    Iterate through a configuration and return a tuple with the component JSON, its value in the submission data
-    and the path within the submission data.
-
-    For example, for a configuration with components:
-
-    .. code:: json
-
-        [
-            {"key": "surname", "type": "textfield"},
-            {"key": "pets", "type": "editgrid", "components": [{"key": "name", "type": "textfield"}]}
-        ]
-
-    And a submission data:
-
-    .. code:: json
-
-        {"surname": "Doe", "pets": [{"name": "Qui"}, {"name": "Quo"}, {"name": "Qua"}] }
-
-    For the "Qui" item of the repeating group this function would yield:
-    ``({"key": "name", "type": "textfield"}, "Qui", "pets.0.name")``.
-    """
-    if configuration.get("type") == "columns":
-        for index, column in enumerate(configuration["columns"]):
-            child_configuration_path = f"{configuration_path}.columns.{index}"
-            yield from _iterate_data_with_components(
-                column, data, data_path, child_configuration_path, filter_types
-            )
-
-    parent_type = configuration.get("type")
-    if parent_type == "editgrid":
-        parent_path = Path(data_path, Path.from_text(configuration["key"]))
-        group_data = glom(data, parent_path, default=list())
-        for index in range(len(group_data)):
-            yield from _iterate_data_with_components(
-                {"components": configuration.get("components", [])},
-                data,
-                data_path=Path(parent_path, index),
-                configuration_path=f"{configuration_path}.components",
-                filter_types=filter_types,
-            )
-    else:
-        base_configuration_path = configuration_path
-        if parent_type == "fieldset":
-            base_configuration_path += ".components"
-        for index, child_component in enumerate(configuration.get("components", [])):
-            child_configuration_path = f"{base_configuration_path}.{index}"
-            yield from _iterate_data_with_components(
-                child_component, data, data_path, child_configuration_path, filter_types
-            )
-
-    filter_out = (parent_type not in filter_types) if filter_types else False
-    if "key" in configuration and not filter_out:
-        component_data_path = Path(data_path, Path.from_text(configuration["key"]))
-        component_data = glom(data, component_data_path, default=None)
-        if component_data is not None:
-            yield configuration, component_data, _glom_path_to_str(
-                component_data_path
-            ), configuration_path
 
 
 def iter_step_uploads(
@@ -376,7 +309,7 @@ def resolve_uploads_from_data(configuration: JSONObject, data: dict) -> dict:
         upload_info,
         data_path,
         configuration_path,
-    ) in _iterate_data_with_components(configuration, data, filter_types={"file"}):
+    ) in iterate_data_with_components(configuration, data, filter_types={"file"}):
         uploads = list()
         for info in upload_info:
             # lets be careful with malformed user data
