@@ -40,19 +40,21 @@ class ConfigCheckTests(TestCase):
             response = self.client.get(self.url)
             self.assertEqual(response.status_code, 200)
 
-    def test_disabled_plugins_are_skipped(self):
-        config = GlobalConfiguration.get_solo()
-        config.plugin_configuration = {
-            "registrations": {
-                "stuf-zds-create-zaak": {"enabled": False},
-                "email": {"enabled": True},
-            },
-            "prefill": {
-                "kvk-kvknumber": {"enabled": False},
-            },
-        }
-        config.save()
-
+    @patch(
+        "openforms.config.models.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            plugin_configuration={
+                "registrations": {
+                    "stuf-zds-create-zaak": {"enabled": False},
+                    "email": {"enabled": True},
+                },
+                "prefill": {
+                    "kvk-kvknumber": {"enabled": False},
+                },
+            }
+        ),
+    )
+    def test_disabled_plugins_are_skipped(self, mock_get_solo):
         user = StaffUserFactory(user_permissions=["configuration_overview"])
         self.client.force_login(user)
 
