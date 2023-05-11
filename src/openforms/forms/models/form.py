@@ -24,6 +24,7 @@ from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
 from openforms.template.validators import DjangoTemplateValidator
+from openforms.typing import JSONObject
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 from openforms.variables.constants import FormVariableSources
 
@@ -344,6 +345,16 @@ class Form(models.Model):
     get_authentication_backends_display.short_description = _(
         "authentication backend(s)"
     )
+
+    def get_cosign_component(self) -> JSONObject | None:
+        for component in self.iter_components():
+            if component["type"] == "cosign":
+                return component
+
+    @property
+    def cosigning_required(self) -> bool:
+        cosign_component = self.get_cosign_component()
+        return cosign_component and cosign_component.get("validate", {}).get("required")
 
     @property
     def login_required(self) -> bool:

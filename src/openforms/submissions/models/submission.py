@@ -15,6 +15,7 @@ from glom import glom
 
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.datastructures import FormioConfigurationWrapper
+from openforms.formio.utils import iterate_data_with_components
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
 from openforms.template import openforms_backend, render_from_string
@@ -202,6 +203,11 @@ class Submission(models.Model):
             "Note that this reference is displayed to the end-user and used as payment "
             "reference!"
         ),
+    )
+    cosign_complete = models.BooleanField(
+        _("cosign complete"),
+        default=False,
+        help_text=_("Indicates whether the submission has been cosigned."),
     )
 
     confirmation_email_sent = models.BooleanField(
@@ -676,3 +682,31 @@ class Submission(models.Model):
                 variable.key: variable.value for variable in prefill_vars
             }
         return self._prefilled_data
+
+    def get_cosigner_email(self) -> str | None:
+        for form_step in self.form.formstep_set.select_related("form_definition"):
+            for (
+                component,
+                upload_info,
+                data_path,
+                configuration_path,
+            ) in iterate_data_with_components(
+                form_step.form_definition.configuration, self.data
+            ):
+                if component["type"] == "cosign":
+                    return glom(self.data, data_path, default=None)
+
+    @property
+    def waiting_on_cosign(self) -> bool:
+        if self.cosign_complete:
+            return False
+
+        # Cosign not complete, but required
+        if self.form.cosigning_required:
+            return True
+
+        # Co-sign not complete, not required, but the optional cosign component was filled in with an email
+        if self.get_cosigner_email():
+            return True
+
+        return False
