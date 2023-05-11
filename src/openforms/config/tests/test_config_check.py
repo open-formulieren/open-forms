@@ -40,38 +40,38 @@ class ConfigCheckTests(TestCase):
             response = self.client.get(self.url)
             self.assertEqual(response.status_code, 200)
 
-    def test_disabled_plugins_are_skipped(self):
-        with patch(
-            "openforms.config.models.GlobalConfiguration.get_solo",
-            return_value=GlobalConfiguration(
-                plugin_configuration={
-                    "registrations": {
-                        "stuf-zds-create-zaak": {"enabled": False},
-                        "email": {"enabled": True},
-                    },
-                    "prefill": {
-                        "kvk-kvknumber": {"enabled": False},
-                    },
-                }
-            ),
-        ):
-            user = StaffUserFactory(user_permissions=["configuration_overview"])
-            self.client.force_login(user)
+    @patch(
+        "openforms.config.models.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            plugin_configuration={
+                "registrations": {
+                    "stuf-zds-create-zaak": {"enabled": False},
+                    "email": {"enabled": True},
+                },
+                "prefill": {
+                    "kvk-kvknumber": {"enabled": False},
+                },
+            }
+        ),
+    )
+    def test_disabled_plugins_are_skipped(self, mock_get_solo):
+        user = StaffUserFactory(user_permissions=["configuration_overview"])
+        self.client.force_login(user)
 
-            response = self.client.get(self.url)
-            self.assertEqual(response.status_code, 200)
-            self.assertNotContains(
-                response,
-                _("StUF-ZDS"),
-            )
-            self.assertNotContains(
-                response,
-                _("KvK Company by KvK number"),
-            )
-            self.assertContains(
-                response,
-                _("Email registration"),
-            )
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(
+            response,
+            _("StUF-ZDS"),
+        )
+        self.assertNotContains(
+            response,
+            _("KvK Company by KvK number"),
+        )
+        self.assertContains(
+            response,
+            _("Email registration"),
+        )
 
     @requests_mock.Mocker()
     @patch(
