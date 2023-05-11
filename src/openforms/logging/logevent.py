@@ -642,3 +642,20 @@ def bulk_forms_imported(user: "User", failed_files: List[Tuple[str, str]]):
         extra_data={"failed_files": failed_files},
         user=user,
     )
+
+
+# - - -
+
+
+def cosigner_email_failure(submission: "Submission"):
+    _create_log(
+        submission,
+        "cosigner_email_failure",
+    )
+
+
+def cosigner_email_success(submission: "Submission"):
+    _create_log(
+        submission,
+        "cosigner_email_success",
+    )

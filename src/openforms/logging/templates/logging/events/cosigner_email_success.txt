@@ -1,0 +1,4 @@
+{% load i18n %}
+{% blocktrans trimmed with lead=log.fmt_lead %}
+   {{ lead }}: Successfully sent email to co-signer.
+{% endblocktrans %}
