@@ -41,15 +41,15 @@ def _get_design_token_values(tokens):
     TODO: convert to use style-dict assets merged with database tokens
     TODO: figure out how to use the remote stylesheet for this
     """
-    height = glom(tokens, "header-logo.height.value", default="50px")
-    width = glom(tokens, "header-logo.width.value", default="auto")
+    height = glom(tokens, "of.header-logo.height.value", default="50px")
+    width = glom(tokens, "of.header-logo.width.value", default="auto")
     height_attr = _filter(height)
     width_attr = _filter(width)
 
     return {
         "header": {
-            "fg": glom(tokens, "page-header.fg.value", default="#000000"),
-            "bg": glom(tokens, "page-header.bg.value", default="#ffffff"),
+            "fg": glom(tokens, "of.page-header.fg.value", default="#000000"),
+            "bg": glom(tokens, "of.page-header.bg.value", default="#ffffff"),
         },
         "logo": {
             # Setting height to a default of 50 obtaines the same result on the
@@ -63,8 +63,8 @@ def _get_design_token_values(tokens):
             "width_attr": width_attr,
         },
         "footer": {
-            "fg": glom(tokens, "page-footer.fg.value", default="#ffffff"),
-            "bg": glom(tokens, "page-footer.bg.value", default="#2980b9"),
+            "fg": glom(tokens, "of.page-footer.fg.value", default="#ffffff"),
+            "bg": glom(tokens, "of.page-footer.bg.value", default="#2980b9"),
         },
-        "layout": {"bg": glom(tokens, "layout.bg.value", default="#e6e6e6")},
+        "layout": {"bg": glom(tokens, "of.layout.bg.value", default="#e6e6e6")},
     }

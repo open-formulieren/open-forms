@@ -355,7 +355,6 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
                 confirmation_email_content="Global content {% appointment_information %} {% payment_information %}",
             ),
         ):
-
             with self.subTest("Custom subject + custom content"):
                 subject, content = get_confirmation_email_templates(submission1)
 
