@@ -402,6 +402,16 @@ class GlobalConfiguration(SingletonModel):
         help_text=_("Allow use of unfinished, unstable service fetch feature."),
     )
 
+    enable_react_formio_builder = models.BooleanField(
+        _("enable new formio builder"),
+        default=False,
+        help_text=_(
+            "Use the experimental Form.io component builder implementation. Note that "
+            "this falls back to the existing builder for components that are not "
+            "supported yet."
+        ),
+    )
+
     default_test_bsn = models.CharField(
         _("default test BSN"),
         blank=True,

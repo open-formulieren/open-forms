@@ -40,10 +40,17 @@ Currently, Prettier is configured to format ``.js`` and ``.scss`` files.
 
 **Managing translations**
 
-Translations are extracted from the code with the ``makemessages`` script, and after the
+Translations are extracted from the code with helper scripts, and after the
 translations have been edited in the JSON files, you can compile them via the
-``compilemessages`` script. We currently check both source and compiled messages into
-version control.
+compilation helper scripts. We currently check both source and compiled messages into
+version control. See :ref:`developers_frontend_index_i18n` for detailed instructions,
+as we're currently re-organizing the tooling here.
+
+Cheat sheet:
+
+* SDK: ``yarn makemessages`` and ``yarn compilemessages``
+* Backend: ``./bin/makemessages_js.sh`` and ``./bin/compilemessages_js.sh``
+* Libraries: ``./bin/makemessages.sh`` and ``(yarn|npm run) compilemessages``
 
 There is also a ``bin/find_untranslated_js.py`` script to point out potentially missed
 translations, as the JSON file format is not too friendly to keep track of everything.

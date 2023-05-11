@@ -31,6 +31,7 @@ class FormioConfigMixin:
                 ],
                 "feature_flags": {
                     "of_service_fetch_enabled": config.enable_service_fetch,
+                    "react_formio_builder_enabled": config.enable_react_formio_builder,
                 },
                 "confidentiality_levels": [
                     {"label": label, "value": value}

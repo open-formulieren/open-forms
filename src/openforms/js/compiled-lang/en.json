@@ -1,4 +1,10 @@
 {
+  "+0eHh2": [
+    {
+      "type": 0,
+      "value": "Property Name"
+    }
+  ],
   "+8EnHh": [
     {
       "type": 0,
@@ -17,6 +23,12 @@
       "value": "Path"
     }
   ],
+  "+XwAuT": [
+    {
+      "type": 0,
+      "value": "Remove"
+    }
+  ],
   "+hAGg7": [
     {
       "type": 0,
@@ -29,10 +41,28 @@
       "value": "is equal to"
     }
   ],
+  "+q3LGC": [
+    {
+      "type": 0,
+      "value": "Regular Expression Pattern"
+    }
+  ],
+  "/XbK4W": [
+    {
+      "type": 0,
+      "value": "Default Value"
+    }
+  ],
   "/c2LWu": [
     {
       "type": 0,
       "value": "Locations Component"
+    }
+  ],
+  "/gcLcC": [
+    {
+      "type": 0,
+      "value": "Make this component read only."
     }
   ],
   "/hIJ8m": [
@@ -45,6 +75,12 @@
     {
       "type": 0,
       "value": "Configuration"
+    }
+  ],
+  "/yDnA3": [
+    {
+      "type": 0,
+      "value": "Whether to show this value in the confirmation PDF"
     }
   ],
   "0RXE97": [
@@ -77,6 +113,12 @@
     {
       "type": 0,
       "value": "Confirm"
+    }
+  ],
+  "1WxO/D": [
+    {
+      "type": 0,
+      "value": "Regular Expression Pattern"
     }
   ],
   "1fD+K4": [
@@ -127,6 +169,12 @@
       "value": "Cancel"
     }
   ],
+  "2k+Mca": [
+    {
+      "type": 0,
+      "value": "Validation"
+    }
+  ],
   "2uIYst": [
     {
       "type": 0,
@@ -143,10 +191,22 @@
       "value": "desc"
     }
   ],
+  "3LdlNv": [
+    {
+      "type": 0,
+      "value": "This component should display"
+    }
+  ],
   "3W3Px9": [
     {
       "type": 0,
       "value": "Add another"
+    }
+  ],
+  "4/cCvG": [
+    {
+      "type": 0,
+      "value": "Location"
     }
   ],
   "4FQxD/": [
@@ -183,6 +243,18 @@
       "value": "The value of the selected field will be the process variable value."
     }
   ],
+  "5DyU8e": [
+    {
+      "type": 0,
+      "value": "The maximum length requirement this field must meet."
+    }
+  ],
+  "5LxMj7": [
+    {
+      "type": 0,
+      "value": "Show a live count of the number of characters."
+    }
+  ],
   "5OXIff": [
     {
       "type": 0,
@@ -201,6 +273,40 @@
       "value": "Add another value"
     }
   ],
+  "5dp5j+": [
+    {
+      "type": 1,
+      "value": "length"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "character"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "characters"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "length"
+    }
+  ],
   "5uaKBM": [
     {
       "type": 0,
@@ -213,6 +319,12 @@
       "value": "Name of the form definition used in this form step"
     }
   ],
+  "6F2H6H": [
+    {
+      "type": 0,
+      "value": "Has the value"
+    }
+  ],
   "6IAwkJ": [
     {
       "type": 0,
@@ -223,6 +335,12 @@
     {
       "type": 0,
       "value": "Authentication"
+    }
+  ],
+  "6T2dvP": [
+    {
+      "type": 0,
+      "value": "A required field must be filled in before the form can be submitted."
     }
   ],
   "6ZW12a": [
@@ -279,6 +397,12 @@
       "value": "Unique identifier for the form"
     }
   ],
+  "7T23Pq": [
+    {
+      "type": 0,
+      "value": "Required"
+    }
+  ],
   "7X6yT4": [
     {
       "type": 0,
@@ -319,6 +443,12 @@
       ],
       "type": 8,
       "value": "link"
+    }
+  ],
+  "7XdV9f": [
+    {
+      "type": 0,
+      "value": "Multiple values"
     }
   ],
   "7YqZOp": [
@@ -507,6 +637,12 @@
       "value": "Configure"
     }
   ],
+  "ALLoNx": [
+    {
+      "type": 0,
+      "value": "Simple conditional"
+    }
+  ],
   "APOVFs": [
     {
       "type": 0,
@@ -629,10 +765,22 @@
       "value": "Internal name of the form definition used in this form step"
     }
   ],
+  "C64ptd": [
+    {
+      "type": 0,
+      "value": "Maximum length"
+    }
+  ],
   "CN9j+L": [
     {
       "type": 0,
       "value": "Delete"
+    }
+  ],
+  "CRN74c": [
+    {
+      "type": 0,
+      "value": "Placeholder"
     }
   ],
   "CXKQZZ": [
@@ -665,6 +813,22 @@
       "value": "Submission allowed"
     }
   ],
+  "D0hDzV": [
+    {
+      "type": 1,
+      "value": "componentType"
+    },
+    {
+      "type": 0,
+      "value": " component"
+    }
+  ],
+  "D5DCv0": [
+    {
+      "type": 0,
+      "value": "Custom error messages for this component and their translations"
+    }
+  ],
   "DEAqyQ": [
     {
       "type": 0,
@@ -683,6 +847,18 @@
       "value": "Session expired"
     }
   ],
+  "Dm3S1P": [
+    {
+      "type": 0,
+      "value": "Placeholder"
+    }
+  ],
+  "Do20MZ": [
+    {
+      "type": 0,
+      "value": "Basic"
+    }
+  ],
   "DqG0YS": [
     {
       "type": 0,
@@ -695,16 +871,34 @@
       "value": "Logic"
     }
   ],
+  "E5FZz/": [
+    {
+      "type": 0,
+      "value": "Translations"
+    }
+  ],
   "EBsxTk": [
     {
       "type": 0,
       "value": "Field"
     }
   ],
+  "EacF3m": [
+    {
+      "type": 0,
+      "value": "Registration attribute"
+    }
+  ],
   "Ekld1h": [
     {
       "type": 0,
       "value": "Save as new"
+    }
+  ],
+  "ErwGIQ": [
+    {
+      "type": 0,
+      "value": "Save"
     }
   ],
   "EtAvFF": [
@@ -743,10 +937,22 @@
       "value": "Simple"
     }
   ],
+  "Fc/emc": [
+    {
+      "type": 0,
+      "value": "Add another"
+    }
+  ],
   "FceidS": [
     {
       "type": 0,
       "value": "is not equal to"
+    }
+  ],
+  "FffJxu": [
+    {
+      "type": 0,
+      "value": "This will be the initial value for this field before user interaction."
     }
   ],
   "FyNxJn": [
@@ -841,6 +1047,12 @@
       "value": "Check to include the field as process variable"
     }
   ],
+  "H4sILo": [
+    {
+      "type": 0,
+      "value": "Derive city"
+    }
+  ],
   "H6VxhG": [
     {
       "type": 0,
@@ -851,6 +1063,12 @@
     {
       "type": 0,
       "value": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration."
+    }
+  ],
+  "HNoGb8": [
+    {
+      "type": 0,
+      "value": "Read only"
     }
   ],
   "HXE3Mm": [
@@ -945,6 +1163,12 @@
       "value": "Authentication failure"
     }
   ],
+  "JDYF2q": [
+    {
+      "type": 0,
+      "value": "The data entered in this component will be removed in accordance with the privacy settings."
+    }
+  ],
   "JRGs/Q": [
     {
       "type": 0,
@@ -955,6 +1179,18 @@
     {
       "type": 0,
       "value": "Successful Submissions Removal Limit"
+    }
+  ],
+  "JdwEl7": [
+    {
+      "type": 0,
+      "value": "JSON"
+    }
+  ],
+  "JneaQM": [
+    {
+      "type": 0,
+      "value": "Hidden"
     }
   ],
   "JtOgcq": [
@@ -1147,6 +1383,12 @@
       "value": ". Extend your session if you wish to continue."
     }
   ],
+  "OlPsaw": [
+    {
+      "type": 0,
+      "value": "Error code"
+    }
+  ],
   "OobRu3": [
     {
       "type": 0,
@@ -1157,6 +1399,12 @@
     {
       "type": 0,
       "value": "Update"
+    }
+  ],
+  "OtGsP8": [
+    {
+      "type": 0,
+      "value": "Label"
     }
   ],
   "OvqnXR": [
@@ -1255,6 +1503,12 @@
     {
       "type": 0,
       "value": "No (with overview page)"
+    }
+  ],
+  "Qjl92W": [
+    {
+      "type": 0,
+      "value": "Preview"
     }
   ],
   "Qr2wnR": [
@@ -1399,16 +1653,46 @@
       "value": "days"
     }
   ],
+  "TtqZa0": [
+    {
+      "type": 0,
+      "value": "The placeholder text that will appear when this field is empty."
+    }
+  ],
+  "UCGSib": [
+    {
+      "type": 0,
+      "value": "Plugin(s)"
+    }
+  ],
+  "UGLnLd": [
+    {
+      "type": 0,
+      "value": "Select the plugin(s) to use for the validation functionality."
+    }
+  ],
   "UKTqb8": [
     {
       "type": 0,
       "value": "All Submissions Removal Limit"
     }
   ],
+  "Uv58uI": [
+    {
+      "type": 0,
+      "value": "Postcode component"
+    }
+  ],
   "V21YkS": [
     {
       "type": 0,
       "value": "Confirm"
+    }
+  ],
+  "V6ClU9": [
+    {
+      "type": 0,
+      "value": "If the postcode and house number are entered this field will autofill with the city"
     }
   ],
   "VMMOA0": [
@@ -1457,6 +1741,12 @@
       "value": "required"
     }
   ],
+  "VekFY+": [
+    {
+      "type": 0,
+      "value": "Autocomplete"
+    }
+  ],
   "Vi0+dd": [
     {
       "type": 0,
@@ -1467,6 +1757,24 @@
     {
       "type": 0,
       "value": "Sensitive data"
+    }
+  ],
+  "VyA4fK": [
+    {
+      "type": 0,
+      "value": "Show in email"
+    }
+  ],
+  "W4PizY": [
+    {
+      "type": 0,
+      "value": "If the postcode and house number are entered this field will autofill with the street name"
+    }
+  ],
+  "WDRqIp": [
+    {
+      "type": 0,
+      "value": "Are there multiple values possible for this field?"
     }
   ],
   "WHqkYA": [
@@ -1529,6 +1837,18 @@
       "value": "Basic"
     }
   ],
+  "YBY95E": [
+    {
+      "type": 0,
+      "value": "Manual"
+    }
+  ],
+  "YJpESX": [
+    {
+      "type": 0,
+      "value": "Advanced"
+    }
+  ],
   "YQ/Vx0": [
     {
       "type": 0,
@@ -1581,6 +1901,12 @@
     {
       "type": 0,
       "value": "Add item"
+    }
+  ],
+  "YmWeGZ": [
+    {
+      "type": 0,
+      "value": "Select the plugin to use for the prefill functionality."
     }
   ],
   "YzLSHY": [
@@ -1673,10 +1999,22 @@
       "value": "Login required?"
     }
   ],
+  "asZV7t": [
+    {
+      "type": 0,
+      "value": "Derive street name"
+    }
+  ],
   "auZOcD": [
     {
       "type": 0,
       "value": "Mapping expression"
+    }
+  ],
+  "b/AHC/": [
+    {
+      "type": 0,
+      "value": "Display in summaries and confirmations"
     }
   ],
   "b9D64D": [
@@ -1695,6 +2033,12 @@
     {
       "type": 0,
       "value": "There are validation errors"
+    }
+  ],
+  "bYBFBc": [
+    {
+      "type": 0,
+      "value": "Whether to show this value in the submission summary"
     }
   ],
   "bnxtnX": [
@@ -1719,6 +2063,12 @@
     {
       "type": 0,
       "value": "Component"
+    }
+  ],
+  "cAC5kL": [
+    {
+      "type": 0,
+      "value": "Remove the value of this field from the submission if it is hidden. Note: the value of this field is then also not used in logic rules!"
     }
   ],
   "cDbGU2": [
@@ -1751,6 +2101,12 @@
       "value": "Content that will be shown on the start page of the form, below the title and above the log in text."
     }
   ],
+  "ce1N0I": [
+    {
+      "type": 0,
+      "value": "Plugin"
+    }
+  ],
   "cpJErE": [
     {
       "type": 0,
@@ -1769,16 +2125,40 @@
       "value": "Export this form"
     }
   ],
+  "d5SKAT": [
+    {
+      "type": 0,
+      "value": "Remove item"
+    }
+  ],
+  "dJNdhr": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
   "dWNClE": [
     {
       "type": 0,
       "value": "Optional category for internal organisation."
     }
   ],
+  "dazu9j": [
+    {
+      "type": 0,
+      "value": "Label is a required field."
+    }
+  ],
   "ddDA6+": [
     {
       "type": 0,
       "value": "Array"
+    }
+  ],
+  "ddDLRu": [
+    {
+      "type": 0,
+      "value": "When the form component"
     }
   ],
   "ddR92A": [
@@ -1823,6 +2203,12 @@
       "value": "Advanced options"
     }
   ],
+  "etny39": [
+    {
+      "type": 0,
+      "value": "Display options to fill in the field, based on earlier typed values."
+    }
+  ],
   "evbysh": [
     {
       "type": 0,
@@ -1851,6 +2237,18 @@
     {
       "type": 0,
       "value": "Pricing logic"
+    }
+  ],
+  "fRMCJI": [
+    {
+      "type": 0,
+      "value": "Prefill"
+    }
+  ],
+  "fT6Gtt": [
+    {
+      "type": 0,
+      "value": "Save the value as this attribute in the registration backend system."
     }
   ],
   "fWcg7I": [
@@ -1913,10 +2311,22 @@
       "value": "Yes"
     }
   ],
+  "h0B9Fr": [
+    {
+      "type": 0,
+      "value": "The property name must only contain alphanumeric characters, underscores, dots and dashes and should not be ended by dash or dot."
+    }
+  ],
   "h1EURI": [
     {
       "type": 0,
       "value": "The text that will be displayed in the form step to go to the previous step. Leave blank to get value from global configuration."
+    }
+  ],
+  "hJtTwo": [
+    {
+      "type": 0,
+      "value": "Form"
     }
   ],
   "hWRRHx": [
@@ -1955,6 +2365,36 @@
       "value": "Tab name"
     }
   ],
+  "iOADkJ": [
+    {
+      "type": 0,
+      "value": "Show in summary"
+    }
+  ],
+  "iX0YPY": [
+    {
+      "options": {
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Collapse panel"
+            }
+          ]
+        },
+        "true": {
+          "value": [
+            {
+              "type": 0,
+              "value": "Expand panel"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "collapsed"
+    }
+  ],
   "iZESbd": [
     {
       "type": 0,
@@ -1973,6 +2413,12 @@
       "value": "Experimental mode. Indicates whether appointments are enabled for this form."
     }
   ],
+  "iqAbXt": [
+    {
+      "type": 0,
+      "value": "Clear on hide"
+    }
+  ],
   "ixiVhj": [
     {
       "type": 1,
@@ -1987,6 +2433,12 @@
     {
       "type": 0,
       "value": "Form definition"
+    }
+  ],
+  "jLg5l6": [
+    {
+      "type": 0,
+      "value": "House number component"
     }
   ],
   "jU/t8O": [
@@ -2043,6 +2495,12 @@
       "value": "Whether to show a link to the main website on the confirmation page."
     }
   ],
+  "k9tAyW": [
+    {
+      "type": 0,
+      "value": "Error message"
+    }
+  ],
   "kHn5Yw": [
     {
       "type": 0,
@@ -2055,10 +2513,22 @@
       "value": "disabled"
     }
   ],
+  "kkTfpu": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
   "koVh3m": [
     {
       "type": 0,
       "value": "Category"
+    }
+  ],
+  "ktjLJK": [
+    {
+      "type": 0,
+      "value": "Show character counter"
     }
   ],
   "l1fi1t": [
@@ -2089,6 +2559,12 @@
     {
       "type": 0,
       "value": "Component label"
+    }
+  ],
+  "m2oZCk": [
+    {
+      "type": 0,
+      "value": "Is sensitive data"
     }
   ],
   "mH3X/G": [
@@ -2277,6 +2753,12 @@
       "value": "Form definition"
     }
   ],
+  "pq7q6N": [
+    {
+      "type": 0,
+      "value": "Show in PDF"
+    }
+  ],
   "pyX2Tl": [
     {
       "type": 0,
@@ -2305,6 +2787,12 @@
     {
       "type": 0,
       "value": "Step slug"
+    }
+  ],
+  "r+9rju": [
+    {
+      "type": 0,
+      "value": "Registration"
     }
   ],
   "r5Olb9": [
@@ -2353,6 +2841,12 @@
       "value": "Whether to send a confirmation email to the end-user who submitted the form."
     }
   ],
+  "sgmcmf": [
+    {
+      "type": 0,
+      "value": "Plugin attribute"
+    }
+  ],
   "t99ynC": [
     {
       "type": 0,
@@ -2377,6 +2871,12 @@
       "value": "Submission confirmation email template"
     }
   ],
+  "tnDJ58": [
+    {
+      "type": 0,
+      "value": "Whether to show this value in the confirmation email"
+    }
+  ],
   "twWsC2": [
     {
       "type": 0,
@@ -2387,6 +2887,12 @@
     {
       "type": 0,
       "value": "Select a step to view or modify."
+    }
+  ],
+  "uDSxtY": [
+    {
+      "type": 0,
+      "value": "Translations"
     }
   ],
   "uG5kOq": [
@@ -2433,6 +2939,12 @@
       "value": "Create a new form definition"
     }
   ],
+  "ve3rsH": [
+    {
+      "type": 0,
+      "value": "Custom error messages"
+    }
+  ],
   "viEfGU": [
     {
       "type": 0,
@@ -2457,6 +2969,12 @@
       "value": "The variable name to be used for the process instance."
     }
   ],
+  "vzhWgR": [
+    {
+      "type": 0,
+      "value": "Specify the attribute holding the pre-fill data."
+    }
+  ],
   "wIaGgb": [
     {
       "type": 0,
@@ -2467,6 +2985,12 @@
     {
       "type": 0,
       "value": "Source"
+    }
+  ],
+  "wZ99FU": [
+    {
+      "type": 0,
+      "value": "The regular expression pattern test that the field value must pass before the form can be submitted."
     }
   ],
   "wjwFwT": [
@@ -2515,6 +3039,18 @@
     {
       "type": 0,
       "value": "Select definition"
+    }
+  ],
+  "yD4X2y": [
+    {
+      "type": 0,
+      "value": "Maximum length"
+    }
+  ],
+  "yQtFln": [
+    {
+      "type": 0,
+      "value": "Hide a field from the form."
     }
   ],
   "yTpHh0": [

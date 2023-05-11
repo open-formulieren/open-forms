@@ -4,11 +4,13 @@ import {Dutch} from 'flatpickr/dist/l10n/nl.js';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import {FeatureFlagsContext} from 'components/admin/form_design/Context';
 import {
   clearObsoleteLiterals,
   persistComponentTranslations,
 } from 'components/formio_builder/translation';
 import {onLoaded} from 'utils/dom';
+import jsonScriptToVar from 'utils/json-script';
 
 import FormIOBuilder from './builder';
 
@@ -19,6 +21,7 @@ export const BLOCK_FORM_BUILDER = 'form-builder';
 export const ELEMENT_CONTAINER = 'container';
 
 onLoaded(() => {
+  const featureFlags = jsonScriptToVar('feature-flags');
   const FORM_BUILDERS = BEM.getBEMNodes(BLOCK_FORM_BUILDER);
   [...FORM_BUILDERS].forEach(node => {
     const configurationInput = BEM.getChildBEMNode(node, BLOCK_FORM_BUILDER, 'configuration-input');
@@ -61,12 +64,14 @@ onLoaded(() => {
     };
 
     ReactDOM.render(
-      <FormIOBuilder
-        configuration={configuration}
-        onChange={onChange}
-        onComponentMutated={onComponentMutated}
-        componentTranslations={componentTranslations}
-      />,
+      <FeatureFlagsContext.Provider value={featureFlags}>
+        <FormIOBuilder
+          configuration={configuration}
+          onChange={onChange}
+          onComponentMutated={onComponentMutated}
+          componentTranslations={componentTranslations}
+        />
+      </FeatureFlagsContext.Provider>,
       BEM.getChildBEMNode(node, BLOCK_FORM_BUILDER, ELEMENT_CONTAINER)
     );
   });

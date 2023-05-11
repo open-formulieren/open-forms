@@ -43,6 +43,11 @@ Frontend
 
 In the frontend, we use `react-intl`_ to manage translations.
 
+.. seealso::
+
+    See :ref:`developers_frontend_index_i18n` on how to manage translations across
+    our (NPM) libraries.
+
 Declaring messages
 ------------------
 
@@ -57,7 +62,7 @@ To extract messages from the codebase, run:
 
 .. code-block:: bash
 
-    npm run makemessages
+    ./bin/makemessages_js.sh
 
 The resulting message catalogs are now available in ``src/openforms/js/lang/{locale}.json``.
 
@@ -65,7 +70,7 @@ Edit these files with the correct translations and then compile them:
 
 .. code-block:: bash
 
-    npm run compilemessages
+    ./bin/compilemessages_js.sh
 
 If you want to see the results directly, you need to add them to the build but
 this is also done by the CI to create the Docker image.
@@ -84,3 +89,7 @@ way as for the ``FormBuilder`` (see :ref:`Forms Admin`), but here the translatio
 (``src/components/FormStep.js``). The translations are managed by the backend and the frontend fetches them.
 Therefore, if there are strings that are not yet translated, they have to be added to this translation file:
 ``src/openforms/js/lang/formio/nl.json``.
+
+.. note:: Currently the Formio builder and renderer are in the process of being replaced
+   with a solution that uses react-intl too. So, eventually the Form.io mechanism will
+   become obsolete.

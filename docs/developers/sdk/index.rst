@@ -4,7 +4,7 @@
 Javascript SDK
 ==============
 
-The Javascript SDK is built to embed forms in various types of pages. It is used
+The `Javascript SDK`_ is built to embed forms in various types of pages. It is used
 internally in the Open Forms project for the public UI functionality.
 
 This documentation is intended for developers looking to integrate the SDK in their
@@ -21,4 +21,5 @@ project.
    logic
 
 
+.. _Javascript SDK: https://github.com/open-formulieren/open-forms-sdk
 .. _Storybook: https://open-formulieren.github.io/open-forms-sdk/
