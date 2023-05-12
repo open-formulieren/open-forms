@@ -8,7 +8,7 @@ from openforms.config.models import CSPSetting
 from .mixin import AnalyticsMixin
 
 
-@override_settings(SOLO_CACHE=None, ALLOWED_HOSTS=["*"])
+@override_settings(ALLOWED_HOSTS=["*"])
 class GoogleAnalyticsTests(AnalyticsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):

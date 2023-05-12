@@ -36,6 +36,7 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.UnsaltedMD5PasswordHasher"]
 
 ENVIRONMENT = "CI"
 
+SOLO_CACHE = None
 #
 # Django-axes
 #

@@ -15,7 +15,7 @@ from openforms.tests.test_csp import CSPMixin
 from .mixin import AnalyticsMixin
 
 
-@override_settings(SOLO_CACHE=None, ALLOWED_HOSTS=["*"])
+@override_settings(ALLOWED_HOSTS=["*"])
 class PiwikProTests(AnalyticsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):

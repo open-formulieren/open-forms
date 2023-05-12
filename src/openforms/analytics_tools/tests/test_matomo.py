@@ -8,7 +8,7 @@ from openforms.config.models import CSPSetting
 from .mixin import AnalyticsMixin
 
 
-@override_settings(SOLO_CACHE=None, ALLOWED_HOSTS=["*"])
+@override_settings(ALLOWED_HOSTS=["*"])
 class MatomoTests(AnalyticsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -24,7 +24,6 @@ class MatomoTests(AnalyticsMixin, TestCase):
         cls.json_csp = [{"directive": "default-src", "value": cls.matomo_url}]
 
     def test_matomo_properly_enabled(self):
-
         self.config.matomo_url = self.matomo_url
         self.config.matomo_site_id = self.matomo_site_id
 

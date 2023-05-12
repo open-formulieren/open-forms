@@ -1,10 +1,8 @@
-from django.test import override_settings
 from django.utils.translation import gettext_lazy as _
 
 from openforms.utils.tests.test_migrations import TestMigrations
 
 
-@override_settings(SOLO_CACHE=None)
 class DesignTokenMigrationTests(TestMigrations):
     app = "config"
     migrate_from = "0002_make_react_ui_default_squashed_0028_auto_20220601_1422"
@@ -28,7 +26,6 @@ class DesignTokenMigrationTests(TestMigrations):
         self.assertEqual(self.config.design_token_values, expected)
 
 
-@override_settings(SOLO_CACHE=None)
 class EmptyDesignTokenMigrationTests(TestMigrations):
     app = "config"
     migrate_from = "0002_make_react_ui_default_squashed_0028_auto_20220601_1422"
@@ -43,7 +40,6 @@ class EmptyDesignTokenMigrationTests(TestMigrations):
         self.assertEqual(self.config.design_token_values, {})
 
 
-@override_settings(SOLO_CACHE=None)
 class AddPrefixDesignTokenMigrationTests(TestMigrations):
     app = "config"
     migrate_from = "0034_alter_globalconfiguration_form_upload_default_file_types"
@@ -71,7 +67,6 @@ class AddPrefixDesignTokenMigrationTests(TestMigrations):
         self.assertEqual(config.design_token_values, expected)
 
 
-@override_settings(SOLO_CACHE=None)
 class AddPrefixDesignTokenMigrationNoTokensTests(TestMigrations):
     app = "config"
     migrate_from = "0034_alter_globalconfiguration_form_upload_default_file_types"
@@ -88,7 +83,6 @@ class AddPrefixDesignTokenMigrationNoTokensTests(TestMigrations):
         self.assertEqual(config.design_token_values, {})
 
 
-@override_settings(SOLO_CACHE=None)
 class AddPrefixDesignTokenMigrationRenameLinkPropertiesTests(TestMigrations):
     app = "config"
     migrate_from = "0034_alter_globalconfiguration_form_upload_default_file_types"
@@ -122,7 +116,6 @@ class AddPrefixDesignTokenMigrationRenameLinkPropertiesTests(TestMigrations):
         self.assertEqual(config.design_token_values, expected)
 
 
-@override_settings(SOLO_CACHE=None)
 class RemovePrefixDesignTokenMigrationRenameLinkPropertiesTests(TestMigrations):
     app = "config"
     migrate_to = "0034_alter_globalconfiguration_form_upload_default_file_types"
@@ -157,7 +150,6 @@ class RemovePrefixDesignTokenMigrationRenameLinkPropertiesTests(TestMigrations):
         self.assertEqual(config.design_token_values, expected)
 
 
-@override_settings(SOLO_CACHE=None)
 class ConfigTemplatesMigrationTest(TestMigrations):
     app = "config"
     migrate_from = "0001_initial_squashed_0022_merge_20210903_1228"
