@@ -2,7 +2,7 @@ from typing import Literal, Optional, TypedDict
 
 from openforms.submissions.models import Submission
 
-from .constants import AuthAttribute
+from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from .models import AuthInfo, RegistratorInfo
 
 
@@ -44,3 +44,14 @@ def store_registrator_details(
     RegistratorInfo.objects.update_or_create(
         submission=submission, defaults=registrator_auth
     )
+
+
+def has_valid_authentication_for_cosign(request, expected_plugin) -> bool:
+    if FORM_AUTH_SESSION_KEY not in request.session:
+        return False
+
+    auth_data = request.session[FORM_AUTH_SESSION_KEY]
+    if auth_data["plugin"] == expected_plugin:
+        return True
+
+    return False
