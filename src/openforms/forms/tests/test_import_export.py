@@ -228,7 +228,7 @@ class ImportExportTests(TestCase):
         )
         self.assertEqual(2, user_defined_vars.count())
 
-        form_logics = FormLogic.objects.all()
+        form_logics = FormLogic.objects.all().order_by("pk")
         self.assertEqual(4, form_logics.count())
         form_logic_2 = form_logics.last()
         self.assertNotEqual(form_logic_2.pk, form_logic_pk)
@@ -332,7 +332,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(fs2.form_definition.pk, fd2.pk)
         self.assertEqual(fs2.order, form_step.order)
 
-        form_logics = FormLogic.objects.all()
+        form_logics = FormLogic.objects.all().order_by("pk")
         form_logic_2 = form_logics.last()
         self.assertEqual(form_logics.count(), 2)
         self.assertNotEqual(form_logic_2.pk, form_logic_pk)
@@ -397,7 +397,7 @@ class ImportExportTests(TestCase):
         self.assertEqual(fs2.form_definition.pk, fd2.pk)
         self.assertEqual(fs2.order, form_step.order)
 
-        form_logics = FormLogic.objects.all()
+        form_logics = FormLogic.objects.all().order_by("pk")
         form_logic_2 = form_logics.last()
         self.assertEqual(form_logics.count(), 2)
         self.assertNotEqual(form_logic_2.pk, form_logic_pk)
