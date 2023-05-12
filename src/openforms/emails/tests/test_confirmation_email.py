@@ -796,3 +796,118 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         ).lstrip()
 
         self.assertEquals(expected_text, text)
+
+    def test_confirmation_email_cosign_required(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign",
+                    "validate": {"required": True},
+                },
+                {
+                    "key": "mainPersonEmail",
+                    "type": "email",
+                    "confirmationRecipient": True,
+                },
+            ],
+            {"cosign": "cosigner@test.nl", "mainPersonEmail": "main@test.nl"},
+            registration_success=True,
+            completed=True,
+            cosign_complete=False,
+        )
+        template = inspect.cleandoc(
+            "Test: {% if waiting_on_cosign %}This form will not be processed until it has been co-signed. A co-sign request was sent to {{ cosigner_email }}.{% endif %}"
+        )
+        ConfirmationEmailTemplateFactory.create(
+            form=submission.form, subject="Confirmation", content=template
+        )
+
+        send_confirmation_email(submission)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        text = message.body.rstrip()
+        expected_text = inspect.cleandoc(
+            "Test: This form will not be processed until it has been co-signed. A co-sign request was sent to cosigner@test.nl."
+        ).lstrip()
+
+        self.assertEquals(expected_text, text)
+
+    def test_confirmation_email_cosign_not_required_but_filled_in(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign",
+                    "validate": {"required": False},
+                },
+                {
+                    "key": "mainPersonEmail",
+                    "type": "email",
+                    "confirmationRecipient": True,
+                },
+            ],
+            {"cosign": "cosigner@test.nl", "mainPersonEmail": "main@test.nl"},
+            registration_success=True,
+            completed=True,
+            cosign_complete=False,
+        )
+        template = inspect.cleandoc(
+            "Test: {% if waiting_on_cosign %}This form will not be processed until it has been co-signed. A co-sign request was sent to {{ cosigner_email }}.{% endif %}"
+        )
+        ConfirmationEmailTemplateFactory.create(
+            form=submission.form, subject="Confirmation", content=template
+        )
+
+        send_confirmation_email(submission)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        text = message.body.rstrip()
+        expected_text = inspect.cleandoc(
+            "Test: This form will not be processed until it has been co-signed. A co-sign request was sent to cosigner@test.nl."
+        ).lstrip()
+
+        self.assertEquals(expected_text, text)
+
+    def test_confirmation_email_cosign_not_required_and_not_filled_in(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign",
+                    "validate": {"required": False},
+                },
+                {
+                    "key": "mainPersonEmail",
+                    "type": "email",
+                    "confirmationRecipient": True,
+                },
+            ],
+            {"cosign": "", "mainPersonEmail": "main@test.nl"},
+            registration_success=True,
+            completed=True,
+            cosign_complete=False,
+        )
+        template = inspect.cleandoc(
+            "Test: {% if waiting_on_cosign %}This form will not be processed until it has been co-signed. A co-sign request was sent to {{ cosigner_email }}.{% endif %}"
+        )
+        ConfirmationEmailTemplateFactory.create(
+            form=submission.form, subject="Confirmation", content=template
+        )
+
+        send_confirmation_email(submission)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        text = message.body.rstrip()
+        expected_text = inspect.cleandoc("Test:").lstrip()
+
+        self.assertEquals(expected_text, text)
