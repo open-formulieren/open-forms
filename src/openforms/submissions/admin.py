@@ -204,6 +204,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         "confirmation_email_sent",
         "registration_attempts",
         "pre_registration_completed",
+        "cosign_complete",
     ]
     raw_id_fields = ("form", "previous_submission")
     actions = [
