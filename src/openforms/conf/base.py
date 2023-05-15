@@ -619,8 +619,12 @@ TWO_FACTOR_PATCH_ADMIN = config("TWO_FACTOR_PATCH_ADMIN", default=True)
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
 
-# Add a 30 minutes timeout to all Celery tasks.
-CELERY_TASK_SOFT_TIME_LIMIT = 30 * 60
+# Add (by default) 5 (soft), 15 (hard) minute timeouts to all Celery tasks.
+CELERY_TASK_TIME_LIMIT = config("CELERY_TASK_HARD_TIME_LIMIT", default=15 * 60)  # hard
+CELERY_TASK_SOFT_TIME_LIMIT = config(
+    "CELERY_TASK_SOFT_TIME_LIMIT", default=5 * 60
+)  # soft
+
 
 CELERY_BEAT_SCHEDULE = {
     "clear-session-store": {
