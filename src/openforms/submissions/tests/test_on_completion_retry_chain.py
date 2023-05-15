@@ -191,12 +191,13 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
             side_effect=RegistrationFailed("still failing"),
         )
 
-        with preregistration_patcher as mock_preregister:
-            with registration_patcher as mock_register, self.assertRaises(
-                RegistrationFailed
-            ):
-                # invoke the chain
-                on_completion_retry(submission.id)()
+        with (
+            preregistration_patcher as mock_preregister,
+            registration_patcher as mock_register,
+            self.assertRaises(RegistrationFailed),
+        ):
+            # invoke the chain
+            on_completion_retry(submission.id)()
 
         submission.refresh_from_db()
         mock_preregister.assert_called_once()
@@ -232,10 +233,9 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
             },
         )
 
-        with preregistration_patcher:
-            with registration_patcher as mock_register:
-                # invoke the chain
-                on_completion_retry(submission.id)()
+        with preregistration_patcher, registration_patcher as mock_register:
+            # invoke the chain
+            on_completion_retry(submission.id)()
 
         submission.refresh_from_db()
         mock_register.assert_called_once()

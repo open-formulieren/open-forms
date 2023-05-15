@@ -77,12 +77,11 @@ class PreRegistrationTests(TestCase):
         with patch(
             "openforms.submissions.tasks.registration.generate_unique_submission_reference",
             return_value="OF-test-registration-failure",
+        ), patch(
+            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
+            side_effect=Exception("I FAILED :("),
         ):
-            with patch(
-                "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
-                side_effect=Exception("I FAILED :("),
-            ):
-                pre_registration(submission.id)
+            pre_registration(submission.id)
 
         submission.refresh_from_db()
 
@@ -184,12 +183,11 @@ class PreRegistrationTests(TestCase):
         with patch(
             "openforms.submissions.tasks.registration.generate_unique_submission_reference",
             return_value="OF-IM-TEMPORARY",
+        ), patch(
+            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
+            side_effect=Exception,
         ):
-            with patch(
-                "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
-                side_effect=Exception,
-            ):
-                pre_registration(submission.id)
+            pre_registration(submission.id)
 
         with patch(
             "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission"

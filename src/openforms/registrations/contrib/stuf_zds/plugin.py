@@ -6,7 +6,6 @@ from typing import Dict, Optional
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from glom import glom
 from rest_framework import serializers
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
@@ -231,10 +230,8 @@ class StufZDSRegistration(BasePlugin):
                 submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
             )
 
-            if internal_reference := glom(
-                submission.registration_result,
+            if internal_reference := submission.registration_result.get(
                 "temporary_internal_reference",
-                default="",
             ):
                 zaak_data.update({"kenmerken": [internal_reference]})
 
