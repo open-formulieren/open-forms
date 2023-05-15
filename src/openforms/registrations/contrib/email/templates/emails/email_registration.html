@@ -1,5 +1,5 @@
 {% load i18n %}
-{% with co_signer=renderer.submission.get_co_signer form_name=renderer.submission.form.admin_name %}
+{% with co_signer=renderer.submission.get_co_signer form_name=renderer.submission.form.name %}
 {% if payment_received %}
     <p>{% blocktrans trimmed %}
         Submission payment received for {{ form_name }} (submitted on {{ datetime }})
