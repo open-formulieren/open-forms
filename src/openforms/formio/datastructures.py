@@ -1,9 +1,11 @@
 import re
+from collections import UserDict
+from collections.abc import Hashable
 from typing import Dict, Iterator, Optional, cast
 
-from glom import glom
+from glom import PathAccessError, assign, glom
 
-from openforms.typing import DataMapping, JSONObject
+from openforms.typing import DataMapping, JSONObject, JSONValue
 
 from .typing import Component
 from .utils import flatten_by_path, is_visible_in_frontend, iter_components
@@ -86,5 +88,16 @@ class FormioConfigurationWrapper:
         return all(is_visible_in_frontend(node, values) for node in nodes)
 
 
-class FormioData(dict):
-    pass
+class FormioData(UserDict):
+    def __getitem__(self, key: Hashable):
+        return cast(JSONValue, glom(self.data, key))
+
+    def __setitem__(self, key: Hashable, value: JSONValue):
+        assign(self.data, key, value, missing=dict)
+
+    def __contains__(self, key: Hashable) -> bool:
+        try:
+            self[key]
+        except PathAccessError:
+            return False
+        return True

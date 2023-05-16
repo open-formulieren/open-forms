@@ -18,7 +18,7 @@ class FormioDataTests(TestCase):
             FormioData(["bad type"])  # type: ignore
 
         with self.assertRaises(TypeError):
-            FormioData(None)  # type: ignore
+            FormioData(123)  # type: ignore
 
     def test_translate_dotted_lookup_paths(self):
         formio_data = FormioData({"foo": {"bar": "baz"}})
