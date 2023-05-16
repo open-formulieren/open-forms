@@ -89,6 +89,24 @@ class FormioConfigurationWrapper:
 
 
 class FormioData(UserDict):
+    """
+    Handle formio (submission) data transparently.
+
+    Form.io supports component keys in the format 'topLevel.nested' which get converted
+    to deep-setting of object properties (using ``lodash.set`` internally). This
+    datastructure mimicks that interface in Python so we can more naturally perform
+    operations like:
+
+    .. code-block:: python
+
+        data = FormioData()
+        for component in iter_components(...):
+            data[component["key"]] = ...
+
+    without having to worry about potential deep assignments or leak implementation
+    details (such as using ``glom`` for this).
+    """
+
     def __getitem__(self, key: Hashable):
         return cast(JSONValue, glom(self.data, key))
 

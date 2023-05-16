@@ -17,7 +17,7 @@ from openforms.prefill import inject_prefill
 from openforms.submissions.models import Submission, SubmissionStep
 from openforms.typing import DataMapping
 
-from .datastructures import FormioConfigurationWrapper
+from .datastructures import FormioConfigurationWrapper, FormioData
 from .dynamic_config import (
     get_translated_custom_error_messages,
     rewrite_formio_components,
@@ -35,6 +35,7 @@ __all__ = [
     "inject_variables",
     "format_value",
     "rewrite_formio_components_for_request",
+    "FormioData",
 ]
 
 
