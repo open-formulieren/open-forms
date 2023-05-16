@@ -63,3 +63,26 @@ class FormioDataTests(TestCase):
 
         with self.subTest("nested absent"):
             self.assertFalse("container.absent" in formio_data)
+
+    def test_initializing_with_dotted_paths_expands(self):
+        formio_data = FormioData(
+            {
+                "container.nested1": "foo",
+                "otherContainer.nested1": "bar",
+                "container.nested2": "baz",
+                "topLevel": True,
+            }
+        )
+
+        expected = {
+            "container": {
+                "nested1": "foo",
+                "nested2": "baz",
+            },
+            "otherContainer": {
+                "nested1": "bar",
+            },
+            "topLevel": True,
+        }
+
+        self.assertEqual(formio_data, expected)
