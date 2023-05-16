@@ -23,6 +23,7 @@ from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.api.throttle_classes import PollingRateThrottle
+from openforms.formio.service import FormioData
 from openforms.forms.models import FormStep
 from openforms.logging import logevent
 from openforms.prefill import prefill_variables
@@ -575,16 +576,13 @@ class SubmissionStepViewSet(
 
         data = form_data_serializer.validated_data["data"]
         if data:
-            # TODO: probably we should use a recursive merge here, in the event that
-            # keys like ``foo.bar`` and ``foo.baz`` are used which construct a foo object
-            # with keys bar and baz.
-            merged_data = {**submission.data, **data}
+            merged_data = FormioData({**submission.data, **data})
             submission_step.data = DirtyData(data)
 
             new_configuration = evaluate_form_logic(
                 submission,
                 submission_step,
-                merged_data,
+                merged_data.data,
                 dirty=True,
                 request=request,
             )

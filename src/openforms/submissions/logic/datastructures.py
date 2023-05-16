@@ -1,8 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any, Tuple
 
-from glom import assign
-
+from openforms.formio.service import FormioData
 from openforms.typing import DataMapping
 
 from ..models import SubmissionStep
@@ -42,13 +41,8 @@ class DataContainer:
             key: variable.to_python() for key, variable in self.state.variables.items()
         }
         static_values = self.state.static_data()
-        # this construct may have dots in the key names, so we need to expand that
-        # into nested objects
-        flattened_data = {**dynamic_values, **static_values}
-        nested_data = {}
-        for dotted_path, value in flattened_data.items():
-            assign(nested_data, dotted_path, value, missing=dict)
-        return nested_data
+        nested_data = FormioData({**dynamic_values, **static_values})
+        return nested_data.data
 
     def update(self, updates: DataMapping) -> None:
         """
@@ -56,16 +50,16 @@ class DataContainer:
         """
         self.state.set_values(updates)
 
-    def get_updated_step_data(self, step: SubmissionStep) -> DataMapping:
+    def get_updated_step_data(self, step: SubmissionStep) -> FormioData:
         relevant_variables = self.state.get_variables_in_submission_step(
             step, include_unsaved=True
         )
 
-        updated_data = {}
+        updated_data = FormioData()
         for key, variable in relevant_variables.items():
             if (
                 not variable.form_variable
                 or variable.value != variable.form_variable.initial_value
             ):
-                assign(updated_data, key, variable.value, missing=dict)
+                updated_data[key] = variable.value
         return updated_data

@@ -107,6 +107,8 @@ class FormioData(UserDict):
     details (such as using ``glom`` for this).
     """
 
+    data: dict[str, JSONValue]
+
     def __getitem__(self, key: Hashable):
         return cast(JSONValue, glom(self.data, key))
 

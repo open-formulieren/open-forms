@@ -1,17 +1,18 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from django.utils.functional import empty
 
 import elasticapm
-from glom import assign, glom
 
 from openforms.formio.service import (
+    FormioData,
     get_dynamic_configuration,
     inject_variables,
     translate_function,
 )
 from openforms.formio.utils import get_component_empty_value, is_visible_in_frontend
 from openforms.logging import logevent
+from openforms.typing import DataMapping
 
 from .logic.actions import PropertyAction
 from .logic.datastructures import DataContainer
@@ -31,10 +32,10 @@ if TYPE_CHECKING:  # pragma: no cover
 def evaluate_form_logic(
     submission: "Submission",
     step: "SubmissionStep",
-    data: Dict[str, Any],
+    data: DataMapping,
     dirty=False,
     **context,
-) -> Dict[str, Any]:
+) -> DataMapping:
     """
     Process all the form logic rules and mutate the step configuration if required.
 
@@ -112,7 +113,7 @@ def evaluate_form_logic(
 
     # Calculate which data has changed from the initial, for the step.
     updated_step_data = data_container.get_updated_step_data(step)
-    step.data = DirtyData(updated_step_data)
+    step.data = DirtyData(updated_step_data.data)
 
     # 7. finally, apply the dynamic configuration
 
@@ -134,7 +135,7 @@ def evaluate_form_logic(
     for mutation in mutation_operations:
         mutation.apply(step, config_wrapper)
 
-    initial_data = data_container.initial_data
+    initial_data = FormioData(data_container.initial_data)
 
     # XXX: See #2340 and #2409 - we need to clear the values of components that are
     # (eventually) hidden BEFORE we do any further processing. This is only a bandaid
@@ -143,7 +144,7 @@ def evaluate_form_logic(
 
     # only keep the changes in the data, so that old values do not overwrite otherwise
     # debounced client-side data changes
-    data_diff = {}
+    data_diff = FormioData()
     for component in config_wrapper:
         key = component["key"]
         is_visible = config_wrapper.is_visible_in_frontend(key, data_container.data)
@@ -178,7 +179,7 @@ def evaluate_form_logic(
     logevent.submission_logic_evaluated(
         submission,
         evaluated_rules,
-        initial_data,
+        initial_data.data,
         data_container.data,
     )
 
@@ -188,11 +189,11 @@ def evaluate_form_logic(
         for component in config_wrapper:
             key = component["key"]
             # already processed, don't process it again
-            if glom(data_diff, key, default=empty) is not empty:
+            if data_diff.get(key, default=empty) is not empty:
                 continue
 
-            new_value = glom(updated_step_data, key, default=empty)
-            original_value = glom(initial_data, key, default=empty)
+            new_value = updated_step_data.get(key, default=empty)
+            original_value = initial_data.get(key, default=empty)
             # Reset the value of any field that may have become hidden again after evaluating the logic
             if original_value is not empty and original_value != (
                 component_empty_value := get_component_empty_value(component)
@@ -202,15 +203,15 @@ def evaluate_form_logic(
                     and not is_visible_in_frontend(component, data_container.data)
                     and component.get("clearOnHide")
                 ):
-                    assign(data_diff, key, component_empty_value, missing=dict)
+                    data_diff[key] = component_empty_value
                     continue
 
             if new_value is empty or new_value == original_value:
                 continue
-            assign(data_diff, key, new_value, missing=dict)
+            data_diff[key] = new_value
 
         # only return the 'overrides'
-        step.data = DirtyData(data_diff)
+        step.data = DirtyData(data_diff.data)
 
     step._form_logic_evaluated = True
 
