@@ -84,3 +84,7 @@ class FormioConfigurationWrapper:
             component = cast(Component, glom(self.configuration, path))
             nodes.append(component)
         return all(is_visible_in_frontend(node, values) for node in nodes)
+
+
+class FormioData(dict):
+    pass
