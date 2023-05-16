@@ -34,15 +34,13 @@ class DeleteSubmissionsTask(TestCase):
         # Not successful
         SubmissionFactory.create(registration_status=RegistrationStatuses.failed)
         # Too recent
-        SubmissionFactory.create(registration_status=RegistrationStatuses.success)
+        SubmissionFactory.create(registration_success=True)
 
         anonymous_submission = SubmissionFactory.create(
-            registration_status=RegistrationStatuses.success,
+            registration_success=True,
             form__successful_submissions_removal_method=RemovalMethods.make_anonymous,
         )
-        submission_to_be_deleted = SubmissionFactory.create(
-            registration_status=RegistrationStatuses.success
-        )
+        submission_to_be_deleted = SubmissionFactory.create(registration_success=True)
 
         # Passing created_on to the factory create method does not work
         anonymous_submission.created_on = timezone.now() - timedelta(
@@ -100,16 +98,14 @@ class DeleteSubmissionsTask(TestCase):
 
         submission_longer_limit = SubmissionFactory.create(
             form=form_longer_limit,
-            registration_status=RegistrationStatuses.success,
+            registration_success=True,
         )
         submission_anonymous = SubmissionFactory.create(
             form=form_make_anonymous,
-            registration_status=RegistrationStatuses.success,
+            registration_success=True,
         )
 
-        submission_to_be_deleted = SubmissionFactory.create(
-            registration_status=RegistrationStatuses.success
-        )
+        submission_to_be_deleted = SubmissionFactory.create(registration_success=True)
         # Passing created_on to the factory create method does not work
         submission_to_be_deleted.created_on = timezone.now() - timedelta(
             days=config.successful_submissions_removal_limit + 1
@@ -253,7 +249,7 @@ class DeleteSubmissionsTask(TestCase):
         config = GlobalConfiguration.get_solo()
 
         # Not failed
-        SubmissionFactory.create(registration_status=RegistrationStatuses.success)
+        SubmissionFactory.create(registration_success=True)
         # Too recent
         SubmissionFactory.create(registration_status=RegistrationStatuses.failed)
 
@@ -440,16 +436,14 @@ class MakeSensitiveDataAnonymousTask(TestCase):
             registration_status=RegistrationStatuses.failed, form=self.form
         )
         # Too recent
-        too_recent = SubmissionFactory.create(
-            registration_status=RegistrationStatuses.success, form=self.form
-        )
+        too_recent = SubmissionFactory.create(registration_success=True, form=self.form)
 
         delete_submission = SubmissionFactory.create(
-            registration_status=RegistrationStatuses.success,
+            registration_success=True,
             form__successful_submissions_removal_method=RemovalMethods.delete_permanently,
         )
         submission_to_be_anonymous = SubmissionFactory.create(
-            form=self.form, registration_status=RegistrationStatuses.success
+            form=self.form, registration_success=True
         )
 
         # Passing created_on to the factory create method does not work
@@ -568,7 +562,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         )
 
         override_submission = SubmissionFactory.create(
-            form=override_form, registration_status=RegistrationStatuses.success
+            form=override_form, registration_success=True
         )
 
         # Not successful
@@ -576,16 +570,14 @@ class MakeSensitiveDataAnonymousTask(TestCase):
             registration_status=RegistrationStatuses.failed, form=self.form
         )
         # Too recent
-        too_recent = SubmissionFactory.create(
-            registration_status=RegistrationStatuses.success, form=self.form
-        )
+        too_recent = SubmissionFactory.create(registration_success=True, form=self.form)
 
         delete_submission = SubmissionFactory.create(
-            registration_status=RegistrationStatuses.success,
+            registration_success=True,
             form__successful_submissions_removal_method=RemovalMethods.delete_permanently,
         )
         submission_to_be_anonymous = SubmissionFactory.create(
-            form=self.form, registration_status=RegistrationStatuses.success
+            form=self.form, registration_success=True
         )
 
         # Passing created_on to the factory create method does not work
@@ -1054,9 +1046,7 @@ class MakeSensitiveDataAnonymousTask(TestCase):
         config = GlobalConfiguration.get_solo()
 
         # Not failed
-        not_failed = SubmissionFactory.create(
-            registration_status=RegistrationStatuses.success, form=self.form
-        )
+        not_failed = SubmissionFactory.create(registration_success=True, form=self.form)
         # Too recent
         too_recent = SubmissionFactory.create(
             registration_status=RegistrationStatuses.failed, form=self.form

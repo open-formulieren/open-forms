@@ -1900,7 +1900,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
         Assert that the internal reference is included in the "kenmerken".
         """
         submission = SubmissionFactory.from_components(
-            completed=True,
             registration_in_progress=True,
             needs_on_completion_retry=True,
             public_registration_reference="OF-1234",
@@ -2600,7 +2599,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         serializer.is_valid()
 
         with patch(
-            "openforms.submissions.tasks.registration.get_reference_for_submission",
+            "openforms.submissions.public_references.get_reference_for_submission",
             return_value="OF-TEST!",
         ):
             pre_registration(submission.id)
@@ -2674,8 +2673,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "zds_zaaktype_code": "zt-code",
                 "zds_documenttype_omschrijving_inzending": "aaabbc",
             },
-            completed=True,
-            registration_success=True,
+            completed_not_preregistered=True,
         )
 
         self.assertEqual(submission.public_registration_reference, "")

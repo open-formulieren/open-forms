@@ -10,14 +10,14 @@ from openforms.submissions.tests.factories import SubmissionFactory
 
 class PreRegistrationTests(TestCase):
     @patch(
-        "openforms.submissions.tasks.registration.generate_unique_submission_reference",
+        "openforms.submissions.public_references.generate_unique_submission_reference",
         return_value="OF-1234",
     )
     def test_pre_registration_no_registration_backend(self, m):
         """If no registration backend is specified, the reference is generated before the registration"""
 
         submission = SubmissionFactory.create(
-            completed=True,
+            completed_not_preregistered=True,
         )
 
         self.assertEqual(submission.public_registration_reference, "")
@@ -31,7 +31,7 @@ class PreRegistrationTests(TestCase):
     def test_if_preregistration_complete_retry_doesnt_repeat_it(self):
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
-            completed=True,
+            completed_not_preregistered=True,
         )
 
         with patch(
@@ -48,13 +48,13 @@ class PreRegistrationTests(TestCase):
             form__registration_backend_options={
                 # "to_emails": ["foo@bar.baz"], # Missing required to_emails parameter
             },
-            completed=True,
+            completed_not_preregistered=True,
         )
 
         self.assertEqual(submission.public_registration_reference, "")
 
         with patch(
-            "openforms.submissions.tasks.registration.generate_unique_submission_reference",
+            "openforms.submissions.public_references.generate_unique_submission_reference",
             return_value="OF-test-registration-failure",
         ):
             pre_registration(submission.id)
@@ -69,13 +69,13 @@ class PreRegistrationTests(TestCase):
     def test_pre_registration_task_errors_but_does_not_raise_error(self):
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
-            completed=True,
+            completed_not_preregistered=True,
         )
 
         self.assertEqual(submission.public_registration_reference, "")
 
         with patch(
-            "openforms.submissions.tasks.registration.generate_unique_submission_reference",
+            "openforms.submissions.public_references.generate_unique_submission_reference",
             return_value="OF-test-registration-failure",
         ), patch(
             "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
@@ -114,14 +114,14 @@ class PreRegistrationTests(TestCase):
             submission = SubmissionFactory.create(
                 form__registration_backend=plugin_name,
                 form__registration_backend_options=plugin_options,
-                completed=True,
+                completed_not_preregistered=True,
             )
 
             with self.subTest(plugin_name):
                 self.assertEqual(submission.public_registration_reference, "")
 
                 with patch(
-                    "openforms.submissions.tasks.registration.generate_unique_submission_reference",
+                    "openforms.submissions.public_references.generate_unique_submission_reference",
                     return_value=f"OF-{plugin_name}",
                 ):
                     pre_registration(submission.id)
@@ -138,7 +138,7 @@ class PreRegistrationTests(TestCase):
             form__registration_backend_options={
                 # "to_emails": ["foo@bar.baz"], # Missing required to_emails parameter
             },
-            completed=True,
+            completed_not_preregistered=True,
         )
 
         pre_registration(submission.id)  # Fails because of invalid options
@@ -149,7 +149,7 @@ class PreRegistrationTests(TestCase):
     def test_retry_doesnt_overwrite_internal_reference(self):
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
-            completed=True,
+            completed_not_preregistered=True,
         )
 
         with patch(
@@ -157,13 +157,13 @@ class PreRegistrationTests(TestCase):
             side_effect=Exception,
         ):
             with patch(
-                "openforms.submissions.tasks.registration.generate_unique_submission_reference",
+                "openforms.submissions.public_references.generate_unique_submission_reference",
                 return_value="OF-IM-NOT-OVERWRITTEN",
             ):
                 pre_registration(submission.id)
 
             with patch(
-                "openforms.submissions.tasks.registration.generate_unique_submission_reference",
+                "openforms.submissions.public_references.generate_unique_submission_reference",
                 return_value="OF-IM-DIFFERENT",
             ):
                 pre_registration(submission.id)
@@ -177,11 +177,11 @@ class PreRegistrationTests(TestCase):
     def test_retry_keeps_track_of_internal_reference(self):
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
-            completed=True,
+            completed_not_preregistered=True,
         )
 
         with patch(
-            "openforms.submissions.tasks.registration.generate_unique_submission_reference",
+            "openforms.submissions.public_references.generate_unique_submission_reference",
             return_value="OF-IM-TEMPORARY",
         ), patch(
             "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",

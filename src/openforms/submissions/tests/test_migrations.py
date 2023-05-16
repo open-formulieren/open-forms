@@ -1,5 +1,6 @@
 from unittest import skip
 
+from openforms.submissions.constants import RegistrationStatuses
 from openforms.utils.tests.test_migrations import TestMigrations
 
 
@@ -184,3 +185,29 @@ class ReverseBackfillSubmissionAttachmentVariableMigrationTests(TestMigrations):
         )
 
         self.assertEqual(attachment.form_key, attachment.submission_variable.key)
+
+
+class AddPreregistrationCompleteTest(TestMigrations):
+    migrate_from = "0071_submission_pre_registration_completed"
+    migrate_to = "0072_set_preregistration_complete"
+    app = "submissions"
+
+    def setUpBeforeMigration(self, apps):
+        Form = apps.get_model("forms", "Form")
+        Submission = apps.get_model("submissions", "Submission")
+
+        form = Form.objects.create(name="my-form")
+
+        self.submission1 = Submission.objects.create(
+            form=form, registration_status=RegistrationStatuses.success
+        )
+        self.submission2 = Submission.objects.create(
+            form=form, registration_status=RegistrationStatuses.pending
+        )
+
+    def test_pre_registration_status(self):
+        self.submission1.refresh_from_db()
+        self.submission2.refresh_from_db()
+
+        self.assertTrue(self.submission1.pre_registration_completed)
+        self.assertFalse(self.submission2.pre_registration_completed)

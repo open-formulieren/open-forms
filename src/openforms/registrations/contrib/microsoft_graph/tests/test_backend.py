@@ -18,7 +18,7 @@ from openforms.registrations.contrib.microsoft_graph.models import (
 )
 from openforms.registrations.contrib.microsoft_graph.plugin import MSGraphRegistration
 from openforms.registrations.exceptions import RegistrationFailed
-from openforms.submissions.tasks import set_submission_reference
+from openforms.submissions.public_references import set_submission_reference
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,

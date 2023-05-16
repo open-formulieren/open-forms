@@ -14,9 +14,9 @@ from openforms.emails.utils import (
 )
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
+from openforms.submissions.public_references import set_submission_reference
 from openforms.submissions.rendering.constants import RenderModes
 from openforms.submissions.rendering.renderer import Renderer
-from openforms.submissions.tasks.registration import set_submission_reference
 from openforms.template import render_from_string
 from openforms.variables.utils import get_variables_for_context
 

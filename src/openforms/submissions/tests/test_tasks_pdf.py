@@ -1,6 +1,6 @@
 import logging
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
@@ -212,6 +212,7 @@ class SubmissionReportGenerationTests(TestCase):
 
         self.assertEqual(inclusive_tag.text(), "")
 
+    @override_settings(LANGUAGE_CODE="en")
     def test_public_reference_included(self):
         submission = SubmissionFactory.from_components(
             [

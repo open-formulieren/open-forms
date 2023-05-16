@@ -149,6 +149,41 @@ class ZGWRegistration(BasePlugin):
     }
 
     @wrap_api_errors
+    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
+        """
+        Create a Zaak, so that we can have a registration ID.
+
+        Note: The Rol, Status, the documents for the files uploaded by the user in the form (attachments) and the
+        confirmation report PDF will be added in the registration task (after the report has been generated).
+        """
+        zgw = ZgwConfig.get_solo()
+        zgw.apply_defaults_to(options)
+
+        zaak_data = apply_data_mapping(
+            submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
+        )
+
+        _create_zaak = partial(
+            create_zaak,
+            options,
+            payment_required=submission.payment_required,
+            existing_reference=submission.public_registration_reference,
+            **zaak_data,
+        )
+        zaak = execute_unless_result_exists(
+            _create_zaak,
+            submission,
+            "intermediate.zaak",
+        )
+
+        result = {"zaak": zaak}
+        submission.registration_result.update(result)
+        submission.public_registration_reference = self.get_reference_from_result(
+            result
+        )
+        submission.save()
+
+    @wrap_api_errors
     def register_submission(
         self, submission: Submission, options: dict
     ) -> Optional[dict]:
@@ -173,7 +208,7 @@ class ZGWRegistration(BasePlugin):
             "intermediate.documents.report.document",
         )
         execute_unless_result_exists(
-            partial(relate_document, result["zaak"]["url"], document["url"]),
+            partial(relate_document, zaak["url"], document["url"]),
             submission,
             "intermediate.documents.report.relation",
         )
@@ -316,38 +351,3 @@ class ZGWRegistration(BasePlugin):
                 ),
             ),
         ]
-
-    @wrap_api_errors
-    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
-        """
-        Create a Zaak, so that we can have a registration ID.
-
-        Note: The Rol, Status, the documents for the files uploaded by the user in the form (attachments) and the
-        confirmation report PDF will be added in the registration task (after the report has been generated).
-        """
-        zgw = ZgwConfig.get_solo()
-        zgw.apply_defaults_to(options)
-
-        zaak_data = apply_data_mapping(
-            submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
-        )
-
-        _create_zaak = partial(
-            create_zaak,
-            options,
-            payment_required=submission.payment_required,
-            existing_reference=submission.public_registration_reference,
-            **zaak_data,
-        )
-        zaak = execute_unless_result_exists(
-            _create_zaak,
-            submission,
-            "intermediate.zaak",
-        )
-
-        result = {"zaak": zaak}
-        submission.registration_result.update(result)
-        submission.public_registration_reference = self.get_reference_from_result(
-            result
-        )
-        submission.save()

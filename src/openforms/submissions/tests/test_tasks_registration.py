@@ -5,13 +5,13 @@ from unittest.mock import patch
 from django.db import close_old_connections
 from django.test import TestCase, TransactionTestCase
 
-from ..tasks.registration import set_submission_reference
+from ..public_references import set_submission_reference
 from .factories import SubmissionFactory
 
 
 class ObtainSubmissionReferenceTests(TestCase):
     @patch(
-        "openforms.submissions.tasks.registration.generate_unique_submission_reference"
+        "openforms.submissions.public_references.generate_unique_submission_reference"
     )
     def test_source_reference_from_registration_result(self, mock_generate):
         """
@@ -48,7 +48,7 @@ class ObtainSubmissionReferenceTests(TestCase):
             return RANDOM_STRINGS.pop(0)
 
         with patch(
-            "openforms.submissions.tasks.registration.get_random_string",
+            "openforms.submissions.public_references.get_random_string",
             new=get_random_string,
         ):
             set_submission_reference(submission)
@@ -90,7 +90,7 @@ class RaceConditionTests(TransactionTestCase):
         # code affected by race condition
         def obtain_reference():
             with patch(
-                "openforms.submissions.tasks.registration.generate_unique_submission_reference",
+                "openforms.submissions.public_references.generate_unique_submission_reference",
                 new=generate_unique_submission_reference,
             ):
                 set_submission_reference(submission1)

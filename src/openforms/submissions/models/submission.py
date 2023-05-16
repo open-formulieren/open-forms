@@ -276,7 +276,14 @@ class Submission(models.Model):
                 fields=("public_registration_reference",),
                 name="unique_public_registration_reference",
                 condition=~models.Q(public_registration_reference=""),
-            )
+            ),
+            models.CheckConstraint(
+                check=~(
+                    models.Q(registration_status=RegistrationStatuses.success)
+                    & models.Q(pre_registration_completed=False)
+                ),
+                name="registration_status_consistency_check",
+            ),
         ]
 
     def __str__(self):
@@ -649,13 +656,3 @@ class Submission(models.Model):
                 variable.key: variable.value for variable in prefill_vars
             }
         return self._prefilled_data
-
-    def get_registration_plugin(self):
-        from ..tasks.registration import get_registration_plugin
-
-        return get_registration_plugin(self)
-
-    def set_submission_reference(self):
-        from ..tasks.registration import set_submission_reference
-
-        set_submission_reference(self)

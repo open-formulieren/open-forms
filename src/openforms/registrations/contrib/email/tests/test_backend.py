@@ -21,7 +21,7 @@ from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.models import Submission
-from openforms.submissions.tasks import set_submission_reference
+from openforms.submissions.public_references import set_submission_reference
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,

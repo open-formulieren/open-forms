@@ -37,7 +37,6 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
             # set by :func:`openforms.payments.tasks.update_submission_payment_status`
             needs_on_completion_retry=True,
             registration_success=True,
-            pre_registration_completed=True,
             form__registration_backend="zgw-create-zaak",
             form__payment_backend="ogone-legacy",
             registration_result={
@@ -85,7 +84,6 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
             completed=True,
             # set by :func:`openforms.payments.tasks.update_submission_payment_status`
             needs_on_completion_retry=True,
-            pre_registration_completed=True,
             registration_success=True,
             form__registration_backend="zgw-create-zaak",
             form__payment_backend="ogone-legacy",
@@ -145,7 +143,6 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
             needs_on_completion_retry=True,
             registration_failed=True,
             form__registration_backend="zgw-create-zaak",
-            pre_registration_completed=True,
             # registration failed, so an internal reference was created
             public_registration_reference="OF-1234",
         )
@@ -173,7 +170,6 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
     @patch("openforms.payments.tasks.update_submission_payment_registration")
     def test_backend_preregistration_still_fails(self, mock_update_payment):
         submission = SubmissionFactory.create(
-            completed=True,
             needs_on_completion_retry=True,
             pre_registration_completed=False,
             registration_failed=True,

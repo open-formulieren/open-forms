@@ -194,6 +194,23 @@ class StufZDSRegistration(BasePlugin):
         ),
     }
 
+    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
+        config = StufZDSConfig.get_solo()
+        config.apply_defaults_to(options)
+
+        with config.get_client(options) as client:
+            # obtain a zaaknummer & save it - first, check if we have an intermediate result
+            # from earlier attempts. if we do, do not generate a new number
+            zaak_id = execute_unless_result_exists(
+                client.create_zaak_identificatie,
+                submission,
+                "intermediate.zaaknummer",
+                default="",
+            )
+
+        submission.public_registration_reference = zaak_id
+        submission.save()
+
     def register_submission(
         self, submission: Submission, options: dict
     ) -> Optional[dict]:
@@ -361,20 +378,3 @@ class StufZDSRegistration(BasePlugin):
                 ),
             ),
         ]
-
-    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
-        config = StufZDSConfig.get_solo()
-        config.apply_defaults_to(options)
-
-        with config.get_client(options) as client:
-            # obtain a zaaknummer & save it - first, check if we have an intermediate result
-            # from earlier attempts. if we do, do not generate a new number
-            zaak_id = execute_unless_result_exists(
-                client.create_zaak_identificatie,
-                submission,
-                "intermediate.zaaknummer",
-                default="",
-            )
-
-        submission.public_registration_reference = zaak_id
-        submission.save()

@@ -20,7 +20,7 @@ from .factories import SubmissionFactory, SubmissionFileAttachmentFactory
 class OnCompletionTests(TestCase):
     def test_submission_form_without_appointment(self):
         submission = SubmissionFactory.from_components(
-            completed=True,
+            completed_not_preregistered=True,
             form__registration_backend="email",
             form__registration_backend_options={
                 "to_emails": ["test@register.nl"],

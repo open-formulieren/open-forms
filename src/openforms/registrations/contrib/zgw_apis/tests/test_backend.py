@@ -1244,8 +1244,7 @@ class ZGWBackendTests(TestCase):
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
             form__registration_backend_options={},
-            completed=True,
-            registration_success=True,
+            completed_not_preregistered=True,
         )
 
         self.assertEqual(submission.public_registration_reference, "")
@@ -1300,7 +1299,7 @@ class PartialRegistrationFailureTests(TestCase):
                 "organisatie_rsin": "000000000",
                 "vertrouwelijkheidaanduiding": "openbaar",
             },
-            completed=True,
+            completed_not_preregistered=True,
             bsn="111222333",
             submitted_data={
                 "voornaam": "Foo",

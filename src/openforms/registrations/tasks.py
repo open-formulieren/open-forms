@@ -1,6 +1,7 @@
 import logging
 import traceback
 
+from django.db import transaction
 from django.utils import timezone
 
 from celery_once import QueueOnce
@@ -10,9 +11,11 @@ from openforms.celery import app
 from openforms.logging import logevent
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
+from openforms.submissions.public_references import set_submission_reference
 
 from ..config.models import GlobalConfiguration
 from .exceptions import RegistrationFailed
+from .service import get_registration_plugin
 
 logger = logging.getLogger(__name__)
 
@@ -23,33 +26,34 @@ def pre_registration(submission_id: int) -> None:
     if submission.pre_registration_completed:
         return
 
-    registration_plugin = submission.get_registration_plugin()
-    if not registration_plugin:
-        submission.set_submission_reference()
-        submission.pre_registration_completed = True
-        submission.save()
-        return
+    with transaction.atomic():
+        registration_plugin = get_registration_plugin(submission)
+        if not registration_plugin:
+            set_submission_reference(submission)
+            submission.pre_registration_completed = True
+            submission.save()
+            return
 
-    options_serializer = registration_plugin.configuration_options(
-        data=submission.form.registration_backend_options
-    )
-
-    if not options_serializer.is_valid():
-        submission.set_submission_reference()
-        return
-
-    # If we are retrying, then an internal registration reference has been set. We keep track of it.
-    if submission.public_registration_reference:
-        if not submission.registration_result:
-            submission.registration_result = {}
-
-        assign(
-            submission.registration_result,
-            "temporary_internal_reference",
-            submission.public_registration_reference,
-            missing=dict,
+        options_serializer = registration_plugin.configuration_options(
+            data=submission.form.registration_backend_options
         )
-        submission.save()
+
+        if not options_serializer.is_valid():
+            set_submission_reference(submission)
+            return
+
+        # If we are retrying, then an internal registration reference has been set. We keep track of it.
+        if submission.public_registration_reference:
+            if not submission.registration_result:
+                submission.registration_result = {}
+
+            assign(
+                submission.registration_result,
+                "temporary_internal_reference",
+                submission.public_registration_reference,
+                missing=dict,
+            )
+            submission.save()
 
     try:
         registration_plugin.pre_register_submission(
@@ -60,7 +64,7 @@ def pre_registration(submission_id: int) -> None:
         submission.save_registration_status(
             RegistrationStatuses.failed, {"traceback": str(exc)}
         )
-        submission.set_submission_reference()
+        set_submission_reference(submission)
         return
 
     submission.pre_registration_completed = True

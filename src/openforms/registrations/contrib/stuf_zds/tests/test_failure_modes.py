@@ -70,7 +70,7 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
                 "zds_zaaktype_status_code": "123",
                 "zds_documenttype_omschrijving_inzending": "aaabbc",
             },
-            completed=True,
+            completed_not_preregistered=True,
             bsn="111222333",
             submitted_data={
                 "voornaam": "Foo",
