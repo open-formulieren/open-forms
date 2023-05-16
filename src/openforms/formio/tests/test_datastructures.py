@@ -38,3 +38,28 @@ class FormioDataTests(TestCase):
         formio_data["foo.bar"] = "baz"
 
         self.assertEqual(formio_data, {"foo": {"bar": "baz"}})
+
+    def test_containment(self):
+        formio_data = FormioData(
+            {
+                "top": "level",
+                "container": {
+                    "nested": "leaf",
+                },
+            }
+        )
+
+        with self.subTest("top level container"):
+            self.assertTrue("top" in formio_data)
+
+        with self.subTest("nested container"):
+            self.assertTrue("container" in formio_data)
+
+        with self.subTest("nested leaf"):
+            self.assertTrue("container.nested" in formio_data)
+
+        with self.subTest("top level absent"):
+            self.assertFalse("absent" in formio_data)
+
+        with self.subTest("nested absent"):
+            self.assertFalse("container.absent" in formio_data)
