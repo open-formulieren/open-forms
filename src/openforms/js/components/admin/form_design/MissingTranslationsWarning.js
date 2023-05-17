@@ -69,7 +69,6 @@ MissingTranslationsTable.propTypes = {
 const MissingTranslationsWarning = ({form, formSteps}) => {
   let formStepTranslations = [];
 
-  // console.log(formSteps)
   let formStepsMissingTranslations = [];
   for (const formStep of formSteps) {
     if (

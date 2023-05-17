@@ -56,7 +56,7 @@ const getBuilderOptions = () => {
           bsn: true,
           npFamilyMembers: true,
           signature: true,
-          coSign: true,
+          cosign: true,
           map: true,
           editgrid: true,
         },
@@ -239,6 +239,7 @@ const getBuilderOptions = () => {
         components: {
           postcode: true,
           password: true,
+          coSign: true,
         },
       },
     },

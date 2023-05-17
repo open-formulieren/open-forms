@@ -51,7 +51,7 @@ const EDIT_FORM_TABS = [
  * co-signed or not, and if it's not, a login-button from the configured plugin is
  * presented.
  */
-class CoSignField extends FieldComponent {
+class CoSignFieldOld extends FieldComponent {
   constructor(component, options, data) {
     super(component, options, data);
     this.checks = [];
@@ -72,11 +72,11 @@ class CoSignField extends FieldComponent {
 
   static get builderInfo() {
     return {
-      title: 'Co-sign',
+      title: 'Co-sign (Old)',
       icon: 'id-card-o',
       group: 'basic',
       weight: 300,
-      schema: CoSignField.schema(),
+      schema: CoSignFieldOld.schema(),
     };
   }
 
@@ -96,4 +96,4 @@ class CoSignField extends FieldComponent {
   }
 }
 
-export default CoSignField;
+export default CoSignFieldOld;

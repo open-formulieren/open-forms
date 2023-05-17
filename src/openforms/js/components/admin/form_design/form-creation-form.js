@@ -25,6 +25,7 @@ import {getUniqueRandomString} from 'utils/random';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import Confirmation from './Confirmation';
 import {APIContext, FormContext} from './Context';
+import CosignInRepeatingGroupWarning from './CosignInRepeatingGroupWarning';
 import DataRemoval from './DataRemoval';
 import FormConfigurationFields from './FormConfigurationFields';
 import FormDetailFields from './FormDetailFields';
@@ -34,6 +35,7 @@ import FormSteps from './FormSteps';
 import FormSubmit from './FormSubmit';
 import {DEFAULT_LANGUAGE} from './LanguageTabs';
 import MissingTranslationsWarning from './MissingTranslationsWarning';
+import MultipleCosignComponentsWarning from './MultipleCosignComponentsWarning';
 import PaymentFields from './PaymentFields';
 import {EMPTY_PRICE_RULE, PriceLogic} from './PriceLogic';
 import ProductFields from './ProductFields';
@@ -1143,6 +1145,8 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
       {state.form.translationEnabled ? (
         <MissingTranslationsWarning form={state.form} formSteps={state.formSteps} />
       ) : null}
+      <MultipleCosignComponentsWarning components={availableComponents} />
+      <CosignInRepeatingGroupWarning formSteps={state.formSteps} />
 
       <FormContext.Provider
         value={{
