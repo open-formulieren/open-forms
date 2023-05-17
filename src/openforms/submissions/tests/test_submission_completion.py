@@ -234,7 +234,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
         cleaned_session = self.client.session
         self.assertNotIn(FORM_AUTH_SESSION_KEY, cleaned_session)
 
-        # assert that identifying attributs are hashed on completion
+        # assert that identifying attributes are hashed on completion
         submission.refresh_from_db()
 
         value = submission.auth_info.value

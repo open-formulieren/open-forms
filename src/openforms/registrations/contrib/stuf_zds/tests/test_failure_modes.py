@@ -8,6 +8,7 @@ from privates.test import temp_private_root
 
 from openforms.config.models import GlobalConfiguration
 from openforms.submissions.constants import RegistrationStatuses
+from openforms.submissions.tasks import pre_registration
 from openforms.submissions.tests.factories import SubmissionFactory
 from stuf.stuf_zds.models import StufZDSConfig
 from stuf.stuf_zds.tests import StUFZDSTestBase
@@ -69,7 +70,7 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
                 "zds_zaaktype_status_code": "123",
                 "zds_documenttype_omschrijving_inzending": "aaabbc",
             },
-            completed=True,
+            completed_not_preregistered=True,
             bsn="111222333",
             submitted_data={
                 "voornaam": "Foo",
@@ -109,6 +110,7 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
             additional_matcher=match_text("zakLk01"),
         )
 
+        pre_registration(self.submission.id)
         register_submission(self.submission.id)
         with self.subTest("Initial registration fails"):
             self.submission.refresh_from_db()
@@ -185,6 +187,7 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
             additional_matcher=match_text("genereerDocumentIdentificatie_Di02"),
         )
 
+        pre_registration(self.submission.id)
         register_submission(self.submission.id)
         with self.subTest("Document id generation fails"):
             self.submission.refresh_from_db()
@@ -280,6 +283,7 @@ class PartialRegistrationFailureTests(StUFZDSTestBase):
             additional_matcher=match_text("edcLk01"),
         )
 
+        pre_registration(self.submission.id)
         register_submission(self.submission.id)
         with self.subTest("Document id generation fails"):
             self.submission.refresh_from_db()

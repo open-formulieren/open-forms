@@ -1,6 +1,6 @@
 import logging
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
@@ -211,6 +211,27 @@ class SubmissionReportGenerationTests(TestCase):
         inclusive_tag = doc(".inclusive")
 
         self.assertEqual(inclusive_tag.text(), "")
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_public_reference_included(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "input",
+                    "label": "Input",
+                    "type": "textfield",
+                },
+            ],
+            with_report=True,
+            public_registration_reference="OF-12345",
+        )
+
+        html = submission.report.generate_submission_report_pdf()
+
+        doc = pq(html)
+        reference_node = doc(".metadata").children()[1]
+
+        self.assertEqual(reference_node.text, "Your reference is: OF-12345")
 
 
 @temp_private_root()

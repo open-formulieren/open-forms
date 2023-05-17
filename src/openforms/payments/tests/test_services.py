@@ -46,6 +46,7 @@ class UpdatePaymentTests(TestCase):
         good_kwargs = dict(
             # these together would update
             submission__registration_status=RegistrationStatuses.success,
+            submission__pre_registration_completed=True,
             submission__form__registration_backend="registration1",
             submission__form__payment_backend="payment1",
             submission__form__product__price=Decimal("11.35"),
@@ -129,6 +130,7 @@ class TestPaymentRaceCondition(TransactionTestCase):
     def test_update_payment_registration(self):
         payment = SubmissionPaymentFactory.create(
             submission__registration_status=RegistrationStatuses.success,
+            submission__pre_registration_completed=True,
             submission__form__registration_backend="registration1",
             submission__form__payment_backend="payment1",
             submission__form__product__price=Decimal("11.35"),

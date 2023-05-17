@@ -50,6 +50,14 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             created_on=factory.LazyAttribute(
                 lambda s: s.completed_on - timedelta(hours=4)
             ),
+            pre_registration_completed=True,
+            price=factory.PostGenerationMethodCall("calculate_price"),
+        )
+        completed_not_preregistered = factory.Trait(
+            completed_on=factory.Faker("date_time_this_month", tzinfo=timezone.utc),
+            created_on=factory.LazyAttribute(
+                lambda s: s.completed_on - timedelta(hours=4)
+            ),
             price=factory.PostGenerationMethodCall("calculate_price"),
         )
         suspended = factory.Trait(
@@ -66,6 +74,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             completed=True,
             last_register_date=factory.LazyFunction(timezone.now),
             registration_status=RegistrationStatuses.success,
+            pre_registration_completed=True,
         )
         registration_pending = factory.Trait(
             completed=True,
@@ -76,6 +85,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
             completed=True,
             last_register_date=factory.LazyFunction(timezone.now),
             registration_status=RegistrationStatuses.in_progress,
+            pre_registration_completed=True,
         )
         has_previous_submission = factory.Trait(
             previous_submission=factory.SubFactory(

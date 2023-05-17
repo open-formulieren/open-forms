@@ -148,12 +148,14 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
         )
         original_register_date = submission.last_register_date
 
-        patcher = patch(
+        registration_patcher = patch(
             "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.register_submission",
             side_effect=RegistrationFailed("still failing"),
         )
 
-        with patcher as mock_register, self.assertRaises(RegistrationFailed):
+        with registration_patcher as mock_register, self.assertRaises(
+            RegistrationFailed
+        ):
             # invoke the chain
             on_completion_retry(submission.id)()
 
@@ -162,6 +164,42 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
         # downstream tasks should not have been called - chain should abort
         mock_update_payment.assert_not_called()
         self.assertNotEqual(submission.last_register_date, original_register_date)
+        self.assertEqual(submission.public_registration_reference, "OF-1234")
+        self.assertTrue(submission.needs_on_completion_retry)
+
+    @patch("openforms.payments.tasks.update_submission_payment_registration")
+    def test_backend_preregistration_still_fails(self, mock_update_payment):
+        submission = SubmissionFactory.create(
+            needs_on_completion_retry=True,
+            pre_registration_completed=False,
+            registration_failed=True,
+            form__registration_backend="zgw-create-zaak",
+            # registration failed, so an internal reference was created
+            public_registration_reference="OF-1234",
+        )
+
+        preregistration_patcher = patch(
+            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
+            side_effect=RegistrationFailed("still failing"),
+        )
+        registration_patcher = patch(
+            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.register_submission",
+            side_effect=RegistrationFailed("still failing"),
+        )
+
+        with (
+            preregistration_patcher as mock_preregister,
+            registration_patcher as mock_register,
+            self.assertRaises(RegistrationFailed),
+        ):
+            # invoke the chain
+            on_completion_retry(submission.id)()
+
+        submission.refresh_from_db()
+        mock_preregister.assert_called_once()
+        mock_register.assert_not_called()
+        # downstream tasks should not have been called - chain should abort
+        mock_update_payment.assert_not_called()
         self.assertEqual(submission.public_registration_reference, "OF-1234")
         self.assertTrue(submission.needs_on_completion_retry)
 
@@ -177,6 +215,10 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
         )
         AppointmentInfoFactory.create(submission=submission, registration_ok=True)
         original_register_date = submission.last_register_date
+
+        preregistration_patcher = patch(
+            "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.pre_register_submission",
+        )
         registration_patcher = patch(
             "openforms.registrations.contrib.zgw_apis.plugin.ZGWRegistration.register_submission",
             return_value={
@@ -187,7 +229,7 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
             },
         )
 
-        with registration_patcher as mock_register:
+        with preregistration_patcher, registration_patcher as mock_register:
             # invoke the chain
             on_completion_retry(submission.id)()
 

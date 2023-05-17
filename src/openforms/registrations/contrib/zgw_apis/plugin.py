@@ -1,3 +1,4 @@
+import logging
 from functools import partial, wraps
 from typing import Dict, List, Optional, Tuple
 
@@ -33,6 +34,8 @@ from ...utils import execute_unless_result_exists
 from .checks import check_config
 from .models import ZgwConfig
 from .validators import RoltypeOmschrijvingValidator
+
+logger = logging.getLogger(__name__)
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -146,16 +149,12 @@ class ZGWRegistration(BasePlugin):
     }
 
     @wrap_api_errors
-    def register_submission(
-        self, submission: Submission, options: dict
-    ) -> Optional[dict]:
+    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
         """
-        Create a zaak and document with the submitted data as PDF.
+        Create a Zaak, so that we can have a registration ID.
 
-        NOTE: this requires that the report was generated before the submission is
-        being registered. See
-        :meth:`openforms.submissions.api.viewsets.SubmissionViewSet._complete` where
-        celery tasks are chained to guarantee this.
+        Note: The Rol, Status, the documents for the files uploaded by the user in the form (attachments) and the
+        confirmation report PDF will be added in the registration task (after the report has been generated).
         """
         zgw = ZgwConfig.get_solo()
         zgw.apply_defaults_to(options)
@@ -176,6 +175,27 @@ class ZGWRegistration(BasePlugin):
             submission,
             "intermediate.zaak",
         )
+
+        result = {"zaak": zaak}
+        submission.registration_result.update(result)
+        submission.public_registration_reference = self.get_reference_from_result(
+            result
+        )
+        submission.save()
+
+    @wrap_api_errors
+    def register_submission(
+        self, submission: Submission, options: dict
+    ) -> Optional[dict]:
+        """
+        Add the PDF document with the submission data (confirmation report) to the zaak created during pre-registration.
+        """
+        zgw = ZgwConfig.get_solo()
+        zgw.apply_defaults_to(options)
+
+        result = submission.registration_result
+        zaak = result["zaak"]
+
         submission_report = SubmissionReport.objects.get(submission=submission)
         document = execute_unless_result_exists(
             partial(
@@ -280,15 +300,19 @@ class ZGWRegistration(BasePlugin):
                 f"intermediate.documents.{attachment.id}.relation",
             )
 
-        result = {
-            "zaak": zaak,
-            "document": document,
-            "status": status,
-            "rol": rol,
-        }
+        result.update(
+            {
+                "document": document,
+                "status": status,
+                "rol": rol,
+            }
+        )
+
         if submission.has_registrator:
             result["medewerker_rol"] = medewerker_rol
 
+        submission.registration_result = result
+        submission.save()
         return result
 
     def get_reference_from_result(self, result: Dict[str, str]) -> str:

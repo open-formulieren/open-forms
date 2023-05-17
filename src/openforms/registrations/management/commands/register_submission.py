@@ -1,6 +1,6 @@
 from django.core.management import BaseCommand
 
-from ...tasks import register_submission
+from ...tasks import pre_registration, register_submission
 
 
 class Command(BaseCommand):
@@ -12,6 +12,16 @@ class Command(BaseCommand):
         )
 
     def handle(self, **options):
+        self.stdout.write("Pre-registering submission...")
+        try:
+            pre_registration(options["submission_id"])
+        except Exception as exc:
+            self.stderr.write(f"Pre-registration failed with error: {exc}")
+        else:
+            self.stdout.write(
+                "Pre-registration completed or skipped (because it was already pre-registered)."
+            )
+
         self.stdout.write("Registering submission...")
         try:
             register_submission(options["submission_id"])

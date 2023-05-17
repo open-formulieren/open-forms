@@ -1,3 +1,4 @@
+import logging
 import re
 from dataclasses import dataclass
 from typing import Dict, Optional
@@ -27,6 +28,8 @@ from stuf.stuf_zds.models import StufZDSConfig
 
 from ...registry import register
 from ...utils import execute_unless_result_exists
+
+logger = logging.getLogger(__name__)
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
@@ -191,6 +194,23 @@ class StufZDSRegistration(BasePlugin):
         ),
     }
 
+    def pre_register_submission(self, submission: "Submission", options: dict) -> None:
+        config = StufZDSConfig.get_solo()
+        config.apply_defaults_to(options)
+
+        with config.get_client(options) as client:
+            # obtain a zaaknummer & save it - first, check if we have an intermediate result
+            # from earlier attempts. if we do, do not generate a new number
+            zaak_id = execute_unless_result_exists(
+                client.create_zaak_identificatie,
+                submission,
+                "intermediate.zaaknummer",
+                default="",
+            )
+
+        submission.public_registration_reference = zaak_id
+        submission.save()
+
     def register_submission(
         self, submission: Submission, options: dict
     ) -> Optional[dict]:
@@ -210,15 +230,8 @@ class StufZDSRegistration(BasePlugin):
         options["omschrijving"] = submission.form.admin_name
 
         with config.get_client(options) as client:
-
-            # obtain a zaaknummer & save it - first, check if we have an intermediate result
-            # from earlier attempts. if we do, do not generate a new number
-            zaak_id = execute_unless_result_exists(
-                client.create_zaak_identificatie,
-                submission,
-                "intermediate.zaaknummer",
-                default="",
-            )
+            # Zaak ID reserved during the pre-registration phase
+            zaak_id = submission.public_registration_reference
 
             zaak_data = apply_data_mapping(
                 submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
@@ -234,10 +247,10 @@ class StufZDSRegistration(BasePlugin):
                 submission, self.zaak_mapping, REGISTRATION_ATTRIBUTE
             )
 
-            if submission.public_registration_reference:
-                zaak_data.update(
-                    {"kenmerken": [submission.public_registration_reference]}
-                )
+            if internal_reference := submission.registration_result.get(
+                "temporary_internal_reference",
+            ):
+                zaak_data.update({"kenmerken": [internal_reference]})
 
             # Add medewerker to the data
             if submission.has_registrator:

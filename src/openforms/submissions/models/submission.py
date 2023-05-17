@@ -182,6 +182,13 @@ class Submission(models.Model):
             "Indication whether the registration in the configured backend was successful."
         ),
     )
+    pre_registration_completed = models.BooleanField(
+        _("pre-registration completed"),
+        default=False,
+        help_text=_(
+            "Indicates whether the pre-registration task completed successfully."
+        ),
+    )
     public_registration_reference = models.CharField(
         _("public registration reference"),
         max_length=100,
@@ -269,7 +276,14 @@ class Submission(models.Model):
                 fields=("public_registration_reference",),
                 name="unique_public_registration_reference",
                 condition=~models.Q(public_registration_reference=""),
-            )
+            ),
+            models.CheckConstraint(
+                check=~(
+                    models.Q(registration_status=RegistrationStatuses.success)
+                    & models.Q(pre_registration_completed=False)
+                ),
+                name="registration_status_consistency_check",
+            ),
         ]
 
     def __str__(self):

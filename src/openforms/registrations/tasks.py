@@ -1,19 +1,74 @@
 import logging
 import traceback
 
+from django.db import transaction
 from django.utils import timezone
 
 from celery_once import QueueOnce
+from glom import assign
 
 from openforms.celery import app
 from openforms.logging import logevent
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
+from openforms.submissions.public_references import set_submission_reference
 
 from ..config.models import GlobalConfiguration
 from .exceptions import RegistrationFailed
+from .service import get_registration_plugin
 
 logger = logging.getLogger(__name__)
+
+
+@app.task
+def pre_registration(submission_id: int) -> None:
+    submission = Submission.objects.get(id=submission_id)
+    if submission.pre_registration_completed:
+        return
+
+    with transaction.atomic():
+        registration_plugin = get_registration_plugin(submission)
+        if not registration_plugin:
+            set_submission_reference(submission)
+            submission.pre_registration_completed = True
+            submission.save()
+            return
+
+        options_serializer = registration_plugin.configuration_options(
+            data=submission.form.registration_backend_options
+        )
+
+        if not options_serializer.is_valid():
+            set_submission_reference(submission)
+            return
+
+        # If we are retrying, then an internal registration reference has been set. We keep track of it.
+        if submission.public_registration_reference:
+            if not submission.registration_result:
+                submission.registration_result = {}
+
+            assign(
+                submission.registration_result,
+                "temporary_internal_reference",
+                submission.public_registration_reference,
+                missing=dict,
+            )
+            submission.save()
+
+    try:
+        registration_plugin.pre_register_submission(
+            submission, options_serializer.validated_data
+        )
+    except Exception as exc:
+        logger.exception("ZGW pre-registration raised %s", exc)
+        submission.save_registration_status(
+            RegistrationStatuses.failed, {"traceback": str(exc)}
+        )
+        set_submission_reference(submission)
+        return
+
+    submission.pre_registration_completed = True
+    submission.save()
 
 
 @app.task(
@@ -45,7 +100,7 @@ def register_submission(submission_id: int) -> None:
     logger.debug("Register submission '%s'", submission)
 
     if submission.registration_status == RegistrationStatuses.success:
-        # if it's already succesfully registered, do not overwrite that.
+        # if it's already successfully registered, do not overwrite that.
         return
 
     config = GlobalConfiguration.get_solo()
@@ -65,6 +120,13 @@ def register_submission(submission_id: int) -> None:
 
     if not submission.completed_on:
         e = RegistrationFailed("Submission should be completed first")
+        logevent.registration_failure(submission, e)
+        raise e
+
+    if not submission.pre_registration_completed:
+        e = RegistrationFailed(
+            "Pre-registration of the submission should be completed first"
+        )
         logevent.registration_failure(submission, e)
         raise e
 

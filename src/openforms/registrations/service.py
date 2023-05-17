@@ -3,9 +3,14 @@ import logging
 from openforms.submissions.constants import RegistrationStatuses
 from openforms.submissions.models import Submission
 
+from .base import BasePlugin
 from .exceptions import NoSubmissionReference
 
-__all__ = ["NoSubmissionReference", "extract_submission_reference"]
+__all__ = [
+    "NoSubmissionReference",
+    "extract_submission_reference",
+    "get_registration_plugin",
+]
 
 logger = logging.getLogger(__name__)
 
@@ -41,3 +46,15 @@ def extract_submission_reference(submission: Submission) -> str:
         return plugin.get_reference_from_result(result)
     except Exception as exc:
         raise NoSubmissionReference("Extraction failed") from exc
+
+
+def get_registration_plugin(submission: Submission) -> BasePlugin | None:
+
+    form = submission.form
+    backend = form.registration_backend
+
+    if not backend:
+        return
+
+    registry = form._meta.get_field("registration_backend").registry
+    return registry[backend]

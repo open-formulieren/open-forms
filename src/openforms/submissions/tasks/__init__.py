@@ -34,7 +34,6 @@ def on_completion(submission_id: int) -> None:
     pre_registration_task = pre_registration.si(submission_id)
     generate_report_task = generate_submission_report.si(submission_id)
     register_submission_task = register_submission.si(submission_id)
-    obtain_submission_reference_task = obtain_submission_reference.si(submission_id)
     finalize_completion_task = finalize_completion.si(submission_id)
 
     # for the orchestration with distributed processing and dependencies between
@@ -56,7 +55,6 @@ def on_completion(submission_id: int) -> None:
         generate_report_task,
         # TODO: ensure that any images that need resizing are done so before this is attempted
         register_submission_task,
-        obtain_submission_reference_task,
         # we schedule the finalization so that the ``async_result`` below is marked
         # as done, which is the "signal" to show the confirmation page. Actual payment
         # flow & confirmation e-mail follow later.
@@ -107,21 +105,22 @@ def on_completion_retry(submission_id: int) -> chain:
     This differs from :func:`on_completion` in that it has a different "starting point"
     and invokes some extra tasks or skips other tasks. It focuses on tasks that
     typically fail downstream in external systems outside of our own control,
-    such as registration backends, appointment booking sytems.
+    such as registration backends, appointment booking systems.
 
     .. note::
 
         The retry workflow may only need to execute a part of the entire flow, but
         we still consider this an atomic unit/entrypoint to manage the dependencies
         properly. It's important that the individual celery tasks making up the
-        workflow are idempotent and exit succesfully when nothing needs to be done!
+        workflow are idempotent and exit successfully when nothing needs to be done!
 
     TODO: the results should be forgotten as part of the retry flow to not flood the
     result backend!
 
-    TODO: see if we can find a way to surpress exceptions from being sent to error
+    TODO: see if we can find a way to suppress exceptions from being sent to error
     monitoring _if and only if_ they're part of this particular workflow.
     """
+    pre_register_submission_task = pre_registration.si(submission_id)
     register_submission_task = register_submission.si(submission_id).set(
         ignore_result=True
     )
@@ -133,6 +132,7 @@ def on_completion_retry(submission_id: int) -> chain:
     )
 
     retry_chain = chain(
+        pre_register_submission_task,
         register_submission_task,
         update_payments_task,
         finalize_completion_retry_task,

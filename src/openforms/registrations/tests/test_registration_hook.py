@@ -193,7 +193,7 @@ class RegistrationHookTests(TestCase):
         last_register_date = timezone.now() - timedelta(hours=1)
         submission = SubmissionFactory.create(
             last_register_date=last_register_date,
-            registration_status=RegistrationStatuses.success,
+            registration_success=True,
             form__registration_backend="callback",
             form__registration_backend_options={
                 "string": "some-option",

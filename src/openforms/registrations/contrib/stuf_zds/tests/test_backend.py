@@ -5,9 +5,11 @@ from unittest.mock import patch
 import requests_mock
 from freezegun import freeze_time
 from privates.test import temp_private_root
+from requests import ConnectTimeout
 
 from openforms.authentication.tests.factories import RegistratorInfoFactory
 from openforms.logging.models import TimelineLogProxy
+from openforms.submissions.tasks import pre_registration
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
@@ -184,6 +186,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
             ],
             form__name="my-form",
             bsn="111222333",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
             submitted_data={
                 "voornaam": "Foo",
                 "achternaam": "Bar",
@@ -202,16 +206,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             content_type="application/msword",
         )
 
-        m.post(
-            self.service.soap_service.url,
-            content=load_mock(
-                "genereerZaakIdentificatie.xml",
-                {
-                    "zaak_identificatie": "foo-zaak",
-                },
-            ),
-            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
-        )
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
@@ -261,9 +255,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
-
-        xml_doc = xml_from_request_history(m, 1)
-        self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
             {
@@ -312,7 +303,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # PDF report
-        xml_doc = xml_from_request_history(m, 2)
+        xml_doc = xml_from_request_history(m, 1)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -321,8 +312,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
                 "//zkn:stuurgegevens/stuf:functie": "genereerDocumentidentificatie",
             },
         )
-
-        xml_doc = xml_from_request_history(m, 3)
+        xml_doc = xml_from_request_history(m, 2)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -334,7 +324,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # attachment
-        xml_doc = xml_from_request_history(m, 4)
+        xml_doc = xml_from_request_history(m, 3)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -344,7 +334,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 5)
+        xml_doc = xml_from_request_history(m, 4)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -359,13 +349,13 @@ class StufZDSPluginTests(StUFZDSTestBase):
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_request.txt"
             ).count(),
-            6,
+            5,
         )
         self.assertEqual(
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_success_response.txt"
             ).count(),
-            6,
+            5,
         )
 
         # even on success, the intermediate results must be recorded:
@@ -447,6 +437,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
                     },
                 },
             ],
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
             submitted_data={
                 "voornaam": "Foo",
                 "achternaam": "Bar",
@@ -469,16 +461,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             content_type="application/msword",
         )
 
-        m.post(
-            self.service.soap_service.url,
-            content=load_mock(
-                "genereerZaakIdentificatie.xml",
-                {
-                    "zaak_identificatie": "foo-zaak",
-                },
-            ),
-            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
-        )
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
@@ -528,9 +510,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
-
-        xml_doc = xml_from_request_history(m, 1)
-        self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
             {
@@ -570,7 +549,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # PDF report
-        xml_doc = xml_from_request_history(m, 2)
+        xml_doc = xml_from_request_history(m, 1)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -580,7 +559,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 3)
+        xml_doc = xml_from_request_history(m, 2)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -592,7 +571,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # attachment
-        xml_doc = xml_from_request_history(m, 4)
+        xml_doc = xml_from_request_history(m, 3)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -602,7 +581,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 5)
+        xml_doc = xml_from_request_history(m, 4)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -616,13 +595,13 @@ class StufZDSPluginTests(StUFZDSTestBase):
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_request.txt"
             ).count(),
-            6,
+            5,
         )
         self.assertEqual(
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_success_response.txt"
             ).count(),
-            6,
+            5,
         )
 
         # even on success, the intermediate results must be recorded:
@@ -707,6 +686,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
                     },
                 },
             ],
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
             submitted_data={
                 "voornaam": "Foo",
                 "achternaam": "Bar",
@@ -725,16 +706,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             content_type="application/msword",
         )
 
-        m.post(
-            self.service.soap_service.url,
-            content=load_mock(
-                "genereerZaakIdentificatie.xml",
-                {
-                    "zaak_identificatie": "foo-zaak",
-                },
-            ),
-            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
-        )
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
@@ -776,9 +747,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         xml_doc = xml_from_request_history(m, 0)
-        self.assertSoapXMLCommon(xml_doc)
-
-        xml_doc = xml_from_request_history(m, 1)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -838,6 +806,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
                     },
                 },
             ],
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
             submitted_data={
                 "handelsnaam": "Foo",
                 "postcode": "2022XY",
@@ -850,16 +820,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             content_type="application/msword",
         )
 
-        m.post(
-            self.service.soap_service.url,
-            content=load_mock(
-                "genereerZaakIdentificatie.xml",
-                {
-                    "zaak_identificatie": "foo-zaak",
-                },
-            ),
-            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
-        )
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
@@ -901,9 +861,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         xml_doc = xml_from_request_history(m, 0)
-        self.assertSoapXMLCommon(xml_doc)
-
-        xml_doc = xml_from_request_history(m, 1)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -968,6 +925,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
                     },
                 },
             ],
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
@@ -986,16 +945,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             content_type="application/msword",
         )
 
-        m.post(
-            self.service.soap_service.url,
-            content=load_mock(
-                "genereerZaakIdentificatie.xml",
-                {
-                    "zaak_identificatie": "foo-zaak",
-                },
-            ),
-            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
-        )
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
@@ -1045,9 +994,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
-
-        xml_doc = xml_from_request_history(m, 1)
-        self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
             {
@@ -1074,7 +1020,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # PDF report
-        xml_doc = xml_from_request_history(m, 2)
+        xml_doc = xml_from_request_history(m, 1)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -1084,7 +1030,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 3)
+        xml_doc = xml_from_request_history(m, 2)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -1096,7 +1042,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # attachment
-        xml_doc = xml_from_request_history(m, 4)
+        xml_doc = xml_from_request_history(m, 3)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -1106,7 +1052,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 5)
+        xml_doc = xml_from_request_history(m, 4)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -1120,13 +1066,13 @@ class StufZDSPluginTests(StUFZDSTestBase):
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_request.txt"
             ).count(),
-            6,
+            5,
         )
         self.assertEqual(
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_success_response.txt"
             ).count(),
-            6,
+            5,
         )
 
         # even on success, the intermediate results must be recorded:
@@ -1173,6 +1119,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
                     },
                 },
             ],
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
@@ -1190,16 +1138,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             content_type="application/msword",
         )
 
-        m.post(
-            self.service.soap_service.url,
-            content=load_mock(
-                "genereerZaakIdentificatie.xml",
-                {
-                    "zaak_identificatie": "foo-zaak",
-                },
-            ),
-            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
-        )
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
@@ -1249,9 +1187,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
-
-        xml_doc = xml_from_request_history(m, 1)
-        self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
             {
@@ -1277,7 +1212,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # PDF report
-        xml_doc = xml_from_request_history(m, 2)
+        xml_doc = xml_from_request_history(m, 1)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -1287,7 +1222,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 3)
+        xml_doc = xml_from_request_history(m, 2)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -1299,7 +1234,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # attachment
-        xml_doc = xml_from_request_history(m, 4)
+        xml_doc = xml_from_request_history(m, 3)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -1309,7 +1244,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 5)
+        xml_doc = xml_from_request_history(m, 4)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -1323,13 +1258,13 @@ class StufZDSPluginTests(StUFZDSTestBase):
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_request.txt"
             ).count(),
-            6,
+            5,
         )
         self.assertEqual(
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_success_response.txt"
             ).count(),
-            6,
+            5,
         )
 
         # even on success, the intermediate results must be recorded:
@@ -1383,6 +1318,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
                     },
                 },
             ],
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
             submitted_data={
                 "handelsnaam": "ACME",
                 "postcode": "1000 AA",
@@ -1401,16 +1338,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             content_type="application/msword",
         )
 
-        m.post(
-            self.service.soap_service.url,
-            content=load_mock(
-                "genereerZaakIdentificatie.xml",
-                {
-                    "zaak_identificatie": "foo-zaak",
-                },
-            ),
-            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
-        )
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
@@ -1460,9 +1387,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
-
-        xml_doc = xml_from_request_history(m, 1)
-        self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
             {
@@ -1488,7 +1412,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # PDF report
-        xml_doc = xml_from_request_history(m, 2)
+        xml_doc = xml_from_request_history(m, 1)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -1498,7 +1422,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 3)
+        xml_doc = xml_from_request_history(m, 2)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -1510,7 +1434,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # attachment
-        xml_doc = xml_from_request_history(m, 4)
+        xml_doc = xml_from_request_history(m, 3)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -1520,7 +1444,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 5)
+        xml_doc = xml_from_request_history(m, 4)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -1534,13 +1458,13 @@ class StufZDSPluginTests(StUFZDSTestBase):
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_request.txt"
             ).count(),
-            6,
+            5,
         )
         self.assertEqual(
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_success_response.txt"
             ).count(),
-            6,
+            5,
         )
 
         # even on success, the intermediate results must be recorded:
@@ -1622,6 +1546,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
                     },
                 },
             ],
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
             submitted_data={
                 "voornaam": "Foo",
                 "achternaam": "Bar",
@@ -1639,16 +1565,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
         RegistratorInfoFactory.create(submission=submission, value="123456782")
 
-        m.post(
-            self.service.soap_service.url,
-            content=load_mock(
-                "genereerZaakIdentificatie.xml",
-                {
-                    "zaak_identificatie": "foo-zaak",
-                },
-            ),
-            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
-        )
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
@@ -1698,9 +1614,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
-
-        xml_doc = xml_from_request_history(m, 1)
-        self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
             {
@@ -1749,6 +1662,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
                     },
                 },
             ],
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
             submitted_data={
                 "medewerker_nummer": "007",
             },
@@ -1760,16 +1675,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             content_type="application/msword",
         )
 
-        m.post(
-            self.service.soap_service.url,
-            content=load_mock(
-                "genereerZaakIdentificatie.xml",
-                {
-                    "zaak_identificatie": "foo-zaak",
-                },
-            ),
-            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
-        )
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
@@ -1811,9 +1716,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         xml_doc = xml_from_request_history(m, 0)
-        self.assertSoapXMLCommon(xml_doc)
-
-        xml_doc = xml_from_request_history(m, 1)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -1866,6 +1768,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
             form__product__price=Decimal("11.35"),
             form__payment_backend="demo",
             bsn="111222333",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
             submitted_data={
                 "voornaam": "Foo",
                 "achternaam": "Bar",
@@ -1873,16 +1777,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
         self.assertTrue(submission.payment_required)
 
-        m.post(
-            self.service.soap_service.url,
-            content=load_mock(
-                "genereerZaakIdentificatie.xml",
-                {
-                    "zaak_identificatie": "foo-zaak",
-                },
-            ),
-            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
-        )
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
@@ -1928,9 +1822,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
-
-        xml_doc = xml_from_request_history(m, 1)
-        self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
             {
@@ -1951,7 +1842,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # PDF report
-        xml_doc = xml_from_request_history(m, 2)
+        xml_doc = xml_from_request_history(m, 1)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -1961,7 +1852,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 3)
+        xml_doc = xml_from_request_history(m, 2)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -1978,7 +1869,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         # process the payment
         plugin.update_payment_status(submission, serializer.validated_data)
 
-        xml_doc = xml_from_request_history(m, 4)
+        xml_doc = xml_from_request_history(m, 3)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -1994,13 +1885,13 @@ class StufZDSPluginTests(StUFZDSTestBase):
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_request.txt"
             ).count(),
-            5,
+            4,
         )
         self.assertEqual(
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_success_response.txt"
             ).count(),
-            5,
+            4,
         )
 
     @patch("celery.app.task.Task.request")
@@ -2009,10 +1900,11 @@ class StufZDSPluginTests(StUFZDSTestBase):
         Assert that the internal reference is included in the "kenmerken".
         """
         submission = SubmissionFactory.from_components(
-            completed=True,
             registration_in_progress=True,
             needs_on_completion_retry=True,
             public_registration_reference="OF-1234",
+            pre_registration_completed=False,
+            registration_result={"temporary_internal_reference": "OF-1234"},
             components_list=[{"key": "dummy"}],
         )
 
@@ -2060,6 +1952,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         serializer = plugin.configuration_options(data=form_options)
         self.assertTrue(serializer.is_valid())
 
+        plugin.pre_register_submission(submission, serializer.validated_data)
         result = plugin.register_submission(submission, serializer.validated_data)
         self.assertEqual(
             result,
@@ -2123,6 +2016,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
             ],
             form__name="my-form",
             bsn="111222333",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
             submitted_data={
                 "voornaam": "Foo",
                 "achternaam": "Bar",
@@ -2138,16 +2033,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             content_type="application/msword",
         )
 
-        m.post(
-            self.service.soap_service.url,
-            content=load_mock(
-                "genereerZaakIdentificatie.xml",
-                {
-                    "zaak_identificatie": "foo-zaak",
-                },
-            ),
-            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
-        )
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
@@ -2190,9 +2075,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
-
-        xml_doc = xml_from_request_history(m, 1)
-        self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
             {
@@ -2229,7 +2111,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # PDF report
-        xml_doc = xml_from_request_history(m, 2)
+        xml_doc = xml_from_request_history(m, 1)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -2239,7 +2121,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 3)
+        xml_doc = xml_from_request_history(m, 2)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -2250,7 +2132,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # attachment
-        xml_doc = xml_from_request_history(m, 4)
+        xml_doc = xml_from_request_history(m, 3)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -2260,7 +2142,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 5)
+        xml_doc = xml_from_request_history(m, 4)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -2274,13 +2156,13 @@ class StufZDSPluginTests(StUFZDSTestBase):
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_request.txt"
             ).count(),
-            6,
+            5,
         )
         self.assertEqual(
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_success_response.txt"
             ).count(),
-            6,
+            5,
         )
 
     @patch("celery.app.task.Task.request")
@@ -2327,6 +2209,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
             ],
             form__name="my-form",
             bsn="111222333",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
             submitted_data={
                 "voornaam": "Foo",
                 "achternaam": "Bar",
@@ -2342,16 +2226,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             content_type="application/msword",
         )
 
-        m.post(
-            self.service.soap_service.url,
-            content=load_mock(
-                "genereerZaakIdentificatie.xml",
-                {
-                    "zaak_identificatie": "foo-zaak",
-                },
-            ),
-            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
-        )
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
@@ -2396,9 +2270,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
-
-        xml_doc = xml_from_request_history(m, 1)
-        self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
             {
@@ -2435,7 +2306,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # PDF report
-        xml_doc = xml_from_request_history(m, 2)
+        xml_doc = xml_from_request_history(m, 1)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -2445,7 +2316,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 3)
+        xml_doc = xml_from_request_history(m, 2)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -2456,7 +2327,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # attachment
-        xml_doc = xml_from_request_history(m, 4)
+        xml_doc = xml_from_request_history(m, 3)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -2466,7 +2337,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 5)
+        xml_doc = xml_from_request_history(m, 4)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -2480,13 +2351,13 @@ class StufZDSPluginTests(StUFZDSTestBase):
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_request.txt"
             ).count(),
-            6,
+            5,
         )
         self.assertEqual(
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_success_response.txt"
             ).count(),
-            6,
+            5,
         )
 
     @patch("celery.app.task.Task.request")
@@ -2533,6 +2404,8 @@ class StufZDSPluginTests(StUFZDSTestBase):
             ],
             form__name="my-form",
             bsn="111222333",
+            public_registration_reference="foo-zaak",
+            registration_result={"intermediate": {"zaaknummer": "foo-zaak"}},
             submitted_data={
                 "voornaam": "Foo",
                 "achternaam": "Bar",
@@ -2548,16 +2421,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
             content_type="application/msword",
         )
 
-        m.post(
-            self.service.soap_service.url,
-            content=load_mock(
-                "genereerZaakIdentificatie.xml",
-                {
-                    "zaak_identificatie": "foo-zaak",
-                },
-            ),
-            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
-        )
         m.post(
             self.service.soap_service.url,
             content=load_mock("creeerZaak.xml"),
@@ -2602,9 +2465,6 @@ class StufZDSPluginTests(StUFZDSTestBase):
 
         xml_doc = xml_from_request_history(m, 0)
         self.assertSoapXMLCommon(xml_doc)
-
-        xml_doc = xml_from_request_history(m, 1)
-        self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
             {
@@ -2639,7 +2499,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # PDF report
-        xml_doc = xml_from_request_history(m, 2)
+        xml_doc = xml_from_request_history(m, 1)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -2649,7 +2509,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 3)
+        xml_doc = xml_from_request_history(m, 2)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -2660,7 +2520,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
         )
 
         # attachment
-        xml_doc = xml_from_request_history(m, 4)
+        xml_doc = xml_from_request_history(m, 3)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -2670,7 +2530,7 @@ class StufZDSPluginTests(StUFZDSTestBase):
             },
         )
 
-        xml_doc = xml_from_request_history(m, 5)
+        xml_doc = xml_from_request_history(m, 4)
         self.assertSoapXMLCommon(xml_doc)
         self.assertXPathEqualDict(
             xml_doc,
@@ -2684,13 +2544,13 @@ class StufZDSPluginTests(StUFZDSTestBase):
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_request.txt"
             ).count(),
-            6,
+            5,
         )
         self.assertEqual(
             TimelineLogProxy.objects.filter(
                 template="logging/events/stuf_zds_success_response.txt"
             ).count(),
-            6,
+            5,
         )
 
     def test_reference_can_be_extracted(self, m):
@@ -2704,3 +2564,121 @@ class StufZDSPluginTests(StUFZDSTestBase):
         reference = extract_submission_reference(submission)
 
         self.assertEqual("abcd1234", reference)
+
+    def test_pre_registration_goes_wrong_sets_internal_reference(self, m):
+        submission = SubmissionFactory.from_components(
+            [],
+            submitted_data={
+                "handelsnaam": "ACME",
+                "postcode": "1000 AA",
+                "coordinaat": [52.36673378967122, 4.893164274470299],
+            },
+            form__registration_backend="stuf-zds-create-zaak",
+            form__registration_backend_options={
+                "zds_zaaktype_code": "zt-code",
+                "zds_documenttype_omschrijving_inzending": "aaabbc",
+            },
+            kvk="12345678",
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
+            exc=ConnectTimeout,
+        )
+
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "zds_zaaktype_status_code": "123",
+            "zds_zaaktype_status_omschrijving": "aaabbc",
+            "zds_documenttype_omschrijving_inzending": "aaabbc",
+        }
+        plugin = StufZDSRegistration("stuf")
+        serializer = plugin.configuration_options(data=form_options)
+        serializer.is_valid()
+
+        with patch(
+            "openforms.submissions.public_references.get_reference_for_submission",
+            return_value="OF-TEST!",
+        ):
+            pre_registration(submission.id)
+
+        submission.refresh_from_db()
+
+        self.assertEqual(submission.public_registration_reference, "OF-TEST!")
+        self.assertFalse(submission.pre_registration_completed)
+
+    def test_retry_pre_registration_task(self, m):
+        submission = SubmissionFactory.from_components(
+            [],
+            public_registration_reference="OF-TEMP",
+            pre_registration_completed=False,
+            registration_result={"temporary_internal_reference": "OF-TEMP"},
+            submitted_data={
+                "handelsnaam": "ACME",
+                "postcode": "1000 AA",
+                "coordinaat": [52.36673378967122, 4.893164274470299],
+            },
+            kvk="12345678",
+        )
+
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerZaakIdentificatie.xml",
+                {
+                    "zaak_identificatie": "ZAAK-FOOO",
+                },
+            ),
+            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
+        )
+
+        form_options = {
+            "zds_zaaktype_code": "zt-code",
+            "zds_zaaktype_omschrijving": "zt-omschrijving",
+            "zds_zaaktype_status_code": "123",
+            "zds_zaaktype_status_omschrijving": "aaabbc",
+            "zds_documenttype_omschrijving_inzending": "aaabbc",
+        }
+        plugin = StufZDSRegistration("stuf")
+        serializer = plugin.configuration_options(data=form_options)
+        serializer.is_valid()
+
+        plugin.pre_register_submission(submission, serializer.validated_data)
+
+        submission.refresh_from_db()
+
+        self.assertEqual(submission.public_registration_reference, "ZAAK-FOOO")
+        self.assertIn("temporary_internal_reference", submission.registration_result)
+        self.assertEqual(
+            submission.registration_result["temporary_internal_reference"], "OF-TEMP"
+        )
+
+    def test_backend_preregistration_sets_reference(self, m):
+        m.post(
+            self.service.soap_service.url,
+            content=load_mock(
+                "genereerZaakIdentificatie.xml",
+                {
+                    "zaak_identificatie": "ZAAK-FOOO",
+                },
+            ),
+            additional_matcher=match_text("genereerZaakIdentificatie_Di02"),
+        )
+
+        submission = SubmissionFactory.create(
+            form__registration_backend="stuf-zds-create-zaak",
+            form__registration_backend_options={
+                "zds_zaaktype_code": "zt-code",
+                "zds_documenttype_omschrijving_inzending": "aaabbc",
+            },
+            completed_not_preregistered=True,
+        )
+
+        self.assertEqual(submission.public_registration_reference, "")
+
+        pre_registration(submission.id)
+        submission.refresh_from_db()
+
+        self.assertEqual(submission.public_registration_reference, "ZAAK-FOOO")

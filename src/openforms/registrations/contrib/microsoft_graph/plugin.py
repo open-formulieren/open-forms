@@ -17,7 +17,7 @@ from openforms.registrations.contrib.microsoft_graph.models import (
     MSGraphRegistrationConfig,
 )
 from openforms.submissions.models import Submission, SubmissionReport
-from openforms.submissions.tasks.registration import set_submission_reference
+from openforms.submissions.public_references import set_submission_reference
 from openforms.template import render_from_string
 
 from ...base import BasePlugin

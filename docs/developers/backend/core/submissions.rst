@@ -26,10 +26,6 @@ Globally, the various actions and plugin categories are processed in order:
    :ref:`registration backends <developers_registration_plugins>`, depending
    on the plugin.
 #. If a :ref:`registration backend <developers_registration_plugins>` is configured, the submission is registered.
-#. Post-registration step. Each :ref:`registration plugin <developers_registration_plugins>` can perform
-   post-registration tasks like obtaining a registration ID from the external service and setting it on the submission.
-   If a registration ID cannot be retrieved, an internal ID is used to not block the process.
-   If an appointment was made, the appointment is updated with the ID.
 #. The confirmation page is shown, containing appointment information if
    applicable and the registration or internal ID. If payment is due, a payment
    link is also shown to start the payment process.

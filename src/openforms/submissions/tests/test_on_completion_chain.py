@@ -20,7 +20,7 @@ from .factories import SubmissionFactory, SubmissionFileAttachmentFactory
 class OnCompletionTests(TestCase):
     def test_submission_form_without_appointment(self):
         submission = SubmissionFactory.from_components(
-            completed=True,
+            completed_not_preregistered=True,
             form__registration_backend="email",
             form__registration_backend_options={
                 "to_emails": ["test@register.nl"],
@@ -51,8 +51,8 @@ class OnCompletionTests(TestCase):
                     self.fail("Invalid task ID returned")
 
         self.assertEqual(
-            len(submission.on_completion_task_ids), 6
-        )  # 6 tasks in the chain
+            len(submission.on_completion_task_ids), 5
+        )  # 5 tasks in the chain
         # registration result reference
         self.assertTrue(submission.public_registration_reference.startswith("OF-"))
         self.assertTrue(SubmissionReport.objects.filter(submission=submission).exists())
