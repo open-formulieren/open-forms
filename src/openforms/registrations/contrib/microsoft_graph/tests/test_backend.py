@@ -41,16 +41,24 @@ class MockFolder:
 class MSGraphRegistrationBackendTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        config = MSGraphRegistrationConfig.get_solo()
-        config.service = MSGraphServiceFactory.create()
-        config.save()
-
+        cls.msgraph_config_patcher = patch(
+            "openforms.registrations.contrib.microsoft_graph.models.MSGraphRegistrationConfig.get_solo",
+            return_value=MSGraphRegistrationConfig(
+                service=MSGraphServiceFactory.create()
+            ),
+        )
         cls.options = dict(folder_path="/open-forms/")
 
     @classmethod
     def addClassCleanup(cls):
         # clear the config from cache
         clear_caches()
+
+    def setUp(self):
+        super().setUp()
+
+        self.msgraph_config_patcher.start()
+        self.addCleanup(self.msgraph_config_patcher.stop)
 
     @patch.object(MockFolder, "upload_file", return_value=None)
     def test_submission(self, upload_mock):
@@ -189,14 +197,23 @@ class MSGraphRegistrationBackendTests(TestCase):
 class MSGraphRegistrationOptionsTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        config = MSGraphRegistrationConfig.get_solo()
-        config.service = MSGraphServiceFactory.create()
-        config.save()
+        cls.msgraph_config_patcher = patch(
+            "openforms.registrations.contrib.microsoft_graph.models.MSGraphRegistrationConfig.get_solo",
+            return_value=MSGraphRegistrationConfig(
+                service=MSGraphServiceFactory.create()
+            ),
+        )
 
     @classmethod
     def addClassCleanup(cls):
         # clear the config from cache
         clear_caches()
+
+    def setUp(self):
+        super().setUp()
+
+        self.msgraph_config_patcher.start()
+        self.addCleanup(self.msgraph_config_patcher.stop)
 
     def test_folder_path(self, upload_mock):
         submission = SubmissionFactory.from_components(
@@ -312,4 +329,4 @@ class MSGraphRegistrationBackendFailureTests(TestCase):
                 Drive, "get_root_folder", return_value=MockFolder()
             ):
                 graph_submission = MSGraphRegistration("microsoft-graph")
-                graph_submission.register_submission(submission, None)
+                graph_submission.register_submission(submission, {})
