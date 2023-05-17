@@ -25,6 +25,7 @@ import {getUniqueRandomString} from 'utils/random';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import Confirmation from './Confirmation';
 import {APIContext, FormContext} from './Context';
+import CosignInRepeatingGroupWarning from './CosignInRepeatingGroupWarning';
 import DataRemoval from './DataRemoval';
 import FormConfigurationFields from './FormConfigurationFields';
 import FormDetailFields from './FormDetailFields';
@@ -1145,6 +1146,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
         <MissingTranslationsWarning form={state.form} formSteps={state.formSteps} />
       ) : null}
       <MultipleCosignComponentsWarning components={availableComponents} />
+      <CosignInRepeatingGroupWarning formSteps={state.formSteps} />
 
       <FormContext.Provider
         value={{
