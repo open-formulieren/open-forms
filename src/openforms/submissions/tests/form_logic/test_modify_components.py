@@ -87,6 +87,7 @@ class ComponentModificationTests(TestCase):
         }
         self.assertEqual(configuration, expected)
 
+    @tag("gh-1871", "gh-2340", "gh-2409")
     def test_hiding_component_empties_its_data(self):
         form = FormFactory.create()
         form_step = FormStepFactory.create(

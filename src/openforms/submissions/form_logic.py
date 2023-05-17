@@ -10,7 +10,7 @@ from openforms.formio.service import (
     inject_variables,
     translate_function,
 )
-from openforms.formio.utils import get_component_empty_value, is_visible_in_frontend
+from openforms.formio.utils import get_component_empty_value
 from openforms.logging import logevent
 from openforms.typing import DataMapping
 
@@ -151,6 +151,7 @@ def evaluate_form_logic(
         if is_visible:
             continue
 
+        # Reset the value of any field that may have become hidden again after evaluating the logic
         original_value = initial_data.get(key, empty)
         empty_value = get_component_empty_value(component)
         if original_value is empty or original_value == empty_value:
@@ -194,18 +195,6 @@ def evaluate_form_logic(
 
             new_value = updated_step_data.get(key, default=empty)
             original_value = initial_data.get(key, default=empty)
-            # Reset the value of any field that may have become hidden again after evaluating the logic
-            if original_value is not empty and original_value != (
-                component_empty_value := get_component_empty_value(component)
-            ):
-                if (
-                    component
-                    and not is_visible_in_frontend(component, data_container.data)
-                    and component.get("clearOnHide")
-                ):
-                    data_diff[key] = component_empty_value
-                    continue
-
             if new_value is empty or new_value == original_value:
                 continue
             data_diff[key] = new_value
