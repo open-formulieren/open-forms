@@ -38,13 +38,15 @@ class MockFolder:
 
 
 @temp_private_root()
-@patch(
-    "openforms.registrations.contrib.microsoft_graph.models.MSGraphRegistrationConfig.get_solo",
-    return_value=MSGraphRegistrationConfig(service=MSGraphServiceFactory.create()),
-)
 class MSGraphRegistrationBackendTests(TestCase):
     @classmethod
     def setUpTestData(cls):
+        cls.msgraph_config_patcher = patch(
+            "openforms.registrations.contrib.microsoft_graph.models.MSGraphRegistrationConfig.get_solo",
+            return_value=MSGraphRegistrationConfig(
+                service=MSGraphServiceFactory.create()
+            ),
+        )
         cls.options = dict(folder_path="/open-forms/")
 
     @classmethod
@@ -52,8 +54,14 @@ class MSGraphRegistrationBackendTests(TestCase):
         # clear the config from cache
         clear_caches()
 
+    def setUp(self):
+        super().setUp()
+
+        self.msgraph_config_patcher.start()
+        self.addCleanup(self.msgraph_config_patcher.stop)
+
     @patch.object(MockFolder, "upload_file", return_value=None)
-    def test_submission(self, upload_mock, mock_get_solo):
+    def test_submission(self, upload_mock):
         data = {"foo": "bar", "some_list": ["value1", "value2"]}
 
         components = [
@@ -140,7 +148,7 @@ class MSGraphRegistrationBackendTests(TestCase):
             self.assertEqual(content, f"{_('payment required')}: € 11.35")
 
     @patch.object(MockFolder, "upload_file", return_value=None)
-    def test_update_payment_status(self, upload_mock, mock_get_solo):
+    def test_update_payment_status(self, upload_mock):
         data = {"foo": "bar", "some_list": ["value1", "value2"]}
 
         submission = SubmissionFactory.create(
@@ -185,18 +193,29 @@ class MSGraphRegistrationBackendTests(TestCase):
 
 
 @temp_private_root()
-@patch(
-    "openforms.registrations.contrib.microsoft_graph.models.MSGraphRegistrationConfig.get_solo",
-    return_value=MSGraphRegistrationConfig(service=MSGraphServiceFactory.create()),
-)
 @patch.object(MockFolder, "upload_file", return_value=None)
 class MSGraphRegistrationOptionsTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.msgraph_config_patcher = patch(
+            "openforms.registrations.contrib.microsoft_graph.models.MSGraphRegistrationConfig.get_solo",
+            return_value=MSGraphRegistrationConfig(
+                service=MSGraphServiceFactory.create()
+            ),
+        )
+
     @classmethod
     def addClassCleanup(cls):
         # clear the config from cache
         clear_caches()
 
-    def test_folder_path(self, upload_mock, mock_get_solo):
+    def setUp(self):
+        super().setUp()
+
+        self.msgraph_config_patcher.start()
+        self.addCleanup(self.msgraph_config_patcher.stop)
+
+    def test_folder_path(self, upload_mock):
         submission = SubmissionFactory.from_components(
             components_list=[
                 {
@@ -238,7 +257,7 @@ class MSGraphRegistrationOptionsTests(TestCase):
             path = f"{folder}/data.json"
             self.assertEqual(call.args[1], path)
 
-    def test_folder_path_with_date(self, upload_mock, mock_get_solo):
+    def test_folder_path_with_date(self, upload_mock):
         submission = SubmissionFactory.from_components(
             components_list=[
                 {
