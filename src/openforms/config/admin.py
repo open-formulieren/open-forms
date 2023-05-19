@@ -24,7 +24,10 @@ class GlobalConfigurationAdmin(
         (
             _("Submissions"),
             {
-                "fields": ("submission_confirmation_template",),
+                "fields": (
+                    "submission_confirmation_template",
+                    "submission_report_download_link_title",
+                ),
             },
         ),
         (

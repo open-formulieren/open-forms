@@ -2,8 +2,6 @@
 
 from django.db import migrations
 
-from openforms.config.translation import GlobalConfigurationTranslationOptions
-
 
 def check_configuration_templates(apps, schema_editor):
     GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
@@ -14,9 +12,22 @@ def check_configuration_templates(apps, schema_editor):
     # create dummy configuration instance to compare templates against default values
     config_default = GlobalConfiguration()
 
-    # get names of template fields that are targeted for update
-    translation_options = GlobalConfigurationTranslationOptions(GlobalConfiguration)
-    field_names = translation_options.get_field_names()
+    # snapshot of translatable fields at the time of this migration
+    field_names = (
+        "submission_confirmation_template",
+        "confirmation_email_subject",
+        "confirmation_email_content",
+        "save_form_email_subject",
+        "save_form_email_content",
+        "form_previous_text",
+        "form_change_text",
+        "form_confirm_text",
+        "form_begin_text",
+        "form_step_previous_text",
+        "form_step_save_text",
+        "form_step_next_text",
+        "privacy_policy_label",
+    )
 
     for field_name in field_names:
         # get the values: (a) from the original field (from before model translation), which
