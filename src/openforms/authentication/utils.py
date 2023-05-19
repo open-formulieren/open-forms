@@ -1,5 +1,7 @@
 from typing import Literal, Optional, TypedDict
 
+from rest_framework.request import Request
+
 from openforms.submissions.models import Submission
 
 from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
@@ -46,12 +48,8 @@ def store_registrator_details(
     )
 
 
-def has_valid_authentication_for_cosign(request, expected_plugin) -> bool:
-    if FORM_AUTH_SESSION_KEY not in request.session:
+def is_authenticated_with_plugin(request: Request, expected_plugin: str) -> bool:
+    try:
+        return request.session[FORM_AUTH_SESSION_KEY]["plugin"] == expected_plugin
+    except KeyError:
         return False
-
-    auth_data = request.session[FORM_AUTH_SESSION_KEY]
-    if auth_data["plugin"] == expected_plugin:
-        return True
-
-    return False

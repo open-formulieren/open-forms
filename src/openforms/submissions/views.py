@@ -16,7 +16,7 @@ from privates.views import PrivateMediaView
 from rest_framework.reverse import reverse
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
-from openforms.authentication.utils import has_valid_authentication_for_cosign
+from openforms.authentication.utils import is_authenticated_with_plugin
 from openforms.forms.models import Form
 from openforms.tokens import BaseTokenGenerator
 from openforms.utils.redirect import allow_redirect_url
@@ -256,7 +256,7 @@ class SearchSubmissionForCosignFormView(PermissionRequiredMixin, FormView):
         form = get_object_or_404(Form, slug=self.kwargs["form_slug"])
         cosign_component = form.get_cosign_component()
         expected_auth_plugin = cosign_component["authPlugin"]
-        return has_valid_authentication_for_cosign(self.request, expected_auth_plugin)
+        return is_authenticated_with_plugin(self.request, expected_auth_plugin)
 
     def get_initial(self):
         return {"form_slug": self.kwargs["form_slug"]}
