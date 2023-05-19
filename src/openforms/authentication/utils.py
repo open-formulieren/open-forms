@@ -1,11 +1,19 @@
 from typing import Literal, Optional, TypedDict
 
-from rest_framework.request import Request
+from django.http import HttpRequest
 
+from furl import furl
+from rest_framework.request import Request
+from rest_framework.reverse import reverse
+
+from openforms.forms.models import Form
 from openforms.submissions.models import Submission
 
+from .api.serializers import LoginOptionSerializer
+from .base import LoginInfo
 from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from .models import AuthInfo, RegistratorInfo
+from .registry import register as auth_register
 
 
 class BaseAuth(TypedDict):
@@ -53,3 +61,39 @@ def is_authenticated_with_plugin(request: Request, expected_plugin: str) -> bool
         return request.session[FORM_AUTH_SESSION_KEY]["plugin"] == expected_plugin
     except KeyError:
         return False
+
+
+def get_cosign_login_info(request: HttpRequest, form: Form) -> dict | None:
+
+    if not (co_sign_component := form.get_cosign_component()):
+        return None
+
+    auth_url = reverse(
+        "authentication:start",
+        kwargs={
+            "slug": form.slug,
+            "plugin_id": co_sign_component["authPlugin"],
+        },
+        request=request,
+    )
+    next_url = reverse(
+        "submissions:find-submission-for-cosign",
+        kwargs={"form_slug": form.slug},
+        request=request,
+    )
+    auth_page = furl(auth_url)
+    auth_page.args.set("next", next_url)
+
+    auth_plugin_id = co_sign_component["authPlugin"]
+    auth_plugin = auth_register[auth_plugin_id]
+
+    plugin_info = LoginInfo(
+        auth_plugin.identifier,
+        auth_plugin.get_label(),
+        url=auth_page.url,
+        logo=auth_plugin.get_logo(request),
+        is_for_gemachtigde=auth_plugin.is_for_gemachtigde,
+    )
+
+    serializer = LoginOptionSerializer(instance=plugin_info)
+    return serializer.data
