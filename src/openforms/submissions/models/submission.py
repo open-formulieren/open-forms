@@ -2,6 +2,7 @@ import logging
 import uuid
 from collections import OrderedDict
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Union
 
 from django.conf import settings
@@ -683,6 +684,7 @@ class Submission(models.Model):
             }
         return self._prefilled_data
 
+    @lru_cache
     def get_cosigner_email(self) -> str | None:
         for form_step in self.form.formstep_set.select_related("form_definition"):
             for (
@@ -701,12 +703,8 @@ class Submission(models.Model):
         if self.cosign_complete:
             return False
 
-        # Cosign not complete, but required
-        if self.form.cosigning_required:
-            return True
-
-        # Co-sign not complete, not required, but the optional cosign component was filled in with an email
-        if self.get_cosigner_email():
+        # Cosign not complete, but required or the component was filled in the form
+        if self.form.cosigning_required or self.get_cosigner_email():
             return True
 
         return False
