@@ -53,7 +53,7 @@ class SearchSubmissionForCosignView(WebTest):
 
         self.assertRedirects(
             submission_response,
-            "http://url-to-form.nl/cosign/check",
+            f"http://url-to-form.nl/cosign/check?submission_uuid={submission.uuid}",
             fetch_redirect_response=False,
         )
 
