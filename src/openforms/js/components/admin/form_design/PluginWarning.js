@@ -21,18 +21,10 @@ const PluginWarning = ({loginRequired, configuration}) => {
       configuration.components.map(checkPrefillsAuth);
     }
 
-    if (
-      !(
-        configuration.prefill &&
-        Object.keys(configuration.prefill).length &&
-        configuration.prefill.plugin !== ''
-      )
-    )
-      return;
+    const pluginId = configuration?.prefill?.plugin;
+    if (!pluginId) return;
 
-    const prefillPlugin = availablePrefillPlugins.find(
-      plugin => plugin.id === configuration.prefill.plugin
-    );
+    const prefillPlugin = availablePrefillPlugins.find(plugin => plugin.id === pluginId);
     const requiredAuthAttribute = prefillPlugin.requiresAuth;
 
     if (!requiredAuthAttribute) return;
