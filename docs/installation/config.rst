@@ -83,11 +83,27 @@ Cross-Origin Resource Sharing (CORS) settings
 
 See: https://github.com/adamchainz/django-cors-headers
 
+* ``CORS_ALLOWED_ORIGINS``: A list of origins that are authorized to make
+  cross-site HTTP requests. Defaults to ``[]``. An example value would be:
+  ``https://cms.example.org,https://forms.example.org``
+
+* ``CSRF_TRUSTED_ORIGINS``: the list of trusted CSRF origins, e.g. ``cms.example.com``.
+  When embedding forms on third party sites, these third party domains need to be added
+  to the allowlist. The default value is taken from the ``CORS_ALLOWED_ORIGINS`` setting.
+  See also `the Django documentation <https://docs.djangoproject.com/en/3.2/ref/settings/#csrf-trusted-origins>`_.
+
+It is recommended to configure CORS explicitly by setting just ``CORS_ALLOWED_ORIGINS``.
+
+**Other CORS-settings**
+
+The settings below are available but should only be specified/used when you have
+intricate knowledge of how they are used. While wildcards and regexes may seem
+attractive options, we are currently limited by our framework in how
+``CSRF_TRUSTED_ORIGINS`` can be specified (which must be an explicit list without
+patterns or wildcards).
+
 * ``CORS_ALLOW_ALL_ORIGINS``: If ``True``, all origins will be allowed. Other
   settings restricting allowed origins will be ignored.Defaults to ``False``.
-
-* ``CORS_ALLOWED_ORIGINS``: A list of origins that are authorized to make
-  cross-site HTTP requests. Defaults to ``[]``.
 
 * ``CORS_ALLOWED_ORIGIN_REGEXES``: A list of strings representing regexes that
   match Origins that are authorized to make cross-site HTTP requests. Defaults
@@ -97,10 +113,6 @@ See: https://github.com/adamchainz/django-cors-headers
   be used when making the actual request. These headers are added to the
   internal setting ``CORS_ALLOW_HEADERS``. Defaults to ``[]``.
 
-* ``CSRF_TRUSTED_ORIGINS``: the list of trusted CSRF origins, e.g. ``cms.example.com``.
-  When embedding forms on third party sites, these third party domains need to be added
-  to the allowlist. The default value is taken from the ``CORS_ALLOWED_ORIGINS`` setting.
-  See also `the Django documentation <https://docs.djangoproject.com/en/3.2/ref/settings/#csrf-trusted-origins>`_.
 
 Content Security Policy (CSP) settings
 --------------------------------------
@@ -183,6 +195,30 @@ Other settings
 
 * ``IS_HTTPS``: Used to construct absolute URLs and controls a variety of
   security settings. Defaults to the inverse of ``DEBUG``.
+
+  .. warning::
+
+     We strongly recommended setting IS_HTTPS=False in local dev environments
+     **only**. Deploying over HTTP instead of HTTPS makes you prone to man-in-the-middle
+     attacks. Any instance reachable from *other* computers should only be deployed with
+     HTTPS.
+
+  The value of ``IS_HTTPS`` is used for the default values of:
+
+      * ``LANGUAGE_COOKIE_SECURE``
+      * ``LANGUAGE_COOKIE_SAMESITE``
+      * ``SESSION_COOKIE_SECURE``
+      * ``SESSION_COOKIE_SAMESITE``
+      * ``CSRF_COOKIE_SECURE``
+      * ``CSRF_COOKIE_SAMESITE``
+
+  The idea is that any cookies automatically receive the ``Secure`` attribute when we're
+  known to be in an HTTPS context. For non-HTTPS contexts this is disabled as it would
+  otherwise break the application's functionality.
+
+  Similarly, the ``SameSite`` attribute controls how cookies are restricted to domains
+  other than the domain where the backend is deployed. In an HTTPS context it is set
+  to ``None``, in an HTTP context it is set to ``Lax`` by default.
 
 * ``USE_X_FORWARDED_HOST``: whether to grab the domain/host from the
   ``X-Forwarded-Host`` request header or not. This header is typically set by reverse

@@ -178,6 +178,24 @@ directory: ``http://localhost:8080/1.0.0/open-forms-sdk.js``.
 
 The SDK follows semantic versioning.
 
+Backend configuration
+=====================
+
+To enable embedding the SDK on domains other than the domain where the backend is
+deployed, you need to appropriately :ref:`configure <installation_environment_config>`
+a number of settings.
+
+.. warning::
+
+    Embedding with cross-site requests in an HTTP context is not possible, as it
+    requires the ``SameSite=None`` attribute to be set, which in turn requires the
+    ``Secure`` attribute. See the `MDN documentation about SameSite`_.
+
+
+* ``IS_HTTPS``: set this to ``True`` to get all the correct defaults.
+* ``CORS_ALLOWED_ORIGINS`` see the section below on CORS.
+* ``CSRF_TRUSTED_ORIGINS`` see the section below on CORS.
+
 Cross Origin Resource Sharing (CORS)
 ------------------------------------
 
@@ -205,3 +223,4 @@ value is ``strict-origin-when-cross-origin``.
 
 
 .. _Referrer Policy: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
+.. _MDN documentation about SameSite: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value
