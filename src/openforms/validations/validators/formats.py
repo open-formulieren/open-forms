@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Protocol
 
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -12,10 +12,16 @@ if TYPE_CHECKING:
     from phonenumbers.phonenumber import PhoneNumber
 
 
+class ParsePhoneNumber(Protocol):
+    def __call__(self, value: str) -> "PhoneNumber":
+        ...  # pragma: nocover
+
+
 class PhoneNumberBaseValidator:
-    country = None
-    country_name = ""
+    country: Optional[str]
+    country_name: str = ""
     error_message = _("Not a valid %(country)s phone number")
+    _parse_phonenumber: ParsePhoneNumber
 
     def __call__(self, value):
         z = self._parse_phonenumber(value)

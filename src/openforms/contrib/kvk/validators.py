@@ -12,8 +12,8 @@ from openforms.validations.registry import register
 
 @deconstructible
 class NumericBaseValidator:
-    value_size: int = NotImplemented
-    value_label: int = NotImplemented
+    value_size: int
+    value_label: int
     error_messages = {
         "too_short": _("%(type)s should have %(size)i characters."),
     }
@@ -46,8 +46,8 @@ validate_branchNumber = KVKBranchNumberValidator()
 
 
 class KVKRemoteBaseValidator:
-    query_param = NotImplemented
-    value_label = NotImplemented
+    query_param: str
+    value_label: str
 
     error_messages = {
         "not_found": _("%(type)s does not exist."),
