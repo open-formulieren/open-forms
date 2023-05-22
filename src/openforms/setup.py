@@ -10,6 +10,7 @@ they are available for Django settings initialization.
     before Django is initialized.
 """
 import logging
+import mimetypes
 import os
 import sys
 import warnings
@@ -28,6 +29,9 @@ from requests import Session
 from self_certifi import load_self_signed_certs as _load_self_signed_certs
 
 logger = logging.getLogger(__name__)
+
+
+mimetypes.init()
 
 
 def setup_env():

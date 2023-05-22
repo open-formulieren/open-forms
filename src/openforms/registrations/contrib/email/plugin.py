@@ -1,5 +1,5 @@
 import html
-from mimetypes import types_map
+import mimetypes
 from typing import List, NoReturn, Optional, Tuple, TypedDict
 
 from django.conf import settings
@@ -53,7 +53,7 @@ class EmailRegistration(BasePlugin):
         subject = render_from_string(
             subject_template,
             {
-                "form_name": submission.form.admin_name,
+                "form_name": submission.form.name,
                 "submission_reference": submission.public_registration_reference,
             },
         )
@@ -138,7 +138,7 @@ class EmailRegistration(BasePlugin):
 
         attachment_formats = options.get("attachment_formats", [])
         for attachment_format in attachment_formats:
-            mime_type = types_map[f".{attachment_format}"]
+            mime_type = mimetypes.types_map[f".{attachment_format}"]
             if attachment_format in [AttachmentFormat.csv, AttachmentFormat.xlsx]:
                 export_data = create_submission_export(
                     Submission.objects.filter(pk=submission.pk).select_related(
@@ -147,7 +147,7 @@ class EmailRegistration(BasePlugin):
                 ).export(attachment_format)
 
                 attachment = (
-                    f"{submission.form.admin_name} - submission.{attachment_format}",
+                    f"{submission.form.name} - submission.{attachment_format}",
                     export_data,
                     mime_type,
                 )
@@ -177,7 +177,7 @@ class EmailRegistration(BasePlugin):
         subject = _(
             "[Open Forms] {form_name} - submission payment received {public_reference}"
         ).format(
-            form_name=submission.form.admin_name,
+            form_name=submission.form.name,
             public_reference=submission.public_registration_reference,
         )
         recipients = options.get("payment_emails")
