@@ -53,7 +53,7 @@ class EmailRegistration(BasePlugin):
         subject = render_from_string(
             subject_template,
             {
-                "form_name": submission.form.admin_name,
+                "form_name": submission.form.name,
                 "submission_reference": submission.public_registration_reference,
             },
             disable_autoescape=True,
@@ -151,7 +151,7 @@ class EmailRegistration(BasePlugin):
                 ).export(attachment_format)
 
                 attachment = (
-                    f"{submission.form.admin_name} - submission.{attachment_format}",
+                    f"{submission.form.name} - submission.{attachment_format}",
                     export_data,
                     mime_type,
                 )
@@ -181,7 +181,7 @@ class EmailRegistration(BasePlugin):
         subject = _(
             "[Open Forms] {form_name} - submission payment received {public_reference}"
         ).format(
-            form_name=submission.form.admin_name,
+            form_name=submission.form.name,
             public_reference=submission.public_registration_reference,
         )
         recipients = options.get("payment_emails")

@@ -1,4 +1,4 @@
-{% load i18n form_summary %}{% with form_name=renderer.submission.form.admin_name %}{% autoescape off %}{% if payment_received %}{% blocktrans trimmed %}
+{% load i18n form_summary %}{% with form_name=renderer.submission.form.name %}{% autoescape off %}{% if payment_received %}{% blocktrans trimmed %}
 Submission payment received for {{ form_name }} (submitted on {{ datetime }})
 {% endblocktrans %}
 

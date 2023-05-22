@@ -141,7 +141,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         message = mail.outbox[0]
         self.assertEqual(
             message.subject,
-            f"Test submission custom subject - {submission.form.admin_name} - submission {submission.public_registration_reference}",
+            f"Test submission custom subject - {submission.form.name} - submission {submission.public_registration_reference}",
         )
         self.assertEqual(message.from_email, "info@open-forms.nl")
         self.assertEqual(message.to, ["foo@bar.nl", "bar@foo.nl"])
@@ -156,7 +156,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         detail_line = _(
             "Submission details for %(form_name)s (submitted on %(datetime)s)"
         ) % dict(
-            form_name=self.form.admin_name,
+            form_name=self.form.name,
             datetime="12:00:00 01-01-2021",
         )
         self.assertIn(detail_line, message_html)
@@ -256,7 +256,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             components_list=[
                 {"key": "foo", "type": "textfield", "label": "foo"},
             ],
-            form__internal_name="Foo's bar",
+            form__name="Foo's bar",
+            form__internal_name="MyInternalName",
             form__registration_backend="email",
             public_registration_reference="XYZ",
         )
@@ -335,7 +336,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
             _(
                 "[Open Forms] {form_name} - submission payment received {public_reference}"
             ).format(
-                form_name=submission.form.admin_name,
+                form_name=submission.form.name,
                 public_reference=submission.public_registration_reference,
             ),
         )
@@ -352,7 +353,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         detail_line = _(
             "Submission payment received for %(form_name)s (submitted on %(datetime)s)"
         ) % dict(
-            form_name=self.form.admin_name,
+            form_name=self.form.name,
             datetime="12:00:00 01-01-2021",
         )
         self.assertIn(detail_line, message_html)
@@ -472,15 +473,11 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         csv_export, xlsx_export = message.attachments
 
         qs = Submission.objects.filter(pk=submission.pk).order_by("-pk")
-        self.assertEqual(
-            csv_export[0], f"{submission.form.admin_name} - submission.csv"
-        )
+        self.assertEqual(csv_export[0], f"{submission.form.name} - submission.csv")
         self.assertEqual(csv_export[1], create_submission_export(qs).export("csv"))
         self.assertEqual(csv_export[2], "text/csv")
 
-        self.assertEqual(
-            xlsx_export[0], f"{submission.form.admin_name} - submission.xlsx"
-        )
+        self.assertEqual(xlsx_export[0], f"{submission.form.name} - submission.xlsx")
 
         data = tablib.Dataset()
         binary_excel = xlsx_export[1]
