@@ -271,4 +271,5 @@ class SearchSubmissionForCosignFormView(UserPassesTestMixin, FormView):
         cosign_page = self.submission.cleaned_form_url
         cosign_page /= "cosign"
         cosign_page /= "check"
+        cosign_page.args["submission_uuid"] = self.submission.uuid
         return cosign_page.url
