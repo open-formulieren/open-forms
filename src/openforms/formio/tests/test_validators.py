@@ -66,7 +66,7 @@ class MimeTypeValidatorTests(SimpleTestCase):
         validator = validators.MimeTypeValidator()
 
         with self.assertRaisesMessage(
-            ValidationError, "The file 'pixel.png' is not a .png."
+            ValidationError, "The provided file is not a .png."
         ):
             validator(file)
 
@@ -79,7 +79,7 @@ class MimeTypeValidatorTests(SimpleTestCase):
         validator = validators.MimeTypeValidator()
 
         with self.assertRaisesMessage(
-            ValidationError, "The file 'pixel.jpg' is not a .jpg."
+            ValidationError, "The provided file is not a .jpg."
         ):
             validator(file)
 
@@ -136,7 +136,7 @@ class MimeTypeValidatorTests(SimpleTestCase):
         validator = validators.MimeTypeValidator({"image/png"})
 
         with self.assertRaisesMessage(
-            ValidationError, "The file 'pixel.gif' is not a valid file type."
+            ValidationError, "The provided file is not a valid file type."
         ):
             validator(self.CORRECT_GIF)
 
