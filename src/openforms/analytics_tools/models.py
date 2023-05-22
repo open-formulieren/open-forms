@@ -1,6 +1,5 @@
 from typing import List
 
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -9,6 +8,7 @@ from solo.models import SingletonModel
 
 from .constants import AnalyticsTools
 from .utils import (
+    get_cookie_domain,
     get_cookies,
     get_csp,
     get_domain_hash,
@@ -183,7 +183,11 @@ class AnalyticsToolsConfiguration(SingletonModel):
         # If instance is being created, we can't find original values
         if self._state.adding:
             return super().save(*args, **kwargs)
+
         original_object = self.__class__.objects.get(pk=self.pk)
+
+        cookie_domain = get_cookie_domain()
+
         # For each analytics provider, we check if :
         # - the value of the provider's boolean field is changing
         if original_object.enable_google_analytics != self.enable_google_analytics:
@@ -200,7 +204,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
                 (
                     "DOMAIN_HASH",
                     lambda cookie: get_domain_hash(
-                        settings.ALLOWED_HOSTS[0], cookie_path=cookie["path"]
+                        cookie_domain, cookie_path=cookie["path"]
                     ),
                 ),
             ]
@@ -218,7 +222,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
                 (
                     "DOMAIN_HASH",
                     lambda cookie: get_domain_hash(
-                        settings.ALLOWED_HOSTS[0], cookie_path=cookie["path"]
+                        cookie_domain, cookie_path=cookie["path"]
                     ),
                 ),
             ]
@@ -238,7 +242,7 @@ class AnalyticsToolsConfiguration(SingletonModel):
                 (
                     "DOMAIN_HASH",
                     lambda cookie: get_domain_hash(
-                        settings.ALLOWED_HOSTS[0], cookie_path=cookie["path"]
+                        cookie_domain, cookie_path=cookie["path"]
                     ),
                 ),
             ]

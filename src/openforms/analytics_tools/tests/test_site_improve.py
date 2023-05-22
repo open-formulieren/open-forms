@@ -8,7 +8,7 @@ from openforms.config.models import CSPSetting
 from .mixin import AnalyticsMixin
 
 
-@override_settings(SOLO_CACHE=None, ALLOWED_HOSTS=["*"])
+@override_settings(SOLO_CACHE=None)
 class SiteImproveTests(AnalyticsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -79,7 +79,7 @@ class SiteImproveTests(AnalyticsMixin, TestCase):
             self.config.clean()
 
     @tag("gh-2651")
-    @override_settings(BASE_URL="https://forms.example.com")
+    @override_settings(BASE_URL="https://forms.example.com:8443")
     def test_correct_domain_recorded(self):
         self.config.siteimprove_id = "irrelevant"
         self.config.enable_siteimprove_analytics = True

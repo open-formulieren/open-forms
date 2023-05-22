@@ -37,6 +37,13 @@ Required settings
   Defaults to ``*`` for the ``docker`` environment and defaults to
   ``127.0.0.1,localhost`` for the ``dev`` environment.
 
+* ``BASE_URL``: The absolute base URL where the Open Forms (backend) is (publicly)
+  accessible. The format must be
+  ``http[s]://<hostname>[:<optional-port>]/[optional-path]``. This URL is used in
+  various security mechanisms, in tooling to construct fully qualified absolute URLs
+  (outside of regular HTTP requests) and serves as input for automatic configuration
+  aspects such as the analytics configuration.
+
 Common settings
 ---------------
 
