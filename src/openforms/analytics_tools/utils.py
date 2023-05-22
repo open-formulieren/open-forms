@@ -1,7 +1,7 @@
 import hashlib
 import json
-import os
-from typing import List
+from pathlib import Path
+from typing import TYPE_CHECKING, Literal, TypedDict, cast
 from urllib.parse import urlparse
 
 from django.conf import settings
@@ -9,35 +9,76 @@ from django.conf import settings
 from cookie_consent.models import Cookie, CookieGroup
 
 from openforms.config.models import CSPSetting
+from openforms.typing import JSONObject
 
-PATH = os.path.abspath(os.path.dirname(__file__))
-
-
-def get_cookies(
-    analytics_tool: str, string_replacement_list: List[tuple]
-) -> List[dict]:
-    with open(f"{PATH}/contrib/{analytics_tool}/cookies.json", "r") as f:
-        cookies = json.load(f)
-        for cookie in cookies:
-            for token, replacement_value in string_replacement_list:
-                # This is the DOMAIN_HASH token : need to calculate it with the cookie path
-                if callable(replacement_value):
-                    replacement_value = replacement_value(cookie)
-                cookie["name"] = cookie["name"].replace(token, str(replacement_value))
-        return cookies
+if TYPE_CHECKING:
+    from .models import AnalyticsToolsConfiguration, ToolConfiguration
 
 
-def get_csp(analytics_tool: str, string_replacement_list: List[tuple]) -> List[dict]:
-    with open(f"{PATH}/contrib/{analytics_tool}/csp_headers.json", "r") as f:
-        csps = json.load(f)
-        for csp in csps:
-            for token, replacement_value in string_replacement_list:
+CONTRIB_DIR = (Path(__file__).parent / "contrib").resolve()
 
-                # No needs of DOMAIN_HASH here
-                if callable(replacement_value):
-                    pass
-                csp["value"] = csp["value"].replace(token, str(replacement_value))
-        return csps
+
+class CookieDict(TypedDict):
+    name: str
+    path: str
+
+
+class CSPDict(TypedDict):
+    directive: str
+    value: str
+
+
+def update_analytics_tool(
+    config: "AnalyticsToolsConfiguration",
+    analytics_tool: str,
+    is_activated: bool,
+    tool_config: "ToolConfiguration",
+):
+    from openforms.logging import logevent
+
+    if is_activated:
+        logevent.enabling_analytics_tool(config, analytics_tool)
+    else:
+        logevent.disabling_analytics_tool(config, analytics_tool)
+
+    # process the CSP headers
+    csps = cast(list[CSPDict], load_asset("csp_headers.json", analytics_tool))
+    for csp in csps:
+        for replacement in tool_config.replacements:
+            if not (field_name := replacement.field_name):
+                continue  # we do not support callables for CSP
+            replacement_value = getattr(config, field_name)
+            csp["value"] = csp["value"].replace(
+                replacement.needle, str(replacement_value)
+            )
+
+    # process the cookies
+    cookies = cast(list[CookieDict], load_asset("cookies.json", analytics_tool))
+    for cookie in cookies:
+        for replacement in tool_config.replacements:
+            if field_name := replacement.field_name:
+                replacement_value = getattr(config, field_name)
+            else:
+                replacement_value = replacement.callback(cookie)
+            cookie["name"] = cookie["name"].replace(
+                replacement.needle, str(replacement_value)
+            )
+
+    update_analytical_cookies(
+        cookies,
+        create=is_activated,
+        cookie_consent_group_id=config.analytics_cookie_consent_group.id,
+    )
+    update_csp(csps, create=is_activated)
+
+
+def load_asset(
+    asset: Literal["cookies.json", "csp_headers.json"],
+    analytics_tool: str,
+) -> list[JSONObject]:
+    json_file = CONTRIB_DIR / analytics_tool / asset
+    with json_file.open("r") as infile:
+        return json.load(infile)
 
 
 def get_cookie_domain() -> str:
@@ -55,13 +96,18 @@ def get_cookie_domain() -> str:
 
 # Implementation based on updateDomainHash()
 # see https://github.com/matomo-org/matomo/blob/a8d917778e75346eab9509ac9707f7e6e2e6c58d/js/piwik.js#L3048
-def get_domain_hash(cookie_domain, cookie_path) -> str:
+def calculate_domain_hash(cookie_domain: str, cookie_path: str) -> str:
     domain_hash = hashlib.sha1(f"{cookie_domain}{cookie_path}".encode())
     return domain_hash.hexdigest()[:4]
 
 
+def get_domain_hash(cookie: CookieDict) -> str:
+    domain = get_cookie_domain()
+    return calculate_domain_hash(domain, cookie_path=cookie["path"])
+
+
 def update_analytical_cookies(
-    cookies: dict, create: bool, cookie_consent_group_id: int
+    cookies: list[CookieDict], create: bool, cookie_consent_group_id: int
 ):
     if create:
         cookie_domain = get_cookie_domain()
@@ -84,7 +130,7 @@ def update_analytical_cookies(
         Cookie.objects.filter(name__in=[cookie["name"] for cookie in cookies]).delete()
 
 
-def update_csp(csps: dict, create: bool):
+def update_csp(csps: list[CSPDict], create: bool):
     if create:
         instances = [
             CSPSetting(directive=csp["directive"], value=csp["value"]) for csp in csps
