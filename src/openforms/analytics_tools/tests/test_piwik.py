@@ -8,23 +8,22 @@ from openforms.config.models import CSPSetting
 from .mixin import AnalyticsMixin
 
 
-@override_settings(SOLO_CACHE=None, ALLOWED_HOSTS=["*"])
+@override_settings(SOLO_CACHE=None, BASE_URL="https://example.com:8443/foo")
 class PiwikTests(AnalyticsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         cls.piwik_url = "https://example.com"
-        cls.piwik_site_id = 1234
         cls.json_cookies = [
-            {"name": f"_pk_id.{cls.piwik_site_id}.e5c3", "path": "/"},
-            {"name": f"_pk_ses.{cls.piwik_site_id}.e5c3", "path": "/"},
+            {"name": "_pk_id.1234.8809", "path": "/"},
+            {"name": "_pk_ses.1234.8809", "path": "/"},
         ]
 
         cls.json_csp = [{"directive": "script-src", "value": cls.piwik_url}]
 
     def test_piwik_properly_enabled(self):
         self.config.piwik_url = self.piwik_url
-        self.config.piwik_site_id = self.piwik_site_id
+        self.config.piwik_site_id = "1234"
 
         self.config.enable_piwik_site_analytics = True
         self.config.clean()
@@ -48,7 +47,7 @@ class PiwikTests(AnalyticsMixin, TestCase):
 
     def test_piwik_properly_disabled(self):
         self.config.piwik_url = self.piwik_url
-        self.config.piwik_site_id = self.piwik_site_id
+        self.config.piwik_site_id = "1234"
 
         # creation of cookies
         self.config.enable_piwik_site_analytics = True

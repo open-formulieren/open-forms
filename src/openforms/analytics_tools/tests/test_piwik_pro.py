@@ -1,5 +1,3 @@
-import uuid
-
 from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -15,16 +13,15 @@ from openforms.tests.test_csp import CSPMixin
 from .mixin import AnalyticsMixin
 
 
-@override_settings(SOLO_CACHE=None, ALLOWED_HOSTS=["*"])
+@override_settings(SOLO_CACHE=None, BASE_URL="https://example.com:8443/foo")
 class PiwikProTests(AnalyticsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         cls.piwik_pro_url = "https://example.com"
-        cls.piwik_pro_site_id = uuid.uuid4()
         cls.json_cookies = [
-            {"name": f"_pk_id.{cls.piwik_pro_site_id}.e5c3", "path": "/"},
-            {"name": f"_pk_ses.{cls.piwik_pro_site_id}.e5c3", "path": "/"},
+            {"name": "_pk_id.771cbcaa-7315-4663-ba47-88f9a8cc158c.8809", "path": "/"},
+            {"name": "_pk_ses.771cbcaa-7315-4663-ba47-88f9a8cc158c.8809", "path": "/"},
         ]
 
         cls.json_csp = [
@@ -33,7 +30,7 @@ class PiwikProTests(AnalyticsMixin, TestCase):
 
     def test_piwik_pro_properly_enabled(self):
         self.config.piwik_pro_url = self.piwik_pro_url
-        self.config.piwik_pro_site_id = self.piwik_pro_site_id
+        self.config.piwik_pro_site_id = "771cbcaa-7315-4663-ba47-88f9a8cc158c"
 
         self.config.enable_piwik_pro_site_analytics = True
         self.config.clean()
@@ -57,7 +54,7 @@ class PiwikProTests(AnalyticsMixin, TestCase):
 
     def test_piwik_pro_properly_disabled(self):
         self.config.piwik_pro_url = self.piwik_pro_url
-        self.config.piwik_pro_site_id = self.piwik_pro_site_id
+        self.config.piwik_pro_site_id = "771cbcaa-7315-4663-ba47-88f9a8cc158c"
 
         # creation of cookies
         self.config.enable_piwik_pro_site_analytics = True

@@ -2,6 +2,7 @@ import hashlib
 import json
 import os
 from typing import List
+from urllib.parse import urlparse
 
 from django.conf import settings
 
@@ -39,6 +40,19 @@ def get_csp(analytics_tool: str, string_replacement_list: List[tuple]) -> List[d
         return csps
 
 
+def get_cookie_domain() -> str:
+    """
+    Obtain the value for the cookie domain from the hostname.
+
+    The value is taken from ``settings.BASE_URL`` as canonical source of "the" domain
+    where Open Forms is deployed.
+    """
+    # extract the domain/host from the BASE_URL setting
+    # RFC 6265 states that cookies are not bound to a port, so we must ignore that part.
+    parsed = urlparse(settings.BASE_URL)
+    return parsed.hostname
+
+
 # Implementation based on updateDomainHash()
 # see https://github.com/matomo-org/matomo/blob/a8d917778e75346eab9509ac9707f7e6e2e6c58d/js/piwik.js#L3048
 def get_domain_hash(cookie_domain, cookie_path) -> str:
@@ -50,12 +64,17 @@ def update_analytical_cookies(
     cookies: dict, create: bool, cookie_consent_group_id: int
 ):
     if create:
+        cookie_domain = get_cookie_domain()
         cookie_group = CookieGroup.objects.get(id=cookie_consent_group_id)
         instances = [
             Cookie(
                 name=cookie["name"],
+                # NOTE: if/when OF is hosted on a subpath, that should be taken into
+                # account as well in a dynamic way... django.urls.get_script_prefix
+                # could be used for this, but perhaps using the path part of settings.BASE_URL
+                # is more predictable
                 path=cookie["path"],
-                domain=settings.ALLOWED_HOSTS[0],
+                domain=cookie_domain,
                 cookiegroup=cookie_group,
             )
             for cookie in cookies

@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 
 from cookie_consent.models import Cookie
 
@@ -8,7 +8,7 @@ from openforms.config.models import CSPSetting
 from .mixin import AnalyticsMixin
 
 
-@override_settings(SOLO_CACHE=None, ALLOWED_HOSTS=["*"])
+@override_settings(SOLO_CACHE=None)
 class SiteImproveTests(AnalyticsMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -77,3 +77,15 @@ class SiteImproveTests(AnalyticsMixin, TestCase):
 
         with self.assertRaises(ValidationError):
             self.config.clean()
+
+    @tag("gh-2651")
+    @override_settings(BASE_URL="https://forms.example.com:8443")
+    def test_correct_domain_recorded(self):
+        self.config.siteimprove_id = "irrelevant"
+        self.config.enable_siteimprove_analytics = True
+        self.config.save()
+
+        a_cookie = Cookie.objects.first()
+
+        self.assertIsNotNone(a_cookie)
+        self.assertEqual(a_cookie.domain, "forms.example.com")
