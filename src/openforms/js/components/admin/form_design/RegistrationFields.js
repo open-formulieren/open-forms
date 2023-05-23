@@ -59,6 +59,8 @@ BackendOptionsFormRow.propTypes = {
 const RegistrationFields = ({
   backends = [],
   selectedBackend = '',
+	backendInstances = [],
+	selectedBackendInstance = '',
   backendOptions = {},
   onChange,
 }) => {
@@ -66,6 +68,14 @@ const RegistrationFields = ({
 
   const backendChoices = backends.map(backend => [backend.id, backend.label]);
   const backend = backends.find(backend => backend.id === selectedBackend);
+
+	// TODO
+	const backendInstanceChoices = backendInstances.map(
+		backendInstance => [backendInstance.id, backendInstance.label]
+	);
+  const backendInstance = backendInstances.find(
+		backendInstance => backendInstance.id === selectedBackendInstance
+	);
 
   const addAnotherMsg = intl.formatMessage({
     description: 'Button text to add extra item',
@@ -90,6 +100,29 @@ const RegistrationFields = ({
           <Select
             choices={backendChoices}
             value={selectedBackend}
+            onChange={event => {
+              onChange(event);
+              // Clear options when changing backend
+              onChange({target: {name: 'form.registrationBackendOptions', value: {}}});
+            }}
+            allowBlank={true}
+          />
+        </Field>
+      </FormRow>
+
+      <FormRow>
+        <Field
+          name="form.registrationBackendInstance"
+          label={
+            <FormattedMessage
+              defaultMessage="Select registration backend instance"
+              description="Registration backend instance label"
+            />
+          }
+        >
+          <Select
+            choices={backendInstanceChoices}
+            value={selectedBackendInstance}
             onChange={event => {
               onChange(event);
               // Clear options when changing backend

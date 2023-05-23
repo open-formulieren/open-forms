@@ -170,11 +170,15 @@ class ZGWRegistration(BasePlugin):
             existing_reference=submission.public_registration_reference,
             **zaak_data,
         )
+        # TODO: AttributeError on `apply_defaults_to` in `execute_unless_result_exists`
         zaak = execute_unless_result_exists(
             _create_zaak,
             submission,
             "intermediate.zaak",
         )
+        import pdb
+
+        pdb.set_trace()
 
         result = {"zaak": zaak}
         submission.registration_result.update(result)

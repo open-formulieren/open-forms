@@ -17,7 +17,12 @@ logger = logging.getLogger(__name__)
 def create_zaak(
     options: dict, payment_required: bool = False, existing_reference: str = "", **extra
 ) -> dict:
-    config = ZgwConfig.get_solo()
+    # TODO: get the correct ZgwConfig instance
+    # get instance id from submission.form.registration_backend_instance
+    # if the latter is none: get first item as default
+
+    # config = ZgwConfig.get_solo()
+    config = ZgwConfig.ZgwConfigInstance.objects.first()
     client = config.zrc_service.build_client()
     today = date.today().isoformat()
     data = {
@@ -51,12 +56,22 @@ def create_zaak(
 
 
 def default_get_drc() -> Service:
-    config = ZgwConfig.get_solo()
+    # TODO: get the correct ZgwConfig instance
+    # get instance id from submission.form.registration_backend_instance
+    # if the latter is none: get first item as default
+
+    # config = ZgwConfig.get_solo()
+    config = ZgwConfig.ZgwConfigInstance.objects.first()
     return config.drc_service
 
 
 def partial_update_zaak(zaak_url: str, data: dict) -> dict:
-    config = ZgwConfig.get_solo()
+    # TODO: get the correct ZgwConfig instance
+    # get instance id from submission.form.registration_backend_instance
+    # if the latter is none: get first item as default
+
+    # config = ZgwConfig.get_solo()
+    config = ZgwConfig.ZgwConfigInstance.objects.first()
     client = config.zrc_service.build_client()
     zaak = client.partial_update("zaak", data, url=zaak_url)
     return zaak
@@ -238,6 +253,10 @@ def retrieve_roltypen(
 
 
 def create_status(zaak: dict) -> dict:
+    # TODO: get the correct ZgwConfig instance
+    # get instance id from submission.form.registration_backend_instance
+    # if the latter is none: get first item as default
+
     config = ZgwConfig.get_solo()
 
     # get statustype for initial status

@@ -1,6 +1,7 @@
 export const FORM_ENDPOINT = '/api/v2/forms';
 export const FORM_DEFINITIONS_ENDPOINT = '/api/v2/form-definitions';
 export const REGISTRATION_BACKENDS_ENDPOINT = '/api/v2/registration/plugins';
+// export const REGISTRATION_BACKEND_INSTANCE_ENDPOINT = '/api/v2/registration/plugins/<id>';
 export const AUTH_PLUGINS_ENDPOINT = '/api/v2/authentication/plugins';
 export const PREFILL_PLUGINS_ENDPOINT = '/api/v2/prefill/plugins';
 export const PAYMENT_PLUGINS_ENDPOINT = '/api/v2/payment/plugins';

@@ -70,6 +70,9 @@ class Form(models.Model):
     registration_backend = RegistrationBackendChoiceField(
         _("registration backend"), blank=True
     )
+    registration_backend_instance = RegistrationBackendChoiceField(
+        _("registration backend instance"), blank=True
+    )
     registration_backend_options = models.JSONField(
         _("registration backend options"), default=dict, blank=True, null=True
     )

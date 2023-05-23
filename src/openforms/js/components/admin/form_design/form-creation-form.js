@@ -97,6 +97,7 @@ const initialFormState = {
     submissionAllowed: 'yes',
     suspensionAllowed: true,
     registrationBackend: '',
+    registrationBackendInstance: '',
     registrationBackendOptions: {},
     product: null,
     paymentBackend: '',
@@ -113,6 +114,7 @@ const initialFormState = {
   errors: {},
   formDefinitions: [],
   availableRegistrationBackends: [],
+  availableRegistrationBackendInstances: [],
   availableAuthPlugins: [],
   availablePrefillPlugins: [],
   selectedAuthPlugins: [],
@@ -935,6 +937,10 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
       stateVar: 'formDefinitions',
     },
     {endpoint: REGISTRATION_BACKENDS_ENDPOINT, stateVar: 'availableRegistrationBackends'},
+    {
+      endpoint: REGISTRATION_BACKEND_INSTACE_ENDPOINT,
+      stateVar: 'availableRegistrationBackendInstances',
+    },
     {endpoint: AUTH_PLUGINS_ENDPOINT, stateVar: 'availableAuthPlugins'},
     {endpoint: CATEGORIES_ENDPOINT, stateVar: 'availableCategories'},
     {endpoint: PREFILL_PLUGINS_ENDPOINT, stateVar: 'availablePrefillPlugins'},
@@ -1271,6 +1277,8 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             <RegistrationFields
               backends={state.availableRegistrationBackends}
               selectedBackend={state.form.registrationBackend}
+              backendInstances={state.availableRegistrationBackendInstances}
+              selectedBackendInstance={state.form.RegistrationBackendInstance}
               backendOptions={state.form.registrationBackendOptions}
               onChange={onFieldChange}
             />

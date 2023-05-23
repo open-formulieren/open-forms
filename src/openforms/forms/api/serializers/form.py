@@ -126,6 +126,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
             "login_required",
             "translation_enabled",
             "registration_backend",
+            "registration_backend_instance",
             "registration_backend_options",
             "authentication_backends",
             "login_options",
