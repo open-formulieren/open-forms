@@ -11,7 +11,7 @@ from cookie_consent.models import Cookie, CookieGroup
 from openforms.config.models import CSPSetting
 from openforms.typing import JSONObject
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .models import AnalyticsToolsConfiguration, ToolConfiguration
 
 

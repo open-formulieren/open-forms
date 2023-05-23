@@ -16,7 +16,9 @@ from .validators import validate_no_trailing_slash
 class StringReplacement:
     needle: str
     field_name: str = ""
-    callback: Callable[[CookieDict], str] = lambda cookie: cookie["name"]
+    callback: Callable[[CookieDict], str] = lambda cookie: cookie[
+        "name"
+    ]  # pragma: no cover
 
 
 @dataclass
