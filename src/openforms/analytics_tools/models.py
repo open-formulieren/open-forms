@@ -1,4 +1,5 @@
-from typing import List
+from dataclasses import dataclass, field
+from typing import Callable
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -7,15 +8,71 @@ from django.utils.translation import gettext_lazy as _
 from solo.models import SingletonModel
 
 from .constants import AnalyticsTools
-from .utils import (
-    get_cookie_domain,
-    get_cookies,
-    get_csp,
-    get_domain_hash,
-    update_analytical_cookies,
-    update_csp,
-)
+from .utils import CookieDict, get_domain_hash, update_analytics_tool
 from .validators import validate_no_trailing_slash
+
+
+@dataclass
+class StringReplacement:
+    needle: str
+    field_name: str = ""
+    callback: Callable[[CookieDict], str] = lambda cookie: cookie["name"]
+
+
+@dataclass
+class ToolConfiguration:
+    enable_field_name: str
+    is_enabled_property: str
+    replacements: list[StringReplacement] = field(default_factory=list)
+
+    def has_enabled_toggled(
+        self,
+        original_config: "AnalyticsToolsConfiguration",
+        current_config: "AnalyticsToolsConfiguration",
+    ) -> bool:
+        was_enabled = getattr(original_config, self.enable_field_name)
+        is_now_enabled = getattr(current_config, self.enable_field_name)
+        # XOR to detect toggle
+        return was_enabled != is_now_enabled
+
+
+DYNAMIC_TOOL_CONFIGURATION = {
+    AnalyticsTools.google_analytics: ToolConfiguration(
+        enable_field_name="enable_google_analytics",
+        is_enabled_property="is_google_analytics_enabled",
+    ),
+    AnalyticsTools.matomo: ToolConfiguration(
+        enable_field_name="enable_matomo_site_analytics",
+        is_enabled_property="is_matomo_enabled",
+        replacements=[
+            StringReplacement(needle="SITE_ID", field_name="matomo_site_id"),
+            StringReplacement(needle="SITE_URL", field_name="matomo_url"),
+            StringReplacement(needle="DOMAIN_HASH", callback=get_domain_hash),
+        ],
+    ),
+    AnalyticsTools.piwik_pro: ToolConfiguration(
+        enable_field_name="enable_piwik_pro_site_analytics",
+        is_enabled_property="is_piwik_pro_enabled",
+        replacements=[
+            StringReplacement(needle="SITE_ID", field_name="piwik_pro_site_id"),
+            StringReplacement(needle="SITE_URL", field_name="piwik_pro_url"),
+            StringReplacement(needle="DOMAIN_HASH", callback=get_domain_hash),
+        ],
+    ),
+    AnalyticsTools.piwik: ToolConfiguration(
+        enable_field_name="enable_piwik_site_analytics",
+        is_enabled_property="is_piwik_enabled",
+        replacements=[
+            StringReplacement(needle="SITE_ID", field_name="piwik_site_id"),
+            StringReplacement(needle="SITE_URL", field_name="piwik_url"),
+            StringReplacement(needle="DOMAIN_HASH", callback=get_domain_hash),
+        ],
+    ),
+    AnalyticsTools.siteimprove: ToolConfiguration(
+        enable_field_name="enable_siteimprove_analytics",
+        is_enabled_property="is_siteimprove_enabled",
+    ),
+}
 
 
 class AnalyticsToolsConfiguration(SingletonModel):
@@ -186,77 +243,19 @@ class AnalyticsToolsConfiguration(SingletonModel):
 
         original_object = self.__class__.objects.get(pk=self.pk)
 
-        cookie_domain = get_cookie_domain()
+        # For each analytics provider, check if the configuration was changed and thus
+        # the dynamic CSP/cookie configuration needs to be updated.
+        for tool, tool_configuration in DYNAMIC_TOOL_CONFIGURATION.items():
+            enabled_toggled = tool_configuration.has_enabled_toggled(
+                original_object, self
+            )
+            # if the config was not changed, there's nothing to do
+            if not enabled_toggled:
+                continue
 
-        # For each analytics provider, we check if :
-        # - the value of the provider's boolean field is changing
-        if original_object.enable_google_analytics != self.enable_google_analytics:
-            self.update_analytics_tool(
-                AnalyticsTools.google_analytics, self.is_google_analytics_enabled, []
-            )
-        if (
-            original_object.enable_matomo_site_analytics
-            != self.enable_matomo_site_analytics
-        ):
-            string_replacements_list = [
-                ("SITE_ID", self.matomo_site_id),
-                ("SITE_URL", self.matomo_url),
-                (
-                    "DOMAIN_HASH",
-                    lambda cookie: get_domain_hash(
-                        cookie_domain, cookie_path=cookie["path"]
-                    ),
-                ),
-            ]
-            self.update_analytics_tool(
-                AnalyticsTools.matomo, self.is_matomo_enabled, string_replacements_list
-            )
-        if (
-            original_object.enable_piwik_pro_site_analytics
-            != self.enable_piwik_pro_site_analytics
-        ):
+            is_currently_enabled = getattr(self, tool_configuration.is_enabled_property)
+            update_analytics_tool(self, tool, is_currently_enabled, tool_configuration)
 
-            string_replacements_list = [
-                ("SITE_ID", self.piwik_pro_site_id),
-                ("SITE_URL", self.piwik_pro_url),
-                (
-                    "DOMAIN_HASH",
-                    lambda cookie: get_domain_hash(
-                        cookie_domain, cookie_path=cookie["path"]
-                    ),
-                ),
-            ]
-            self.update_analytics_tool(
-                AnalyticsTools.piwik_pro,
-                self.is_piwik_pro_enabled,
-                string_replacements_list,
-            )
-        if (
-            original_object.enable_piwik_site_analytics
-            != self.enable_piwik_site_analytics
-        ):
-
-            string_replacements_list = [
-                ("SITE_ID", self.piwik_site_id),
-                ("SITE_URL", self.piwik_url),
-                (
-                    "DOMAIN_HASH",
-                    lambda cookie: get_domain_hash(
-                        cookie_domain, cookie_path=cookie["path"]
-                    ),
-                ),
-            ]
-
-            self.update_analytics_tool(
-                AnalyticsTools.piwik, self.is_piwik_enabled, string_replacements_list
-            )
-        if (
-            original_object.enable_siteimprove_analytics
-            != self.enable_siteimprove_analytics
-        ):
-            self.update_analytics_tool(
-                AnalyticsTools.siteimprove, self.is_siteimprove_enabled, []
-            )
         super().save(*args, **kwargs)
 
     def clean(self):
@@ -291,25 +290,3 @@ class AnalyticsToolsConfiguration(SingletonModel):
                 ).format(analytics_tool="SiteImprove")
             )
         super().clean()
-
-    def update_analytics_tool(
-        self,
-        analytics_tool: str,
-        is_activated: bool,
-        string_replacements_list: List[tuple],
-    ):
-        from openforms.logging import logevent
-
-        if is_activated:
-            logevent.enabling_analytics_tool(self, analytics_tool)
-        else:
-            logevent.disabling_analytics_tool(self, analytics_tool)
-
-        csps = get_csp(analytics_tool, string_replacements_list)
-        cookies = get_cookies(analytics_tool, string_replacements_list)
-        update_analytical_cookies(
-            cookies,
-            create=is_activated,
-            cookie_consent_group_id=self.analytics_cookie_consent_group.id,
-        )
-        update_csp(csps, create=is_activated)
