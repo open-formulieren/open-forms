@@ -1,9 +1,11 @@
 import re
+from collections import UserDict
+from collections.abc import Hashable
 from typing import Dict, Iterator, Optional, cast
 
-from glom import glom
+from glom import PathAccessError, assign, glom
 
-from openforms.typing import DataMapping, JSONObject
+from openforms.typing import DataMapping, JSONObject, JSONValue
 
 from .typing import Component
 from .utils import flatten_by_path, is_visible_in_frontend, iter_components
@@ -84,3 +86,38 @@ class FormioConfigurationWrapper:
             component = cast(Component, glom(self.configuration, path))
             nodes.append(component)
         return all(is_visible_in_frontend(node, values) for node in nodes)
+
+
+class FormioData(UserDict):
+    """
+    Handle formio (submission) data transparently.
+
+    Form.io supports component keys in the format 'topLevel.nested' which get converted
+    to deep-setting of object properties (using ``lodash.set`` internally). This
+    datastructure mimicks that interface in Python so we can more naturally perform
+    operations like:
+
+    .. code-block:: python
+
+        data = FormioData()
+        for component in iter_components(...):
+            data[component["key"]] = ...
+
+    without having to worry about potential deep assignments or leak implementation
+    details (such as using ``glom`` for this).
+    """
+
+    data: dict[str, JSONValue]
+
+    def __getitem__(self, key: Hashable):
+        return cast(JSONValue, glom(self.data, key))
+
+    def __setitem__(self, key: Hashable, value: JSONValue):
+        assign(self.data, key, value, missing=dict)
+
+    def __contains__(self, key: Hashable) -> bool:
+        try:
+            self[key]
+        except PathAccessError:
+            return False
+        return True

@@ -5,11 +5,12 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from django.db import models
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
+from django.utils.functional import empty
 from django.utils.translation import gettext_lazy as _
 
-from glom import Assign, PathAccessError, glom
-
+from openforms.formio.service import FormioData
 from openforms.forms.models.form_variable import FormVariable
+from openforms.typing import DataMapping
 from openforms.utils.date import format_date_value
 from openforms.variables.constants import FormVariableDataTypes
 from openforms.variables.service import get_static_variables
@@ -50,14 +51,14 @@ class SubmissionValueVariablesState:
         self,
         submission_step: Optional["SubmissionStep"] = None,
         return_unchanged_data: bool = True,
-    ) -> dict:
+    ) -> DataMapping:
         submission_variables = self.saved_variables
         if submission_step:
             submission_variables = self.get_variables_in_submission_step(
                 submission_step, include_unsaved=False
             )
 
-        data = {}
+        formio_data = FormioData()
         for variable_key, variable in submission_variables.items():
             if (
                 variable.value is None
@@ -68,8 +69,8 @@ class SubmissionValueVariablesState:
                 continue
 
             if variable.source != SubmissionValueVariableSources.sensitive_data_cleaner:
-                glom(data, Assign(variable_key, variable.value, missing=dict))
-        return data
+                formio_data[variable_key] = variable.value
+        return formio_data.data
 
     def get_variables_in_submission_step(
         self,
@@ -174,7 +175,7 @@ class SubmissionValueVariablesState:
 
         SubmissionValueVariable.objects.bulk_create(variables_to_prefill)
 
-    def set_values(self, data: Dict[str, Any]) -> None:
+    def set_values(self, data: DataMapping) -> None:
         """
         Apply the values from ``data`` to the current state of the variables.
 
@@ -187,10 +188,10 @@ class SubmissionValueVariablesState:
         .. todo:: apply variable.datatype/format to obtain python objects? This also
            needs to properly serialize back to JSON though!
         """
+        formio_data = FormioData(data)
         for key, variable in self.variables.items():
-            try:
-                new_value = glom(data, key)
-            except PathAccessError:
+            new_value = formio_data.get(key, default=empty)
+            if new_value is empty:
                 continue
             variable.value = new_value
 
@@ -198,9 +199,9 @@ class SubmissionValueVariablesState:
 class SubmissionValueVariableManager(models.Manager):
     def bulk_create_or_update_from_data(
         self,
-        data: dict,
+        data: DataMapping,
         submission: "Submission",
-        submission_step: "SubmissionStep" = None,
+        submission_step: Optional["SubmissionStep"] = None,
         update_missing_variables: bool = False,
     ) -> None:
 
@@ -218,10 +219,11 @@ class SubmissionValueVariableManager(models.Manager):
         variables_to_create = []
         variables_to_update = []
         variables_keys_to_delete = []
+        formio_data = FormioData(data)
         for key, variable in submission_variables.items():
             try:
-                variable.value = glom(data, key)
-            except PathAccessError:
+                variable.value = formio_data[key]
+            except KeyError:
                 if update_missing_variables:
                     if variable.pk:
                         variables_keys_to_delete.append(variable.key)
