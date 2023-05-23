@@ -87,7 +87,7 @@ defusedxml==0.6.0
     #   django-camunda
     #   django-digid-eherkenning
     #   maykin-python3-saml
-django==3.2.18
+django==3.2.19
     # via
     #   -r requirements/base.in
     #   django-admin-index
@@ -373,7 +373,7 @@ redis==4.5.4
     #   celery-once
     #   django-redis
     #   portalocker
-requests==2.26.0
+requests==2.31.0
     # via
     #   django-camunda
     #   gemma-zds-client
