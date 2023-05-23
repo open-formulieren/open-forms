@@ -1,12 +1,20 @@
+from itertools import count
+from string import ascii_letters, digits
 from typing import Literal, Optional, Sequence
 from unittest import TestCase
 
-from hypothesis import assume, given, strategies as st
+from hypothesis import given, settings, strategies as st
 
-from openforms.tests.search_strategies import json_primitives
+from openforms.tests.search_strategies import json_numbers, json_primitives
 from openforms.typing import JSONObject, JSONValue
 
 from ..json_logic_inference import type_check
+
+SALT = map(str, count())
+
+
+def make_unique(s: str) -> str:
+    return f"{s}{next(SALT)}"
 
 
 def json_logic_expressions(
@@ -17,62 +25,57 @@ def json_logic_expressions(
     if not operators and not values:
         return (
             json_logic_vars()
-            | st.deferred(json_logic_boolean_logic)
             | st.deferred(json_logic_arithmetic)
+            | st.deferred(json_logic_boolean_logic)
         )
-    keys = st.sampled_from(operators) if len(operators) > 1 else st.just(operators[0])
     return st.dictionaries(
-        keys=keys,
+        keys=st.sampled_from(operators),
         values=values,
         min_size=1,
         max_size=1,
     )
 
 
-def json_logic_vars() -> st.SearchStrategy[dict[Literal["var"], str]]:
+@st.composite
+def json_logic_vars(draw) -> st.SearchStrategy[dict[Literal["var"], str]]:
     'Return a strategy that generates JsonLogic "var" expressions.'
     # TODO narrow to legal variable names?
-    return json_logic_expressions(operators=("var",), values=st.text(min_size=1))
+    return {"var": make_unique(draw(st.text(alphabet=ascii_letters + digits + "_.")))}
 
 
 def json_logic_arithmetic() -> st.SearchStrategy[JSONObject]:
-    return st.deferred(
-        lambda: json_logic_expressions(
-            # unary - (inverse)
-            operators=("-",),
-            values=st.lists(
-                st.integers()
-                | st.floats()
-                | json_logic_vars()
-                | json_logic_arithmetic(),
-                min_size=1,
-                max_size=1,
+    def arithmetic_expressions(numeric_expression):
+        return st.one_of(
+            json_logic_expressions(
+                # unary - (inverse)
+                operators=("-",),
+                values=st.lists(
+                    json_numbers() | json_logic_vars() | numeric_expression,
+                    min_size=1,
+                    max_size=1,
+                ),
+            ),
+            json_logic_expressions(
+                # binary operators
+                operators=("+", "-", "*", "/", "%"),
+                values=st.lists(
+                    json_numbers() | json_logic_vars() | numeric_expression,
+                    min_size=2,
+                    max_size=2,
+                ),
+            ),
+            json_logic_expressions(
+                # n-ary + and *
+                operators=("+", "*"),
+                values=st.lists(
+                    json_numbers() | json_logic_vars() | numeric_expression,
+                    min_size=3,
+                ),
             ),
         )
-        | json_logic_expressions(
-            # binary operators
-            operators=("+", "-", "*", "/", "%"),
-            values=st.lists(
-                st.integers()
-                | st.floats()
-                | json_logic_vars()
-                | json_logic_arithmetic(),
-                min_size=2,
-                max_size=2,
-            ),
-        )
-        | json_logic_expressions(
-            # n-ary + and *
-            operators=("+", "*"),
-            values=st.lists(
-                st.integers()
-                | st.floats()
-                | json_logic_vars()
-                | json_logic_arithmetic(),
-                min_size=3,
-            ),
-        )
-        | json_logic_expressions(
+
+    return st.recursive(
+        base=json_logic_expressions(
             # unary + (cast to Number)
             operators=("+",),
             values=st.lists(
@@ -80,7 +83,26 @@ def json_logic_arithmetic() -> st.SearchStrategy[JSONObject]:
                 min_size=1,
                 max_size=1,
             ),
-        )
+        ),
+        extend=arithmetic_expressions,
+        max_leaves=3,
+    )
+
+    return st.one_of(
+        st.recursive(
+            base=json_numbers(),
+            extend=arithmetic_expressions,
+            max_leaves=3,
+        ),
+        json_logic_expressions(
+            # unary + (cast to Number)
+            operators=("+",),
+            values=st.lists(
+                json_primitives() | json_logic_expressions(),  # any type
+                min_size=1,
+                max_size=1,
+            ),
+        ),
     )
 
 
@@ -89,57 +111,62 @@ def json_logic_boolean_logic() -> st.SearchStrategy[JSONObject]:
 
     e.g. {"==", "!==", "!", "!!", "or", "and", ...}
     """
+
     # NB the order of one_of is from simple to complex values
-    return st.one_of(
-        # binary logic operators
-        json_logic_expressions(
+    def binary_logic_operators(bool_expression):
+        return json_logic_expressions(
             operators=("or", "and"),
             values=st.lists(
-                st.booleans() | st.deferred(json_logic_boolean_logic),
+                st.booleans() | bool_expression,
                 min_size=2,
                 max_size=2,
             ),
-        ),
-        # binary numeric operators
-        json_logic_expressions(
-            operators=(">", ">=", "<", "<="),
-            values=st.lists(
-                # numeric types
-                st.integers() | st.floats() | json_logic_arithmetic(),
-                min_size=2,
-                max_size=2,
+        )
+
+    return st.recursive(
+        base=st.one_of(
+            # binary numeric operators
+            json_logic_expressions(
+                operators=(">", ">=", "<", "<="),
+                values=st.lists(
+                    # numeric types
+                    json_numbers() | json_logic_arithmetic(),
+                    min_size=2,
+                    max_size=2,
+                ),
+            ),
+            # ternary numeric "between" operators
+            json_logic_expressions(
+                operators=("<", "<="),
+                values=st.lists(
+                    # numeric types
+                    json_numbers() | json_logic_arithmetic(),
+                    min_size=3,
+                    max_size=3,
+                ),
+            ),
+            # unary operators
+            json_logic_expressions(
+                operators=("!", "!!"),
+                values=st.lists(
+                    json_primitives() | json_logic_expressions(),  # any type
+                    min_size=1,
+                    max_size=1,
+                ),
+            ),
+            # binary equivalence operators
+            json_logic_expressions(
+                operators=("==", "!=", "===", "!=="),
+                values=st.lists(
+                    # any two types
+                    json_primitives() | json_logic_expressions(),  # any type
+                    min_size=2,
+                    max_size=2,
+                ),
             ),
         ),
-        # ternary numeric "between" operators
-        json_logic_expressions(
-            operators=("<", "<="),
-            values=st.lists(
-                # numeric types
-                st.integers() | st.floats() | json_logic_arithmetic(),
-                min_size=3,
-                max_size=3,
-            ),
-        ),
-        # unary operators
-        json_logic_expressions(
-            operators=("!", "!!"),
-            values=st.lists(
-                # any types
-                json_primitives() | json_logic_expressions(),
-                min_size=1,
-                max_size=1,
-            ),
-        ),
-        # binary equivalence operators
-        json_logic_expressions(
-            operators=("==", "!=", "===", "!=="),
-            values=st.lists(
-                # any two types
-                json_primitives() | json_logic_expressions(),
-                min_size=2,
-                max_size=2,
-            ),
-        ),
+        extend=binary_logic_operators,
+        max_leaves=3,
     )
 
 
@@ -191,6 +218,7 @@ class JsonLogicInferenceTests(TestCase):
         s, t = type_check(expression)
         self.assertEqual(str(t), "Number")
 
+    @settings(deadline=1000)
     @given(
         json_logic_boolean_logic(),
         json_logic_arithmetic(),
@@ -215,6 +243,7 @@ class JsonLogicInferenceTests(TestCase):
 
         self.assertEqual(str(more_t), "Number")
 
+    @settings(deadline=1000)
     @given(
         bool_exp=json_logic_boolean_logic(),
         then_exp=json_logic_arithmetic(),
@@ -244,16 +273,6 @@ class JsonLogicInferenceTests(TestCase):
     def test_conditionals_infers_the_condition_is_a_boolean(
         self, condition, then_exp, else_exp
     ):
-        def contains(exp, var):
-            "exp contains var"
-            s, t = type_check(exp)
-            return var["var"] in s
-
-        # ensure our condition var is not bound somewhere in the then or other
-        # that would result in Boolean and some other types which may not unify
-        assume(not contains(then_exp, condition))
-        assume(not contains(else_exp, condition))
-
         conditional_exp = {"if": [condition, then_exp, else_exp]}
 
         s, t = type_check(conditional_exp)

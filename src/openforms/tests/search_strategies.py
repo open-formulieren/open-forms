@@ -8,12 +8,23 @@ from openforms.forms.models.form_variable import variable_key_validator
 from openforms.typing import JSONPrimitive, JSONValue
 
 
+def json_numbers(min_value=None, max_value=None) -> st.SearchStrategy[JSONPrimitive]:
+    return st.one_of(
+        st.integers(min_value=min_value, max_value=max_value),
+        st.floats(
+            min_value=min_value,
+            max_value=max_value,
+            allow_infinity=False,
+            allow_nan=False,
+        ),
+    )
+
+
 def json_primitives(text_strategy=st.text()) -> st.SearchStrategy[JSONPrimitive]:
     return st.one_of(
         st.none(),
         st.booleans(),
-        st.integers(),
-        st.floats(allow_infinity=False, allow_nan=False),
+        json_numbers(),
         text_strategy,
     )
 
