@@ -4,6 +4,8 @@ from django.utils.translation import gettext_lazy as _
 from solo.models import SingletonModel
 from zgw_consumers.constants import APITypes
 
+from openforms.prefill.contrib.haalcentraal.constants import HaalCentraalVersion
+
 
 class HaalCentraalConfigManager(models.Manager):
     def get_queryset(self):
@@ -17,11 +19,18 @@ class HaalCentraalConfig(SingletonModel):
 
     service = models.OneToOneField(
         "zgw_consumers.Service",
-        verbose_name=_("Haal Centraal API"),
+        verbose_name=_("BRP Bevragen Personen service"),
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.orc},
         related_name="+",
         null=True,
+    )
+    version = models.CharField(
+        _("BRP Bevragen Personen version"),
+        max_length=30,
+        choices=HaalCentraalVersion.choices,
+        default=HaalCentraalVersion.haalcentraal13,
+        help_text=_("The BRP Bevragen Personen version."),
     )
 
     objects = HaalCentraalConfigManager()

@@ -15,7 +15,7 @@ from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
 from ...registry import register
-from .constants import Attributes
+from .constants import Attributes, HaalCentraalVersion
 from .models import HaalCentraalConfig
 
 logger = logging.getLogger(__name__)
@@ -32,13 +32,24 @@ class HaalCentraalPrefill(BasePlugin):
     def get_available_attributes() -> list[tuple[str, str]]:
         return Attributes.choices
 
+    def get_config():
+        config = HaalCentraalConfig.get_solo()
+        if not config.service:
+            logger.warning("no service defined for Haal Centraal prefill")
+            return
+        return config
+
     @classmethod
     def _get_values_for_bsn(
         cls, submission: Submission, bsn: str, attributes: Iterable[str]
     ) -> Dict[str, Any]:
-        config = HaalCentraalConfig.get_solo()
-        if not config.service:
-            logger.warning("no service defined for Haal Centraal prefill")
+        config = cls.get_config()
+
+        if config.version != HaalCentraalVersion.haalcentraal13:
+            logger.warning("Service configed for the wrong version.")
+            return {}
+
+        if not config:
             return {}
 
         client = config.service.build_client()
@@ -73,6 +84,60 @@ class HaalCentraalPrefill(BasePlugin):
         return values
 
     @classmethod
+    def _get_values_for_bsn_v2(
+        cls, submission: Submission, bsn: str, attributes: Iterable[str]
+    ) -> Dict[str, Any]:
+        config = cls.get_config()
+        print(config.version)
+
+        if config.version != HaalCentraalVersion.haalcentraal20:
+            logger.warning("Service configed for the wrong version.")
+            return {}
+
+        if not config:
+            return {}
+
+        client = config.service.build_client()
+        client.context = PreRequestClientContext(submission=submission)
+
+        # manually build the URL, since HaalCentraal API spec & Open Personen have
+        # mismatching operation IDs
+        resource_url = "personen"
+
+        headers = {"headers": {"Content-Type": "application/json", "Accept": "*/*"}}
+
+        recource_body = {
+            "type": "RaadpleegMetBurgerservicenummer",
+            "burgerservicenummer": [bsn],
+            "fields": attributes,
+        }
+
+        try:
+            data = client.operation(
+                "Personen",
+                data=recource_body,
+                url=resource_url,
+                request_kwargs=headers,
+            )
+        except RequestException as e:
+            logger.exception("exception while making request", exc_info=e)
+            return {}
+        except ClientError as e:
+            logger.exception("exception while making request", exc_info=e)
+            return {}
+
+        values = dict()
+        for attr in attributes:
+            try:
+                values[attr] = glom(data["personen"][0], attr)
+            except GlomError:
+                logger.warning(
+                    f"missing expected attribute '{attr}' in backend response"
+                )
+
+        return values
+
+    @classmethod
     def get_prefill_values(
         cls, submission: Submission, attributes: List[str]
     ) -> Dict[str, Any]:
@@ -83,9 +148,19 @@ class HaalCentraalPrefill(BasePlugin):
             #  If there is no bsn we can't prefill any values so just return
             logger.info("No BSN associated with submission, cannot prefill.")
             return {}
-        return cls._get_values_for_bsn(
-            submission, submission.auth_info.value, attributes
-        )
+        config = cls.get_config()
+        if not config:
+            return {}
+
+        match config.version:
+            case HaalCentraalVersion.haalcentraal13:
+                return cls._get_values_for_bsn(
+                    submission, submission.auth_info.value, attributes
+                )
+            case HaalCentraalVersion.haalcentraal20:
+                return cls._get_values_for_bsn_v2(
+                    submission, submission.auth_info.value, attributes
+                )
 
     @classmethod
     def get_co_sign_values(
@@ -102,7 +177,11 @@ class HaalCentraalPrefill(BasePlugin):
         :return: a key-value dictionary, where the key is the requested attribute and
           the value is the prefill value to use for that attribute.
         """
-        values = cls._get_values_for_bsn(
+        config = cls.get_config()
+        if not config:
+            return {}
+
+        get_values_args = (
             submission,
             identifier,
             (
@@ -112,6 +191,15 @@ class HaalCentraalPrefill(BasePlugin):
                 Attributes.naam_voorletters,
             ),
         )
+
+        match config.version:
+            case HaalCentraalVersion.haalcentraal13:
+                return cls._get_values_for_bsn(
+                    values=cls._get_values_for_bsn(get_values_args)
+                )
+            case HaalCentraalVersion.haalcentraal20:
+                values = cls._get_values_for_bsn_v2(get_values_args)
+
         first_names = values.get(Attributes.naam_voornamen, "")
         first_letters = values.get(Attributes.naam_voorletters) or " ".join(
             [f"{name[0]}." for name in first_names.split(" ") if name]

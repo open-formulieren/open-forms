@@ -577,3 +577,8 @@ class Attributes(models.TextChoices):
         "verblijfstitel.inOnderzoek.datumIngangOnderzoek.maand",
         _("Verblijfstitel > Inonderzoek > Datumingangonderzoek > Maand"),
     )
+
+
+class HaalCentraalVersion(models.TextChoices):
+    haalcentraal13 = "1.3", "BRP Bevragen Personen 1.3"
+    haalcentraal20 = "2.0", "BRP Bevragen Personen 2.0"
