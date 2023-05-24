@@ -6,7 +6,6 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 import requests
-from furl import furl
 from rest_framework import serializers
 from rest_framework.exceptions import ParseError
 
@@ -84,7 +83,7 @@ class OgoneLegacyPaymentPlugin(BasePlugin):
 
         self.apply_status(payment, params.STATUS)
 
-        form_url = furl(payment.submission.form_url)
+        form_url = payment.submission.cleaned_form_url
         form_url.args.update(
             {
                 "of_payment_status": payment.status,
