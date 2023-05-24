@@ -98,7 +98,7 @@ class File(BasePlugin):
             component["file"].update(
                 {
                     "allowedTypesLabels": [
-                        dict(UploadFileType.choices)[mimetype]
+                        UploadFileType(mimetype).label
                         for mimetype in config.form_upload_default_file_types
                     ],
                 }
