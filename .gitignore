@@ -45,6 +45,8 @@ local.py
 /.env
 /private_media/
 /celerybeat
+/tmp/*
+!/tmp/.gitkeep
 
 # Static files
 src/openforms/static/bundles/
