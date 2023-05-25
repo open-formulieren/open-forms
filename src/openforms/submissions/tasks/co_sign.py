@@ -3,14 +3,20 @@ import logging
 from django.conf import settings
 from django.utils.translation import ugettext
 
+from celery import chain
+
 from openforms.celery import app
 from openforms.emails.utils import render_email_template, send_mail_html
 from openforms.logging import logevent
 from openforms.submissions.models import Submission
 
+from .cleanup import *  # noqa
+from .emails import *  # noqa
+from .registration import *  # noqa
+
 logger = logging.getLogger(__name__)
 
-__all__ = ["send_email_cosigner"]
+__all__ = ["send_email_cosigner", "on_cosign"]
 
 
 @app.task()
@@ -50,3 +56,21 @@ def send_email_cosigner(submission_id: int) -> None:
         raise
 
     logevent.cosigner_email_queuing_success(submission)
+
+
+def on_cosign(submission_id: int) -> None:
+    register_submission_task = register_submission.si(submission_id)
+    # TODO ADD cosigner to CC
+    send_confirmation_email_task = maybe_send_confirmation_email.si(submission_id)
+    # TODO Should it hash the cosigner data attributes?
+    hash_identifying_attributes_task = maybe_hash_identifying_attributes.si(
+        submission_id
+    )
+
+    on_cosign_chain = chain(
+        register_submission_task,
+        send_confirmation_email_task,
+        hash_identifying_attributes_task,
+    )
+
+    on_cosign_chain.delay()

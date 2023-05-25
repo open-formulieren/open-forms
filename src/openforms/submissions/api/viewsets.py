@@ -12,7 +12,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError
+from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -23,6 +23,7 @@ from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.api.throttle_classes import PollingRateThrottle
+from openforms.authentication.utils import is_authenticated_with_plugin
 from openforms.formio.service import FormioData
 from openforms.forms.models import FormStep
 from openforms.logging import logevent
@@ -38,6 +39,7 @@ from ..parsers import IgnoreDataFieldCamelCaseJSONParser, IgnoreDataJSONRenderer
 from ..signals import submission_complete, submission_cosigned, submission_start
 from ..status import SubmissionProcessingStatus
 from ..tasks import on_completion
+from ..tasks.co_sign import on_cosign
 from ..tokens import submission_status_token_generator
 from ..utils import (
     add_submmission_to_session,
