@@ -12,7 +12,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import NotFound, PermissionDenied
+from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -35,7 +35,7 @@ from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep
 from ..models.submission_step import DirtyData
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser, IgnoreDataJSONRenderer
-from ..signals import submission_complete, submission_start
+from ..signals import submission_complete, submission_cosigned, submission_start
 from ..status import SubmissionProcessingStatus
 from ..tasks import on_completion
 from ..tokens import submission_status_token_generator
@@ -54,6 +54,7 @@ from .permissions import (
     SubmissionStatusPermission,
 )
 from .serializers import (
+    CosignValidationSerializer,
     FormDataSerializer,
     SubmissionCompletionSerializer,
     SubmissionCoSignStatusSerializer,
@@ -183,6 +184,7 @@ class SubmissionViewSet(
             404: ExceptionSerializer,
             405: ExceptionSerializer,
         },
+        deprecated=True,
     )
     @action(detail=True, methods=["get"], url_name="co-sign", url_path="co-sign")
     def co_sign(self, request, *args, **kwargs) -> Response:
@@ -194,6 +196,52 @@ class SubmissionViewSet(
             instance=submission, context={"request": request}
         )
         return Response(serializer.data)
+
+    @extend_schema(
+        summary=_("Co-sign submission"),
+        responses={
+            200: {},
+            400: ExceptionSerializer,
+            403: ExceptionSerializer,
+            404: ExceptionSerializer,
+            405: ExceptionSerializer,
+        },
+    )
+    @transaction.atomic()
+    @action(
+        detail=True,
+        methods=["post"],
+        url_name="cosign",
+    )
+    def cosign(self, request, *args, **kwargs):
+        submission = self.get_object()
+
+        cosign_component = submission.form.get_cosign_component()
+        if not is_authenticated_with_plugin(request, cosign_component["authPlugin"]):
+            raise PermissionDenied(
+                _("You need to be logged in with %(auth_plugin)s")
+                % {"auth_plugin": cosign_component["authPlugin"]}
+            )
+
+        serializer = CosignValidationSerializer(
+            data={
+                "completed": submission.is_completed,
+                "privacy_policy_accepted": request.data["privacy_policy_accepted"],
+            },
+            context={"request": request, "submission": submission},
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        # dispatch signal for modules to tap into
+        submission_cosigned.send(
+            sender=self.__class__, instance=submission, request=self.request
+        )
+
+        remove_submission_from_session(submission, self.request.session)
+
+        transaction.on_commit(lambda: on_cosign(submission.id))
+        return Response({})
 
     @extend_schema(
         summary=_("Complete a submission"),

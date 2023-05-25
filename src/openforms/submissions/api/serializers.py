@@ -14,6 +14,7 @@ from rest_framework.reverse import reverse
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
 from csp_post_processor.drf.fields import CSPPostProcessedHTMLField
+from openforms.api.utils import mark_experimental
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.utils import render_email_template, send_mail_html
 from openforms.forms.api.serializers import FormDefinitionSerializer
@@ -28,6 +29,7 @@ from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep
 from ..tokens import submission_resume_token_generator
 from .fields import NestedRelatedField
+from .validation import privacy_policy_accepted
 from .validators import FormMaintenanceModeValidator, ValidatePrefillData
 
 logger = logging.getLogger(__name__)
@@ -479,3 +481,28 @@ class SubmissionStepSummarySerialzier(serializers.Serializer):
         required=True,
     )
     data = SubmissionComponentSummarySerializer(many=True)
+
+
+@mark_experimental
+class CosignValidationSerializer(serializers.Serializer):
+    completed = serializers.BooleanField(
+        label=_("Completed"),
+        help_text=_("The submission was completed."),
+    )
+    privacy_policy_accepted = serializers.BooleanField(
+        label=_("privacy policy accepted"),
+        help_text=_("Whether the co-signer has accepted the privacy policy"),
+        validators=[privacy_policy_accepted],
+    )
+
+    def validate_completed(self, value):
+        if not value:
+            raise serializers.ValidationError(
+                _("The submission must be completed before being able to co-sign it.")
+            )
+
+    def save(self, **kwargs):
+        submission = self.context["submission"]
+        submission.cosign_complete = True
+        submission.cosign_privacy_policy_accepted = True
+        submission.save()
