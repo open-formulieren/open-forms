@@ -1,7 +1,13 @@
+from django.test import override_settings
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from openforms.accounts.tests.factories import UserFactory
+from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
+
+from ..constants import SUBMISSIONS_SESSION_KEY
 from .factories import SubmissionFactory
 from .mixins import SubmissionsMixin
 
@@ -67,3 +73,116 @@ class SubmissionCoSignStatusTests(SubmissionsMixin, APITestCase):
                 "representation": "",
             },
         )
+
+
+class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
+    def test_submission_must_be_in_session(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[{"type": "cosign", "key": "cosign"}],
+            submitted_data={
+                "cosign": "test@example.com",
+            },
+        )
+
+        endpoint = reverse("api:submission-cosign", kwargs={"uuid": submission.uuid})
+        response = self.client.post(endpoint)
+
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_submission_must_be_completed(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[{"type": "cosign", "key": "cosign"}],
+            submitted_data={
+                "cosign": "test@example.com",
+            },
+            completed=False,
+        )
+
+        user = UserFactory.create()
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+        }
+        session.save()
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-cosign", kwargs={"uuid": submission.uuid})
+        self.client.force_authenticate(user=user)
+        response = self.client.post(endpoint)
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        data = response.json()
+
+        self.assertEqual(data["invalidParams"][0]["name"], "completed")
+        self.assertEqual(
+            data["invalidParams"][0]["reason"],
+            "The submission must be completed before being able to co-sign it.",
+        )
+
+    def test_user_must_have_authenticated_with_right_plugin(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
+            ],
+            submitted_data={
+                "cosign": "test@example.com",
+            },
+            completed=False,
+        )
+
+        user = UserFactory.create()
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "NOT-digid",
+            "attribute": "bsn",
+            "value": "123456782",
+        }
+        session.save()
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-cosign", kwargs={"uuid": submission.uuid})
+        self.client.force_authenticate(user=user)
+        response = self.client.post(endpoint)
+
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
+
+    def test_cosign_happyflow_calls_on_cosign_task(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
+            ],
+            submitted_data={
+                "cosign": "test@example.com",
+            },
+            completed=True,
+        )
+
+        user = UserFactory.create()
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+        }
+        session.save()
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-cosign", kwargs={"uuid": submission.uuid})
+        self.client.force_authenticate(user=user)
+
+        response = self.client.post(endpoint)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        submission.refresh_from_db()
+
+        self.assertTrue(submission.cosign_complete)
+
+        session = self.client.session
+        ids = session.get(SUBMISSIONS_SESSION_KEY, [])
+
+        self.assertNotIn(submission.uuid, ids)
