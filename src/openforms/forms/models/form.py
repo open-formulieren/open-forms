@@ -1,4 +1,5 @@
 import uuid as _uuid
+from contextlib import suppress
 from copy import deepcopy
 from typing import List, Optional
 
@@ -363,6 +364,7 @@ class Form(models.Model):
 
     @transaction.atomic
     def copy(self):
+        from ...emails.models import ConfirmationEmailTemplate
         from .form_variable import FormVariable
 
         form_steps = self.formstep_set.all().select_related("form_definition")
@@ -407,6 +409,11 @@ class Form(models.Model):
             variable.pk = None
             variable.form = copy
             variable.save()
+
+        with suppress(ConfirmationEmailTemplate.DoesNotExist):
+            self.confirmation_email_template.pk = None
+            self.confirmation_email_template.form = copy
+            self.confirmation_email_template.save()
 
         return copy
 
