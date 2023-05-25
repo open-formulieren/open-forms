@@ -4,12 +4,13 @@ Implement backend functionality for core Formio (built-in) component types.
 Custom component types (defined by us or third parties) need to be organized in the
 adjacent custom.py module.
 """
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, TypedDict
 
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
 
 from csp_post_processor import post_process_html
+from openforms.config.constants import UploadFileType
 from openforms.config.models import GlobalConfiguration
 from openforms.typing import DataMapping
 from openforms.utils.urls import build_absolute_uri
@@ -68,11 +69,16 @@ class PhoneNumber(BasePlugin):
     formatter = PhoneNumberFormatter
 
 
+class FileConfig(TypedDict):
+    allowedTypesLabels: list[str]
+
+
 class FileComponent(Component):
     storage: Literal["url"]
     url: str
     useConfigFiletypes: bool
     filePattern: str
+    file: FileConfig
 
 
 @register("file")
@@ -89,6 +95,14 @@ class File(BasePlugin):
         if component.get("useConfigFiletypes", False):
             config = GlobalConfiguration.get_solo()
             component["filePattern"] = ",".join(config.form_upload_default_file_types)
+            component["file"].update(
+                {
+                    "allowedTypesLabels": [
+                        UploadFileType(mimetype).label
+                        for mimetype in config.form_upload_default_file_types
+                    ],
+                }
+            )
 
 
 @register("textarea")
