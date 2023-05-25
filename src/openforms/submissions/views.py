@@ -165,18 +165,11 @@ class ResumeSubmissionView(ResumeFormMixin, RedirectView):
     token_generator = submission_resume_token_generator
 
     def get_form_resume_url(self, submission: Submission) -> str:
-        form_resume_url = furl(submission.form_url)
+        form_resume_url = submission.cleaned_form_url
 
         state = submission.load_execution_state()
         last_completed_step = state.get_last_completed_step()
         target_step = last_completed_step or state.submission_steps[0]
-
-        # If the URL ends with "startpagina" we need to remove it before adding the path of the step
-        if (
-            form_resume_url.path.segments
-            and form_resume_url.path.segments[-1] == "startpagina"
-        ):
-            form_resume_url.path.segments = form_resume_url.path.segments[:-1]
 
         # furl adds paths with the /= operator
         form_resume_url /= "stap"

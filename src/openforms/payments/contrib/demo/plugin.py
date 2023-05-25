@@ -1,8 +1,6 @@
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
 
-from furl import furl
-
 from ...base import BasePlugin, PaymentInfo
 from ...constants import PaymentStatus, UserAction
 from ...registry import register
@@ -21,7 +19,7 @@ class DemoPayment(BasePlugin):
         payment.status = PaymentStatus.completed
         payment.save()
 
-        form_url = furl(payment.submission.form_url)
+        form_url = payment.submission.cleaned_form_url
         form_url.args.update(
             {
                 "of_payment_status": payment.status,

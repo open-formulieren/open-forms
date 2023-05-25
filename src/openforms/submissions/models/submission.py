@@ -10,6 +10,7 @@ from django.utils.translation import get_language, gettext_lazy as _
 
 import elasticapm
 from django_better_admin_arrayfield.models.fields import ArrayField
+from furl import furl
 from glom import glom
 
 from openforms.config.models import GlobalConfiguration
@@ -317,6 +318,25 @@ class Submission(models.Model):
             update_fields += ["needs_on_completion_retry"]
 
         self.save(update_fields=update_fields)
+
+    @property
+    def cleaned_form_url(self) -> furl:
+        """
+        Return the base URL where the form of the submission is/was hosted.
+
+        The SDK itself performs client-side redirects and this URL gets recorded,
+        but appointment management/submission resuming relies on the cleaned, canonical
+        URL.
+
+        See open-formulieren/open-forms#3025 for the original ticket.
+
+        TODO: check how this works with the hash-based router!
+        """
+        furl_instance = furl(self.form_url)
+        # if the url path ends with 'startpagina', strip it off
+        if furl_instance.path.segments[-1:] == ["startpagina"]:
+            furl_instance.path.segments.remove("startpagina")
+        return furl_instance
 
     @property
     def total_configuration_wrapper(self) -> FormioConfigurationWrapper:
