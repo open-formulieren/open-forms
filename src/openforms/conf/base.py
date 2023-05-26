@@ -558,6 +558,17 @@ DEFAULT_TIMEOUT_REQUESTS = config("DEFAULT_TIMEOUT_REQUESTS", default=10.0)
 
 MAX_FILE_UPLOAD_SIZE = config("MAX_FILE_UPLOAD_SIZE", default="50M", cast=Filesize())
 
+# Deal with being hosted on a subpath
+SUBPATH = config("SUBPATH", None)
+if SUBPATH:
+    if not SUBPATH.startswith("/"):
+        SUBPATH = f"/{SUBPATH}"
+
+if SUBPATH and SUBPATH != "/":
+    STATIC_URL = f"{SUBPATH}{STATIC_URL}"
+    MEDIA_URL = f"{SUBPATH}{MEDIA_URL}"
+
+
 ##############################
 #                            #
 # 3RD PARTY LIBRARY SETTINGS #
