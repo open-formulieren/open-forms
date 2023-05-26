@@ -56,7 +56,7 @@ class InternationalPhoneNumberValidator(PhoneNumberBaseValidator):
     country = None
     country_name = _("international")
     error_message = _(
-        "Not a valid international phone number. An example of a valid international phone number is +316123123123"
+        "Not a valid international phone number. An example of a valid international phone number is +31612312312"
     )
 
     def _parse_phonenumber(self, value: str) -> "PhoneNumber":
@@ -83,7 +83,7 @@ class DutchPhoneNumberValidator(PhoneNumberBaseValidator):
     country = "NL"
     country_name = _("Dutch")
     error_message = _(
-        "Not a valid dutch phone number. An example of a valid dutch phone number is 06123123123"
+        "Not a valid dutch phone number. An example of a valid dutch phone number is 0612312312"
     )
 
     def _parse_phonenumber(self, value: str) -> "PhoneNumber":

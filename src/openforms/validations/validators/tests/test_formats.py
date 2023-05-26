@@ -37,7 +37,7 @@ class PhoneNumberTestCase(ValidatorTestBase):
             "+311234",
             "+3161234566789aaaaa",
         ]
-        message = "Not a valid international phone number. An example of a valid international phone number is +316123123123"
+        message = "Not a valid international phone number. An example of a valid international phone number is +31612312312"
         self.run_cases(validator, valid, invalid, message)
 
     def test_phone_number_dutch(self):
@@ -60,5 +60,5 @@ class PhoneNumberTestCase(ValidatorTestBase):
             "+441134960000",  # US test number
             "+1 206 555 0100",  # US test number
         ]
-        message = "Not a valid dutch phone number. An example of a valid dutch phone number is 06123123123"
+        message = "Not a valid dutch phone number. An example of a valid dutch phone number is 0612312312"
         self.run_cases(validator, valid, invalid, message)
