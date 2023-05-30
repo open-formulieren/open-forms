@@ -258,7 +258,7 @@ def type_check(
             (k[5:] if k.startswith("var: ") else k): v
             for k, v in s.items()
             if k in context  # filter intermediate
-            and isinstance(v, MonoType)  # and poly types
+            and isinstance(v, (TypeVariable, TypeApplication))  # and poly types
         },
         s(t),
     )

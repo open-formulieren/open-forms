@@ -1,6 +1,6 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, TypeAlias, Union
 
 # Naming is based on
 # https://en.wikipedia.org/wiki/Hindley%E2%80%93Milner_type_system
@@ -49,23 +49,14 @@ class Let(Expression):
     e2: Expression
 
 
-@dataclass
-class PolyType(ABC):
-    "σ    sigma or TypeScheme"
-    pass
+# τ, tau or Type
+MonoType: TypeAlias = Union["TypeApplication", "TypeVariable"]
+# σ, sigma or TypeScheme
+PolyType: TypeAlias = Union["TypeQuantifier", MonoType]
 
 
 @dataclass
-class MonoType(PolyType, ABC):
-    "τ    tau or Type"
-
-    @abstractmethod
-    def __contains__(self, a: "TypeVariable") -> bool:
-        ...
-
-
-@dataclass
-class TypeVariable(MonoType):
+class TypeVariable:
     "α    alpha"
     alpha: str
 
@@ -89,7 +80,7 @@ TypeFunction = Literal[
 
 
 @dataclass
-class TypeApplication(MonoType):
+class TypeApplication:
     "Cτ...τ"
     C: TypeFunction
     taus: tuple[()] | tuple[MonoType] | tuple[MonoType, MonoType] = ()
@@ -121,7 +112,7 @@ class TypeApplication(MonoType):
 
 
 @dataclass
-class TypeQuantifier(PolyType):
+class TypeQuantifier:
     "∀α.σ    forall alpha . sigma"
     alpha: str
     sigma: MonoType | PolyType

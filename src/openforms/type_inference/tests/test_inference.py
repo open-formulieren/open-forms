@@ -20,7 +20,7 @@ def make_unique(s: str) -> str:
 def json_logic_expressions(
     operators: Optional[Sequence[str]] = None,
     values: Optional[st.SearchStrategy[JSONValue]] = None,
-) -> st.SearchStrategy[JSONValue]:
+) -> st.SearchStrategy[JSONObject]:
     "Return a strategy that generates JsonLogic expressions."
     if not operators and not values:
         return (
@@ -28,6 +28,7 @@ def json_logic_expressions(
             | st.deferred(json_logic_arithmetic)
             | st.deferred(json_logic_boolean_logic)
         )
+    assert operators and values
     return st.dictionaries(
         keys=st.sampled_from(operators),
         values=values,
@@ -37,7 +38,7 @@ def json_logic_expressions(
 
 
 @st.composite
-def json_logic_vars(draw) -> st.SearchStrategy[dict[Literal["var"], str]]:
+def json_logic_vars(draw) -> dict[Literal["var"], str]:
     'Return a strategy that generates JsonLogic "var" expressions.'
     # TODO narrow to legal variable names?
     return {"var": make_unique(draw(st.text(alphabet=ascii_letters + digits + "_.")))}

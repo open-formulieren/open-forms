@@ -1,5 +1,15 @@
 from itertools import chain, count
-from typing import Iterator, MutableMapping, Optional, TypeVar, Union
+from typing import Iterator, MutableMapping, Optional, TypeVar, Union, overload
+
+try:
+    from typing_extensions import assert_never
+except ImportError:
+    # typing_extenstions is not in the requirements of production
+    from typing import NoReturn
+
+    def assert_never(x: NoReturn, /) -> NoReturn:
+        assert False, "Expected code to be unreachable"
+
 
 from .models import (
     Context,
@@ -10,11 +20,12 @@ from .models import (
     TypeVariable,
 )
 
-T = TypeVar("T", MonoType, PolyType, Context, "Substitution")
-
 
 class InferenceError(TypeError):
     pass
+
+
+T = TypeVar("T", TypeApplication, TypeQuantifier, Context, "Substitution")
 
 
 class Substitution(dict[str, Union[MonoType, PolyType, Context, "Substitution"]]):
@@ -23,7 +34,15 @@ class Substitution(dict[str, Union[MonoType, PolyType, Context, "Substitution"]]
     a Mapping of names alpha to types tau
     """
 
+    @overload
+    def __call__(self, value: TypeVariable) -> MonoType:
+        ...
+
+    @overload
     def __call__(self, value: T) -> T:
+        ...
+
+    def __call__(self, value):
         "apply substitution"
         match value:
             case Context():
@@ -43,8 +62,8 @@ class Substitution(dict[str, Union[MonoType, PolyType, Context, "Substitution"]]
                         ((a, self(t)) for a, t in s2.items()),
                     )
                 )
-
-        raise TypeError(f"Can't apply substitution {self} to {value}")
+            case _ as unreachable:
+                assert_never(unreachable)
 
 
 def unify(a: MonoType, b: MonoType) -> Substitution:
@@ -111,9 +130,8 @@ def free_variables(value: Context | PolyType) -> set[str]:
         case TypeQuantifier(a, s):
             # alpha is bound in sigma
             return free_variables(s) - {a}
-        case _:
-            # pragma: no cover
-            raise TypeError(f"{value} must be a Context or PolyType")
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def generalise(context: Context, t: MonoType) -> PolyType:
@@ -148,8 +166,8 @@ def instantiate(
         case TypeQuantifier(a, s):
             mapping[a] = next(type_vars)
             return inst(s, mapping)
-
-    raise TypeError(f"Can't instantiate type {t}")
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 def f(*taus: MonoType) -> TypeApplication:
@@ -159,7 +177,8 @@ def f(*taus: MonoType) -> TypeApplication:
             return TypeApplication("->", (t1, t2))
         case [t1, t2, t3, *rest]:
             return TypeApplication("->", (t1, f(t2, t3, *rest)))
-    raise ValueError("Missing arguments, need to pass at least 2 taus")
+        case _:
+            raise ValueError("Missing arguments, need to pass at least 2 MonoTypes")
 
 
 def array(t: MonoType) -> TypeApplication:
