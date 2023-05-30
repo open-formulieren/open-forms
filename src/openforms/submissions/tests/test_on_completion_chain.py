@@ -1,4 +1,5 @@
 import uuid
+from unittest.mock import patch
 
 from django.core import mail
 from django.test import TestCase, override_settings
@@ -51,8 +52,8 @@ class OnCompletionTests(TestCase):
                     self.fail("Invalid task ID returned")
 
         self.assertEqual(
-            len(submission.on_completion_task_ids), 5
-        )  # 5 tasks in the chain
+            len(submission.on_completion_task_ids), 6
+        )  # 6 tasks in the chain
         # registration result reference
         self.assertTrue(submission.public_registration_reference.startswith("OF-"))
         self.assertTrue(SubmissionReport.objects.filter(submission=submission).exists())
@@ -75,3 +76,98 @@ class OnCompletionTests(TestCase):
 
         with self.assertRaises(AppointmentRegistrationFailed):
             on_completion(submission.id)
+
+    def test_cosign_required_but_not_completed_skips_registration(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                    "validate": {"required": True},
+                },
+            ],
+            submitted_data={"cosign": "test@test.nl"},
+            completed=True,
+            cosign_complete=False,
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["test@registration.nl"]},
+        )
+
+        with patch(
+            "openforms.registrations.contrib.email.plugin.EmailRegistration.register_submission"
+        ) as mock_registration:
+            on_completion(submission.id)
+
+        mock_registration.assert_not_called()
+
+    def test_cosign_not_required_and_not_filled_in_proceeds_with_registration(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                    "validate": {"required": False},
+                },
+            ],
+            submitted_data={"cosign": ""},
+            completed=True,
+            cosign_complete=False,
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["test@registration.nl"]},
+        )
+
+        with patch(
+            "openforms.registrations.contrib.email.plugin.EmailRegistration.register_submission"
+        ) as mock_registration:
+            on_completion(submission.id)
+
+        mock_registration.assert_called_once()
+
+    def test_no_cosign_proceeds_with_registration(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "notCosign",
+                    "type": "textfield",
+                    "label": "Not a cosign component",
+                },
+            ],
+            submitted_data={"notCosign": "Hello"},
+            completed=True,
+            cosign_complete=False,
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["test@registration.nl"]},
+        )
+
+        with patch(
+            "openforms.registrations.contrib.email.plugin.EmailRegistration.register_submission"
+        ) as mock_registration:
+            on_completion(submission.id)
+
+        mock_registration.assert_called_once()
+
+    def test_cosign_not_required_but_filled_in_does_not_proceed_with_registration(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                    "validate": {"required": False},
+                },
+            ],
+            submitted_data={"cosign": "test@test.nl"},
+            completed=True,
+            cosign_complete=False,
+            form__registration_backend="email",
+            form__registration_backend_options={"to_emails": ["test@registration.nl"]},
+        )
+
+        with patch(
+            "openforms.registrations.contrib.email.plugin.EmailRegistration.register_submission"
+        ) as mock_registration:
+            on_completion(submission.id)
+
+        mock_registration.assert_not_called()

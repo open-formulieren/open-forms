@@ -563,3 +563,50 @@ class SubmissionTests(TestCase):
             submission._form_login_required = True
 
             self.assertTrue(submission.form_login_required)
+
+    def test_get_cosigner_email(self):
+        submission1 = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Co-signer Email",
+                },
+            ],
+            submitted_data={"cosign": "test@test.nl"},
+        )
+        submission2 = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "fieldset",
+                    "type": "fieldset",
+                    "components": [
+                        {
+                            "key": "cosign",
+                            "type": "cosign",
+                            "label": "Co-signer Email",
+                        }
+                    ],
+                },
+            ],
+            submitted_data={"cosign": "test@test.nl"},
+        )
+        submission3 = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "nested.cosign",
+                    "type": "cosign",
+                    "label": "Co-signer Email",
+                },
+            ],
+            submitted_data={"nested": {"cosign": "test@test.nl"}},
+        )
+
+        with self.subTest("simple"):
+            self.assertEqual(submission1.cosigner_email, "test@test.nl")
+
+        with self.subTest("in fieldset"):
+            self.assertEqual(submission2.cosigner_email, "test@test.nl")
+
+        with self.subTest("nested"):
+            self.assertEqual(submission3.cosigner_email, "test@test.nl")

@@ -49,3 +49,7 @@ class Component(TypedDict):
     hidden: bool
     defaultValue: JSONValue
     prefill: PrefillConfiguration
+
+
+class CosignComponent(Component):
+    authPlugin: str

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Union
 
 from django.conf import settings
 from django.db import models, transaction
+from django.utils.functional import cached_property
 from django.utils.translation import get_language, gettext_lazy as _
 
 import elasticapm
@@ -202,6 +203,11 @@ class Submission(models.Model):
             "Note that this reference is displayed to the end-user and used as payment "
             "reference!"
         ),
+    )
+    cosign_complete = models.BooleanField(
+        _("cosign complete"),
+        default=False,
+        help_text=_("Indicates whether the submission has been cosigned."),
     )
 
     confirmation_email_sent = models.BooleanField(
@@ -676,3 +682,27 @@ class Submission(models.Model):
                 variable.key: variable.value for variable in prefill_vars
             }
         return self._prefilled_data
+
+    @cached_property
+    def cosigner_email(self) -> str | None:
+        from openforms.formio.service import iterate_data_with_components
+
+        for form_step in self.form.formstep_set.select_related("form_definition"):
+            for component_with_data_item in iterate_data_with_components(
+                form_step.form_definition.configuration, self.data
+            ):
+                if component_with_data_item.component["type"] == "cosign":
+                    return glom(
+                        self.data, component_with_data_item.data_path, default=None
+                    )
+
+    @property
+    def waiting_on_cosign(self) -> bool:
+        if self.cosign_complete:
+            return False
+
+        # Cosign not complete, but required or the component was filled in the form
+        if self.form.cosigning_required or self.cosigner_email:
+            return True
+
+        return False

@@ -18,6 +18,7 @@ from csp_post_processor.fields import CSPPostProcessedWYSIWYGField
 from openforms.authentication.fields import AuthenticationBackendMultiSelectField
 from openforms.authentication.registry import register as authentication_register
 from openforms.data_removal.constants import RemovalMethods
+from openforms.formio.typing import CosignComponent
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
@@ -344,6 +345,16 @@ class Form(models.Model):
     get_authentication_backends_display.short_description = _(
         "authentication backend(s)"
     )
+
+    def get_cosign_component(self) -> CosignComponent | None:
+        for component in self.iter_components():
+            if component["type"] == "cosign":
+                return component
+
+    @property
+    def cosigning_required(self) -> bool:
+        cosign_component = self.get_cosign_component()
+        return cosign_component and cosign_component.get("validate", {}).get("required")
 
     @property
     def login_required(self) -> bool:

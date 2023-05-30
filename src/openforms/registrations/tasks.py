@@ -94,13 +94,23 @@ def register_submission(submission_id: int) -> None:
     Submission registration is only executed for "completed" forms, and is delegated
     to the underlying registration backend (if set).
     """
-    submission = Submission.objects.select_related("auth_info").get(id=submission_id)
+    submission = Submission.objects.select_related("auth_info", "form").get(
+        id=submission_id
+    )
     is_retrying = submission.needs_on_completion_retry
 
     logger.debug("Register submission '%s'", submission)
 
     if submission.registration_status == RegistrationStatuses.success:
         # if it's already successfully registered, do not overwrite that.
+        return
+
+    if submission.waiting_on_cosign:
+        logger.debug(
+            "Skipping registration for submission '%s' as it hasn't been co-signed yet.",
+            submission,
+        )
+        logevent.skipped_registration_cosign_required(submission)
         return
 
     config = GlobalConfiguration.get_solo()
