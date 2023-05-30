@@ -17,8 +17,7 @@ __all__ = ["send_email_cosigner"]
 def send_email_cosigner(submission_id: int) -> None:
     submission = Submission.objects.get(id=submission_id)
 
-    recipient = submission.get_cosigner_email()
-    if not recipient:
+    if not (recipient := submission.cosigner_email):
         logger.warning(
             "No co-signer email found in the form. Skipping co-sign email for submission %d.",
             submission.id,
@@ -47,7 +46,7 @@ def send_email_cosigner(submission_id: int) -> None:
             text_message=content,
         )
     except Exception:
-        logevent.cosigner_email_failure(submission)
+        logevent.cosigner_email_queuing_failure(submission)
         raise
 
-    logevent.cosigner_email_success(submission)
+    logevent.cosigner_email_queuing_success(submission)

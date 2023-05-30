@@ -911,3 +911,40 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         expected_text = inspect.cleandoc("Test:").lstrip()
 
         self.assertEquals(expected_text, text)
+
+    def test_confirmation_email_cosign_completed(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign",
+                    "validate": {"required": True},
+                },
+                {
+                    "key": "mainPersonEmail",
+                    "type": "email",
+                    "confirmationRecipient": True,
+                },
+            ],
+            {"cosign": "cosign@test.nl", "mainPersonEmail": "main@test.nl"},
+            registration_success=True,
+            completed=True,
+            cosign_complete=True,
+        )
+        template = inspect.cleandoc(
+            "Test: {% if waiting_on_cosign %}This form will not be processed until it has been co-signed. A co-sign request was sent to {{ cosigner_email }}.{% endif %}"
+        )
+        ConfirmationEmailTemplateFactory.create(
+            form=submission.form, subject="Confirmation", content=template
+        )
+
+        send_confirmation_email(submission)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        text = message.body.rstrip()
+        expected_text = inspect.cleandoc("Test:").lstrip()
+
+        self.assertEquals(expected_text, text)

@@ -1,4 +1,4 @@
 {% load i18n %}
 {% blocktrans trimmed with lead=log.fmt_lead %}
-   {{ lead }}: Successfully sent email to co-signer.
+   {{ lead }}: Could not queue the email for the co-signer.
 {% endblocktrans %}

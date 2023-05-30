@@ -2,11 +2,11 @@ import logging
 import uuid
 from collections import OrderedDict
 from dataclasses import dataclass
-from functools import lru_cache
 from typing import TYPE_CHECKING, Dict, List, Mapping, Optional, Union
 
 from django.conf import settings
 from django.db import models, transaction
+from django.utils.functional import cached_property
 from django.utils.translation import get_language, gettext_lazy as _
 
 import elasticapm
@@ -16,7 +16,6 @@ from glom import glom
 
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.datastructures import FormioConfigurationWrapper
-from openforms.formio.utils import iterate_data_with_components
 from openforms.forms.models import FormStep
 from openforms.payments.constants import PaymentStatus
 from openforms.template import openforms_backend, render_from_string
@@ -684,19 +683,18 @@ class Submission(models.Model):
             }
         return self._prefilled_data
 
-    @lru_cache
-    def get_cosigner_email(self) -> str | None:
+    @cached_property
+    def cosigner_email(self) -> str | None:
+        from openforms.formio.service import iterate_data_with_components
+
         for form_step in self.form.formstep_set.select_related("form_definition"):
-            for (
-                component,
-                upload_info,
-                data_path,
-                configuration_path,
-            ) in iterate_data_with_components(
+            for component_with_data_item in iterate_data_with_components(
                 form_step.form_definition.configuration, self.data
             ):
-                if component["type"] == "cosign":
-                    return glom(self.data, data_path, default=None)
+                if component_with_data_item.component["type"] == "cosign":
+                    return glom(
+                        self.data, component_with_data_item.data_path, default=None
+                    )
 
     @property
     def waiting_on_cosign(self) -> bool:
@@ -704,7 +702,7 @@ class Submission(models.Model):
             return False
 
         # Cosign not complete, but required or the component was filled in the form
-        if self.form.cosigning_required or self.get_cosigner_email():
+        if self.form.cosigning_required or self.cosigner_email:
             return True
 
         return False

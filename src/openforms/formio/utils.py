@@ -1,13 +1,14 @@
 import logging
+from dataclasses import dataclass
 from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 import elasticapm
 from glom import Coalesce, Path, glom
 
+from openforms.typing import DataMapping, JSONObject
 from openforms.utils.glom import _glom_path_to_str
 from openforms.variables.constants import DEFAULT_INITIAL_VALUE, FormVariableDataTypes
 
-from ..typing import DataMapping, JSONObject
 from .constants import COMPONENT_DATATYPES
 from .typing import Component
 
@@ -341,13 +342,21 @@ def is_visible_in_frontend(component: Component, data: DataMapping) -> bool:
     )
 
 
+@dataclass
+class ComponentWithDataItem:
+    component: JSONObject
+    upload_info: JSONObject
+    data_path: str
+    configuration_path: str
+
+
 def iterate_data_with_components(
     configuration: JSONObject,
     data: JSONObject,
     data_path: Path = Path(),
     configuration_path: str = "components",
     filter_types: list[str] = None,
-) -> tuple[JSONObject, JSONObject, str, str] | None:
+) -> Iterator[ComponentWithDataItem] | None:
     """
     Iterate through a configuration and return a tuple with the component JSON, its value in the submission data
     and the path within the submission data.
@@ -368,7 +377,7 @@ def iterate_data_with_components(
         {"surname": "Doe", "pets": [{"name": "Qui"}, {"name": "Quo"}, {"name": "Qua"}] }
 
     For the "Qui" item of the repeating group this function would yield:
-    ``({"key": "name", "type": "textfield"}, "Qui", "pets.0.name")``.
+    ``ComponentWithDataItem({"key": "name", "type": "textfield"}, "Qui", "pets", "pets.0.name")``.
     """
     if configuration.get("type") == "columns":
         for index, column in enumerate(configuration["columns"]):
@@ -404,6 +413,9 @@ def iterate_data_with_components(
         component_data_path = Path(data_path, Path.from_text(configuration["key"]))
         component_data = glom(data, component_data_path, default=None)
         if component_data is not None:
-            yield configuration, component_data, _glom_path_to_str(
-                component_data_path
-            ), configuration_path
+            yield ComponentWithDataItem(
+                configuration,
+                component_data,
+                _glom_path_to_str(component_data_path),
+                configuration_path,
+            )

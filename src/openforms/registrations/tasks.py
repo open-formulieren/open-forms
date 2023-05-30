@@ -110,6 +110,7 @@ def register_submission(submission_id: int) -> None:
             "Skipping registration for submission '%s' as it hasn't been co-signed yet.",
             submission,
         )
+        logevent.skipped_registration_cosign_required(submission)
         return
 
     config = GlobalConfiguration.get_solo()

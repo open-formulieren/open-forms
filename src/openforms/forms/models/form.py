@@ -18,13 +18,13 @@ from csp_post_processor.fields import CSPPostProcessedWYSIWYGField
 from openforms.authentication.fields import AuthenticationBackendMultiSelectField
 from openforms.authentication.registry import register as authentication_register
 from openforms.data_removal.constants import RemovalMethods
+from openforms.formio.typing import CosignComponent
 from openforms.payments.fields import PaymentBackendChoiceField
 from openforms.payments.registry import register as payment_register
 from openforms.plugins.constants import UNIQUE_ID_MAX_LENGTH
 from openforms.registrations.fields import RegistrationBackendChoiceField
 from openforms.registrations.registry import register as registration_register
 from openforms.template.validators import DjangoTemplateValidator
-from openforms.typing import JSONObject
 from openforms.utils.files import DeleteFileFieldFilesMixin, DeleteFilesQuerySetMixin
 from openforms.variables.constants import FormVariableSources
 
@@ -346,7 +346,7 @@ class Form(models.Model):
         "authentication backend(s)"
     )
 
-    def get_cosign_component(self) -> JSONObject | None:
+    def get_cosign_component(self) -> CosignComponent | None:
         for component in self.iter_components():
             if component["type"] == "cosign":
                 return component

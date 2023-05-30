@@ -22,8 +22,8 @@ from openforms.api.exceptions import RequestEntityTooLarge
 from openforms.conf.utils import Filesize
 from openforms.config.models import GlobalConfiguration
 from openforms.formio.api.validators import MimeTypeValidator
+from openforms.formio.service import iterate_data_with_components
 from openforms.formio.typing import Component
-from openforms.formio.utils import iterate_data_with_components
 from openforms.submissions.models import (
     Submission,
     SubmissionFileAttachment,
@@ -304,15 +304,12 @@ def resolve_uploads_from_data(configuration: JSONObject, data: dict) -> dict:
     """
     result = dict()
 
-    for (
-        component,
-        upload_info,
-        data_path,
-        configuration_path,
-    ) in iterate_data_with_components(configuration, data, filter_types={"file"}):
+    for component_with_data_item in iterate_data_with_components(
+        configuration, data, filter_types={"file"}
+    ):
         uploads = list()
-        for info in upload_info:
-            # lets be careful with malformed user data
+        for info in component_with_data_item.upload_info:
+            # let's be careful with malformed user data
             if not isinstance(info, dict) or not isinstance(info.get("url"), str):
                 continue
 
@@ -321,7 +318,11 @@ def resolve_uploads_from_data(configuration: JSONObject, data: dict) -> dict:
                 uploads.append(upload)
 
         if uploads:
-            result[data_path] = (component, uploads, configuration_path)
+            result[component_with_data_item.data_path] = (
+                component_with_data_item.component,
+                uploads,
+                component_with_data_item.configuration_path,
+            )
 
     return result
 

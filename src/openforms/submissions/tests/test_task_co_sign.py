@@ -66,7 +66,7 @@ class OnCompletionTests(TestCase):
         mock_email.assert_called_once()
         self.assertEqual(
             TimelineLogProxy.objects.filter(
-                template="logging/events/cosigner_email_failure.txt"
+                template="logging/events/cosigner_email_queuing_failure.txt"
             ).count(),
             1,
         )
@@ -87,7 +87,7 @@ class OnCompletionTests(TestCase):
 
         self.assertEqual(
             TimelineLogProxy.objects.filter(
-                template="logging/events/cosigner_email_success.txt"
+                template="logging/events/cosigner_email_queuing_success.txt"
             ).count(),
             1,
         )

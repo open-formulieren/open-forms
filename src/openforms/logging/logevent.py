@@ -647,15 +647,22 @@ def bulk_forms_imported(user: "User", failed_files: List[Tuple[str, str]]):
 # - - -
 
 
-def cosigner_email_failure(submission: "Submission"):
+def cosigner_email_queuing_failure(submission: "Submission"):
     _create_log(
         submission,
-        "cosigner_email_failure",
+        "cosigner_email_queuing_failure",
     )
 
 
-def cosigner_email_success(submission: "Submission"):
+def cosigner_email_queuing_success(submission: "Submission"):
     _create_log(
         submission,
-        "cosigner_email_success",
+        "cosigner_email_queuing_success",
+    )
+
+
+def skipped_registration_cosign_required(submission: "Submission"):
+    _create_log(
+        submission,
+        "skipped_registration_cosign_required",
     )
