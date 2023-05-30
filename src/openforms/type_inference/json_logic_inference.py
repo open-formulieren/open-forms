@@ -1,11 +1,13 @@
 from typing import Literal, Mapping, Sequence
 
 from json_logic.meta import expressions
+from typing_extensions import assert_never
 
-from openforms.typing import JSONObject, JSONPrimitive
+from openforms.typing import JSONObject, JSONPrimitive, JSONValue
 
 from . import M, W
 from .models import (
+    Abstraction,
     Application,
     Context,
     Expression,
@@ -23,12 +25,7 @@ from .utils import array, either, f, gen_type_vars
 AnyJSONObject = JSONObject | list[expressions.JSON] | dict[str, expressions.JSON] | None
 
 # Operator Types
-JsonLogicDataAccessOperator = Literal[
-    "var",
-    # TODO record types
-    # "missing",
-    # "missing_some",
-]
+JsonLogicDataAccessOperator = Literal["var", "missing", "missing_some"]
 JsonLogicArithmaticOperator = Literal["+", "-", "*", "/", "%"]
 JsonLogicLogicOperator = Literal["if", "==", "!=", "===", "!==", "!", "!!", "or", "and"]
 JsonLogicNumericOperator = Literal[">", ">=", "<", "<=", "max", "min"]
@@ -76,12 +73,12 @@ DEFAULT_CONTEXT = Context(
         "null": Null,
         # type constructors
         "[]": TypeQuantifier("a", array(A)),
+        "cons": TypeQuantifier("a", f(A, array(A), array(A))),
         "Either": TypeQuantifier("a", TypeQuantifier("b", f(A, B, either(A, B)))),
         # Accessing Data
         # Each "var" should have a TypeVariable in the Context and a Variable in the Expression
-        # TODO record types
-        # "missing": f(array(String), record(String, Any?), array(String)),
-        # "missing_some": f(Number, array(String), array(String)
+        "missing": f(array(String), array(String)),
+        "missing_some": f(Number, array(String), array(String)),
         # Logic and Boolean Operations
         "if": TypeQuantifier("a", TypeQuantifier("b", f(Bool, A, B, either(A, B)))),
         "==": TypeQuantifier("a", TypeQuantifier("b", f(A, B, Bool))),
@@ -99,8 +96,9 @@ DEFAULT_CONTEXT = Context(
         "<=": f(Number, Number, Bool),
         "3-ary <": f(Number, Number, Number, Bool),
         "3-ary <=": f(Number, Number, Number, Bool),
-        "max": f(array(A), A),
-        "min": f(array(A), A),
+        # TODO min and max of [] returns null
+        "max": f(array(Number), Number),
+        "min": f(array(Number), Number),
         # Arithmatic
         "+": f(Number, Number, Number),
         "-": f(Number, Number, Number),
@@ -125,6 +123,7 @@ DEFAULT_CONTEXT = Context(
         "none": TypeQuantifier("a", f(array(A), f(A, Bool), Bool)),
         "some": TypeQuantifier("a", f(array(A), f(A, Bool), Bool)),
         # TODO: this doesn't cast everything to array
+        # "merge": TypeQuantifier("a", f(array(either(A, array(A))), array(A))),
         "merge": TypeQuantifier("a", f(array(array(A)), array(A))),
         "in": TypeQuantifier("a", f(A, array(A), Bool)),
         # String Operations
@@ -132,19 +131,20 @@ DEFAULT_CONTEXT = Context(
         # "in": f(String, String, Bool),
         "cat": f(array(String), String),
         "substr": f(String, Number, String),
-        # TODO: overload with sum type encoding
-        # "substr": f(String, Number, Number, String),
+        "3-ary substr": f(String, Number, Number, String),
         # Miscellaneous
         "log": TypeQuantifier("a", f(A, A)),
     }
 )
 
 
-def apply(*expressions: Expression) -> Application:
+def apply(*expressions: Expression, right_associative=False) -> Application:
     """A helper function to create a Application Expression with arbitrary number of arguments."""
     match expressions:
         case [e1, e2]:
             return Application(e1, e2)
+        case [*rest, e1, e2, e3] if right_associative:
+            return apply(*rest, e1, Application(e2, e3), right_associative=True)
         case [e1, e2, e3, *rest]:
             return apply(Application(e1, e2), e3, *rest)
     raise ValueError("Need to pass at least 2 expressions")
@@ -152,10 +152,41 @@ def apply(*expressions: Expression) -> Application:
 
 def parse(json_logic_expression: AnyJSONObject) -> tuple[Context, Expression]:
     normal_form = expressions.JSONLogicExpression.normalize(json_logic_expression)
-    if not isinstance(normal_form, dict):
-        raise NotImplementedError("Syntactic sugar not implemented yet")  # TODO
-    operator, params = expressions.destructure(normal_form)
     context = Context()
+
+    def parse_param(param: JSONValue) -> Expression:
+        if isinstance(param, bool):
+            # "false" and "true" exist in the DEFAULT_CONTEXT
+            return Variable(str(param).lower())
+        elif isinstance(param, (int, float)):
+            return NumberLiteral(value=param)
+        elif isinstance(param, str):
+            return StringLiteral(value=param)
+        elif param is None:
+            # "null" exists in the DEFAULT_CONTEXT
+            return Variable("null")
+        elif isinstance(param, dict):
+            # nested expression
+            c, exp = parse(param)
+            context.update(c)
+            return exp
+        elif isinstance(param, list):
+            if not len(param):
+                return Variable("[]")
+            # arrays are linked lists of cons cells
+            # [1, 2 ,3] === cons 1 (cons 2 ( cons 3 []))
+            return apply(
+                *(apply(Variable("cons"), parse_param(p)) for p in param),
+                Variable("[]"),
+                right_associative=True,
+            )
+        else:
+            assert_never(param)  # pragma: no cover
+
+    if not isinstance(normal_form, dict):
+        return context, parse_param(normal_form)
+
+    operator, params = expressions.destructure(normal_form)
 
     if operator == "var":
         assert isinstance(params[0], str)
@@ -164,7 +195,7 @@ def parse(json_logic_expression: AnyJSONObject) -> tuple[Context, Expression]:
             Context({var: TypeVariable(var)}),
             Variable(var),
         )
-    elif operator in ("<", "<=") and len(params) == 3:
+    elif operator in ("<", "<=", "substr") and len(params) == 3:
         operator = f"3-ary {operator}"
     elif operator in ("-", "+") and len(params) == 1:
         operator = f"1-ary {operator}"
@@ -172,29 +203,36 @@ def parse(json_logic_expression: AnyJSONObject) -> tuple[Context, Expression]:
         operator = f"{arity}-ary {operator}"
         # add n-ary function to the context
         context[operator] = f(*((arity + 1) * (Number,)))
+    elif operator in ("map", "filter", "all", "some", "none"):
+        array_exp = parse_param(params[0])
+        e2 = parse_param(params[1])
+        return context, apply(
+            Variable(operator),
+            array_exp,
+            Abstraction(x="var: ", e=e2),  # lambda 'var: ""': e2
+        )
+    elif operator == "reduce":
+        array_exp = parse_param(params[0])
+        e2 = parse_param(params[1])
+        initial_accum = parse_param(params[2])
+        return context, apply(
+            Variable(operator),
+            array_exp,
+            Abstraction(
+                "var: accumulator", Abstraction(x="var: current", e=e2)
+            ),  # lambda acc, curr: e2
+            initial_accum,
+        )
+    elif operator in ("cat", "merge", "missing", "min", "max"):
+        # pass all params for n-adic functions as a single array
+        return context, apply(Variable(operator), parse_param(params))
 
-    args: list[Expression] = []
-    for param in params:
-        if isinstance(param, bool):
-            # "false" and "true" exist in the DEFAULT_CONTEXT
-            args.append(Variable(str(param).lower()))
-        elif isinstance(param, (int, float)):
-            args.append(NumberLiteral(value=param))
-        elif isinstance(param, str):
-            args.append(StringLiteral(value=param))
-        elif param is None:
-            # "null" exists in the DEFAULT_CONTEXT
-            args.append(Variable("null"))
-        else:
-            c, exp = parse(param)
-            context.update(c)
-            args.append(exp)
-
-    return context, apply(Variable(operator), *args)
+    return context, apply(Variable(operator), *[parse_param(param) for param in params])
 
 
 def type_check(
     json_logic_expression: JSONObject,
+    /,
     using: Literal["M", "W"] = "W",
 ) -> tuple[Mapping[str, MonoType], MonoType]:
     "Type check a json_logic_expression using Algoritm"
@@ -202,7 +240,7 @@ def type_check(
     context, expression = parse(json_logic_expression)
 
     if using == "M":
-        t = next(type_vars)
+        t: MonoType = next(type_vars)
         s = M(
             Context(**DEFAULT_CONTEXT, **context),
             expression,
@@ -215,7 +253,6 @@ def type_check(
             expression,
             type_vars,
         )
-
     return (
         {
             (k[5:] if k.startswith("var: ") else k): v

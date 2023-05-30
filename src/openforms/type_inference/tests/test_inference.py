@@ -1,7 +1,7 @@
 from itertools import count
 from string import ascii_letters, digits
 from typing import Literal, Optional, Sequence
-from unittest import TestCase
+from unittest import TestCase, skip
 
 from hypothesis import given, settings, strategies as st
 
@@ -278,3 +278,136 @@ class JsonLogicInferenceTests(TestCase):
         s, t = type_check(conditional_exp)
 
         self.assertEqual(str(s[condition["var"]]), "Bool")
+
+    def test_map_example(self):
+        expr = {"map": [{"var": "integers"}, {"*": [{"var": ""}, 2]}]}
+        # data = {"integers": [1,2,3,4,5]}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "[Number]")
+        self.assertEqual(str(s["integers"]), "[Number]")
+
+    def test_map_over_array_of_literals(self):
+        expr = {"map": [[1, 2, 3], {"*": [{"var": ""}, 2]}]}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "[Number]")
+
+    def test_map_over_empty_array_literal(self):
+        expr = {"map": [[], {"*": [{"var": ""}, 2]}]}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "[Number]")
+
+    def test_filter_example(self):
+        expr = {"filter": [{"var": "integers"}, {"!!": {"%": [{"var": ""}, 2]}}]}
+        # data = {"integers": [1,2,3,4,5]}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "[Number]")
+        self.assertEqual(str(s["integers"]), "[Number]")
+
+    def test_reduce_example(self):
+        expr = {
+            "reduce": [
+                {"var": "integers"},
+                {"+": [{"var": "current"}, {"var": "accumulator"}]},
+                0,
+            ]
+        }
+        # data = {"integers": [1,2,3,4,5]}
+
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "Number")
+        self.assertEqual(str(s["integers"]), "[Number]")
+
+    def test_all_example(self):
+        expr = {"all": [[1, 2, 3], {">": [{"var": ""}, 0]}]}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "Bool")
+
+    def test_some_example(self):
+        # TODO nested some pie filling example
+        expr = {"some": [[1, 2, 3], {">": [{"var": ""}, 0]}]}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "Bool")
+
+    def test_none_example(self):
+        expr = {"none": [[1, 2, 3], {">": [{"var": ""}, 0]}]}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "Bool")
+
+    def test_merge_example(self):
+        expr = {"merge": [[1, 2], [3, 4]]}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "[Number]")
+
+    def test_in_array_example(self):
+        expr = {"in": ["Ringo", ["John", "Paul", "George", "Ringo"]]}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "Bool")
+
+    def test_cat_example(self):
+        expr = {"cat": ["I love ", {"var": "filling"}, " pie"]}
+        # data = {"filling":"apple", "temp":110}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "String")
+        self.assertEqual(str(s["filling"]), "String")
+
+    def test_substr_example(self):
+        expr = {"substr": ["jsonlogic", -5]}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "String")
+
+    def test_ternary_substr_example(self):
+        expr = {"substr": ["jsonlogic", 4, -2]}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "String")
+
+    def test_missing_example(self):
+        expr = {"missing": ["a", "b"]}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "[String]")
+
+    @skip("TODO: merge doens't cast yet")
+    def test_merge_casts_to_array(self):
+        expr = {"merge": [1, 2, [3, 4]]}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "[Number]")
+
+    @skip("TODO: merge doens't cast yet")
+    def test_missing_merge_example(self):
+        expr = {
+            "missing": {
+                "merge": ["vin", {"if": [{"var": "financing"}, ["apr", "term"], []]}]
+            }
+        }
+
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "[String]")
+        self.assertEqual(str(s["financing"]), "Bool")
+
+    def test_missing_some_example(self):
+        expr = {"missing_some": [1, ["a", "b", "c"]]}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "[String]")
+
+    def test_max_example(self):
+        expr = {"max": [1, 2, 3]}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "Number")
+
+        # TODO
+        # {"max": []} == null
+        #
+        # Is this achievable?
+        # expr = {"max": []}
+        # s, t = type_check(expr)
+        # self.assertEqual(str(t), "Null")
+        #
+        # And this?
+        # expr = {"max": {"var": "foo"}}
+        # s, t = type_check(expr)
+        # self.assertEqual(str(t), "Either Number Null")
+        # self.assertEqual(str(s["foo"]), "[Number]")
+
+    def test_min_example(self):
+        expr = {"min": [1, 2, 3]}
+        s, t = type_check(expr)
+        self.assertEqual(str(t), "Number")

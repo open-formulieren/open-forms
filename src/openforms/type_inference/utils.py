@@ -13,6 +13,10 @@ from .models import (
 T = TypeVar("T", MonoType, PolyType, Context, "Substitution")
 
 
+class InferenceError(TypeError):
+    pass
+
+
 class Substitution(dict[str, Union[MonoType, PolyType, Context, "Substitution"]]):
     """S = { αᵢ ↦ τᵢ }
 
@@ -65,11 +69,11 @@ def unify(a: MonoType, b: MonoType) -> Substitution:
         # TODO: Either a b should unify with Either b a
         case TypeApplication(ca, ta), TypeApplication(cb, tb):
             if ca != cb:
-                raise TypeError(
+                raise InferenceError(
                     f"Can't unify types {a} and {b}: different type functions"
                 )
             if len(ta) != len(tb):
-                raise TypeError(
+                raise InferenceError(
                     f"Can't unify types {a} and {b}: different number of arguments"
                 )
             s = Substitution()
@@ -79,7 +83,7 @@ def unify(a: MonoType, b: MonoType) -> Substitution:
 
     if isinstance(a, TypeVariable):
         if a in b:
-            raise TypeError(
+            raise InferenceError(
                 f"Can't unify: {a} occurs in {b} so unifying would create infinite type"
             )
         return Substitution(**{a.alpha: b})
@@ -88,7 +92,7 @@ def unify(a: MonoType, b: MonoType) -> Substitution:
         # a is not a TypeVar b is -> flip
         return unify(b, a)
 
-    raise ValueError("Unify was unable to handle inputs {a} and {b}")
+    raise ValueError("Unify is unable to handle inputs {a} and {b}")
 
 
 def free_variables(value: Context | PolyType) -> set[str]:
@@ -108,7 +112,8 @@ def free_variables(value: Context | PolyType) -> set[str]:
             # alpha is bound in sigma
             return free_variables(s) - {a}
         case _:
-            raise TypeError("Unknown argument passed to free_variables")
+            # pragma: no cover
+            raise TypeError(f"{value} must be a Context or PolyType")
 
 
 def generalise(context: Context, t: MonoType) -> PolyType:
@@ -121,16 +126,16 @@ def generalise(context: Context, t: MonoType) -> PolyType:
 
 def gen_type_vars() -> Iterator[TypeVariable]:
     for i in count():
-        yield TypeVariable(alpha=f"[t{i}]")
+        yield TypeVariable(alpha=f"t{i}")
 
 
 def instantiate(
     t: PolyType,
     mapping: Optional[MutableMapping[str, TypeVariable]] = None,
-    gen_type_vars=gen_type_vars(),
+    type_vars: Iterator[TypeVariable] = gen_type_vars(),
 ) -> MonoType:
     def inst(t, m) -> MonoType:
-        return instantiate(t, m, gen_type_vars)
+        return instantiate(t, m, type_vars)
 
     if mapping is None:
         mapping = {}
@@ -141,7 +146,7 @@ def instantiate(
             # ignore because of https://github.com/python/mypy/issues/7509
             return TypeApplication(c, tuple(inst(t, mapping) for t in taus))  # type: ignore
         case TypeQuantifier(a, s):
-            mapping[a] = next(gen_type_vars)
+            mapping[a] = next(type_vars)
             return inst(s, mapping)
 
     raise TypeError(f"Can't instantiate type {t}")
@@ -155,10 +160,6 @@ def f(*taus: MonoType) -> TypeApplication:
         case [t1, t2, t3, *rest]:
             return TypeApplication("->", (t1, f(t2, t3, *rest)))
     raise ValueError("Missing arguments, need to pass at least 2 taus")
-
-
-def pt(t: MonoType) -> TypeQuantifier:
-    return TypeQuantifier("", t)
 
 
 def array(t: MonoType) -> TypeApplication:
