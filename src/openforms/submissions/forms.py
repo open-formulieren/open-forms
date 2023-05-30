@@ -18,23 +18,23 @@ class SearchSubmissionForCosignForm(forms.Form):
             }
         ),
     )
-    form_slug = forms.CharField(
-        label=_("form slug"),
-        help_text=_("The slug of the form to which the submission corresponds."),
-        required=True,
-        widget=forms.HiddenInput(),
-        disabled=True,
-    )
+
+    def __init__(self, instance, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.form = instance
 
     def clean(self):
-        if not Submission.objects.filter(
+        submission = Submission.objects.filter(
             public_registration_reference=self.cleaned_data["code"],
-            form__slug=self.initial["form_slug"],
+            form=self.form,
             cosign_complete=False,
-        ).exists():
+        ).first()
+        if not submission:
             raise ValidationError(
                 _(
-                    "Could not find submission corresponding to this code that requires co-signing"
+                    "Could not find a submission corresponding to this code that requires co-signing"
                 )
             )
+        self.cleaned_data["submission"] = submission
         return self.cleaned_data

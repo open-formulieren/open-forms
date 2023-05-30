@@ -17,12 +17,9 @@
         <div class="card__body">
             {% block card_body %}
                 <p class="body">
-                    <form method="post">{% csrf_token %}
+                    <form method="post" action=".">{% csrf_token %}
                         {% include "includes/forms/errorlist.html" with errors=form.non_field_errors only %}
 
-                        {% for hidden in form.hidden_fields %}
-                            {{ hidden }}
-                        {% endfor %}
                         {% include "includes/forms/field_wrapper.html" with field=form.code type='text' only %}
 
                         <div class="openforms-toolbar openforms-toolbar--reverse openforms-toolbar--bottom">
