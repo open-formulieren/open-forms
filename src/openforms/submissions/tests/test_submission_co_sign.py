@@ -4,7 +4,6 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from openforms.accounts.tests.factories import UserFactory
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
 
 from ..constants import SUBMISSIONS_SESSION_KEY
@@ -92,14 +91,15 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
     @override_settings(LANGUAGE_CODE="en")
     def test_submission_must_be_completed(self):
         submission = SubmissionFactory.from_components(
-            components_list=[{"type": "cosign", "key": "cosign"}],
+            components_list=[
+                {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
+            ],
             submitted_data={
                 "cosign": "test@example.com",
             },
             completed=False,
         )
 
-        user = UserFactory.create()
         session = self.client.session
         session[FORM_AUTH_SESSION_KEY] = {
             "plugin": "digid",
@@ -110,8 +110,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-cosign", kwargs={"uuid": submission.uuid})
-        self.client.force_authenticate(user=user)
-        response = self.client.post(endpoint)
+        response = self.client.post(endpoint, data={"privacy_policy_accepted": True})
 
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
@@ -134,7 +133,6 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
             completed=False,
         )
 
-        user = UserFactory.create()
         session = self.client.session
         session[FORM_AUTH_SESSION_KEY] = {
             "plugin": "NOT-digid",
@@ -145,12 +143,11 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-cosign", kwargs={"uuid": submission.uuid})
-        self.client.force_authenticate(user=user)
         response = self.client.post(endpoint)
 
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
-    def test_cosign_happyflow_calls_on_cosign_task(self):
+    def test_cosign_happy_flow_calls_on_cosign_task(self):
         submission = SubmissionFactory.from_components(
             components_list=[
                 {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
@@ -161,7 +158,6 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
             completed=True,
         )
 
-        user = UserFactory.create()
         session = self.client.session
         session[FORM_AUTH_SESSION_KEY] = {
             "plugin": "digid",
@@ -172,9 +168,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
         self._add_submission_to_session(submission)
         endpoint = reverse("api:submission-cosign", kwargs={"uuid": submission.uuid})
-        self.client.force_authenticate(user=user)
-
-        response = self.client.post(endpoint)
+        response = self.client.post(endpoint, data={"privacy_policy_accepted": True})
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
 
@@ -186,3 +180,38 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
         ids = session.get(SUBMISSIONS_SESSION_KEY, [])
 
         self.assertNotIn(submission.uuid, ids)
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_cosign_did_not_accept_privacy_policy(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
+            ],
+            submitted_data={
+                "cosign": "test@example.com",
+            },
+            completed=True,
+        )
+
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+        }
+        session.save()
+
+        self._add_submission_to_session(submission)
+        endpoint = reverse("api:submission-cosign", kwargs={"uuid": submission.uuid})
+
+        response = self.client.post(endpoint, data={"privacy_policy_accepted": False})
+
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
+
+        data = response.json()
+
+        self.assertEqual(data["invalidParams"][0]["name"], "privacyPolicyAccepted")
+        self.assertEqual(
+            data["invalidParams"][0]["reason"],
+            "Privacy policy must be accepted.",
+        )

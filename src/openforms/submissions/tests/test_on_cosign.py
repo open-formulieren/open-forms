@@ -32,6 +32,7 @@ class OnCosignTests(TestCase):
                 "mainEmail": "main@test.nl",
                 "cosignerEmail": "cosigner@test.nl",
             },
+            cosign_complete=True,
         )
         ConfirmationEmailTemplateFactory.create(
             form=submission.form,
@@ -68,6 +69,7 @@ class OnCosignTests(TestCase):
             },
             form__send_confirmation_email=True,
             completed=True,
+            cosign_complete=True,
             form__registration_backend="email",
             form__registration_backend_options={"to_emails": ["registration@test.nl"]},
             submitted_data={
