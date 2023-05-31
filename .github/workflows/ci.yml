@@ -354,6 +354,41 @@ jobs:
       target_env: ${{ matrix.target.env }}
       extensions: ${{ matrix.target.extensions }}
 
+  image_scan:
+    needs: docker_build
+    name: Scan 'all-extensions' image
+    runs-on: ubuntu-latest
+    # FIXME: Commented out the line below to test this PR.
+    # if: github.event_name == 'push' # Exclude PRs
+    steps:
+      - name: Derive version
+        id: vars
+        run: |
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # Strip "v" prefix from tag name (if present at all)
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+
+          # PRs result in version 'merge' -> transform that into 'latest'
+          [ "$VERSION" == "merge" ] && VERSION=latest
+
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+      - name: Download built image
+        uses: actions/download-artifact@v3
+        with:
+          name: docker-image-all-extensions-${{ steps.vars.outputs.version }}
+      - name: Scan for vulnerabilities
+        uses: crazy-max/ghaction-container-scan@v2
+        with:
+          tarball: image.tar
+          # Fail if one or more HIGH severities are found.
+          severity_threshold: HIGH
+          annotations: true
+
   oas-up-to-date:
     needs: tests
     name: Check for unexepected OAS changes
