@@ -9,7 +9,7 @@ FROM openformulieren/open-forms-sdk:${SDK_RELEASE} as sdk-image
 
 # Stage 1 - Backend build environment
 # includes compilers and build tooling to create the environment
-FROM python:3.10.9-slim-bullseye AS backend-build
+FROM python:3.10.11-slim-bullseye AS backend-build
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         pkg-config \
@@ -61,7 +61,7 @@ COPY ./src /app/src
 RUN npm run build
 
 # Stage 3 - Build docker image suitable for production
-FROM python:3.10.9-slim-bullseye
+FROM python:3.10.11-slim-bullseye
 
 # Stage 3.1 - Set up the needed production dependencies
 # install all the dependencies for GeoDjango
