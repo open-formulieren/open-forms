@@ -6122,7 +6122,14 @@ components:
         hideNonApplicableSteps:
           type: boolean
           readOnly: true
+        cosignLoginInfo:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
+          description: Info about the plugin to use for co-sign authentication.
       required:
+      - cosignLoginInfo
       - hideNonApplicableSteps
       - loginOptions
       - loginRequired
@@ -7464,6 +7471,12 @@ components:
         hideNonApplicableSteps:
           type: boolean
           readOnly: true
+        cosignLoginInfo:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
+          description: Info about the plugin to use for co-sign authentication.
     PatchedFormDefinition:
       type: object
       properties:
