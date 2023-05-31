@@ -2,12 +2,13 @@ import logging
 import uuid
 
 from django.contrib.auth.hashers import check_password as check_salted_hash
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
+from django.shortcuts import get_object_or_404
 from django.utils.crypto import constant_time_compare
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import RedirectView
+from django.views.generic import FormView, RedirectView
 from django.views.generic.base import TemplateResponseMixin
 
 from furl import furl
@@ -15,10 +16,13 @@ from privates.views import PrivateMediaView
 from rest_framework.reverse import reverse
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
+from openforms.authentication.utils import is_authenticated_with_plugin
+from openforms.forms.models import Form
 from openforms.tokens import BaseTokenGenerator
 
 from .constants import RegistrationStatuses
 from .exceptions import FormDeactivated, FormMaintenance
+from .forms import SearchSubmissionForCosignForm
 from .models import Submission, SubmissionFileAttachment
 from .signals import submission_resumed
 from .tokens import submission_resume_token_generator
@@ -90,9 +94,8 @@ class ResumeFormMixin(TemplateResponseMixin):
         if not submission.is_authenticated:
             return False
 
-        is_auth_plugin_correct = (
-            submission.auth_info.plugin
-            == self.request.session[FORM_AUTH_SESSION_KEY]["plugin"]
+        is_auth_plugin_correct = is_authenticated_with_plugin(
+            self.request, submission.auth_info.plugin
         )
         is_auth_attribute_correct = (
             submission.auth_info.attribute
@@ -235,3 +238,37 @@ class SubmissionAttachmentDownloadView(LoginRequiredMixin, PrivateMediaView):
             "mimetype": submission_attachment.content_type,
         }
         return opts
+
+
+class SearchSubmissionForCosignFormView(UserPassesTestMixin, FormView):
+    form_class = SearchSubmissionForCosignForm
+    template_name = "submissions/find_submission_for_cosign.html"
+    raise_exception = True
+
+    form = None
+    submission = None
+
+    def test_func(self):
+        """
+        The user should have authenticated with the auth plugin specified on the form for the co-sign component
+        """
+        self.form = get_object_or_404(Form, slug=self.kwargs["form_slug"])
+        cosign_component = self.form.get_cosign_component()
+        expected_auth_plugin = cosign_component["authPlugin"]
+        return is_authenticated_with_plugin(self.request, expected_auth_plugin)
+
+    def get_form_kwargs(self):
+        super_kwargs = super().get_form_kwargs()
+        super_kwargs["instance"] = self.form
+        return super_kwargs
+
+    def form_valid(self, form):
+        self.submission = form.cleaned_data["submission"]
+        add_submmission_to_session(self.submission, self.request.session)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        cosign_page = self.submission.cleaned_form_url
+        cosign_page /= "cosign"
+        cosign_page /= "check"
+        return cosign_page.url

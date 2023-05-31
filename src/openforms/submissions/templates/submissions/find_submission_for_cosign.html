@@ -1,0 +1,35 @@
+{% extends 'ui/views/abstract/detail.html' %}
+{% load i18n %}
+
+{% block extra_css %}
+    {% include "forms/sdk_css_snippet.html" %}
+    {{ block.super }} {# Called after SDK CSS for custom design overrides #}
+{% endblock %}
+
+{% block card %}
+    <div class="card">
+        <header class="card__header">
+            <h1 class="title">
+                {% trans "Retrieve submission for co-signing" %}
+            </h1>
+        </header>
+
+        <div class="card__body">
+            {% block card_body %}
+                <p class="body">
+                    <form method="post" action=".">{% csrf_token %}
+                        {% include "includes/forms/errorlist.html" with errors=form.non_field_errors only %}
+
+                        {% include "includes/forms/field_wrapper.html" with field=form.code type='text' only %}
+
+                        <div class="openforms-toolbar openforms-toolbar--reverse openforms-toolbar--bottom">
+                            <button class="openforms-button openforms-button--primary" type="submit">
+                                <span class="openforms-button__label">{% trans "Submit" %}</span>
+                            </button>
+                        </div>
+                    </form>
+                </p>
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}

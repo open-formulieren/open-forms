@@ -1,8 +1,10 @@
 from typing import Literal, Optional, TypedDict
 
+from rest_framework.request import Request
+
 from openforms.submissions.models import Submission
 
-from .constants import AuthAttribute
+from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from .models import AuthInfo, RegistratorInfo
 
 
@@ -44,3 +46,10 @@ def store_registrator_details(
     RegistratorInfo.objects.update_or_create(
         submission=submission, defaults=registrator_auth
     )
+
+
+def is_authenticated_with_plugin(request: Request, expected_plugin: str) -> bool:
+    try:
+        return request.session[FORM_AUTH_SESSION_KEY]["plugin"] == expected_plugin
+    except KeyError:
+        return False
