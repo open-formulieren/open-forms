@@ -1,5 +1,7 @@
 from django.test import override_settings
+from django.urls import resolve
 
+from furl import furl
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -155,7 +157,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
             submitted_data={
                 "cosign": "test@example.com",
             },
-            completed=True,
+            registration_success=True,
         )
 
         session = self.client.session
@@ -171,6 +173,14 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
         response = self.client.post(endpoint, data={"privacy_policy_accepted": True})
 
         self.assertEqual(status.HTTP_200_OK, response.status_code)
+
+        data = response.json()
+
+        self.assertIn("downloadReportUrl", data)
+
+        match = resolve(furl(data["downloadReportUrl"]).path)
+
+        self.assertEqual(match.view_name, "api:submissions:download-submission")
 
         submission.refresh_from_db()
 
