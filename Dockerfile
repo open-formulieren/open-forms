@@ -11,7 +11,9 @@ FROM openformulieren/open-forms-sdk:${SDK_RELEASE} as sdk-image
 # includes compilers and build tooling to create the environment
 FROM python:3.10.11-slim-bullseye AS backend-build
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install -y --no-install-recommends \
         pkg-config \
         build-essential \
         python3-dev \
@@ -65,7 +67,9 @@ FROM python:3.10.11-slim-bullseye
 
 # Stage 3.1 - Set up the needed production dependencies
 # install all the dependencies for GeoDjango
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install -y --no-install-recommends \
         procps \
         vim \
         mime-support \
