@@ -61,6 +61,7 @@ from .serializers import (
     SubmissionCompletionSerializer,
     SubmissionCoSignStatusSerializer,
     SubmissionProcessingStatusSerializer,
+    SubmissionReportUrlSerializer,
     SubmissionSerializer,
     SubmissionStateLogic,
     SubmissionStateLogicSerializer,
@@ -202,7 +203,7 @@ class SubmissionViewSet(
     @extend_schema(
         summary=_("Co-sign submission"),
         responses={
-            200: {},
+            200: SubmissionReportUrlSerializer,
             400: ExceptionSerializer,
             403: ExceptionSerializer,
             404: ExceptionSerializer,
@@ -243,7 +244,11 @@ class SubmissionViewSet(
         remove_submission_from_session(submission, self.request.session)
 
         transaction.on_commit(lambda: on_cosign(submission.id))
-        return Response({})
+
+        out_serializer = SubmissionReportUrlSerializer(
+            instance=submission, context={"request": request}
+        )
+        return Response(out_serializer.data)
 
     @extend_schema(
         summary=_("Complete a submission"),

@@ -8,6 +8,7 @@ from django.utils import translation
 
 from rest_framework.permissions import SAFE_METHODS
 from rest_framework.request import Request
+from rest_framework.reverse import reverse
 
 from openforms.appointments.utils import get_confirmation_mail_suffix
 from openforms.emails.confirmation_emails import (
@@ -27,7 +28,13 @@ from openforms.variables.constants import FormVariableSources
 from .constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from .exceptions import FormDeactivated, FormMaintenance
 from .form_logic import check_submission_logic
-from .models import Submission, SubmissionValueVariable, TemporaryFileUpload
+from .models import (
+    Submission,
+    SubmissionReport,
+    SubmissionValueVariable,
+    TemporaryFileUpload,
+)
+from .tokens import submission_report_token_generator
 
 logger = logging.getLogger(__name__)
 
@@ -223,3 +230,12 @@ def check_form_status(
     # to pass after a while
     if form.maintenance_mode and not request.user.is_staff:
         raise FormMaintenance()
+
+
+def get_report_download_url(request: Request, report: "SubmissionReport") -> str:
+    token = submission_report_token_generator.make_token(report)
+    download_url = reverse(
+        "api:submissions:download-submission",
+        kwargs={"report_id": report.id, "token": token},
+    )
+    return request.build_absolute_uri(download_url)
