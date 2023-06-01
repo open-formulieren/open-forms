@@ -5843,6 +5843,41 @@ components:
       required:
       - configuration
       - index
+    CosignLoginInfo:
+      type: object
+      properties:
+        identifier:
+          type: string
+          readOnly: true
+        label:
+          type: string
+          readOnly: true
+          title: Button label
+          description: Button label
+        url:
+          type: string
+          format: uri
+          readOnly: true
+          title: Login URL
+          description: URL to start login flow, expects 'next' GET-parameter with
+            return url
+        logo:
+          allOf:
+          - $ref: '#/components/schemas/LoginLogo'
+          readOnly: true
+          title: Optional logo
+          description: Optional logo
+        isForGemachtigde:
+          type: boolean
+          readOnly: true
+          description: This authorization method can be used to log in on behalf of
+            another person or company
+      required:
+      - identifier
+      - isForGemachtigde
+      - label
+      - logo
+      - url
     DataMappingTypeEnum:
       enum:
       - JsonLogic
@@ -6123,11 +6158,9 @@ components:
           type: boolean
           readOnly: true
         cosignLoginInfo:
-          type: object
-          additionalProperties: {}
-          nullable: true
+          allOf:
+          - $ref: '#/components/schemas/CosignLoginInfo'
           readOnly: true
-          description: Info about the plugin to use for co-sign authentication.
       required:
       - cosignLoginInfo
       - hideNonApplicableSteps
@@ -7472,11 +7505,9 @@ components:
           type: boolean
           readOnly: true
         cosignLoginInfo:
-          type: object
-          additionalProperties: {}
-          nullable: true
+          allOf:
+          - $ref: '#/components/schemas/CosignLoginInfo'
           readOnly: true
-          description: Info about the plugin to use for co-sign authentication.
     PatchedFormDefinition:
       type: object
       properties:

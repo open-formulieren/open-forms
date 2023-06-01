@@ -5,6 +5,7 @@ from rest_framework import serializers
 from openforms.plugins.api.serializers import PluginBaseSerializer
 
 from ..constants import LogoAppearance
+from ..utils import get_cosign_login_info
 
 
 class AuthPluginSerializer(PluginBaseSerializer):
@@ -68,3 +69,8 @@ class LoginOptionSerializer(serializers.Serializer):
         ),
         read_only=True,
     )
+
+
+class CosignLoginInfoSerializer(LoginOptionSerializer):
+    def get_attribute(self, form):
+        return get_cosign_login_info(self.context["request"], form)

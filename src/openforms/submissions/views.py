@@ -268,8 +268,6 @@ class SearchSubmissionForCosignFormView(UserPassesTestMixin, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        cosign_page = self.submission.cleaned_form_url
-        cosign_page /= "cosign"
-        cosign_page /= "check"
+        cosign_page = self.submission.cleaned_form_url / "cosign" / "check"
         cosign_page.args["submission_uuid"] = self.submission.uuid
         return cosign_page.url

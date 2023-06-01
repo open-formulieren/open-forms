@@ -66,7 +66,7 @@ class UtilsTests(TestCase):
 
         self.assertIsNotNone(login_info)
 
-        login_url = furl(login_info["url"])
+        login_url = furl(login_info.url)
         submission_find_url = furl(
             login_url.args["next"]
         )  # Page where the user will look for the submission to cosign

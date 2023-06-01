@@ -7,8 +7,8 @@ from rest_framework.exceptions import ErrorDetail
 from openforms.api.serializers import PublicFieldsSerializerMixin
 from openforms.api.utils import get_from_serializer_data_or_instance
 from openforms.authentication.api.fields import LoginOptionsReadOnlyField
+from openforms.authentication.api.serializers import CosignLoginInfoSerializer
 from openforms.authentication.registry import register as auth_register
-from openforms.authentication.utils import get_cosign_login_info
 from openforms.config.models import GlobalConfiguration
 from openforms.emails.api.serializers import ConfirmationEmailTemplateSerializer
 from openforms.emails.models import ConfirmationEmailTemplate
@@ -65,9 +65,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         default=list,
     )
     login_options = LoginOptionsReadOnlyField()
-    cosign_login_info = serializers.SerializerMethodField(
-        help_text=_("Info about the plugin to use for co-sign authentication."),
-    )
+    cosign_login_info = CosignLoginInfoSerializer(source="*", read_only=True)
     auto_login_authentication_backend = serializers.CharField(
         required=False,
         allow_blank=True,
@@ -322,9 +320,6 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         lifetime = min(lifetime, lifetime_all)
 
         return lifetime
-
-    def get_cosign_login_info(self, form) -> None | dict:
-        return get_cosign_login_info(self.context["request"], form)
 
 
 FormSerializer.__doc__ = FormSerializer.__doc__.format(
