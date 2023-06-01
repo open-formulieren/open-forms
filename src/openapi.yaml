@@ -5843,6 +5843,41 @@ components:
       required:
       - configuration
       - index
+    CosignLoginInfo:
+      type: object
+      properties:
+        identifier:
+          type: string
+          readOnly: true
+        label:
+          type: string
+          readOnly: true
+          title: Button label
+          description: Button label
+        url:
+          type: string
+          format: uri
+          readOnly: true
+          title: Login URL
+          description: URL to start login flow, expects 'next' GET-parameter with
+            return url
+        logo:
+          allOf:
+          - $ref: '#/components/schemas/LoginLogo'
+          readOnly: true
+          title: Optional logo
+          description: Optional logo
+        isForGemachtigde:
+          type: boolean
+          readOnly: true
+          description: This authorization method can be used to log in on behalf of
+            another person or company
+      required:
+      - identifier
+      - isForGemachtigde
+      - label
+      - logo
+      - url
     DataMappingTypeEnum:
       enum:
       - JsonLogic
@@ -6122,7 +6157,12 @@ components:
         hideNonApplicableSteps:
           type: boolean
           readOnly: true
+        cosignLoginInfo:
+          allOf:
+          - $ref: '#/components/schemas/CosignLoginInfo'
+          readOnly: true
       required:
+      - cosignLoginInfo
       - hideNonApplicableSteps
       - loginOptions
       - loginRequired
@@ -7463,6 +7503,10 @@ components:
           description: The number of days that the resume link is valid for.
         hideNonApplicableSteps:
           type: boolean
+          readOnly: true
+        cosignLoginInfo:
+          allOf:
+          - $ref: '#/components/schemas/CosignLoginInfo'
           readOnly: true
     PatchedFormDefinition:
       type: object
