@@ -846,3 +846,46 @@ class TestReplaceOldCosignComponent(TestMigrations):
                 "validateOn": "blur",
             },
         )
+
+
+class TestAddShowInSummaryDefault(TestMigrations):
+    migrate_from = "0079_replace_cosign_component"
+    migrate_to = "0080_add_show_in_summary_default"
+    app = "forms"
+
+    def setUpBeforeMigration(self, apps):
+        FormDefinition = apps.get_model("forms", "FormDefinition")
+        self.form_definition = FormDefinition.objects.create(
+            name="Definition with Content Component",
+            slug="definition-with-content",
+            configuration={
+                "components": [
+                    {
+                        "type": "content",
+                        "key": "content",
+                        "html": "<p>WYSIWYG with <strong>markup</strong></p>",
+                        "input": False,
+                        "label": "Content",
+                        "hidden": False,
+                    }
+                ]
+            },
+        )
+
+    def test_forward_migration(self):
+        self.form_definition.refresh_from_db()
+
+        content_component = self.form_definition.configuration["components"][0]
+
+        self.assertEqual(
+            content_component,
+            {
+                "type": "content",
+                "key": "content",
+                "html": "<p>WYSIWYG with <strong>markup</strong></p>",
+                "input": False,
+                "label": "Content",
+                "hidden": False,
+                "showInSummary": False,
+            },
+        )
