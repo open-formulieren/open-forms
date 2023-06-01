@@ -14,6 +14,7 @@ from django_webtest import WebTest
 
 from openforms.accounts.tests.factories import SuperUserFactory, UserFactory
 from openforms.config.models import GlobalConfiguration, RichTextColor
+from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.forms.tests.factories import FormLogicFactory
 from openforms.tests.utils import disable_2fa
 from openforms.utils.admin import SubmitActions
@@ -516,6 +517,9 @@ class FormAdminCopyTests(TestCase):
         form = FormFactory.create(
             authentication_backends=["digid"], internal_name="internal"
         )
+        confirmation_email_template = ConfirmationEmailTemplateFactory(
+            form=form, subject="Test"
+        )
         form_step = FormStepFactory.create(form=form, form_definition__is_reusable=True)
         logic = FormLogicFactory.create(
             form=form,
@@ -548,6 +552,11 @@ class FormAdminCopyTests(TestCase):
 
         copied_form_step_form_definition = copied_form_step.form_definition
         self.assertEqual(copied_form_step_form_definition, form_step.form_definition)
+
+        self.assertEqual(copied_form.confirmation_email_template.subject, "Test")
+        self.assertNotEqual(
+            copied_form.confirmation_email_template.id, confirmation_email_template.id
+        )
 
 
 @disable_2fa
