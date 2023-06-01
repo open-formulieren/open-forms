@@ -375,7 +375,8 @@ class Form(models.Model):
 
     @transaction.atomic
     def copy(self):
-        from ...emails.models import ConfirmationEmailTemplate
+        from openforms.emails.models import ConfirmationEmailTemplate
+
         from .form_variable import FormVariable
 
         form_steps = self.formstep_set.all().select_related("form_definition")
