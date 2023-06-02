@@ -325,6 +325,9 @@ Other settings
 * ``FORMS_EXPORT_REMOVED_AFTER_DAYS``: The number of days after which zip files of exported forms should be deleted.
   Defaults to 7 days.
 
+* ``SUBPATH``: The string, shows the subpath under which Open Forms is hosted, for example
+  ``/of``. Defaults to empty string meaning that Open Forms is hosted at the root.
+
 .. _`Django DATABASE settings`: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DATABASE-ENGINE
 
 Specifying the environment variables
