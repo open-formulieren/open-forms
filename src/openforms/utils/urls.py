@@ -106,7 +106,7 @@ def is_admin_request(request: RequestType) -> bool:
     :arg request: the request object to be checked.
     """
     admin_path_prefix = reverse("admin:index")
-    if request.path.startswith(admin_path_prefix):
+    if request.path_info.startswith(admin_path_prefix):
         return True
     if not (referrer := request.headers.get("Referer")):
         return False

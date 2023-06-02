@@ -47,7 +47,7 @@ class CsrfTokenMiddleware:
         response = self.get_response(request)
 
         # Only add the CSRF token header if it's an api endpoint
-        if not request.path.startswith("/api"):
+        if not request.path_info.startswith("/api"):
             return response
 
         response[CSRF_TOKEN_HEADER_NAME] = get_token(request)
@@ -67,7 +67,7 @@ class CanNavigateBetweenStepsMiddleware:
         response = self.get_response(request)
 
         # Only add the header if it's an api endpoint
-        if not request.path.startswith("/api"):
+        if not request.path_info.startswith("/api"):
             return response
 
         response[IS_FORM_DESIGNER_HEADER_NAME] = "false"
