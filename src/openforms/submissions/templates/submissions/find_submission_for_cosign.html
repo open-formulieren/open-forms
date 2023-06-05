@@ -28,6 +28,13 @@
                             </button>
                         </div>
                     </form>
+                    <form method="post" action="{% url "authentication:logout" %}">{% csrf_token %}
+                        <div class="openforms-toolbar openforms-toolbar--reverse openforms-toolbar--bottom">
+                            <button class="openforms-button openforms-button--danger" type="submit">
+                                <span class="openforms-button__label">{% trans "Log out" %}</span>
+                            </button>
+                        </div>
+                    </form>
                 </p>
             {% endblock %}
         </div>

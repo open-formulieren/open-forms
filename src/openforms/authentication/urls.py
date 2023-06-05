@@ -3,6 +3,8 @@ from django.urls import path
 from .views import (
     AuthenticationReturnView,
     AuthenticationStartView,
+    AuthPluginLogoutConfirmationView,
+    AuthPluginLogoutView,
     RegistratorSubjectInfoView,
 )
 
@@ -24,4 +26,10 @@ urlpatterns = [
         AuthenticationReturnView.as_view(),
         name="return",
     ),
+    path(
+        "logout/confirmation/",
+        AuthPluginLogoutConfirmationView.as_view(),
+        name="logout-confirmation",
+    ),
+    path("logout/", AuthPluginLogoutView.as_view(), name="logout"),
 ]
