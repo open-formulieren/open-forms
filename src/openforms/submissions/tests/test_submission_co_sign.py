@@ -176,9 +176,9 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
         data = response.json()
 
-        self.assertIn("downloadReportUrl", data)
+        self.assertIn("reportDownloadUrl", data)
 
-        match = resolve(furl(data["downloadReportUrl"]).path)
+        match = resolve(furl(data["reportDownloadUrl"]).path)
 
         self.assertEqual(match.view_name, "api:submissions:download-submission")
 
