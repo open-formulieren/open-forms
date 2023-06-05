@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
-from django.test import TestCase, override_settings, tag
+from django.test import override_settings, tag
 from django.test.client import RequestFactory
 
 from rest_framework.request import Request
@@ -279,7 +279,7 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
         self.assertFalse(submission.auth_info.attribute_hashed)
 
 
-class SetCosignDataTests(TestCase):
+class SetCosignDataTests(APITestCase):
     def test_set_cosigner_data(self):
         submission = SubmissionFactory.create(completed=True)
         request = APIRequestFactory().get("/")

@@ -17,7 +17,7 @@ from ..form_logic import check_submission_logic
 from ..models import Submission, SubmissionStep
 
 
-def privacy_policy_accepted(value: bool) -> None:
+def check_privacy_policy_accepted(value: bool) -> None:
     config = GlobalConfiguration.get_solo()
     privacy_policy_valid = value if config.ask_privacy_consent else True
     if not privacy_policy_valid:
@@ -39,7 +39,7 @@ class CompletionValidationSerializer(serializers.Serializer):
         choices=SubmissionAllowedChoices.choices,
     )
     privacy_policy_accepted = serializers.BooleanField(
-        validators=[privacy_policy_accepted]
+        validators=[check_privacy_policy_accepted]
     )
     contains_blocked_steps = serializers.BooleanField()
 

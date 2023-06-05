@@ -232,7 +232,7 @@ def check_form_status(
         raise FormMaintenance()
 
 
-def get_report_download_url(request: Request, report: "SubmissionReport") -> str:
+def get_report_download_url(request: Request, report: SubmissionReport) -> str:
     token = submission_report_token_generator.make_token(report)
     download_url = reverse(
         "api:submissions:download-submission",

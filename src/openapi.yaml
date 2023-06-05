@@ -8134,6 +8134,7 @@ components:
       properties:
         reportDownloadUrl:
           type: string
+          format: uri
           readOnly: true
           title: download report url
           description: The URL where the submission report can be downloaded. Note

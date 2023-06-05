@@ -125,7 +125,7 @@ def clean_submission_auth(sender, request: Request, **kwargs):
         del request.session[REGISTRATOR_SUBJECT_SESSION_KEY]
 
 
-@receiver([submission_cosigned], dispatch_uid="auth.set_submission_form_auth")
+@receiver(submission_cosigned, dispatch_uid="auth.set_submission_form_auth")
 def set_cosign_data_on_submission(
     sender, instance: Submission, request: Request, **kwargs
 ):

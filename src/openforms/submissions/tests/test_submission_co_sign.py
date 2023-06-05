@@ -90,7 +90,6 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
 
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
-    @override_settings(LANGUAGE_CODE="en")
     def test_submission_must_be_completed(self):
         submission = SubmissionFactory.from_components(
             components_list=[
@@ -114,15 +113,7 @@ class SubmissionCosignEndpointTests(SubmissionsMixin, APITestCase):
         endpoint = reverse("api:submission-cosign", kwargs={"uuid": submission.uuid})
         response = self.client.post(endpoint, data={"privacy_policy_accepted": True})
 
-        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
-
-        data = response.json()
-
-        self.assertEqual(data["invalidParams"][0]["name"], "completed")
-        self.assertEqual(
-            data["invalidParams"][0]["reason"],
-            "The submission must be completed before being able to co-sign it.",
-        )
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_user_must_have_authenticated_with_right_plugin(self):
         submission = SubmissionFactory.from_components(

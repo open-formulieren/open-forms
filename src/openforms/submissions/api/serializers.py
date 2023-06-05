@@ -9,6 +9,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 import elasticapm
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
@@ -30,7 +32,7 @@ from ..models import Submission, SubmissionStep
 from ..tokens import submission_resume_token_generator
 from ..utils import get_report_download_url
 from .fields import NestedRelatedField
-from .validation import privacy_policy_accepted
+from .validation import check_privacy_policy_accepted
 from .validators import FormMaintenanceModeValidator, ValidatePrefillData
 
 logger = logging.getLogger(__name__)
@@ -486,21 +488,11 @@ class SubmissionStepSummarySerialzier(serializers.Serializer):
 
 @mark_experimental
 class CosignValidationSerializer(serializers.Serializer):
-    completed = serializers.BooleanField(
-        label=_("Completed"),
-        help_text=_("The submission was completed."),
-    )
     privacy_policy_accepted = serializers.BooleanField(
         label=_("privacy policy accepted"),
         help_text=_("Whether the co-signer has accepted the privacy policy"),
-        validators=[privacy_policy_accepted],
+        validators=[check_privacy_policy_accepted],
     )
-
-    def validate_completed(self, value):
-        if not value:
-            raise serializers.ValidationError(
-                _("The submission must be completed before being able to co-sign it.")
-            )
 
     def save(self, **kwargs):
         submission = self.context["submission"]
@@ -517,5 +509,6 @@ class SubmissionReportUrlSerializer(serializers.Serializer):
         ),
     )
 
+    @extend_schema_field(OpenApiTypes.URI)
     def get_report_download_url(self, submission) -> str:
         return get_report_download_url(self.context["request"], submission.report)
