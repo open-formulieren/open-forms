@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from django.test import override_settings
+from django.test import TestCase, override_settings
 from django.test.client import RequestFactory
 from django.utils.translation import gettext as _
 
@@ -18,6 +18,7 @@ from openforms.submissions.tests.mixins import SubmissionsMixin
 
 from ..constants import (
     CO_SIGN_PARAMETER,
+    FORM_AUTH_SESSION_KEY,
     REGISTRATOR_SUBJECT_SESSION_KEY,
     AuthAttribute,
 )
@@ -567,3 +568,35 @@ class RegistratorSubjectInfoViewTests(WebTest):
             self.assertIn(REGISTRATOR_SUBJECT_SESSION_KEY, self.app.session)
             data = self.app.session[REGISTRATOR_SUBJECT_SESSION_KEY]
             self.assertEqual(data, {"skipped_subject_info": True})
+
+
+class LogoutTestViewTests(TestCase):
+    def test_no_auth_info_in_session(self):
+        logout_url = reverse("authentication:logout")
+
+        response = self.client.post(logout_url)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_logout_calls_plugin_logout(self):
+        session = self.client.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+        }
+        session.save()
+
+        with patch(
+            "openforms.authentication.contrib.digid.plugin.DigidAuthentication.logout"
+        ) as m_logout:
+            response = self.client.post(reverse("authentication:logout"), data={})
+
+        m_logout.assert_called_once()
+
+        self.assertRedirects(
+            response,
+            reverse("authentication:logout-confirmation"),
+            fetch_redirect_response=False,
+        )
+        self.assertNotIn(FORM_AUTH_SESSION_KEY, self.client.session)

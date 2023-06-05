@@ -238,3 +238,44 @@ class SearchSubmissionForCosignView(WebTest):
             "Could not find a submission corresponding to this code that requires co-signing",
             error_node.text.strip(),
         )
+
+    @override_settings(LANGUAGE_CODE="en")
+    def test_logout_button(self):
+        SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                    "validate": {"required": True},
+                    "authPlugin": "digid",
+                },
+            ],
+            submitted_data={"cosign": "test@test.nl"},
+            completed=True,
+            cosign_complete=False,
+            form__slug="form-to-cosign",
+            form_url="http://url-to-form.nl/startpagina",
+            public_registration_reference="OF-IMAREFERENCE",
+        )
+        session = self.app.session
+        session[FORM_AUTH_SESSION_KEY] = {
+            "plugin": "digid",
+            "attribute": "bsn",
+            "value": "123456782",
+        }
+        session.save()
+
+        response = self.app.get(
+            reverse(
+                "submissions:find-submission-for-cosign",
+                kwargs={"form_slug": "form-to-cosign"},
+            )
+        )
+
+        form = response.forms[1]
+        logout_response = form.submit().follow()
+
+        title_node = logout_response.html.find("h1")
+
+        self.assertEqual(title_node.text.strip(), "You successfully logged out.")
