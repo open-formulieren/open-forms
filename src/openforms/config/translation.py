@@ -7,6 +7,7 @@ from .models import GlobalConfiguration
 class GlobalConfigurationTranslationOptions(TranslationOptions):
     fields = (
         "submission_confirmation_template",
+        "submission_report_download_link_title",
         "confirmation_email_subject",
         "confirmation_email_content",
         "save_form_email_subject",
@@ -22,6 +23,7 @@ class GlobalConfigurationTranslationOptions(TranslationOptions):
     )
     fallback_undefined = {
         "submission_confirmation_template": "",
+        "submission_report_download_link_title": "",
         "confirmation_email_subject": "",
         "confirmation_email_content": "",
         "save_form_email_subject": "",

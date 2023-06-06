@@ -64,6 +64,12 @@ class GlobalConfiguration(SingletonModel):
         default=runtime_gettext(_("Thank you for submitting this form.")),
         validators=[DjangoTemplateValidator()],
     )
+    submission_report_download_link_title = models.CharField(
+        verbose_name=_("submission report download link title"),
+        max_length=128,
+        help_text=_("The title of the link to download the report of a submission."),
+        default=runtime_gettext(_("Download PDF")),
+    )
 
     confirmation_email_subject = models.CharField(
         _("subject"),

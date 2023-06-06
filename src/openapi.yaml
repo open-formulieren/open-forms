@@ -6271,6 +6271,9 @@ components:
           allOf:
           - $ref: '#/components/schemas/CosignLoginInfo'
           readOnly: true
+        submissionReportDownloadLinkTitle:
+          type: string
+          readOnly: true
       required:
       - cosignLoginInfo
       - hideNonApplicableSteps
@@ -6283,6 +6286,7 @@ components:
       - resumeLinkLifetime
       - slug
       - steps
+      - submissionReportDownloadLinkTitle
       - url
       - uuid
     FormAdminMessage:
@@ -7617,6 +7621,9 @@ components:
         cosignLoginInfo:
           allOf:
           - $ref: '#/components/schemas/CosignLoginInfo'
+          readOnly: true
+        submissionReportDownloadLinkTitle:
+          type: string
           readOnly: true
     PatchedFormDefinition:
       type: object
