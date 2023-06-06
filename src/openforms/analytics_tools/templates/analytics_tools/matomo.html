@@ -13,7 +13,7 @@
   (function() {
     var u="{{ analytics_tools_config.matomo_url|escapejs }}/";
     _paq.push(['setTrackerUrl', u+'matomo.php']);
-    _paq.push(['setSiteId', {{ config.matomo_site_id|escapejs }}]);
+    _paq.push(['setSiteId', {{ analytics_tools_config.matomo_site_id|escapejs }}]);
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
     g.type='text/javascript'; g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
   })();
