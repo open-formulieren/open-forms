@@ -19,6 +19,18 @@ class CSRFTokenMiddleware(TestCase):
 
         self.assertNotIn(CSRF_TOKEN_HEADER_NAME, response.headers)
 
+    def test_csrftoken_in_header_api_endpoint_with_subpath(self):
+        url = reverse("api:form-list")
+
+        response = self.client.get(url, SCRIPT_NAME="/of")
+
+        self.assertIn(CSRF_TOKEN_HEADER_NAME, response.headers)
+
+    def test_csrftoken_not_in_header_root_with_subpath(self):
+        response = self.client.get("/", SCRIPT_NAME="/of")
+
+        self.assertNotIn(CSRF_TOKEN_HEADER_NAME, response.headers)
+
 
 class CanNavigateBetweenStepsMiddlewareTests(TestCase):
     def test_header_api_endpoint_not_authenticated(self):
@@ -60,6 +72,21 @@ class CanNavigateBetweenStepsMiddlewareTests(TestCase):
         url = reverse("api:form-list")
 
         response = self.client.get(url)
+
+        self.assertIn(IS_FORM_DESIGNER_HEADER_NAME, response.headers)
+        self.assertEqual("true", response.headers[IS_FORM_DESIGNER_HEADER_NAME])
+
+    def test_header_not_api_endpoint_with_subpath(self):
+        response = self.client.get("/", SCRIPT_NAME="/of")
+
+        self.assertNotIn(IS_FORM_DESIGNER_HEADER_NAME, response.headers)
+
+    def test_header_api_endpoint_staff_with_permissions_with_subpath(self):
+        user = StaffUserFactory.create(user_permissions=["forms.change_form"])
+        self.client.force_login(user=user)
+        url = reverse("api:form-list")
+
+        response = self.client.get(url, SCRIPT_NAME="/of")
 
         self.assertIn(IS_FORM_DESIGNER_HEADER_NAME, response.headers)
         self.assertEqual("true", response.headers[IS_FORM_DESIGNER_HEADER_NAME])

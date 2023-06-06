@@ -159,3 +159,28 @@ class IsAdminRequestTest(TestCase):
         result = is_admin_request(request)
 
         self.assertTrue(result)
+
+    def test_is_admin_request_true_with_subpath(self):
+        factory = RequestFactory()
+        request = factory.get(
+            "/api/v1/foo",
+            HTTP_REFERER="http://testserver/admin/forms/form/1/change/",
+            SCRIPT_NAME="/of",
+        )
+
+        self.assertTrue(is_admin_request(request))
+
+    def test_is_admin_request_false_with_subpath(self):
+        factory = RequestFactory()
+        bad_referers = (
+            "http://otherdomain/bar/",
+            "http://otherdomain/admin/forms/form/",
+        )
+
+        for referer in bad_referers:
+            with self.subTest(referer=referer):
+                request = factory.get(
+                    "/api/v1/foo", HTTP_REFERER=referer, SCRIPT_NAME="/of"
+                )
+
+                self.assertFalse(is_admin_request(request))
