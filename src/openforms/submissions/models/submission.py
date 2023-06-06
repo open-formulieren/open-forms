@@ -117,7 +117,7 @@ class Submission(models.Model):
     # meta information
     form_url = models.URLField(
         _("form URL"),
-        max_length=255,
+        max_length=1000,
         blank=False,
         default="",
         help_text=_("URL where the user initialized the submission."),
