@@ -23,6 +23,7 @@ from openforms.api.authentication import AnonCSRFSessionAuthentication
 from openforms.api.filters import PermissionFilterMixin
 from openforms.api.serializers import ExceptionSerializer, ValidationErrorSerializer
 from openforms.api.throttle_classes import PollingRateThrottle
+from openforms.authentication.service import is_authenticated_with_plugin
 from openforms.formio.service import FormioData
 from openforms.forms.models import FormStep
 from openforms.logging import logevent
@@ -35,9 +36,10 @@ from ..form_logic import check_submission_logic, evaluate_form_logic
 from ..models import Submission, SubmissionStep
 from ..models.submission_step import DirtyData
 from ..parsers import IgnoreDataFieldCamelCaseJSONParser, IgnoreDataJSONRenderer
-from ..signals import submission_complete, submission_start
+from ..signals import submission_complete, submission_cosigned, submission_start
 from ..status import SubmissionProcessingStatus
 from ..tasks import on_completion
+from ..tasks.co_sign import on_cosign
 from ..tokens import submission_status_token_generator
 from ..utils import (
     add_submmission_to_session,
@@ -54,10 +56,12 @@ from .permissions import (
     SubmissionStatusPermission,
 )
 from .serializers import (
+    CosignValidationSerializer,
     FormDataSerializer,
     SubmissionCompletionSerializer,
     SubmissionCoSignStatusSerializer,
     SubmissionProcessingStatusSerializer,
+    SubmissionReportUrlSerializer,
     SubmissionSerializer,
     SubmissionStateLogic,
     SubmissionStateLogicSerializer,
@@ -183,6 +187,7 @@ class SubmissionViewSet(
             404: ExceptionSerializer,
             405: ExceptionSerializer,
         },
+        deprecated=True,
     )
     @action(detail=True, methods=["get"], url_name="co-sign", url_path="co-sign")
     def co_sign(self, request, *args, **kwargs) -> Response:
@@ -194,6 +199,62 @@ class SubmissionViewSet(
             instance=submission, context={"request": request}
         )
         return Response(serializer.data)
+
+    @extend_schema(
+        summary=_("Co-sign submission"),
+        responses={
+            200: SubmissionReportUrlSerializer,
+            400: ExceptionSerializer,
+            403: ExceptionSerializer,
+            404: ExceptionSerializer,
+            405: ExceptionSerializer,
+        },
+    )
+    @transaction.atomic()
+    @action(
+        detail=True,
+        methods=["post"],
+        url_name="cosign",
+    )
+    def cosign(self, request, *args, **kwargs):
+        submission = self.get_object()
+
+        if not submission.is_completed:
+            raise PermissionDenied(
+                _("The submission must be completed before being able to co-sign it.")
+            )
+
+        cosign_component = submission.form.get_cosign_component()
+        if not is_authenticated_with_plugin(request, cosign_component["authPlugin"]):
+            raise PermissionDenied(
+                _("You need to be logged in with {auth_plugin}").format(
+                    auth_plugin=cosign_component["authPlugin"]
+                )
+            )
+
+        serializer = CosignValidationSerializer(
+            data={
+                "completed": submission.is_completed,
+                "privacy_policy_accepted": request.data["privacy_policy_accepted"],
+            },
+            context={"request": request, "submission": submission},
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        # dispatch signal for modules to tap into
+        submission_cosigned.send(
+            sender=self.__class__, instance=submission, request=self.request
+        )
+
+        remove_submission_from_session(submission, self.request.session)
+
+        transaction.on_commit(lambda: on_cosign(submission.id))
+
+        out_serializer = SubmissionReportUrlSerializer(
+            instance=submission, context={"request": request}
+        )
+        return Response(out_serializer.data)
 
     @extend_schema(
         summary=_("Complete a submission"),

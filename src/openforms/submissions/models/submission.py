@@ -221,6 +221,11 @@ class Submission(models.Model):
         default=False,
         help_text=_("Has the user accepted the privacy policy?"),
     )
+    cosign_privacy_policy_accepted = models.BooleanField(
+        _("cosign privacy policy accepted"),
+        default=False,
+        help_text=_("Has the co-signer accepted the privacy policy?"),
+    )
 
     _is_cleaned = models.BooleanField(
         _("is cleaned"),

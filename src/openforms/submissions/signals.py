@@ -40,6 +40,15 @@ Provides:
     :arg request: the HttpRequest instance (or DRF wrapper around it).
 """
 
+submission_cosigned = Signal()
+"""
+Signal that a :class:`openforms.models.Submission` instance has been co-signed.
+
+Provides:
+    :arg submission: the :class:`openforms.models.Submission` instance.
+    :arg request: the HttpRequest instance (or DRF wrapper around it).
+"""
+
 
 @receiver(post_delete, sender=SubmissionReport)
 def delete_submission_report_files(

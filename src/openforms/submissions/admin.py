@@ -205,6 +205,8 @@ class SubmissionAdmin(admin.ModelAdmin):
         "registration_attempts",
         "pre_registration_completed",
         "cosign_complete",
+        "cosign_privacy_policy_accepted",
+        "privacy_policy_accepted",
     ]
     raw_id_fields = ("form", "previous_submission")
     actions = [

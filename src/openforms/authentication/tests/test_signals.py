@@ -19,7 +19,7 @@ from ..constants import (
     AuthAttribute,
 )
 from ..registry import Registry
-from ..signals import set_auth_attribute_on_session
+from ..signals import set_auth_attribute_on_session, set_cosign_data_on_submission
 from ..views import AuthenticationReturnView
 from .mocks import Plugin, RequiresAdminPlugin, mock_register
 
@@ -277,3 +277,30 @@ class SetSubmissionIdentifyingAttributesTests(APITestCase):
 
         self.assertEqual(submission.auth_info.value, "123456789")
         self.assertFalse(submission.auth_info.attribute_hashed)
+
+
+class SetCosignDataTests(APITestCase):
+    def test_set_cosigner_data(self):
+        submission = SubmissionFactory.create(completed=True)
+        request = APIRequestFactory().get("/")
+        request.user = UserFactory()
+        request.session = {
+            FORM_AUTH_SESSION_KEY: {
+                "plugin": "digid",
+                "attribute": "bsn",
+                "value": "123456782",
+            }
+        }
+
+        set_cosign_data_on_submission(sender=None, instance=submission, request=request)
+
+        submission.refresh_from_db()
+
+        self.assertEqual(
+            submission.co_sign_data,
+            {
+                "plugin": "digid",
+                "attribute": "bsn",
+                "value": "123456782",
+            },
+        )

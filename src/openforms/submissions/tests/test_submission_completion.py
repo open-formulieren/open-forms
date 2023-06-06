@@ -290,7 +290,7 @@ class SubmissionCompletionTests(SubmissionsMixin, APITestCase):
                 {
                     "name": "privacyPolicyAccepted",
                     "code": "invalid",
-                    "reason": "Privacy policy must be accepted before completing submission.",
+                    "reason": "Privacy policy must be accepted.",
                 }
             ],
         )

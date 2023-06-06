@@ -14,8 +14,7 @@ from openforms.appointments.models import AppointmentInfo
 
 from .constants import ProcessingResults, ProcessingStatuses
 from .models import Submission
-from .tokens import submission_report_token_generator
-from .utils import add_submmission_to_session
+from .utils import add_submmission_to_session, get_report_download_url
 
 
 @dataclass
@@ -84,13 +83,7 @@ class SubmissionProcessingStatus:
         # only return a download URL if the entire chain succeeded
         if self.result != ProcessingResults.success:
             return ""
-        report = self.submission.report
-        token = submission_report_token_generator.make_token(report)
-        download_url = reverse(
-            "api:submissions:download-submission",
-            kwargs={"report_id": report.id, "token": token},
-        )
-        return self.request.build_absolute_uri(download_url)
+        return get_report_download_url(self.request, self.submission.report)
 
     @property
     def payment_url(self) -> str:
