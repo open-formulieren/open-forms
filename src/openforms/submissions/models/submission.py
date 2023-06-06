@@ -402,6 +402,15 @@ class Submission(models.Model):
         self._execution_state = state
         return state
 
+    def clear_execution_state(self) -> None:
+        if not hasattr(self, "_execution_state"):
+            return
+
+        for submission_step in self._execution_state.submission_steps:
+            submission_step._can_submit = True
+
+        del self._execution_state
+
     def render_confirmation_page(self) -> str:
         from openforms.variables.utils import get_variables_for_context
 
