@@ -4,7 +4,7 @@
 
 {% url 'cookie_consent_cookie_group_list' as manage_url %}
 
-{% if cookie_groups and request.path_info != manage_url %}
+{% if cookie_groups and request.path != manage_url %}
 <div class="cookie-notice">
 
     <span class="cookie-notice__text">
