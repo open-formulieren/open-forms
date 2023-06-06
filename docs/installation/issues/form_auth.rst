@@ -45,6 +45,23 @@ following child elements. The exact ``Location`` URLs can differ:
     <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="[...]/idp/request_authentication"/>
     <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="[...]/saml/idp/request_authentication"/>
 
+**Error**
+
+.. code::
+
+    OneLogin_Saml2_Error: Invalid dict settings: idp_not_found
+
+
+**Solution**
+
+Make sure the ``Identity provider service entity ID`` is correctly configured.
+It needs to match the URL found in the XML file uploaded under the 
+``Metadata identity provider`` in the 
+``<EntityDescriptor ... entityID="<URL>">``-attribute.
+
+For Logius, this is typically set to ``https://was.digid.nl/saml/idp/metadata``
+in production and to ``https://was-preprod1.digid.nl/saml/idp/metadata`` in 
+pre-production. But, be aware that these values might change over time.
 
 The DigiD login succeeds but Open Forms shows that login failed
 ---------------------------------------------------------------
