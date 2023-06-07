@@ -8027,7 +8027,7 @@ components:
           type: string
           format: uri
           description: URL where the user initialized the submission.
-          maxLength: 255
+          maxLength: 1000
       required:
       - form
       - formUrl
