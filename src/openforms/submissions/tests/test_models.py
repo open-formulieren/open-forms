@@ -610,3 +610,10 @@ class SubmissionTests(TestCase):
 
         with self.subTest("nested"):
             self.assertEqual(submission3.cosigner_email, "test@test.nl")
+
+    def test_clear_execution_state_without_execution_state(self):
+        submission = SubmissionFactory.create()
+
+        self.assertFalse(hasattr(submission, "_execution_state"))
+
+        submission.clear_execution_state()
