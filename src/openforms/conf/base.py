@@ -365,6 +365,7 @@ DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", "openforms@example.com")
 # LOGGING
 #
 LOG_STDOUT = config("LOG_STDOUT", default=False)
+LOG_REQUESTS = config("LOG_REQUESTS", default=True)
 
 LOGGING_DIR = os.path.join(BASE_DIR, "log")
 
@@ -460,7 +461,9 @@ LOGGING = {
             "level": "DEBUG",
         },
         "requests": {
-            "handlers": ["log_outgoing_requests", "save_outgoing_requests"],
+            "handlers": ["log_outgoing_requests", "save_outgoing_requests"]
+            if LOG_REQUESTS
+            else [],
             "level": "DEBUG",
             "propagate": True,
         },
