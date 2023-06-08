@@ -3,8 +3,8 @@ from unittest.mock import patch
 from django.test import TestCase
 
 import requests_mock
-from openforms.prefill.contrib.haalcentraal.constants import HaalCentraalVersion
 
+from openforms.prefill.contrib.haalcentraal.constants import HaalCentraalVersion
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 

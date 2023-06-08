@@ -19,18 +19,18 @@ class HaalCentraalConfig(SingletonModel):
 
     service = models.OneToOneField(
         "zgw_consumers.Service",
-        verbose_name=_("BRP Bevragen Personen service"),
+        verbose_name=_("Haal Centraal API"),
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.orc},
         related_name="+",
         null=True,
     )
     version = models.CharField(
-        _("BRP Bevragen Personen version"),
+        _("Haal Centraal API version"),
         max_length=30,
         choices=HaalCentraalVersion.choices,
         default=HaalCentraalVersion.haalcentraal13,
-        help_text=_("The BRP Bevragen Personen version."),
+        help_text=_("The version number the selected Haal Centraal API."),
     )
 
     objects = HaalCentraalConfigManager()

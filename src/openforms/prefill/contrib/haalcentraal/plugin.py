@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 def get_config():
     config = HaalCentraalConfig.get_solo()
     if not config.service:
-        logger.warning("no service defined for Haal Centraal prefill")
+        logger.warning("No service defined for Haal Centraal prefill.")
         return
     return config
 
