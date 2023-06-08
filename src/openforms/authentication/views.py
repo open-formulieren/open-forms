@@ -1,7 +1,7 @@
 import logging
 from typing import Optional
 
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.http import (
     HttpResponseBadRequest,
@@ -9,7 +9,9 @@ from django.http import (
     HttpResponseRedirect,
 )
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.views.generic.base import TemplateView, View
 from django.views.generic.edit import FormView
 
 from drf_spectacular.types import OpenApiTypes
@@ -37,7 +39,11 @@ from .constants import (
 from .exceptions import InvalidCoSignData
 from .forms import RegistratorSubjectInfoForm
 from .registry import register
-from .signals import authentication_success, co_sign_authentication_success
+from .signals import (
+    authentication_logout,
+    authentication_success,
+    co_sign_authentication_success,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -425,3 +431,25 @@ class RegistratorSubjectInfoView(PermissionRequiredMixin, FormView):
 
         assert self.cleaned_next_url
         return HttpResponseRedirect(self.cleaned_next_url)
+
+
+class AuthPluginLogoutView(UserPassesTestMixin, View):
+    http_method_names = ["post"]
+    raise_exception = True
+
+    def test_func(self):
+        return FORM_AUTH_SESSION_KEY in self.request.session
+
+    def post(self, request, *args, **kwargs):
+        auth_info = request.session[FORM_AUTH_SESSION_KEY]
+
+        plugin = register[auth_info["plugin"]]
+        plugin.logout(request=request)
+
+        authentication_logout.send(sender=self.__class__, request=request)
+
+        return HttpResponseRedirect(reverse("authentication:logout-confirmation"))
+
+
+class AuthPluginLogoutConfirmationView(TemplateView):
+    template_name = "of_authentication/logout_confirmation.html"

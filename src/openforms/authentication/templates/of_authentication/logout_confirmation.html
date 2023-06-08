@@ -1,0 +1,17 @@
+{% extends 'ui/views/abstract/detail.html' %}
+{% load i18n %}
+
+{% block extra_css %}
+    {% include "forms/sdk_css_snippet.html" %}
+    {{ block.super }} {# Called after SDK CSS for custom design overrides #}
+{% endblock %}
+
+{% block card %}
+    <div class="card">
+        <header class="card__header">
+            <h1 class="title">
+                {% trans "You successfully logged out." %}
+            </h1>
+        </header>
+    </div>
+{% endblock %}

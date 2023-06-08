@@ -27,12 +27,19 @@ logger = logging.getLogger(__name__)
 authentication_success = Signal()
 co_sign_authentication_success = Signal()
 """
-Signal a succesful co-sign authentication.
+Signal a successful co-sign authentication.
 
 Provides:
     :arg request: the HttpRequest instance
     :arg plugin: authentication plugin identifier
     :arg submission: The :class:`Submission` instance being co-signed.
+"""
+authentication_logout = Signal()
+"""
+Signals that a user that had logged in with an authentication plugin logged out.
+
+Provides:
+    :arg request: the HttpRequest instance
 """
 
 
@@ -116,7 +123,10 @@ def set_auth_attribute_on_session(
         store_auth_details(instance, form_auth)
 
 
-@receiver(submission_complete, dispatch_uid="auth.clean_submission_auth")
+@receiver(
+    [submission_complete, authentication_logout],
+    dispatch_uid="auth.clean_submission_auth",
+)
 def clean_submission_auth(sender, request: Request, **kwargs):
     if FORM_AUTH_SESSION_KEY in request.session:
         del request.session[FORM_AUTH_SESSION_KEY]
