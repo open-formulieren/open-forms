@@ -17,6 +17,7 @@ class RoltypeOmschrijvingValidator:
                 match_omschrijving, omschrijving=data["medewerker_roltype"]
             ),
             query_params={"zaaktype": data["zaaktype"]},
+            ztc_service=data["zgw_api_group"].ztc_service,
         )
 
         if not roltype:

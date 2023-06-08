@@ -14,28 +14,46 @@ class ZgwConfig(SingletonModel):
     global configuration and defaults
     """
 
-    zrc_service = models.OneToOneField(
+    default_zgw_api_group = models.ForeignKey(
+        to="ZGWApiGroupConfig",
+        on_delete=models.PROTECT,
+        verbose_name=_("default ZGW API set."),
+        help_text=_("Which set of ZGW APIs should be used as default."),
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = _("ZGW API's configuration")
+
+
+class ZGWApiGroupConfig(models.Model):
+    name = models.CharField(
+        _("name"),
+        max_length=255,
+        help_text=_("A recognisable name for this set of ZGW APIs."),
+    )
+    zrc_service = models.ForeignKey(
         "zgw_consumers.Service",
         verbose_name=_("Zaken API"),
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.zrc},
-        related_name="zgw_zrc_config",
+        related_name="zgwset_zrc_config",
         null=True,
     )
-    drc_service = models.OneToOneField(
+    drc_service = models.ForeignKey(
         "zgw_consumers.Service",
         verbose_name=_("Documenten API"),
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.drc},
-        related_name="zgw_drc_config",
+        related_name="zgwset_drc_config",
         null=True,
     )
-    ztc_service = models.OneToOneField(
+    ztc_service = models.ForeignKey(
         "zgw_consumers.Service",
         verbose_name=_("Catalogi API"),
         on_delete=models.PROTECT,
         limit_choices_to={"api_type": APITypes.ztc},
-        related_name="zgw_ztc_config",
+        related_name="zgwset_ztc_config",
         null=True,
     )
     # Overridable defaults
@@ -86,20 +104,11 @@ class ZgwConfig(SingletonModel):
     )
 
     class Meta:
-        verbose_name = _("ZGW API's configuration")
+        verbose_name = _("ZGW API set")
+        verbose_name_plural = _("ZGW API sets")
 
-    def apply_defaults_to(self, options):
-        options.setdefault("zaaktype", self.zaaktype)
-        options.setdefault("informatieobjecttype", self.informatieobjecttype)
-        options.setdefault("organisatie_rsin", self.organisatie_rsin)
-        options.setdefault(
-            "zaak_vertrouwelijkheidaanduiding", self.zaak_vertrouwelijkheidaanduiding
-        )
-        options.setdefault(
-            "doc_vertrouwelijkheidaanduiding",
-            self.doc_vertrouwelijkheidaanduiding,
-        )
-        options.setdefault("auteur", self.auteur)
+    def __str__(self):
+        return self.name
 
     def clean(self):
         super().clean()
@@ -119,3 +128,16 @@ class ZgwConfig(SingletonModel):
                         )
                     }
                 )
+
+    def apply_defaults_to(self, options):
+        options.setdefault("zaaktype", self.zaaktype)
+        options.setdefault("informatieobjecttype", self.informatieobjecttype)
+        options.setdefault("organisatie_rsin", self.organisatie_rsin)
+        options.setdefault(
+            "zaak_vertrouwelijkheidaanduiding", self.zaak_vertrouwelijkheidaanduiding
+        )
+        options.setdefault(
+            "doc_vertrouwelijkheidaanduiding",
+            self.doc_vertrouwelijkheidaanduiding,
+        )
+        options.setdefault("auteur", self.auteur)

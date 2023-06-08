@@ -15,10 +15,13 @@ logger = logging.getLogger(__name__)
 
 
 def create_zaak(
-    options: dict, payment_required: bool = False, existing_reference: str = "", **extra
+    zrc_service: Service,
+    options: dict,
+    payment_required: bool = False,
+    existing_reference: str = "",
+    **extra,
 ) -> dict:
-    config = ZgwConfig.get_solo()
-    client = config.zrc_service.build_client()
+    client = zrc_service.build_client()
     today = date.today().isoformat()
     data = {
         "zaaktype": options["zaaktype"],
@@ -52,22 +55,22 @@ def create_zaak(
 
 def default_get_drc() -> Service:
     config = ZgwConfig.get_solo()
-    return config.drc_service
+    zgw_config = config.default_zgw_api_group
+    return zgw_config.drc_service
 
 
-def partial_update_zaak(zaak_url: str, data: dict) -> dict:
-    config = ZgwConfig.get_solo()
-    client = config.zrc_service.build_client()
+def partial_update_zaak(zaak_url: str, data: dict, zrc_service: Service) -> dict:
+    client = zrc_service.build_client()
     zaak = client.partial_update("zaak", data, url=zaak_url)
     return zaak
 
 
-def set_zaak_payment(zaak_url: str, partial: bool = False) -> dict:
+def set_zaak_payment(zaak_url: str, service: Service, partial: bool = False) -> dict:
     data = {
         "betalingsindicatie": "gedeeltelijk" if partial else "geheel",
         "laatsteBetaaldatum": timezone.now().isoformat(),
     }
-    return partial_update_zaak(zaak_url, data)
+    return partial_update_zaak(zaak_url, data, service)
 
 
 def create_document(
@@ -184,14 +187,22 @@ def relate_document(zaak_url: str, document_url: str) -> dict:
     return zio
 
 
-def create_rol(zaak: dict, betrokkene: dict, options: dict) -> Optional[dict]:
+def create_rol(
+    zaak: dict,
+    betrokkene: dict,
+    zrc_service: Service,
+    ztc_service: Service,
+    options: dict,
+) -> Optional[dict]:
     roltype = betrokkene.get("roltype")
     if not roltype:
         query_params = {
             "zaaktype": options["zaaktype"],
             "omschrijvingGeneriek": betrokkene.get("omschrijvingGeneriek", "initiator"),
         }
-        rol_typen = retrieve_roltypen(query_params=query_params)
+        rol_typen = retrieve_roltypen(
+            query_params=query_params, ztc_service=ztc_service
+        )
         if not rol_typen or not rol_typen:
             logger.warning(
                 "No matching roltype found in the zaaktype.",
@@ -200,8 +211,7 @@ def create_rol(zaak: dict, betrokkene: dict, options: dict) -> Optional[dict]:
             return None
         roltype = rol_typen[0]["url"]
 
-    config = ZgwConfig.get_solo()
-    zrc_client = config.zrc_service.build_client()
+    zrc_client = zrc_service.build_client()
     data = {
         "zaak": zaak["url"],
         # "betrokkene": betrokkene.get("betrokkene", ""),
@@ -228,20 +238,19 @@ def noop_matcher(roltypen: list) -> list:
 
 
 def retrieve_roltypen(
-    matcher: Callable[[list], list] = noop_matcher, query_params: None | dict = None
+    ztc_service: Service,
+    matcher: Callable[[list], list] = noop_matcher,
+    query_params: None | dict = None,
 ) -> List:
-    config = ZgwConfig.get_solo()
-    ztc_client = config.ztc_service.build_client()
+    ztc_client = ztc_service.build_client()
     roltypen = ztc_client.list("roltype", query_params)
 
     return matcher(roltypen["results"])
 
 
-def create_status(zaak: dict) -> dict:
-    config = ZgwConfig.get_solo()
-
+def create_status(zaak: dict, ztc_service: Service, zrc_service: Service) -> dict:
     # get statustype for initial status
-    ztc_client = config.ztc_service.build_client()
+    ztc_client = ztc_service.build_client()
     statustypen = ztc_client.list("statustype", {"zaaktype": zaak["zaaktype"]})[
         "results"
     ]
@@ -250,7 +259,7 @@ def create_status(zaak: dict) -> dict:
     initial_status_remarks = ""  # variables.get("initialStatusRemarks", "")
 
     # create status
-    zrc_client = config.zrc_service.build_client()
+    zrc_client = zrc_service.build_client()
     data = {
         "zaak": zaak["url"],
         "statustype": statustype["url"],
