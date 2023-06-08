@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.test import TestCase
 
 import requests_mock
@@ -8,11 +10,27 @@ from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..constants import Attributes, AttributesV2, HaalCentraalVersion
 from ..models import HaalCentraalConfig
-from ..plugin import HaalCentraalPrefill
+from ..plugin import HaalCentraalPrefill, get_config, get_correct_attributes
 from .utils import load_binary_mock, load_json_mock
 
 
 class HaalCentraalPrefillV1Test(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        config_patcher = patch(
+            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            return_value=HaalCentraalConfig(
+                version=HaalCentraalVersion.haalcentraal13,
+                service=ServiceFactory(
+                    api_root="https://personen/api/",
+                    oas="https://personen/api/schema/openapi.yaml",
+                ),
+            ),
+        )
+        config_patcher.start()
+        self.addCleanup(config_patcher.stop)
+
     def test_defined_attributes_paths_resolve(self):
         data = load_json_mock("ingeschrevenpersonen.999990676-full.json")
         for key, label in sorted(Attributes.choices, key=lambda o: o[0]):
@@ -31,15 +49,6 @@ class HaalCentraalPrefillV1Test(TestCase):
             status_code=200,
             json=load_json_mock("ingeschrevenpersonen.999990676.json"),
         )
-
-        config = HaalCentraalConfig.get_solo()
-        service = ServiceFactory(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
-        config.version = HaalCentraalVersion.haalcentraal13
-        config.service = service
-        config.save()
 
         submission = SubmissionFactory(auth_info__value="999990676")
         values = HaalCentraalPrefill.get_prefill_values(
@@ -64,15 +73,6 @@ class HaalCentraalPrefillV1Test(TestCase):
             status_code=500,
         )
 
-        config = HaalCentraalConfig.get_solo()
-        service = ServiceFactory(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
-        config.version = HaalCentraalVersion.haalcentraal13
-        config.service = service
-        config.save()
-
         submission = SubmissionFactory(auth_info__value="999990676")
         values = HaalCentraalPrefill.get_prefill_values(
             submission,
@@ -93,15 +93,6 @@ class HaalCentraalPrefillV1Test(TestCase):
             status_code=404,
         )
 
-        config = HaalCentraalConfig.get_solo()
-        service = ServiceFactory(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
-        config.version = HaalCentraalVersion.haalcentraal13
-        config.service = service
-        config.save()
-
         submission = SubmissionFactory(auth_info__value="999990676")
         values = HaalCentraalPrefill.get_prefill_values(
             submission,
@@ -112,6 +103,22 @@ class HaalCentraalPrefillV1Test(TestCase):
 
 
 class HaalCentraalPrefillApiV2Test(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        config_patcher = patch(
+            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            return_value=HaalCentraalConfig(
+                version=HaalCentraalVersion.haalcentraal20,
+                service=ServiceFactory(
+                    api_root="https://personen/api/",
+                    oas="https://personen/api/schema/openapi.yaml",
+                ),
+            ),
+        )
+        config_patcher.start()
+        self.addCleanup(config_patcher.stop)
+
     def test_defined_attributes_paths_resolve(self):
         data = load_json_mock("personen-full-response.json")
         for key, label in sorted(AttributesV2.choices, key=lambda o: o[0]):
@@ -130,15 +137,6 @@ class HaalCentraalPrefillApiV2Test(TestCase):
             status_code=200,
             json=load_json_mock("personen-full-response.json"),
         )
-
-        config = HaalCentraalConfig.get_solo()
-        service = ServiceFactory(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
-        config.service = service
-        config.version = HaalCentraalVersion.haalcentraal20
-        config.save()
 
         submission = SubmissionFactory(auth_info__value="999993653")
         values = HaalCentraalPrefill.get_prefill_values(
@@ -163,15 +161,6 @@ class HaalCentraalPrefillApiV2Test(TestCase):
             status_code=500,
         )
 
-        config = HaalCentraalConfig.get_solo()
-        service = ServiceFactory(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
-        config.service = service
-        config.version = HaalCentraalVersion.haalcentraal20
-        config.save()
-
         submission = SubmissionFactory(auth_info__value="999993653")
         values = HaalCentraalPrefill.get_prefill_values(
             submission,
@@ -192,15 +181,6 @@ class HaalCentraalPrefillApiV2Test(TestCase):
             status_code=404,
         )
 
-        config = HaalCentraalConfig.get_solo()
-        service = ServiceFactory(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
-        config.version = HaalCentraalVersion.haalcentraal20
-        config.service = service
-        config.save()
-
         submission = SubmissionFactory(auth_info__value="999993653")
         values = HaalCentraalPrefill.get_prefill_values(
             submission,
@@ -210,39 +190,135 @@ class HaalCentraalPrefillApiV2Test(TestCase):
         self.assertEqual(values, expected)
 
 
+class HaalCentraalPrefillNoConfigTest(TestCase):
+    @patch(
+        "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+        return_value=HaalCentraalConfig(),
+    )
+    def test_get_prefill_values_without_config(self, mock_solo):
+        submission = SubmissionFactory(auth_info__value="999990676")
+        values = HaalCentraalPrefill.get_prefill_values(
+            submission,
+            [Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
+        )
+        self.assertEqual(values, {})
+
+
 class HaalCentraalPrefillGetAvailableAtributesTest(TestCase):
-    def test_get_available_attributes_no_configured_version(self):
+    @patch(
+        "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+        return_value=HaalCentraalConfig(),
+    )
+    def test_get_available_attributes_no_configured_version(self, mock_solo):
         attrs = HaalCentraalPrefill.get_available_attributes()
         self.assertIsInstance(attrs, list)
         self.assertIsInstance(attrs[0], tuple)
         self.assertEqual(len(attrs[0]), 2)
 
     def test_get_available_attributes_v1(self):
-        config = HaalCentraalConfig.get_solo()
-        service = ServiceFactory(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
-        config.version = HaalCentraalVersion.haalcentraal13
-        config.service = service
-        config.save()
-
-        attrs = HaalCentraalPrefill.get_available_attributes()
-        self.assertIsInstance(attrs, list)
-        self.assertIsInstance(attrs[0], tuple)
-        self.assertEqual(len(attrs[0]), 2)
+        with patch(
+            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            return_value=HaalCentraalConfig(
+                version=HaalCentraalVersion.haalcentraal13,
+                service=ServiceFactory(
+                    api_root="https://personen/api/",
+                    oas="https://personen/api/schema/openapi.yaml",
+                ),
+            ),
+        ):
+            attrs = HaalCentraalPrefill.get_available_attributes()
+            self.assertIsInstance(attrs, list)
+            self.assertIsInstance(attrs[0], tuple)
+            self.assertEqual(len(attrs[0]), 2)
 
     def test_get_available_attributes_v2(self):
-        config = HaalCentraalConfig.get_solo()
-        service = ServiceFactory(
-            api_root="https://personen/api/",
-            oas="https://personen/api/schema/openapi.yaml",
-        )
-        config.version = HaalCentraalVersion.haalcentraal20
-        config.service = service
-        config.save()
+        with patch(
+            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            return_value=HaalCentraalConfig(
+                version=HaalCentraalVersion.haalcentraal20,
+                service=ServiceFactory(
+                    api_root="https://personen/api/",
+                    oas="https://personen/api/schema/openapi.yaml",
+                ),
+            ),
+        ):
+            attrs = HaalCentraalPrefill.get_available_attributes()
+            self.assertIsInstance(attrs, list)
+            self.assertIsInstance(attrs[0], tuple)
+            self.assertEqual(len(attrs[0]), 2)
 
-        attrs = HaalCentraalPrefill.get_available_attributes()
-        self.assertIsInstance(attrs, list)
-        self.assertIsInstance(attrs[0], tuple)
-        self.assertEqual(len(attrs[0]), 2)
+
+class HaalCentraalPluginConfigTest(TestCase):
+    @patch(
+        "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+        return_value=HaalCentraalConfig(),
+    )
+    def test_no_config(self, mock_solo):
+        config = get_config()
+        self.assertIsNone(config)
+
+    def test_config_is_v1(self):
+        with patch(
+            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            return_value=HaalCentraalConfig(
+                version=HaalCentraalVersion.haalcentraal13,
+                service=ServiceFactory(
+                    api_root="https://personen/api/",
+                    oas="https://personen/api/schema/openapi.yaml",
+                ),
+            ),
+        ):
+            config = get_config()
+            self.assertIsNotNone(config)
+
+    def test_config_is_v2(self):
+        with patch(
+            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            return_value=HaalCentraalConfig(
+                version=HaalCentraalVersion.haalcentraal20,
+                service=ServiceFactory(
+                    api_root="https://personen/api/",
+                    oas="https://personen/api/schema/openapi.yaml",
+                ),
+            ),
+        ):
+            config = get_config()
+            self.assertIsNotNone(config)
+
+
+class HaalCentraalPluginAttributesTest(TestCase):
+    @patch(
+        "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+        return_value=HaalCentraalConfig(),
+    )
+    def test_no_config(self, mock_solo):
+        attributes = get_correct_attributes()
+        self.assertEqual(attributes, Attributes)
+
+    def test_config_is_v1(self):
+        with patch(
+            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            return_value=HaalCentraalConfig(
+                version=HaalCentraalVersion.haalcentraal13,
+                service=ServiceFactory(
+                    api_root="https://personen/api/",
+                    oas="https://personen/api/schema/openapi.yaml",
+                ),
+            ),
+        ):
+            attributes = get_correct_attributes()
+            self.assertEqual(attributes, Attributes)
+
+    def test_config_is_v2(self):
+        with patch(
+            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            return_value=HaalCentraalConfig(
+                version=HaalCentraalVersion.haalcentraal20,
+                service=ServiceFactory(
+                    api_root="https://personen/api/",
+                    oas="https://personen/api/schema/openapi.yaml",
+                ),
+            ),
+        ):
+            attributes = get_correct_attributes()
+            self.assertEqual(attributes, AttributesV2)

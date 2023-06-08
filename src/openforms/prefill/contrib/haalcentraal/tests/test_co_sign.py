@@ -215,3 +215,45 @@ class CoSignPrefillV2Tests(TestCase):
                 "fields": {},
             },
         )
+
+
+class CoSignPrefillNoConfigTests(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        # mock out django-solo interface (we don't have to deal with caches then)
+        config_patcher = patch(
+            "openforms.prefill.co_sign.PrefillConfig.get_solo",
+            return_value=PrefillConfig(default_person_plugin=plugin.identifier),
+        )
+        config_patcher.start()
+        self.addCleanup(config_patcher.stop)
+
+        hc_config_patcher = patch(
+            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            return_value=HaalCentraalConfig(service=None),
+        )
+        hc_config_patcher.start()
+        self.addCleanup(hc_config_patcher.stop)
+
+    def test_co_sign_prefill_with_no_config(self):
+        submission = SubmissionFactory.create(
+            co_sign_data={
+                "plugin": plugin.identifier,
+                "identifier": "999993653",
+                "fields": {},
+            }
+        )
+
+        add_co_sign_representation(submission, plugin.requires_auth)
+
+        submission.refresh_from_db()
+        self.assertEqual(
+            submission.co_sign_data,
+            {
+                "plugin": plugin.identifier,
+                "identifier": "999993653",
+                "representation": "",
+                "fields": {},
+            },
+        )

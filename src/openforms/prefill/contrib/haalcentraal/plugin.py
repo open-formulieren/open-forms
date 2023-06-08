@@ -144,10 +144,6 @@ class HaalCentraalPrefill(BasePlugin):
         :return: a key-value dictionary, where the key is the requested attribute and
           the value is the prefill value to use for that attribute.
         """
-        config = get_config()
-        if not config:
-            return {}
-
         version_atributes = get_correct_attributes()
 
         values = cls._get_values_for_bsn(
