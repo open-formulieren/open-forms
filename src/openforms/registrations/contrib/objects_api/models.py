@@ -4,6 +4,12 @@ from django.utils.translation import gettext_lazy as _
 from solo.models import SingletonModel
 from zgw_consumers.constants import APITypes
 
+from openforms.registrations.contrib.objects_api.validators import (
+    JSONTEMPLATEVALIDATORTHINYMCTINNY,
+    JsonTemplateValidator,
+)
+
+from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.validators import validate_rsin
 
 
@@ -98,6 +104,17 @@ class ObjectsAPIConfig(SingletonModel):
         validators=[validate_rsin],
         help_text=_("Default RSIN of organization, which creates the INFORMATIEOBJECT"),
     )
+    content_json = models.TextField(
+        _("Json field"),
+        validators=[
+            DjangoTemplateValidator(
+                backend="openforms.template.openforms_backend",
+            ),
+            JSONTEMPLATEVALIDATORTHINYMCTINNY(),
+        ],
+        blank=True,
+        default=dict,
+    )
 
     class Meta:
         verbose_name = _("Objects API configuration")
@@ -118,3 +135,4 @@ class ObjectsAPIConfig(SingletonModel):
             "informatieobjecttype_attachment", self.informatieobjecttype_attachment
         )
         options.setdefault("organisatie_rsin", self.organisatie_rsin)
+        options.setdefault("content_json", self.content_json)

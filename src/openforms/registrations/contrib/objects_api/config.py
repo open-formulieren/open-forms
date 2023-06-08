@@ -1,6 +1,10 @@
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
+from openforms.registrations.contrib.objects_api.validators import JsonTemplateValidator
+from openforms.template.validators import DjangoTemplateValidator
+
+from openforms.utils.json_logic.api.validators import JsonLogicValidator
 
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
@@ -65,4 +69,17 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
         required=False,
         validators=[validate_rsin],
         help_text=_("RSIN of organization, which creates the INFORMATIEOBJECT"),
+    )
+    content_json = serializers.CharField(
+        label=_("JSON content field"),
+        help_text=_("Field to generate json logic based on variables"),
+        validators=[
+            DjangoTemplateValidator(
+                backend="openforms.template.openforms_backend",
+            ),
+            JsonTemplateValidator(max_length=300),
+            JsonLogicValidator(),
+        ],
+        default=dict,
+        initial=dict,
     )

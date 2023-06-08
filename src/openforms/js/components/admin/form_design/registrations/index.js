@@ -12,6 +12,16 @@ export const BACKEND_OPTIONS_FORMS = {
     form: CamundaOptionsForm,
     onStepEdit: onStepEdit,
   },
+  objects_api: {
+    uiSchema: {
+      contentJson: {
+        'ui:widget': 'textarea',
+        'ui:options': {
+          rows: 5,
+        },
+      },
+    }
+  },
   email: {
     uiSchema: {
       emailContentTemplateText: {
