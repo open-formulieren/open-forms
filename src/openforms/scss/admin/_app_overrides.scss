@@ -235,3 +235,23 @@ body.app-forms.model-category.change-list {
     padding: 8px 10px;
   }
 }
+
+/**
+ * Django-log-outgoing-requests
+ */
+body.app-log_outgoing_requests.model-outgoingrequestslog {
+  .field-request_body,
+  .field-response_body {
+    & > div {
+      display: flex;
+    }
+
+    .readonly {
+      white-space: pre-wrap !important;
+      max-width: 88ch;
+      overflow: unset !important;
+      word-break: break-all;
+      overflow-wrap: anywhere;
+    }
+  }
+}
