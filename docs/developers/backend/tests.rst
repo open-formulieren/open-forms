@@ -107,3 +107,29 @@ Example custom command:
     NO_E2E_HEADLESS=1 E2E_DRIVER=firefox python src/manage.py test src --tag=e2e
 
 .. note:: Only the presence of the ``NO_E2E_HEADLESS`` is checked, not the value
+
+Known issues
+============
+
+**AssertionError: Database queries to 'default' are not allowed in SimpleTestCase subclasses.**
+
+These are often caused by django-solo ``SingletonModel`` sucblasses that are being
+called somewhere, e.g. ``GlobalConfiguration.get_solo``. Sometimes they fetch from
+cache, sometimes there is a cache miss and a database query is needed (e.g. when running
+tests in reverse).
+
+This is typically a test-isolation smell and the root cause should be fixed. This may
+also be caused indirectly if you have ``LOG_REQUESTS`` set to ``True`` in your local
+``.env``, as it also results in a django-solo lookup.
+
+The preferred approach to mitigate these kind of issues is to mock the ``get_solo`` call
+to prevent cache or DB hits:
+
+.. code-block:: python
+
+    @unittest.mock.patch(
+        "path.to.module.using_the_model.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(...),
+    )
+    def test_something(self, mock_get_solo):
+        ...

@@ -8,6 +8,12 @@ import warnings
 
 os.environ.setdefault("IS_HTTPS", "no")
 os.environ.setdefault("SECRET_KEY", "dummy")
+# Do not log requests in CI/tests:
+#
+# * overhead making tests slower
+# * it conflicts with SimpleTestCase in some cases when the run-time configuration is
+#   looked up from the django-solo model
+os.environ.setdefault("LOG_REQUESTS", "no")
 
 from .base import *  # noqa isort:skip
 
