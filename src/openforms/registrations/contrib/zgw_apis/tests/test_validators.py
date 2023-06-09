@@ -6,7 +6,7 @@ from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
 from ..plugin import ZaakOptionsSerializer
-from .factories import ZgwConfigFactory
+from .factories import ZGWApiGroupConfigFactory
 
 
 @requests_mock.Mocker()
@@ -15,7 +15,7 @@ class OmschrijvingValidatorTests(TestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        ZgwConfigFactory.create(
+        cls.zgw_group = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken.nl/api/v1/",
             zrc_service__oas="https://zaken.nl/api/v1/schema/openapi.yaml",
             drc_service__api_root="https://documenten.nl/api/v1/",
@@ -51,6 +51,7 @@ class OmschrijvingValidatorTests(TestCase):
         )
 
         data = {
+            "zgw_api_group": self.zgw_group.pk,
             "zaaktype": "https://catalogus.nl/api/v1/zaaktypen/111",
             "medewerker_roltype": "Some description",
         }
@@ -76,6 +77,7 @@ class OmschrijvingValidatorTests(TestCase):
         )
 
         data = {
+            "zgw_api_group": self.zgw_group.pk,
             "zaaktype": "https://catalogus.nl/api/v1/zaaktypen/111",
             "medewerker_roltype": "Some description",
         }
