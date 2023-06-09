@@ -1163,6 +1163,7 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
           },
           languages: state.languageInfo.languages,
           translationEnabled: state.form.translationEnabled,
+          registration: {registrationBackend: state.form.registrationBackend, registrationBackendOptions: state.form.registrationBackendOptions}
         }}
       >
         <Tabs defaultIndex={activeTab ? parseInt(activeTab, 10) : null}>

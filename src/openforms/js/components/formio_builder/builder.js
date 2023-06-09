@@ -310,6 +310,7 @@ const FormIOBuilder = ({
   onComponentMutated,
   componentTranslations = {}, // mapping of language code to (mapping of literal -> translation)
   componentNamespace = {},
+  registrationBackendInfo = {},
   forceUpdate = false,
 }) => {
   // the deep clone is needed to create a mutable object, as the FormBuilder
@@ -327,6 +328,7 @@ const FormIOBuilder = ({
 
   const componentTranslationsRef = useRef(componentTranslations);
   const componentNamespaceRef = useRef(componentNamespace);
+  const registrationBackendInfoRef = useRef(registrationBackendInfo);
 
   // ... The onChange event of the builder is only bound once, so while the
   // onBuilderFormChange function identity changes with every render, the formio builder
@@ -352,6 +354,7 @@ const FormIOBuilder = ({
   set(builderOptions, 'openForms.componentTranslationsRef', componentTranslationsRef);
   set(builderOptions, 'openForms.componentNamespace', componentNamespaceRef.current);
   set(builderOptions, 'openForms.featureFlags', featureFlags);
+  set(builderOptions, 'openForms.registrationBackendInfoRef', registrationBackendInfoRef)
 
   // if an update must be forced, we mutate the ref state to point to the new
   // configuration, which causes the form builder to re-render the new configuration.

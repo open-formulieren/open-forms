@@ -18,12 +18,25 @@ const REGISTRATION = {
       key: 'registration.informatieobjecttype',
       label: 'Informatieobjecttype',
       tooltip: 'Save the attachment in the Documents API with this InformatieObjectType.',
-      dataSrc: 'url',
+      dataSrc: 'custom',
       data: {
-        // if the url starts with '/', then formio will prefix it with the formio
-        // base URL, which is of course wrong. We there explicitly use the detected
-        // host.
-        url: getFullyQualifiedUrl('/api/v2/registration/plugins/zgw/informatieobjecttypen'),
+        custom(context) {
+          const instance = context.instance;
+          const registrationInfo = instance?.options?.openForms?.registrationBackendInfoRef?.current;
+          if (!registrationInfo) return [];
+
+          // if the url starts with '/', then formio will prefix it with the formio
+          // base URL, which is of course wrong. We there explicitly use the detected
+          // host.
+          let url = new URL(getFullyQualifiedUrl('/api/v2/registration/plugins/zgw/informatieobjecttypen'));
+
+          if (registrationInfo.registrationBackend === "zgw-create-zaak") {
+            url.searchParams.set('zgw_api_group', registrationInfo.registrationBackendOptions.zgwApiGroup);
+          }
+
+          const options = context.component.authenticate ? {} : { noToken: true };
+          instance.loadItems(url.href, [], instance.requestHeaders, options, 'GET', {});
+        }
       },
       valueProperty: 'url',
     },

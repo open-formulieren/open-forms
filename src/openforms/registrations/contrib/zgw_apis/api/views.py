@@ -34,7 +34,7 @@ class InformatieObjectTypenListView(ListMixin, APIView):
         if zgw_api_group:
             return zgw_api_group.ztc_service.build_client()
 
-        config = ZgwConfig().get_solo()
+        config = ZgwConfig.get_solo()
         if config.default_zgw_api_group:
             return config.default_zgw_api_group.ztc_service.build_client()
 
