@@ -8,6 +8,8 @@ from django.utils.translation import gettext_lazy as _
 import sentry_sdk
 from celery.schedules import crontab
 from corsheaders.defaults import default_headers as default_cors_headers
+from log_outgoing_requests.datastructures import ContentType
+from log_outgoing_requests.formatters import HttpFormatter
 
 from csp_post_processor.constants import NONCE_HTTP_HEADER
 
@@ -185,6 +187,8 @@ INSTALLED_APPS = [
     "cspreports",
     "csp_post_processor",
     "django_camunda",
+    "log_outgoing_requests",
+    "log_outgoing_requests_ext",
     # Project applications.
     "openforms.accounts",
     "openforms.analytics_tools",
@@ -361,6 +365,7 @@ DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", "openforms@example.com")
 # LOGGING
 #
 LOG_STDOUT = config("LOG_STDOUT", default=False)
+LOG_REQUESTS = config("LOG_REQUESTS", default=True)
 
 LOGGING_DIR = os.path.join(BASE_DIR, "log")
 
@@ -376,6 +381,7 @@ LOGGING = {
         "performance": {
             "format": "%(asctime)s %(process)d | %(thread)d | %(message)s",
         },
+        "outgoing_requests": {"()": HttpFormatter},
     },
     "filters": {
         "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"},
@@ -419,6 +425,15 @@ LOGGING = {
             "maxBytes": 1024 * 1024 * 10,  # 10 MB
             "backupCount": 10,
         },
+        "log_outgoing_requests": {
+            "level": "DEBUG",
+            "formatter": "outgoing_requests",
+            "class": "logging.StreamHandler",
+        },
+        "save_outgoing_requests": {
+            "level": "DEBUG",
+            "class": "log_outgoing_requests.handlers.DatabaseOutgoingRequestsHandler",
+        },
     },
     "loggers": {
         "openforms": {
@@ -444,6 +459,13 @@ LOGGING = {
         "mozilla_django_oidc": {
             "handlers": ["project"] if not LOG_STDOUT else ["console"],
             "level": "DEBUG",
+        },
+        "requests": {
+            "handlers": ["log_outgoing_requests", "save_outgoing_requests"]
+            if LOG_REQUESTS
+            else [],
+            "level": "DEBUG",
+            "propagate": True,
         },
     },
 }
@@ -678,6 +700,10 @@ CELERY_BEAT_SCHEDULE = {
     "clear-forms-exports": {
         "task": "openforms.forms.admin.tasks.clear_forms_export",
         "schedule": crontab(hour=0, minute=0, day_of_week="sunday"),
+    },
+    "cleanup-outgoing-request-logs": {
+        "task": "log_outgoing_requests_ext.tasks.cleanup_request_logs",
+        "schedule": crontab(hour=0, minute=0, day_of_week="*"),
     },
 }
 
@@ -1140,6 +1166,24 @@ HIJACK_INSERT_BEFORE = (
 # Django Modeltranslation
 #
 MODELTRANSLATION_DEFAULT_LANGUAGE = "nl"
+
+#
+# Django-log-outgoing-requests
+#
+LOG_OUTGOING_REQUESTS_CONTENT_TYPES = [
+    ContentType(pattern="application/json", default_encoding="utf-8"),
+    ContentType(pattern="application/soap+xml", default_encoding="utf-8"),
+    ContentType(pattern="application/xml", default_encoding="utf-8"),
+    ContentType(pattern="text/xml", default_encoding="iso-8859-1"),
+    ContentType(pattern="text/*", default_encoding="utf-8"),
+]
+LOG_OUTGOING_REQUESTS_EMIT_BODY = True
+LOG_OUTGOING_REQUESTS_MAX_CONTENT_LENGTH = 524_288  # 0.5MB
+
+# Custom settings
+LOG_OUTGOING_REQUESTS_MAX_AGE = config(
+    "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7 * 24
+)  # number of hours
 
 #
 # Open Forms extensions

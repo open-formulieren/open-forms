@@ -191,6 +191,10 @@
                 "blacklist"
             ],
             [
+                "log_outgoing_requests",
+                "outgoingrequestslogconfig"
+            ],
+            [
                 "multidomain",
                 "domain"
             ],
@@ -267,6 +271,10 @@
             [
                 "logging",
                 "timelinelogproxy"
+            ],
+            [
+                "log_outgoing_requests",
+                "outgoingrequestslog"
             ],
             [
                 "submissions",

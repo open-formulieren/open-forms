@@ -178,6 +178,7 @@ django==3.2.19
     #   django-formtools
     #   django-hijack
     #   django-jenkins
+    #   django-log-outgoing-requests
     #   django-modeltranslation
     #   django-otp
     #   django-phonenumber-field
@@ -210,6 +211,7 @@ django-appconf==1.0.4
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-cookie-consent
+    #   django-log-outgoing-requests
     #   django-timeline-logger
 django-autoslug==1.9.8
     # via
@@ -280,6 +282,10 @@ django-ipware==3.0.1
     #   django-axes
 django-jenkins==0.110.0
     # via -r requirements/test-tools.in
+django-log-outgoing-requests==0.4.0
+    # via
+    #   -c requirements/base.txt
+    #   -r requirements/base.txt
 django-modeltranslation==0.18.5
     # via
     #   -c requirements/base.txt
@@ -335,6 +341,7 @@ django-solo==2.0.0
     #   -r requirements/base.txt
     #   django-camunda
     #   django-digid-eherkenning
+    #   django-log-outgoing-requests
     #   mozilla-django-oidc-db
     #   zgw-consumers
 django-timeline-logger==2.1.0
@@ -725,6 +732,7 @@ requests==2.31.0
     #   -c requirements/base.txt
     #   -r requirements/base.txt
     #   django-camunda
+    #   django-log-outgoing-requests
     #   gemma-zds-client
     #   maykin-python3-saml
     #   mozilla-django-oidc
