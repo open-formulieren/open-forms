@@ -3,18 +3,23 @@ from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import authentication, permissions
 from rest_framework.views import APIView
+from zds_client import Client
 from zgw_consumers.api_models.base import factory
 from zgw_consumers.api_models.catalogi import Catalogus, InformatieObjectType
 from zgw_consumers.service import get_paginated_results
 
 from openforms.api.views import ListMixin
-from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
+from openforms.registrations.contrib.zgw_apis.models import ZGWApiGroupConfig, ZgwConfig
 
+from .filters import ZgwApiGroupFilterSerializer
 from .serializers import InformatieObjectTypeChoiceSerializer
 
 
 @extend_schema_view(
-    get=extend_schema(summary=_("List available InformatieObjectTypen")),
+    get=extend_schema(
+        summary=_("List available InformatieObjectTypen"),
+        parameters=[ZgwApiGroupFilterSerializer],
+    ),
 )
 class InformatieObjectTypenListView(ListMixin, APIView):
     """
@@ -25,13 +30,24 @@ class InformatieObjectTypenListView(ListMixin, APIView):
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = InformatieObjectTypeChoiceSerializer
 
-    def get_objects(self):
-        config = ZgwConfig().get_solo()
+    def _get_ztc_client(self, zgw_api_group: ZGWApiGroupConfig | None) -> Client | None:
+        if zgw_api_group:
+            return zgw_api_group.ztc_service.build_client()
 
-        if not config.ztc_service:
+        config = ZgwConfig().get_solo()
+        if config.default_zgw_api_group:
+            return config.default_zgw_api_group.ztc_service.build_client()
+
+    def get_objects(self):
+        filter_serializer = ZgwApiGroupFilterSerializer(data=self.request.query_params)
+        if not filter_serializer.is_valid():
             return []
 
-        client = config.ztc_service.build_client()
+        zgw_api_group = filter_serializer.validated_data.get("zgw_api_group")
+
+        client = self._get_ztc_client(zgw_api_group)
+        if not client:
+            return []
 
         catalogus_data = get_paginated_results(client, "catalogus")
         catalogus_mapping = {
