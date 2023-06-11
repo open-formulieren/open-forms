@@ -59,7 +59,6 @@ django-tinymce
 django-treebeard
 django-yubin
 mozilla-django-oidc-db
-pyopenssl
 maykin-django-two-factor-auth[phonenumbers]
 django-timeline-logger
 django-csp
