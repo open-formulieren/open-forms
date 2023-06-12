@@ -7,7 +7,7 @@ from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from ..models import ZGWApiGroupConfig
 
 
-class ZgwApiGroupFilterSerializer(serializers.Serializer):
+class ListInformatieObjectTypenQueryParamsSerializer(serializers.Serializer):
     zgw_api_group = PrimaryKeyRelatedAsChoicesField(
         queryset=ZGWApiGroupConfig.objects.all(),
         help_text=_(
@@ -15,5 +15,10 @@ class ZgwApiGroupFilterSerializer(serializers.Serializer):
             "in this set will be returned. Otherwise, the Catalogi API in the default ZGW API set will be returned."
         ),
         label=_("ZGW API set"),
+        required=False,
+    )
+    registration_backend = serializers.CharField(
+        help_text=_("The ID of the registration backend to use."),
+        label=_("Registration backend ID"),
         required=False,
     )
