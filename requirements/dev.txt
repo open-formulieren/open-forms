@@ -156,7 +156,7 @@ coverage==7.1.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-cryptography==39.0.1
+cryptography==41.0.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -770,7 +770,7 @@ pyjwt==2.6.0
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
     #   gemma-zds-client
-pyopenssl==23.0.0
+pyopenssl==23.2.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
