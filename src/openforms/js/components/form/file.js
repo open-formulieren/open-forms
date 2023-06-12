@@ -29,9 +29,18 @@ const REGISTRATION = {
           // base URL, which is of course wrong. We there explicitly use the detected
           // host.
           let url = new URL(getFullyQualifiedUrl('/api/v2/registration/plugins/zgw/informatieobjecttypen'));
-
-          if (registrationInfo.registrationBackend === "zgw-create-zaak") {
-            url.searchParams.set('zgw_api_group', registrationInfo.registrationBackendOptions.zgwApiGroup);
+          switch (registrationInfo.registrationBackend) {
+            case 'zgw-create-zaak': {
+              url.searchParams.set('zgw_api_group', registrationInfo.registrationBackendOptions.zgwApiGroup);
+              url.searchParams.set('registration_backend', 'zgw-create-zaak');
+              break;
+            }
+            case 'objects_api': {
+              url.searchParams.set('registration_backend', 'objects_api');
+              break;
+            }
+            default:
+              return;
           }
 
           const options = context.component.authenticate ? {} : { noToken: true };

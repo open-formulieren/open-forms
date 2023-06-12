@@ -113,5 +113,72 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
             furl(requests_to_endpoint[0]).args["zgw_api_group"], str(self.zgw_api_1.pk)
         )
         self.assertEqual(
+            furl(requests_to_endpoint[0]).args["registration_backend"],
+            "zgw-create-zaak",
+        )
+        self.assertEqual(
             furl(requests_to_endpoint[2]).args["zgw_api_group"], str(self.zgw_api_2.pk)
+        )
+        self.assertEqual(
+            furl(requests_to_endpoint[2]).args["registration_backend"],
+            "zgw-create-zaak",
+        )
+
+    async def test_configuration_objects_api_backend(self):
+        @sync_to_async
+        def setUpTestData():
+            return FormFactory.create(
+                name="Configure registration test",
+                name_nl="Configure registration test",
+                generate_minimal_setup=True,
+                formstep__form_definition__name_nl="Configure registration test",
+                formstep__form_definition__configuration={
+                    "components": [
+                        {
+                            "type": "file",
+                            "key": "fileUpload",
+                            "label": "File upload test",
+                        },
+                    ],
+                },
+            )
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        requests_to_endpoint = []
+
+        def collect_requests(request):
+            url = furl(request.url)
+            match = resolve(url.path)
+
+            if match.view_name == "api:zgw_apis:iotypen-list":
+                requests_to_endpoint.append(request)
+
+        async with browser_page() as page:
+            page.on("request", collect_requests)
+
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            with phase("Configure registration backend"):
+                await page.get_by_role("tab", name="Registration").click()
+                await page.get_by_role(
+                    "combobox", name="Select registration backend"
+                ).select_option(label="Objects API registration")
+
+            with phase("Configure upload component"):
+                await page.get_by_role("tab", name="Steps and fields").click()
+
+                await open_component_options_modal(page, label="File upload test")
+                await page.get_by_role("button", name="Opslaan").first.click()
+
+        # Formio fires the request twice everytime you open the component
+        self.assertEqual(len(requests_to_endpoint), 2)
+        self.assertEqual(
+            furl(requests_to_endpoint[0]).args["registration_backend"], "objects_api"
         )
