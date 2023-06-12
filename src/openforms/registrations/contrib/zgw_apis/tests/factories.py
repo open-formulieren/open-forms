@@ -10,6 +10,7 @@ class ServiceFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Service
+        django_get_or_create = ("api_root",)
 
 
 class ZGWApiGroupConfigFactory(factory.django.DjangoModelFactory):
