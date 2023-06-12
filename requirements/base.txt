@@ -148,7 +148,7 @@ django-capture-tag==1.0
     # via -r requirements/base.in
 django-colorfield==0.7.0
     # via -r requirements/base.in
-django-cookie-consent==0.3.1
+django-cookie-consent==0.4.0
     # via -r requirements/base.in
 django-cors-headers==3.11.0
     # via -r requirements/base.in
