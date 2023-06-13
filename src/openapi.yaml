@@ -3287,8 +3287,25 @@ paths:
   /api/v2/registration/plugins/zgw/informatieobjecttypen:
     get:
       operationId: registration_plugins_zgw_informatieobjecttypen_list
-      description: List the available InformatieObjectTypen.
+      description: List the available InformatieObjectTypen based on the configured
+        registration backend and ZGW APIs services.
       summary: List available InformatieObjectTypen
+      parameters:
+      - in: query
+        name: registration_backend
+        schema:
+          type: string
+          title: Registration backend ID
+          minLength: 1
+        description: The ID of the registration backend to use.
+      - in: query
+        name: zgw_api_group
+        schema:
+          type: integer
+          title: ZGW API set
+        description: The primary key of the ZGW API set to use. If provided, the informatieobjecttypen
+          from the Catalogi API in this set will be returned. Otherwise, the Catalogi
+          API in the default ZGW API set will be returned.
       tags:
       - registration
       security:
