@@ -5,8 +5,19 @@ from zgw_consumers.models import Service
 from ..models import ZGWApiGroupConfig
 
 
+class UriPathFaker(factory.Faker):
+    def __init__(self, **kwargs):
+        super().__init__("uri_path", **kwargs)
+
+    def generate(self, extra_kwargs=None):
+        uri_path = super().generate(extra_kwargs)
+        if not uri_path.endswith("/"):
+            return f"{uri_path}/"
+        return uri_path
+
+
 class ServiceFactory(factory.django.DjangoModelFactory):
-    api_root = factory.Faker("uri_path")
+    api_root = UriPathFaker()
 
     class Meta:
         model = Service
