@@ -1,3 +1,5 @@
+from typing import cast
+
 from django.utils.encoding import force_str
 from django.utils.translation import gettext as _
 
@@ -20,7 +22,7 @@ class FormioConfigMixin:
     def render_change_form(
         self, request, context, add=False, change=False, form_url="", obj=None
     ):
-        config = GlobalConfiguration.get_solo()
+        config = cast(GlobalConfiguration, GlobalConfiguration.get_solo())
         context.update(
             {
                 "required_default": config.form_fields_required_default,
@@ -32,6 +34,7 @@ class FormioConfigMixin:
                 "feature_flags": {
                     "of_service_fetch_enabled": config.enable_service_fetch,
                     "react_formio_builder_enabled": config.enable_react_formio_builder,
+                    "new_appointments_enabled": config.enable_new_appointments,
                 },
                 "confidentiality_levels": [
                     {"label": label, "value": value}

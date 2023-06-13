@@ -2,7 +2,7 @@
 global URLify;
  */
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useContext} from 'react';
 import {FormattedMessage, defineMessage, useIntl} from 'react-intl';
 
 import Field from 'components/admin/forms/Field';
@@ -14,6 +14,7 @@ import {getTranslatedChoices} from 'utils/i18n';
 
 import AuthPluginAutoLoginField from './AuthPluginAutoLoginField';
 import AuthPluginField from './AuthPluginField';
+import {FeatureFlagsContext} from './Context';
 
 export const SUMBISSION_ALLOWED_CHOICES = [
   [
@@ -80,6 +81,7 @@ const FormConfigurationFields = ({
   } = form;
 
   const intl = useIntl();
+  const {new_appointments_enabled} = useContext(FeatureFlagsContext);
 
   const onCheckboxChange = (event, currentValue) => {
     const {
@@ -328,25 +330,27 @@ const FormConfigurationFields = ({
           onChange={event => onCheckboxChange(event, suspensionAllowed)}
         />
       </FormRow>
-      <FormRow>
-        <Checkbox
-          name="form.appointmentEnabled"
-          label={
-            <FormattedMessage
-              defaultMessage="Appointment enabled"
-              description="Form appointment enabled field label"
-            />
-          }
-          helpText={
-            <FormattedMessage
-              defaultMessage="Experimental mode. Indicates whether appointments are enabled for this form."
-              description="Form appointment enabled field help text"
-            />
-          }
-          checked={appointmentEnabled}
-          onChange={event => onCheckboxChange(event, appointmentEnabled)}
-        />
-      </FormRow>
+      {new_appointments_enabled && (
+        <FormRow>
+          <Checkbox
+            name="form.appointmentEnabled"
+            label={
+              <FormattedMessage
+                defaultMessage="Appointment enabled"
+                description="Form appointment enabled field label"
+              />
+            }
+            helpText={
+              <FormattedMessage
+                defaultMessage="Experimental mode. Indicates whether appointments are enabled for this form."
+                description="Form appointment enabled field help text"
+              />
+            }
+            checked={appointmentEnabled}
+            onChange={event => onCheckboxChange(event, appointmentEnabled)}
+          />
+        </FormRow>
+      )}
     </Fieldset>
   );
 };
