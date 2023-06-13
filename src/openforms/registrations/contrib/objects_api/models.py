@@ -1,16 +1,24 @@
+from functools import partial
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
 from zgw_consumers.constants import APITypes
+from openforms.registrations.contrib.email.models import render_with_language
 
 from openforms.registrations.contrib.objects_api.validators import (
-    JSONTEMPLATEVALIDATORTHINYMCTINNY,
     JsonTemplateValidator,
 )
 
 from openforms.template.validators import DjangoTemplateValidator
+from openforms.utils.json_logic.api.validators import JsonLogicValidator
 from openforms.utils.validators import validate_rsin
+
+
+get_content_text = partial(
+    render_with_language, "registrations/contrib/objects_api/content_json.txt"
+)
 
 
 class ObjectsAPIConfig(SingletonModel):
@@ -110,7 +118,7 @@ class ObjectsAPIConfig(SingletonModel):
             DjangoTemplateValidator(
                 backend="openforms.template.openforms_backend",
             ),
-            JSONTEMPLATEVALIDATORTHINYMCTINNY(),
+            JsonTemplateValidator(max_length=300),
         ],
         blank=True,
         default=dict,

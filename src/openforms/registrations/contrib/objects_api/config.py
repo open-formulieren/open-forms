@@ -1,7 +1,11 @@
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
+from openforms.registrations.contrib.objects_api.constants import (
+    JsonTemplateValidatorErrorTypes,
+)
 from openforms.registrations.contrib.objects_api.validators import JsonTemplateValidator
+from openforms.template.backends.sandboxed_django import get_openforms_backend
 from openforms.template.validators import DjangoTemplateValidator
 
 from openforms.utils.json_logic.api.validators import JsonLogicValidator
@@ -77,8 +81,10 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
             DjangoTemplateValidator(
                 backend="openforms.template.openforms_backend",
             ),
-            JsonTemplateValidator(max_length=300),
-            JsonLogicValidator(),
+            JsonTemplateValidator(
+                max_length=300,
+                error_type=JsonTemplateValidatorErrorTypes.api,
+            ),
         ],
         default=dict,
         initial=dict,
