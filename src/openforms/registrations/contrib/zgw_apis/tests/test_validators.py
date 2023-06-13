@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.test import TestCase, override_settings
 
 import requests_mock
@@ -5,6 +7,7 @@ from zds_client.oas import schema_fetcher
 from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
+from ..models import ZgwConfig
 from ..plugin import ZaakOptionsSerializer
 from .factories import ZGWApiGroupConfigFactory
 
@@ -90,5 +93,26 @@ class OmschrijvingValidatorTests(TestCase):
         self.assertIn("non_field_errors", serializer.errors)
         self.assertEqual(
             "Could not find a roltype with this description related to the zaaktype",
+            serializer.errors["non_field_errors"][0],
+        )
+
+
+@override_settings(LANGUAGE_CODE="en")
+class ZGWAPIGroupConfigTest(TestCase):
+    def test_no_zgw_api_group_and_no_default(self):
+        # No zgw_api_group provided
+        serializer = ZaakOptionsSerializer(data={})
+
+        # No ZgwConfig.default_zgw_api_group configured
+        with patch(
+            "openforms.registrations.contrib.zgw_apis.plugin.ZgwConfig.get_solo",
+            return_value=ZgwConfig(),
+        ):
+            is_valid = serializer.is_valid()
+
+        self.assertFalse(is_valid)
+        self.assertIn("non_field_errors", serializer.errors)
+        self.assertEqual(
+            "No ZGW API set was configured on the form and no default was specified globally.",
             serializer.errors["non_field_errors"][0],
         )

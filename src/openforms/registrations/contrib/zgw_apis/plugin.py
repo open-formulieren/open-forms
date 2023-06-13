@@ -8,6 +8,7 @@ from django.utils.translation import gettext as _
 
 import requests
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from zds_client import ClientError
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
@@ -48,6 +49,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         queryset=ZGWApiGroupConfig.objects.all(),
         help_text=_("Which ZGW API set to use."),
         label=_("ZGW API set"),
+        required=False,
     )
     zaaktype = serializers.URLField(
         required=False, help_text=_("URL of the ZAAKTYPE in the Catalogi API")
@@ -80,6 +82,18 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         validators = [
             RoltypeOmschrijvingValidator(),
         ]
+
+    def validate(self, attrs):
+        if attrs.get("zgw_api_group") is None:
+            config = ZgwConfig.get_solo()
+            if config.default_zgw_api_group is None:
+                raise ValidationError(
+                    _(
+                        "No ZGW API set was configured on the form and no default was specified globally."
+                    )
+                )
+
+        return attrs
 
 
 def _point_coordinate(value):
@@ -158,6 +172,13 @@ class ZGWRegistration(BasePlugin):
         ),
     }
 
+    def get_zgw_config(self, options: dict) -> ZGWApiGroupConfig:
+        zgw = options.get("zgw_api_group")
+        if zgw is None:
+            config = ZgwConfig.get_solo()
+            zgw = config.default_zgw_api_group
+        return zgw
+
     @wrap_api_errors
     def pre_register_submission(self, submission: "Submission", options: dict) -> None:
         """
@@ -166,7 +187,7 @@ class ZGWRegistration(BasePlugin):
         Note: The Rol, Status, the documents for the files uploaded by the user in the form (attachments) and the
         confirmation report PDF will be added in the registration task (after the report has been generated).
         """
-        zgw = options["zgw_api_group"]
+        zgw = self.get_zgw_config(options)
         zgw.apply_defaults_to(options)
 
         zaak_data = apply_data_mapping(
@@ -201,7 +222,7 @@ class ZGWRegistration(BasePlugin):
         """
         Add the PDF document with the submission data (confirmation report) to the zaak created during pre-registration.
         """
-        zgw = options["zgw_api_group"]
+        zgw = self.get_zgw_config(options)
         zgw.apply_defaults_to(options)
 
         result = submission.registration_result
