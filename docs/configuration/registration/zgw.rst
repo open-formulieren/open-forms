@@ -63,8 +63,8 @@ IP address                    The IP address of the Open Forms server (optional,
 Configuration
 =============
 
-1. In Open Forms, navigate to: **Configuration** > **Services**
-2. Here we need to configure credentials for three related ZGW API's:
+#. In Open Forms, navigate to: **Configuration** > **Services**
+#. Here we need to configure credentials for three related ZGW API's:
 
     - Zaakregistratiecomponent (ZRC)
     - Documentregistratiecomponent (DRC)
@@ -92,21 +92,30 @@ Configuration
    c. Click **Opslaan** and repeat to create configuration for the other components.
 
 
-3. Navigate to **Configuration** > **Overview**. In the **Registration plugin** group, click on **Configuration** for the **ZGW API's** line.
-4. Enter the following details:
+#. Navigate to **Configuration** > **Overview**. In the **Registration plugin** group, click on **Configuration** for the **ZGW API's** line.
+#. Click on ``Add a ZGW API set``.
+#. Enter the following details:
 
    * **Zaken API**: Select the Zaakregistratiecomponent (ZRC) service created above
    * **Documenten API**: Select the Documentregistratiecomponent (DRC) service created above
    * **Catalogi API**: Select the Zaaktypecatalogus (ZTC) service created above
 
-5. Click **Opslaan en opnieuw bewerken** to save the form to retrieve the list of available types.
-6. Continue entering the following details:
+#. Click **Opslaan en opnieuw bewerken** to save the form to retrieve the list of available types.
+#. Continue entering the following details:
 
    * **Zaaktype**: Select the default Zaaktype to be used to create the Zaak. *For example:* ``https://example.com/catalogi/api/v1/zaaktypen/1/``
    * **Informatieobjecttype**: Fill in the URL of the Informatieobjecttype to be used to create the Document. *For example:* ``https://example.com/catalogi/api/v1/informatieobjecttypen/1/``
    * **Organisatie RSIN**: Fill the RSIN to be referred to in the created objects. *For example:* ``123456789``
 
-7. Click **Opslaan**
+#. Click **Opslaan**
+
+If you have added services to multiple ZGW APIs, you can create multiple ZGW API sets. This will enable you to specify
+different ZGW API sets on a form. If you do not specify a ZGW API set on the form, then a default set will be used. The
+default can be configured as follows:
+
+#. Navigate to **Miscellaneous** > **ZGW APIs configuration**.
+#. Select the desired default set.
+#. Save the form.
 
 The ZGW API's configuration is now completed and can be selected as registration backend in the form builder.
 In each form, the global defaults can be overwritten and additional properties can be configured. These include:
