@@ -116,3 +116,71 @@ class SideEffectTests(SubmissionsMixin, APITestCase):
 
             self.assertFalse(step2_detail.data["is_applicable"])
             self.assertEqual(step2_detail.data["data"], {})
+
+    def test_blocked_submission_is_reset(self):
+        """
+        Assert that subsequent steps are reset when they become not-applicable.
+        """
+        # set up the form with logic
+        form = FormFactory.create()
+        step1 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "fieldA",
+                    }
+                ]
+            },
+        )
+        step2 = FormStepFactory.create(
+            form=form,
+            form_definition__configuration={
+                "components": [
+                    {
+                        "type": "textfield",
+                        "key": "fieldB",
+                    }
+                ]
+            },
+        )
+        FormLogicFactory.create(
+            form=form,
+            json_logic_trigger={
+                "==": [
+                    {"var": "fieldA"},
+                    {"var": "fieldB"},
+                ]
+            },
+            actions=[{"action": {"type": "disable-next"}}],
+            trigger_from_step=step2,
+        )
+
+        # set up a submission
+        submission = SubmissionFactory.create(form=form)
+        self._add_submission_to_session(submission)
+
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step1,
+            data={"fieldA": "B"},
+        )
+        SubmissionStepFactory.create(
+            submission=submission,
+            form_step=step2,
+            data={"fieldB": "B"},
+        )
+        # check internal state for correct test setup
+        logic_check_endpoint = reverse(
+            "api:submission-steps-logic-check",
+            kwargs={"submission_uuid": submission.uuid, "step_uuid": step2.uuid},
+        )
+
+        response = self.client.post(
+            logic_check_endpoint, data={"data": {"fieldB": "A"}}
+        )
+
+        data = response.json()
+
+        self.assertTrue(data["step"]["canSubmit"])
