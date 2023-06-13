@@ -562,3 +562,10 @@ class SubmissionTests(TestCase):
             submission._form_login_required = True
 
             self.assertTrue(submission.form_login_required)
+
+    def test_clear_execution_state_without_execution_state(self):
+        submission = SubmissionFactory.create()
+
+        self.assertFalse(hasattr(submission, "_execution_state"))
+
+        submission.clear_execution_state()
