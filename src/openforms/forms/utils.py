@@ -452,6 +452,9 @@ def advanced_formio_logic_to_backend_logic(form_definition: "FormDefinition") ->
 def fix_broken_rules(rules: models.QuerySet) -> None:
     fixed_rules = []
     for rule in rules:
+        for action in rule.actions:
+            if action.get("form_step"):
+                action["form_step"] = action["form_step"].replace("/api/v1", "/api/v2")
         serializer = LogicComponentActionSerializer(data=rule.actions, many=True)
         is_valid = serializer.is_valid()
         if not is_valid:

@@ -137,6 +137,12 @@ class FixBrokenConvertedLogicTests(TestMigrations):
 
     def setUpBeforeMigration(self, apps):
         form = Form.objects.create(name="Form", slug="form")
+        step = FormStep.objects.create(
+            form=form,
+            form_definition=FormDefinition.objects.create(
+                name="FD", configuration={"components": []}
+            ),
+        )
         rule1 = FormLogic.objects.create(
             form=form,
             json_logic_trigger={"==": [{"var": "test1"}, "trigger value"]},
@@ -185,12 +191,26 @@ class FixBrokenConvertedLogicTests(TestMigrations):
             ],
         )
 
+        rule3 = FormLogic.objects.create(
+            form=form,
+            json_logic_trigger={"==": [{"var": "test1"}, "test"]},
+            actions=[
+                # valid rule
+                {
+                    "name": "Rule 3 Action 1",
+                    "form_step": f"https://example.com/api/v1/forms/{form.uuid}/steps/{step.uuid}",
+                    "action": {"type": "step-not-applicable"},
+                }
+            ],
+        )
+
         self.form = form
         self.rule1 = rule1
         self.rule2 = rule2
+        self.rule3 = rule3
 
     def test_migrate_logic(self):
-        self.assertEqual(2, self.form.formlogic_set.count())
+        self.assertEqual(self.form.formlogic_set.count(), 3)
 
         self.rule1.refresh_from_db()
         self.rule2.refresh_from_db()
