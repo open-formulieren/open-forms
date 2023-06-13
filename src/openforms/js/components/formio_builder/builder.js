@@ -354,7 +354,7 @@ const FormIOBuilder = ({
   set(builderOptions, 'openForms.componentTranslationsRef', componentTranslationsRef);
   set(builderOptions, 'openForms.componentNamespace', componentNamespaceRef.current);
   set(builderOptions, 'openForms.featureFlags', featureFlags);
-  set(builderOptions, 'openForms.registrationBackendInfoRef', registrationBackendInfoRef)
+  set(builderOptions, 'openForms.registrationBackendInfoRef', registrationBackendInfoRef);
 
   // if an update must be forced, we mutate the ref state to point to the new
   // configuration, which causes the form builder to re-render the new configuration.

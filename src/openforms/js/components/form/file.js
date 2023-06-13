@@ -22,16 +22,22 @@ const REGISTRATION = {
       data: {
         custom(context) {
           const instance = context.instance;
-          const registrationInfo = instance?.options?.openForms?.registrationBackendInfoRef?.current;
+          const registrationInfo =
+            instance?.options?.openForms?.registrationBackendInfoRef?.current;
           if (!registrationInfo) return [];
 
           // if the url starts with '/', then formio will prefix it with the formio
           // base URL, which is of course wrong. We there explicitly use the detected
           // host.
-          let url = new URL(getFullyQualifiedUrl('/api/v2/registration/plugins/zgw/informatieobjecttypen'));
+          let url = new URL(
+            getFullyQualifiedUrl('/api/v2/registration/plugins/zgw/informatieobjecttypen')
+          );
           switch (registrationInfo.registrationBackend) {
             case 'zgw-create-zaak': {
-              url.searchParams.set('zgw_api_group', registrationInfo.registrationBackendOptions.zgwApiGroup);
+              url.searchParams.set(
+                'zgw_api_group',
+                registrationInfo.registrationBackendOptions.zgwApiGroup
+              );
               url.searchParams.set('registration_backend', 'zgw-create-zaak');
               break;
             }
@@ -43,9 +49,9 @@ const REGISTRATION = {
               return;
           }
 
-          const options = context.component.authenticate ? {} : { noToken: true };
+          const options = context.component.authenticate ? {} : {noToken: true};
           instance.loadItems(url.href, [], instance.requestHeaders, options, 'GET', {});
-        }
+        },
       },
       valueProperty: 'url',
     },
