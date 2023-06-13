@@ -8,6 +8,12 @@ from ..constants import LogoAppearance
 from ..utils import get_cosign_login_info
 
 
+class TextChoiceSerializer(serializers.Serializer):
+    "Serialize not just the values (the way ChoiceField does), but the labels too"
+    value = serializers.CharField()
+    label = serializers.CharField()  # type: ignore  # djangorestframework-stubs#158
+
+
 class AuthPluginSerializer(PluginBaseSerializer):
     # serializer for form builder
     provides_auth = serializers.ListField(
@@ -15,6 +21,11 @@ class AuthPluginSerializer(PluginBaseSerializer):
         source="get_provides_auth",
         label=_("Provides authentication attributes"),
         help_text=_("The authentication attribute provided by this plugin."),
+    )
+    assurance_levels = serializers.ListField(
+        child=TextChoiceSerializer(),
+        label=_("Levels of assurance"),
+        help_text=_("The levels of assurance this plugin defines."),
     )
 
 
@@ -46,9 +57,10 @@ class LoginLogoSerializer(serializers.Serializer):
 class LoginOptionSerializer(serializers.Serializer):
     # serializer for form
     identifier = serializers.CharField(label=_("Identifier"), read_only=True)
+
     label = serializers.CharField(
         label=_("Button label"), help_text=_("Button label"), read_only=True
-    )
+    )  # type: ignore  # djangorestframework-stubs#158
     url = serializers.URLField(
         label=_("Login URL"),
         help_text=_(

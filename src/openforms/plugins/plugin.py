@@ -4,6 +4,8 @@ from django.utils.translation import gettext_lazy as _
 
 from openforms.config.models import GlobalConfiguration
 
+from .registry import BaseRegistry
+
 
 class AbstractBasePlugin:
     verbose_name = _("Set the 'verbose_name' attribute for a human-readable name")
@@ -12,6 +14,7 @@ class AbstractBasePlugin:
     """
 
     is_demo_plugin = False
+    registry: BaseRegistry  # reference to the registry set upon registration
 
     def __init__(self, identifier: str):
         self.identifier = identifier

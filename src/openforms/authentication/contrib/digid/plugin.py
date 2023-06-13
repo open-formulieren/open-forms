@@ -1,8 +1,9 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, NoReturn, Optional
 
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
 
+from digid_eherkenning.choices import DigiDAssuranceLevels
 from furl import furl
 from rest_framework.reverse import reverse
 
@@ -20,6 +21,7 @@ from .constants import DIGID_AUTH_SESSION_KEY
 class DigidAuthentication(BasePlugin):
     verbose_name = _("DigiD")
     provides_auth = AuthAttribute.bsn
+    assurance_levels = DigiDAssuranceLevels
 
     def start_login(
         self, request: HttpRequest, form: Form, form_url: str
@@ -49,7 +51,7 @@ class DigidAuthentication(BasePlugin):
 
     def handle_co_sign(
         self, request: HttpRequest, form: Form
-    ) -> Optional[Dict[str, Any]]:
+    ) -> Dict[str, Any] | NoReturn:
         if not (bsn := request.session.get(DIGID_AUTH_SESSION_KEY)):
             raise InvalidCoSignData("Missing 'bsn' parameter/value")
         return {

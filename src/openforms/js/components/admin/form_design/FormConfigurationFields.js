@@ -202,6 +202,27 @@ const FormConfigurationFields = ({
       </FormRow>
 
       <FormRow>
+        <Field name="form.authenticationBackendOptions" label="Minimal levels of assurance">
+          <>
+            {availableAuthPlugins
+              .filter(
+                plugin => plugin.assuranceLevels.length && selectedAuthPlugins.includes(plugin.id)
+              )
+              .map(plugin => (
+                <Select
+                  key={plugin.id}
+                  name={`form.authenticationBackendOptions.${plugin.id}.loa`}
+                  value={form.authenticationBackendOptions[plugin.id]?.loa}
+                  onChange={onChange}
+                  allowBlack={true}
+                  choices={plugin.assuranceLevels.map(loa => [loa.value, loa.label])}
+                />
+              ))}
+          </>
+        </Field>
+      </FormRow>
+
+      <FormRow>
         <Checkbox
           name="form.showProgressIndicator"
           label={
@@ -367,6 +388,7 @@ FormConfigurationFields.propTypes = {
     submissionAllowed: PropTypes.oneOf(SUMBISSION_ALLOWED_CHOICES.map(opt => opt[0])),
     suspensionAllowed: PropTypes.bool.isRequired,
     appointmentEnabled: PropTypes.bool.isRequired,
+    authenticationBackendOptions: PropTypes.object,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
   availableAuthPlugins: PropTypes.arrayOf(

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TypedDict
 
+from django.db.models import TextChoices
 from django.http import HttpRequest, HttpResponse
 
 from furl import furl
@@ -8,6 +9,8 @@ from rest_framework.reverse import reverse
 
 from openforms.forms.models import Form
 from openforms.plugins.plugin import AbstractBasePlugin
+
+from .constants import AuthAttribute
 
 
 @dataclass()
@@ -22,13 +25,19 @@ class LoginLogo:
 class LoginInfo:
     identifier: str
     label: str
-    logo: LoginLogo = None
+    logo: LoginLogo | None = None
     url: Optional[str] = None
     is_for_gemachtigde: bool = False
 
 
+class Choice(TypedDict):
+    value: str | int
+    label: str
+
+
 class BasePlugin(AbstractBasePlugin):
-    provides_auth = None
+    provides_auth: list[AuthAttribute] | AuthAttribute | None = None
+    assurance_levels = TextChoices
     return_method = "GET"
     is_for_gemachtigde = False
 
@@ -105,6 +114,11 @@ class BasePlugin(AbstractBasePlugin):
             return [self.provides_auth]
         else:
             return list(self.provides_auth)
+
+    def get_assurance_levels(self) -> list[Choice]:
+        return [
+            Choice(value=loa.value, label=loa.label) for loa in self.assurance_levels
+        ]
 
     # cosmetics
 
