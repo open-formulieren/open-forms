@@ -1,4 +1,7 @@
+from copy import copy
+
 from django.contrib import admin
+from django.contrib.admin.widgets import AdminTextInputWidget
 from django.utils import timezone
 from django.utils.html import format_html_join
 from django.utils.translation import gettext_lazy as _
@@ -10,18 +13,37 @@ from .constants import AppointmentDetailsStatus
 from .fields import AppointmentBackendChoiceField
 from .models import AppointmentInfo, AppointmentsConfig
 from .registry import register
+from .utils import get_plugin
 
 
 @admin.register(AppointmentsConfig)
 class AppointmentsConfigAdmin(SingletonModelAdmin):
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if isinstance(db_field, AppointmentBackendChoiceField):
-            assert not db_field.choices
-            _old = db_field.choices
-            db_field.choices = register.get_choices()
-            field = super().formfield_for_dbfield(db_field, request, **kwargs)
-            db_field.choices = _old
-            return field
+            field_copy = copy(db_field)
+            field_copy.choices = register.get_choices()
+            return super().formfield_for_dbfield(field_copy, request, **kwargs)
+
+        elif db_field.name == "limit_to_location":
+            try:
+                plugin = get_plugin()
+            except ValueError:
+                return super().formfield_for_dbfield(
+                    db_field,
+                    request,
+                    disabled=True,
+                    widget=AdminTextInputWidget(
+                        attrs={"placeholder": _("Please configure the plugin first")}
+                    ),
+                    **kwargs,
+                )
+
+            locations = plugin.get_locations([])
+            field_copy = copy(db_field)
+            field_copy.choices = [
+                (location.identifier, location.name) for location in locations
+            ]
+            return super().formfield_for_dbfield(field_copy, request, **kwargs)
 
         return super().formfield_for_dbfield(db_field, request, **kwargs)
 
