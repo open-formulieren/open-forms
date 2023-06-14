@@ -807,47 +807,6 @@ class TestRemoveConfirmationEmailBackwardsOptions(TestMigrations):
         )
 
 
-class TestReplaceOldCosignComponent(TestMigrations):
-    migrate_from = "0078_form_suspension_allowed"
-    migrate_to = "0079_replace_cosign_component"
-    app = "forms"
-
-    def setUpBeforeMigration(self, apps):
-        FormDefinition = apps.get_model("forms", "FormDefinition")
-        self.form_definition = FormDefinition.objects.create(
-            name="Definition with Co-sign",
-            slug="definition-with-cosign",
-            configuration={
-                "components": [
-                    {
-                        "label": "Co-sign",
-                        "description": "Im a cosign component",
-                        "authPlugin": "digid",
-                        "key": "medeOndertekenen1",
-                        "type": "coSign",
-                    }
-                ]
-            },
-        )
-
-    def test_forward_migration(self):
-        self.form_definition.refresh_from_db()
-
-        cosign_component = self.form_definition.configuration["components"][0]
-
-        self.assertEqual(
-            cosign_component,
-            {
-                "label": "Co-sign",
-                "description": "Im a cosign component",
-                "authPlugin": "digid",
-                "key": "medeOndertekenen1",
-                "type": "cosign",
-                "validateOn": "blur",
-            },
-        )
-
-
 class TestAddShowInSummaryDefault(TestMigrations):
     migrate_from = "0079_replace_cosign_component"
     migrate_to = "0080_add_show_in_summary_default"

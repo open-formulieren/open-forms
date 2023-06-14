@@ -2,39 +2,13 @@
 
 from django.db import migrations
 
-from openforms.formio.utils import iter_components
 
-
-def replace_old_cosign_component(apps, schema_editor):
-    FormDefinition = apps.get_model("forms", "FormDefinition")
-
-    form_definitions = FormDefinition.objects.all()
-
-    form_definitions_to_update = []
-    for form_definition in form_definitions:
-        updated_form_definition = False
-        for comp in iter_components(configuration=form_definition.configuration):
-            if comp["type"] != "coSign":
-                continue
-
-            comp.update({"type": "cosign", "validateOn": "blur"})
-            updated_form_definition = True
-
-        if updated_form_definition:
-            form_definitions_to_update.append(form_definition)
-
-    if form_definitions_to_update:
-        FormDefinition.objects.bulk_update(
-            form_definitions_to_update, fields=["configuration"]
-        )
-
-
+# Initially we thought the new cosign component would replace the old one,
+# but actually they will both exist for a while
 class Migration(migrations.Migration):
 
     dependencies = [
         ("forms", "0078_form_suspension_allowed"),
     ]
 
-    operations = [
-        migrations.RunPython(replace_old_cosign_component, migrations.RunPython.noop),
-    ]
+    operations = []
