@@ -3,13 +3,18 @@ from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import authentication, permissions
 from rest_framework.views import APIView
+from zgw_consumers.api_models.base import factory
+from zgw_consumers.api_models.catalogi import Catalogus, InformatieObjectType
+from zgw_consumers.service import get_paginated_results
 
 from openforms.api.views import ListMixin
 
 from ..constants import RegistrationAttribute
 from ..registry import register
+from .filters import ListInformatieObjectTypenQueryParamsSerializer
 from .serializers import (
     ChoiceWrapper,
+    InformatieObjectTypeChoiceSerializer,
     RegistrationAttributeSerializer,
     RegistrationPluginSerializer,
 )
@@ -50,3 +55,46 @@ class AllAttributesListView(ListMixin, APIView):
         choices = RegistrationAttribute.choices
 
         return [ChoiceWrapper(choice) for choice in choices]
+
+
+@extend_schema_view(
+    get=extend_schema(
+        summary=_("List available InformatieObjectTypen"),
+        parameters=[ListInformatieObjectTypenQueryParamsSerializer],
+    ),
+)
+class InformatieObjectTypenListView(ListMixin, APIView):
+    """
+    List the available InformatieObjectTypen based on the configured registration backend and ZGW APIs services.
+    """
+
+    authentication_classes = (authentication.SessionAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = InformatieObjectTypeChoiceSerializer
+
+    def get_objects(self):
+        filter_serializer = ListInformatieObjectTypenQueryParamsSerializer(
+            data=self.request.query_params
+        )
+        if not filter_serializer.is_valid():
+            return []
+
+        client = filter_serializer.get_ztc_client()
+        if not client:
+            return []
+
+        catalogus_data = get_paginated_results(client, "catalogus")
+        catalogus_mapping = {
+            catalogus["url"]: catalogus for catalogus in catalogus_data
+        }
+
+        iotypen_data = get_paginated_results(client, "informatieobjecttype")
+        iotypen = [
+            {
+                "informatieobjecttype": factory(InformatieObjectType, iotype),
+                "catalogus": factory(Catalogus, catalogus_mapping[iotype["catalogus"]]),
+            }
+            for iotype in iotypen_data
+        ]
+
+        return iotypen

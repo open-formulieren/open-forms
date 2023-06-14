@@ -72,6 +72,52 @@ class MoveExistingZGWConfigMigrationTests(TestMigrations):
         self.assertEqual(group.auteur, "testeerrr")
 
 
+class ReconfigureSoloModelBackwardsMigrationTests(TestMigrations):
+    migrate_to = "0006_zgwapigroupconfig"
+    migrate_from = "0007_move_singleton_data"
+    app = "zgw_apis"
+
+    def setUpBeforeMigration(self, apps):
+        ZGWApiGroupConfig = apps.get_model("zgw_apis", "ZGWApiGroupConfig")
+        ZgwConfig = apps.get_model("zgw_apis", "ZgwConfig")
+
+        ZgwConfig.objects.create()
+        self.zgw_group1 = ZGWApiGroupConfig.objects.create(
+            name="ZGW API 1",
+            auteur="test 1",
+        )
+        self.zgw_group2 = ZGWApiGroupConfig.objects.create(
+            name="ZGW API 2",
+            auteur="test 2",
+        )
+        self.assertTrue(self.zgw_group1.pk < self.zgw_group2.pk)
+
+    def test_solo_reconfigured_correctly(self):
+        ZgwConfig = self.apps.get_model("zgw_apis", "ZgwConfig")
+
+        solo = ZgwConfig.objects.get()
+
+        self.assertEqual(solo.auteur, "test 1")
+
+
+class BackwardsMigrationNoZGWGroupTests(TestMigrations):
+    migrate_to = "0006_zgwapigroupconfig"
+    migrate_from = "0007_move_singleton_data"
+    app = "zgw_apis"
+
+    def setUpBeforeMigration(self, apps):
+        ZgwConfig = apps.get_model("zgw_apis", "ZgwConfig")
+
+        ZgwConfig.objects.create()
+
+    def test_solo_reconfigured_correctly(self):
+        ZgwConfig = self.apps.get_model("zgw_apis", "ZgwConfig")
+
+        solo = ZgwConfig.objects.get()
+
+        self.assertIsNone(solo.zrc_service)
+
+
 class NoZgwConfigDoesntCreateZGWApiGrouMigrationTest(TestMigrations):
     migrate_from = "0006_zgwapigroupconfig"
     migrate_to = "0007_move_singleton_data"

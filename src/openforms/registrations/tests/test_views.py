@@ -131,7 +131,7 @@ class GetInformatieObjecttypesView(APITestCase):
 
     def test_must_be_logged_in_as_admin(self, m):
         user = UserFactory.create()
-        url = reverse("api:zgw_apis:iotypen-list")
+        url = reverse("api:iotypen-list")
         self.client.force_login(user)
 
         response = self.client.get(url)
@@ -140,13 +140,13 @@ class GetInformatieObjecttypesView(APITestCase):
 
     def test_retrieve_without_filter_param(self, m):
         user = StaffUserFactory.create()
-        url = reverse("api:zgw_apis:iotypen-list")
+        url = reverse("api:iotypen-list")
         self.client.force_login(user)
 
         self.install_mocks(m)
 
         with patch(
-            "openforms.registrations.contrib.zgw_apis.api.views.ZgwConfig.get_solo",
+            "openforms.registrations.api.filters.ZgwConfig.get_solo",
             return_value=ZgwConfig(default_zgw_api_group=self.zgw_group1),
         ):
             response = self.client.get(url)
@@ -159,7 +159,7 @@ class GetInformatieObjecttypesView(APITestCase):
 
     def test_retrieve_without_filter_param_no_default(self, m):
         user = StaffUserFactory.create()
-        url = reverse("api:zgw_apis:iotypen-list")
+        url = reverse("api:iotypen-list")
         self.client.force_login(user)
 
         response = self.client.get(url)
@@ -169,7 +169,7 @@ class GetInformatieObjecttypesView(APITestCase):
 
     def test_retrieve_with_filter_params(self, m):
         user = StaffUserFactory.create()
-        url = furl(reverse("api:zgw_apis:iotypen-list"))
+        url = furl(reverse("api:iotypen-list"))
         url.args["zgw_api_group"] = self.zgw_group2.pk
         url.args["registration_backend"] = "zgw-create-zaak"
         self.client.force_login(user)
@@ -186,7 +186,7 @@ class GetInformatieObjecttypesView(APITestCase):
 
     def test_filter_with_invalid_param(self, m):
         user = StaffUserFactory.create()
-        url = furl(reverse("api:zgw_apis:iotypen-list"))
+        url = furl(reverse("api:iotypen-list"))
         url.args["zgw_api_group"] = "INVALID"
         self.client.force_login(user)
 
@@ -197,14 +197,14 @@ class GetInformatieObjecttypesView(APITestCase):
 
     def test_with_object_api(self, m):
         user = StaffUserFactory.create()
-        url = furl(reverse("api:zgw_apis:iotypen-list"))
+        url = furl(reverse("api:iotypen-list"))
         url.args["registration_backend"] = "objects_api"
         self.client.force_login(user)
 
         self.install_mocks(m)
 
         with patch(
-            "openforms.registrations.contrib.zgw_apis.api.views.ObjectsAPIConfig.get_solo",
+            "openforms.registrations.api.filters.ObjectsAPIConfig.get_solo",
             return_value=ObjectsAPIConfig(catalogi_service=self.zgw_group1.ztc_service),
         ):
             response = self.client.get(url.url)

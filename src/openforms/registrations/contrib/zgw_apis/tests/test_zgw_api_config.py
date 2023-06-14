@@ -1,18 +1,23 @@
+from unittest.mock import patch
+
 from django.test import TestCase
 
 import requests_mock
 from privates.test import temp_private_root
+from requests.models import HTTPError
 from zds_client.oas import schema_fetcher
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
+from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.submissions.models import SubmissionStep
 from openforms.submissions.tests.factories import (
     SubmissionFactory,
     SubmissionFileAttachmentFactory,
 )
 
+from ..models import ZgwConfig
 from ..plugin import ZGWRegistration
 from .factories import ZGWApiGroupConfigFactory
 
@@ -59,6 +64,11 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         mock_service_oas_get(m, "https://documenten-1.nl/api/v1/", "documenten")
         mock_service_oas_get(m, "https://catalogus-1.nl/api/v1/", "catalogi")
 
+        m.get(
+            "https://zaken-1.nl/api/v1/zaken",
+            status_code=200,
+            json=[],
+        )
         m.post(
             "https://zaken-1.nl/api/v1/zaken",
             status_code=201,
@@ -68,6 +78,11 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
                 url="https://zaken-1.nl/api/v1/zaken/1",
                 zaaktype="https://catalogi-1.nl/api/v1/zaaktypen/1",
             ),
+        )
+        m.get(
+            "https://documenten-1.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=200,
+            json=[],
         )
         m.post(
             "https://documenten-1.nl/api/v1/enkelvoudiginformatieobjecten",
@@ -160,6 +175,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
                 ],
             },
         )
+        m.get("https://catalogus-1.nl/api/v1/zaaktypen", status_code=200, json=[])
         m.post(
             "https://zaken-1.nl/api/v1/statussen",
             status_code=201,
@@ -173,6 +189,11 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
         mock_service_oas_get(m, "https://documenten-2.nl/api/v1/", "documenten")
         mock_service_oas_get(m, "https://catalogus-2.nl/api/v1/", "catalogi")
 
+        m.get(
+            "https://zaken-2.nl/api/v1/zaken",
+            status_code=200,
+            json=[],
+        )
         m.post(
             "https://zaken-2.nl/api/v1/zaken",
             status_code=201,
@@ -182,6 +203,11 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
                 url="https://zaken-2.nl/api/v1/zaken/1",
                 zaaktype="https://catalogi-2.nl/api/v1/zaaktypen/1",
             ),
+        )
+        m.get(
+            "https://documenten-2.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=200,
+            json=[],
         )
         m.post(
             "https://documenten-2.nl/api/v1/enkelvoudiginformatieobjecten",
@@ -260,6 +286,7 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
                 ],
             },
         )
+        m.get("https://catalogus-2.nl/api/v1/zaaktypen", status_code=200, json=[])
         m.post(
             "https://zaken-2.nl/api/v1/rollen",
             status_code=201,
@@ -455,3 +482,65 @@ class ZGWRegistrationMultipleZGWAPIsTests(TestCase):
             attachment_body["bronorganisatie"],
             "100000009",
         )
+
+    def test_check_config(self, m):
+        self.install_mocks(m)
+
+        plugin = ZGWRegistration("zgw")
+        plugin.check_config()
+
+        history = m.request_history
+
+        self.assertEqual(len(history), 12)
+        self.assertEqual(history[1].hostname, "zaken-1.nl")
+        self.assertEqual(history[3].hostname, "documenten-1.nl")
+        self.assertEqual(history[5].hostname, "catalogus-1.nl")
+
+        self.assertEqual(history[7].hostname, "zaken-2.nl")
+        self.assertEqual(history[9].hostname, "documenten-2.nl")
+        self.assertEqual(history[11].hostname, "catalogus-2.nl")
+
+    def test_check_config_no_service(self, m):
+        self.install_mocks(m)
+
+        ZGWApiGroupConfigFactory.create(zrc_service=None)
+
+        plugin = ZGWRegistration("zgw")
+
+        with self.assertRaises(InvalidPluginConfiguration):
+            plugin.check_config()
+
+    def test_check_config_http_error(self, m):
+        self.install_mocks(m)
+
+        m.get(
+            "https://zaken-1.nl/api/v1/zaken",
+            exc=HTTPError,
+        )
+
+        plugin = ZGWRegistration("zgw")
+        with self.assertRaises(InvalidPluginConfiguration):
+            plugin.check_config()
+
+    def test_check_config_random_error(self, m):
+        self.install_mocks(m)
+
+        m.get(
+            "https://zaken-1.nl/api/v1/zaken",
+            exc=Exception,
+        )
+
+        plugin = ZGWRegistration("zgw")
+        with self.assertRaises(InvalidPluginConfiguration):
+            plugin.check_config()
+
+    def test_get_zgw_config(self, m):
+        plugin = ZGWRegistration("zgw")
+
+        with patch(
+            "openforms.registrations.contrib.zgw_apis.plugin.ZgwConfig.get_solo",
+            return_value=ZgwConfig(default_zgw_api_group=self.zgw_group1),
+        ):
+            api_group = plugin.get_zgw_config({})
+
+        self.assertEqual(api_group, self.zgw_group1)

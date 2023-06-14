@@ -111,8 +111,8 @@ class ZGWAPIGroupConfigTest(TestCase):
             is_valid = serializer.is_valid()
 
         self.assertFalse(is_valid)
-        self.assertIn("non_field_errors", serializer.errors)
+        self.assertIn("zgw_api_group", serializer.errors)
         self.assertEqual(
             "No ZGW API set was configured on the form and no default was specified globally.",
-            serializer.errors["non_field_errors"][0],
+            serializer.errors["zgw_api_group"][0],
         )

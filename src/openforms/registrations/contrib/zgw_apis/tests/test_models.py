@@ -33,3 +33,10 @@ class ZGWBackendTests(TestCase):
         with self.assertRaises(ValidationError):
             self.config.organisatie_rsin = "063-08836"
             self.config.full_clean()
+
+    def test_model_string(self):
+        api_group = ZGWApiGroupConfigFactory.create(
+            name="ZGW API test",
+        )
+
+        self.assertEqual(str(api_group), "ZGW API test")

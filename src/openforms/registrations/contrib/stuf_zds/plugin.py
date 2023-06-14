@@ -340,7 +340,9 @@ class StufZDSRegistration(BasePlugin):
         config = StufZDSConfig.get_solo()
         config.apply_defaults_to(options)
         with config.get_client(options) as client:
-            client.set_zaak_payment(submission.registration_result["zaak"])
+            client.set_zaak_payment(
+                submission.registration_result["zaak"],
+            )
 
     def check_config(self):
         config = StufZDSConfig.get_solo()

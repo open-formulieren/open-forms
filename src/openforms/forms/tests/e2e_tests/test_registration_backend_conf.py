@@ -15,6 +15,8 @@ from .test_form_designer import open_component_options_modal, phase
 class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
     async def test_configuring_zgw_api_group(self):
         """
+        Test that the admin editor dynamically changes the request to InformatieObjectTypenListView based on the registration backend configuration.
+
         The flow in this test is:
         - Configure the Registration backend to use set 1 of the configured ZGW apis
         - Go to the file upload component and check that the query parameter in the request to the informatieobjecttype endpoint is the PK of the right group
@@ -72,7 +74,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
             url = furl(request.url)
             match = resolve(url.path)
 
-            if match.view_name == "api:zgw_apis:iotypen-list":
+            if match.view_name == "api:iotypen-list":
                 requests_to_endpoint.append(request)
 
         async with browser_page() as page:
@@ -110,17 +112,19 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
         # Formio fires the request twice everytime you open the component
         self.assertEqual(len(requests_to_endpoint), 4)
         self.assertEqual(
-            furl(requests_to_endpoint[0]).args["zgw_api_group"], str(self.zgw_api_1.pk)
+            furl(requests_to_endpoint[0].url).args["zgw_api_group"],
+            str(self.zgw_api_1.pk),
         )
         self.assertEqual(
-            furl(requests_to_endpoint[0]).args["registration_backend"],
+            furl(requests_to_endpoint[0].url).args["registration_backend"],
             "zgw-create-zaak",
         )
         self.assertEqual(
-            furl(requests_to_endpoint[2]).args["zgw_api_group"], str(self.zgw_api_2.pk)
+            furl(requests_to_endpoint[2].url).args["zgw_api_group"],
+            str(self.zgw_api_2.pk),
         )
         self.assertEqual(
-            furl(requests_to_endpoint[2]).args["registration_backend"],
+            furl(requests_to_endpoint[2].url).args["registration_backend"],
             "zgw-create-zaak",
         )
 
@@ -156,7 +160,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
             url = furl(request.url)
             match = resolve(url.path)
 
-            if match.view_name == "api:zgw_apis:iotypen-list":
+            if match.view_name == "api:iotypen-list":
                 requests_to_endpoint.append(request)
 
         async with browser_page() as page:
@@ -180,5 +184,6 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
         # Formio fires the request twice everytime you open the component
         self.assertEqual(len(requests_to_endpoint), 2)
         self.assertEqual(
-            furl(requests_to_endpoint[0]).args["registration_backend"], "objects_api"
+            furl(requests_to_endpoint[0].url).args["registration_backend"],
+            "objects_api",
         )

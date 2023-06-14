@@ -38,8 +38,9 @@ from .checks import check_config
 from .models import ZGWApiGroupConfig, ZgwConfig
 from .validators import RoltypeOmschrijvingValidator
 
-if typing.TYPE_CHECKING:
-    from zgw_consumers.models import Service
+if typing.TYPE_CHECKING:  # pragma: no cover
+    from zgw_consumers.client import ZGWClient
+
 
 logger = logging.getLogger(__name__)
 
@@ -88,9 +89,11 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             config = ZgwConfig.get_solo()
             if config.default_zgw_api_group is None:
                 raise ValidationError(
-                    _(
-                        "No ZGW API set was configured on the form and no default was specified globally."
-                    )
+                    {
+                        "zgw_api_group": _(
+                            "No ZGW API set was configured on the form and no default was specified globally."
+                        )
+                    }
                 )
 
         return attrs
@@ -172,7 +175,8 @@ class ZGWRegistration(BasePlugin):
         ),
     }
 
-    def get_zgw_config(self, options: dict) -> ZGWApiGroupConfig:
+    @staticmethod
+    def get_zgw_config(options: dict) -> ZGWApiGroupConfig:
         zgw = options.get("zgw_api_group")
         if zgw is None:
             config = ZgwConfig.get_solo()
@@ -196,7 +200,7 @@ class ZGWRegistration(BasePlugin):
 
         _create_zaak = partial(
             create_zaak,
-            zrc_service=zgw.zrc_service,
+            zrc_client=zgw.zrc_service.build_client(),
             options=options,
             payment_required=submission.payment_required,
             existing_reference=submission.public_registration_reference,
@@ -225,11 +229,13 @@ class ZGWRegistration(BasePlugin):
         zgw = self.get_zgw_config(options)
         zgw.apply_defaults_to(options)
 
+        ztc_client = zgw.ztc_service.build_client()
+        zrc_client = zgw.zrc_service.build_client()
         result = submission.registration_result
         zaak = result["zaak"]
 
-        def get_drc() -> "Service":
-            return zgw.drc_service
+        def get_drc() -> "ZGWClient":
+            return zgw.drc_service.build_client()
 
         submission_report = SubmissionReport.objects.get(submission=submission)
         document = execute_unless_result_exists(
@@ -265,9 +271,7 @@ class ZGWRegistration(BasePlugin):
             rol_data["betrokkeneType"] = "natuurlijk_persoon"
 
         rol = execute_unless_result_exists(
-            partial(
-                create_rol, zaak, rol_data, zgw.zrc_service, zgw.ztc_service, options
-            ),
+            partial(create_rol, zrc_client, ztc_client, zaak, rol_data, options),
             submission,
             "intermediate.rol",
         )
@@ -278,7 +282,7 @@ class ZGWRegistration(BasePlugin):
                     match_omschrijving, omschrijving=options["medewerker_roltype"]
                 ),
                 query_params={"zaaktype": options["zaaktype"]},
-                ztc_service=zgw.ztc_service,
+                ztc_client=ztc_client,
             )[0]
             registrator_rol_data = {
                 "betrokkeneType": "medewerker",
@@ -293,10 +297,10 @@ class ZGWRegistration(BasePlugin):
             medewerker_rol = execute_unless_result_exists(
                 partial(
                     create_rol,
+                    zrc_client,
+                    ztc_client,
                     zaak,
                     registrator_rol_data,
-                    zgw.zrc_service,
-                    zgw.ztc_service,
                     options,
                 ),
                 submission,
@@ -304,7 +308,7 @@ class ZGWRegistration(BasePlugin):
             )
 
         status = execute_unless_result_exists(
-            partial(create_status, zaak, zgw.ztc_service, zgw.zrc_service),
+            partial(create_status, zrc_client, ztc_client, zaak),
             submission,
             "intermediate.status",
         )
@@ -388,7 +392,10 @@ class ZGWRegistration(BasePlugin):
     @wrap_api_errors
     def update_payment_status(self, submission: "Submission", options: dict):
         zgw = options["zgw_api_group"]
-        set_zaak_payment(submission.registration_result["zaak"]["url"], zgw.zrc_service)
+        set_zaak_payment(
+            zgw.zrc_service.build_client(),
+            submission.registration_result["zaak"]["url"],
+        )
 
     def check_config(self):
         check_config()
@@ -398,8 +405,7 @@ class ZGWRegistration(BasePlugin):
             (
                 _("Configuration"),
                 reverse(
-                    "admin:zgw_apis_zgwconfig_change",
-                    args=(ZgwConfig.singleton_instance_id,),
+                    "admin:admin:zgw_apis_zgwapigroupconfig_changelist",
                 ),
             ),
         ]

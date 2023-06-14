@@ -1,5 +1,6 @@
 import {Formio} from 'formiojs';
 
+import {get} from 'utils/fetch';
 import jsonScriptToVar from 'utils/json-script';
 import {getFullyQualifiedUrl} from 'utils/urls';
 
@@ -29,28 +30,25 @@ const REGISTRATION = {
           // if the url starts with '/', then formio will prefix it with the formio
           // base URL, which is of course wrong. We there explicitly use the detected
           // host.
-          let url = new URL(
-            getFullyQualifiedUrl('/api/v2/registration/plugins/zgw/informatieobjecttypen')
-          );
+          let url = new URL(getFullyQualifiedUrl('/api/v2/registration/informatieobjecttypen'));
+          let queries = {};
           switch (registrationInfo.registrationBackend) {
             case 'zgw-create-zaak': {
-              url.searchParams.set(
-                'zgw_api_group',
-                registrationInfo.registrationBackendOptions.zgwApiGroup
-              );
-              url.searchParams.set('registration_backend', 'zgw-create-zaak');
+              queries = {
+                zgw_api_group: registrationInfo.registrationBackendOptions.zgwApiGroup,
+                registration_backend: 'zgw-create-zaak',
+              };
               break;
             }
             case 'objects_api': {
-              url.searchParams.set('registration_backend', 'objects_api');
+              queries = {registration_backend: 'objects_api'};
               break;
             }
             default:
               return;
           }
 
-          const options = context.component.authenticate ? {} : {noToken: true};
-          instance.loadItems(url.href, [], instance.requestHeaders, options, 'GET', {});
+          get(url, queries).then(response => instance.setItems(response.data));
         },
       },
       valueProperty: 'url',
