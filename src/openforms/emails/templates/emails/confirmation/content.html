@@ -12,10 +12,8 @@ You have submitted the form "{{ tt_openvariable }} form_name {{ tt_closevariable
 Your reference is: {{ tt_openvariable }} public_reference {{ tt_closevariable }}<br>
 <br>
 
-{{ tt_openblock }} if waiting_on_cosign {{ tt_closeblock }}
-This form will not be processed until it has been co-signed. A co-sign request was sent to {{ tt_openvariable }} cosigner_email {{ tt_closevariable }}.
-{{ tt_openblock }} endif {{ tt_closeblock }}
 
+{{ tt_openblock }} cosign_info {{ tt_closeblock }}<br>
 {{ tt_openblock }} summary {{ tt_closeblock }}<br>
 {{ tt_openblock }} appointment_information {{ tt_closeblock }}<br>
 {{ tt_openblock }} payment_information {{ tt_closeblock }}<br><br>
