@@ -19,16 +19,12 @@ from .test_plugin import mock_response
 
 
 class MockConfigMixin:
-    extra_appointments_config = {}
-
     def setUp(self):
         super().setUp()  # type: ignore
 
         patcher = patch(
             "openforms.appointments.utils.AppointmentsConfig.get_solo",
-            return_value=AppointmentsConfig(
-                plugin="qmatic", **self.extra_appointments_config
-            ),
+            return_value=AppointmentsConfig(plugin="qmatic"),
         )
         patcher.start()
         self.addCleanup(patcher.stop)  # type: ignore

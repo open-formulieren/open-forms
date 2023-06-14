@@ -48,8 +48,15 @@ class JccAppointment(BasePlugin):
     verbose_name = _("JCC")
 
     def get_available_products(
-        self, current_products: Optional[List[AppointmentProduct]] = None
-    ) -> List[AppointmentProduct]:
+        self,
+        current_products: list[AppointmentProduct] | None = None,
+        location_id: str = "",
+    ) -> list[AppointmentProduct]:
+        if location_id:
+            logger.debug(
+                "Plugin does not support filtering products by location.",
+                extra={"location_id": location_id},
+            )
 
         client = get_client()
         try:

@@ -43,14 +43,6 @@ class ProductsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
         self.assertEqual(response.status_code, 403)
 
 
-class ProductListsWithFixedLocationTests(
-    MockConfigMixin, SubmissionsMixin, APITestCase
-):
-    extra_appointments_config = {
-        "limit_to_location": "1"
-    }  # see ./mocks/getGovLocationsForProductResponse.xml
-
-
 class LocationsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):

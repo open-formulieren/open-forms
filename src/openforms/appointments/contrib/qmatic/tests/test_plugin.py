@@ -1,4 +1,3 @@
-import os
 from datetime import date, datetime, timezone
 
 from django.test import TestCase
@@ -12,40 +11,45 @@ from ....base import (
     AppointmentProduct,
 )
 from ..plugin import QmaticAppointment
-from .factories import QmaticConfigFactory
+from .utils import MockConfigMixin, mock_response
 
 
-def mock_response(filename):
-    filepath = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "mock", filename)
-    )
-    with open(filepath, "r") as f:
-        return f.read()
-
-
-class PluginTests(TestCase):
+class PluginTests(MockConfigMixin, TestCase):
     maxDiff = 1024
+    api_root: str
 
     @classmethod
     def setUpTestData(cls):
-        config = QmaticConfigFactory.create()
+        super().setUpTestData()
 
         cls.plugin = QmaticAppointment("qmatic")
-        cls.api_root = config.service.api_root
 
     @requests_mock.Mocker()
     def test_get_available_products(self, m):
-        m.get(
-            f"{self.api_root}services",
-            text=mock_response("services.json"),
-        )
 
-        products = self.plugin.get_available_products()
+        with self.subTest("without location ID"):
+            m.get(f"{self.api_root}services", text=mock_response("services.json"))
 
-        self.assertEqual(len(products), 2)
-        self.assertEqual(products[0].identifier, "54b3482204c11bedc8b0a7acbffa308")
-        self.assertEqual(products[0].code, None)
-        self.assertEqual(products[0].name, "Service 01")
+            products = self.plugin.get_available_products()
+
+            self.assertEqual(len(products), 2)
+            self.assertEqual(products[0].identifier, "54b3482204c11bedc8b0a7acbffa308")
+            self.assertEqual(products[0].code, None)
+            self.assertEqual(products[0].name, "Service 01")
+
+        with self.subTest("with location ID"):
+            m.get(
+                f"{self.api_root}branches/f364d92b7fa07a48c4ecc862de30c47/services",
+                text=mock_response("limited_services.json"),
+            )
+
+            # see ./mocks/branches.json for possible IDs
+            products = self.plugin.get_available_products(
+                location_id="f364d92b7fa07a48c4ecc862de30c47"
+            )
+
+            # plugin does not support filtering
+            self.assertEqual(len(products), 1)
 
     @requests_mock.Mocker()
     def test_get_locations(self, m):
@@ -55,10 +59,23 @@ class PluginTests(TestCase):
 
         m.get(
             f"{self.api_root}services/{product.identifier}/branches",
-            text=mock_response("branches.json"),
+            text=mock_response("limited_branches.json"),
         )
 
         locations = self.plugin.get_locations([product])
+
+        self.assertEqual(len(locations), 1)
+        self.assertEqual(locations[0].identifier, "f7d0e4e45558de30c4772e4f1cc862")
+        self.assertEqual(locations[0].name, "Branch 2")
+
+    @requests_mock.Mocker()
+    def test_get_all_locations(self, m):
+        m.get(
+            f"{self.api_root}branches",
+            text=mock_response("branches.json"),
+        )
+
+        locations = self.plugin.get_locations()
 
         self.assertEqual(len(locations), 2)
         self.assertEqual(locations[0].identifier, "f364d92b7fa07a48c4ecc862de30c47")

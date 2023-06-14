@@ -1,0 +1,25 @@
+{
+    "serviceList": [
+        {
+            "additionalCustomerDuration": 0,
+            "duration": 5,
+            "updated": 1475589228781,
+            "created": 1475589228595,
+            "name": "Service 02",
+            "publicId": "1e0c3d34acb5a4ad0133b2927959e896d",
+            "active": true,
+            "publicEnabled": true,
+            "custom": null
+        }
+    ],
+    "notifications": [],
+    "meta": {
+        "start": "",
+        "end": "",
+        "totalResults": 1,
+        "offset": null,
+        "limit": null,
+        "fields": "",
+        "arguments": {}
+    }
+}

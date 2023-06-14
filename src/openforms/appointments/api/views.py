@@ -21,7 +21,11 @@ from openforms.submissions.api.permissions import (
 )
 from openforms.submissions.models import Submission
 
-from ..api.serializers import (
+from ..base import AppointmentLocation, AppointmentProduct
+from ..exceptions import AppointmentDeleteFailed, CancelAppointmentFailed
+from ..models import AppointmentsConfig
+from ..utils import delete_appointment_for_submission, get_plugin
+from .serializers import (
     CancelAppointmentInputSerializer,
     DateInputSerializer,
     DateSerializer,
@@ -31,9 +35,6 @@ from ..api.serializers import (
     TimeInputSerializer,
     TimeSerializer,
 )
-from ..base import AppointmentLocation, AppointmentProduct
-from ..exceptions import AppointmentDeleteFailed, CancelAppointmentFailed
-from ..utils import delete_appointment_for_submission, get_plugin
 
 logger = logging.getLogger(__name__)
 
@@ -52,10 +53,15 @@ class ProductsListView(ListMixin, APIView):
 
     def get_objects(self):
         plugin = get_plugin()
+        config = AppointmentsConfig().get_solo()
+        assert isinstance(config, AppointmentsConfig)
+        kwargs = {}
+        if location_id := config.limit_to_location:
+            kwargs["location_id"] = location_id
         with elasticapm.capture_span(
             name="get-available-products", span_type="app.appointments.get_products"
         ):
-            return plugin.get_available_products()
+            return plugin.get_available_products(**kwargs)
 
 
 # The serializer + @extend_schema approach for querystring params is not ideal, the

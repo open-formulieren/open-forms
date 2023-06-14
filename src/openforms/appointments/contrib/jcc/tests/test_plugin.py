@@ -32,12 +32,20 @@ class PluginTests(MockConfigMixin, TestCase):
             text=mock_response("getGovAvailableProductsResponse.xml"),
         )
 
-        products = self.plugin.get_available_products()
+        with self.subTest("without location ID"):
+            products = self.plugin.get_available_products()
 
-        self.assertEqual(len(products), 3)
-        self.assertEqual(products[0].identifier, "1")
-        self.assertEqual(products[0].code, "PASAAN")
-        self.assertEqual(products[0].name, "Paspoort aanvraag")
+            self.assertEqual(len(products), 3)
+            self.assertEqual(products[0].identifier, "1")
+            self.assertEqual(products[0].code, "PASAAN")
+            self.assertEqual(products[0].name, "Paspoort aanvraag")
+
+        with self.subTest("with location ID"):
+            # see ./mocks/getGovLocationsResponse.xml for the ID
+            products = self.plugin.get_available_products(location_id="1")
+
+            # plugin does not support filtering
+            self.assertEqual(len(products), 3)
 
     @requests_mock.Mocker()
     def test_get_available_product_products(self, m):
