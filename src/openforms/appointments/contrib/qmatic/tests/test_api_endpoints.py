@@ -1,11 +1,14 @@
-from django.test import TestCase
+from unittest.mock import patch
+
 from django.urls import reverse
 
 import requests_mock
+from rest_framework.test import APITestCase
 
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
+from openforms.utils.tests.cache import clear_caches
 
 from ....constants import AppointmentDetailsStatus
 from ....models import AppointmentsConfig
@@ -15,15 +18,30 @@ from .factories import QmaticConfigFactory
 from .test_plugin import mock_response
 
 
-class ProductsListTests(SubmissionsMixin, TestCase):
+class MockConfigMixin:
+    extra_appointments_config = {}
+
+    def setUp(self):
+        super().setUp()  # type: ignore
+
+        patcher = patch(
+            "openforms.appointments.utils.AppointmentsConfig.get_solo",
+            return_value=AppointmentsConfig(
+                plugin="qmatic", **self.extra_appointments_config
+            ),
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)  # type: ignore
+        self.addCleanup(clear_caches)  # type: ignore
+
+
+class ProductsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         cls.submission = SubmissionFactory.create()
         cls.endpoint = reverse("api:appointments-products-list")
-
-        appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.plugin = "qmatic"
-        appointments_config.save()
 
         config = QmaticConfigFactory.create()
         cls.api_root = config.service.api_root
@@ -50,15 +68,13 @@ class ProductsListTests(SubmissionsMixin, TestCase):
         self.assertEqual(response.status_code, 403)
 
 
-class LocationsListTests(SubmissionsMixin, TestCase):
+class LocationsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         cls.submission = SubmissionFactory.create()
         cls.endpoint = reverse("api:appointments-locations-list")
-
-        appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.plugin = "qmatic"
-        appointments_config.save()
 
         config = QmaticConfigFactory.create()
         cls.api_root = config.service.api_root
@@ -98,15 +114,13 @@ class LocationsListTests(SubmissionsMixin, TestCase):
         self.assertEqual(response.status_code, 403)
 
 
-class DatesListTests(SubmissionsMixin, TestCase):
+class DatesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         cls.submission = SubmissionFactory.create()
         cls.endpoint = reverse("api:appointments-dates-list")
-
-        appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.plugin = "qmatic"
-        appointments_config.save()
 
         config = QmaticConfigFactory.create()
         cls.api_root = config.service.api_root
@@ -145,15 +159,13 @@ class DatesListTests(SubmissionsMixin, TestCase):
         self.assertEqual(response.status_code, 403)
 
 
-class TimesListTests(SubmissionsMixin, TestCase):
+class TimesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         cls.submission = SubmissionFactory.create()
         cls.endpoint = reverse("api:appointments-times-list")
-
-        appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.plugin = "qmatic"
-        appointments_config.save()
 
         config = QmaticConfigFactory.create()
         cls.api_root = config.service.api_root
@@ -200,12 +212,10 @@ class TimesListTests(SubmissionsMixin, TestCase):
         self.assertEqual(response.status_code, 403)
 
 
-class CancelAppointmentTests(SubmissionsMixin, TestCase):
+class CancelAppointmentTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
-        appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.plugin = "qmatic"
-        appointments_config.save()
+        super().setUpTestData()
 
         config = QmaticConfigFactory.create()
         cls.api_root = config.service.api_root

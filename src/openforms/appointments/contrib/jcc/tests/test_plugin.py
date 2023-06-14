@@ -1,4 +1,3 @@
-import os
 from datetime import date, datetime
 
 from django.test import TestCase
@@ -6,37 +5,22 @@ from django.utils.translation import ugettext_lazy as _
 
 import requests_mock
 
-from stuf.tests.factories import SoapServiceFactory
-
 from ....base import (
     AppointmentClient,
     AppointmentDetails,
     AppointmentLocation,
     AppointmentProduct,
 )
-from ..models import JccConfig
 from ..plugin import JccAppointment
+from .utils import MockConfigMixin, mock_response
 
 
-def mock_response(filename):
-    filepath = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "mock", filename)
-    )
-    with open(filepath, "r") as f:
-        return f.read()
-
-
-class PluginTests(TestCase):
+class PluginTests(MockConfigMixin, TestCase):
     maxDiff = 1024
 
     @classmethod
     def setUpTestData(cls):
-        wsdl = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "mock/GenericGuidanceSystem2.wsdl")
-        )
-        config = JccConfig.get_solo()
-        config.service = SoapServiceFactory.create(url=wsdl)
-        config.save()
+        super().setUpTestData()
 
         cls.plugin = JccAppointment("jcc")
 

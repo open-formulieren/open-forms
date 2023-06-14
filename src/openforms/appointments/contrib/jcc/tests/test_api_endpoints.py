@@ -1,43 +1,25 @@
-import os
-
-from django.conf import settings
-from django.test import TestCase
 from django.urls import reverse
 
 import requests_mock
+from rest_framework.test import APITestCase
 from zeep.exceptions import Error as ZeepError
 
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
-from stuf.tests.factories import SoapServiceFactory
 
 from ....constants import AppointmentDetailsStatus
-from ....models import AppointmentsConfig
 from ....tests.factories import AppointmentInfoFactory
-from ..models import JccConfig
-from ..tests.test_plugin import mock_response
+from .utils import MockConfigMixin, mock_response
 
 
-class ProductsListTests(SubmissionsMixin, TestCase):
+class ProductsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         cls.submission = SubmissionFactory.create()
         cls.endpoint = reverse("api:appointments-products-list")
-
-        appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.plugin = "jcc"
-        appointments_config.save()
-
-        config = JccConfig.get_solo()
-        wsdl = os.path.abspath(
-            os.path.join(
-                settings.DJANGO_PROJECT_DIR,
-                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
-            )
-        )
-        config.service = SoapServiceFactory.create(url=wsdl)
-        config.save()
 
     @requests_mock.Mocker()
     def test_get_products_returns_all_products(self, m):
@@ -61,25 +43,13 @@ class ProductsListTests(SubmissionsMixin, TestCase):
         self.assertEqual(response.status_code, 403)
 
 
-class LocationsListTests(SubmissionsMixin, TestCase):
+class LocationsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         cls.submission = SubmissionFactory.create()
         cls.endpoint = reverse("api:appointments-locations-list")
-
-        appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.plugin = "jcc"
-        appointments_config.save()
-
-        config = JccConfig.get_solo()
-        wsdl = os.path.abspath(
-            os.path.join(
-                settings.DJANGO_PROJECT_DIR,
-                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
-            )
-        )
-        config.service = SoapServiceFactory.create(url=wsdl)
-        config.save()
 
     def setUp(self):
         super().setUp()
@@ -112,25 +82,13 @@ class LocationsListTests(SubmissionsMixin, TestCase):
         self.assertEqual(response.status_code, 403)
 
 
-class DatesListTests(SubmissionsMixin, TestCase):
+class DatesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         cls.submission = SubmissionFactory.create()
         cls.endpoint = reverse("api:appointments-dates-list")
-
-        appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.plugin = "jcc"
-        appointments_config.save()
-
-        config = JccConfig.get_solo()
-        wsdl = os.path.abspath(
-            os.path.join(
-                settings.DJANGO_PROJECT_DIR,
-                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
-            )
-        )
-        config.service = SoapServiceFactory.create(url=wsdl)
-        config.save()
 
     def setUp(self):
         super().setUp()
@@ -167,25 +125,13 @@ class DatesListTests(SubmissionsMixin, TestCase):
         self.assertEqual(response.status_code, 403)
 
 
-class TimesListTests(SubmissionsMixin, TestCase):
+class TimesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         cls.submission = SubmissionFactory.create()
         cls.endpoint = reverse("api:appointments-times-list")
-
-        appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.plugin = "jcc"
-        appointments_config.save()
-
-        config = JccConfig.get_solo()
-        wsdl = os.path.abspath(
-            os.path.join(
-                settings.DJANGO_PROJECT_DIR,
-                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
-            )
-        )
-        config.service = SoapServiceFactory.create(url=wsdl)
-        config.save()
 
     def setUp(self):
         super().setUp()
@@ -229,23 +175,7 @@ class TimesListTests(SubmissionsMixin, TestCase):
         self.assertEqual(response.status_code, 403)
 
 
-class CancelAppointmentTests(SubmissionsMixin, TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.plugin = "jcc"
-        appointments_config.save()
-
-        config = JccConfig.get_solo()
-        wsdl = os.path.abspath(
-            os.path.join(
-                settings.DJANGO_PROJECT_DIR,
-                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
-            )
-        )
-        config.service = SoapServiceFactory.create(url=wsdl)
-        config.save()
-
+class CancelAppointmentTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @requests_mock.Mocker()
     def test_cancel_appointment_cancels_the_appointment(self, m):
         submission = SubmissionFactory.from_components(
