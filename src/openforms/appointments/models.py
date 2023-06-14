@@ -9,9 +9,23 @@ from .fields import AppointmentBackendChoiceField
 
 class AppointmentsConfig(SingletonModel):
     plugin = AppointmentBackendChoiceField(_("appointment plugin"), blank=True)
+    limit_to_location = models.CharField(
+        _("location"),
+        max_length=50,
+        blank=True,
+        help_text=_(
+            "If configured, only products connected to this location are exposed. "
+            "Additionally, the user can only select this location for the appointment."
+        ),
+    )
 
     class Meta:
         verbose_name = _("Appointment configuration")
+
+    def save(self, *args, **kwargs):
+        if not self.plugin and self.limit_to_location:
+            self.limit_to_location = ""
+        super().save(*args, **kwargs)
 
 
 class AppointmentInfo(models.Model):

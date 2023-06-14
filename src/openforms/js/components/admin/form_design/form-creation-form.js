@@ -25,6 +25,7 @@ import {getUniqueRandomString} from 'utils/random';
 import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import Confirmation from './Confirmation';
 import {APIContext, FormContext} from './Context';
+import {FeatureFlagsContext} from './Context';
 import CosignInRepeatingGroupWarning from './CosignInRepeatingGroupWarning';
 import DataRemoval from './DataRemoval';
 import FormConfigurationFields from './FormConfigurationFields';
@@ -915,6 +916,7 @@ StepsFieldSet.propTypes = {
  */
 const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
   const {csrftoken} = useContext(APIContext);
+  const {new_appointments_enabled} = useContext(FeatureFlagsContext);
   const initialState = {
     ...initialFormState,
     form: {
@@ -1206,12 +1208,14 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             <Tab hasErrors={state.tabsWithErrors.includes('logic-rules')}>
               <FormattedMessage defaultMessage="Logic" description="Form logic tab title" />
             </Tab>
-            <Tab>
-              <FormattedMessage
-                defaultMessage="Appointments"
-                description="Appointments tab title"
-              />
-            </Tab>
+            {!new_appointments_enabled && (
+              <Tab>
+                <FormattedMessage
+                  defaultMessage="Appointments"
+                  description="Appointments tab title"
+                />
+              </Tab>
+            )}
             <Tab hasErrors={state.formVariables.some(variable => variableHasErrors(variable))}>
               <FormattedMessage defaultMessage="Variables" description="Variables tab title" />
             </Tab>
@@ -1313,16 +1317,18 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             />
           </TabPanel>
 
-          <TabPanel>
-            <Appointments
-              onChange={event => {
-                dispatch({
-                  type: 'APPOINTMENT_CONFIGURATION_CHANGED',
-                  payload: event,
-                });
-              }}
-            />
-          </TabPanel>
+          {!new_appointments_enabled && (
+            <TabPanel>
+              <Appointments
+                onChange={event => {
+                  dispatch({
+                    type: 'APPOINTMENT_CONFIGURATION_CHANGED',
+                    payload: event,
+                  });
+                }}
+              />
+            </TabPanel>
+          )}
 
           <TabPanel>
             <VariablesEditor

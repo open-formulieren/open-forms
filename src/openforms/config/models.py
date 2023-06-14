@@ -417,6 +417,11 @@ class GlobalConfiguration(SingletonModel):
             "supported yet."
         ),
     )
+    enable_new_appointments = models.BooleanField(
+        _("enable new appointments"),
+        default=False,
+        help_text=_("Enable using the new appointment form flow."),
+    )
 
     default_test_bsn = models.CharField(
         _("default test BSN"),

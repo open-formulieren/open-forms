@@ -21,6 +21,7 @@ class FormioConfigMixin:
         self, request, context, add=False, change=False, form_url="", obj=None
     ):
         config = GlobalConfiguration.get_solo()
+        assert isinstance(config, GlobalConfiguration)
         context.update(
             {
                 "required_default": config.form_fields_required_default,
@@ -32,6 +33,7 @@ class FormioConfigMixin:
                 "feature_flags": {
                     "of_service_fetch_enabled": config.enable_service_fetch,
                     "react_formio_builder_enabled": config.enable_react_formio_builder,
+                    "new_appointments_enabled": config.enable_new_appointments,
                 },
                 "confidentiality_levels": [
                     {"label": label, "value": value}

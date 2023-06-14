@@ -1,5 +1,7 @@
+from contextlib import contextmanager
 from unittest.mock import patch
 
+from django.test import tag
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -11,11 +13,34 @@ from openforms.accounts.tests.factories import (
     SuperUserFactory,
     UserFactory,
 )
+from openforms.plugins.validators import PluginExistsValidator
+from openforms.utils.tests.cache import clear_caches
 
 from ..contrib.demo.plugin import DemoAppointment
+from ..fields import AppointmentBackendChoiceField
 from ..models import AppointmentsConfig
 from ..registry import Registry
 from .factories import AppointmentInfoFactory
+
+
+@contextmanager
+def patch_registry(register):
+    field = AppointmentsConfig._meta.get_field("plugin")
+    assert isinstance(field, AppointmentBackendChoiceField)
+    validators = [
+        validator
+        for validator in field.validators
+        if isinstance(validator, PluginExistsValidator)
+    ]
+    assert len(validators) == 1, "Expected only one PluginValidator"
+    validator = validators[0]
+    with (
+        patch("openforms.appointments.admin.register", register),
+        patch("openforms.appointments.utils.register", register),
+        patch.object(field, "registry", register),
+        patch.object(validator, "registry", register),
+    ):
+        yield
 
 
 class TestPlugin(DemoAppointment):
@@ -90,6 +115,10 @@ class AppointmentsConfigAdminTests(WebTest):
         super().setUpTestData()
         cls.user = SuperUserFactory.create()
 
+    def setUp(self):
+        super().setUp()
+        self.addCleanup(clear_caches)
+
     def test_plugin_choices(self):
         """
         show available plugins from registry as field choices
@@ -103,7 +132,7 @@ class AppointmentsConfigAdminTests(WebTest):
             args=(AppointmentsConfig.singleton_instance_id,),
         )
 
-        with patch("openforms.appointments.admin.register", test_register):
+        with patch_registry(test_register):
             response = self.app.get(url, user=self.user)
 
         self.assertEqual(response.status_code, 200)
@@ -112,3 +141,64 @@ class AppointmentsConfigAdminTests(WebTest):
         plugin_options = form["plugin"].options
 
         self.assertEqual([p[0] for p in plugin_options], ["", "test1", "test2"])
+
+    @tag("gh-2471")
+    def test_configure_default_location(self):
+        test_register = Registry()
+        test_register("test")(TestPlugin)
+
+        url = reverse(
+            "admin:appointments_appointmentsconfig_change",
+            args=(AppointmentsConfig.singleton_instance_id,),
+        )
+
+        with patch_registry(test_register):
+            with self.subTest("no plugin selected -> block setting a location"):
+                response = self.app.get(url, user=self.user)
+
+                self.assertEqual(response.status_code, 200)
+                form = response.form
+
+                self.assertEqual(form["plugin"].value, "")
+                location = form["limit_to_location"]
+                self.assertEqual(location.tag, "input")
+                self.assertIn("disabled", location.attrs)
+                self.assertEqual(
+                    location.attrs["placeholder"],
+                    _("Please configure the plugin first"),
+                )
+
+            config = AppointmentsConfig.get_solo()
+            assert isinstance(config, AppointmentsConfig)
+            config.plugin = "test"
+            config.save()
+
+            with self.subTest("plugin selected -> show available locations"):
+                response = self.app.get(url, user=self.user)
+
+                self.assertEqual(response.status_code, 200)
+                form = response.form
+
+                self.assertEqual(form["plugin"].value, "test")
+                location = form["limit_to_location"]
+                self.assertEqual(location.tag, "select")
+                form["limit_to_location"].select("1")
+                form.submit(name="_save")
+
+                config.refresh_from_db()
+                self.assertEqual(config.limit_to_location, "1")
+
+            with self.subTest("clearing plugin clears the location"):
+                config.limit_to_location = "1"
+                config.save()
+
+                response = self.app.get(url, user=self.user)
+
+                form = response.form
+                form["plugin"].select("")
+
+                form.submit(name="_save")
+
+                config.refresh_from_db()
+                self.assertEqual(config.plugin, "")
+                self.assertEqual(config.limit_to_location, "")
