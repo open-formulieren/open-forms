@@ -1,5 +1,4 @@
 from contextlib import contextmanager
-from typing import cast
 from unittest.mock import patch
 
 from django.test import tag
@@ -26,9 +25,8 @@ from .factories import AppointmentInfoFactory
 
 @contextmanager
 def patch_registry(register):
-    field = cast(
-        AppointmentBackendChoiceField, AppointmentsConfig._meta.get_field("plugin")
-    )
+    field = AppointmentsConfig._meta.get_field("plugin")
+    assert isinstance(field, AppointmentBackendChoiceField)
     validators = [
         validator
         for validator in field.validators
@@ -36,10 +34,11 @@ def patch_registry(register):
     ]
     assert len(validators) == 1, "Expected only one PluginValidator"
     validator = validators[0]
-    with patch("openforms.appointments.admin.register", register), patch(
-        "openforms.appointments.utils.register", register
-    ), patch.object(field, "registry", register), patch.object(
-        validator, "registry", register
+    with (
+        patch("openforms.appointments.admin.register", register),
+        patch("openforms.appointments.utils.register", register),
+        patch.object(field, "registry", register),
+        patch.object(validator, "registry", register),
     ):
         yield
 
@@ -169,7 +168,8 @@ class AppointmentsConfigAdminTests(WebTest):
                     _("Please configure the plugin first"),
                 )
 
-            config = cast(AppointmentsConfig, AppointmentsConfig.get_solo())
+            config = AppointmentsConfig.get_solo()
+            assert isinstance(config, AppointmentsConfig)
             config.plugin = "test"
             config.save()
 
