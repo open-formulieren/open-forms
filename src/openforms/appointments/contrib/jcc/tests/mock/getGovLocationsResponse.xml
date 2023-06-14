@@ -1,0 +1,8 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gen="http://www.genericCBS.org/GenericCBS/">
+   <soapenv:Body>
+      <getGovLocationsResponse xmlns="http://www.genericCBS.org/GenericCBS/">
+         <locationIDs xmlns="">1</locationIDs>
+         <locationIDs xmlns="">2</locationIDs>
+      </getGovLocationsResponse>
+   </soapenv:Body>
+</soapenv:Envelope>

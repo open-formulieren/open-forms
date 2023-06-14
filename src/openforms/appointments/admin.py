@@ -38,7 +38,7 @@ class AppointmentsConfigAdmin(SingletonModelAdmin):
                     **kwargs,
                 )
 
-            locations = plugin.get_locations([])
+            locations = plugin.get_locations()
             field_copy = copy(db_field)
             field_copy.choices = [
                 (location.identifier, location.name) for location in locations

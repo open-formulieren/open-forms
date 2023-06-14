@@ -98,13 +98,16 @@ class BasePlugin(ABC, AbstractBasePlugin):
 
     @abstractmethod
     def get_locations(
-        self, products: List[AppointmentProduct]
-    ) -> List[AppointmentLocation]:  # pragma: no cover
+        self,
+        products: list[AppointmentProduct] | None = None,
+    ) -> list[AppointmentLocation]:  # pragma: no cover
         """
         Retrieve all available locations for given ``products``.
 
         :param products: List of :class:`AppointmentProduct`, as obtained from
-          :meth:`get_available_products`. :returns: List of :class:`AppointmentLocation`
+          :meth:`get_available_products`. If ``None`` or unspecified, all possible
+          locations are returned.
+        :returns: List of :class:`AppointmentLocation`
         """
         raise NotImplementedError()
 

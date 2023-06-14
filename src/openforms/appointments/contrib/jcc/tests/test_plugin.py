@@ -1,3 +1,4 @@
+import re
 from datetime import date, datetime
 
 from django.test import TestCase
@@ -55,6 +56,49 @@ class PluginTests(MockConfigMixin, TestCase):
         self.assertEqual(other_products[0].identifier, "5")
         self.assertEqual(other_products[0].code, "RIJAAN")
         self.assertEqual(other_products[0].name, "Rijbewijs aanvraag (Drivers license)")
+
+    @requests_mock.Mocker()
+    def test_get_all_locations(self, m):
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovLocationsResponse.xml"),
+            additional_matcher=lambda request: "getGovLocationsRequest" in request.text,
+        )
+
+        default_location_details = mock_response("getGovLocationDetailsResponse.xml")
+
+        def location_details_callback(request, context):
+            # yeah yeah, don't parse XML with regex...
+            re_match = re.search("<locationID>(1|2)</locationID>", request.text)
+            assert re_match is not None
+            match re_match.group(1):
+                case "1":
+                    return default_location_details
+                case "2":
+                    return default_location_details.replace("Maykin Media", "Bahamas")
+                case _:
+                    raise ValueError("Unknown location ID")
+
+        m.post(
+            "http://example.com/soap11",
+            text=location_details_callback,
+            additional_matcher=lambda request: "getGovLocationDetailsRequest"
+            in request.text,
+        )
+
+        locations = self.plugin.get_locations()
+
+        self.assertEqual(len(locations), 2)
+
+        with self.subTest("location 1"):
+            location_1 = locations[0]
+            self.assertEqual(location_1.identifier, "1")
+            self.assertEqual(location_1.name, "Maykin Media")
+
+        with self.subTest("location 2"):
+            location_1 = locations[1]
+            self.assertEqual(location_1.identifier, "2")
+            self.assertEqual(location_1.name, "Bahamas")
 
     @requests_mock.Mocker()
     def test_get_locations(self, m):
