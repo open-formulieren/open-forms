@@ -60,8 +60,9 @@ def send_email_cosigner(submission_id: int) -> None:
 
 def on_cosign(submission_id: int) -> None:
     register_submission_task = register_submission.si(submission_id)
-    # TODO ADD cosigner to CC
-    send_confirmation_email_task = maybe_send_confirmation_email.si(submission_id)
+    send_post_cosign_confirmation_email_task = send_post_cosign_confirmation_email.si(
+        submission_id
+    )
     # TODO Should it hash the cosigner data attributes?
     hash_identifying_attributes_task = maybe_hash_identifying_attributes.si(
         submission_id
@@ -69,7 +70,7 @@ def on_cosign(submission_id: int) -> None:
 
     on_cosign_chain = chain(
         register_submission_task,
-        send_confirmation_email_task,
+        send_post_cosign_confirmation_email_task,
         hash_identifying_attributes_task,
     )
 

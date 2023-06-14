@@ -10,7 +10,7 @@ from openforms.celery import app
 from ..models import Submission
 from ..utils import send_confirmation_email as _send_confirmation_email
 
-__all__ = ["maybe_send_confirmation_email"]
+__all__ = ["maybe_send_confirmation_email", "send_post_cosign_confirmation_email"]
 
 logger = logging.getLogger(__name__)
 
@@ -79,5 +79,12 @@ def send_confirmation_email(submission_id: int) -> None:
 
     if submission.confirmation_email_sent:
         return
+
+    _send_confirmation_email(submission)
+
+
+@app.task()
+def send_post_cosign_confirmation_email(submission_id: int) -> None:
+    submission = Submission.objects.get(id=submission_id)
 
     _send_confirmation_email(submission)
