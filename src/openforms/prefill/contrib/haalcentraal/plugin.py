@@ -5,40 +5,27 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from glom import GlomError, glom
-from requests import RequestException
 from zds_client import ClientError
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.pre_requests.clients import PreRequestClientContext
+from openforms.prefill.contrib.haalcentraal.constants import Attributes
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
 from ...registry import register
-from .constants import Attributes, AttributesV2, HaalCentraalVersion
 from .models import HaalCentraalConfig
 
 logger = logging.getLogger(__name__)
 
 
-def get_config():
+def get_config() -> HaalCentraalConfig | None:
     config = HaalCentraalConfig.get_solo()
     if not config.service:
         logger.warning("No service defined for Haal Centraal prefill.")
         return
     return config
-
-
-def get_correct_attributes():
-    config = get_config()
-    if not config:
-        return Attributes
-
-    match config.version:
-        case HaalCentraalVersion.haalcentraal13:
-            return Attributes
-        case HaalCentraalVersion.haalcentraal20:
-            return AttributesV2
 
 
 @register("haalcentraal")
@@ -48,64 +35,36 @@ class HaalCentraalPrefill(BasePlugin):
 
     @staticmethod
     def get_available_attributes() -> list[tuple[str, str]]:
-        return get_correct_attributes().choices
+        config = get_config()
+        if not config:
+            return Attributes.choices
+        return config.get_attributes().choices
 
     @classmethod
     def _get_values_for_bsn(
-        cls, submission: Submission, bsn: str, attributes: Iterable[str]
+        cls,
+        config: HaalCentraalConfig,
+        submission: Submission,
+        bsn: str,
+        attributes: Iterable[str],
     ) -> Dict[str, Any]:
-        config = get_config()
-
         if not config:
             return {}
 
-        client = config.service.build_client()
+        client = config.build_client()
         client.context = PreRequestClientContext(submission=submission)
 
-        try:
-            match config.version:
-                case HaalCentraalVersion.haalcentraal13:
-                    headers = dict(headers={"Accept": "application/hal+json"})
-                    data = client.retrieve(
-                        "ingeschrevenpersonen",
-                        burgerservicenummer=bsn,
-                        url=f"ingeschrevenpersonen/{bsn}",
-                        request_kwargs=headers,
-                    )
-                case HaalCentraalVersion.haalcentraal20:
-                    headers = dict(
-                        headers={"Content-Type": "application/json; charset=utf-8"}
-                    )
-                    recource_body = {
-                        "type": "RaadpleegMetBurgerservicenummer",
-                        "burgerservicenummer": [bsn],
-                        "fields": attributes,
-                    }
-                    data = client.operation(
-                        "Personen",
-                        data=recource_body,
-                        url="personen",
-                        request_kwargs=headers,
-                    )
-        except RequestException as e:
-            logger.exception("exception while making request", exc_info=e)
-            return {}
-        except ClientError as e:
-            logger.exception("exception while making request", exc_info=e)
-            return {}
-
+        data = client.find_person(bsn, attributes=attributes)
         values = dict()
-        for attr in attributes:
-            try:
-                match config.version:
-                    case HaalCentraalVersion.haalcentraal13:
-                        values[attr] = glom(data, attr)
-                    case HaalCentraalVersion.haalcentraal20:
-                        values[attr] = glom(data["personen"][0], attr)
-            except GlomError:
-                logger.warning(
-                    f"missing expected attribute '{attr}' in backend response"
-                )
+
+        if data:
+            for attr in attributes:
+                try:
+                    values[attr] = glom(data, attr)
+                except GlomError:
+                    logger.warning(
+                        f"missing expected attribute '{attr}' in backend response"
+                    )
 
         return values
 
@@ -126,7 +85,7 @@ class HaalCentraalPrefill(BasePlugin):
             return {}
 
         return cls._get_values_for_bsn(
-            submission, submission.auth_info.value, attributes
+            config, submission, submission.auth_info.value, attributes
         )
 
     @classmethod
@@ -144,9 +103,14 @@ class HaalCentraalPrefill(BasePlugin):
         :return: a key-value dictionary, where the key is the requested attribute and
           the value is the prefill value to use for that attribute.
         """
-        version_atributes = get_correct_attributes()
+        config = get_config()
+        version_atributes = Attributes
+
+        if config:
+            version_atributes = config.get_attributes()
 
         values = cls._get_values_for_bsn(
+            config,
             submission,
             identifier,
             (

@@ -1,3 +1,4 @@
+
 {
     "type": "RaadpleegMetBurgerservicenummer",
     "personen": [
@@ -6,6 +7,13 @@
             "geslacht": {
                 "code": "V",
                 "omschrijving": "Vrouw"
+            },
+            "naam": {
+                "voornamen": "Cornelia Francisca",
+                "geslachtsnaam": "Wiegman",
+                "voorletters": "C. F.",
+                "voorvoegsel": "",
+                "volledigeNaam": "Cornelia Francisca Wiegman"
             },
             "geboorte": {
                 "land": {
