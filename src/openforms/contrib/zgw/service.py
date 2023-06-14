@@ -71,7 +71,7 @@ def create_document(
     name: str,
     base64_body: str,
     options: dict,
-    get_drc: Callable,
+    get_drc: Callable[[], ZGWClient],
 ) -> dict:
     drc_client = get_drc()
     today = date.today().isoformat()
@@ -104,7 +104,7 @@ def create_report_document(
     name: str,
     submission_report: SubmissionReport,
     options: dict,
-    get_drc: Callable,
+    get_drc: Callable[[], ZGWClient],
 ) -> dict:
     submission_report.content.seek(0)
     base64_body = b64encode(submission_report.content.read()).decode()
@@ -127,7 +127,7 @@ def create_csv_document(
     name: str,
     csv_data: str,
     options: dict,
-    get_drc: Callable,
+    get_drc: Callable[[], ZGWClient],
     language: str = "nld",
 ) -> dict:
     base64_body = b64encode(csv_data.encode()).decode()
@@ -150,7 +150,7 @@ def create_attachment_document(
     name: str,
     submission_attachment: SubmissionFileAttachment,
     options: dict,
-    get_drc: Callable,
+    get_drc: Callable[[], ZGWClient],
 ) -> dict:
     submission_attachment.content.seek(0)
     base64_body = b64encode(submission_attachment.content.read()).decode()

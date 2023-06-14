@@ -27,10 +27,6 @@ const REGISTRATION = {
             instance?.options?.openForms?.registrationBackendInfoRef?.current;
           if (!registrationInfo) return [];
 
-          // if the url starts with '/', then formio will prefix it with the formio
-          // base URL, which is of course wrong. We there explicitly use the detected
-          // host.
-          let url = new URL(getFullyQualifiedUrl('/api/v2/registration/informatieobjecttypen'));
           let queries = {};
           switch (registrationInfo.registrationBackend) {
             case 'zgw-create-zaak': {
@@ -48,7 +44,9 @@ const REGISTRATION = {
               return;
           }
 
-          get(url, queries).then(response => instance.setItems(response.data));
+          get('/api/v2/registration/informatieobjecttypen', queries).then(response =>
+            instance.setItems(response.data)
+          );
         },
       },
       valueProperty: 'url',
