@@ -12,11 +12,11 @@ from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 from stuf.tests.factories import SoapServiceFactory
 
-from ...constants import AppointmentDetailsStatus
-from ...contrib.jcc.models import JccConfig
-from ...contrib.jcc.tests.test_plugin import mock_response
-from ...models import AppointmentsConfig
-from ...tests.factories import AppointmentInfoFactory
+from ....constants import AppointmentDetailsStatus
+from ....models import AppointmentsConfig
+from ....tests.factories import AppointmentInfoFactory
+from ..models import JccConfig
+from ..tests.test_plugin import mock_response
 
 
 class ProductsListTests(SubmissionsMixin, TestCase):

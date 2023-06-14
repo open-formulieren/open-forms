@@ -7,12 +7,12 @@ from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
 
-from ...constants import AppointmentDetailsStatus
-from ...contrib.qmatic.client import QmaticException
-from ...contrib.qmatic.tests.factories import QmaticConfigFactory
-from ...contrib.qmatic.tests.test_plugin import mock_response
-from ...models import AppointmentsConfig
-from ...tests.factories import AppointmentInfoFactory
+from ....constants import AppointmentDetailsStatus
+from ....models import AppointmentsConfig
+from ....tests.factories import AppointmentInfoFactory
+from ..client import QmaticException
+from .factories import QmaticConfigFactory
+from .test_plugin import mock_response
 
 
 class ProductsListTests(SubmissionsMixin, TestCase):
