@@ -1,10 +1,14 @@
 import re
 from datetime import date, datetime
 
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from django.utils.translation import ugettext_lazy as _
 
 import requests_mock
+from hypothesis import given, strategies as st
+
+from openforms.utils.tests.logging import disable_logging
+from stuf.tests.factories import SoapServiceFactory
 
 from ....base import (
     AppointmentClient,
@@ -12,10 +16,12 @@ from ....base import (
     AppointmentLocation,
     AppointmentProduct,
 )
+from ....exceptions import AppointmentException
 from ..plugin import JccAppointment
-from .utils import MockConfigMixin, mock_response
+from .utils import WSDL, MockConfigMixin, mock_response
 
 
+@disable_logging()
 class PluginTests(MockConfigMixin, TestCase):
     maxDiff = 1024
 
@@ -236,3 +242,98 @@ class PluginTests(MockConfigMixin, TestCase):
                 ): '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUoAAAFKAQAAAABTUiuoAAAB50lEQVR4nO2bzY3cMAxGHyMDe5Q72FLkDlJSkJLSgVXKdiAfA9j4cpA849nLziQYr4IlT/p5hw8gKNKibOJOy9/uJcFRRx111FFHn4laswGb2Mxs3AyWfXl6ugBHH0GTJKmAfo5BmgmyiSBJ0i36HAGOPoIulxACSG9DHZjZcI4AR++w4d3cwFCeMLGcIcDRf0FTCbLpEwU4+jEaJc37ouao6jJJ6zkCHL3D2kmYDYBQZ5behhXY7PkCHH3YW4frp/y6QnVUvL2V+nStjlJr9CSJVAAIkkrYPRXbruZP1+po9Zakdc9RUYK4HtxYzb3VD7q8yKZlQDObkQqYjUAeTxLg6D3WAodWCTYrQaQS2obHVifo5cBbOeSteU9etar3vNUJevQWcUUzYa834gpJq8dWN+ixgk+/BoDNyCMIthMEOPp3NeEhmOY6kuetvtB2ElZHlZvp1TxvdYJeYkuXXtaxtvC81SF67R1XS5JgGfx7q0v02jue44pNi1k7DhfvRvaD7hV8oba26tpMON7oet7qFK1PMn7Uj+WwF4snCnD0ETSVzchmrbWVR2htyv60fjl0z0pRUB9ixHVQ/l4gv/6263uaDrQ62tBsZmYj2LS8vH+X0aa9aP3CqPlfC4466qijjv5H6B/hFU+U471mPQAAAABJRU5ErkJggg==" alt="44b322c32c5329b135e1" />'
             },
         )
+
+
+@disable_logging()
+class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
+    """
+    Test behaviour when the remote service responds with errors.
+    """
+
+    def setUp(self):
+        self.soap_service = SoapServiceFactory.build(url=WSDL)
+        super().setUp()
+        self.plugin = JccAppointment("jcc")
+
+    @requests_mock.Mocker()
+    @given(st.integers(min_value=500, max_value=511))
+    def test_get_available_products_server_error(self, m, status_code):
+        m.post(requests_mock.ANY, status_code=status_code)
+
+        products = self.plugin.get_available_products()
+
+        self.assertEqual(products, [])
+
+    @requests_mock.Mocker()
+    def test_get_available_products_unexpected_exception(self, m):
+        m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
+
+        with self.assertRaises(AppointmentException):
+            self.plugin.get_available_products()
+
+    @requests_mock.Mocker()
+    @given(st.integers(min_value=500, max_value=511))
+    def test_get_locations_server_error(self, m, status_code):
+        m.post(requests_mock.ANY, status_code=status_code)
+        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
+
+        locations = self.plugin.get_locations()
+        self.assertEqual(locations, [])
+
+        locations = self.plugin.get_locations(products=[product])
+        self.assertEqual(locations, [])
+
+    @requests_mock.Mocker()
+    def test_get_locations_unexpected_exception(self, m):
+        m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
+        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
+
+        with self.assertRaises(AppointmentException):
+            self.plugin.get_locations()
+
+        with self.assertRaises(AppointmentException):
+            self.plugin.get_locations(products=[product])
+
+    @requests_mock.Mocker()
+    @given(st.integers(min_value=500, max_value=511))
+    def test_get_dates_server_error(self, m, status_code):
+        m.post(requests_mock.ANY, status_code=status_code)
+        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
+        location = AppointmentLocation(identifier="1", name="Bahamas")
+
+        dates = self.plugin.get_dates(products=[product], location=location)
+
+        self.assertEqual(dates, [])
+
+    @requests_mock.Mocker()
+    def test_get_dates_unexpected_exception(self, m):
+        m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
+        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
+        location = AppointmentLocation(identifier="1", name="Bahamas")
+
+        with self.assertRaises(AppointmentException):
+            self.plugin.get_dates(products=[product], location=location)
+
+    @requests_mock.Mocker()
+    @given(st.integers(min_value=500, max_value=511))
+    def test_get_times_server_error(self, m, status_code):
+        m.post(requests_mock.ANY, status_code=status_code)
+        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
+        location = AppointmentLocation(identifier="1", name="Bahamas")
+
+        times = self.plugin.get_times(
+            products=[product], location=location, day=date(2023, 6, 22)
+        )
+
+        self.assertEqual(times, [])
+
+    @requests_mock.Mocker()
+    def test_get_times_unexpected_exception(self, m):
+        m.post(requests_mock.ANY, exc=IOError("tubes are closed"))
+        product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
+        location = AppointmentLocation(identifier="1", name="Bahamas")
+
+        with self.assertRaises(AppointmentException):
+            self.plugin.get_times(
+                products=[product], location=location, day=date(2023, 6, 22)
+            )

@@ -29,7 +29,7 @@ class MockConfigMixin:
 
         main_config_patcher = patch(
             "openforms.appointments.utils.AppointmentsConfig.get_solo",
-            return_value=AppointmentsConfig(plugin="jcc"),
+            return_value=AppointmentsConfig(plugin="qmatic"),
         )
         main_config_patcher.start()
         self.addCleanup(main_config_patcher.stop)  # type: ignore

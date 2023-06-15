@@ -13,17 +13,21 @@ class QmaticClient(Session):
     headers.
     """
 
-    _config = None
+    _config: QmaticConfig | None = None
 
     def request(self, method: str, url: str, *args, **kwargs):
         if not self._config:
-            self._config = QmaticConfig.get_solo()
+            config = QmaticConfig.get_solo()
+            assert isinstance(config, QmaticConfig)
+            self._config = config
 
         api_root = self._config.service.api_root
+        _temp_client = self._config.service.build_client()
         headers = {
             "Content-Type": "application/json",
+            **_temp_client.auth_header,
         }
-        headers.update(self._config.service.get_auth_header(api_root))
+        del _temp_client
 
         url = f"{api_root}{url}"
         response = super().request(method, url, headers=headers, *args, **kwargs)
