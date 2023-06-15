@@ -86,6 +86,5 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
                 error_type=JsonTemplateValidatorErrorTypes.api,
             ),
         ],
-        default=dict,
-        initial=dict,
+        required=False,
     )

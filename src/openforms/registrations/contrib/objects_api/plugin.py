@@ -12,11 +12,16 @@ from openforms.contrib.zgw.service import (
     create_report_document,
 )
 from openforms.formio.rendering.structured import render_json
+from openforms.registrations.contrib.objects_api.utils import (
+    get_registration_json_templates,
+)
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.submissions.public_references import set_submission_reference
+from openforms.template import render_from_string, openforms_backend
 from openforms.translations.utils import to_iso639_2b
+from openforms.variables.utils import get_variables_for_context
 
 from ...base import BasePlugin
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
@@ -128,8 +133,20 @@ class ObjectsAPIRegistration(BasePlugin):
 
         objects_client = config.objects_service.build_client()
 
+        templates = get_registration_json_templates(submission)
+
+        base_render_context = {
+            "_submission": submission,
+            **get_variables_for_context(submission),
+        }
+
         record_data = {
-            "data": render_json(submission),
+            "data": render_from_string(
+                templates,
+                context={**base_render_context},
+                disable_autoescape=True,
+                backend=openforms_backend,
+            ),
             "type": options["productaanvraag_type"],
             "submission_id": str(submission.uuid),
             "language_code": submission.language_code,
@@ -200,3 +217,6 @@ class ObjectsAPIRegistration(BasePlugin):
 
     def pre_register_submission(self, submission: "Submission", options: dict) -> None:
         set_submission_reference(submission)
+
+    def get_custom_templatetags_libraries(self) -> list[str]:
+        return ["openforms.registrations.contrib.objects_api.templatetags.objects_api"]

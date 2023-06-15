@@ -49,7 +49,6 @@ def extract_submission_reference(submission: Submission) -> str:
 
 
 def get_registration_plugin(submission: Submission) -> BasePlugin | None:
-
     form = submission.form
     backend = form.registration_backend
 
