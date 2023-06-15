@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from django.core import mail
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from openforms.logging.models import TimelineLogProxy
 
@@ -98,6 +98,7 @@ class OnCompletionTests(TestCase):
         self.assertEqual(email.recipients(), ["test@test.nl"])
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 class OnCosignTests(TestCase):
     def test_on_cosign_submission(self):
         submission = SubmissionFactory.from_components(
