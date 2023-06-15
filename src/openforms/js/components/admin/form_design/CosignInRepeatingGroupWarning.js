@@ -1,35 +1,32 @@
-import FormioUtils from 'formiojs/utils';
 import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import MessageList from '../MessageList';
+import MessageList from 'components/admin/MessageList';
 
-const CosignInRepeatingGroupWarning = ({formSteps}) => {
-  // Iterate to see if there are repeating groups or co-sign components
-  let editGrids = [];
-  const cosignComponents = [];
-  formSteps.map(step =>
-    FormioUtils.eachComponent(step.configuration.components, configComponent => {
-      if (configComponent.type === 'editgrid') {
-        editGrids.push(configComponent);
-      } else if (configComponent.type === 'cosign') {
-        cosignComponents.push(configComponent);
+const CosignInRepeatingGroupWarning = ({cosignComponents, availableComponents}) => {
+  if (!cosignComponents) return null;
+
+  let componentInEditgrid = false;
+  for (const componentPath in cosignComponents) {
+    // components/cosignComponents are dictionaries where the key is the 'path' of the component. For example, for a component 'foo' in a
+    // repeating group 'bar', the key is 'bar.foo'.
+    const pathBits = componentPath.split('.');
+    const numberOfParentsBits = pathBits.length - 1;
+
+    // Check each parent to see if they are editgrids (repeating groups)
+    for (let counter = numberOfParentsBits; counter > 0; counter--) {
+      const parentPathBits = pathBits.slice(0, counter);
+      if (!parentPathBits.length) continue;
+
+      const parentPath = parentPathBits.join('.');
+      if (availableComponents[parentPath] && availableComponents[parentPath].type === 'editgrid') {
+        componentInEditgrid = true;
+        break;
       }
-    })
-  );
-
-  if (!cosignComponents.length) return null;
-
-  // Check if the co-sign components are in the editgrid
-  let foundComponent = false;
-  for (const cosignComponent of cosignComponents) {
-    for (const editGrid of editGrids) {
-      foundComponent = FormioUtils.getComponent(editGrid.components, cosignComponent.key, true);
-      if (foundComponent) break;
     }
   }
 
-  if (!foundComponent) return null;
+  if (!componentInEditgrid) return null;
 
   const warning = {
     level: 'warning',

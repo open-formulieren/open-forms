@@ -4,12 +4,8 @@ import {FormattedMessage} from 'react-intl';
 
 import MessageList from '../MessageList';
 
-const MultipleCosignComponentsWarning = ({components}) => {
-  const coSignComponents = Object.entries(components).filter(
-    ([key, component]) => component.type === 'cosign'
-  );
-
-  if (coSignComponents.length <= 1) return null;
+const MultipleCosignComponentsWarning = ({cosignComponents}) => {
+  if (cosignComponents.length <= 1) return null;
 
   const warning = {
     level: 'warning',
@@ -25,7 +21,7 @@ const MultipleCosignComponentsWarning = ({components}) => {
 };
 
 MultipleCosignComponentsWarning.propTypes = {
-  components: PropTypes.objectOf(PropTypes.object).isRequired,
+  cosignComponents: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default MultipleCosignComponentsWarning;
