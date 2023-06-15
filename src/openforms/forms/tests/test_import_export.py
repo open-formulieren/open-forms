@@ -478,6 +478,7 @@ class ImportExportTests(TestCase):
             content=dedent(
                 """
                 Some confirmation email content translation with the obligatory
+                {% cosign_information %}
                 {% appointment_information %}
                 {% payment_information %}
                 """
@@ -487,6 +488,7 @@ class ImportExportTests(TestCase):
         email_template.content = dedent(
             """
             Untranslated confirmation email content with the obligatory
+            {% cosign_information %}
             {% appointment_information %}
             {% payment_information %}
             """
@@ -577,6 +579,7 @@ class ImportExportTests(TestCase):
             dedent(
                 """
                 Some confirmation email content translation with the obligatory
+                {% cosign_information %}
                 {% appointment_information %}
                 {% payment_information %}
                 """
@@ -587,6 +590,7 @@ class ImportExportTests(TestCase):
             dedent(
                 """
                 Untranslated confirmation email content with the obligatory
+                {% cosign_information %}
                 {% appointment_information %}
                 {% payment_information %}
                 """

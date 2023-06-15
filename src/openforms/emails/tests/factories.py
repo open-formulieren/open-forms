@@ -13,5 +13,5 @@ class ConfirmationEmailTemplateFactory(factory.django.DjangoModelFactory):
     class Params:
         with_tags = factory.Trait(
             subject="Hello",
-            content="Thanks! {% payment_information %} {% appointment_information %}",
+            content="Thanks! {% payment_information %} {% appointment_information %} {% cosign_information %}",
         )

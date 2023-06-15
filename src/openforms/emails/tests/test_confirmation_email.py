@@ -135,7 +135,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         with self.subTest("valid"):
             email = ConfirmationEmailTemplate(
                 subject="foo",
-                content="bla bla http://good.net/bla?x=1 {% appointment_information %} {% payment_information %}",
+                content="bla bla http://good.net/bla?x=1 {% appointment_information %} {% payment_information %} {% cosign_information %}",
             )
 
             email.full_clean()
@@ -143,7 +143,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         with self.subTest("invalid"):
             email = ConfirmationEmailTemplate(
                 subject="foo",
-                content="bla bla http://bad.net/bla?x=1 {% appointment_information %} {% payment_information %}",
+                content="bla bla http://bad.net/bla?x=1 {% appointment_information %} {% payment_information %} {% cosign_information %}",
             )
             with self.assertRaisesMessage(
                 ValidationError,
@@ -329,12 +329,12 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         email_template1 = ConfirmationEmailTemplateFactory.create(
             form__send_confirmation_email=True,
             subject="Custom subject",
-            content="Custom content {% appointment_information %} {% payment_information %}",
+            content="Custom content {% appointment_information %} {% payment_information %} {% cosign_information %}",
         )
         email_template2 = ConfirmationEmailTemplateFactory.create(
             form__send_confirmation_email=True,
             subject="",
-            content="Custom content {% appointment_information %} {% payment_information %}",
+            content="Custom content {% appointment_information %} {% payment_information %} {% cosign_information %}",
         )
         email_template3 = ConfirmationEmailTemplateFactory.create(
             form__send_confirmation_email=True, subject="Custom subject", content=""
@@ -352,7 +352,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             "openforms.emails.confirmation_emails.GlobalConfiguration.get_solo",
             return_value=GlobalConfiguration(
                 confirmation_email_subject="Global subject",
-                confirmation_email_content="Global content {% appointment_information %} {% payment_information %}",
+                confirmation_email_content="Global content {% appointment_information %} {% payment_information %} {% cosign_information %}",
             ),
         ):
             with self.subTest("Custom subject + custom content"):

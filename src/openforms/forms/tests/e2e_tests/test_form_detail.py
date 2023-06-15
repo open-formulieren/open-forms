@@ -23,7 +23,7 @@ class FormDesignerComponentTranslationTests(E2ETestCase):
             )
             ConfirmationEmailTemplateFactory.create(
                 subject="Custom Subject",
-                content="Custom content {% appointment_information %} {% payment_information %}",
+                content="Custom content {% appointment_information %} {% payment_information %} {% cosign_information %}",
                 form=form,
             )
             return form
