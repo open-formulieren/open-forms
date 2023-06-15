@@ -11,10 +11,10 @@ logger = logging.getLogger(__name__)
 
 
 class HaalCentraalClient(Protocol):
-    def __init__(self, service_client: ZGWClient):
+    def __init__(self, service_client: ZGWClient):  # pragma: no cover
         ...
 
-    def find_person(self, bsn: str, **kwargs) -> JSONObject:
+    def find_person(self, bsn: str, **kwargs) -> JSONObject | None:  # pragma: no cover
         ...
 
 
@@ -26,7 +26,7 @@ class HaalCentraalV1Client:
     def __init__(self, service_client: ZGWClient):
         self.service_client = service_client
 
-    def find_person(self, bsn: str, *args, **kwargs) -> JSONObject:
+    def find_person(self, bsn: str, **kwargs) -> JSONObject | None:
         try:
             data = self.service_client.retrieve(
                 "ingeschrevenpersonen",
@@ -36,10 +36,7 @@ class HaalCentraalV1Client:
                     "headers": {"Accept": "application/hal+json"},
                 },
             )
-        except RequestException as e:
-            logger.exception("exception while making request", exc_info=e)
-            return
-        except ClientError as e:
+        except (ClientError, RequestException) as e:
             logger.exception("exception while making request", exc_info=e)
             return
 
@@ -54,7 +51,7 @@ class HaalCentraalV2Client:
     def __init__(self, service_client: ZGWClient):
         self.service_client = service_client
 
-    def find_person(self, bsn: str, attributes: Iterable[str]) -> JSONObject:
+    def find_person(self, bsn: str, attributes: Iterable[str]) -> JSONObject | None:
         body = {
             "type": "RaadpleegMetBurgerservicenummer",
             "burgerservicenummer": [bsn],
@@ -70,13 +67,12 @@ class HaalCentraalV2Client:
                     "headers": {"Content-Type": "application/json; charset=utf-8"}
                 },
             )
-        except RequestException as e:
-            logger.exception("exception while making request", exc_info=e)
-            return
-        except ClientError as e:
+        except (ClientError, RequestException) as e:
             logger.exception("exception while making request", exc_info=e)
             return
 
-        if data.get("personen"):
-            return data["personen"][0]
-        return data
+        if not data.get("personen"):
+            logger.debug("Personen not found")
+            return
+
+        return data["personen"][0]

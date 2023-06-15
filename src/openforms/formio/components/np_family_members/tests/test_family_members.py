@@ -12,7 +12,7 @@ import requests_mock
 from openforms.authentication.constants import AuthAttribute
 from openforms.contrib.brp.models import BRPConfig
 from openforms.formio.service import get_dynamic_configuration
-from openforms.prefill.contrib.haalcentraal.tests.test_plugin import load_binary_mock
+from openforms.prefill.contrib.haalcentraal.tests.utils import load_binary_mock
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from stuf.constants import EndpointType

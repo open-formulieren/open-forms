@@ -1,131 +1,167 @@
-from unittest.mock import Mock, patch
+from typing import Literal
+from unittest.mock import patch
 
 from django.test import TestCase
 
-import requests
+import requests_mock
 from glom import glom
+from zgw_consumers.models import Service
+from zgw_consumers.test import mock_service_oas_get
 
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
-from openforms.submissions.tests.factories import SubmissionFactory
 
 from ..constants import HaalCentraalVersion
 from ..models import HaalCentraalConfig
 from .utils import load_json_mock
 
 
-class BaseHaalCentraalTestFindPerson:
-    class HaalCentraalFindPersonTest(TestCase):
-        @patch(
-            "zgw_consumers.client.ZGWClient.retrieve",
-            return_value=load_json_mock("ingeschrevenpersonen.999990676.json"),
-        )
-        @patch(
-            "zgw_consumers.client.ZGWClient.operation",
-            return_value=load_json_mock("personen-full-api-response.json"),
-        )
-        def test_find_person_succesfully(self, mock_operation, mock_retrieve):
-            with patch(
-                "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
-                return_value=HaalCentraalConfig(
-                    version=self.version,
-                    service=ServiceFactory(
-                        api_root="https://personen/api/",
-                        oas="https://personen/api/schema/openapi.yaml",
-                    ),
-                ),
-            ):
-                config = HaalCentraalConfig.get_solo()
-                attributes = config.get_attributes()
-                submission = SubmissionFactory(auth_info__value="999990676")
-                attributes_list = [
-                    attributes.naam_voornamen,
-                    attributes.naam_geslachtsnaam,
-                ]
-                data = config.build_client().find_person(
-                    submission,
-                    (
-                        attributes.naam_voornamen,
-                        attributes.naam_geslachtsnaam,
-                    ),
-                )
+class HaalCentraalFindPersonTests:
+    """
+    Mixin defining the actual tests to run for a particular client version.
 
-                values = dict()
+    All client versions must support this set of functionality.
 
-                if data:
-                    for attr in attributes_list:
-                        values[attr] = glom(data, attr)
+    You must implement the classmethod ``setUpTestData`` to create the relevant service,
+    for which you can then mock the API calls.
+    """
 
-                expected = {
-                    "naam.voornamen": "Cornelia Francisca",
-                    "naam.geslachtsnaam": "Wiegman",
-                }
-                self.assertEqual(values, expected)
+    # specify in subclasses
+    version: HaalCentraalVersion
+    schema_yaml_name: Literal["personen", "personen-v2"]
 
-        @patch(
-            "zgw_consumers.client.ZGWClient.retrieve",
-            side_effect=requests.HTTPError(Mock(status=500)),
-        )
-        @patch(
-            "zgw_consumers.client.ZGWClient.operation",
-            side_effect=requests.HTTPError(Mock(status=500)),
-        )
-        def test_find_person_500(self, mock_operation, mock_retrieve):
-            with patch(
-                "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
-                return_value=HaalCentraalConfig(
-                    version=self.version,
-                    service=ServiceFactory(
-                        api_root="https://personen/api/",
-                        oas="https://personen/api/schema/openapi.yaml",
-                    ),
-                ),
-            ):
-                config = HaalCentraalConfig.get_solo()
-                attributes = config.get_attributes()
-                submission = SubmissionFactory(auth_info__value="999990676")
-                data = config.build_client().find_person(
-                    submission,
-                    (
-                        attributes.naam_voornamen,
-                        attributes.naam_geslachtsnaam,
-                    ),
-                )
+    # set in setUP
+    service: Service
+    config: HaalCentraalConfig
 
-                self.assertIsNone(data)
-
-
-class HaalCentraalFindPersonV1Test(
-    BaseHaalCentraalTestFindPerson.HaalCentraalFindPersonTest
-):
     def setUp(self):
-        super().setUp()
-        self.version = HaalCentraalVersion.haalcentraal13
+        super().setUp()  # type: ignore
 
-    @patch(
-        "zgw_consumers.client.ZGWClient.retrieve",
-        side_effect=requests.HTTPError(Mock(status=404), "not found"),
-    )
-    def test_find_person_400(self, mock_retrieve):
-        with patch(
+        # set up patcher for the configuration
+        self.config = HaalCentraalConfig(
+            version=self.version,
+            service=self.service,
+        )
+        config_patcher = patch(
             "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
-            return_value=HaalCentraalConfig(
-                version=self.version,
-                service=ServiceFactory(
-                    api_root="https://personen/api/",
-                    oas="https://personen/api/schema/openapi.yaml",
-                ),
+            return_value=self.config,
+        )
+        self.config_mock = config_patcher.start()
+        self.addCleanup(config_patcher.stop)  # type: ignore
+
+        # prepare a requests mock instance to wire up the mocks
+        self.requests_mock = requests_mock.Mocker(real_http=True)
+        self.requests_mock.start()
+        mock_service_oas_get(
+            self.requests_mock,
+            url=self.service.api_root,
+            service=self.schema_yaml_name,
+            oas_url=self.service.oas,
+        )
+        self.addCleanup(self.requests_mock.stop)  # type: ignore
+
+    def find_person_succesfully_test(self):
+        attributes = self.config.get_attributes()
+        client = self.config.build_client()
+        assert client is not None
+
+        attributes = [attributes.naam_voornamen, attributes.naam_geslachtsnaam]
+        raw_data = client.find_person("999990676", attributes=attributes)
+
+        values = {attr: glom(raw_data, attr) for attr in attributes}
+        expected = {
+            "naam.voornamen": "Cornelia Francisca",
+            "naam.geslachtsnaam": "Wiegman",
+        }
+        self.assertEqual(values, expected)  # type: ignore
+
+    def find_person_unsuccesfully_test(self):
+        attributes = self.config.get_attributes()
+        client = self.config.build_client()
+        assert client is not None
+
+        attributes = [attributes.naam_voornamen, attributes.naam_geslachtsnaam]
+        raw_data = client.find_person(bsn="999990676", attributes=attributes)
+
+        self.assertIsNone(raw_data)  # type: ignore
+
+
+class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, TestCase):
+    version = HaalCentraalVersion.haalcentraal13
+    schema_yaml_name = "personen"
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.service = ServiceFactory.create(
+            api_root="https://personen/api/",
+            oas="https://personen/api/schema/openapi.yaml",
+        )
+
+    def test_find_person_succesfully(self):
+        self.requests_mock.get(
+            "https://personen/api/ingeschrevenpersonen/999990676",
+            status_code=200,
+            json=load_json_mock("ingeschrevenpersonen.v1.json"),
+        )
+        super().find_person_unsuccesfully_test()
+
+    def test_find_person_unsuccesfully_resulting_in_500(self):
+        self.requests_mock.get(
+            "https://personen/api/ingeschrevenpersonen/999990676",
+            status_code=500,
+        )
+        super().find_person_unsuccesfully_test()
+
+    def test_find_person_succesfully(self):
+        self.requests_mock.get(
+            "https://personen/api/ingeschrevenpersonen/999990676",
+            status_code=404,
+        )
+        super().find_person_unsuccesfully_test()
+
+
+class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, TestCase):
+    version = HaalCentraalVersion.haalcentraal20
+    schema_yaml_name = "personen-v2"
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.service = ServiceFactory.create(
+            api_root="https://personen/api/",
+            oas="https://personen/api/schema/openapi.yaml",
+        )
+
+    def test_find_person_succesfully(self):
+        self.requests_mock.post(
+            "https://personen/api/",
+            status_code=200,
+            json=load_json_mock("ingeschrevenpersonen.v2-full.json"),
+        )
+        super().find_person_unsuccesfully_test()
+
+    def test_find_person_without_personen_key(self):
+        self.requests_mock.post(
+            "https://personen/api/",
+            status_code=200,
+            json=load_json_mock(
+                "ingeschrevenpersonen.v2-full-find-personen-response.json"
             ),
-        ):
-            config = HaalCentraalConfig.get_solo()
-            submission = SubmissionFactory(auth_info__value="999990676")
-            data = config.build_client().find_person(submission)
+        )
+        super().find_person_unsuccesfully_test()
 
-            self.assertIsNone(data)
+    def test_find_person_unsuccesfully_resulting_in_500(self):
+        self.requests_mock.post(
+            "https://personen/",
+            status_code=500,
+        )
+        super().find_person_unsuccesfully_test()
 
-
-class HaalCentraalFindPersonV2Test(
-    BaseHaalCentraalTestFindPerson.HaalCentraalFindPersonTest
-):
-    def setUp(self):
-        super().setUp()
-        self.version = HaalCentraalVersion.haalcentraal20
+    def test_find_person_succesfully(self):
+        self.requests_mock.post(
+            "https://personen/",
+            status_code=404,
+        )
+        super().find_person_unsuccesfully_test()

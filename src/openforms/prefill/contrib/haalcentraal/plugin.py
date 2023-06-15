@@ -24,7 +24,7 @@ def get_config() -> HaalCentraalConfig | None:
     config = HaalCentraalConfig.get_solo()
     if not config.service:
         logger.warning("No service defined for Haal Centraal prefill.")
-        return
+        return None
     return config
 
 
@@ -55,16 +55,18 @@ class HaalCentraalPrefill(BasePlugin):
         client.context = PreRequestClientContext(submission=submission)
 
         data = client.find_person(bsn, attributes=attributes)
-        values = dict()
+        if not data:
+            return {}
 
-        if data:
-            for attr in attributes:
-                try:
-                    values[attr] = glom(data, attr)
-                except GlomError:
-                    logger.warning(
-                        f"missing expected attribute '{attr}' in backend response"
-                    )
+        values = dict()
+        for attr in attributes:
+            try:
+                values[attr] = glom(data, attr)
+            except GlomError:
+                logger.warning(
+                    "missing expected attribute '%s' in backend response",
+                    attr,
+                )
 
         return values
 
@@ -104,10 +106,10 @@ class HaalCentraalPrefill(BasePlugin):
           the value is the prefill value to use for that attribute.
         """
         config = get_config()
-        version_atributes = Attributes
+        if config is None:
+            return ({}, "")
 
-        if config:
-            version_atributes = config.get_attributes()
+        version_atributes = config.get_attributes()
 
         values = cls._get_values_for_bsn(
             config,

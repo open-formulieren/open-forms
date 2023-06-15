@@ -11,9 +11,14 @@ from .constants import Attributes, AttributesV2, HaalCentraalVersion
 
 logger = logging.getLogger(__name__)
 
-VERSION_TO_ATTRIBUTES_MAP = {
+VERSION_TO_ATTRIBUTES_MAP: Attributes | AttributesV2 = {
     HaalCentraalVersion.haalcentraal13: Attributes,
     HaalCentraalVersion.haalcentraal20: AttributesV2,
+}
+
+VERSION_TO_CLIENT_CLASS_MAP: HaalCentraalClient = {
+    HaalCentraalVersion.haalcentraal13: HaalCentraalV1Client,
+    HaalCentraalVersion.haalcentraal20: HaalCentraalV2Client,
 }
 
 
@@ -49,22 +54,13 @@ class HaalCentraalConfig(SingletonModel):
         verbose_name = _("Haal Centraal configuration")
 
     def build_client(self) -> HaalCentraalClient | None:
-        if not self.service:
+        ClientCls = VERSION_TO_CLIENT_CLASS_MAP.get(self.version)
+        if not self.service or ClientCls is None:
             logger.info(
                 "Haal Centraal Config hasn't been setup properly, make sure to configure the service properly."
             )
-            return
-
-        match self.version:
-            case HaalCentraalVersion.haalcentraal13:
-                return HaalCentraalV1Client(self.service.build_client())
-            case HaalCentraalVersion.haalcentraal20:
-                return HaalCentraalV2Client(self.service.build_client())
-            case _:
-                logger.info(
-                    "Haal Centraal Config hasn't been setup properly, make sure to configure the version properly."
-                )
-                return
+            return None
+        return ClientCls(self.service.build_client())
 
     def get_attributes(self) -> Attributes | AttributesV2:
         if not self.service:

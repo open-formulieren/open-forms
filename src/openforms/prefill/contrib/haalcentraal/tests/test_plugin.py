@@ -1,267 +1,182 @@
+from typing import Literal
 from unittest.mock import patch
 
 from django.test import TestCase
 
 import requests_mock
 from glom import glom
+from zgw_consumers.models import Service
+from zgw_consumers.test import mock_service_oas_get
 
+from openforms.prefill.contrib.haalcentraal.plugin import HaalCentraalPrefill
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ..constants import Attributes, AttributesV2, HaalCentraalVersion
+from ..constants import HaalCentraalVersion
 from ..models import HaalCentraalConfig
-from ..plugin import HaalCentraalPrefill, get_config
-from .utils import load_binary_mock, load_json_mock
+from .utils import load_json_mock
 
 
-class BaseHaalCentraalTestCases:
-    class BaseHaalCentraalTests(TestCase):
-        def test_get_config(self):
-            self.assertIsNotNone(get_config())
+class HaalCentraalPluginTests:
+    """
+    Mixin defining the actual tests to run for a particular client version.
 
-        def test_defined_attributes_paths_resolve(self):
-            attributes = self.attributes
-            data = load_json_mock(self.ingeschreven_personen_complete)
-            for key, label in sorted(attributes.choices, key=lambda o: o[0]):
-                with self.subTest(key):
-                    glom(data, key)
+    All client versions must support this set of functionality.
 
-        @requests_mock.Mocker()
-        def test_get_prefill_values(self, m):
-            attributes = self.attributes
+    You must implement the classmethod ``setUpTestData`` to create the relevant service,
+    for which you can then mock the API calls.
+    """
 
-            m.get(
-                "https://personen/api/schema/openapi.yaml?v=3",
-                status_code=200,
-                content=load_binary_mock(self.personen),
-            )
-            with patch(
-                f"openforms.prefill.contrib.haalcentraal.client.{self.client}.find_person",
-                return_value=load_json_mock(self.ingeschreven_personen_complete),
-            ):
-                submission = SubmissionFactory(auth_info__value="999990676")
-                values = HaalCentraalPrefill.get_prefill_values(
-                    submission,
-                    [attributes.naam_voornamen, attributes.naam_geslachtsnaam],
-                )
-                expected = {
-                    "naam.voornamen": "Cornelia Francisca",
-                    "naam.geslachtsnaam": "Wiegman",
-                }
-                self.assertEqual(values, expected)
+    # specify in subclasses
+    version: HaalCentraalVersion | None = None
+    schema_yaml_name: Literal["personen", "personen-v2"] | None = None
 
-        @requests_mock.Mocker()
-        def test_get_prefill_values_http_500(self, m):
-            attributes = self.attributes
+    # set in setUP
+    service: Service | None = None
+    config: HaalCentraalConfig
 
-            m.get(
-                "https://personen/api/schema/openapi.yaml?v=3",
-                status_code=200,
-                content=load_binary_mock(self.personen),
-            )
-            with patch(
-                f"openforms.prefill.contrib.haalcentraal.client.{self.client}.find_person",
-                return_value=self.error_500,
-            ):
-                submission = SubmissionFactory(auth_info__value="999990676")
-                values = HaalCentraalPrefill.get_prefill_values(
-                    submission,
-                    [attributes.naam_voornamen, attributes.naam_geslachtsnaam],
-                )
-                expected = {}
-                self.assertEqual(values, expected)
+    expected: any
 
-        def test_get_attributes(self):
-            attrs = HaalCentraalPrefill.get_available_attributes()
-            self.assertIsInstance(attrs, list)
-            self.assertIsInstance(attrs[0], tuple)
-            self.assertEqual(len(attrs[0]), 2)
-
-
-class HaalCentraalPrefilDefaultVersionTest(
-    BaseHaalCentraalTestCases.BaseHaalCentraalTests
-):
     def setUp(self):
-        super().setUp()
+        super().setUp()  # type: ignore
 
+        # set up patcher for the configuration
+        self.config = HaalCentraalConfig(
+            version=self.version,
+            service=self.service,
+        )
         config_patcher = patch(
             "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
-            return_value=HaalCentraalConfig(
-                service=ServiceFactory(
-                    api_root="https://personen/api/",
-                    oas="https://personen/api/schema/openapi.yaml",
-                ),
-            ),
+            return_value=self.config,
         )
-        config_patcher.start()
-        self.addCleanup(config_patcher.stop)
+        self.config_mock = config_patcher.start()
+        self.addCleanup(config_patcher.stop)  # type: ignore
 
-        self.attributes = Attributes
-
-        self.personen = "personen.yaml"
-        self.ingeschreven_personen_incomplete = "ingeschrevenpersonen.999990676.json"
-        self.ingeschreven_personen_complete = "ingeschrevenpersonen.999990676-full.json"
-
-        self.client = "HaalCentraalV1Client"
-        self.error_404 = {
-            "type": "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.5",
-            "title": "Opgevraagde resource bestaat niet.",
-            "status": 404,
-            "detail": "The server has not found anything matching the Request-URI.",
-            "instance": "https://datapunt.voorbeeldgemeente.nl/api/v1/resourcenaam?parameter=waarde",
-            "code": "notFound",
-        }
-        self.error_500 = {
-            "type": "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1",
-            "title": "Interne server fout.",
-            "status": 500,
-            "detail": "The server encountered an unexpected condition which prevented it from fulfilling the request.",
-            "instance": "https://datapunt.voorbeeldgemeente.nl/api/v1/resourcenaam?parameter=waarde",
-            "code": "serverError",
-        }
-
-    @requests_mock.Mocker()
-    def test_get_prefill_values_http_404(self, m):
-        attributes = self.attributes
-        m.get(
-            "https://personen/api/schema/openapi.yaml?v=3",
-            status_code=200,
-            content=load_binary_mock(self.personen),
-        )
-        with patch(
-            f"openforms.prefill.contrib.haalcentraal.client.{self.client}.find_person",
-            return_value=self.error_404,
-        ):
-            submission = SubmissionFactory(auth_info__value="999990676")
-            values = HaalCentraalPrefill.get_prefill_values(
-                submission,
-                [attributes.naam_voornamen, attributes.naam_geslachtsnaam],
+        # prepare a requests mock instance to wire up the mocks
+        if self.schema_yaml_name:
+            self.requests_mock = requests_mock.Mocker(real_http=True)
+            self.requests_mock.start()
+            mock_service_oas_get(
+                self.requests_mock,
+                url=self.service.api_root,
+                service=self.schema_yaml_name,
+                oas_url=self.service.oas,
             )
-            expected = {}
-            self.assertEqual(values, expected)
+            self.addCleanup(self.requests_mock.stop)  # type: ignore
 
+    def defined_attributes_paths_resolve_test(self):
+        attributes = self.config.get_attributes()
 
-class HaalCentraalPrefillV1Test(BaseHaalCentraalTestCases.BaseHaalCentraalTests):
-    def setUp(self):
-        super().setUp()
+        data = load_json_mock(self.ingeschrevenpersonen)
+        for key, label in sorted(attributes.choices, key=lambda o: o[0]):
+            with self.subTest(key):
+                glom(data, key)  # type: ignore
 
-        config_patcher = patch(
-            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
-            return_value=HaalCentraalConfig(
-                version=HaalCentraalVersion.haalcentraal13,
-                service=ServiceFactory(
-                    api_root="https://personen/api/",
-                    oas="https://personen/api/schema/openapi.yaml",
-                ),
-            ),
-        )
-        config_patcher.start()
-        self.addCleanup(config_patcher.stop)
+    def prefill_values_test(self):
+        attributes = self.config.get_attributes()
 
-        self.attributes = Attributes
-
-        self.personen = "personen.yaml"
-        self.ingeschreven_personen_incomplete = "ingeschrevenpersonen.999990676.json"
-        self.ingeschreven_personen_complete = "ingeschrevenpersonen.999990676-full.json"
-
-        self.client = "HaalCentraalV1Client"
-        self.error_404 = {
-            "type": "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.5",
-            "title": "Opgevraagde resource bestaat niet.",
-            "status": 404,
-            "detail": "The server has not found anything matching the Request-URI.",
-            "instance": "https://datapunt.voorbeeldgemeente.nl/api/v1/resourcenaam?parameter=waarde",
-            "code": "notFound",
-        }
-        self.error_500 = {
-            "type": "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1",
-            "title": "Interne server fout.",
-            "status": 500,
-            "detail": "The server encountered an unexpected condition which prevented it from fulfilling the request.",
-            "instance": "https://datapunt.voorbeeldgemeente.nl/api/v1/resourcenaam?parameter=waarde",
-            "code": "serverError",
-        }
-
-    @requests_mock.Mocker()
-    def test_get_prefill_values_http_404(self, m):
-        attributes = self.attributes
-        m.get(
-            "https://personen/api/schema/openapi.yaml?v=3",
-            status_code=200,
-            content=load_binary_mock(self.personen),
-        )
-        with patch(
-            f"openforms.prefill.contrib.haalcentraal.client.{self.client}.find_person",
-            return_value=self.error_404,
-        ):
-            submission = SubmissionFactory(auth_info__value="999990676")
-            values = HaalCentraalPrefill.get_prefill_values(
-                submission,
-                [attributes.naam_voornamen, attributes.naam_geslachtsnaam],
-            )
-            expected = {}
-            self.assertEqual(values, expected)
-
-
-class HaalCentraalPrefillV2Test(BaseHaalCentraalTestCases.BaseHaalCentraalTests):
-    def setUp(self):
-        super().setUp()
-
-        config_patcher = patch(
-            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
-            return_value=HaalCentraalConfig(
-                version=HaalCentraalVersion.haalcentraal20,
-                service=ServiceFactory(
-                    api_root="https://personen/api/",
-                    oas="https://personen/api/schema/openapi.yaml",
-                ),
-            ),
-        )
-        config_patcher.start()
-        self.addCleanup(config_patcher.stop)
-
-        self.attributes = AttributesV2
-
-        self.personen = "personen-v2.yaml"
-        self.ingeschreven_personen_incomplete = "personen-incomplete.json"
-        self.ingeschreven_personen_complete = "personen-full-response.json"
-
-        self.client = "HaalCentraalV2Client"
-        self.error_500 = {
-            "type": "https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.1",
-            "title": "Interne server fout.",
-            "status": 500,
-            "detail": "The server encountered an unexpected condition which prevented it from fulfilling the request.",
-            "instance": "https://datapunt.voorbeeldgemeente.nl/api/v1/resourcenaam?parameter=waarde",
-            "code": "serverError",
-        }
-
-
-class HaalCentraalNoConfigTest(TestCase):
-    def setUp(self):
-        super().setUp()
-
-        config_patcher = patch(
-            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
-            return_value=HaalCentraalConfig(),
-        )
-        config_patcher.start()
-        self.addCleanup(config_patcher.stop)
-
-    def test_get_config(self):
-        self.assertIsNone(get_config())
-
-    def test_get_prefills(self):
         submission = SubmissionFactory(auth_info__value="999990676")
         values = HaalCentraalPrefill.get_prefill_values(
             submission,
-            [Attributes.naam_voornamen, Attributes.naam_geslachtsnaam],
+            [attributes.naam_voornamen, attributes.naam_geslachtsnaam],
         )
-        expected = {}
-        self.assertEqual(values, expected)
+        self.assertEqual(values, self.expected)  # type: ignore
 
-    def test_get_attributes(self):
+    def attributes_values_test(self):
         attrs = HaalCentraalPrefill.get_available_attributes()
-        self.assertIsInstance(attrs, list)
-        self.assertIsInstance(attrs[0], tuple)
-        self.assertEqual(len(attrs[0]), 2)
+        self.assertIsInstance(attrs, list)  # type: ignore
+        self.assertIsInstance(attrs[0], tuple)  # type: ignore
+        self.assertEqual(len(attrs[0]), 2)  # type: ignore
+
+
+class HaalCentraalFindPersonV1Test(HaalCentraalPluginTests, TestCase):
+    version = HaalCentraalVersion.haalcentraal13
+    schema_yaml_name = "personen"
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.service = ServiceFactory.create(
+            api_root="https://personen/api/",
+            oas="https://personen/api/schema/openapi.yaml",
+        )
+
+    @patch(
+        "openforms.prefill.contrib.haalcentraal.client.HaalCentraalV1Client.find_person",
+        return_value=load_json_mock("ingeschrevenpersonen.v1-full.json"),
+    )
+    def test_prefill_returns_values(self, mock_find_person):
+        self.expected = {
+            "naam.voornamen": "Cornelia Francisca",
+            "naam.geslachtsnaam": "Wiegman",
+        }
+        super().prefill_values_test()
+
+    @patch(
+        "openforms.prefill.contrib.haalcentraal.client.HaalCentraalV1Client.find_person",
+        return_value={},
+    )
+    def test_prefill_find_person_returns_empty(self, mock_find_person):
+        self.expected = {}
+        super().prefill_values_test()
+
+    def test_defined_attributes_paths_resolve(self):
+        self.ingeschrevenpersonen = "ingeschrevenpersonen.v1-full.json"
+        super().defined_attributes_paths_resolve_test()
+
+    def test_attributes(self):
+        super().attributes_values_test()
+
+
+class HaalCentraalFindPersonV2Test(HaalCentraalPluginTests, TestCase):
+    version = HaalCentraalVersion.haalcentraal20
+    schema_yaml_name = "personen-v2"
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
+        cls.service = ServiceFactory.create(
+            api_root="https://personen/api/",
+            oas="https://personen/api/schema/openapi.yaml",
+        )
+
+    @patch(
+        "openforms.prefill.contrib.haalcentraal.client.HaalCentraalV2Client.find_person",
+        return_value=load_json_mock(
+            "ingeschrevenpersonen.v2-full-find-personen-response.json"
+        ),
+    )
+    def test_prefill_returns_values(self, mock_find_person):
+        self.expected = {
+            "naam.voornamen": "Cornelia Francisca",
+            "naam.geslachtsnaam": "Wiegman",
+        }
+        super().prefill_values_test()
+
+    @patch(
+        "openforms.prefill.contrib.haalcentraal.client.HaalCentraalV2Client.find_person",
+        return_value={},
+    )
+    def test_prefill_find_person_returns_empty(self, mock_find_person):
+        self.expected = {}
+        super().prefill_values_test()
+
+    def test_defined_attributes_paths_resolve(self):
+        self.ingeschrevenpersonen = (
+            "ingeschrevenpersonen.v2-full-find-personen-response.json"
+        )
+        super().defined_attributes_paths_resolve_test()
+
+    def test_attributes(self):
+        super().attributes_values_test()
+
+
+class HaalCentraalFindPersonNoConfigTest(HaalCentraalPluginTests, TestCase):
+    def test_prefill_returns_values(self):
+        self.expected = {}
+        super().prefill_values_test()
+
+    def test_attributes(self):
+        super().attributes_values_test()
