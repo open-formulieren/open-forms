@@ -2,6 +2,9 @@ from unittest.mock import patch
 
 from django.test import TestCase
 
+from openforms.registrations.contrib.zgw_apis.tests.factories import (
+    ZGWApiGroupConfigFactory,
+)
 from openforms.registrations.exceptions import RegistrationFailed
 from openforms.registrations.tasks import register_submission
 from openforms.submissions.tasks.registration import pre_registration
@@ -29,8 +32,10 @@ class PreRegistrationTests(TestCase):
         self.assertTrue(submission.pre_registration_completed)
 
     def test_if_preregistration_complete_retry_doesnt_repeat_it(self):
+        zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
             completed_not_preregistered=True,
         )
 
@@ -67,8 +72,10 @@ class PreRegistrationTests(TestCase):
         self.assertFalse(submission.pre_registration_completed)
 
     def test_pre_registration_task_errors_but_does_not_raise_error(self):
+        zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
             completed_not_preregistered=True,
         )
 
@@ -175,8 +182,10 @@ class PreRegistrationTests(TestCase):
         )
 
     def test_retry_keeps_track_of_internal_reference(self):
+        zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
             completed_not_preregistered=True,
         )
 

@@ -291,6 +291,8 @@ class WebformBuilder extends WebformBuilderFormio {
   // Custom react-based implementation
   editComponent(component, parent, isNew, isJsonEdit, original, flags = {}) {
     const {react_formio_builder_enabled = false} = this.options.openForms.featureFlags;
+    const registrationBackendInfoRef = this.options.openForms.registrationBackendInfoRef;
+
     if (
       !component.key ||
       !react_formio_builder_enabled ||

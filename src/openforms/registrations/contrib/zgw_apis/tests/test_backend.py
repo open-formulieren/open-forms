@@ -24,7 +24,7 @@ from ....exceptions import RegistrationFailed
 from ....service import extract_submission_reference
 from ....tasks import register_submission
 from ..plugin import ZGWRegistration
-from .factories import ZgwConfigFactory
+from .factories import ZGWApiGroupConfigFactory
 
 
 @temp_private_root()
@@ -32,7 +32,7 @@ from .factories import ZgwConfigFactory
 class ZGWBackendTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        ZgwConfigFactory.create(
+        cls.zgw_group = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken.nl/api/v1/",
             zrc_service__oas="https://zaken.nl/api/v1/schema/openapi.yaml",
             drc_service__api_root="https://documenten.nl/api/v1/",
@@ -242,6 +242,7 @@ class ZGWBackendTests(TestCase):
         )
 
         zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
@@ -430,6 +431,7 @@ class ZGWBackendTests(TestCase):
         )
 
         zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
@@ -605,6 +607,7 @@ class ZGWBackendTests(TestCase):
         )
 
         zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
@@ -674,6 +677,7 @@ class ZGWBackendTests(TestCase):
         )
 
         zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
@@ -842,6 +846,7 @@ class ZGWBackendTests(TestCase):
         RegistratorInfoFactory.create(submission=submission, value="123456782")
 
         zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
@@ -904,6 +909,7 @@ class ZGWBackendTests(TestCase):
             components_list=[{"key": "dummy"}],
         )
         zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
@@ -940,6 +946,7 @@ class ZGWBackendTests(TestCase):
         self.assertTrue(submission.payment_required)
 
         zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
@@ -973,7 +980,7 @@ class ZGWBackendTests(TestCase):
         self.assertNotIn("laatsteBetaaldatum", create_zaak_body)
 
         # run the actual update
-        plugin.update_payment_status(submission, {})
+        plugin.update_payment_status(submission, {"zgw_api_group": self.zgw_group})
 
         patch_zaak_body = m.request_history[-1].json()
         self.assertEqual(patch_zaak_body["betalingsindicatie"], "geheel")
@@ -1028,6 +1035,7 @@ class ZGWBackendTests(TestCase):
         )
 
         zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             organisatie_rsin="000000000",
@@ -1132,6 +1140,7 @@ class ZGWBackendTests(TestCase):
             submission_step=submission.steps[0],
         )
         zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
         )
         self.install_mocks(m)
@@ -1205,6 +1214,7 @@ class ZGWBackendTests(TestCase):
             ],
         )
         zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
             zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
             informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
             auteur="",
@@ -1243,7 +1253,9 @@ class ZGWBackendTests(TestCase):
 
         submission = SubmissionFactory.create(
             form__registration_backend="zgw-create-zaak",
-            form__registration_backend_options={},
+            form__registration_backend_options={
+                "zgw_api_group": self.zgw_group.pk,
+            },
             completed_not_preregistered=True,
         )
 
@@ -1270,7 +1282,7 @@ class PartialRegistrationFailureTests(TestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        ZgwConfigFactory.create(
+        zgw_api_group = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken.nl/api/v1/",
             zrc_service__oas="https://zaken.nl/api/v1/schema/openapi.yaml",
             drc_service__api_root="https://documenten.nl/api/v1/",
@@ -1294,6 +1306,7 @@ class PartialRegistrationFailureTests(TestCase):
             form__name="my-form",
             form__registration_backend="zgw-create-zaak",
             form__registration_backend_options={
+                "zgw_api_group": zgw_api_group.pk,
                 "zaaktype": "https://catalogi.nl/api/v1/zaaktypen/1",
                 "informatieobjecttype": "https://catalogi.nl/api/v1/informatieobjecttypen/1",
                 "organisatie_rsin": "000000000",

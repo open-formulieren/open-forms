@@ -139,8 +139,8 @@ Objects API. The top-level has meta-data about the form submission, and the
 
 To configure the Objects API follow these steps:
 
-1. In Open Forms, navigate to: **Configuration** > **Services**
-2. Create a service for the Objects API (ORC) where the form data will be registered.
+#. In Open Forms, navigate to: **Configuration** > **Services**
+#. Create a service for the Objects API (ORC) where the form data will be registered.
 
    a. Click **Service toevoegen**.
    b. Fill out the form:
@@ -161,7 +161,7 @@ To configure the Objects API follow these steps:
 
    c. Click **Opslaan** and repeat to create configuration for the other component.
 
-3. Create a second service, for the Documentregistratiecomponent (DRC) where the PDF summary and form attachment documents will be stored.
+#. Create a second service, for the Documentregistratiecomponent (DRC) where the PDF summary and form attachment documents will be stored.
 
    a. Click **Service toevoegen**.
    b. Fill out the form:
@@ -180,11 +180,31 @@ To configure the Objects API follow these steps:
       * **User ID**: Audit trail user ID, usually same as the Client ID
       * **User representation**: *For example:* ``Open Forms``
 
-4. Navigate to **Configuration** > **Overview**. In the **Registration plugin** group, click on **Configuration** for the **Objects API registratie** line.
-5. Enter the following details:
+#. Create a third service, for the Zaaktypecatalogus (ZTC). This is needed to retrieve Informatieobjecttypen.
+
+   a. Click **Service toevoegen**.
+   b. Fill out the form:
+
+      * **Label**: *For example:* ``Catalogi``
+      * **Type**: Select the type: ``ZTC``
+      * **API root url**: The root of this API, *for example* ``https://example.com/catalogi/api/v1/``
+
+      * **Client ID**: Fill the value provided by the backend service *For example:* ``open-forms``
+      * **Secret**: Fill the value provided by the backend service
+      * **Authorization type**: Select the option: ``ZGW client_id + secret``
+      * **OAS**: URL that points to the OAS, same URL as used for **API root url** with ``/schema/openapi.yaml`` added to it
+        *for example:* ``https://example.com/catalogi/api/v1/schema/openapi.yaml``
+
+      * **NLX**: Support for NLX can be selected here if enabled in the installation
+      * **User ID**: Audit trail user ID, usually same as the Client ID
+      * **User representation**: *For example:* ``Open Forms``
+
+#. Navigate to **Configuration** > **Overview**. In the **Registration plugin** group, click on **Configuration** for the **Objects API registratie** line.
+#. Enter the following details:
 
    * **Objects API**: Select the Objects API (ORC) service created above
    * **Documenten API**: Select the Documentregistratiecomponent (DRC) service created above
+   * **Catalogi API**: Select the Zaaktypecatalogus (ZTC) service created above
    * **Objecttype**: Fill in the default URL of the ProductAanvraag OBJECTTYPE in the Objecttypes API *For example* ``https://example.com/api/v1/objecttypes``
    * **Objecttype version**: Fill in the default version of the OBJECTTYPE in the Objecttypes API *For example:* ``1``
    * **Productaanvraag type**: Fill in the type of ProductAanvraag *For example:* ``terugbelnotitie``
@@ -195,7 +215,7 @@ To configure the Objects API follow these steps:
    * **Organisatie RSIN**: Fill the RSIN to be referred to in the created objects. *For example:* ``123456789``
 
 
-6. Click **Opslaan**
+#. Click **Opslaan**
 
 The Objects API configuration is now complete and can be selected as registration backend in the form builder.
 

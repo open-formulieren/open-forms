@@ -6,10 +6,14 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from privates.test import temp_private_root
+from zgw_consumers.client import ZGWClient
 
 from openforms.appointments.tests.factories import AppointmentInfoFactory
 from openforms.payments.constants import PaymentStatus
 from openforms.payments.tests.factories import SubmissionPaymentFactory
+from openforms.registrations.contrib.zgw_apis.tests.factories import (
+    ZGWApiGroupConfigFactory,
+)
 from openforms.registrations.exceptions import RegistrationFailed
 
 from ..constants import RegistrationStatuses
@@ -31,6 +35,7 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
     """
 
     def test_payment_status_update_now_succeeds(self):
+        zgw_group = ZGWApiGroupConfigFactory.create()
         # set up a complex submission, with an appointment and payment required.
         submission = SubmissionFactory.create(
             completed=True,
@@ -38,6 +43,7 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
             needs_on_completion_retry=True,
             registration_success=True,
             form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
             form__payment_backend="ogone-legacy",
             registration_result={
                 "zaak": {
@@ -76,9 +82,12 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
         # that last_register_date is updated if it runs)
         self.assertEqual(submission.last_register_date, original_register_date)
         self.assertEqual(appointment_info.appointment_id, original_appointment_id)
-        mock_set_zaak_payment.assert_called_once_with("https://example.com")
+        mock_set_zaak_payment.assert_called_once()
+        self.assertTrue(isinstance(mock_set_zaak_payment.call_args[0][0], ZGWClient))
+        self.assertEqual(mock_set_zaak_payment.call_args[0][1], "https://example.com")
 
     def test_payment_status_update_still_fails(self):
+        zgw_group = ZGWApiGroupConfigFactory.create()
         # set up a complex submission, with an appointment and payment required.
         submission = SubmissionFactory.create(
             completed=True,
@@ -86,6 +95,7 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
             needs_on_completion_retry=True,
             registration_success=True,
             form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
             form__payment_backend="ogone-legacy",
             registration_result={
                 "zaak": {
@@ -126,7 +136,9 @@ class OnCompletionRetryFailedUpdatePaymentStatusTests(TestCase):
         # that last_register_date is updated if it runs)
         self.assertEqual(submission.last_register_date, original_register_date)
         self.assertEqual(appointment_info.appointment_id, original_appointment_id)
-        mock_set_zaak_payment.assert_called_once_with("https://example.com")
+        mock_set_zaak_payment.assert_called_once()
+        self.assertTrue(isinstance(mock_set_zaak_payment.call_args[0][0], ZGWClient))
+        self.assertEqual(mock_set_zaak_payment.call_args[0][1], "https://example.com")
 
 
 @temp_private_root()
@@ -138,11 +150,13 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
 
     @patch("openforms.payments.tasks.update_submission_payment_registration")
     def test_backend_registration_still_fails(self, mock_update_payment):
+        zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             completed=True,
             needs_on_completion_retry=True,
             registration_failed=True,
             form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
             # registration failed, so an internal reference was created
             public_registration_reference="OF-1234",
         )
@@ -169,11 +183,13 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
 
     @patch("openforms.payments.tasks.update_submission_payment_registration")
     def test_backend_preregistration_still_fails(self, mock_update_payment):
+        zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             needs_on_completion_retry=True,
             pre_registration_completed=False,
             registration_failed=True,
             form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
             # registration failed, so an internal reference was created
             public_registration_reference="OF-1234",
         )
@@ -205,11 +221,13 @@ class OnCompletionRetryFailedRegistrationTests(TestCase):
 
     @patch("openforms.payments.tasks.update_submission_payment_registration")
     def test_backend_registration_succeeds(self, mock_update_payment):
+        zgw_group = ZGWApiGroupConfigFactory.create()
         submission = SubmissionFactory.create(
             completed=True,
             needs_on_completion_retry=True,
             registration_failed=True,
             form__registration_backend="zgw-create-zaak",
+            form__registration_backend_options={"zgw_api_group": zgw_group.pk},
             # registration failed, so an internal reference was created
             public_registration_reference="OF-1234",
         )

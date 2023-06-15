@@ -4,7 +4,7 @@ from typing import Any, Dict, NoReturn
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from zgw_consumers.models import Service
+from zgw_consumers.client import ZGWClient
 
 from openforms.contrib.zgw.service import (
     create_attachment_document,
@@ -27,9 +27,9 @@ from .config import ObjectsAPIOptionsSerializer
 from .models import ObjectsAPIConfig
 
 
-def get_drc() -> Service:
+def get_drc() -> ZGWClient:
     config = ObjectsAPIConfig.get_solo()
-    return config.drc_service
+    return config.drc_service.build_client()
 
 
 def _point_coordinate(value):

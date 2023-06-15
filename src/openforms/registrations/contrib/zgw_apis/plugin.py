@@ -1,4 +1,5 @@
 import logging
+import typing
 from functools import partial, wraps
 from typing import Dict, List, Optional, Tuple
 
@@ -7,9 +8,11 @@ from django.utils.translation import gettext as _
 
 import requests
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from zds_client import ClientError
 from zgw_consumers.api_models.constants import VertrouwelijkheidsAanduidingen
 
+from openforms.api.fields import PrimaryKeyRelatedAsChoicesField
 from openforms.contrib.zgw.service import (
     create_attachment_document,
     create_report_document,
@@ -32,13 +35,23 @@ from ...exceptions import RegistrationFailed
 from ...registry import register
 from ...utils import execute_unless_result_exists
 from .checks import check_config
-from .models import ZgwConfig
+from .models import ZGWApiGroupConfig, ZgwConfig
 from .validators import RoltypeOmschrijvingValidator
+
+if typing.TYPE_CHECKING:  # pragma: no cover
+    from zgw_consumers.client import ZGWClient
+
 
 logger = logging.getLogger(__name__)
 
 
 class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
+    zgw_api_group = PrimaryKeyRelatedAsChoicesField(
+        queryset=ZGWApiGroupConfig.objects.all(),
+        help_text=_("Which ZGW API set to use."),
+        label=_("ZGW API set"),
+        required=False,
+    )
     zaaktype = serializers.URLField(
         required=False, help_text=_("URL of the ZAAKTYPE in the Catalogi API")
     )
@@ -70,6 +83,20 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
         validators = [
             RoltypeOmschrijvingValidator(),
         ]
+
+    def validate(self, attrs):
+        if attrs.get("zgw_api_group") is None:
+            config = ZgwConfig.get_solo()
+            if config.default_zgw_api_group is None:
+                raise ValidationError(
+                    {
+                        "zgw_api_group": _(
+                            "No ZGW API set was configured on the form and no default was specified globally."
+                        )
+                    }
+                )
+
+        return attrs
 
 
 def _point_coordinate(value):
@@ -148,6 +175,14 @@ class ZGWRegistration(BasePlugin):
         ),
     }
 
+    @staticmethod
+    def get_zgw_config(options: dict) -> ZGWApiGroupConfig:
+        zgw = options.get("zgw_api_group")
+        if zgw is None:
+            config = ZgwConfig.get_solo()
+            zgw = config.default_zgw_api_group
+        return zgw
+
     @wrap_api_errors
     def pre_register_submission(self, submission: "Submission", options: dict) -> None:
         """
@@ -156,7 +191,7 @@ class ZGWRegistration(BasePlugin):
         Note: The Rol, Status, the documents for the files uploaded by the user in the form (attachments) and the
         confirmation report PDF will be added in the registration task (after the report has been generated).
         """
-        zgw = ZgwConfig.get_solo()
+        zgw = self.get_zgw_config(options)
         zgw.apply_defaults_to(options)
 
         zaak_data = apply_data_mapping(
@@ -165,7 +200,8 @@ class ZGWRegistration(BasePlugin):
 
         _create_zaak = partial(
             create_zaak,
-            options,
+            zrc_client=zgw.zrc_service.build_client(),
+            options=options,
             payment_required=submission.payment_required,
             existing_reference=submission.public_registration_reference,
             **zaak_data,
@@ -190,11 +226,16 @@ class ZGWRegistration(BasePlugin):
         """
         Add the PDF document with the submission data (confirmation report) to the zaak created during pre-registration.
         """
-        zgw = ZgwConfig.get_solo()
+        zgw = self.get_zgw_config(options)
         zgw.apply_defaults_to(options)
 
+        ztc_client = zgw.ztc_service.build_client()
+        zrc_client = zgw.zrc_service.build_client()
         result = submission.registration_result
         zaak = result["zaak"]
+
+        def get_drc() -> "ZGWClient":
+            return zgw.drc_service.build_client()
 
         submission_report = SubmissionReport.objects.get(submission=submission)
         document = execute_unless_result_exists(
@@ -202,7 +243,8 @@ class ZGWRegistration(BasePlugin):
                 create_report_document,
                 submission.form.admin_name,
                 submission_report,
-                options,
+                get_drc=get_drc,
+                options=options,
             ),
             submission,
             "intermediate.documents.report.document",
@@ -229,7 +271,9 @@ class ZGWRegistration(BasePlugin):
             rol_data["betrokkeneType"] = "natuurlijk_persoon"
 
         rol = execute_unless_result_exists(
-            partial(create_rol, zaak, rol_data, options), submission, "intermediate.rol"
+            partial(create_rol, zrc_client, ztc_client, zaak, rol_data, options),
+            submission,
+            "intermediate.rol",
         )
 
         if submission.has_registrator:
@@ -238,6 +282,7 @@ class ZGWRegistration(BasePlugin):
                     match_omschrijving, omschrijving=options["medewerker_roltype"]
                 ),
                 query_params={"zaaktype": options["zaaktype"]},
+                ztc_client=ztc_client,
             )[0]
             registrator_rol_data = {
                 "betrokkeneType": "medewerker",
@@ -250,13 +295,22 @@ class ZGWRegistration(BasePlugin):
                 },
             }
             medewerker_rol = execute_unless_result_exists(
-                partial(create_rol, zaak, registrator_rol_data, options),
+                partial(
+                    create_rol,
+                    zrc_client,
+                    ztc_client,
+                    zaak,
+                    registrator_rol_data,
+                    options,
+                ),
                 submission,
                 "intermediate.medewerker_rol",
             )
 
         status = execute_unless_result_exists(
-            partial(create_status, zaak), submission, "intermediate.status"
+            partial(create_status, zrc_client, ztc_client, zaak),
+            submission,
+            "intermediate.status",
         )
 
         for attachment in submission.attachments:
@@ -290,6 +344,7 @@ class ZGWRegistration(BasePlugin):
                     submission.form.admin_name,
                     attachment,
                     doc_options,
+                    get_drc,
                 ),
                 submission,
                 f"intermediate.documents.{attachment.id}.document",
@@ -336,7 +391,11 @@ class ZGWRegistration(BasePlugin):
 
     @wrap_api_errors
     def update_payment_status(self, submission: "Submission", options: dict):
-        set_zaak_payment(submission.registration_result["zaak"]["url"])
+        zgw = options["zgw_api_group"]
+        set_zaak_payment(
+            zgw.zrc_service.build_client(),
+            submission.registration_result["zaak"]["url"],
+        )
 
     def check_config(self):
         check_config()
@@ -346,8 +405,7 @@ class ZGWRegistration(BasePlugin):
             (
                 _("Configuration"),
                 reverse(
-                    "admin:zgw_apis_zgwconfig_change",
-                    args=(ZgwConfig.singleton_instance_id,),
+                    "admin:admin:zgw_apis_zgwapigroupconfig_changelist",
                 ),
             ),
         ]

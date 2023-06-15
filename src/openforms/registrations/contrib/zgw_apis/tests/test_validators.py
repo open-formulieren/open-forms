@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.test import TestCase, override_settings
 
 import requests_mock
@@ -5,8 +7,9 @@ from zds_client.oas import schema_fetcher
 from zgw_consumers.test import generate_oas_component
 from zgw_consumers.test.schema_mock import mock_service_oas_get
 
+from ..models import ZgwConfig
 from ..plugin import ZaakOptionsSerializer
-from .factories import ZgwConfigFactory
+from .factories import ZGWApiGroupConfigFactory
 
 
 @requests_mock.Mocker()
@@ -15,7 +18,7 @@ class OmschrijvingValidatorTests(TestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        ZgwConfigFactory.create(
+        cls.zgw_group = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken.nl/api/v1/",
             zrc_service__oas="https://zaken.nl/api/v1/schema/openapi.yaml",
             drc_service__api_root="https://documenten.nl/api/v1/",
@@ -51,6 +54,7 @@ class OmschrijvingValidatorTests(TestCase):
         )
 
         data = {
+            "zgw_api_group": self.zgw_group.pk,
             "zaaktype": "https://catalogus.nl/api/v1/zaaktypen/111",
             "medewerker_roltype": "Some description",
         }
@@ -76,6 +80,7 @@ class OmschrijvingValidatorTests(TestCase):
         )
 
         data = {
+            "zgw_api_group": self.zgw_group.pk,
             "zaaktype": "https://catalogus.nl/api/v1/zaaktypen/111",
             "medewerker_roltype": "Some description",
         }
@@ -89,4 +94,25 @@ class OmschrijvingValidatorTests(TestCase):
         self.assertEqual(
             "Could not find a roltype with this description related to the zaaktype",
             serializer.errors["non_field_errors"][0],
+        )
+
+
+@override_settings(LANGUAGE_CODE="en")
+class ZGWAPIGroupConfigTest(TestCase):
+    def test_no_zgw_api_group_and_no_default(self):
+        # No zgw_api_group provided
+        serializer = ZaakOptionsSerializer(data={})
+
+        # No ZgwConfig.default_zgw_api_group configured
+        with patch(
+            "openforms.registrations.contrib.zgw_apis.plugin.ZgwConfig.get_solo",
+            return_value=ZgwConfig(),
+        ):
+            is_valid = serializer.is_valid()
+
+        self.assertFalse(is_valid)
+        self.assertIn("zgw_api_group", serializer.errors)
+        self.assertEqual(
+            "No ZGW API set was configured on the form and no default was specified globally.",
+            serializer.errors["zgw_api_group"][0],
         )

@@ -28,6 +28,14 @@ class ObjectsAPIConfig(SingletonModel):
         null=True,
         related_name="+",
     )
+    catalogi_service = models.OneToOneField(
+        "zgw_consumers.Service",
+        verbose_name=_("Catalogi API"),
+        on_delete=models.PROTECT,
+        limit_choices_to={"api_type": APITypes.ztc},
+        null=True,
+        related_name="+",
+    )
 
     # Overridable defaults
     objecttype = models.URLField(

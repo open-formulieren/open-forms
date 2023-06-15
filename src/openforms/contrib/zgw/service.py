@@ -5,9 +5,9 @@ from typing import Callable, List, Optional
 
 from django.utils import timezone
 
+from zgw_consumers.client import ZGWClient
 from zgw_consumers.models import Service
 
-from openforms.registrations.contrib.zgw_apis.models import ZgwConfig
 from openforms.submissions.models import SubmissionFileAttachment, SubmissionReport
 from openforms.translations.utils import to_iso639_2b
 
@@ -15,10 +15,12 @@ logger = logging.getLogger(__name__)
 
 
 def create_zaak(
-    options: dict, payment_required: bool = False, existing_reference: str = "", **extra
+    zrc_client: ZGWClient,
+    options: dict,
+    payment_required: bool = False,
+    existing_reference: str = "",
+    **extra,
 ) -> dict:
-    config = ZgwConfig.get_solo()
-    client = config.zrc_service.build_client()
     today = date.today().isoformat()
     data = {
         "zaaktype": options["zaaktype"],
@@ -46,37 +48,32 @@ def create_zaak(
 
     data.update(extra)
 
-    zaak = client.create("zaak", data)
+    zaak = zrc_client.create("zaak", data)
     return zaak
 
 
-def default_get_drc() -> Service:
-    config = ZgwConfig.get_solo()
-    return config.drc_service
-
-
-def partial_update_zaak(zaak_url: str, data: dict) -> dict:
-    config = ZgwConfig.get_solo()
-    client = config.zrc_service.build_client()
-    zaak = client.partial_update("zaak", data, url=zaak_url)
+def partial_update_zaak(zrc_client: ZGWClient, zaak_url: str, data: dict) -> dict:
+    zaak = zrc_client.partial_update("zaak", data, url=zaak_url)
     return zaak
 
 
-def set_zaak_payment(zaak_url: str, partial: bool = False) -> dict:
+def set_zaak_payment(
+    zrc_client: ZGWClient, zaak_url: str, partial: bool = False
+) -> dict:
     data = {
         "betalingsindicatie": "gedeeltelijk" if partial else "geheel",
         "laatsteBetaaldatum": timezone.now().isoformat(),
     }
-    return partial_update_zaak(zaak_url, data)
+    return partial_update_zaak(zrc_client, zaak_url, data)
 
 
 def create_document(
     name: str,
     base64_body: str,
     options: dict,
-    get_drc=default_get_drc,
+    get_drc: Callable[[], ZGWClient],
 ) -> dict:
-    client = get_drc().build_client()
+    drc_client = get_drc()
     today = date.today().isoformat()
 
     data = {
@@ -99,7 +96,7 @@ def create_document(
 
     assert options["auteur"], "auteur must be a non-empty string"
 
-    informatieobject = client.create("enkelvoudiginformatieobject", data)
+    informatieobject = drc_client.create("enkelvoudiginformatieobject", data)
     return informatieobject
 
 
@@ -107,7 +104,7 @@ def create_report_document(
     name: str,
     submission_report: SubmissionReport,
     options: dict,
-    get_drc=default_get_drc,
+    get_drc: Callable[[], ZGWClient],
 ) -> dict:
     submission_report.content.seek(0)
     base64_body = b64encode(submission_report.content.read()).decode()
@@ -130,7 +127,7 @@ def create_csv_document(
     name: str,
     csv_data: str,
     options: dict,
-    get_drc=default_get_drc,
+    get_drc: Callable[[], ZGWClient],
     language: str = "nld",
 ) -> dict:
     base64_body = b64encode(csv_data.encode()).decode()
@@ -153,7 +150,7 @@ def create_attachment_document(
     name: str,
     submission_attachment: SubmissionFileAttachment,
     options: dict,
-    get_drc=default_get_drc,
+    get_drc: Callable[[], ZGWClient],
 ) -> dict:
     submission_attachment.content.seek(0)
     base64_body = b64encode(submission_attachment.content.read()).decode()
@@ -184,14 +181,20 @@ def relate_document(zaak_url: str, document_url: str) -> dict:
     return zio
 
 
-def create_rol(zaak: dict, betrokkene: dict, options: dict) -> Optional[dict]:
+def create_rol(
+    zrc_client: ZGWClient,
+    ztc_client: ZGWClient,
+    zaak: dict,
+    betrokkene: dict,
+    options: dict,
+) -> Optional[dict]:
     roltype = betrokkene.get("roltype")
     if not roltype:
         query_params = {
             "zaaktype": options["zaaktype"],
             "omschrijvingGeneriek": betrokkene.get("omschrijvingGeneriek", "initiator"),
         }
-        rol_typen = retrieve_roltypen(query_params=query_params)
+        rol_typen = retrieve_roltypen(query_params=query_params, ztc_client=ztc_client)
         if not rol_typen or not rol_typen:
             logger.warning(
                 "No matching roltype found in the zaaktype.",
@@ -200,8 +203,6 @@ def create_rol(zaak: dict, betrokkene: dict, options: dict) -> Optional[dict]:
             return None
         roltype = rol_typen[0]["url"]
 
-    config = ZgwConfig.get_solo()
-    zrc_client = config.zrc_service.build_client()
     data = {
         "zaak": zaak["url"],
         # "betrokkene": betrokkene.get("betrokkene", ""),
@@ -228,20 +229,21 @@ def noop_matcher(roltypen: list) -> list:
 
 
 def retrieve_roltypen(
-    matcher: Callable[[list], list] = noop_matcher, query_params: None | dict = None
+    ztc_client: ZGWClient,
+    matcher: Callable[[list], list] = noop_matcher,
+    query_params: None | dict = None,
 ) -> List:
-    config = ZgwConfig.get_solo()
-    ztc_client = config.ztc_service.build_client()
     roltypen = ztc_client.list("roltype", query_params)
 
     return matcher(roltypen["results"])
 
 
-def create_status(zaak: dict) -> dict:
-    config = ZgwConfig.get_solo()
-
+def create_status(
+    zrc_client: ZGWClient,
+    ztc_client: ZGWClient,
+    zaak: dict,
+) -> dict:
     # get statustype for initial status
-    ztc_client = config.ztc_service.build_client()
     statustypen = ztc_client.list("statustype", {"zaaktype": zaak["zaaktype"]})[
         "results"
     ]
@@ -250,7 +252,6 @@ def create_status(zaak: dict) -> dict:
     initial_status_remarks = ""  # variables.get("initialStatusRemarks", "")
 
     # create status
-    zrc_client = config.zrc_service.build_client()
     data = {
         "zaak": zaak["url"],
         "statustype": statustype["url"],

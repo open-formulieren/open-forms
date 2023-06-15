@@ -1,12 +1,12 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from .factories import ZgwConfigFactory
+from .factories import ZGWApiGroupConfigFactory
 
 
 class ZGWBackendTests(TestCase):
     def setUp(self):
-        self.config = ZgwConfigFactory.create(
+        self.config = ZGWApiGroupConfigFactory.create(
             zrc_service__api_root="https://zaken.nl/api/v1/",
             drc_service__api_root="https://documenten.nl/api/v1/",
             ztc_service__api_root="https://catalogus.nl/api/v1/",
@@ -33,3 +33,10 @@ class ZGWBackendTests(TestCase):
         with self.assertRaises(ValidationError):
             self.config.organisatie_rsin = "063-08836"
             self.config.full_clean()
+
+    def test_model_string(self):
+        api_group = ZGWApiGroupConfigFactory.create(
+            name="ZGW API test",
+        )
+
+        self.assertEqual(str(api_group), "ZGW API test")
