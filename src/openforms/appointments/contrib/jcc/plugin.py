@@ -83,19 +83,20 @@ class JccAppointment(BasePlugin):
     def _get_all_locations(self, client: Client) -> list[AppointmentLocation]:
         try:
             location_ids = client.service.getGovLocations()
+            with parallel() as pool:
+                details = pool.map(
+                    lambda location_id: client.service.getGovLocationDetails(
+                        locationID=location_id
+                    ),
+                    location_ids,
+                )
+            # evaluate the generator
+            details = list(details)
         except (ZeepError, RequestException) as e:
             logger.exception("Could not retrieve location IDs", exc_info=e)
             return []
         except Exception as exc:
             raise AppointmentException from exc
-
-        with parallel() as pool:
-            details = pool.map(
-                lambda location_id: client.service.getGovLocationDetails(
-                    locationID=location_id
-                ),
-                location_ids,
-            )
 
         locations = [
             AppointmentLocation(

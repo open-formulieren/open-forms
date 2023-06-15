@@ -5,7 +5,7 @@ from zgw_consumers.models import Service
 from ..models import QmaticConfig
 
 
-# TODO: consilidate this in src/openforms/contrib or src/zgw_consumers_ext
+# TODO: consolidate this in src/openforms/contrib or src/zgw_consumers_ext
 class ServiceFactory(factory.django.DjangoModelFactory):
     label = factory.Sequence(lambda n: f"API-{n}")
     api_root = factory.Sequence(lambda n: f"http://www.example{n}.com/api/v1/")

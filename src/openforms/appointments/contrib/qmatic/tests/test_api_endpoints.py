@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 from django.urls import reverse
 
 import requests_mock
@@ -8,27 +6,12 @@ from rest_framework.test import APITestCase
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
-from openforms.utils.tests.cache import clear_caches
 
 from ....constants import AppointmentDetailsStatus
-from ....models import AppointmentsConfig
 from ....tests.factories import AppointmentInfoFactory
 from ..client import QmaticException
 from .factories import QmaticConfigFactory
-from .test_plugin import mock_response
-
-
-class MockConfigMixin:
-    def setUp(self):
-        super().setUp()  # type: ignore
-
-        patcher = patch(
-            "openforms.appointments.utils.AppointmentsConfig.get_solo",
-            return_value=AppointmentsConfig(plugin="qmatic"),
-        )
-        patcher.start()
-        self.addCleanup(patcher.stop)  # type: ignore
-        self.addCleanup(clear_caches)  # type: ignore
+from .test_plugin import MockConfigMixin, mock_response
 
 
 class ProductsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):

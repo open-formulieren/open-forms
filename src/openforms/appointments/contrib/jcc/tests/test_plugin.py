@@ -296,6 +296,29 @@ class SadFlowPluginTests(MockConfigMixin, SimpleTestCase):
 
     @requests_mock.Mocker()
     @given(st.integers(min_value=500, max_value=511))
+    def test_get_locations_location_details_server_error(self, m, status_code):
+        m.post(
+            "http://example.com/soap11",
+            text=mock_response("getGovLocationsResponse.xml"),
+            additional_matcher=lambda request: "getGovLocationsRequest" in request.text,
+        )
+
+        def location_details_callback(request, context):
+            context.status_code = status_code
+            return "<broken />"
+
+        m.post(
+            "http://example.com/soap11",
+            text=location_details_callback,
+            additional_matcher=lambda request: "getGovLocationDetailsRequest"
+            in request.text,
+        )
+
+        locations = self.plugin.get_locations()
+        self.assertEqual(locations, [])
+
+    @requests_mock.Mocker()
+    @given(st.integers(min_value=500, max_value=511))
     def test_get_dates_server_error(self, m, status_code):
         m.post(requests_mock.ANY, status_code=status_code)
         product = AppointmentProduct(identifier="k@pu77", name="Kaputt")
