@@ -817,7 +817,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             completed=True,
             cosign_complete=False,
         )
-        template = inspect.cleandoc("{% cosign_info %}")
+        template = inspect.cleandoc("{% cosign_information %}")
         ConfirmationEmailTemplateFactory.create(
             form=submission.form, subject="Confirmation", content=template
         )
@@ -854,7 +854,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             completed=True,
             cosign_complete=False,
         )
-        template = inspect.cleandoc("{% cosign_info %}")
+        template = inspect.cleandoc("{% cosign_information %}")
         ConfirmationEmailTemplateFactory.create(
             form=submission.form, subject="Confirmation", content=template
         )
@@ -891,7 +891,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             completed=True,
             cosign_complete=True,
         )
-        template = inspect.cleandoc("{% cosign_info %}")
+        template = inspect.cleandoc("{% cosign_information %}")
         ConfirmationEmailTemplateFactory.create(
             form=submission.form, subject="Confirmation", content=template
         )

@@ -5,13 +5,13 @@ register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
-def cosign_info(context):
+def cosign_information(context):
     submission = context["_submission"]
 
     if context.get("rendering_text"):
-        template_name = "emails/templatetags/cosign_info.txt"
+        template_name = "emails/templatetags/cosign_information.txt"
     else:
-        template_name = "emails/templatetags/cosign_info.html"
+        template_name = "emails/templatetags/cosign_information.html"
 
     tag_context = {
         "cosign_complete": submission.cosign_complete,

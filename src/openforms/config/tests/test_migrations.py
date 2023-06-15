@@ -212,7 +212,7 @@ class ConfirmationEmailTemplatesCosignTest(TestMigrations):
 
         config = GlobalConfiguration.objects.get()
 
-        self.assertIn("{% cosign_info %}", config.confirmation_email_content)
+        self.assertIn("{% cosign_information %}", config.confirmation_email_content)
         self.assertIn("{% summary %}", config.confirmation_email_content)
         self.assertIn(
             "{% appointment_information %}", config.confirmation_email_content

@@ -182,7 +182,7 @@ Variabele                           Beschrijving
 ``{% appointment_information %}``   Kop "Afspraakinformatie" gevolgd door de afspraakgegevens, zoals product, locatie, datum en tijdstip.
 ``{% product_information %}``       Zonder kop, geeft dit de tekst weer uit het optionele veld "informatie" van het product dat aan dit formulier is gekoppeld.
 ``{% payment_information %}``       Kop "Betaalinformatie" gevolgd door een betaallink indien nog niet is betaald en anders de betalingsbevestiging.
-``{% cosign_info %}``               Kop "Medeondertekenen informatie" gevolgd door informatie over de status van medeondertekenen.
+``{% cosign_information %}``        Kop "Medeondertekenen informatie" gevolgd door informatie over de status van medeondertekenen.
 ==================================  ===========================================================================
 
 .. note::
@@ -204,7 +204,7 @@ Voorbeeld
 
          Uw referentienummer is: {{ public_reference }}
 
-         {% cosign_info %}
+         {% cosign_information %}
 
          Let u alstublieft op het volgende:
 

@@ -57,19 +57,19 @@ class ConfirmationEmailTemplatesCosignTest(TestMigrations):
     def test_template_after_migration_contains_cosign_tag(self):
         self.email1.refresh_from_db()
 
-        self.assertIn("{% cosign_info %}", self.email1.content)
+        self.assertIn("{% cosign_information %}", self.email1.content)
         self.assertIn("{% summary %}", self.email1.content)
         self.assertIn("{% payment_information %}", self.email1.content)
         self.assertIn("{% appointment_information %}", self.email1.content)
 
         self.email2.refresh_from_db()
 
-        self.assertIn("{% cosign_info %}", self.email2.content)
+        self.assertIn("{% cosign_information %}", self.email2.content)
         self.assertIn("{% payment_information %}", self.email2.content)
         self.assertIn("{% appointment_information %}", self.email2.content)
 
         self.email3.refresh_from_db()
 
-        self.assertIn("{% cosign_info %}", self.email3.content)
+        self.assertIn("{% cosign_information %}", self.email3.content)
         self.assertIn("{% payment_information %}", self.email3.content)
         self.assertIn("{% appointment_information %}", self.email3.content)
