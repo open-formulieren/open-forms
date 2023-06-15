@@ -77,6 +77,7 @@ class FormDesignerComponentDefinitionTests(E2ETestCase):
                 name_nl="Formulier Test Cosign",
                 generate_minimal_setup=True,
                 formstep__form_definition__configuration={"components": []},
+                authentication_backends=["digid"],
             )
 
         await create_superuser()
@@ -108,4 +109,43 @@ class FormDesignerComponentDefinitionTests(E2ETestCase):
             await page.get_by_role("button", name="Opslaan").click()
 
             # Check that a warning has appeared
+            await expect(warning_node).to_be_visible()
+
+    async def test_missing_auth_plugin_warning(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            return FormFactory.create(
+                name="Form Test Cosign",
+                name_nl="Formulier Test Cosign",
+                generate_minimal_setup=True,
+                formstep__form_definition__configuration={
+                    "components": [
+                        {"type": "cosign", "key": "cosign", "authPlugin": "digid"}
+                    ]
+                },
+                authentication_backends=["digid"],
+            )
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+
+            warning_node = page.get_by_role("list").filter(
+                has=page.locator("css=.warning")
+            )
+
+            # Check that there is no warning
+            await expect(warning_node).not_to_be_visible()
+
+            await page.get_by_role("checkbox", name="DigiD", checked="true").click()
+
+            # Check that the warning has appeared
             await expect(warning_node).to_be_visible()
