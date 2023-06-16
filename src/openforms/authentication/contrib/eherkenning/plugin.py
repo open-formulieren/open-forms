@@ -1,9 +1,10 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, NoReturn, Optional
 
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
+from digid_eherkenning.choices import AssuranceLevels
 from digid_eherkenning.models import EherkenningConfiguration
 from furl import furl
 from rest_framework.reverse import reverse
@@ -24,7 +25,7 @@ from .constants import EHERKENNING_AUTH_SESSION_KEY, EIDAS_AUTH_SESSION_KEY  # n
 
 
 class AuthenticationBasePlugin(BasePlugin):
-    session_key = None
+    session_key: str
 
     def _get_attr_consuming_service_index(self) -> str:
         config = EherkenningConfiguration.get_solo()
@@ -67,7 +68,7 @@ class AuthenticationBasePlugin(BasePlugin):
 
     def handle_co_sign(
         self, request: HttpRequest, form: Form
-    ) -> Optional[Dict[str, Any]]:
+    ) -> Dict[str, Any] | NoReturn:
         if not (identifier := request.session.get(self.session_key)):
             raise InvalidCoSignData(
                 f"Missing or empty auth session data (key: {self.session_key})"
@@ -108,6 +109,7 @@ class AuthenticationBasePlugin(BasePlugin):
 class EHerkenningAuthentication(AuthenticationBasePlugin):
     verbose_name = _("eHerkenning")
     provides_auth = AuthAttribute.kvk
+    assurance_levels = AssuranceLevels
     session_key = EHERKENNING_AUTH_SESSION_KEY
 
     def get_logo(self, request) -> Optional[LoginLogo]:
