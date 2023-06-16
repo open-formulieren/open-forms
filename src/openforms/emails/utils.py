@@ -52,7 +52,7 @@ def send_mail_html(
     html_body: str,
     from_email: str,
     recipient_list: list[str],
-    cc: list[str] = None,
+    cc: list[str] | None = None,
     attachment_tuples: AttachmentsType = None,
     fail_silently: bool = False,
     text_message: str | None = None,

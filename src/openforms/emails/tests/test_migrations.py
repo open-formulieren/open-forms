@@ -53,6 +53,20 @@ class ConfirmationEmailTemplatesCosignTest(TestMigrations):
                     Open Forms<br>
                     """
         )
+        self.email4 = ConfirmationEmailTemplate.objects.create(
+            content="""
+                    Dear Sir, Madam,<br>
+                    You have submitted the form "{{ form_name }}" on {{ submission_date }}.<br>
+                    Your reference is: {{ public_reference }}<br>
+
+                    {%payment_information%}<br>
+                    {%appointment_information%}<br>
+
+                    Kind regards,<br>
+                    <br>
+                    Open Forms<br>
+                    """
+        )
 
     def test_template_after_migration_contains_cosign_tag(self):
         self.email1.refresh_from_db()
@@ -73,3 +87,9 @@ class ConfirmationEmailTemplatesCosignTest(TestMigrations):
         self.assertIn("{% cosign_information %}", self.email3.content)
         self.assertIn("{% payment_information %}", self.email3.content)
         self.assertIn("{% appointment_information %}", self.email3.content)
+
+        self.email4.refresh_from_db()
+
+        self.assertIn("{% cosign_information %}", self.email4.content)
+        self.assertIn("{%payment_information%}", self.email4.content)
+        self.assertIn("{%appointment_information%}", self.email4.content)

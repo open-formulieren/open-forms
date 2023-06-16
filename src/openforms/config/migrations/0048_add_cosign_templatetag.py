@@ -2,7 +2,7 @@
 
 from django.db import migrations
 
-from openforms.utils.regex import add_cosign_info_templatetag
+from openforms.utils.migrations_utils.regex import add_cosign_info_templatetag
 
 
 def add_cosign_template_tag_to_email_confirmation_template(apps, _):
