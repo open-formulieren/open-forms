@@ -1,9 +1,7 @@
-<div class="openforms-form-choices__choice">
-    <div class="openforms-checkbox">
-        {% include "django/forms/widgets/input.html" %}
-        <div class="openforms-checkbox__checkmark"></div>
-        <label for="{{ widget.attrs.id }}" class="openforms-checkbox__label">
-            {{ widget.label }}
-        </label>
-    </div>
+<div class="openforms-form-choices__choice utrecht-form-field utrecht-form-field--radio">
+    {% include "django/forms/widgets/input.html" %}
+    <div class="openforms-form-choices__checkmark"></div>
+    <label for="{{ widget.attrs.id }}" class="openforms-form-choices__label utrecht-form-label utrecht-form-label--radio">
+        {{ widget.label }}
+    </label>
 </div>

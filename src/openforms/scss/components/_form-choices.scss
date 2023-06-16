@@ -1,5 +1,5 @@
 @import 'microscope-sass/lib/bem';
-@import 'microscope-sass/lib/responsive';
+@import '~microscope-sass/lib/typography';
 
 .openforms-form-choices {
   @include modifier('inline') {
@@ -11,6 +11,7 @@
     }
 
     @include element('choice') {
+      @include margin($margin: true, $value-mobile: $typography-margin-list);
       width: 100%;
     }
   }

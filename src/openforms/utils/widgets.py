@@ -12,4 +12,18 @@ class OpenFormsRadioSelect(forms.RadioSelect):
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
         context["widget"]["inline"] = self._inline
+        context["widget"]["attrs"].update(
+            {"class": "utrecht-radio-button utrecht-radio-button--html-input"}
+        )
+        return context
+
+
+class OpenFormsTextInput(forms.TextInput):
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        context["widget"]["attrs"].update(
+            {
+                "class": "utrecht-textbox utrecht-textbox--html-input utrecht-textbox--openforms"
+            }
+        )
         return context

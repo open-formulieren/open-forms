@@ -2,6 +2,8 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
+from openforms.utils.widgets import OpenFormsTextInput
+
 from .models import Submission
 
 
@@ -12,11 +14,7 @@ class SearchSubmissionForCosignForm(forms.Form):
             "You should have received this code in the email requesting you to cosign a form."
         ),
         required=True,
-        widget=forms.TextInput(
-            attrs={
-                "class": "openforms-input",
-            }
-        ),
+        widget=OpenFormsTextInput(),
     )
 
     def __init__(self, instance, *args, **kwargs):
