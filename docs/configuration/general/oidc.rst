@@ -47,7 +47,7 @@ Zorg dat je de volgende :ref:`gegevens <configuration_oidc_appgroup>` hebt:
 * Client ID
 * Client secret
 
-Navigeer vervolgens in de admin naar **Configuratie** > **OpenID Connect configuration**.
+Navigeer vervolgens in de admin naar **Accounts** > **OpenID Connect configuration**.
 
 1. Vink *Enable* aan om OIDC in te schakelen.
 2. Vul bij **OpenID Connect client ID** het Client ID in, bijvoorbeeld
