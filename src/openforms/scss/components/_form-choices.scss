@@ -1,5 +1,5 @@
 @import 'microscope-sass/lib/bem';
-@import '~microscope-sass/lib/typography';
+@import 'microscope-sass/lib/typography';
 
 .openforms-form-choices {
   @include modifier('inline') {
