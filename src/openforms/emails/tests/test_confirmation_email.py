@@ -135,7 +135,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         with self.subTest("valid"):
             email = ConfirmationEmailTemplate(
                 subject="foo",
-                content="bla bla http://good.net/bla?x=1 {% appointment_information %} {% payment_information %}",
+                content="bla bla http://good.net/bla?x=1 {% appointment_information %} {% payment_information %} {% cosign_information %}",
             )
 
             email.full_clean()
@@ -143,7 +143,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         with self.subTest("invalid"):
             email = ConfirmationEmailTemplate(
                 subject="foo",
-                content="bla bla http://bad.net/bla?x=1 {% appointment_information %} {% payment_information %}",
+                content="bla bla http://bad.net/bla?x=1 {% appointment_information %} {% payment_information %} {% cosign_information %}",
             )
             with self.assertRaisesMessage(
                 ValidationError,
@@ -329,12 +329,12 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
         email_template1 = ConfirmationEmailTemplateFactory.create(
             form__send_confirmation_email=True,
             subject="Custom subject",
-            content="Custom content {% appointment_information %} {% payment_information %}",
+            content="Custom content {% appointment_information %} {% payment_information %} {% cosign_information %}",
         )
         email_template2 = ConfirmationEmailTemplateFactory.create(
             form__send_confirmation_email=True,
             subject="",
-            content="Custom content {% appointment_information %} {% payment_information %}",
+            content="Custom content {% appointment_information %} {% payment_information %} {% cosign_information %}",
         )
         email_template3 = ConfirmationEmailTemplateFactory.create(
             form__send_confirmation_email=True, subject="Custom subject", content=""
@@ -352,7 +352,7 @@ class ConfirmationEmailTests(HTMLAssertMixin, TestCase):
             "openforms.emails.confirmation_emails.GlobalConfiguration.get_solo",
             return_value=GlobalConfiguration(
                 confirmation_email_subject="Global subject",
-                confirmation_email_content="Global content {% appointment_information %} {% payment_information %}",
+                confirmation_email_content="Global content {% appointment_information %} {% payment_information %} {% cosign_information %}",
             ),
         ):
             with self.subTest("Custom subject + custom content"):
@@ -817,9 +817,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             completed=True,
             cosign_complete=False,
         )
-        template = inspect.cleandoc(
-            "Test: {% if waiting_on_cosign %}This form will not be processed until it has been co-signed. A co-sign request was sent to {{ cosigner_email }}.{% endif %}"
-        )
+        template = inspect.cleandoc("{% cosign_information %}")
         ConfirmationEmailTemplateFactory.create(
             form=submission.form, subject="Confirmation", content=template
         )
@@ -831,7 +829,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         message = mail.outbox[0]
         text = message.body.rstrip()
         expected_text = inspect.cleandoc(
-            "Test: This form will not be processed until it has been co-signed. A co-sign request was sent to cosigner@test.nl."
+            "This form will not be processed until it has been co-signed. A co-sign request was sent to cosigner@test.nl."
         ).lstrip()
 
         self.assertEquals(expected_text, text)
@@ -856,9 +854,7 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
             completed=True,
             cosign_complete=False,
         )
-        template = inspect.cleandoc(
-            "Test: {% if waiting_on_cosign %}This form will not be processed until it has been co-signed. A co-sign request was sent to {{ cosigner_email }}.{% endif %}"
-        )
+        template = inspect.cleandoc("{% cosign_information %}")
         ConfirmationEmailTemplateFactory.create(
             form=submission.form, subject="Confirmation", content=template
         )
@@ -870,7 +866,44 @@ class ConfirmationEmailRenderingIntegrationTest(HTMLAssertMixin, TestCase):
         message = mail.outbox[0]
         text = message.body.rstrip()
         expected_text = inspect.cleandoc(
-            "Test: This form will not be processed until it has been co-signed. A co-sign request was sent to cosigner@test.nl."
+            "This form will not be processed until it has been co-signed. A co-sign request was sent to cosigner@test.nl."
+        ).lstrip()
+
+        self.assertEquals(expected_text, text)
+
+    def test_confirmation_email_cosign_complete(self):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign",
+                    "validate": {"required": False},
+                },
+                {
+                    "key": "mainPersonEmail",
+                    "type": "email",
+                    "confirmationRecipient": True,
+                },
+            ],
+            {"cosign": "cosigner@test.nl", "mainPersonEmail": "main@test.nl"},
+            registration_success=True,
+            completed=True,
+            cosign_complete=True,
+        )
+        template = inspect.cleandoc("{% cosign_information %}")
+        ConfirmationEmailTemplateFactory.create(
+            form=submission.form, subject="Confirmation", content=template
+        )
+
+        send_confirmation_email(submission)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        message = mail.outbox[0]
+        text = message.body.rstrip()
+        expected_text = inspect.cleandoc(
+            "This email is a confirmation that this form has been co-signed by cosigner@test.nl and can now be processed."
         ).lstrip()
 
         self.assertEquals(expected_text, text)

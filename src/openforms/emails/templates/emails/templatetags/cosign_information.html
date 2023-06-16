@@ -1,0 +1,13 @@
+{% load static i18n %}
+
+{% if cosign_complete or waiting_on_cosign %}<h2 style="margin: 1em 0; font-size: 1.5em;">{% trans "Co-sign information" %}</h2>{% endif %}
+{% if cosign_complete %}
+    <p>
+        {% blocktranslate trimmed %}This email is a confirmation that this form has been co-signed by {{ cosigner_email }} and can now be processed.{% endblocktranslate %}
+    </p>
+{%  elif waiting_on_cosign %}
+    <p>
+        {% blocktranslate trimmed %}This form will not be processed until it has been co-signed. A co-sign request was sent to {{ cosigner_email }}.{% endblocktranslate %}
+    </p>
+{% endif %}
+

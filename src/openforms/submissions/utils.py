@@ -122,6 +122,10 @@ def send_confirmation_email(submission: Submission):
         logevent.confirmation_email_skip(submission)
         return
 
+    cc_emails = []
+    if cosigner_email := submission.cosigner_email:
+        cc_emails.append(cosigner_email)
+
     context = get_confirmation_email_context_data(submission)
 
     # render the templates with the submission context
@@ -145,6 +149,7 @@ def send_confirmation_email(submission: Submission):
             html_content,
             settings.DEFAULT_FROM_EMAIL,  # TODO: add config option to specify sender e-mail
             to_emails,
+            cc=cc_emails,
             text_message=text_content,
         )
     except Exception as e:

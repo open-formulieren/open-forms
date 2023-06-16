@@ -51,11 +51,11 @@ class ConfirmationTemplateSerializerTests(TestCase):
                 "translations": {
                     "nl": {
                         "subject": "Nederlands",
-                        "content": "NL: {% appointment_information %} {% payment_information %}",
+                        "content": "NL: {% appointment_information %} {% payment_information %} {% cosign_information %}",
                     },
                     "en": {
                         "subject": "English",
-                        "content": "EN: {% appointment_information %} {% payment_information %}",
+                        "content": "EN: {% appointment_information %} {% payment_information %} {% cosign_information %}",
                     },
                 }
             }
@@ -69,8 +69,8 @@ class ConfirmationTemplateSerializerTests(TestCase):
             {
                 "subject_nl": "Nederlands",
                 "subject_en": "English",
-                "content_nl": "NL: {% appointment_information %} {% payment_information %}",
-                "content_en": "EN: {% appointment_information %} {% payment_information %}",
+                "content_nl": "NL: {% appointment_information %} {% payment_information %} {% cosign_information %}",
+                "content_en": "EN: {% appointment_information %} {% payment_information %} {% cosign_information %}",
             },
         )
 
@@ -87,11 +87,11 @@ class ConfirmationTemplateSerializerTests(TestCase):
                 "translations": {
                     "nl": {
                         "subject": "Nederlands",
-                        "content": "NL: {% appointment_information %} {% payment_information %}",
+                        "content": "NL: {% appointment_information %} {% payment_information %} {% cosign_information %}",
                     },
                     "en": {
                         "subject": "English",
-                        "content": "EN: {% appointment_information %} {% payment_information %}",
+                        "content": "EN: {% appointment_information %} {% payment_information %} {% cosign_information %}",
                     },
                 }
             },
@@ -111,9 +111,9 @@ class ConfirmationTemplateSerializerTests(TestCase):
 
             self.assertEqual(
                 instance.content_nl,
-                "NL: {% appointment_information %} {% payment_information %}",
+                "NL: {% appointment_information %} {% payment_information %} {% cosign_information %}",
             )
             self.assertEqual(
                 instance.content_en,
-                "EN: {% appointment_information %} {% payment_information %}",
+                "EN: {% appointment_information %} {% payment_information %} {% cosign_information %}",
             )

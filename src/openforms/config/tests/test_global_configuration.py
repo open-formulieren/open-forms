@@ -260,12 +260,12 @@ class GlobalConfirmationEmailTests(TestCase):
         config.confirmation_email_content = "no tags here"
 
         with self.subTest("valid"):
-            config.confirmation_email_content = "bla bla http://good.net/bla?x=1 {% appointment_information %} {% payment_information %}"
+            config.confirmation_email_content = "bla bla http://good.net/bla?x=1 {% appointment_information %} {% payment_information %} {% cosign_information %}"
 
             config.full_clean()
 
         with self.subTest("invalid"):
-            config.confirmation_email_content = "bla bla http://bad.net/bla?x=1 {% appointment_information %} {% payment_information %}"
+            config.confirmation_email_content = "bla bla http://bad.net/bla?x=1 {% appointment_information %} {% payment_information %} {% cosign_information %}"
             with self.assertRaisesMessage(
                 ValidationError,
                 _("This domain is not in the global netloc allowlist: {netloc}").format(
@@ -294,12 +294,12 @@ class GlobalSaveFormEmailTests(TestCase):
         config.save_form_email_content = "no tags here"
 
         with self.subTest("valid"):
-            config.save_form_email_content = "bla bla http://good.net/bla?x=1 {% appointment_information %} {% payment_information %}"
+            config.save_form_email_content = "bla bla http://good.net/bla?x=1 {% appointment_information %} {% payment_information %} {% cosign_information %}"
 
             config.full_clean()
 
         with self.subTest("invalid"):
-            config.save_form_email_content = "bla bla http://bad.net/bla?x=1 {% appointment_information %} {% payment_information %}"
+            config.save_form_email_content = "bla bla http://bad.net/bla?x=1 {% appointment_information %} {% payment_information %} {% cosign_information %}"
             with self.assertRaisesMessage(
                 ValidationError,
                 _("This domain is not in the global netloc allowlist: {netloc}").format(

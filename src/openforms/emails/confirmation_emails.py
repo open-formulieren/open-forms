@@ -53,8 +53,6 @@ def get_confirmation_email_context_data(submission: "Submission") -> Dict[str, A
             # submission.get_printable_data did.
             **get_variables_for_context(submission),
             "public_reference": submission.public_registration_reference,
-            "waiting_on_cosign": submission.waiting_on_cosign,
-            "cosigner_email": submission.cosigner_email,
         }
 
     # use the ``|date`` filter so that the timestamp is first localized to the correct

@@ -40,6 +40,7 @@ class ConfirmationEmailTemplate(models.Model):
                 required_template_tags=[
                     "appointment_information",
                     "payment_information",
+                    "cosign_information",
                 ],
                 backend="openforms.template.openforms_backend",
             ),

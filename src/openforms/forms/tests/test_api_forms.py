@@ -795,7 +795,7 @@ class FormsAPITests(APITestCase):
             "slug": "test-post-form",
             "confirmation_email_template": {
                 "subject": "The subject",
-                "content": "The content: {% appointment_information %} {% payment_information %}",
+                "content": "The content: {% appointment_information %} {% payment_information %} {% cosign_information %}",
             },
         }
         response = self.client.post(url, data=data)
@@ -808,7 +808,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(form.confirmation_email_template.subject, "The subject")
         self.assertEqual(
             form.confirmation_email_template.content,
-            "The content: {% appointment_information %} {% payment_information %}",
+            "The content: {% appointment_information %} {% payment_information %} {% cosign_information %}",
         )
 
     def test_creating_a_confirmation_email_template_for_an_existing_form(self):
@@ -821,7 +821,7 @@ class FormsAPITests(APITestCase):
         data = {
             "confirmation_email_template": {
                 "subject": "The subject",
-                "content": "The content {% appointment_information %} {% payment_information %}",
+                "content": "The content {% appointment_information %} {% payment_information %} {% cosign_information %}",
             }
         }
         response = self.client.patch(url, data=data)
@@ -831,7 +831,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(form.confirmation_email_template.subject, "The subject")
         self.assertEqual(
             form.confirmation_email_template.content,
-            "The content {% appointment_information %} {% payment_information %}",
+            "The content {% appointment_information %} {% payment_information %} {% cosign_information %}",
         )
 
     def test_creating_a_confirmation_email_fails_for_missing_template_tags(self):
@@ -844,7 +844,7 @@ class FormsAPITests(APITestCase):
         data = {
             "confirmation_email_template": {
                 "subject": "The subject",
-                "content": "The content {% appointment_information %} {% payment_information %}",
+                "content": "The content {% appointment_information %} {% payment_information %} {% cosign_information %}",
             }
         }
 
@@ -881,7 +881,7 @@ class FormsAPITests(APITestCase):
         data = {
             "confirmation_email_template": {
                 "subject": "Updated subject",
-                "content": "Updated content: {% appointment_information %} {% payment_information %}",
+                "content": "Updated content: {% appointment_information %} {% payment_information %} {% cosign_information %}",
             }
         }
         response = self.client.patch(url, data=data)
@@ -891,7 +891,7 @@ class FormsAPITests(APITestCase):
         self.assertEqual(form.confirmation_email_template.subject, "Updated subject")
         self.assertEqual(
             form.confirmation_email_template.content,
-            "Updated content: {% appointment_information %} {% payment_information %}",
+            "Updated content: {% appointment_information %} {% payment_information %} {% cosign_information %}",
         )
 
     def test_deleting_a_confirmation_email_template_through_the_api(self):
@@ -1361,15 +1361,15 @@ class FormsAPITranslationTests(APITestCase):
             },
             "confirmation_email_template": {
                 "subject": "foo",
-                "content": "{% appointment_information %} {% payment_information %}",
+                "content": "{% appointment_information %} {% payment_information %} {% cosign_information %}",
                 "translations": {
                     "en": {
                         "subject": "Subject",
-                        "content": "Content {% appointment_information %} {% payment_information %}",
+                        "content": "Content {% appointment_information %} {% payment_information %} {% cosign_information %}",
                     },
                     "nl": {
                         "subject": "Onderwerp",
-                        "content": "Inhoud {% appointment_information %} {% payment_information %}",
+                        "content": "Inhoud {% appointment_information %} {% payment_information %} {% cosign_information %}",
                     },
                 },
             },
@@ -1400,13 +1400,13 @@ class FormsAPITranslationTests(APITestCase):
         self.assertEqual(form.confirmation_email_template.subject_en, "Subject")
         self.assertEqual(
             form.confirmation_email_template.content_en,
-            "Content {% appointment_information %} {% payment_information %}",
+            "Content {% appointment_information %} {% payment_information %} {% cosign_information %}",
         )
 
         self.assertEqual(form.confirmation_email_template.subject_nl, "Onderwerp")
         self.assertEqual(
             form.confirmation_email_template.content_nl,
-            "Inhoud {% appointment_information %} {% payment_information %}",
+            "Inhoud {% appointment_information %} {% payment_information %} {% cosign_information %}",
         )
 
     def test_update_with_translations(self):
@@ -1434,15 +1434,15 @@ class FormsAPITranslationTests(APITestCase):
             },
             "confirmation_email_template": {
                 "subject": "foo",
-                "content": "{% appointment_information %} {% payment_information %}",
+                "content": "{% appointment_information %} {% payment_information %} {% cosign_information %}",
                 "translations": {
                     "en": {
                         "subject": "Subject",
-                        "content": "Content {% appointment_information %} {% payment_information %}",
+                        "content": "Content {% appointment_information %} {% payment_information %} {% cosign_information %}",
                     },
                     "nl": {
                         "subject": "Onderwerp",
-                        "content": "Inhoud {% appointment_information %} {% payment_information %}",
+                        "content": "Inhoud {% appointment_information %} {% payment_information %} {% cosign_information %}",
                     },
                 },
             },
@@ -1472,13 +1472,13 @@ class FormsAPITranslationTests(APITestCase):
         self.assertEqual(form.confirmation_email_template.subject_en, "Subject")
         self.assertEqual(
             form.confirmation_email_template.content_en,
-            "Content {% appointment_information %} {% payment_information %}",
+            "Content {% appointment_information %} {% payment_information %} {% cosign_information %}",
         )
 
         self.assertEqual(form.confirmation_email_template.subject_nl, "Onderwerp")
         self.assertEqual(
             form.confirmation_email_template.content_nl,
-            "Inhoud {% appointment_information %} {% payment_information %}",
+            "Inhoud {% appointment_information %} {% payment_information %} {% cosign_information %}",
         )
 
     def test_update_with_translations_confirmation_email_template_validate_content(
@@ -1492,7 +1492,7 @@ class FormsAPITranslationTests(APITestCase):
         data = {
             "confirmation_email_template": {
                 "subject": "foo",
-                "content": "{% appointment_information %} {% payment_information %}",
+                "content": "{% appointment_information %} {% payment_information %} {% cosign_information %}",
                 "translations": {
                     "en": {
                         "subject": "Subject",
@@ -1500,7 +1500,7 @@ class FormsAPITranslationTests(APITestCase):
                     },
                     "nl": {
                         "subject": "Onderwerp",
-                        "content": "Inhoud {% appointment_information %} {% payment_information %}",
+                        "content": "Inhoud {% appointment_information %} {% payment_information %} {% cosign_information %}",
                     },
                 },
             },
@@ -1655,11 +1655,11 @@ class FormsAPITranslationTests(APITestCase):
             },
             "confirmation_email_template": {
                 "subject": "foo",
-                "content": "{% appointment_information %} {% payment_information %}",
+                "content": "{% appointment_information %} {% payment_information %} {% cosign_information %}",
                 "translations": {
                     "en": {
                         "subject": "Subject",
-                        "content": "Content {% appointment_information %} {% payment_information %}",
+                        "content": "Content {% appointment_information %} {% payment_information %} {% cosign_information %}",
                     },
                 },
             },
@@ -1690,7 +1690,7 @@ class FormsAPITranslationTests(APITestCase):
         self.assertEqual(form.confirmation_email_template.subject_en, "Subject")
         self.assertEqual(
             form.confirmation_email_template.content_en,
-            "Content {% appointment_information %} {% payment_information %}",
+            "Content {% appointment_information %} {% payment_information %} {% cosign_information %}",
         )
 
         # checks that the fallback to original non-translation fields is registered
@@ -1698,5 +1698,5 @@ class FormsAPITranslationTests(APITestCase):
         self.assertEqual(form.confirmation_email_template.subject_nl, "foo")
         self.assertEqual(
             form.confirmation_email_template.content_nl,
-            "{% appointment_information %} {% payment_information %}",
+            "{% appointment_information %} {% payment_information %} {% cosign_information %}",
         )

@@ -1,0 +1,7 @@
+{% load static i18n %}
+{% if cosign_complete %}
+{% blocktranslate trimmed %}This email is a confirmation that this form has been co-signed by {{ cosigner_email }} and can now be processed.{% endblocktranslate %}
+{%  elif waiting_on_cosign %}
+{% blocktranslate trimmed %}This form will not be processed until it has been co-signed. A co-sign request was sent to {{ cosigner_email }}.{% endblocktranslate %}
+{% endif %}
+

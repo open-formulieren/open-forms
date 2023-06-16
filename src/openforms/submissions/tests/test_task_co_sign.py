@@ -1,11 +1,11 @@
 from unittest.mock import patch
 
 from django.core import mail
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from openforms.logging.models import TimelineLogProxy
 
-from ..tasks import send_email_cosigner
+from ..tasks import on_cosign, send_email_cosigner
 from .factories import SubmissionFactory
 
 
@@ -96,3 +96,34 @@ class OnCompletionTests(TestCase):
         email = mail.outbox[0]
 
         self.assertEqual(email.recipients(), ["test@test.nl"])
+
+
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+class OnCosignTests(TestCase):
+    def test_on_cosign_submission(self):
+        submission = SubmissionFactory.from_components(
+            components_list=[
+                {
+                    "key": "cosign",
+                    "type": "cosign",
+                    "label": "Cosign component",
+                },
+                {
+                    "key": "main",
+                    "type": "email",
+                    "confirmationRecipient": True,
+                },
+            ],
+            submitted_data={"cosign": "cosign@test.nl", "main": "main@test.nl"},
+            completed=True,
+            cosign_complete=True,
+        )
+
+        on_cosign(submission.id)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        email = mail.outbox[0]
+
+        self.assertEqual(email.recipients(), ["main@test.nl", "cosign@test.nl"])
+        self.assertEqual(email.cc, ["cosign@test.nl"])

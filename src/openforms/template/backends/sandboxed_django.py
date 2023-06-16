@@ -70,6 +70,7 @@ def get_openforms_backend():
             "OPTIONS": {
                 "builtins": [
                     "openforms.emails.templatetags.appointments",
+                    "openforms.emails.templatetags.cosign_information",
                     "openforms.emails.templatetags.form_summary",
                     "openforms.emails.templatetags.payment",
                     "openforms.emails.templatetags.products",

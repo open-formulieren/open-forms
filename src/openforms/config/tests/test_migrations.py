@@ -181,3 +181,39 @@ class ConfigTemplatesMigrationTest(TestMigrations):
 
         self.assertEqual(template_nl, template)
         self.assertEqual(form_previous_text_nl, form_previous_text)
+
+
+@override_settings(SOLO_CACHE=None)
+class ConfirmationEmailTemplatesCosignTest(TestMigrations):
+    app = "config"
+    migrate_from = "0047_globalconfiguration_enable_new_appointments"
+    migrate_to = "0048_add_cosign_templatetag"
+
+    def setUpBeforeMigration(self, apps):
+        GlobalConfiguration = apps.get_model("config", "GlobalConfiguration")
+        GlobalConfiguration.objects.create(
+            confirmation_email_content="""
+            Dear Sir, Madam,<br>
+            You have submitted the form "{{ form_name }}" on {{ submission_date }}.<br>
+            Your reference is: {{ public_reference }}<br>
+
+            {% summary %}<br>
+            {% appointment_information %}<br>
+            {% payment_information %}<br><br>
+
+            Kind regards,<br>
+            <br>
+            Open Forms<br>
+            """
+        )
+
+    def test_template_after_migration_contains_cosign_tag(self):
+        GlobalConfiguration = self.apps.get_model("config", "GlobalConfiguration")
+
+        config = GlobalConfiguration.objects.get()
+
+        self.assertIn("{% cosign_information %}", config.confirmation_email_content)
+        self.assertIn("{% summary %}", config.confirmation_email_content)
+        self.assertIn(
+            "{% appointment_information %}", config.confirmation_email_content
+        )

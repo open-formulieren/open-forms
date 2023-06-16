@@ -163,6 +163,10 @@ De bevestigingsmail is een optionele e-mail die wordt verzonden wanneer een
 gebruiker een formulier verstuurd. De bevestigingsmail heeft toegang tot alle
 gegevens uit het formulier en de waarden ingevuld door de gebruiker.
 
+Als een formulier een medeondertekenencomponent bevat, dan wordt na het ondertekenen
+een bevestigingsmail gestuurd naar de hoofdpersoon die het formulier heeft ingestuurd.
+De medeondertekenaar wordt hierbij in de CC opgenomen en ontvangt deze e-mail dus ook.
+
 **Speciale instructies**
 
 Dit zijn aanvullende variabelen en instructies die beschikbaar zijn voor de
@@ -179,6 +183,7 @@ Variabele                           Beschrijving
 ``{% appointment_information %}``   Kop "Afspraakinformatie" gevolgd door de afspraakgegevens, zoals product, locatie, datum en tijdstip.
 ``{% product_information %}``       Zonder kop, geeft dit de tekst weer uit het optionele veld "informatie" van het product dat aan dit formulier is gekoppeld.
 ``{% payment_information %}``       Kop "Betaalinformatie" gevolgd door een betaallink indien nog niet is betaald en anders de betalingsbevestiging.
+``{% cosign_information %}``        Kop "Medeondertekeneninformatie" gevolgd door informatie over de status van medeondertekenen.
 ==================================  ===========================================================================
 
 .. note::
@@ -199,6 +204,8 @@ Voorbeeld
          U heeft via de website het formulier "{{ form_name }}" verzonden op {{ submission_date }}.
 
          Uw referentienummer is: {{ public_reference }}
+
+         {% cosign_information %}
 
          Let u alstublieft op het volgende:
 
@@ -221,6 +228,10 @@ Voorbeeld
          U heeft via de website het formulier "Voorbeeld" verzonden op 17 januari 2022.
 
          Uw referentienummer is: OF-123456
+
+         **Medeondertekenen informatie**
+
+         Dit formulier wordt pas in behandeling genomen na medeondertekening. Er is een verzoek verzonden naar cosigner@test.nl.
 
          Let u alstublieft op het volgende:
 
