@@ -1,0 +1,64 @@
+{
+    "burgerservicenummer": "999993653",
+    "geslacht": {
+        "code": "V",
+        "omschrijving": "Vrouw"
+    },
+    "naam": {
+        "voornamen": "Cornelia Francisca",
+        "geslachtsnaam": "Wiegman",
+        "voorletters": "C. F.",
+        "voorvoegsel": "",
+        "volledigeNaam": "Cornelia Francisca Wiegman"
+    },
+    "geboorte": {
+        "land": {
+            "code": "5001",
+            "omschrijving": "Canada"
+        },
+        "plaats": {
+            "code": "5002",
+            "omschrijving": "Thann"
+        },
+        "datum": {
+            "type": "Datum",
+            "datum": "1985-12-01",
+            "jaar": "1985",
+            "langFormaat": "1 december 1985",
+            "maand": "december",
+            "onbekend": "nee"
+        }
+    },
+    "verblijfplaats": {
+        "type": "Adres",
+        "verblijfadres": {
+            "officieleStraatnaam": "Boterdiep",
+            "korteStraatnaam": "Boterdiep",
+            "huisnummertoevoeging": "-",
+            "huisletter": "a",
+            "huisnummer": 31,
+            "postcode": "3077AW",
+            "woonplaats": "Rotterdam"
+        }
+    },
+    "gemeenteVanInschrijving": {
+        "code": "0599",
+        "omschrijving": "Rotterdam"
+    },
+    "adressering": {
+        "adresregel1": "Boterdiep 31",
+        "adresregel2": "3077 AW  ROTTERDAM",
+        "adresregel3": "-",
+        "land": "Nederland"
+    },
+    "overlijden": {
+        "datum": {
+            "type": "Datum",
+            "datum": "2015-12-01",
+            "jaar": "2015",
+            "langFormaat": "1 december 2015",
+            "maand": "december",
+            "onbekend": "nee"
+        }
+    }
+}

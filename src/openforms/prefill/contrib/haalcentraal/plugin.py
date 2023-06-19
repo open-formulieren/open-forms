@@ -1,24 +1,33 @@
 import logging
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from collections.abc import Sequence
+from typing import Any, Iterable, Optional
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from glom import GlomError, glom
-from requests import RequestException
 from zds_client import ClientError
 
 from openforms.authentication.constants import AuthAttribute
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 from openforms.pre_requests.clients import PreRequestClientContext
+from openforms.prefill.contrib.haalcentraal.constants import Attributes
 from openforms.submissions.models import Submission
 
 from ...base import BasePlugin
 from ...registry import register
-from .constants import Attributes
 from .models import HaalCentraalConfig
 
 logger = logging.getLogger(__name__)
+
+
+def get_config() -> HaalCentraalConfig | None:
+    config = HaalCentraalConfig.get_solo()
+    assert isinstance(config, HaalCentraalConfig)
+    if not config.service:
+        logger.warning("No service defined for Haal Centraal prefill.")
+        return None
+    return config
 
 
 @register("haalcentraal")
@@ -26,56 +35,47 @@ class HaalCentraalPrefill(BasePlugin):
     verbose_name = _("Haal Centraal")
     requires_auth = AuthAttribute.bsn
 
-    request_kwargs = dict(headers={"Accept": "application/hal+json"})
-
     @staticmethod
     def get_available_attributes() -> list[tuple[str, str]]:
-        return Attributes.choices
+        config = get_config()
+        if config is None:
+            return Attributes.choices
+        return config.get_attributes().choices
 
     @classmethod
     def _get_values_for_bsn(
-        cls, submission: Submission, bsn: str, attributes: Iterable[str]
-    ) -> Dict[str, Any]:
-        config = HaalCentraalConfig.get_solo()
-        if not config.service:
-            logger.warning("no service defined for Haal Centraal prefill")
-            return {}
-
-        client = config.service.build_client()
+        cls,
+        config: HaalCentraalConfig,
+        submission: Submission | None,
+        bsn: str,
+        attributes: Iterable[str],
+    ) -> dict[str, Any]:
+        client = config.build_client()
+        assert client is not None
+        # FIXME: typing info on protocol
         client.context = PreRequestClientContext(submission=submission)
 
-        # manually build the URL, since HaalCentraal API spec & Open Personen have
-        # mismatching operation IDs
-        resource_url = f"ingeschrevenpersonen/{bsn}"
-
-        try:
-            data = client.retrieve(
-                "ingeschrevenpersonen",
-                burgerservicenummer=bsn,
-                url=resource_url,
-                request_kwargs=cls.request_kwargs,
-            )
-        except RequestException as e:
-            logger.exception("exception while making request", exc_info=e)
-            return {}
-        except ClientError as e:
-            logger.exception("exception while making request", exc_info=e)
+        data = client.find_person(bsn, attributes=attributes)
+        if not data:
             return {}
 
         values = dict()
         for attr in attributes:
             try:
                 values[attr] = glom(data, attr)
-            except GlomError:
+            except GlomError as exc:
                 logger.warning(
-                    f"missing expected attribute '{attr}' in backend response"
+                    "missing expected attribute '%s' in backend response",
+                    attr,
+                    exc_info=exc,
                 )
+
         return values
 
     @classmethod
     def get_prefill_values(
-        cls, submission: Submission, attributes: List[str]
-    ) -> Dict[str, Any]:
+        cls, submission: Submission, attributes: Sequence[str]
+    ) -> dict[str, Any]:
         if (
             not submission.is_authenticated
             or submission.auth_info.attribute != AuthAttribute.bsn
@@ -83,14 +83,19 @@ class HaalCentraalPrefill(BasePlugin):
             #  If there is no bsn we can't prefill any values so just return
             logger.info("No BSN associated with submission, cannot prefill.")
             return {}
+
+        config = get_config()
+        if config is None:
+            return {}
+
         return cls._get_values_for_bsn(
-            submission, submission.auth_info.value, attributes
+            config, submission, submission.auth_info.value, attributes
         )
 
     @classmethod
     def get_co_sign_values(
         cls, identifier: str, submission: Optional["Submission"] = None
-    ) -> Tuple[Dict[str, Any], str]:
+    ) -> tuple[dict[str, Any], str]:
         """
         Given an identifier, fetch the co-sign specific values.
 
@@ -102,24 +107,32 @@ class HaalCentraalPrefill(BasePlugin):
         :return: a key-value dictionary, where the key is the requested attribute and
           the value is the prefill value to use for that attribute.
         """
+        config = get_config()
+        if config is None:
+            return ({}, "")
+
+        version_atributes = config.get_attributes()
+
         values = cls._get_values_for_bsn(
+            config,
             submission,
             identifier,
             (
-                Attributes.naam_voornamen,
-                Attributes.naam_voorvoegsel,
-                Attributes.naam_geslachtsnaam,
-                Attributes.naam_voorletters,
+                version_atributes.naam_voornamen,
+                version_atributes.naam_voorvoegsel,
+                version_atributes.naam_geslachtsnaam,
+                version_atributes.naam_voorletters,
             ),
         )
-        first_names = values.get(Attributes.naam_voornamen, "")
-        first_letters = values.get(Attributes.naam_voorletters) or " ".join(
+
+        first_names = values.get(version_atributes.naam_voornamen, "")
+        first_letters = values.get(version_atributes.naam_voorletters) or " ".join(
             [f"{name[0]}." for name in first_names.split(" ") if name]
         )
         representation_bits = [
             first_letters,
-            values.get(Attributes.naam_voorvoegsel, ""),
-            values.get(Attributes.naam_geslachtsnaam, ""),
+            values.get(version_atributes.naam_voorvoegsel, ""),
+            values.get(version_atributes.naam_geslachtsnaam, ""),
         ]
         return (
             values,
@@ -129,10 +142,12 @@ class HaalCentraalPrefill(BasePlugin):
     def check_config(self):
         try:
             config = HaalCentraalConfig.get_solo()
+            assert isinstance(config, HaalCentraalConfig)
             if not config.service:
                 raise InvalidPluginConfiguration(_("Service not selected"))
 
             client = config.service.build_client()
+            # FIXME: haal centraal v2 client does not support GET methods
             client.retrieve("test", "test")
         except ClientError as e:
             if e.args[0].get("status") == 404:

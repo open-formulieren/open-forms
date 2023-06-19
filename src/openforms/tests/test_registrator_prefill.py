@@ -242,7 +242,7 @@ class OIDCRegistratorSubjectHaalCentraalPrefillIntegrationTest(WebTest):
             m.get(
                 "https://personen/api/ingeschrevenpersonen/999990676",
                 status_code=200,
-                json=load_json_mock("ingeschrevenpersonen.999990676.json"),
+                json=load_json_mock("ingeschrevenpersonen.v1.json"),
             )
 
             response = self.app.post_json(
