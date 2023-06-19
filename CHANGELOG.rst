@@ -2,6 +2,242 @@
 Changelog
 =========
 
+
+2.2.0 "Èspelès" (2023-06-23)
+============================
+
+.. epigraph::
+
+   **Èspelès**, The Hague dialect for "Ijspaleis" or "ice palace" is the nickname for
+   its Town Hall.
+
+   De bijnaam IJspaleis dankt het aan de veelvuldig gebruikte witte kleur aan exterieur en interieur.
+
+   -- "Stadhuis van Den Haag", Wikiwand
+
+Upgrade procedure
+-----------------
+
+Ensure that your current version of Open Forms is at least version 2.1.3 before
+upgrading.
+
+Version 2.2.0 does not contain breaking changes and therefore upgrading should be
+straightforward.
+
+Major features
+--------------
+
+**🧑 Haal Centraal BRP Personen v2 support**
+
+In addition to v1.3, Open Forms now also supports v2 of the
+`BRP Personen APIs <https://github.com/BRP-API/Haal-Centraal-BRP-bevragen>`_. You can
+specify the relevant version in the admin interface for your environment.
+
+**🔏 Reworked co-signing flow**
+
+We've introduced a new co-signing flow, compatible with authentication gateways!
+
+The primary person (the one filling out the form) now provides the email address of the
+co-signer, whom receives the request for co-signing. After the co-signer completed their
+duties, the submission is passed to the registration plugin and processed as usual.
+
+The "old" co-sign component is still functional, but deprecated.
+
+**🛂 Level Of Assurance (LOA) per form**
+
+DigiD, eHerkenning and eIDAS support different levels of assurance that the logged in
+user is actually the person they claim to be. Higher levels require additional
+authentication requirements and/or factors.
+
+It is now possible to configure on a per-form basis what the authentication LOA must
+be, giving you stronger guarantees in your form about the authenticated person or company.
+
+**🗃️ Reworked Objects API registration backend**
+
+We've reworked the Objects API registration backend - our fixed "ProductAanvraag" format
+has been replaced with a configurable template format, so you can decide on a per-form
+basis exactly what the JSON-data structure is to be sent to the Objects API.
+
+All form variables are available in these templates, so this gives you enormous
+flexibility in which data you register for your processes.
+
+**💄 Better theming tools**
+
+We've added a graphical tool to edit `design token <https://nldesignsystem.nl/meedoen/design-tokens/>`_
+values in our admin interface. Before, you'd have to edit raw JSON-code and piece together
+all bits, but now there is a handy reference of available tokens AND you can change their
+values to suit your visual identity in great detail.
+
+**🔌 Retrieve data from external registrations (preview)**
+
+An iteration of 2.1's "Retrieve data from external registrations" feature - we now
+provide a nicer user experience to configure how to retrieve data. This moves the
+feature into "preview" status - you still need to opt-in to the feature but it should
+be stable and we would like feedback from users!
+
+.. note::
+    Possible breaking change
+
+    The interpolation format has changed from single bracket to double bracket
+    interpolation to be consistent with interpolation in other places. We have added
+    an automatic migration, but it's possible not everything is caught.
+
+    If you have ``{some_variable}``, change this to ``{{ some_variable }}``.
+
+
+
+Detailed changes
+----------------
+
+**New features**
+
+* Retrieve data from external registrations (aka service fetch):
+
+    * [#2680] Added API endpoint to expose available services for service fetch.
+    * [#2661, #2693, #2834, #2835] Added user friendly UI to configure "external data retrieval".
+    * [#2681] Added logic logging of service fetch to allow better debugging of form logic.
+    * [#2694] Updated interpolation format to double bracket, making it possible to use
+      Django template engine filters.
+
+* [#1530] Introduced a new co-sign component
+
+    * Implemented a new flow for co-signing so that the co-signer receives a request via
+      email.
+    * The submission is only registered when co-signing is completed.
+    * Ensure the co-signer also receives the confirmation email.
+    * The existing component is deprecated.
+
+* Background task processing
+
+    * [#2927] Added Celery worker monitoring tooling (for devops/infra).
+    * [#3068] Added soft and hard task timeout settings for background workers.
+
+* [#2826] The form builder now validates the format of dates in logic rules.
+* [#2789] The submission pause/save modal text is now configurable.
+* [#2872] The registration flow is reworked to have a pre-registration step, e.g. to
+  reserve a "zaaknummer" before creating the case.
+* [#2872] The email registration plugin can now include the registration reference and
+  any other submission variables.
+* [#2872] You can now override subject and body templates for the registration email
+* [#2957] Added editor to simplify theming an instance instead of editing JSON.
+* [#2444] It's now possible to hide non-applicable steps in the progress indicator
+  rather than greying them out.
+* [#2946] It's now possible to overwrite the confirmation email subject and content
+  templates individually.
+* [#2343] Added option to hide the label of a repeating group.
+* [#3004] You can now disable form pausing.
+* [#1879] Relevant validation plugins are now filtered per component type in the form
+  designer.
+* [#3031] Increased the size of Objects API registration plugin configuration form fields.
+* [#2918] Added alternative Formio builder implementation, opt-in via a feature flag.
+* [#1424] The form submission reference is now included in the confirmation PDF.
+* [#2845] Added option to include content component in submission summary.
+* [#2809] Made the link title for downloading the submission report configurable.
+* [#2762] Added (opt-in) logging for outgoing requests to assist with configuration
+  troubleshooting.
+* [#2859] You can now configure multiple sets of ZGW APIs and configure per form where
+  documents need to be uploaded.
+* [#2606] Added support for Haal Centraal BRP Personen v2.
+
+**Bugfixes**
+
+* [#2804] Fixed the "static variables" not being available in confirmation template
+  rendering.
+* [#2821] Fixed broken "Map" component configuration screen.
+* [#2819] Fixed the key and translations of the password field not automatically
+  updating with entered content (label and other translatable fields).
+* [#2785] Fixed attribute hashing on submission suspend
+* [#2822] Fixed date components being interpreted as datetimes instead of dates.
+* Fixed misalignment for file upload preview in form builder.
+* [#2820] Fixed translations not registering initially when adding a component to a new
+  form step.
+* [#2838] Fixed hidden selectboxes field triggering premature validation of required fields.
+* [#2791] Fixed long words overflowing in the confirmation PDF.
+* [#2842] Fixed analytics CSP-integration resulting in a misconfigured policy.
+* [#2851] Fixed importing a form while the admin UI is set to English resulting in
+  incorrect form translation mappings.
+* [#2850] Fixed a crash in the AVG log viewer when certain log records of deleted
+  submissions are displayed.
+* [#2844] Fixed validation errors for submission confirmation email not being displayed
+  in the form designer.
+* Fixed unique component key suffix generation on a newly added component.
+* [#2874] Fixed "repeating group" component group label not being translated.
+* [#2888] Fixed a crash when using file fields and hidden repeating groups at the same
+  time
+* [#2888] Fixed a crash when using file fields and repeating groups with numbers inside
+* [#2889] Fix the focus jumps of the content component in the admin by re-implement the
+  component translations machinery.
+* [#2911] Make validation of .heic and .heif files more lenient.
+* [#2893] A minimal fix to prevent crashes of the celery task logging the evaluation of
+  logic rules.
+* [#2942] Fixed "undefined" being displayed in the co-signing component configuration.
+* [#2945] Fixed logic rule variables inadvertedly being cleared when adding a new
+  user defined variable
+* [#2947] Added missing translatable error messages for number components.
+* [#2877] Fixed admin crash on misconfigured ZGW services.
+* [#2900] Fixed inconsistent frontend logic involving checkboxes.
+* [#2716] Added missing co-sign identifier (BSN) to PDF submission report.
+* [#2849] Restored ability to import forms using form logic in the pre-2.0 format.
+* [#2632] Fixed crash during submission data pruning when submissions point to form
+  steps that have been deleted
+* [#2980] Fixed file upload component not using config overwrites when registering
+  with the objects API backend.
+* [#2983] Fixed broken StUF-ZDS registration for some vendors due to bad refactor
+* [#2977] Fixed StUF postcode not being uppercase.
+* [#2963] Fixed global configuration templates being reset to their default values.
+* [#3007] Fixed worfklows where < 2.1 form exports are imported and edited in the admin.
+* [#2875] Fixed another SiteImprove analytics bug where only the path was sent instead
+  of the full URL.
+* [#1959] Fixed invalid link to resume form after pausing and resuming multiple times.
+* [#3025] Fixed resuming a form redirecting to an invalid URL.
+* [#2895] Fixed WYSIWYG colors missing when filling out a form while logged in as staff user.
+* [#3015] Fixed invalid URLs being generated to resume the form from WYSIWYG content.
+* [#3040] Fixed file-upload validation errors being user-unfriendly.
+* [#2970] Fixed design token being ignored in confirmation and suspension emails.
+* [#2808] Fixed filenames in upload validation errors overflowing.
+* [#2651] Fixed analytics cookies receiving incorrect domain information after enabling
+  the provider via the admin.
+* [#2879] Fixed the available zaaktypen not refreshing the admin when the catalogi API
+  is changed.
+* [#3097] Fixed invalid phone numbers example in validation error messages.
+* [#3123] Added support for deploying Open Forms on a subpath (e.g. ``/formulieren``).
+* [#3012] Fixed select, radio and checboxes options not being translated in the UI.
+* [#3070] Fixed the confirmation email template not being copied along when copying a form.
+* Fixed Matomo not using the configured Site ID correctly.
+* [#3114] Fixed the "next" button not becoming active if you're not logged in as admin user.
+
+**Documentation**
+
+* Improved Storybook documentation in the backend.
+* Add instruction for Postgres 15 DB initialization (with docker-compose).
+* [#2362] Documented known Ogone payment simulator limitation.
+* Added more details to the release flow and backporting documentation.
+* Documented the possible use of soft hyphens in the form name.
+* [#2908] Documented limitations of import/export for forms with service fetch config.
+* Added a note on refactor and small changes for contributors.
+* [#2940] Improved SDK embedding configuration documentation.
+* Documented solution for "IDP not found" DigiD error.
+
+**Project maintenance**
+
+* Added management command to check component usage for usage analytics.
+* Ignore coverage on type checking branches.
+* [#2814] Added additional robustness tests for possible glom crashes.
+* Removed postcss-selector-lint.
+* Add 2.1.x release series to Docker Hub generation config
+* Add 2.2.x release series to Docker Hub generation config
+* Deprecated the password field as it has no real-world usage.
+* Bumped a number of dependencies following @dependabot security alerts.
+* Started preparing the upgrade to Django 4.2 LTS.
+* Added tests for and refined intended behaviour of ``AllOrNoneRequiredFieldsValidator``.
+* Added tests for ``ModelValidator``.
+* [#3016] Fixed the MacOS CI build.
+* Removed the 1.1.x series from supported versions.
+* Support sufficiently modern browsers, reducing the JS bundle sizes a bit.
+* [#2999] Fixed broken test isolation.
+* [#2784] Introduced and refactored code to use ``FormioDate`` interface.
+* Tests are now also run in reverse order in CI to catch test isolation problems.
+
 2.1.4 (2023-06-21)
 ==================
 
@@ -39,7 +275,6 @@ Periodic bugfix release
 
     To fix this for existing file components, it's recommended to remove and re-add the
     component in the form.
-
 
 2.0.7 (2023-05-01)
 ==================
@@ -171,7 +406,7 @@ Ensure that your current version of Open Forms is at least version 2.0.2 before
 upgrading.
 
 Version 2.1.0 does not contain breaking changes and therefore upgrading should be
-straight forward.
+straightforward.
 
 Major features
 --------------
@@ -314,7 +549,7 @@ Detailed changes
 * [#2635] Fixed component key not being updated anymore with label changes.
 * [#2643] Fixed description generation for empty ``var`` operations and the ``map``
   operation.
-* [#2641] Relaxed e-mail URL stripping for subdomains of allow-listed domains.
+* [#2641] Relaxed email URL stripping for subdomains of allow-listed domains.
 * [#2549] Fixed cookie banner overlapping footer links
 * [#2673] Fixed mobile styling (spacing + location of language selection component).
 * [#2676] Fixed more mobile styling spacing issues (header/footer, logo).
@@ -424,7 +659,7 @@ Detailed changes
 * Multilingual support
 
   * [#2478] Implemented UI/UX for form designers to manage component-level translations.
-  * [#2390] PDF reports and confirmation e-mails are now rendered in the submission
+  * [#2390] PDF reports and confirmation emails are now rendered in the submission
     language.
   * [#2286] Ensured that the API endpoints for the SDK return the translations
     according to the active language.
@@ -479,7 +714,7 @@ Detailed changes
 * [#2012] Fixed missing ``script-src`` CSP directive for SiteImprove analytics.
 * [#2541] Fixed a crash in the logic editor when changing the key of selectboxes
   components.
-* [#2587] Fixed inadvertedly HTML escaping while templating out e-mail subjects.
+* [#2587] Fixed inadvertedly HTML escaping while templating out email subjects.
 * [#2599] Fixed typo in registration constants.
 * [#2607] Fixed crash in logic editor when specifying a "trigger-from" step.
 * [#2581] Fixed bug in logic where dates and datetimes were being mixed.
@@ -667,7 +902,7 @@ This patch fixes a couple of bugs encountered when upgrading from 1.1 to 2.0.
 
 * [#2301] Fixed identifying attributes still being hashed after a submission is resumed
 * [#2135] Fixed submission step data being cascade deleted in certain edge cases
-* [#2219] A fix was also attempted for bad CSS unit usage in confirmation e-mails, but
+* [#2219] A fix was also attempted for bad CSS unit usage in confirmation emails, but
   this caused other problems. As a workaround you should use the correctly sized images
   for the time being.
 * [#2244] Fixed 'content' component and components not marked as showInSummary showing
@@ -796,7 +1031,7 @@ Open Forms 1.1.8 fixes some bugs for which no workaround exists
 * [#2301] Fixed identifying attributes still being hashed for paused-and-resumed
   submissions. This caused the hashes to be sent to registration backends rather than
   the actual BSN/KVK/Pseudo attribute.
-* [#2219] Fixed CSS units usage for logo design tokens in (confirmation) e-mails
+* [#2219] Fixed CSS units usage for logo design tokens in (confirmation) emails
 
 2.0.0 "Règâh" (2022-10-26)
 ==========================
@@ -997,7 +1232,7 @@ double check with the list of breaking changes in mind.
 * [#1183] Intermediate registration results are now properly tracked and re-used,
   preventing the same objects being created over and over again if registration is being
   retried. This especially affects StUF-ZDS and ZGW API's registration backends.
-* [#1877] Registration e-mail subject is now configurable
+* [#1877] Registration email subject is now configurable
 * [#1867] StUF-ZDS & ZGW: Added more registration fields
 
 *Prefill*
@@ -1022,7 +1257,7 @@ double check with the list of breaking changes in mind.
 * You can now use separate DigiD/eHerkenning certificates
 * [#1294] Reworked analytics integration - enabling/disabling an analytics provider now
   automatically updates the cookies and CSP configuration
-* [#1787] You can now configure the "form pause" e-mail template to use
+* [#1787] You can now configure the "form pause" email template to use
 * [#1971] Added config option to disable search engine indexing
 * [#1895] Removed deprecated functionality
 * Improved search fields in Form/Form Definition admin pages
@@ -1065,7 +1300,7 @@ double check with the list of breaking changes in mind.
 * Only display application version for authenticated staff users, some pages still
   leaked this information
 * Fixed styling of the password reset pages
-* [#2154] Fixed coloured links e-mail rendering crash
+* [#2154] Fixed coloured links email rendering crash
 * [#2117] Fixed submission export for submissions with filled out subset of
   available fields
 * [#1899] Fixed validation problem on certain types of prefilled fields during
@@ -1105,7 +1340,7 @@ double check with the list of breaking changes in mind.
 1.1.6 was broken due to a bad merge conflict resolution.
 
 * [#2095] Fixed accidentally removing the OF layer on top of Formio
-* [#1871] Ensure that fields hidden in frontend don't end up in registration e-mails
+* [#1871] Ensure that fields hidden in frontend don't end up in registration emails
 
 1.1.6 (2022-09-29)
 ==================
@@ -1377,12 +1612,12 @@ removed in version 2.0, see the last section of this changelog entry.
 * [#1541] Allow some NL Design System compatible custom CSS classes for the content
   component.
 * [#1451] Completely overhauled "submission rendering". Submission rendering is used
-  to generate the confirmation e-mails, PDFs, registration e-mails, exports...
+  to generate the confirmation emails, PDFs, registration emails, exports...
 
   - You can now specify whether a component should be displayed in different modes
-    (PDF, summary, confirmation e-mail)
+    (PDF, summary, confirmation email)
   - Implemented sane defaults for configuration options
-  - PDF / Confirmation e-mails / registration e-mails now have more structure,
+  - PDF / Confirmation emails / registration emails now have more structure,
     including form step titles
   - Container elements (fieldsets, columns, steps) are only rendered if they have
     visible content
@@ -1426,13 +1661,13 @@ All the bugfixes up to the ``1.0.8`` release are included.
 * [maykinmedia/django-digid-eherkenning#4] Updated because of external provider changes
 * Added CI check to lint requirements/base.in
 * Ensure uwsgi runs in master process mode for better crash recovery
-* Improved development views to view how confirmation e-mails/PDFs will be rendered
+* Improved development views to view how confirmation emails/PDFs will be rendered
 * Refactor submission models
 * Refactor form serializers file
 * Moved some generic OIDC functionality to mozilla-django-oidc-db
 * [#1366] default to allow CORS with docker-compose
 * Remove SDK from docker-compose
-* Add SMTP container to docker-compose stack for outgoing e-mails
+* Add SMTP container to docker-compose stack for outgoing emails
 * [#1444] resolve media files locally too with WeasyPrint
 * Update momentjs version (dependabot alert)
 * [#1574] Dropped Django 2.x SameSiteNoneCookieMiddlware
@@ -1549,8 +1784,8 @@ Bugfixes
 * [#1322] Demo authentication plugins can now only be used by staff users
 * [#1395, #1367] Moved identifying attributes hashing to on_completion cleanup stage,
   registrations backends now no longer receive hashed values
-* Fixed bug in e-mail registration backend when using new formio formatters
-* [#1293, #1179] "signature" components are now proper images in PDF/confirmation e-mail
+* Fixed bug in email registration backend when using new formio formatters
+* [#1293, #1179] "signature" components are now proper images in PDF/confirmation email
 * Fixed missing newlines in HTML-mail-to-plain-text conversion
 * [#1333] Removed 'multiple'/'default value' component options where they don't make sense
 * [#1398] File upload size limit is now restricted to integer values due to broken
@@ -1609,7 +1844,7 @@ New features
 
 * [#1264] Set up and documented the Open Forms versioning policy
 * [#1348] Improved interface for form version history/restore
-* [#1363] User uploads as registration e-mail attachments is now configurable
+* [#1363] User uploads as registration email attachments is now configurable
 * [#1367] Implemented hashing identifying attributes when they are not actively used
 
 Project maintenance
