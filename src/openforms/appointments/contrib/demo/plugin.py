@@ -22,7 +22,7 @@ class DemoAppointment(BasePlugin):
             AppointmentProduct(identifier="2", name="Test product 2"),
         ]
 
-    def get_locations(self, products):
+    def get_locations(self, products=None):
         return [AppointmentLocation(identifier="1", name="Test location")]
 
     def get_dates(self, products, location, start_at=None, end_at=None):

@@ -82,8 +82,10 @@ class BasePlugin(ABC, AbstractBasePlugin):
 
     @abstractmethod
     def get_available_products(
-        self, current_products: Optional[List[AppointmentProduct]] = None
-    ) -> List[AppointmentProduct]:  # pragma: no cover
+        self,
+        current_products: list[AppointmentProduct] | None = None,
+        location_id: str = "",
+    ) -> list[AppointmentProduct]:  # pragma: no cover
         """
         Retrieve all available products and services to create an appointment for.
 
@@ -92,19 +94,25 @@ class BasePlugin(ABC, AbstractBasePlugin):
 
         :param current_products: List of :class:`AppointmentProduct`, as obtained from
           another :meth:`get_available_products` call.
+        :param location_id: ID of the location to filter products on - plugins may
+          support this.
         :returns: List of :class:`AppointmentProduct`
         """
         raise NotImplementedError()
 
     @abstractmethod
     def get_locations(
-        self, products: List[AppointmentProduct]
-    ) -> List[AppointmentLocation]:  # pragma: no cover
+        self,
+        products: list[AppointmentProduct] | None = None,
+    ) -> list[AppointmentLocation]:  # pragma: no cover
         """
-        Retrieve all available locations for given ``products``.
+        Retrieve all available locations.
 
         :param products: List of :class:`AppointmentProduct`, as obtained from
-          :meth:`get_available_products`. :returns: List of :class:`AppointmentLocation`
+          :meth:`get_available_products`. If ``None`` or unspecified, all possible
+          locations are returned. Otherwise, if the plugin supports it, locations are
+          filtered given the products.
+        :returns: List of :class:`AppointmentLocation`
         """
         raise NotImplementedError()
 

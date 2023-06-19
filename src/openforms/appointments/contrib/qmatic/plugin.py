@@ -42,8 +42,10 @@ class QmaticAppointment(BasePlugin):
     verbose_name = _("Qmatic")
 
     def get_available_products(
-        self, current_products: Optional[List[AppointmentProduct]] = None
-    ) -> List[AppointmentProduct]:
+        self,
+        current_products: list[AppointmentProduct] | None = None,
+        location_id: str = "",
+    ) -> list[AppointmentProduct]:
         """
         Retrieve all available products and services to create an appointment for.
 
@@ -51,8 +53,9 @@ class QmaticAppointment(BasePlugin):
         products. The ``current_products`` argument is ignored.
         """
         client = QmaticClient()
+        endpoint = f"branches/{location_id}/services" if location_id else "services"
         try:
-            response = client.get("services")
+            response = client.get(endpoint)
             response.raise_for_status()
         except (QmaticException, RequestException) as e:
             logger.exception("Could not retrieve available products", exc_info=e)
@@ -69,20 +72,32 @@ class QmaticAppointment(BasePlugin):
         ]
 
     def get_locations(
-        self, products: List[AppointmentProduct]
+        self,
+        products: list[AppointmentProduct] | None = None,
     ) -> List[AppointmentLocation]:
-        if len(products) > 1:
-            logger.warning("Attempt to retrieve locations for more than one product.")
+        products = products or []
+        product_ids = [product.identifier for product in products]
 
         client = QmaticClient()
-        product_id = products[0].identifier
+
+        if not product_ids:
+            endpoint = "branches"
+        else:
+            if len(product_ids) > 1:
+                logger.warning(
+                    "Attempt to retrieve locations for more than one product. Using "
+                    "the first ID to limit locations."
+                )
+            endpoint = f"services/{product_ids[0]}/branches"
 
         try:
-            response = client.get(f"services/{product_id}/branches")
+            response = client.get(endpoint)
             response.raise_for_status()
         except (QmaticException, RequestException) as e:
             logger.exception(
-                "Could not retrieve locations for product '%s'", product_id, exc_info=e
+                "Could not retrieve locations for product, using API endpoint '%s'",
+                endpoint,
+                exc_info=e,
             )
             return []
         except Exception as exc:

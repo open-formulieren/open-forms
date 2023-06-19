@@ -7,7 +7,9 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from requests.exceptions import RequestException
+from zeep.client import Client
 from zeep.exceptions import Error as ZeepError
+from zgw_consumers.concurrent import parallel
 
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
@@ -46,8 +48,15 @@ class JccAppointment(BasePlugin):
     verbose_name = _("JCC")
 
     def get_available_products(
-        self, current_products: Optional[List[AppointmentProduct]] = None
-    ) -> List[AppointmentProduct]:
+        self,
+        current_products: list[AppointmentProduct] | None = None,
+        location_id: str = "",
+    ) -> list[AppointmentProduct]:
+        if location_id:
+            logger.debug(
+                "Plugin does not support filtering products by location.",
+                extra={"location_id": location_id},
+            )
 
         client = get_client()
         try:
@@ -71,12 +80,48 @@ class JccAppointment(BasePlugin):
             for entry in result
         ]
 
+    def _get_all_locations(self, client: Client) -> list[AppointmentLocation]:
+        try:
+            location_ids = client.service.getGovLocations()
+            with parallel() as pool:
+                details = pool.map(
+                    lambda location_id: client.service.getGovLocationDetails(
+                        locationID=location_id
+                    ),
+                    location_ids,
+                )
+            # evaluate the generator
+            details = list(details)
+        except (ZeepError, RequestException) as e:
+            logger.exception("Could not retrieve location IDs", exc_info=e)
+            return []
+        except Exception as exc:
+            raise AppointmentException from exc
+
+        locations = [
+            AppointmentLocation(
+                identifier=identifier,
+                name=entry["locationDesc"],
+                address=entry["address"],
+                postalcode=entry["postalcode"],
+                city=entry["city"],
+            )
+            for identifier, entry in zip(location_ids, details)
+        ]
+
+        return locations
+
     def get_locations(
-        self, products: List[AppointmentProduct]
-    ) -> List[AppointmentLocation]:
+        self,
+        products: list[AppointmentProduct] | None = None,
+    ) -> list[AppointmentLocation]:
+        client = get_client()
+
+        if products is None:
+            return self._get_all_locations(client)
+
         product_ids = squash_ids(products)
 
-        client = get_client()
         try:
             result = client.service.getGovLocationsForProduct(productID=product_ids)
         except (ZeepError, RequestException) as e:

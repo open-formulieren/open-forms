@@ -8,6 +8,7 @@ from ..contrib.jcc.models import JccConfig
 from ..models import AppointmentsConfig
 
 
+# FIXME: replace with proper mocks, see ../contrib/jcc/tests/utils.py
 def setup_jcc() -> None:
     appointments_config = AppointmentsConfig.get_solo()
     appointments_config.plugin = "jcc"

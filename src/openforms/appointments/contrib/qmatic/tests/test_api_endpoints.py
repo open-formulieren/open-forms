@@ -1,85 +1,62 @@
-import os
-
-from django.conf import settings
-from django.test import TestCase
 from django.urls import reverse
 
 import requests_mock
-from zeep.exceptions import Error as ZeepError
+from rest_framework.test import APITestCase
 
 from openforms.logging.models import TimelineLogProxy
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.submissions.tests.mixins import SubmissionsMixin
-from stuf.tests.factories import SoapServiceFactory
 
-from ...constants import AppointmentDetailsStatus
-from ...contrib.jcc.models import JccConfig
-from ...contrib.jcc.tests.test_plugin import mock_response
-from ...models import AppointmentsConfig
-from ...tests.factories import AppointmentInfoFactory
+from ....constants import AppointmentDetailsStatus
+from ....tests.factories import AppointmentInfoFactory
+from ..client import QmaticException
+from .factories import QmaticConfigFactory
+from .test_plugin import MockConfigMixin, mock_response
 
 
-class ProductsListTests(SubmissionsMixin, TestCase):
+class ProductsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         cls.submission = SubmissionFactory.create()
         cls.endpoint = reverse("api:appointments-products-list")
 
-        appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.plugin = "jcc"
-        appointments_config.save()
-
-        config = JccConfig.get_solo()
-        wsdl = os.path.abspath(
-            os.path.join(
-                settings.DJANGO_PROJECT_DIR,
-                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
-            )
-        )
-        config.service = SoapServiceFactory.create(url=wsdl)
-        config.save()
+        config = QmaticConfigFactory.create()
+        cls.api_root = config.service.api_root
 
     @requests_mock.Mocker()
     def test_get_products_returns_all_products(self, m):
         self._add_submission_to_session(self.submission)
-        m.post(
-            "http://example.com/soap11",
-            text=mock_response("getGovAvailableProductsResponse.xml"),
+        m.get(
+            f"{self.api_root}services",
+            text=mock_response("services.json"),
         )
 
         response = self.client.get(self.endpoint)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 3)
-        first_entry = response.json()[0]
-        self.assertEqual(first_entry["code"], "PASAAN")
-        self.assertEqual(first_entry["identifier"], "1")
-        self.assertEqual(first_entry["name"], "Paspoort aanvraag")
+        products = response.json()
+        self.assertEqual(len(products), 2)
+        self.assertEqual(products[0]["identifier"], "54b3482204c11bedc8b0a7acbffa308")
+        self.assertEqual(products[0]["code"], None)
+        self.assertEqual(products[0]["name"], "Service 01")
 
     def test_get_products_returns_403_when_no_active_sessions(self):
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 403)
 
 
-class LocationsListTests(SubmissionsMixin, TestCase):
+class LocationsListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         cls.submission = SubmissionFactory.create()
         cls.endpoint = reverse("api:appointments-locations-list")
 
-        appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.plugin = "jcc"
-        appointments_config.save()
-
-        config = JccConfig.get_solo()
-        wsdl = os.path.abspath(
-            os.path.join(
-                settings.DJANGO_PROJECT_DIR,
-                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
-            )
-        )
-        config.service = SoapServiceFactory.create(url=wsdl)
-        config.save()
+        config = QmaticConfigFactory.create()
+        cls.api_root = config.service.api_root
 
     def setUp(self):
         super().setUp()
@@ -87,18 +64,20 @@ class LocationsListTests(SubmissionsMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_get_locations_returns_all_locations_for_a_product(self, m):
-        m.post(
-            "http://example.com/soap11",
-            text=mock_response("getGovLocationsForProductResponse.xml"),
+        m.get(
+            f"{self.api_root}services/54b3482204c11bedc8b0a7acbffa308/branches",
+            text=mock_response("branches.json"),
         )
 
-        response = self.client.get(f"{self.endpoint}?product_id=79")
+        response = self.client.get(
+            f"{self.endpoint}?product_id=54b3482204c11bedc8b0a7acbffa308"
+        )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 1)
-        location = response.json()[0]
-        self.assertEqual(location["identifier"], "1")
-        self.assertEqual(location["name"], "Maykin Media")
+        locations = response.json()
+        self.assertEqual(len(locations), 2)
+        self.assertEqual(locations[0]["identifier"], "f364d92b7fa07a48c4ecc862de30c47")
+        self.assertEqual(locations[0]["name"], "Branch 1")
 
     def test_get_locations_returns_400_when_no_product_id_is_given(self):
         response = self.client.get(self.endpoint)
@@ -108,29 +87,22 @@ class LocationsListTests(SubmissionsMixin, TestCase):
 
     def test_get_locations_returns_403_when_no_active_sessions(self):
         self._clear_session()
-        response = self.client.get(f"{self.endpoint}?product_id=1&location_id=1")
+        response = self.client.get(
+            f"{self.endpoint}?product_id=54b3482204c11bedc8b0a7acbffa308"
+        )
         self.assertEqual(response.status_code, 403)
 
 
-class DatesListTests(SubmissionsMixin, TestCase):
+class DatesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         cls.submission = SubmissionFactory.create()
         cls.endpoint = reverse("api:appointments-dates-list")
 
-        appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.plugin = "jcc"
-        appointments_config.save()
-
-        config = JccConfig.get_solo()
-        wsdl = os.path.abspath(
-            os.path.join(
-                settings.DJANGO_PROJECT_DIR,
-                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
-            )
-        )
-        config.service = SoapServiceFactory.create(url=wsdl)
-        config.save()
+        config = QmaticConfigFactory.create()
+        cls.api_root = config.service.api_root
 
     def setUp(self):
         super().setUp()
@@ -138,20 +110,19 @@ class DatesListTests(SubmissionsMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_get_dates_returns_all_dates_for_a_give_location_and_product(self, m):
-        m.post(
-            "http://example.com/soap11",
-            [
-                {"text": mock_response("getGovLatestPlanDateResponse.xml")},
-                {"text": mock_response("getGovAvailableDaysResponse.xml")},
-            ],
+        m.get(
+            f"{self.api_root}branches/1/services/1/dates",
+            text=mock_response("dates.json"),
         )
 
         response = self.client.get(f"{self.endpoint}?product_id=1&location_id=1")
 
         self.assertEqual(response.status_code, 200)
+        results = response.json()
+        self.assertEqual(len(results), 21)
         self.assertEqual(
-            response.json(),
-            [{"date": "2021-08-19"}, {"date": "2021-08-20"}, {"date": "2021-08-23"}],
+            results[0],
+            {"date": "2016-11-08"},
         )
 
     def test_get_dates_returns_400_when_missing_query_params(self):
@@ -167,25 +138,16 @@ class DatesListTests(SubmissionsMixin, TestCase):
         self.assertEqual(response.status_code, 403)
 
 
-class TimesListTests(SubmissionsMixin, TestCase):
+class TimesListTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
+        super().setUpTestData()
+
         cls.submission = SubmissionFactory.create()
         cls.endpoint = reverse("api:appointments-times-list")
 
-        appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.plugin = "jcc"
-        appointments_config.save()
-
-        config = JccConfig.get_solo()
-        wsdl = os.path.abspath(
-            os.path.join(
-                settings.DJANGO_PROJECT_DIR,
-                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
-            )
-        )
-        config.service = SoapServiceFactory.create(url=wsdl)
-        config.save()
+        config = QmaticConfigFactory.create()
+        cls.api_root = config.service.api_root
 
     def setUp(self):
         super().setUp()
@@ -193,19 +155,19 @@ class TimesListTests(SubmissionsMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_get_times_returns_all_times_for_a_give_location_product_and_date(self, m):
-
-        m.post(
-            "http://example.com/soap11",
-            text=mock_response("getGovAvailableTimesPerDayResponse.xml"),
+        m.get(
+            f"{self.api_root}branches/1/services/1/dates/2016-12-06/times",
+            text=mock_response("times.json"),
         )
 
         response = self.client.get(
-            f"{self.endpoint}?product_id=1&location_id=1&date=2021-8-23"
+            f"{self.endpoint}?product_id=1&location_id=1&date=2016-12-06"
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 106)
-        self.assertEqual(response.json()[0], {"time": "2021-08-23T08:00:00+02:00"})
+        results = response.json()
+        self.assertEqual(len(results), 16)
+        self.assertEqual(results[0], {"time": "2016-12-06T09:00:00+01:00"})
 
     def test_get_times_returns_400_when_missing_query_params(self):
         for query_param in [
@@ -224,46 +186,38 @@ class TimesListTests(SubmissionsMixin, TestCase):
     def test_get_times_returns_403_when_no_active_sessions(self):
         self._clear_session()
         response = self.client.get(
-            f"{self.endpoint}?product_id=1&location_id=1&date=2021-8-23"
+            f"{self.endpoint}?product_id=1&location_id=1&date=2016-12-06"
         )
         self.assertEqual(response.status_code, 403)
 
 
-class CancelAppointmentTests(SubmissionsMixin, TestCase):
+class CancelAppointmentTests(MockConfigMixin, SubmissionsMixin, APITestCase):
     @classmethod
     def setUpTestData(cls):
-        appointments_config = AppointmentsConfig.get_solo()
-        appointments_config.plugin = "jcc"
-        appointments_config.save()
+        super().setUpTestData()
 
-        config = JccConfig.get_solo()
-        wsdl = os.path.abspath(
-            os.path.join(
-                settings.DJANGO_PROJECT_DIR,
-                "appointments/contrib/jcc/tests/mock/GenericGuidanceSystem2.wsdl",
-            )
-        )
-        config.service = SoapServiceFactory.create(url=wsdl)
-        config.save()
+        config = QmaticConfigFactory.create()
+        cls.api_root = config.service.api_root
 
     @requests_mock.Mocker()
-    def test_cancel_appointment_cancels_the_appointment(self, m):
+    def test_cancel_appointment_deletes_the_appointment(self, m):
         submission = SubmissionFactory.from_components(
             components_list=[
                 {"key": "email", "label": "Email", "confirmationRecipient": True}
             ],
             submitted_data={"email": "maykin@media.nl"},
         )
-        AppointmentInfoFactory.create(submission=submission)
+
+        identifier = "123456789"
+        AppointmentInfoFactory.create(submission=submission, appointment_id=identifier)
         self._add_submission_to_session(submission)
         endpoint = reverse(
             "api:appointments-cancel",
             kwargs={"submission_uuid": submission.uuid},
         )
 
-        m.post(
-            "http://example.com/soap11",
-            text=mock_response("deleteGovAppointmentResponse.xml"),
+        m.delete(
+            f"{self.api_root}appointments/{identifier}",
         )
 
         data = {
@@ -293,23 +247,21 @@ class CancelAppointmentTests(SubmissionsMixin, TestCase):
 
     @requests_mock.Mocker()
     def test_cancel_appointment_properly_handles_plugin_exception(self, m):
+        identifier = "123456789"
         submission = SubmissionFactory.from_components(
             components_list=[
                 {"key": "email", "label": "Email", "confirmationRecipient": True}
             ],
             submitted_data={"email": "maykin@media.nl"},
         )
-        AppointmentInfoFactory.create(submission=submission)
+        AppointmentInfoFactory.create(submission=submission, appointment_id=identifier)
         self._add_submission_to_session(submission)
         endpoint = reverse(
             "api:appointments-cancel",
             kwargs={"submission_uuid": submission.uuid},
         )
 
-        m.post(
-            "http://example.com/soap11",
-            exc=ZeepError,
-        )
+        m.delete(f"{self.api_root}appointments/{identifier}", exc=QmaticException)
 
         data = {
             "email": "maykin@media.nl",
