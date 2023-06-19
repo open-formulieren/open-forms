@@ -135,25 +135,7 @@ class ObjectsAPIRegistration(BasePlugin):
 
         templates = get_registration_json_templates(submission)
 
-        base_render_context = {
-            "_submission": submission,
-            **get_variables_for_context(submission),
-        }
-
-        record_data = {
-            "data": render_from_string(
-                templates,
-                context={**base_render_context},
-                disable_autoescape=True,
-                backend=openforms_backend,
-            ),
-            "type": options["productaanvraag_type"],
-            "submission_id": str(submission.uuid),
-            "language_code": submission.language_code,
-            "attachments": attachments,
-            "pdf_url": document["url"],
-        }
-
+        csv_url: str = ""
         if (
             options.get("upload_submission_csv", False)
             and options["informatieobjecttype_submission_csv"]
@@ -178,7 +160,29 @@ class ObjectsAPIRegistration(BasePlugin):
                 get_drc=get_drc,
                 language=language_code_2b,
             )
-            record_data["csv_url"] = submission_csv_document["url"]
+            csv_url = submission_csv_document["url"]
+
+        base_render_context = {
+            "_submission": submission,
+            **get_variables_for_context(submission),
+            "type": options["productaanvraag_type"],
+            "submission": {
+                "uuid": submission.uuid,
+                "language_code": submission.language_code,
+                "attachments": attachments,
+                "pdf_url": document["url"],
+                "csv_url": csv_url,
+            },
+        }
+
+        record_data = {
+            "data": render_from_string(
+                templates,
+                context={**base_render_context},
+                disable_autoescape=True,
+                backend=openforms_backend,
+            ),
+        }
 
         if submission.is_authenticated:
             record_data[submission.auth_info.attribute] = submission.auth_info.value

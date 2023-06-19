@@ -121,7 +121,7 @@ class ObjectsAPIConfig(SingletonModel):
             JsonTemplateValidator(max_length=300),
         ],
         blank=True,
-        default=dict,
+        default=get_content_text,
     )
 
     class Meta:

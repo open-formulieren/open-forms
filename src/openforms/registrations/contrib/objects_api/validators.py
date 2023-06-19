@@ -10,8 +10,7 @@ from openforms.registrations.contrib.objects_api.constants import (
 
 from rest_framework import serializers
 
-from openforms.template import render_from_string
-from openforms.template.backends.sandboxed_django import get_openforms_backend
+from openforms.template import render_from_string, openforms_backend
 
 
 @deconstructible
@@ -21,7 +20,7 @@ class JsonTemplateValidator:
     def __init__(
         self,
         max_length: int | None = None,
-        backend: str = get_openforms_backend(),
+        backend: str = openforms_backend,
         error_type: JsonTemplateValidatorErrorTypes.choices = JsonTemplateValidatorErrorTypes.model,
     ):
         self.max_length = max_length
