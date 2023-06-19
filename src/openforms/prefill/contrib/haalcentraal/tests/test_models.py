@@ -1,15 +1,13 @@
+from typing import Literal
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import SimpleTestCase
 
 from zgw_consumers.models import Service
 
-from openforms.prefill.contrib.haalcentraal.client import (
-    HaalCentraalV1Client,
-    HaalCentraalV2Client,
-)
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 
+from ..client import HaalCentraalClient, HaalCentraalV1Client, HaalCentraalV2Client
 from ..constants import Attributes, AttributesV2, HaalCentraalVersion
 from ..models import HaalCentraalConfig
 
@@ -25,9 +23,11 @@ class HaalCentraalModelTests:
     """
 
     # specify in subclasses
-    version: HaalCentraalVersion | None = None
+    version: HaalCentraalVersion | Literal[""]
+    expected_client_class: type[HaalCentraalClient] | type[None]
+    expected_attributes: type[Attributes] | type[AttributesV2]
 
-    # set in setUP
+    # set in setUp
     service: Service | None = None
     config: HaalCentraalConfig
 
@@ -46,62 +46,44 @@ class HaalCentraalModelTests:
         self.config_mock = config_patcher.start()
         self.addCleanup(config_patcher.stop)  # type: ignore
 
-    def build_client_test(self):
+    def test_build_client(self):
         client = self.config.build_client()
-        self.assertIsInstance(client, self.client)
 
-    def get_attributes_test(self):
+        self.assertIsInstance(client, self.expected_client_class)  # type: ignore
+
+    def test_get_attributes(self):
         attributes = self.config.get_attributes()
-        self.assertEqual(attributes, self.attributes)
+
+        self.assertEqual(attributes, self.expected_attributes)  # type: ignore
 
 
-class HaalCentraalModelV1Tests(HaalCentraalModelTests, TestCase):
+class HaalCentraalModelV1Tests(HaalCentraalModelTests, SimpleTestCase):
     version = HaalCentraalVersion.haalcentraal13
+    expected_client_class = HaalCentraalV1Client
+    expected_attributes = Attributes
 
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-
-        cls.service = ServiceFactory.create(
+    def setUp(self):
+        self.service = ServiceFactory.build(
             api_root="https://personen/api/",
             oas="https://personen/api/schema/openapi.yaml",
         )
-
-    def test_build_client(self):
-        self.client = HaalCentraalV1Client
-        super().build_client_test()
-
-    def test_get_attributes(self):
-        self.attributes = Attributes
-        super().get_attributes_test()
+        super().setUp()
 
 
-class HaalCentraalModelV2Tests(HaalCentraalModelTests, TestCase):
+class HaalCentraalModelV2Tests(HaalCentraalModelTests, SimpleTestCase):
     version = HaalCentraalVersion.haalcentraal20
+    expected_client_class = HaalCentraalV2Client
+    expected_attributes = AttributesV2
 
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-
-        cls.service = ServiceFactory.create(
+    def setUp(self):
+        self.service = ServiceFactory.build(
             api_root="https://personen/api/",
             oas="https://personen/api/schema/openapi.yaml",
         )
-
-    def test_build_client(self):
-        self.client = HaalCentraalV2Client
-        super().build_client_test()
-
-    def test_get_attributes(self):
-        self.attributes = AttributesV2
-        super().get_attributes_test()
+        super().setUp()
 
 
-class HaalCentraalModelNoServiceTests(HaalCentraalModelTests, TestCase):
-    def test_build_client(self):
-        self.client = type(None)
-        super().build_client_test()
-
-    def test_get_attributes(self):
-        self.attributes = Attributes
-        super().get_attributes_test()
+class HaalCentraalModelNoServiceTests(HaalCentraalModelTests, SimpleTestCase):
+    version = ""
+    expected_client_class = type(None)
+    expected_attributes = Attributes

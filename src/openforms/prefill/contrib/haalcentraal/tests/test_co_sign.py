@@ -31,14 +31,12 @@ class CoSignPrefillTests:
     """
 
     # specify in subclasses
-    version: HaalCentraalVersion | None = None
-    schema_yaml_name: Literal["personen", "personen-v2"] | None = None
+    version: HaalCentraalVersion
+    schema_yaml_name: Literal["personen", "personen-v2"]
 
-    # set in setUP
-    service: Service = None
+    # set in setUp
+    service: Service
     config: HaalCentraalConfig
-
-    expected: any
 
     def setUp(self):
         super().setUp()  # type: ignore
@@ -49,13 +47,10 @@ class CoSignPrefillTests:
             return_value=PrefillConfig(default_person_plugin=plugin.identifier),
         )
         co_sign_config_patcher.start()
-        self.addCleanup(co_sign_config_patcher.stop)
+        self.addCleanup(co_sign_config_patcher.stop)  # type: ignore
 
         # set up patcher for the configuration
-        self.config = HaalCentraalConfig(
-            version=self.version,
-            service=self.service,
-        )
+        self.config = HaalCentraalConfig(version=self.version, service=self.service)
         haalcentraal_config_patcher = patch(
             "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
             return_value=self.config,
@@ -64,18 +59,17 @@ class CoSignPrefillTests:
         self.addCleanup(haalcentraal_config_patcher.stop)  # type: ignore
 
         # prepare a requests mock instance to wire up the mocks
-        if self.schema_yaml_name:
-            self.requests_mock = requests_mock.Mocker()
-            self.requests_mock.start()
-            mock_service_oas_get(
-                self.requests_mock,
-                url=self.service.api_root,
-                service=self.schema_yaml_name,
-                oas_url=self.service.oas,
-            )
-            self.addCleanup(self.requests_mock.stop)  # type: ignore
+        self.requests_mock = requests_mock.Mocker()
+        self.requests_mock.start()
+        mock_service_oas_get(
+            self.requests_mock,
+            url=self.service.api_root,
+            service=self.schema_yaml_name,
+            oas_url=self.service.oas,
+        )
+        self.addCleanup(self.requests_mock.stop)  # type: ignore
 
-    def store_names_on_co_sign_auth_test(self):
+    def test_store_names_on_co_sign_auth(self):
         submission = SubmissionFactory.create(
             co_sign_data={
                 "plugin": plugin.identifier,
@@ -87,9 +81,20 @@ class CoSignPrefillTests:
         add_co_sign_representation(submission, plugin.requires_auth)
 
         submission.refresh_from_db()
-        self.assertEqual(submission.co_sign_data, self.expected)
+        expected = {
+            "plugin": plugin.identifier,
+            "identifier": "999990676",
+            "representation": "C. F. Wiegman",
+            "fields": {
+                "naam.voornamen": "Cornelia Francisca",
+                "naam.voorvoegsel": "",
+                "naam.voorletters": "C. F.",
+                "naam.geslachtsnaam": "Wiegman",
+            },
+        }
+        self.assertEqual(submission.co_sign_data, expected)  # type: ignore
 
-    def incomplete_data_returned_test(self):
+    def test_incomplete_data_returned(self):
         submission = SubmissionFactory.create(
             co_sign_data={
                 "plugin": plugin.identifier,
@@ -101,7 +106,13 @@ class CoSignPrefillTests:
         add_co_sign_representation(submission, plugin.requires_auth)
 
         submission.refresh_from_db()
-        self.assertEqual(submission.co_sign_data, self.expected)
+        expected = {
+            "plugin": plugin.identifier,
+            "identifier": "999990676",
+            "representation": "",
+            "fields": {},
+        }
+        self.assertEqual(submission.co_sign_data, expected)  # type: ignore
 
 
 class CoSignPrefillV1Tests(CoSignPrefillTests, TestCase):
@@ -117,36 +128,21 @@ class CoSignPrefillV1Tests(CoSignPrefillTests, TestCase):
             oas="https://personen/api/schema/openapi.yaml",
         )
 
-    @patch(
-        "openforms.prefill.contrib.haalcentraal.client.HaalCentraalV1Client.find_person",
-        return_value=load_json_mock("ingeschrevenpersonen.v1-full.json"),
-    )
-    def test_store_names_on_co_sign_auth(self, mock_find_person):
-        self.expected = {
-            "plugin": plugin.identifier,
-            "identifier": "999990676",
-            "representation": "C. F. Wiegman",
-            "fields": {
-                "naam.voornamen": "Cornelia Francisca",
-                "naam.voorvoegsel": "",
-                "naam.voorletters": "C. F.",
-                "naam.geslachtsnaam": "Wiegman",
-            },
-        }
-        super().store_names_on_co_sign_auth_test()
+    def test_store_names_on_co_sign_auth(self):
+        self.requests_mock.get(
+            "https://personen/api/ingeschrevenpersonen/999990676",
+            status_code=200,
+            json=load_json_mock("ingeschrevenpersonen.v1-full.json"),
+        )
+        super().test_store_names_on_co_sign_auth()
 
-    @patch(
-        "openforms.prefill.contrib.haalcentraal.client.HaalCentraalV1Client.find_person",
-        return_value=load_json_mock("ingeschrevenpersonen.v1-incomplete.json"),
-    )
-    def test_incomplete_data_returned(self, mock_find_person):
-        self.expected = {
-            "plugin": plugin.identifier,
-            "identifier": "999990676",
-            "representation": "",
-            "fields": {},
-        }
-        super().incomplete_data_returned_test()
+    def test_incomplete_data_returned(self):
+        self.requests_mock.get(
+            "https://personen/api/ingeschrevenpersonen/999990676",
+            status_code=200,
+            json=load_json_mock("ingeschrevenpersonen.v1-incomplete.json"),
+        )
+        super().test_incomplete_data_returned()
 
 
 class CoSignPrefillV2Tests(CoSignPrefillTests, TestCase):
@@ -162,58 +158,59 @@ class CoSignPrefillV2Tests(CoSignPrefillTests, TestCase):
             oas="https://personen/api/schema/openapi.yaml",
         )
 
-    @patch(
-        "openforms.prefill.contrib.haalcentraal.client.HaalCentraalV2Client.find_person",
-        return_value=load_json_mock(
-            "ingeschrevenpersonen.v2-full-find-personen-response.json"
-        ),
-    )
-    def test_store_names_on_co_sign_auth(self, mock_find_person):
-        self.expected = {
-            "plugin": plugin.identifier,
-            "identifier": "999990676",
-            "representation": "C. F. Wiegman",
-            "fields": {
-                "naam.voornamen": "Cornelia Francisca",
-                "naam.voorvoegsel": "",
-                "naam.voorletters": "C. F.",
-                "naam.geslachtsnaam": "Wiegman",
-            },
-        }
-        super().store_names_on_co_sign_auth_test()
-
-    @patch(
-        "openforms.prefill.contrib.haalcentraal.client.HaalCentraalV2Client.find_person",
-        return_value=load_json_mock(
-            "ingeschrevenpersonen.v2-incomplete-find-personen-response.json"
-        ),
-    )
-    def test_incomplete_data_returned(self, mock_find_person):
-        self.expected = {
-            "plugin": plugin.identifier,
-            "identifier": "999990676",
-            "representation": "",
-            "fields": {},
-        }
-
-        super().incomplete_data_returned_test()
-
-
-class CoSignPrefillNoConfigTests(CoSignPrefillTests, TestCase):
     def test_store_names_on_co_sign_auth(self):
-        self.expected = {
-            "plugin": plugin.identifier,
-            "identifier": "999990676",
-            "representation": "",
-            "fields": {},
-        }
-        super().store_names_on_co_sign_auth_test()
+        self.requests_mock.post(
+            "https://personen/api/personen",
+            status_code=200,
+            json=load_json_mock("ingeschrevenpersonen.v2-full.json"),
+        )
+        super().test_store_names_on_co_sign_auth()
 
     def test_incomplete_data_returned(self):
-        self.expected = {
+        self.requests_mock.post(
+            "https://personen/api/personen",
+            status_code=200,
+            json=load_json_mock("ingeschrevenpersonen.v2-incomplete.json"),
+        )
+        super().test_incomplete_data_returned()
+
+
+class CoSignPrefillEmptyConfigTests(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        # mock out django-solo interface (we don't have to deal with caches then)
+        self.config = HaalCentraalConfig(version="", service=None)
+        config_patcher = patch(
+            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            return_value=self.config,
+        )
+        self.config_mock = config_patcher.start()
+        self.addCleanup(config_patcher.stop)  # type: ignore
+
+        co_sign_config_patcher = patch(
+            "openforms.prefill.co_sign.PrefillConfig.get_solo",
+            return_value=PrefillConfig(default_person_plugin=plugin.identifier),
+        )
+        co_sign_config_patcher.start()
+        self.addCleanup(co_sign_config_patcher.stop)  # type: ignore
+
+    def test_store_names_on_co_sign_auth(self):
+        submission = SubmissionFactory.create(
+            co_sign_data={
+                "plugin": plugin.identifier,
+                "identifier": "999990676",
+                "fields": {},
+            }
+        )
+
+        add_co_sign_representation(submission, plugin.requires_auth)
+
+        submission.refresh_from_db()
+        expected = {
             "plugin": plugin.identifier,
             "identifier": "999990676",
             "representation": "",
             "fields": {},
         }
-        super().incomplete_data_returned_test()
+        self.assertEqual(submission.co_sign_data, expected)

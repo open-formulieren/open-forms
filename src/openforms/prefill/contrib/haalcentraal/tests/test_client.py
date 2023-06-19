@@ -1,7 +1,7 @@
 from typing import Literal
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import SimpleTestCase
 
 import requests_mock
 from glom import glom
@@ -21,7 +21,7 @@ class HaalCentraalFindPersonTests:
 
     All client versions must support this set of functionality.
 
-    You must implement the classmethod ``setUpTestData`` to create the relevant service,
+    You must implement the classmethod ``setUp`` to create the relevant service,
     for which you can then mock the API calls.
     """
 
@@ -29,7 +29,7 @@ class HaalCentraalFindPersonTests:
     version: HaalCentraalVersion
     schema_yaml_name: Literal["personen", "personen-v2"]
 
-    # set in setUP
+    # set in setUp
     service: Service
     config: HaalCentraalConfig
 
@@ -49,7 +49,7 @@ class HaalCentraalFindPersonTests:
         self.addCleanup(config_patcher.stop)  # type: ignore
 
         # prepare a requests mock instance to wire up the mocks
-        self.requests_mock = requests_mock.Mocker(real_http=True)
+        self.requests_mock = requests_mock.Mocker()
         self.requests_mock.start()
         mock_service_oas_get(
             self.requests_mock,
@@ -59,7 +59,7 @@ class HaalCentraalFindPersonTests:
         )
         self.addCleanup(self.requests_mock.stop)  # type: ignore
 
-    def find_person_succesfully_test(self):
+    def test_find_person_succesfully(self):
         attributes = self.config.get_attributes()
         client = self.config.build_client()
         assert client is not None
@@ -74,7 +74,7 @@ class HaalCentraalFindPersonTests:
         }
         self.assertEqual(values, expected)  # type: ignore
 
-    def find_person_unsuccesfully_test(self):
+    def test_find_person_unsuccesfully(self):
         attributes = self.config.get_attributes()
         client = self.config.build_client()
         assert client is not None
@@ -84,19 +84,34 @@ class HaalCentraalFindPersonTests:
 
         self.assertIsNone(raw_data)  # type: ignore
 
+    def test_find_person_server_error(self):
+        attributes = self.config.get_attributes()
+        client = self.config.build_client()
+        assert client is not None
+        self.requests_mock.register_uri(
+            requests_mock.ANY,
+            requests_mock.ANY,
+            additional_matcher=lambda request: "openapi.yaml" not in request.url,
+            # additional_matcher=lambda request: "yaml" not in request.url,
+            status_code=500,
+        )
 
-class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, TestCase):
+        attributes = [attributes.naam_voornamen, attributes.naam_geslachtsnaam]
+        raw_data = client.find_person(bsn="999990676", attributes=attributes)
+
+        self.assertIsNone(raw_data)  # type: ignore
+
+
+class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, SimpleTestCase):
     version = HaalCentraalVersion.haalcentraal13
     schema_yaml_name = "personen"
 
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-
-        cls.service = ServiceFactory.create(
+    def setUp(self):
+        self.service = ServiceFactory.build(
             api_root="https://personen/api/",
             oas="https://personen/api/schema/openapi.yaml",
         )
+        super().setUp()
 
     def test_find_person_succesfully(self):
         self.requests_mock.get(
@@ -104,64 +119,44 @@ class HaalCentraalFindPersonV1Test(HaalCentraalFindPersonTests, TestCase):
             status_code=200,
             json=load_json_mock("ingeschrevenpersonen.v1.json"),
         )
-        super().find_person_unsuccesfully_test()
+        super().test_find_person_succesfully()
 
-    def test_find_person_unsuccesfully_resulting_in_500(self):
+    def test_find_person_unsuccesfully(self):
         self.requests_mock.get(
-            "https://personen/api/ingeschrevenpersonen/999990676",
-            status_code=500,
+            "https://personen/api/ingeschrevenpersonen/999990676", status_code=404
         )
-        super().find_person_unsuccesfully_test()
-
-    def test_find_person_succesfully(self):
-        self.requests_mock.get(
-            "https://personen/api/ingeschrevenpersonen/999990676",
-            status_code=404,
-        )
-        super().find_person_unsuccesfully_test()
+        super().test_find_person_unsuccesfully()
 
 
-class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, TestCase):
+class HaalCentraalFindPersonV2Test(HaalCentraalFindPersonTests, SimpleTestCase):
     version = HaalCentraalVersion.haalcentraal20
     schema_yaml_name = "personen-v2"
 
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-
-        cls.service = ServiceFactory.create(
+    def setUp(self):
+        self.service = ServiceFactory.build(
             api_root="https://personen/api/",
             oas="https://personen/api/schema/openapi.yaml",
         )
+        super().setUp()
 
     def test_find_person_succesfully(self):
         self.requests_mock.post(
-            "https://personen/api/",
+            "https://personen/api/personen",
             status_code=200,
             json=load_json_mock("ingeschrevenpersonen.v2-full.json"),
         )
-        super().find_person_unsuccesfully_test()
+        super().test_find_person_succesfully()
+
+    def test_find_person_unsuccesfully(self):
+        self.requests_mock.post("https://personen/api/personen", status_code=404)
+        super().test_find_person_unsuccesfully()
 
     def test_find_person_without_personen_key(self):
         self.requests_mock.post(
-            "https://personen/api/",
+            "https://personen/api/personen",
             status_code=200,
             json=load_json_mock(
                 "ingeschrevenpersonen.v2-full-find-personen-response.json"
             ),
         )
-        super().find_person_unsuccesfully_test()
-
-    def test_find_person_unsuccesfully_resulting_in_500(self):
-        self.requests_mock.post(
-            "https://personen/",
-            status_code=500,
-        )
-        super().find_person_unsuccesfully_test()
-
-    def test_find_person_succesfully(self):
-        self.requests_mock.post(
-            "https://personen/",
-            status_code=404,
-        )
-        super().find_person_unsuccesfully_test()
+        super().test_find_person_unsuccesfully()

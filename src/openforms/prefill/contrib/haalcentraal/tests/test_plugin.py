@@ -1,20 +1,50 @@
 from typing import Literal
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 
 import requests_mock
 from glom import glom
 from zgw_consumers.models import Service
 from zgw_consumers.test import mock_service_oas_get
 
-from openforms.prefill.contrib.haalcentraal.plugin import HaalCentraalPrefill
 from openforms.registrations.contrib.zgw_apis.tests.factories import ServiceFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 
-from ..constants import HaalCentraalVersion
-from ..models import HaalCentraalConfig
+from ..constants import Attributes, HaalCentraalVersion
+from ..models import VERSION_TO_ATTRIBUTES_MAP, HaalCentraalConfig
+from ..plugin import HaalCentraalPrefill
 from .utils import load_json_mock
+
+
+class AttributeResolutionTests(SimpleTestCase):
+    def test_defined_attributes_paths_resolve(self):
+        """
+        Test that the attributes constant is compatible with the response data.
+        """
+        mock_files = {
+            HaalCentraalVersion.haalcentraal13: "ingeschrevenpersonen.v1-full.json",
+            HaalCentraalVersion.haalcentraal20: "ingeschrevenpersonen.v2-full-find-personen-response.json",
+        }
+
+        for version, attributes in VERSION_TO_ATTRIBUTES_MAP.items():
+            with self.subTest(version=version):
+                data = load_json_mock(mock_files[version])
+                for key in sorted(attributes):
+                    with self.subTest(key):
+                        glom(data, key)
+
+    def test_get_available_attributes(self):
+        service = ServiceFactory.build()
+        for version in HaalCentraalVersion:
+            with self.subTest(version=version):
+                config = HaalCentraalConfig(version=version, service=service)
+
+                attrs = config.get_attributes().choices
+
+                self.assertIsInstance(attrs, list)  # type: ignore
+                self.assertIsInstance(attrs[0], tuple)  # type: ignore
+                self.assertEqual(len(attrs[0]), 2)  # type: ignore
 
 
 class HaalCentraalPluginTests:
@@ -28,23 +58,18 @@ class HaalCentraalPluginTests:
     """
 
     # specify in subclasses
-    version: HaalCentraalVersion | None = None
-    schema_yaml_name: Literal["personen", "personen-v2"] | None = None
+    version: HaalCentraalVersion
+    schema_yaml_name: Literal["personen", "personen-v2"]
 
-    # set in setUP
-    service: Service | None = None
+    # set in setUp
+    service: Service
     config: HaalCentraalConfig
-
-    expected: any
 
     def setUp(self):
         super().setUp()  # type: ignore
 
         # set up patcher for the configuration
-        self.config = HaalCentraalConfig(
-            version=self.version,
-            service=self.service,
-        )
+        self.config = HaalCentraalConfig(version=self.version, service=self.service)
         config_patcher = patch(
             "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
             return_value=self.config,
@@ -53,43 +78,52 @@ class HaalCentraalPluginTests:
         self.addCleanup(config_patcher.stop)  # type: ignore
 
         # prepare a requests mock instance to wire up the mocks
-        if self.schema_yaml_name:
-            self.requests_mock = requests_mock.Mocker(real_http=True)
-            self.requests_mock.start()
-            mock_service_oas_get(
-                self.requests_mock,
-                url=self.service.api_root,
-                service=self.schema_yaml_name,
-                oas_url=self.service.oas,
-            )
-            self.addCleanup(self.requests_mock.stop)  # type: ignore
+        self.requests_mock = requests_mock.Mocker()
 
-    def defined_attributes_paths_resolve_test(self):
+        self.requests_mock.start()
+        mock_service_oas_get(
+            self.requests_mock,
+            url=self.service.api_root,
+            service=self.schema_yaml_name,
+            oas_url=self.service.oas,
+        )
+        self.addCleanup(self.requests_mock.stop)  # type: ignore
+
+    def test_get_available_attributes(self):
+        attributes = HaalCentraalPrefill.get_available_attributes()
+
+        expected = VERSION_TO_ATTRIBUTES_MAP[self.version].choices
+        self.assertEqual(attributes, expected)  # type: ignore
+
+    def test_prefill_values(self):
         attributes = self.config.get_attributes()
 
-        data = load_json_mock(self.ingeschrevenpersonen)
-        for key, label in sorted(attributes.choices, key=lambda o: o[0]):
-            with self.subTest(key):
-                glom(data, key)  # type: ignore
-
-    def prefill_values_test(self):
-        attributes = self.config.get_attributes()
-
-        submission = SubmissionFactory(auth_info__value="999990676")
+        submission = SubmissionFactory.create(auth_info__value="999990676")
+        assert submission.is_authenticated
         values = HaalCentraalPrefill.get_prefill_values(
             submission,
-            [attributes.naam_voornamen, attributes.naam_geslachtsnaam],
+            attributes=[attributes.naam_voornamen, attributes.naam_geslachtsnaam],
         )
-        self.assertEqual(values, self.expected)  # type: ignore
+        expected = {
+            "naam.voornamen": "Cornelia Francisca",
+            "naam.geslachtsnaam": "Wiegman",
+        }
+        self.assertEqual(values, expected)  # type: ignore
 
-    def attributes_values_test(self):
-        attrs = HaalCentraalPrefill.get_available_attributes()
-        self.assertIsInstance(attrs, list)  # type: ignore
-        self.assertIsInstance(attrs[0], tuple)  # type: ignore
-        self.assertEqual(len(attrs[0]), 2)  # type: ignore
+    def test_person_not_found_returns_empty(self):
+        attributes = self.config.get_attributes()
+        submission = SubmissionFactory.create(auth_info__value="999990676")
+        assert submission.is_authenticated
+
+        values = HaalCentraalPrefill.get_prefill_values(
+            submission,
+            attributes=[attributes.naam_voornamen, attributes.naam_geslachtsnaam],
+        )
+
+        self.assertEqual(values, {})  # type: ignore
 
 
-class HaalCentraalFindPersonV1Test(HaalCentraalPluginTests, TestCase):
+class HaalCentraalFindPersonV1Tests(HaalCentraalPluginTests, TestCase):
     version = HaalCentraalVersion.haalcentraal13
     schema_yaml_name = "personen"
 
@@ -102,34 +136,23 @@ class HaalCentraalFindPersonV1Test(HaalCentraalPluginTests, TestCase):
             oas="https://personen/api/schema/openapi.yaml",
         )
 
-    @patch(
-        "openforms.prefill.contrib.haalcentraal.client.HaalCentraalV1Client.find_person",
-        return_value=load_json_mock("ingeschrevenpersonen.v1-full.json"),
-    )
-    def test_prefill_returns_values(self, mock_find_person):
-        self.expected = {
-            "naam.voornamen": "Cornelia Francisca",
-            "naam.geslachtsnaam": "Wiegman",
-        }
-        super().prefill_values_test()
+    def test_prefill_values(self):
+        self.requests_mock.get(
+            "https://personen/api/ingeschrevenpersonen/999990676",
+            status_code=200,
+            json=load_json_mock("ingeschrevenpersonen.v1-full.json"),
+        )
+        super().test_prefill_values()
 
-    @patch(
-        "openforms.prefill.contrib.haalcentraal.client.HaalCentraalV1Client.find_person",
-        return_value={},
-    )
-    def test_prefill_find_person_returns_empty(self, mock_find_person):
-        self.expected = {}
-        super().prefill_values_test()
-
-    def test_defined_attributes_paths_resolve(self):
-        self.ingeschrevenpersonen = "ingeschrevenpersonen.v1-full.json"
-        super().defined_attributes_paths_resolve_test()
-
-    def test_attributes(self):
-        super().attributes_values_test()
+    def test_person_not_found_returns_empty(self):
+        self.requests_mock.get(
+            "https://personen/api/ingeschrevenpersonen/999990676",
+            status_code=404,
+        )
+        super().test_person_not_found_returns_empty()
 
 
-class HaalCentraalFindPersonV2Test(HaalCentraalPluginTests, TestCase):
+class HaalCentraalFindPersonV2Tests(HaalCentraalPluginTests, TestCase):
     version = HaalCentraalVersion.haalcentraal20
     schema_yaml_name = "personen-v2"
 
@@ -142,41 +165,58 @@ class HaalCentraalFindPersonV2Test(HaalCentraalPluginTests, TestCase):
             oas="https://personen/api/schema/openapi.yaml",
         )
 
-    @patch(
-        "openforms.prefill.contrib.haalcentraal.client.HaalCentraalV2Client.find_person",
-        return_value=load_json_mock(
-            "ingeschrevenpersonen.v2-full-find-personen-response.json"
-        ),
-    )
-    def test_prefill_returns_values(self, mock_find_person):
-        self.expected = {
-            "naam.voornamen": "Cornelia Francisca",
-            "naam.geslachtsnaam": "Wiegman",
-        }
-        super().prefill_values_test()
-
-    @patch(
-        "openforms.prefill.contrib.haalcentraal.client.HaalCentraalV2Client.find_person",
-        return_value={},
-    )
-    def test_prefill_find_person_returns_empty(self, mock_find_person):
-        self.expected = {}
-        super().prefill_values_test()
-
-    def test_defined_attributes_paths_resolve(self):
-        self.ingeschrevenpersonen = (
-            "ingeschrevenpersonen.v2-full-find-personen-response.json"
+    def test_prefill_values(self):
+        self.requests_mock.post(
+            "https://personen/api/personen",
+            status_code=200,
+            json=load_json_mock("ingeschrevenpersonen.v2-full.json"),
         )
-        super().defined_attributes_paths_resolve_test()
+        super().test_prefill_values()
 
-    def test_attributes(self):
-        super().attributes_values_test()
+    def test_person_not_found_returns_empty(self):
+        self.requests_mock.post(
+            "https://personen/api/personen",
+            status_code=200,
+            json={"personen": []},
+        )
+        super().test_person_not_found_returns_empty()
 
 
-class HaalCentraalFindPersonNoConfigTest(HaalCentraalPluginTests, TestCase):
-    def test_prefill_returns_values(self):
-        self.expected = {}
-        super().prefill_values_test()
+class HaalCentraalEmptyConfigTests(TestCase):
+    def setUp(self):
+        super().setUp()
 
-    def test_attributes(self):
-        super().attributes_values_test()
+        self.config = HaalCentraalConfig(version="", service=None)
+        config_patcher = patch(
+            "openforms.prefill.contrib.haalcentraal.plugin.HaalCentraalConfig.get_solo",
+            return_value=self.config,
+        )
+        self.config_mock = config_patcher.start()
+        self.addCleanup(config_patcher.stop)  # type: ignore
+
+    def test_get_available_attributes(self):
+        attributes = HaalCentraalPrefill.get_available_attributes()
+
+        self.assertEqual(attributes, Attributes.choices)
+
+    def test_get_prefill_values(self):
+        attributes = self.config.get_attributes()
+
+        with self.subTest("unauthenticated submission"):
+            submission = SubmissionFactory.build()
+            assert not submission.is_authenticated
+            values = HaalCentraalPrefill.get_prefill_values(
+                submission, attributes=(attributes.naam_voornamen,)
+            )
+
+            self.assertEqual(values, {})
+
+        with self.subTest("authenticated submission"):
+            submission = SubmissionFactory.create(auth_info__value="999990676")
+            assert submission.is_authenticated
+
+            values = HaalCentraalPrefill.get_prefill_values(
+                submission, attributes=(attributes.naam_voornamen,)
+            )
+
+            self.assertEqual(values, {})
