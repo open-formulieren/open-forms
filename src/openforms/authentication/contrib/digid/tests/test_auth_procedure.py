@@ -107,10 +107,14 @@ class AuthenticationStep2Tests(DigiDConfigMixin, TestCase):
         expected_next_path = reverse(
             "authentication:return", kwargs={"slug": form.slug, "plugin_id": "digid"}
         )
-        expected_next = furl(expected_next_path).set({"next": form_url}).url
+        next = furl(furl(response.url).args["next"])
         self.assertEqual(
-            furl("http://testserver/digid/login/").set({"next": expected_next}).url,
-            response.url,
+            next.path,
+            expected_next_path,
+        )
+        self.assertEqual(
+            next.args["next"],
+            form_url,
         )
 
     @freeze_time("2020-04-09T08:31:46Z")
@@ -209,6 +213,38 @@ class AuthenticationStep2Tests(DigiDConfigMixin, TestCase):
         self.assertEqual(
             auth_context_class_ref.text, DigiDAssuranceLevels.substantial.value
         )
+
+    @freeze_time("2020-04-09T08:31:46Z")
+    @patch(
+        "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
+        return_value="ONELOGIN_123456",
+    )
+    def test_authn_request_loa_signatures_expire(self, mock_id):
+        # forms served at form_url may change loa should test that
+        form = FormFactory.create(
+            authentication_backends=["digid"],
+            authentication_backend_options={
+                "digid": {"loa": DigiDAssuranceLevels.substantial}
+            },
+        )
+        form_definition = FormDefinitionFactory.create(login_required=True)
+        FormStepFactory.create(form_definition=form_definition, form=form)
+
+        login_url = reverse(
+            "authentication:start", kwargs={"slug": form.slug, "plugin_id": "digid"}
+        )
+        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
+        form_url = f"https://testserver{form_path}"
+
+        redirect_to_plugin_login_view = self.client.get(
+            f"{login_url}?next={form_url}", follow=False
+        )
+
+        # wait and try to reuse an old signed loa for the same form_url
+        with freeze_time("2020-04-09T09:00:00Z"):
+            response = self.client.get(redirect_to_plugin_login_view.url)
+
+        self.assert_(400 <= response.status_code <= 499)
 
 
 @temp_private_root()
@@ -344,17 +380,16 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, DigiDConfigMixin, TestCas
             form__formstep__form_definition__login_required=True,
             form__slug="myform",
             form__authentication_backends=["digid"],
+            form_url="http://localhost:3000",
         )
         self._add_submission_to_session(submission)
-        form_path = reverse("core:form-detail", kwargs={"slug": submission.form.slug})
-        form_url = furl("http://localhost:3000") / form_path
         login_url = reverse(
             "authentication:start", kwargs={"slug": "myform", "plugin_id": "digid"}
         )
 
         start_response = self.client.get(
             login_url,
-            {"next": form_url, CO_SIGN_PARAMETER: submission.uuid},
+            {"next": submission.form_url, CO_SIGN_PARAMETER: submission.uuid},
             follow=True,
         )
 

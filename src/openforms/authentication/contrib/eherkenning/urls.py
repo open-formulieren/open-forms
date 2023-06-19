@@ -1,9 +1,11 @@
-from django.urls import path, resolve
+from datetime import datetime, timedelta
+
+from django.core.exceptions import SuspiciousOperation
+from django.core.signing import Signer
+from django.urls import path
 
 from digid_eherkenning.views import eHerkenningLoginView as _eHerkenningLoginView
 from furl import furl
-
-from openforms.forms.models import Form
 
 from .views import eHerkenningAssertionConsumerServiceView
 
@@ -13,14 +15,17 @@ app_name = "eherkenning"
 class eHerkenningLoginView(_eHerkenningLoginView):
     def get_level_of_assurance(self):
         return_url = furl(self.request.GET.get("next"))
-        form_path = furl(return_url.args["next"]).path
+        signed_object = Signer().unsign_object(return_url.args["authn"])
+        signature_utc = datetime.fromtimestamp(signed_object["utc"])
+        max_age = timedelta(minutes=15)  # same grace period as a Logius SAML request
 
-        resolver_match = resolve(form_path)
-        form_slug = resolver_match.kwargs.get("slug")
+        if not (
+            signed_object["next"] == return_url.args["next"]  # correct form
+            and (datetime.utcnow() - signature_utc) < max_age  # recent enough
+        ):
+            raise SuspiciousOperation("Invalid Level of Assurance signature")
 
-        form = Form.objects.get(slug=form_slug)
-
-        loa = form.authentication_backend_options.get("eherkenning", {}).get("loa")
+        loa = signed_object["loa"]
         return loa if loa else super().get_level_of_assurance()
 
 
