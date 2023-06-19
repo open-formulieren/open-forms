@@ -74,7 +74,7 @@ jobs:
           result_code=${PIPESTATUS[0]}
           report="$(cat flake8_output.txt)"
           report="${report//$'\n'/'%0A'}"  # escape newlines
-          echo "::set-output name=flake8_output::${report}"
+          echo "flake8_output=${report}" >> $GITHUB_OUTPUT
           exit $result_code
       - name: Emit flake8 flake8 output
         if: ${{ failure() }}
