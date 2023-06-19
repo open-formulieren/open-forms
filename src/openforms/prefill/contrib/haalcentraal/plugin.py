@@ -1,5 +1,6 @@
 import logging
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from collections.abc import Sequence
+from typing import Any, Iterable, Optional
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -22,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 def get_config() -> HaalCentraalConfig | None:
     config = HaalCentraalConfig.get_solo()
+    assert isinstance(config, HaalCentraalConfig)
     if not config.service:
         logger.warning("No service defined for Haal Centraal prefill.")
         return None
@@ -36,7 +38,7 @@ class HaalCentraalPrefill(BasePlugin):
     @staticmethod
     def get_available_attributes() -> list[tuple[str, str]]:
         config = get_config()
-        if not config:
+        if config is None:
             return Attributes.choices
         return config.get_attributes().choices
 
@@ -44,14 +46,13 @@ class HaalCentraalPrefill(BasePlugin):
     def _get_values_for_bsn(
         cls,
         config: HaalCentraalConfig,
-        submission: Submission,
+        submission: Submission | None,
         bsn: str,
         attributes: Iterable[str],
-    ) -> Dict[str, Any]:
-        if not config:
-            return {}
-
+    ) -> dict[str, Any]:
         client = config.build_client()
+        assert client is not None
+        # FIXME: typing info on protocol
         client.context = PreRequestClientContext(submission=submission)
 
         data = client.find_person(bsn, attributes=attributes)
@@ -62,18 +63,19 @@ class HaalCentraalPrefill(BasePlugin):
         for attr in attributes:
             try:
                 values[attr] = glom(data, attr)
-            except GlomError:
+            except GlomError as exc:
                 logger.warning(
                     "missing expected attribute '%s' in backend response",
                     attr,
+                    exc_info=exc,
                 )
 
         return values
 
     @classmethod
     def get_prefill_values(
-        cls, submission: Submission, attributes: List[str]
-    ) -> Dict[str, Any]:
+        cls, submission: Submission, attributes: Sequence[str]
+    ) -> dict[str, Any]:
         if (
             not submission.is_authenticated
             or submission.auth_info.attribute != AuthAttribute.bsn
@@ -83,7 +85,7 @@ class HaalCentraalPrefill(BasePlugin):
             return {}
 
         config = get_config()
-        if not config:
+        if config is None:
             return {}
 
         return cls._get_values_for_bsn(
@@ -93,7 +95,7 @@ class HaalCentraalPrefill(BasePlugin):
     @classmethod
     def get_co_sign_values(
         cls, identifier: str, submission: Optional["Submission"] = None
-    ) -> Tuple[Dict[str, Any], str]:
+    ) -> tuple[dict[str, Any], str]:
         """
         Given an identifier, fetch the co-sign specific values.
 
@@ -140,10 +142,12 @@ class HaalCentraalPrefill(BasePlugin):
     def check_config(self):
         try:
             config = HaalCentraalConfig.get_solo()
+            assert isinstance(config, HaalCentraalConfig)
             if not config.service:
                 raise InvalidPluginConfiguration(_("Service not selected"))
 
             client = config.service.build_client()
+            # FIXME: haal centraal v2 client does not support GET methods
             client.retrieve("test", "test")
         except ClientError as e:
             if e.args[0].get("status") == 404:

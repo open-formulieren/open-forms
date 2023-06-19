@@ -1,5 +1,6 @@
 import logging
-from typing import Iterable, Protocol
+from collections.abc import Sequence
+from typing import Protocol
 
 from requests import RequestException
 from zds_client import ClientError
@@ -51,7 +52,8 @@ class HaalCentraalV2Client:
     def __init__(self, service_client: ZGWClient):
         self.service_client = service_client
 
-    def find_person(self, bsn: str, attributes: Iterable[str]) -> JSONObject | None:
+    def find_person(self, bsn: str, **kwargs) -> JSONObject | None:
+        attributes: Sequence[str] = kwargs.pop("attributes")
         body = {
             "type": "RaadpleegMetBurgerservicenummer",
             "burgerservicenummer": [bsn],
@@ -67,6 +69,7 @@ class HaalCentraalV2Client:
                     "headers": {"Content-Type": "application/json; charset=utf-8"}
                 },
             )
+            assert isinstance(data, dict)
         except (ClientError, RequestException) as e:
             logger.exception("exception while making request", exc_info=e)
             return
