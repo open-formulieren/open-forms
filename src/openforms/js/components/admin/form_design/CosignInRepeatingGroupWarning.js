@@ -1,31 +1,24 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
 import MessageList from 'components/admin/MessageList';
 
 const CosignInRepeatingGroupWarning = ({cosignComponents, availableComponents}) => {
-  if (!cosignComponents) return null;
+  if (!Object.keys(cosignComponents).length) return null;
 
-  let componentInEditgrid = false;
-  for (const componentPath in cosignComponents) {
-    // components/cosignComponents are dictionaries where the key is the 'path' of the component. For example, for a component 'foo' in a
-    // repeating group 'bar', the key is 'bar.foo'.
-    const pathBits = componentPath.split('.');
-    const numberOfParentsBits = pathBits.length - 1;
+  // In cosignComponents the key is the 'path' of the component. For example, for a component 'foo' in a
+  // repeating group 'bar', the key is 'bar.foo'.
+  const isInEditGrid = pathParts => {
+    const path = pathParts.join('.');
+    if (!path) return false; // reached root
+    if (availableComponents[path] && availableComponents[path].type === 'editgrid') return true;
+    return isInEditGrid(pathParts.slice(0, -1)); // check parent
+  };
 
-    // Check each parent to see if they are editgrids (repeating groups)
-    for (let counter = numberOfParentsBits; counter > 0; counter--) {
-      const parentPathBits = pathBits.slice(0, counter);
-      if (!parentPathBits.length) continue;
-
-      const parentPath = parentPathBits.join('.');
-      if (availableComponents[parentPath] && availableComponents[parentPath].type === 'editgrid') {
-        componentInEditgrid = true;
-        break;
-      }
-    }
-  }
-
+  const componentInEditgrid = Object.keys(cosignComponents).some(path =>
+    isInEditGrid(path.split('.'))
+  );
   if (!componentInEditgrid) return null;
 
   const warning = {
@@ -39,6 +32,11 @@ const CosignInRepeatingGroupWarning = ({cosignComponents, availableComponents}) 
   };
 
   return <MessageList messages={[warning]} />;
+};
+
+CosignInRepeatingGroupWarning.propTypes = {
+  cosignComponents: PropTypes.objectOf(PropTypes.object).isRequired,
+  availableComponents: PropTypes.objectOf(PropTypes.object).isRequired,
 };
 
 export default CosignInRepeatingGroupWarning;

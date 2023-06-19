@@ -14,14 +14,15 @@ const FormWarnings = ({form}) => {
   // components is a dictionary where the key is the 'path' of the component. For example, for a component 'foo' in a
   // repeating group 'bar', the key is 'bar.foo'.
   let cosignComponentsWithPath = {};
-  let cosignComponentsWithoutPath = [];
 
-  Object.entries(components).map(([key, component]) => {
-    if (component.type === 'cosign') {
-      cosignComponentsWithPath[key] = component;
-      cosignComponentsWithoutPath.push(component);
-    }
-  });
+  const cosignComponentsWithoutPath = Object.entries(components)
+    .map(([key, component]) => {
+      if (component.type === 'cosign') {
+        cosignComponentsWithPath[key] = component;
+        return component;
+      }
+    })
+    .filter(Boolean);
 
   return (
     <>
