@@ -49,6 +49,7 @@ experimental feature changes (see :ref:`developers_versioning_api`).
    1.1.1       1.1.1               < 2.0.0
    1.2.x       2.0.y               < 2.1.0
    1.3.0       2.1.0               n/a
+   1.4.0       2.2.0               n/a
    =========== =================== ===================
 
 .. _developers_versioning_api:
