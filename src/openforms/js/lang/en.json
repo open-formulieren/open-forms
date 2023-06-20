@@ -464,6 +464,11 @@
     "description": "Manage process vars component column title",
     "originalDefault": "Field"
   },
+  "ENyg8G": {
+    "defaultMessage": "There are multiple co-sign components specified in this form. At most one should be present.",
+    "description": "Too many cosign components",
+    "originalDefault": "There are multiple co-sign components specified in this form. At most one should be present."
+  },
   "Ekld1h": {
     "defaultMessage": "Save as new",
     "description": "Save as new service fetch configuration button label",
@@ -579,6 +584,11 @@
     "description": "Form maintenance mode field label",
     "originalDefault": "Maintenance mode"
   },
+  "HEg854": {
+    "defaultMessage": "Name",
+    "description": "Service fetch configuration modal form name field label",
+    "originalDefault": "Name"
+  },
   "HF0cSk": {
     "defaultMessage": "Amount of days errored submissions of this form will remain before being removed. Leave blank to use value in General Configuration.",
     "description": "Errored Submissions Removal Limit help text",
@@ -663,6 +673,11 @@
     "defaultMessage": "Successful Submissions Removal Limit",
     "description": "Successful Submissions Removal Limit field label",
     "originalDefault": "Successful Submissions Removal Limit"
+  },
+  "JhdlEg": {
+    "defaultMessage": "There are co-sign components inside repeating groups. This is not supported.",
+    "description": "Cosign components in repeating group warning message",
+    "originalDefault": "There are co-sign components inside repeating groups. This is not supported."
   },
   "JtOgcq": {
     "defaultMessage": "Last Name Component",
@@ -1109,6 +1124,16 @@
     "description": "Warning message for missing translations",
     "originalDefault": "Form has translation enabled, but is missing <link>{count, plural, one {# translation} other {# translations} }</link>"
   },
+  "ZFcKzh": {
+    "defaultMessage": "Suspension allowed",
+    "description": "Form suspensionAllowed field label",
+    "originalDefault": "Suspension allowed"
+  },
+  "ZGY2dI": {
+    "defaultMessage": "Whether the user is allowed to suspend this form or not.",
+    "description": "Form suspensionAllowed field help text",
+    "originalDefault": "Whether the user is allowed to suspend this form or not."
+  },
   "ZICfus": {
     "defaultMessage": "Previous text",
     "description": "Form step previous text label",
@@ -1313,6 +1338,11 @@
     "defaultMessage": "Do nothing",
     "description": "Session expiry warning \"do nothing\" button",
     "originalDefault": "Do nothing"
+  },
+  "gAf9pR": {
+    "defaultMessage": "(not configured yet)",
+    "description": "No service fetch configuration configured yet message",
+    "originalDefault": "(not configured yet)"
   },
   "gGNIdG": {
     "defaultMessage": "The text that will be displayed in the overview page to go to the previous step. Leave blank to get value from global configuration.",
@@ -1609,6 +1639,11 @@
     "description": "Variable table form definition title",
     "originalDefault": "Form definition"
   },
+  "pqCru3": {
+    "defaultMessage": "Fetch configuration:",
+    "description": "Currently selected service fetch configuration label",
+    "originalDefault": "Fetch configuration:"
+  },
   "pyX2Tl": {
     "defaultMessage": "Confirm",
     "description": "Confirm complex Camunda variable definition",
@@ -1803,6 +1838,11 @@
     "defaultMessage": "Phone Number Component",
     "description": "Phone Number Component field label",
     "originalDefault": "Phone Number Component"
+  },
+  "z+kWUh": {
+    "defaultMessage": "The co-sign component requires the {plugin} authentication plugin, but this plugin is not enabled on the form.",
+    "description": "MissingAuthCosignWarning message",
+    "originalDefault": "The the co-sign component requires the {plugin} authentication plugin, but this plugin is not enabled on the form."
   },
   "z0FW+t": {
     "defaultMessage": "Field name",

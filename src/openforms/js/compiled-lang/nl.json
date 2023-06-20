@@ -20,7 +20,7 @@
   "+DztEl": [
     {
       "type": 0,
-      "value": "Path"
+      "value": "Pad"
     }
   ],
   "+XwAuT": [
@@ -74,7 +74,7 @@
   "/rF8P0": [
     {
       "type": 0,
-      "value": "Configuration"
+      "value": "Instellingen"
     }
   ],
   "/yDnA3": [
@@ -130,7 +130,7 @@
   "20K9To": [
     {
       "type": 0,
-      "value": "Service fetch configuration"
+      "value": "Servicebevraging instellen"
     }
   ],
   "294MCM": [
@@ -154,7 +154,7 @@
   "2boL55": [
     {
       "type": 0,
-      "value": "Query parameters"
+      "value": "Query-parameters"
     }
   ],
   "2d5RfI": [
@@ -270,7 +270,7 @@
   "5QLG/6": [
     {
       "type": 0,
-      "value": "Add another value"
+      "value": "Nog een waarde toevoegen"
     }
   ],
   "5dp5j+": [
@@ -546,7 +546,7 @@
   "9LflJr": [
     {
       "type": 0,
-      "value": "Key"
+      "value": "Sleutel"
     }
   ],
   "9N67XB": [
@@ -638,7 +638,7 @@
   "AHfeW/": [
     {
       "type": 0,
-      "value": "Configure"
+      "value": "Instellen"
     }
   ],
   "ALLoNx": [
@@ -742,7 +742,7 @@
   "BqA9of": [
     {
       "type": 0,
-      "value": "Try it out"
+      "value": "Probeer het uit"
     }
   ],
   "BrGg65": [
@@ -760,7 +760,7 @@
   "C+91tl": [
     {
       "type": 0,
-      "value": "Data extraction"
+      "value": "Gegevensverwerking"
     }
   ],
   "C4Zn+R": [
@@ -887,6 +887,12 @@
       "value": "Veld"
     }
   ],
+  "ENyg8G": [
+    {
+      "type": 0,
+      "value": "Het formulier heeft meerdere mede-ondertekencomponenten. Zorg ervoor dat dit er maximaal één is."
+    }
+  ],
   "EacF3m": [
     {
       "type": 0,
@@ -896,7 +902,7 @@
   "Ekld1h": [
     {
       "type": 0,
-      "value": "Save as new"
+      "value": "Opslaan als nieuw"
     }
   ],
   "ErwGIQ": [
@@ -968,7 +974,7 @@
   "Fz4U73": [
     {
       "type": 0,
-      "value": "Send confirmation email"
+      "value": "Verstuur bevestigingsmail"
     }
   ],
   "G1JHUM": [
@@ -1061,6 +1067,12 @@
     {
       "type": 0,
       "value": "Onderhoudsmodus"
+    }
+  ],
+  "HEg854": [
+    {
+      "type": 0,
+      "value": "Naam"
     }
   ],
   "HF0cSk": [
@@ -1191,6 +1203,12 @@
       "value": "JSON"
     }
   ],
+  "JhdlEg": [
+    {
+      "type": 0,
+      "value": "Er zijn mede-ondertekencomponenten gevonden binnen een herhalende groep. Dit is niet ondersteund."
+    }
+  ],
   "JneaQM": [
     {
       "type": 0,
@@ -1286,13 +1304,13 @@
   "LrlAVD": [
     {
       "type": 0,
-      "value": "Data extraction"
+      "value": "Gegevensverwerking"
     }
   ],
   "Ltde29": [
     {
       "type": 0,
-      "value": "Haal de waarde op uit een externe registratie"
+      "value": "haal de waarde op uit een externe registratie"
     }
   ],
   "M0kOz9": [
@@ -1316,7 +1334,7 @@
   "MXKqVO": [
     {
       "type": 0,
-      "value": "Below you can specify a custom template for the configuration email. If not specified, the globally configured template will be used."
+      "value": "Je kan hieronder een formulierspecifiek sjabloon opstellen voor de bevestigingsmail. Indien leeg, dan worden de algemene instellingen gebruikt."
     }
   ],
   "Mv8yjC": [
@@ -1636,7 +1654,7 @@
   "TH62Jn": [
     {
       "type": 0,
-      "value": "the path should not have a leading slash"
+      "value": "Zorg ervoor dat het pad niet met een schuine streep ('/') begint."
     }
   ],
   "TR5xSY": [
@@ -1838,7 +1856,7 @@
   "Xe+CCn": [
     {
       "type": 0,
-      "value": "Basic"
+      "value": "Basis"
     }
   ],
   "YBY95E": [
@@ -1968,6 +1986,18 @@
       "value": "link"
     }
   ],
+  "ZFcKzh": [
+    {
+      "type": 0,
+      "value": "Tussentijds opslaan"
+    }
+  ],
+  "ZGY2dI": [
+    {
+      "type": 0,
+      "value": "Whether the user is allowed to suspend this form or not."
+    }
+  ],
   "ZICfus": [
     {
       "type": 0,
@@ -2013,7 +2043,7 @@
   "auZOcD": [
     {
       "type": 0,
-      "value": "Mapping expression"
+      "value": "Mappingexpressie"
     }
   ],
   "b/AHC/": [
@@ -2049,7 +2079,7 @@
   "bnxtnX": [
     {
       "type": 0,
-      "value": "Full request"
+      "value": "Volledige HTTP-request"
     }
   ],
   "bzVhb6": [
@@ -2265,7 +2295,7 @@
   "fpX4ei": [
     {
       "type": 0,
-      "value": "Mapping expression language"
+      "value": "Soort mappingexpressie"
     }
   ],
   "ftzF/n": [
@@ -2277,13 +2307,19 @@
   "fv74On": [
     {
       "type": 0,
-      "value": "Choose existing configuration"
+      "value": "Gebruik bestaande configuratie"
     }
   ],
   "g+ppJj": [
     {
       "type": 0,
       "value": "Negeren"
+    }
+  ],
+  "gAf9pR": [
+    {
+      "type": 0,
+      "value": "(nog niet ingesteld)"
     }
   ],
   "gGNIdG": [
@@ -2467,7 +2503,7 @@
   "jitewC": [
     {
       "type": 0,
-      "value": "HTTP method"
+      "value": "HTTP-method"
     }
   ],
   "jo1PVg": [
@@ -2551,7 +2587,7 @@
   "lDFtNM": [
     {
       "type": 0,
-      "value": "Value"
+      "value": "Waarde"
     }
   ],
   "lcR5L6": [
@@ -2653,7 +2689,7 @@
   "oCo2mP": [
     {
       "type": 0,
-      "value": "Save"
+      "value": "Opslaan"
     }
   ],
   "oYmpN5": [
@@ -2765,6 +2801,12 @@
       "value": "Weergeven in PDF"
     }
   ],
+  "pqCru3": [
+    {
+      "type": 0,
+      "value": "Servicebevraging:"
+    }
+  ],
   "pyX2Tl": [
     {
       "type": 0,
@@ -2810,7 +2852,7 @@
   "r9MTrz": [
     {
       "type": 0,
-      "value": "Request headers"
+      "value": "Request-headers"
     }
   ],
   "rF90xM": [
@@ -2844,7 +2886,7 @@
   "sFHD3/": [
     {
       "type": 0,
-      "value": "Whether to send a confirmation email to the end-user who submitted the form."
+      "value": "Vink aan om een bevestigingsmail te sturen naar de inzender(s) van het formulier."
     }
   ],
   "sgmcmf": [
@@ -3069,6 +3111,20 @@
     {
       "type": 0,
       "value": "Telefoonnummer veld"
+    }
+  ],
+  "z+kWUh": [
+    {
+      "type": 0,
+      "value": "De mede-ondertekenencomponent vereist de "
+    },
+    {
+      "type": 1,
+      "value": "plugin"
+    },
+    {
+      "type": 0,
+      "value": "-authenticatieplugin, maar deze is (nog) niet ingeschakeld."
     }
   ],
   "z0FW+t": [

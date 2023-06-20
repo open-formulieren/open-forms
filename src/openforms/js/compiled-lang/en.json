@@ -883,6 +883,12 @@
       "value": "Field"
     }
   ],
+  "ENyg8G": [
+    {
+      "type": 0,
+      "value": "There are multiple co-sign components specified in this form. At most one should be present."
+    }
+  ],
   "EacF3m": [
     {
       "type": 0,
@@ -1059,6 +1065,12 @@
       "value": "Maintenance mode"
     }
   ],
+  "HEg854": [
+    {
+      "type": 0,
+      "value": "Name"
+    }
+  ],
   "HF0cSk": [
     {
       "type": 0,
@@ -1185,6 +1197,12 @@
     {
       "type": 0,
       "value": "JSON"
+    }
+  ],
+  "JhdlEg": [
+    {
+      "type": 0,
+      "value": "There are co-sign components inside repeating groups. This is not supported."
     }
   ],
   "JneaQM": [
@@ -1963,6 +1981,18 @@
       "value": "link"
     }
   ],
+  "ZFcKzh": [
+    {
+      "type": 0,
+      "value": "Suspension allowed"
+    }
+  ],
+  "ZGY2dI": [
+    {
+      "type": 0,
+      "value": "Whether the user is allowed to suspend this form or not."
+    }
+  ],
   "ZICfus": [
     {
       "type": 0,
@@ -2279,6 +2309,12 @@
     {
       "type": 0,
       "value": "Do nothing"
+    }
+  ],
+  "gAf9pR": [
+    {
+      "type": 0,
+      "value": "(not configured yet)"
     }
   ],
   "gGNIdG": [
@@ -2759,6 +2795,12 @@
       "value": "Show in PDF"
     }
   ],
+  "pqCru3": [
+    {
+      "type": 0,
+      "value": "Fetch configuration:"
+    }
+  ],
   "pyX2Tl": [
     {
       "type": 0,
@@ -3063,6 +3105,20 @@
     {
       "type": 0,
       "value": "Phone Number Component"
+    }
+  ],
+  "z+kWUh": [
+    {
+      "type": 0,
+      "value": "The co-sign component requires the "
+    },
+    {
+      "type": 1,
+      "value": "plugin"
+    },
+    {
+      "type": 0,
+      "value": " authentication plugin, but this plugin is not enabled on the form."
     }
   ],
   "z0FW+t": [
