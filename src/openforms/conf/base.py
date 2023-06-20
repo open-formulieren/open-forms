@@ -1193,3 +1193,7 @@ OPEN_FORMS_EXTENSIONS = config("OPEN_FORMS_EXTENSIONS", split=True, default=[])
 
 if OPEN_FORMS_EXTENSIONS:
     INSTALLED_APPS += OPEN_FORMS_EXTENSIONS
+
+
+# Objects API registration backedend maxinum template size in bytes
+OBJECTS_API_DATA_SIZE_LIMIT = config("OBJECTS_API_DATA_SIZE_LIMIT", 1000000)

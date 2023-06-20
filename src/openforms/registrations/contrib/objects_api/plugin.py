@@ -1,6 +1,11 @@
+import json
+import logging
+import sys
 from datetime import date
 from typing import Any, Dict, NoReturn
 
+from django.conf import settings
+from django.core.exceptions import SuspiciousOperation, ValidationError
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
@@ -11,15 +16,11 @@ from openforms.contrib.zgw.service import (
     create_csv_document,
     create_report_document,
 )
-from openforms.formio.rendering.structured import render_json
-from openforms.registrations.contrib.objects_api.utils import (
-    get_registration_json_templates,
-)
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.submissions.public_references import set_submission_reference
-from openforms.template import render_from_string, openforms_backend
+from openforms.template import openforms_backend, render_from_string
 from openforms.translations.utils import to_iso639_2b
 from openforms.variables.utils import get_variables_for_context
 
@@ -30,6 +31,8 @@ from ...registry import register
 from .checks import check_config
 from .config import ObjectsAPIOptionsSerializer
 from .models import ObjectsAPIConfig
+
+logger = logging.getLogger(__name__)
 
 
 def get_drc() -> ZGWClient:
@@ -79,9 +82,12 @@ class ObjectsAPIRegistration(BasePlugin):
         use."""
 
         config = ObjectsAPIConfig.get_solo()
-        config.apply_defaults_to(options)
+        objects_client = config.objects_service.build_client()
 
+        config.apply_defaults_to(options)
         options["auteur"] = options.get("auteur", "Aanvrager")
+
+        language_code_2b = to_iso639_2b(submission.language_code)
 
         submission_report = SubmissionReport.objects.get(submission=submission)
         submission_report_options = build_options(
@@ -98,8 +104,6 @@ class ObjectsAPIRegistration(BasePlugin):
             submission_report_options,
             get_drc=get_drc,
         )
-
-        language_code_2b = to_iso639_2b(submission.language_code)
 
         attachments = []
         for attachment in submission.attachments:
@@ -131,11 +135,7 @@ class ObjectsAPIRegistration(BasePlugin):
             )
             attachments.append(attachment_document["url"])
 
-        objects_client = config.objects_service.build_client()
-
-        templates = get_registration_json_templates(submission)
-
-        csv_url: str = ""
+        csv_url = ""
         if (
             options.get("upload_submission_csv", False)
             and options["informatieobjecttype_submission_csv"]
@@ -165,9 +165,12 @@ class ObjectsAPIRegistration(BasePlugin):
         base_render_context = {
             "_submission": submission,
             **get_variables_for_context(submission),
-            "type": options["productaanvraag_type"],
+            "productaanvraag_type": str(options["productaanvraag_type"]),
+            # nested for namespacing note: other templates and context expose all submission
+            # variables in the top level namespace, but that is due for refactor
             "submission": {
-                "uuid": submission.uuid,
+                "public_reference": submission.public_registration_reference,
+                "kenmerk": str(submission.uuid),
                 "language_code": submission.language_code,
                 "attachments": attachments,
                 "pdf_url": document["url"],
@@ -175,14 +178,41 @@ class ObjectsAPIRegistration(BasePlugin):
             },
         }
 
-        record_data = {
-            "data": render_from_string(
-                templates,
-                context={**base_render_context},
-                disable_autoescape=True,
-                backend=openforms_backend,
-            ),
-        }
+        template = (
+            options.get("content_json") or ObjectsAPIConfig.get_solo().content_json
+        )
+
+        record_data = render_from_string(
+            template,
+            context={**base_render_context},
+            disable_autoescape=False,
+            backend=openforms_backend,
+        )
+
+        if sys.getsizeof(record_data) > settings.OBJECTS_API_DATA_SIZE_LIMIT:
+            logger.error(
+                "Content JSON field exceeded size of %s with total size: %s",
+                settings.OBJECTS_API_DATA_SIZE_LIMIT,
+                sys.getsizeof(record_data),
+            )
+            raise SuspiciousOperation(
+                _(
+                    "Content JSON field exceeded size of %(max)s with total size: %(total)s.",
+                )
+                % {
+                    "max": settings.OBJECTS_API_DATA_SIZE_LIMIT,
+                    "total": sys.getsizeof(record_data),
+                }
+            )
+
+        try:
+            record_data = json.loads(record_data)
+        except (TypeError, json.decoder.JSONDecodeError) as err:
+            logger.error(
+                "Template object doesn't have valid JSON format",
+                exc_info=err,
+            )
+            raise ValidationError(_("Invalid JSON"), code="invalid") from err
 
         if submission.is_authenticated:
             record_data[submission.auth_info.attribute] = submission.auth_info.value

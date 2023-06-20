@@ -11,8 +11,8 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def json_summary(context):
     submission = context.get("_submission")
-    if submission:
-        get_json_renderer = render_json(submission)
-        return SafeString(json.dumps(get_json_renderer))
+    if not submission:
+        return {}
 
-    return {}
+    get_json_renderer = render_json(submission)
+    return SafeString(json.dumps(get_json_renderer))

@@ -1,6 +1,7 @@
 from datetime import date
 
-from django.test import TestCase
+from django.core.exceptions import SuspiciousOperation, ValidationError
+from django.test import TestCase, override_settings
 
 import requests_mock
 from zds_client.oas import schema_fetcher
@@ -25,7 +26,7 @@ class ObjectsAPIBackendTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        ObjectsAPIConfigFactory.create(
+        cls.config = ObjectsAPIConfigFactory.create(
             objects_service__api_root="https://objecten.nl/api/v1/",
             objects_service__oas="https://objecten.nl/api/v1/schema/openapi.yaml",
             drc_service__api_root="https://documenten.nl/api/v1/",
@@ -37,6 +38,29 @@ class ObjectsAPIBackendTests(TestCase):
             informatieobjecttype_submission_csv="https://catalogi.nl/api/v1/informatieobjecttypen/4",
             informatieobjecttype_attachment="https://catalogi.nl/api/v1/informatieobjecttypen/3",
             organisatie_rsin="000000000",
+            content_json="""
+            {\n
+                "bron": {\n
+                    "naam": "Open Formulieren",\n
+                    "kenmerk": "{{ submission.kenmerk }}"\n
+                },\n
+                "type": "{{ productaanvraag_type }}",\n
+                "aanvraaggegevens": {% json_summary %},\n
+                "taal": "{{ submission.language_code  }}",\n
+                "betrokkenen": [\n
+                    {\n
+                    "inpBsn" : "{{ auth_bsn }}",\n
+                    "rolOmschrijvingGeneriek" : "initiator"\n
+                    }\n
+                ],\n
+                "pdf": "{{ submission.pdf_url }}",\n
+                "csv": "{{ submission.csv_url }}",\n
+                "bijlagen": [\n
+                    {% for attachment in submission.attachments %}\n
+                    "{{ attachment }}"{% if not forloop.last %},{% endif %}\n
+                    {% endfor %}\n
+                ]\n
+            }""",
         )
 
     def setUp(self):
@@ -242,7 +266,12 @@ class ObjectsAPIBackendTests(TestCase):
             "record": {
                 "typeVersion": 2,
                 "data": {
-                    "data": {
+                    "bron": {
+                        "naam": "Open Formulieren",
+                        "kenmerk": str(submission.uuid),
+                    },
+                    "type": "testproduct",
+                    "aanvraaggegevens": {
                         f"{step_slug}": {
                             "voornaam": "Foo",
                             "achternaam": "Bar",
@@ -251,14 +280,15 @@ class ObjectsAPIBackendTests(TestCase):
                             "coordinaat": [52.36673378967122, 4.893164274470299],
                         }
                     },
-                    "type": "testproduct",
-                    "submission_id": str(submission.uuid),
-                    "language_code": "en",
-                    "attachments": [],
-                    "pdf_url": expected_document_result["url"],
-                    "csv_url": expected_csv_document_result["url"],
+                    "taal": "en",
+                    "betrokkenen": [
+                        {"inpBsn": "", "rolOmschrijvingGeneriek": "initiator"}
+                    ],
+                    "pdf": expected_document_result["url"],
+                    "csv": expected_csv_document_result["url"],
+                    "bijlagen": [],
                 },
-                "startAt": date.today().isoformat(),
+                "startAt": "2023-06-20",
                 "geometry": {
                     "type": "Point",
                     "coordinates": [52.36673378967122, 4.893164274470299],
@@ -423,17 +453,23 @@ class ObjectsAPIBackendTests(TestCase):
             "record": {
                 "typeVersion": 2,
                 "data": {
-                    "data": {
+                    "bron": {
+                        "naam": "Open Formulieren",
+                        "kenmerk": str(submission.uuid),
+                    },
+                    "type": "testproduct",
+                    "aanvraaggegevens": {
                         f"{step_slug}": {
                             "voornaam": "Foo",
                         }
                     },
-                    "type": "testproduct",
-                    "submission_id": str(submission.uuid),
-                    "language_code": "nl",
-                    "attachments": [],
-                    "pdf_url": expected_document_result["url"],
-                    "csv_url": expected_csv_document_result["url"],
+                    "taal": "nl",
+                    "betrokkenen": [
+                        {"inpBsn": "", "rolOmschrijvingGeneriek": "initiator"}
+                    ],
+                    "pdf": expected_document_result["url"],
+                    "csv": expected_csv_document_result["url"],
+                    "bijlagen": [],
                 },
                 "startAt": date.today().isoformat(),
             },
@@ -565,18 +601,260 @@ class ObjectsAPIBackendTests(TestCase):
             "record": {
                 "typeVersion": 2,
                 "data": {
-                    "data": {
+                    "bron": {
+                        "naam": "Open Formulieren",
+                        "kenmerk": str(submission.uuid),
+                    },
+                    "type": "testproduct",
+                    "aanvraaggegevens": {
                         f"{step_slug}": {
                             "voornaam": "Foo",
                         }
                     },
-                    "type": "testproduct",
-                    "submission_id": str(submission.uuid),
-                    "language_code": "nl",
-                    "attachments": [],
-                    "pdf_url": expected_document_result["url"],
+                    "taal": "nl",
+                    "betrokkenen": [
+                        {"inpBsn": "", "rolOmschrijvingGeneriek": "initiator"}
+                    ],
+                    "pdf": expected_document_result["url"],
+                    "csv": "",
+                    "bijlagen": [],
                 },
                 "startAt": date.today().isoformat(),
+            },
+        }
+
+        object_create_body = object_create.json()
+        self.assertEqual(object_create.method, "POST")
+        self.assertEqual(object_create.url, "https://objecten.nl/api/v1/objects")
+        self.assertEqual(object_create_body, expected_object_body)
+
+    def test_submission_with_objects_api_backend_override_content_json(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+                {
+                    "key": "tussenvoegsel",
+                    "type": "textfield",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    },
+                },
+                {
+                    "key": "geboortedatum",
+                    "type": "date",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geboortedatum,
+                    },
+                },
+                {
+                    "key": "coordinaat",
+                    "type": "map",
+                    "registration": {
+                        "attribute": RegistrationAttribute.locatie_coordinaat,
+                    },
+                },
+            ],
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "tussenvoegsel": "de",
+                "geboortedatum": "2000-12-31",
+                "coordinaat": [52.36673378967122, 4.893164274470299],
+            },
+            language_code="en",
+        )
+        submission_step = submission.steps[0]
+        step_slug = submission_step.form_step.form_definition.slug
+
+        mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
+        mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
+
+        objects_form_options = dict(
+            objecttype="https://objecttypen.nl/api/v1/objecttypes/2",
+            objecttype_version=2,
+            productaanvraag_type="testproduct",
+            informatieobjecttype_submission_report="https://catalogi.nl/api/v1/informatieobjecttypen/2",
+            upload_submission_csv=True,
+            informatieobjecttype_submission_csv="https://catalogi.nl/api/v1/informatieobjecttypen/5",
+            organisatie_rsin="123456782",
+            content_json="""
+            {\n
+                "bron": {\n
+                    "naam": "Open Formulieren",\n
+                    "kenmerk": "{{ submission.kenmerk }}"\n
+                },\n
+                "type": "{{ productaanvraag_type }}",\n
+                "aanvraaggegevens": {% json_summary %},\n
+                "taal": "{{ submission.language_code  }}"\n
+            }""",
+            zaak_vertrouwelijkheidaanduiding="geheim",
+            doc_vertrouwelijkheidaanduiding="geheim",
+        )
+
+        expected_result = {
+            "url": "https://objecten.nl/api/v1/objects/1",
+            "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+            "type": objects_form_options["objecttype"],
+            "record": {
+                "index": 0,
+                "typeVersion": objects_form_options["objecttype_version"],
+                "data": {
+                    "data": {
+                        f"{step_slug}": {
+                            "voornaam": "Foo",
+                            "achternaam": "Bar",
+                            "tussenvoegsel": "de",
+                            "geboortedatum": "2000-12-31",
+                            "coordinaat": [52.36673378967122, 4.893164274470299],
+                        }
+                    },
+                    "type": objects_form_options["productaanvraag_type"],
+                    "submission_id": str(submission.uuid),
+                    "language_code": "en",
+                    "attachments": [],
+                    "pdf_url": "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [52.36673378967122, 4.893164274470299],
+                },
+                "startAt": date.today().isoformat(),
+                "endAt": date.today().isoformat(),
+                "registrationAt": date.today().isoformat(),
+                "correctionFor": 0,
+                "correctedBy": "",
+            },
+        }
+        expected_document_result = generate_oas_component(
+            "documenten",
+            "schemas/EnkelvoudigInformatieObject",
+            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+        )
+
+        m.post(
+            "https://objecten.nl/api/v1/objects",
+            status_code=201,
+            json=expected_result,
+        )
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=201,
+            json=expected_document_result,
+        )
+
+        def match_csv(request):
+            if "csv" in request.json()["bestandsnaam"]:
+                return True
+            return False
+
+        expected_csv_document_result = generate_oas_component(
+            "documenten",
+            "schemas/EnkelvoudigInformatieObject",
+            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
+        )
+
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=201,
+            json=expected_csv_document_result,
+            additional_matcher=match_csv,
+        )
+
+        plugin = ObjectsAPIRegistration("objects_api")
+        result = plugin.register_submission(submission, objects_form_options)
+
+        # Result is simply the created object
+        self.assertEqual(result, expected_result)
+
+        self.assertEqual(len(m.request_history), 5)
+
+        (
+            documenten_oas_get,
+            document_create,
+            csv_document_create,
+            objecten_oas_get,
+            object_create,
+        ) = m.request_history
+
+        self.assertEqual(documenten_oas_get.method, "GET")
+        self.assertEqual(
+            documenten_oas_get.url,
+            "https://documenten.nl/api/v1/schema/openapi.yaml?v=3",
+        )
+
+        document_create_body = document_create.json()
+        self.assertEqual(document_create.method, "POST")
+        self.assertEqual(
+            document_create.url,
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+        )
+        self.assertEqual(document_create_body["bronorganisatie"], "123456782")
+        self.assertEqual(
+            document_create_body["informatieobjecttype"],
+            "https://catalogi.nl/api/v1/informatieobjecttypen/2",
+        )
+        self.assertEqual(
+            document_create_body["vertrouwelijkheidaanduiding"],
+            "geheim",
+        )
+
+        csv_document_create_body = csv_document_create.json()
+        self.assertEqual(csv_document_create.method, "POST")
+        self.assertEqual(
+            csv_document_create.url,
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+        )
+        # Overridden informatieobjecttype used
+        self.assertEqual(
+            csv_document_create_body["informatieobjecttype"],
+            "https://catalogi.nl/api/v1/informatieobjecttypen/5",
+        )
+
+        self.assertEqual(csv_document_create_body["taal"], "eng")
+        self.assertEqual(objecten_oas_get.method, "GET")
+        self.assertEqual(
+            objecten_oas_get.url, "https://objecten.nl/api/v1/schema/openapi.yaml?v=3"
+        )
+
+        expected_object_body = {
+            "type": "https://objecttypen.nl/api/v1/objecttypes/2",
+            "record": {
+                "typeVersion": 2,
+                "data": {
+                    "bron": {
+                        "naam": "Open Formulieren",
+                        "kenmerk": str(submission.uuid),
+                    },
+                    "type": "testproduct",
+                    "aanvraaggegevens": {
+                        f"{step_slug}": {
+                            "voornaam": "Foo",
+                            "achternaam": "Bar",
+                            "tussenvoegsel": "de",
+                            "geboortedatum": "2000-12-31",
+                            "coordinaat": [52.36673378967122, 4.893164274470299],
+                        }
+                    },
+                    "taal": "en",
+                },
+                "startAt": "2023-06-20",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [52.36673378967122, 4.893164274470299],
+                },
             },
         }
 
@@ -718,7 +996,7 @@ class ObjectsAPIBackendTests(TestCase):
             "record": {
                 "typeVersion": 1,
                 "data": {
-                    "data": {
+                    "aanvraaggegevens": {
                         f"{step_slug}": {
                             "voornaam": "Foo",
                             "achternaam": "Bar",
@@ -726,11 +1004,18 @@ class ObjectsAPIBackendTests(TestCase):
                             "geboortedatum": "2000-12-31",
                         }
                     },
+                    "betrokkenen": [
+                        {"inpBsn": "", "rolOmschrijvingGeneriek": "initiator"}
+                    ],
+                    "bijlagen": [],
+                    "bron": {
+                        "kenmerk": str(submission.uuid),
+                        "naam": "Open Formulieren",
+                    },
+                    "csv": "",
+                    "pdf": expected_document_result["url"],
+                    "taal": "en",
                     "type": "terugbelnotitie",
-                    "submission_id": str(submission.uuid),
-                    "language_code": "en",
-                    "attachments": [],
-                    "pdf_url": expected_document_result["url"],
                 },
                 "startAt": date.today().isoformat(),
             },
@@ -873,7 +1158,12 @@ class ObjectsAPIBackendTests(TestCase):
             "record": {
                 "typeVersion": 1,
                 "data": {
-                    "data": {
+                    "bron": {
+                        "naam": "Open Formulieren",
+                        "kenmerk": str(submission.uuid),
+                    },
+                    "type": "terugbelnotitie",
+                    "aanvraaggegevens": {
                         f"{step_slug}": {
                             "voornaam": "Foo",
                             "achternaam": "Bar",
@@ -881,12 +1171,14 @@ class ObjectsAPIBackendTests(TestCase):
                             "geboortedatum": "2000-12-31",
                         }
                     },
-                    "type": "terugbelnotitie",
-                    "submission_id": str(submission.uuid),
-                    "language_code": "nl",
-                    "attachments": [],
+                    "taal": "nl",
+                    "betrokkenen": [
+                        {"inpBsn": "111222333", "rolOmschrijvingGeneriek": "initiator"}
+                    ],
+                    "pdf": expected_document_result["url"],
+                    "csv": "",
+                    "bijlagen": [],
                     "bsn": "111222333",
-                    "pdf_url": expected_document_result["url"],
                 },
                 "startAt": date.today().isoformat(),
             },
@@ -1000,13 +1292,20 @@ class ObjectsAPIBackendTests(TestCase):
             "record": {
                 "typeVersion": 1,
                 "data": {
-                    "data": {f"{step_slug}": {"voornaam": "Foo"}},
+                    "bron": {
+                        "naam": "Open Formulieren",
+                        "kenmerk": str(submission.uuid),
+                    },
                     "type": "terugbelnotitie",
-                    "submission_id": str(submission.uuid),
-                    "language_code": "nl",
-                    "attachments": [],
+                    "aanvraaggegevens": {f"{step_slug}": {"voornaam": "Foo"}},
+                    "taal": "nl",
+                    "betrokkenen": [
+                        {"inpBsn": "", "rolOmschrijvingGeneriek": "initiator"}
+                    ],
+                    "pdf": expected_document_result["url"],
+                    "csv": "",
+                    "bijlagen": [],
                     "kvk": "11122233",
-                    "pdf_url": expected_document_result["url"],
                 },
                 "startAt": date.today().isoformat(),
             },
@@ -1244,7 +1543,12 @@ class ObjectsAPIBackendTests(TestCase):
             "record": {
                 "typeVersion": 1,
                 "data": {
-                    "data": {
+                    "bron": {
+                        "naam": "Open Formulieren",
+                        "kenmerk": str(submission.uuid),
+                    },
+                    "type": "terugbelnotitie",
+                    "aanvraaggegevens": {
                         f"{step_slug}": {
                             "voornaam": "Foo",
                             "achternaam": "Bar",
@@ -1252,14 +1556,16 @@ class ObjectsAPIBackendTests(TestCase):
                             "geboortedatum": "2000-12-31",
                         }
                     },
-                    "type": "terugbelnotitie",
-                    "submission_id": str(submission.uuid),
-                    "language_code": "en",
-                    "attachments": [
+                    "taal": "en",
+                    "betrokkenen": [
+                        {"inpBsn": "", "rolOmschrijvingGeneriek": "initiator"}
+                    ],
+                    "pdf": expected_document_result["url"],
+                    "csv": "",
+                    "bijlagen": [
                         "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
                         "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/3",
                     ],
-                    "pdf_url": expected_document_result["url"],
                 },
                 "startAt": date.today().isoformat(),
             },
@@ -1485,20 +1791,27 @@ class ObjectsAPIBackendTests(TestCase):
             "record": {
                 "typeVersion": 1,
                 "data": {
-                    "data": {
+                    "bron": {
+                        "naam": "Open Formulieren",
+                        "kenmerk": str(submission.uuid),
+                    },
+                    "type": "terugbelnotitie",
+                    "aanvraaggegevens": {
                         f"{step_slug}": {
                             "field1": None,
                             "field2": None,
                         }
                     },
-                    "type": "terugbelnotitie",
-                    "submission_id": str(submission.uuid),
-                    "language_code": "en",
-                    "attachments": [
+                    "taal": "en",
+                    "betrokkenen": [
+                        {"inpBsn": "", "rolOmschrijvingGeneriek": "initiator"}
+                    ],
+                    "pdf": expected_document_result["url"],
+                    "csv": "",
+                    "bijlagen": [
                         "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/2",
                         "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/3",
                     ],
-                    "pdf_url": expected_document_result["url"],
                 },
                 "startAt": date.today().isoformat(),
             },
@@ -1849,3 +2162,144 @@ class ObjectsAPIBackendTests(TestCase):
             document_create_attachment_body["vertrouwelijkheidaanduiding"], "geheim"
         )
         self.assertEqual(document_create_attachment_body["titel"], "A Custom Title")
+
+    @override_settings(OBJECTS_API_DATA_SIZE_LIMIT=1000000)
+    def test_submission_with_objects_api_content_json_exceed_max_file_limit(self, m):
+        # generates template of 1000007 bytes
+        self.config.content_json = {
+            "oversized_list": list(range(0, 138875))
+        }
+        self.config.save()
+        self.config.refresh_from_db()
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+                {
+                    "key": "tussenvoegsel",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    },
+                },
+                {
+                    "key": "geboortedatum",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geboortedatum,
+                    },
+                },
+            ],
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "tussenvoegsel": "de",
+                "geboortedatum": "2000-12-31",
+            },
+            bsn="111222333",
+        )
+
+        mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
+        mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
+
+        expected_document_result = generate_oas_component(
+            "documenten",
+            "schemas/EnkelvoudigInformatieObject",
+            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+        )
+
+        m.post(
+            "https://objecten.nl/api/v1/objects",
+            status_code=201,
+            json={},
+        )
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=201,
+            json=expected_document_result,
+        )
+
+        plugin = ObjectsAPIRegistration("objects_api")
+        with self.assertRaises(SuspiciousOperation) as cm:
+            plugin.register_submission(submission, {})
+        self.assertEqual(
+            "Content JSON field exceeded size of 1000000 with total size: 1000007.",
+            str(cm.exception),
+        )
+
+    def test_submission_with_objects_api_content_json_not_valid_json(self, m):
+        # trailing comma on last item
+        self.config.content_json = {
+            "key": "value",
+        }
+        self.config.save()
+        self.config.refresh_from_db()
+
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "voornaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_voornamen,
+                    },
+                },
+                {
+                    "key": "achternaam",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    },
+                },
+                {
+                    "key": "tussenvoegsel",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    },
+                },
+                {
+                    "key": "geboortedatum",
+                    "registration": {
+                        "attribute": RegistrationAttribute.initiator_geboortedatum,
+                    },
+                },
+            ],
+            submitted_data={
+                "voornaam": "Foo",
+                "achternaam": "Bar",
+                "tussenvoegsel": "de",
+                "geboortedatum": "2000-12-31",
+            },
+            bsn="111222333",
+        )
+
+        mock_service_oas_get(m, "https://objecten.nl/api/v1/", "objecten")
+        mock_service_oas_get(m, "https://documenten.nl/api/v1/", "documenten")
+
+        expected_document_result = generate_oas_component(
+            "documenten",
+            "schemas/EnkelvoudigInformatieObject",
+            url="https://documenten.nl/api/v1/enkelvoudiginformatieobjecten/1",
+        )
+
+        m.post(
+            "https://objecten.nl/api/v1/objects",
+            status_code=201,
+            json={},
+        )
+        m.post(
+            "https://documenten.nl/api/v1/enkelvoudiginformatieobjecten",
+            status_code=201,
+            json=expected_document_result,
+        )
+
+        plugin = ObjectsAPIRegistration("objects_api")
+        with self.assertRaises(ValidationError):
+            plugin.register_submission(submission, {})

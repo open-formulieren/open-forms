@@ -20,7 +20,7 @@ export const BACKEND_OPTIONS_FORMS = {
           rows: 5,
         },
       },
-    }
+    },
   },
   email: {
     uiSchema: {

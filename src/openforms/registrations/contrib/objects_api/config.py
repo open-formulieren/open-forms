@@ -1,15 +1,8 @@
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
-from openforms.registrations.contrib.objects_api.constants import (
-    JsonTemplateValidatorErrorTypes,
-)
-from openforms.registrations.contrib.objects_api.validators import JsonTemplateValidator
-from openforms.template.backends.sandboxed_django import get_openforms_backend
+
 from openforms.template.validators import DjangoTemplateValidator
-
-from openforms.utils.json_logic.api.validators import JsonLogicValidator
-
 from openforms.utils.mixins import JsonSchemaSerializerMixin
 from openforms.utils.validators import validate_rsin
 
@@ -76,14 +69,10 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
     )
     content_json = serializers.CharField(
         label=_("JSON content field"),
-        help_text=_("Field to generate json logic based on variables"),
+        help_text=_("Configurable JSON Content to send to the objects api."),
         validators=[
             DjangoTemplateValidator(
                 backend="openforms.template.openforms_backend",
-            ),
-            JsonTemplateValidator(
-                max_length=300,
-                error_type=JsonTemplateValidatorErrorTypes.api,
             ),
         ],
         required=False,
