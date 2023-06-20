@@ -4,7 +4,11 @@ from openforms.contrib.brp.models import BRPConfig
 
 
 def get_np_children_haal_centraal(bsn: str) -> List[Tuple[str, str]]:
+    # XXX: check the usage of this component in production, perhaps we can deprecate and
+    # remove it instead.
+    # otherwise: make Haal Centraal v2 compatible
     config = BRPConfig.get_solo()
+    assert isinstance(config, BRPConfig)
     client = config.get_client()
 
     # actual operation ID from standard! but Open Personen has the wrong one

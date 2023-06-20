@@ -5,6 +5,7 @@ from django.test import SimpleTestCase
 
 import requests_mock
 from glom import glom
+from zds_client.oas import schema_fetcher
 from zgw_consumers.models import Service
 from zgw_consumers.test import mock_service_oas_get
 
@@ -58,6 +59,10 @@ class HaalCentraalFindPersonTests:
             oas_url=self.service.oas,
         )
         self.addCleanup(self.requests_mock.stop)  # type: ignore
+
+        # ensure the schema cache is cleared before and after each test
+        schema_fetcher.cache.clear()
+        self.addCleanup(schema_fetcher.cache.clear)  # type: ignore
 
     def test_find_person_succesfully(self):
         attributes = self.config.get_attributes()
