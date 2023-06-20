@@ -1,35 +1,25 @@
-import FormioUtils from 'formiojs/utils';
+import PropTypes from 'prop-types';
 import React from 'react';
 import {FormattedMessage} from 'react-intl';
 
-import MessageList from '../MessageList';
+import MessageList from 'components/admin/MessageList';
 
-const CosignInRepeatingGroupWarning = ({formSteps}) => {
-  // Iterate to see if there are repeating groups or co-sign components
-  let editGrids = [];
-  const cosignComponents = [];
-  formSteps.map(step =>
-    FormioUtils.eachComponent(step.configuration.components, configComponent => {
-      if (configComponent.type === 'editgrid') {
-        editGrids.push(configComponent);
-      } else if (configComponent.type === 'cosign') {
-        cosignComponents.push(configComponent);
-      }
-    })
+const CosignInRepeatingGroupWarning = ({cosignComponents, availableComponents}) => {
+  if (!Object.keys(cosignComponents).length) return null;
+
+  // In cosignComponents the key is the 'path' of the component. For example, for a component 'foo' in a
+  // repeating group 'bar', the key is 'bar.foo'.
+  const isInEditGrid = pathParts => {
+    const path = pathParts.join('.');
+    if (!path) return false; // reached root
+    if (availableComponents[path] && availableComponents[path].type === 'editgrid') return true;
+    return isInEditGrid(pathParts.slice(0, -1)); // check parent
+  };
+
+  const componentInEditgrid = Object.keys(cosignComponents).some(path =>
+    isInEditGrid(path.split('.'))
   );
-
-  if (!cosignComponents.length) return null;
-
-  // Check if the co-sign components are in the editgrid
-  let foundComponent = false;
-  for (const cosignComponent of cosignComponents) {
-    for (const editGrid of editGrids) {
-      foundComponent = FormioUtils.getComponent(editGrid.components, cosignComponent.key, true);
-      if (foundComponent) break;
-    }
-  }
-
-  if (!foundComponent) return null;
+  if (!componentInEditgrid) return null;
 
   const warning = {
     level: 'warning',
@@ -42,6 +32,11 @@ const CosignInRepeatingGroupWarning = ({formSteps}) => {
   };
 
   return <MessageList messages={[warning]} />;
+};
+
+CosignInRepeatingGroupWarning.propTypes = {
+  cosignComponents: PropTypes.objectOf(PropTypes.object).isRequired,
+  availableComponents: PropTypes.objectOf(PropTypes.object).isRequired,
 };
 
 export default CosignInRepeatingGroupWarning;

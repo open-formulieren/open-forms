@@ -65,6 +65,9 @@ class CoSignField extends FormioEmail {
           },
           valueProperty: 'id',
           template: `<span>{{ item.label }}, provides: {{ item.providesAuth }}</span>`,
+          validate: {
+            required: true,
+          },
         },
         PRESENTATION,
         HIDDEN,

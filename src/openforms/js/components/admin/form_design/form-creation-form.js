@@ -26,7 +26,6 @@ import Appointments, {KEYS as APPOINTMENT_CONFIG_KEYS} from './Appointments';
 import Confirmation from './Confirmation';
 import {APIContext, FormContext} from './Context';
 import {FeatureFlagsContext} from './Context';
-import CosignInRepeatingGroupWarning from './CosignInRepeatingGroupWarning';
 import DataRemoval from './DataRemoval';
 import FormConfigurationFields from './FormConfigurationFields';
 import FormDetailFields from './FormDetailFields';
@@ -35,14 +34,13 @@ import FormObjectTools from './FormObjectTools';
 import FormSteps from './FormSteps';
 import FormSubmit from './FormSubmit';
 import {DEFAULT_LANGUAGE} from './LanguageTabs';
-import MissingTranslationsWarning from './MissingTranslationsWarning';
-import MultipleCosignComponentsWarning from './MultipleCosignComponentsWarning';
 import PaymentFields from './PaymentFields';
 import {EMPTY_PRICE_RULE, PriceLogic} from './PriceLogic';
 import ProductFields from './ProductFields';
 import RegistrationFields from './RegistrationFields';
 import Tab from './Tab';
 import TextLiterals from './TextLiterals';
+import {FormWarnings} from './Warnings';
 import {
   AUTH_PLUGINS_ENDPOINT,
   CATEGORIES_ENDPOINT,
@@ -1144,12 +1142,6 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
         </div>
       ) : null}
 
-      {state.form.translationEnabled ? (
-        <MissingTranslationsWarning form={state.form} formSteps={state.formSteps} />
-      ) : null}
-      <MultipleCosignComponentsWarning components={availableComponents} />
-      <CosignInRepeatingGroupWarning formSteps={state.formSteps} />
-
       <FormContext.Provider
         value={{
           form: {url: state.form.url},
@@ -1169,8 +1161,10 @@ const FormCreationForm = ({formUuid, formUrl, formHistoryUrl}) => {
             registrationBackend: state.form.registrationBackend,
             registrationBackendOptions: state.form.registrationBackendOptions,
           },
+          selectedAuthPlugins: state.selectedAuthPlugins,
         }}
       >
+        <FormWarnings form={state.form} />
         <Tabs defaultIndex={activeTab ? parseInt(activeTab, 10) : null}>
           <TabList>
             <Tab hasErrors={state.tabsWithErrors.includes('form')}>

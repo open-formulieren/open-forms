@@ -25,6 +25,11 @@ export const FormDecorator = (Story, {args}) => (
       formSteps: args.availableFormSteps || [],
       staticVariables: args.availableStaticVariables || [],
       formVariables: args.availableFormVariables || [],
+      selectedAuthPlugins: args.selectedAuthPlugins || [],
+      plugins: {
+        availableAuthPlugins: args.availableAuthPlugins || [],
+      },
+      components: args.availableComponents || {},
     }}
   >
     <Story />
