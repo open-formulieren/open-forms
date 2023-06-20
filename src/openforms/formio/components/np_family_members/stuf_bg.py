@@ -5,6 +5,7 @@ from stuf.stuf_bg.models import StufBGConfig
 
 def get_np_children_stuf_bg(bsn: str) -> List[Tuple[str, str]]:
     config = StufBGConfig.get_solo()
+    assert isinstance(config, StufBGConfig)
     client = config.get_client()
 
     attributes = [
