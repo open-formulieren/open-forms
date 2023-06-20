@@ -80,7 +80,7 @@ class EmailOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
             DjangoTemplateValidator(
                 backend="openforms.template.openforms_backend",
             ),
-            URLSanitationValidator,
+            URLSanitationValidator(),
         ],
     )
 
