@@ -356,6 +356,69 @@ class AuthenticationStep5Tests(EHerkenningConfigMixin, TestCase):
         "onelogin.saml2.utils.OneLogin_Saml2_Utils.generate_unique_id",
         return_value="_1330416516",
     )
+    @patch(
+        "onelogin.saml2.response.OneLogin_Saml2_Response.is_valid", return_value=True
+    )
+    @patch(
+        "digid_eherkenning.saml2.base.BaseSaml2Client.verify_saml2_response",
+        return_value=True,
+    )
+    def test_receive_unencrypted_samlart_from_eHerkenning(
+        self,
+        m,
+        mock_verification,
+        mock_validation,
+        mock_id,
+        mock_xml_validation,
+    ):
+        # Signicat testing environment doesn't encrypt the saml attributes
+        # The encryption feature of SAML attributes isn't important, since we
+        # only support Artefact Binding; we get the artefact from the Idp, *not*
+        # the requesting browser
+
+        m.post(
+            "https://test-iwelcome.nl/broker/ars/1.13",
+            content=_get_artifact_response("UnencryptedArtifactResponse.xml"),
+        )
+        form = FormFactory.create(
+            authentication_backends=["eherkenning"],
+            generate_minimal_setup=True,
+            formstep__form_definition__login_required=True,
+        )
+        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
+        return_url = reverse(
+            "authentication:return",
+            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+        )
+        return_url_with_param = furl(f"https://testserver{return_url}").set(
+            {"next": f"https://testserver{form_path}"}
+        )
+
+        url = furl(reverse("eherkenning:acs")).set(
+            {
+                "SAMLart": _create_test_artifact(),
+                "RelayState": str(return_url_with_param),
+            }
+        )
+
+        with surpress_output(sys.stderr, os.devnull):
+            response = self.client.get(url, follow=True)
+
+        self.assertRedirects(
+            response, f"https://testserver{form_path}", status_code=302
+        )
+        self.assertIn(FORM_AUTH_SESSION_KEY, self.client.session)
+        session_data = self.client.session[FORM_AUTH_SESSION_KEY]
+        self.assertEqual(session_data["attribute"], AuthAttribute.kvk)
+        self.assertEqual(session_data["value"], "123456782")
+
+    @patch(
+        "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
+    )
+    @patch(
+        "onelogin.saml2.utils.OneLogin_Saml2_Utils.generate_unique_id",
+        return_value="_1330416516",
+    )
     def test_cancel_login(
         self,
         m,

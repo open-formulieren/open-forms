@@ -1,5 +1,5 @@
 import logging
-from typing import Dict
+from typing import Any, Dict
 
 from django.http import HttpResponseRedirect
 from django.urls import resolve
@@ -57,7 +57,17 @@ class eHerkenningAssertionConsumerServiceView(
                 qualifier_name = subject["NameID"]["NameQualifier"]
                 qualifiers[qualifier_name] = subject["NameID"]["value"]
 
-        return qualifiers
+        def flatten(maybe_list: Any):
+            "Flatten singleton list"
+            match maybe_list:
+                case [singleton]:
+                    return singleton
+                case _:
+                    return maybe_list
+
+        return (
+            qualifiers if qualifiers else {a: flatten(v) for a, v in attributes.items()}
+        )
 
     def _get_plugin_id(self):
         redirect_url = self.get_redirect_url()
