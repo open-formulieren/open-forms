@@ -10,7 +10,7 @@
     "originalDefault": "Configure"
   },
   "+DztEl": {
-    "defaultMessage": "Path",
+    "defaultMessage": "Pad",
     "description": "Service fetch configuration modal form Path field label",
     "originalDefault": "Path"
   },
@@ -35,7 +35,7 @@
     "originalDefault": "Dates Component"
   },
   "/rF8P0": {
-    "defaultMessage": "Configuration",
+    "defaultMessage": "Instellingen",
     "description": "Service fetch config configuration tab title",
     "originalDefault": "Configuration"
   },
@@ -65,7 +65,7 @@
     "originalDefault": "Incomplete Submissions Removal Method"
   },
   "20K9To": {
-    "defaultMessage": "Service fetch configuration",
+    "defaultMessage": "Servicebevraging instellen",
     "description": "Service fetch configuration selection modal title",
     "originalDefault": "Service fetch configuration"
   },
@@ -85,7 +85,7 @@
     "originalDefault": "Type"
   },
   "2boL55": {
-    "defaultMessage": "Query parameters",
+    "defaultMessage": "Query-parameters",
     "description": "Service fetch configuration modal form query parameters field label",
     "originalDefault": "Query parameters"
   },
@@ -150,7 +150,7 @@
     "originalDefault": "Add step"
   },
   "5QLG/6": {
-    "defaultMessage": "Add another value",
+    "defaultMessage": "Nog een waarde toevoegen",
     "description": "Label for add button used in MappingArrayInput",
     "originalDefault": "Add another value"
   },
@@ -275,7 +275,7 @@
     "originalDefault": "Please select the logic type:"
   },
   "9LflJr": {
-    "defaultMessage": "Key",
+    "defaultMessage": "Sleutel",
     "description": "Label for 'key' in MappingArrayInput table column",
     "originalDefault": "Key"
   },
@@ -325,7 +325,7 @@
     "originalDefault": "is greater than"
   },
   "AHfeW/": {
-    "defaultMessage": "Configure",
+    "defaultMessage": "Instellen",
     "description": "Button to open service fetch configuration modal",
     "originalDefault": "Configure"
   },
@@ -380,7 +380,7 @@
     "originalDefault": "Static"
   },
   "BqA9of": {
-    "defaultMessage": "Try it out",
+    "defaultMessage": "Probeer het uit",
     "description": "Service fetch config try it out tab title",
     "originalDefault": "Try it out"
   },
@@ -395,7 +395,7 @@
     "originalDefault": "Then the price is"
   },
   "C+91tl": {
-    "defaultMessage": "Data extraction",
+    "defaultMessage": "Gegevensverwerking",
     "description": "Service fetch configuration modal data extraction fieldset title",
     "originalDefault": "Data extraction"
   },
@@ -464,8 +464,13 @@
     "description": "Manage process vars component column title",
     "originalDefault": "Field"
   },
+  "ENyg8G": {
+    "defaultMessage": "Het formulier heeft meerdere mede-ondertekencomponenten. Zorg ervoor dat dit er maximaal één is.",
+    "description": "Too many cosign components",
+    "originalDefault": "There are multiple co-sign components specified in this form. At most one should be present."
+  },
   "Ekld1h": {
-    "defaultMessage": "Save as new",
+    "defaultMessage": "Opslaan als nieuw",
     "description": "Save as new service fetch configuration button label",
     "originalDefault": "Save as new"
   },
@@ -510,7 +515,7 @@
     "originalDefault": "Text"
   },
   "Fz4U73": {
-    "defaultMessage": "Send confirmation email",
+    "defaultMessage": "Verstuur bevestigingsmail",
     "description": "Label of form field 'Send the confirmation email'",
     "originalDefault": "Send confirmation email"
   },
@@ -578,6 +583,11 @@
     "defaultMessage": "Onderhoudsmodus",
     "description": "Form maintenance mode field label",
     "originalDefault": "Maintenance mode"
+  },
+  "HEg854": {
+    "defaultMessage": "Naam",
+    "description": "Service fetch configuration modal form name field label",
+    "originalDefault": "Name"
   },
   "HF0cSk": {
     "defaultMessage": "Aantal dagen dat een niet voltooide inzendingen (door fouten in de afhandeling) bewaard blijft. Laat leeg om de waarde van de algemene configuratie te gebruiken.",
@@ -664,6 +674,11 @@
     "description": "Successful Submissions Removal Limit field label",
     "originalDefault": "Successful Submissions Removal Limit"
   },
+  "JhdlEg": {
+    "defaultMessage": "Er zijn mede-ondertekencomponenten gevonden binnen een herhalende groep. Dit is niet ondersteund.",
+    "description": "Cosign components in repeating group warning message",
+    "originalDefault": "There are co-sign components inside repeating groups. This is not supported."
+  },
   "JtOgcq": {
     "defaultMessage": "Achternaam veld",
     "description": "Last Name Component field label",
@@ -730,12 +745,12 @@
     "originalDefault": "Add variable"
   },
   "LrlAVD": {
-    "defaultMessage": "Data extraction",
+    "defaultMessage": "Gegevensverwerking",
     "description": "Service fetch configuration try it out tabpanel data extraction fieldset title",
     "originalDefault": "Data extraction"
   },
   "Ltde29": {
-    "defaultMessage": "Haal de waarde op uit een externe registratie",
+    "defaultMessage": "haal de waarde op uit een externe registratie",
     "description": "action type \"fetch-from-service\" label",
     "originalDefault": "fetch the value for a variable from a service"
   },
@@ -755,7 +770,7 @@
     "originalDefault": "Component"
   },
   "MXKqVO": {
-    "defaultMessage": "Below you can specify a custom template for the configuration email. If not specified, the globally configured template will be used.",
+    "defaultMessage": "Je kan hieronder een formulierspecifiek sjabloon opstellen voor de bevestigingsmail. Indien leeg, dan worden de algemene instellingen gebruikt.",
     "description": "Custom confirmation email template explanation",
     "originalDefault": "Below you can specify a custom template for the configuration email. If not specified, the globally configured template will be used."
   },
@@ -965,7 +980,7 @@
     "originalDefault": "Back to login"
   },
   "TH62Jn": {
-    "defaultMessage": "the path should not have a leading slash",
+    "defaultMessage": "Zorg ervoor dat het pad niet met een schuine streep ('/') begint.",
     "description": "Service fetch configuration modal form Path field help text",
     "originalDefault": "the path should not have a leading slash"
   },
@@ -1075,7 +1090,7 @@
     "originalDefault": "Invalid JSON logic expression"
   },
   "Xe+CCn": {
-    "defaultMessage": "Basic",
+    "defaultMessage": "Basis",
     "description": "Service fetch configuration modal basic fieldset title",
     "originalDefault": "Basic"
   },
@@ -1109,6 +1124,16 @@
     "description": "Warning message for missing translations",
     "originalDefault": "Form has translation enabled, but is missing <link>{count, plural, one {# translation} other {# translations} }</link>"
   },
+  "ZFcKzh": {
+    "defaultMessage": "Tussentijds opslaan",
+    "description": "Form suspensionAllowed field label",
+    "originalDefault": "Suspension allowed"
+  },
+  "ZGY2dI": {
+    "defaultMessage": "Whether the user is allowed to suspend this form or not.",
+    "description": "Form suspensionAllowed field help text",
+    "originalDefault": "Geeft aan of de gebruiker het formulier tussentijds kan opslaan/pauzeren."
+  },
   "ZICfus": {
     "defaultMessage": "'Vorige' tekst",
     "description": "Form step previous text label",
@@ -1140,7 +1165,7 @@
     "originalDefault": "Login required?"
   },
   "auZOcD": {
-    "defaultMessage": "Mapping expression",
+    "defaultMessage": "Mappingexpressie",
     "description": "Service fetch configuration modal form mapping expression field label",
     "originalDefault": "Mapping expression"
   },
@@ -1160,7 +1185,7 @@
     "originalDefault": "There are validation errors"
   },
   "bnxtnX": {
-    "defaultMessage": "Full request",
+    "defaultMessage": "Volledige HTTP-request",
     "description": "Service fetch configuration try it out tabpanel full request fieldset title",
     "originalDefault": "Full request"
   },
@@ -1295,7 +1320,7 @@
     "originalDefault": "Object"
   },
   "fpX4ei": {
-    "defaultMessage": "Mapping expression language",
+    "defaultMessage": "Soort mappingexpressie",
     "description": "Service fetch configuration modal form mapping expression language field label",
     "originalDefault": "Mapping expression language"
   },
@@ -1305,7 +1330,7 @@
     "originalDefault": "When"
   },
   "fv74On": {
-    "defaultMessage": "Choose existing configuration",
+    "defaultMessage": "Gebruik bestaande configuratie",
     "description": "Service fetch configuration modal select existing field label",
     "originalDefault": "Choose existing configuration"
   },
@@ -1313,6 +1338,11 @@
     "defaultMessage": "Negeren",
     "description": "Session expiry warning \"do nothing\" button",
     "originalDefault": "Do nothing"
+  },
+  "gAf9pR": {
+    "defaultMessage": "(nog niet ingesteld)",
+    "description": "No service fetch configuration configured yet message",
+    "originalDefault": "(not configured yet)"
   },
   "gGNIdG": {
     "defaultMessage": "De tekst op de overzichtspagina om naar de vorige stap terug te gaan. Laat dit veld leeg om de standaardinstelling te gebruiken.",
@@ -1415,7 +1445,7 @@
     "originalDefault": "No"
   },
   "jitewC": {
-    "defaultMessage": "HTTP method",
+    "defaultMessage": "HTTP-method",
     "description": "Service fetch configuration modal form HTTP method field label",
     "originalDefault": "HTTP method"
   },
@@ -1470,7 +1500,7 @@
     "originalDefault": "Mark the form step as not-applicable"
   },
   "lDFtNM": {
-    "defaultMessage": "Value",
+    "defaultMessage": "Waarde",
     "description": "Label for 'value' in MappingArrayInput table column",
     "originalDefault": "Value"
   },
@@ -1550,7 +1580,7 @@
     "originalDefault": "String"
   },
   "oCo2mP": {
-    "defaultMessage": "Save",
+    "defaultMessage": "Opslaan",
     "description": "Save service fetch configuration button label",
     "originalDefault": "Save"
   },
@@ -1609,6 +1639,11 @@
     "description": "Variable table form definition title",
     "originalDefault": "Form definition"
   },
+  "pqCru3": {
+    "defaultMessage": "Servicebevraging:",
+    "description": "Currently selected service fetch configuration label",
+    "originalDefault": "Fetch configuration:"
+  },
   "pyX2Tl": {
     "defaultMessage": "Bevestigen",
     "description": "Confirm complex Camunda variable definition",
@@ -1640,7 +1675,7 @@
     "originalDefault": "Manage complex process variables"
   },
   "r9MTrz": {
-    "defaultMessage": "Request headers",
+    "defaultMessage": "Request-headers",
     "description": "Service fetch configuration modal form request headers field label",
     "originalDefault": "Request headers"
   },
@@ -1665,7 +1700,7 @@
     "originalDefault": "Sorry, we couldn't do that because you are logged out - this may be because your session expired."
   },
   "sFHD3/": {
-    "defaultMessage": "Whether to send a confirmation email to the end-user who submitted the form.",
+    "defaultMessage": "Vink aan om een bevestigingsmail te sturen naar de inzender(s) van het formulier.",
     "description": "Help text of form field 'Send the confirmation email'",
     "originalDefault": "Whether to send a confirmation email to the end-user who submitted the form."
   },
@@ -1803,6 +1838,11 @@
     "defaultMessage": "Telefoonnummer veld",
     "description": "Phone Number Component field label",
     "originalDefault": "Phone Number Component"
+  },
+  "z+kWUh": {
+    "defaultMessage": "De mede-ondertekenencomponent vereist de {plugin}-authenticatieplugin, maar deze is (nog) niet ingeschakeld.",
+    "description": "MissingAuthCosignWarning message",
+    "originalDefault": "The the co-sign component requires the {plugin} authentication plugin, but this plugin is not enabled on the form."
   },
   "z0FW+t": {
     "defaultMessage": "Veldnaam",
