@@ -23,7 +23,31 @@ class ConfirmationEmailTemplatesCosignTest(TestMigrations):
             Kind regards,<br>
             <br>
             Open Forms<br>
-            """
+            """,
+            content_en="""
+            Dear Sir, Madam,<br>
+            You have submitted the form "{{ form_name }}" on {{ submission_date }}.<br>
+            Your reference is: {{ public_reference }}<br>
+
+            {% summary %}<br>
+            {% appointment_information %}<br>
+            {% payment_information %}<br><br>
+
+            Kind regards,<br>
+            <br>
+            Open Forms<br>
+            """,
+            content_nl="""
+            Bla bla in het Nederlands<br>
+
+            {% summary %}<br>
+            {% appointment_information %}<br>
+            {% payment_information %}<br><br>
+
+            Met vriendelijke groet,<br>
+            <br>
+            Open Formulieren<br>
+            """,
         )
         self.email2 = ConfirmationEmailTemplate.objects.create(
             content="""
@@ -71,10 +95,14 @@ class ConfirmationEmailTemplatesCosignTest(TestMigrations):
     def test_template_after_migration_contains_cosign_tag(self):
         self.email1.refresh_from_db()
 
-        self.assertIn("{% cosign_information %}", self.email1.content)
-        self.assertIn("{% summary %}", self.email1.content)
-        self.assertIn("{% payment_information %}", self.email1.content)
-        self.assertIn("{% appointment_information %}", self.email1.content)
+        for field in ["content", "content_nl", "content_en"]:
+            with self.subTest(f"Email 1 {field}"):
+                self.assertIn("{% cosign_information %}", getattr(self.email1, field))
+                self.assertIn("{% summary %}", getattr(self.email1, field))
+                self.assertIn("{% payment_information %}", getattr(self.email1, field))
+                self.assertIn(
+                    "{% appointment_information %}", getattr(self.email1, field)
+                )
 
         self.email2.refresh_from_db()
 

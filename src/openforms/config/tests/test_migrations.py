@@ -217,3 +217,15 @@ class ConfirmationEmailTemplatesCosignTest(TestMigrations):
         self.assertIn(
             "{% appointment_information %}", config.confirmation_email_content
         )
+
+        self.assertIn("{% cosign_information %}", config.confirmation_email_content_nl)
+        self.assertIn("{% summary %}", config.confirmation_email_content_nl)
+        self.assertIn(
+            "{% appointment_information %}", config.confirmation_email_content_nl
+        )
+
+        self.assertIn("{% cosign_information %}", config.confirmation_email_content_en)
+        self.assertIn("{% summary %}", config.confirmation_email_content_en)
+        self.assertIn(
+            "{% appointment_information %}", config.confirmation_email_content_en
+        )

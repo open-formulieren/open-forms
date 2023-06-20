@@ -14,7 +14,15 @@ def add_cosign_template_tag_to_email_confirmation_template(apps, _):
 
     for template in templates:
         template.content = add_cosign_info_templatetag(template.content)
-    ConfirmationEmailTemplate.objects.bulk_update(templates, fields=["content"])
+        if template.content_en:
+            template.content_en = add_cosign_info_templatetag(template.content_en)
+
+        if template.content_nl:
+            template.content_nl = add_cosign_info_templatetag(template.content_nl)
+
+    ConfirmationEmailTemplate.objects.bulk_update(
+        templates, fields=["content", "content_en", "content_nl"]
+    )
 
 
 class Migration(migrations.Migration):
