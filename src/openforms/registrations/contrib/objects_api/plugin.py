@@ -82,9 +82,10 @@ class ObjectsAPIRegistration(BasePlugin):
         use."""
 
         config = ObjectsAPIConfig.get_solo()
+        config.apply_defaults_to(options)
+
         objects_client = config.objects_service.build_client()
 
-        config.apply_defaults_to(options)
         options["auteur"] = options.get("auteur", "Aanvrager")
 
         language_code_2b = to_iso639_2b(submission.language_code)
@@ -105,6 +106,7 @@ class ObjectsAPIRegistration(BasePlugin):
             get_drc=get_drc,
         )
 
+        # TODO turn attachments into dictionary when giving users more options then just urls.
         attachments = []
         for attachment in submission.attachments:
             attachment_options = build_options(

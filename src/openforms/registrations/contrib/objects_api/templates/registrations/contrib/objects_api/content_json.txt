@@ -1,4 +1,4 @@
-{% load i18n registrations.contrib.email.registration_summary capture_tags %}
+{% load registrations.contrib.objects_api.json_summary capture_tags %}
 {% capture as tt_openblock silent %}{% templatetag openblock %}{% endcapture %}
 {% capture as tt_closeblock silent %}{% templatetag closeblock %}{% endcapture %}
 {% capture as tt_openvariable silent %}{% templatetag openvariable %}{% endcapture %}

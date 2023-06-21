@@ -1,18 +1,16 @@
-from functools import partial
-
 from django.db import models
+from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from solo.models import SingletonModel
 from zgw_consumers.constants import APITypes
 
-from openforms.registrations.contrib.email.models import render_with_language
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.validators import validate_rsin
 
-get_content_text = partial(
-    render_with_language, "registrations/contrib/objects_api/content_json.txt"
-)
+get_content_text = render_to_string(
+    "registrations/contrib/objects_api/content_json.txt"
+).strip()
 
 
 class ObjectsAPIConfig(SingletonModel):
