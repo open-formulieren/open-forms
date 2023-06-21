@@ -1,10 +1,12 @@
 from unittest.mock import patch
 
 from django.urls import reverse
+from django.utils.translation import gettext as _
 
 from rest_framework import serializers, status
 from rest_framework.test import APITestCase
 
+from openforms.accounts.models import User
 from openforms.accounts.tests.factories import SuperUserFactory
 from openforms.payments.base import BasePlugin as PaymentBasePlugin
 from openforms.payments.registry import Registry as PaymentRegistry
@@ -35,9 +37,11 @@ class PaymentPlugin(PaymentBasePlugin):
 
 
 class FormPluginOptionTest(APITestCase):
+    user: User
+
     def setUp(self):
         super().setUp()
-        self.user = SuperUserFactory()
+        self.user = SuperUserFactory.create()
         self.client.force_authenticate(user=self.user)
 
     def test_registration_backend_options(self):
@@ -234,9 +238,12 @@ class FormPluginOptionTest(APITestCase):
         self.assertEqual(response.status_code, 400)
 
         data = response.json()
+        error = data["invalidParams"][0]["reason"]
 
         self.assertEqual(
-            data["invalidParams"][0]["reason"],
-            "The fields email_content_template_html, email_content_template_text must all have a "
-            "non-empty value as soon as one of them does.",
+            error,
+            _(
+                "The fields {fields} must all have a non-empty value as soon as one of them "
+                "does."
+            ).format(fields="email_content_template_html, email_content_template_text"),
         )

@@ -6332,8 +6332,6 @@ msgstr "Testen"
 #: openforms/registrations/contrib/email/templates/registrations/contrib/email/email_registration_content.html:8
 #: openforms/registrations/contrib/email/templates/registrations/contrib/email/email_registration_content.txt:13
 #, python-format
-#| msgid ""
-#| "Submission payment received for %(form_name)s (submitted on %(datetime)s)"
 msgid ""
 "Submission payment received for %(tt_openvariable)s form_name "
 "%(tt_closevariable)s (submitted on %(tt_openvariable)s completed_on "
