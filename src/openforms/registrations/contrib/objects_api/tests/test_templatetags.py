@@ -1,68 +1,78 @@
-from unittest import TestCase
+from django.test import TransactionTestCase
 
-from django.template import Context, Template
-
+from openforms.forms.tests.factories import FormFactory
 from openforms.registrations.constants import RegistrationAttribute
-from openforms.submissions.tests.factories import SubmissionFactory
+from openforms.submissions.tests.factories import (
+    SubmissionFactory,
+    SubmissionStepFactory,
+)
+from openforms.template import openforms_backend, render_from_string
 
 
-class JsonSummeryTests(TestCase):
+class JsonSummeryTests(TransactionTestCase):
     def test_render_json_summary(self):
-        submission = SubmissionFactory.from_components(
-            [
-                {
-                    "key": "voornaam",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_voornamen,
+        form = FormFactory.create()
+        submission = SubmissionFactory.create(
+            form=form, completed=True, form_url="http://maykinmedia.nl/myform/"
+        )
+        SubmissionStepFactory.create(
+            form_step__form=form,
+            form_step__form_definition__slug="json-summery-step",
+            form_step__form_definition__configuration={
+                "display": "form",
+                "components": [
+                    {
+                        "key": "voornaam",
+                        "type": "textfield",
+                        "registration": {
+                            "attribute": RegistrationAttribute.initiator_voornamen,
+                        },
                     },
-                },
-                {
-                    "key": "achternaam",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                    {
+                        "key": "achternaam",
+                        "type": "textfield",
+                        "registration": {
+                            "attribute": RegistrationAttribute.initiator_geslachtsnaam,
+                        },
                     },
-                },
-                {
-                    "key": "tussenvoegsel",
-                    "type": "textfield",
-                    "registration": {
-                        "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                    {
+                        "key": "tussenvoegsel",
+                        "type": "textfield",
+                        "registration": {
+                            "attribute": RegistrationAttribute.initiator_tussenvoegsel,
+                        },
                     },
-                },
-            ],
-            submitted_data={
+                ],
+            },
+            submission=submission,
+            data={
                 "voornaam": "Foo",
                 "achternaam": "Bar",
                 "tussenvoegsel": "de",
             },
-            language_code="en",
-        )
-        submission_step = submission.steps[0]
-        step_slug = submission_step.form_step.form_definition.slug
-
-        # Loads template tag and uses template tag
-        template = Template(
-            """{% load registrations.contrib.objects_api.json_summary %}{% json_summary %}"""
         )
 
-        rendered = template.render(Context({"_submission": submission}))
-
-        expected = (
-            '{"%s": {"voornaam": "Foo", "achternaam": "Bar", "tussenvoegsel": "de"}}'
-            % step_slug
+        rendered = render_from_string(
+            "{% json_summary %}",
+            context={"_submission": submission},
+            backend=openforms_backend,
+            disable_autoescape=True,
         )
+
+        expected = '{"json-summery-step": {"voornaam": "Foo", "achternaam": "Bar", "tussenvoegsel": "de"}}'
 
         self.assertEqual(rendered, expected)
 
     def test_render_json_summary_no_submission(self):
         # Loads template tag and uses template tag
-        template = Template(
-            """{% load registrations.contrib.objects_api.json_summary %}{% json_summary %}"""
+
+        rendered = render_from_string(
+            "{% json_summary %}",
+            context={},
+            backend=openforms_backend,
+            disable_autoescape=True,
         )
 
-        rendered = template.render(Context())
         expected = "{}"
 
         self.assertEqual(rendered, expected)

@@ -105,7 +105,7 @@ class ObjectsAPIConfig(SingletonModel):
         help_text=_("Default RSIN of organization, which creates the INFORMATIEOBJECT"),
     )
     content_json = models.TextField(
-        _("Json field"),
+        _("JSON content template"),
         validators=[
             DjangoTemplateValidator(
                 backend="openforms.template.openforms_backend",
@@ -113,6 +113,9 @@ class ObjectsAPIConfig(SingletonModel):
         ],
         blank=False,
         default=get_content_text,
+        help_text=_(
+            "This template is evaluated with the submission data and the resulting JSON is sent to the objects API."
+        ),
     )
 
     class Meta:
@@ -134,4 +137,5 @@ class ObjectsAPIConfig(SingletonModel):
             "informatieobjecttype_attachment", self.informatieobjecttype_attachment
         )
         options.setdefault("organisatie_rsin", self.organisatie_rsin)
-        options.setdefault("content_json", self.content_json)
+        if not options.get("content_json"):
+            options["content_json"] = self.content_json

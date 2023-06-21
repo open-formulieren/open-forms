@@ -1,11 +1,11 @@
 import json
-import logging
 import sys
 from datetime import date
 from typing import Any, Dict, NoReturn
 
 from django.conf import settings
-from django.core.exceptions import SuspiciousOperation, ValidationError
+from django.core.exceptions import SuspiciousOperation
+from django.template.defaultfilters import filesizeformat
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
@@ -31,8 +31,6 @@ from ...registry import register
 from .checks import check_config
 from .config import ObjectsAPIOptionsSerializer
 from .models import ObjectsAPIConfig
-
-logger = logging.getLogger(__name__)
 
 
 def get_drc() -> ZGWClient:
@@ -164,11 +162,11 @@ class ObjectsAPIRegistration(BasePlugin):
             )
             csv_url = submission_csv_document["url"]
 
-        base_render_context = {
+        context = {
             "_submission": submission,
-            **get_variables_for_context(submission),
-            "productaanvraag_type": str(options["productaanvraag_type"]),
-            # nested for namespacing note: other templates and context expose all submission
+            "productaanvraag_type": options["productaanvraag_type"],
+            "variables": get_variables_for_context(submission),
+            # Github issue #661, nested for namespacing note: other templates and context expose all submission
             # variables in the top level namespace, but that is due for refactor
             "submission": {
                 "public_reference": submission.public_registration_reference,
@@ -180,41 +178,30 @@ class ObjectsAPIRegistration(BasePlugin):
             },
         }
 
-        template = (
-            options.get("content_json") or ObjectsAPIConfig.get_solo().content_json
-        )
-
+        # FIXME: replace with better suited alternative dealing with JSON specifically
         record_data = render_from_string(
-            template,
-            context={**base_render_context},
-            disable_autoescape=False,
+            options["content_json"],
+            context=context,
+            disable_autoescape=True,
             backend=openforms_backend,
         )
 
-        if sys.getsizeof(record_data) > settings.OBJECTS_API_DATA_SIZE_LIMIT:
-            logger.error(
-                "Content JSON field exceeded size of %s with total size: %s",
-                settings.OBJECTS_API_DATA_SIZE_LIMIT,
-                sys.getsizeof(record_data),
-            )
+        if (
+            data_size := sys.getsizeof(record_data)
+        ) > settings.MAX_UNTRUSTED_JSON_PARSE_SIZE:
+            formatted_size = filesizeformat(data_size)
+            max_size = filesizeformat(settings.MAX_UNTRUSTED_JSON_PARSE_SIZE)
             raise SuspiciousOperation(
-                _(
-                    "Content JSON field exceeded size of %(max)s with total size: %(total)s.",
-                )
-                % {
-                    "max": settings.OBJECTS_API_DATA_SIZE_LIMIT,
-                    "total": sys.getsizeof(record_data),
-                }
+                f"Templated out content JSON exceeds the maximum size {max_size} ("
+                f"it is {formatted_size})."
             )
 
         try:
             record_data = json.loads(record_data)
-        except (TypeError, json.decoder.JSONDecodeError) as err:
-            logger.error(
-                "Template object doesn't have valid JSON format",
-                exc_info=err,
-            )
-            raise ValidationError(_("Invalid JSON"), code="invalid") from err
+        except json.decoder.JSONDecodeError as err:
+            raise RuntimeError(
+                "Template evaluation did not result in valid JSON"
+            ) from err
 
         if submission.is_authenticated:
             record_data[submission.auth_info.attribute] = submission.auth_info.value

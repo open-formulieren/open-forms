@@ -3,7 +3,6 @@
 {% capture as tt_closeblock silent %}{% templatetag closeblock %}{% endcapture %}
 {% capture as tt_openvariable silent %}{% templatetag openvariable %}{% endcapture %}
 {% capture as tt_closevariable silent %}{% templatetag closevariable %}{% endcapture %}
-{% autoescape off %}
 {
   "data": {{ tt_openblock }} json_summary {{ tt_closeblock }},
   "type": "terugbelnotitie",
@@ -13,4 +12,3 @@
   "submission_id": "{{ tt_openvariable }} submission.kenmerk {{ tt_closevariable }}",
   "language_code": "{{ tt_openvariable }} submission.language_code {{ tt_closevariable }}"
 }
-{% endautoescape %}

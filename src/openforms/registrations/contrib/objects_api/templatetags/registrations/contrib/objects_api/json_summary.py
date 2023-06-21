@@ -14,5 +14,5 @@ def json_summary(context):
     if not submission:
         return {}
 
-    get_json_renderer = render_json(submission)
-    return SafeString(json.dumps(get_json_renderer))
+    json_renderer = render_json(submission)
+    return SafeString(json.dumps(json_renderer))

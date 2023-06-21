@@ -1185,6 +1185,11 @@ LOG_OUTGOING_REQUESTS_MAX_AGE = config(
     "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7 * 24
 )  # number of hours
 
+# Objects API registration backend maximum JSON body size in bytes
+MAX_UNTRUSTED_JSON_PARSE_SIZE = config(
+    "MAX_UNTRUSTED_JSON_PARSE_SIZE", 1_000_000
+)  # 1mb in bytes
+
 #
 # Open Forms extensions
 #
@@ -1193,7 +1198,3 @@ OPEN_FORMS_EXTENSIONS = config("OPEN_FORMS_EXTENSIONS", split=True, default=[])
 
 if OPEN_FORMS_EXTENSIONS:
     INSTALLED_APPS += OPEN_FORMS_EXTENSIONS
-
-
-# Objects API registration backend maximum JSON body size in bytes
-OBJECTS_API_DATA_SIZE_LIMIT = config("OBJECTS_API_DATA_SIZE_LIMIT", 1000000)

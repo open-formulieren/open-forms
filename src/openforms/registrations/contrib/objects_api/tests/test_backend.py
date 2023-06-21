@@ -1,3 +1,4 @@
+import textwrap
 from datetime import date
 
 from django.core.exceptions import SuspiciousOperation, ValidationError
@@ -38,29 +39,31 @@ class ObjectsAPIBackendTests(TestCase):
             informatieobjecttype_submission_csv="https://catalogi.nl/api/v1/informatieobjecttypen/4",
             informatieobjecttype_attachment="https://catalogi.nl/api/v1/informatieobjecttypen/3",
             organisatie_rsin="000000000",
-            content_json="""
-            {\n
-                "bron": {\n
-                    "naam": "Open Formulieren",\n
-                    "kenmerk": "{{ submission.kenmerk }}"\n
-                },\n
-                "type": "{{ productaanvraag_type }}",\n
-                "aanvraaggegevens": {% json_summary %},\n
-                "taal": "{{ submission.language_code  }}",\n
-                "betrokkenen": [\n
-                    {\n
-                    "inpBsn" : "{{ auth_bsn }}",\n
-                    "rolOmschrijvingGeneriek" : "initiator"\n
-                    }\n
-                ],\n
-                "pdf": "{{ submission.pdf_url }}",\n
-                "csv": "{{ submission.csv_url }}",\n
-                "bijlagen": [\n
-                    {% for attachment in submission.attachments %}\n
-                    "{{ attachment }}"{% if not forloop.last %},{% endif %}\n
-                    {% endfor %}\n
-                ]\n
-            }""",
+            content_json=textwrap.dedent(
+                """
+                {
+                "bron": {
+                "naam": "Open Formulieren",
+                "kenmerk": "{{ submission.kenmerk }}"
+                },
+                "type": "{{ productaanvraag_type }}",
+                "aanvraaggegevens": {% json_summary %},
+                "taal": "{{ submission.language_code  }}",
+                "betrokkenen": [
+                {
+                "inpBsn" : "{{ variables.auth_bsn }}",
+                "rolOmschrijvingGeneriek" : "initiator"
+                }
+                ],
+                "pdf": "{{ submission.pdf_url }}",
+                "csv": "{{ submission.csv_url }}",
+                "bijlagen": [
+                {% for attachment in submission.attachments %}
+                "{{ attachment }}"{% if not forloop.last %},{% endif %}
+                {% endfor %}
+                ]
+                }"""
+            ),
         )
 
     def setUp(self):
@@ -2163,13 +2166,8 @@ class ObjectsAPIBackendTests(TestCase):
         )
         self.assertEqual(document_create_attachment_body["titel"], "A Custom Title")
 
-    @override_settings(OBJECTS_API_DATA_SIZE_LIMIT=1000000)
+    @override_settings(MAX_UNTRUSTED_JSON_PARSE_SIZE=10)
     def test_submission_with_objects_api_content_json_exceed_max_file_limit(self, m):
-        # generates template of 1000007 bytes
-        self.config.content_json = {"oversized_list": list(range(0, 138875))}
-        self.config.save()
-        self.config.refresh_from_db()
-
         submission = SubmissionFactory.from_components(
             [
                 {
@@ -2230,7 +2228,7 @@ class ObjectsAPIBackendTests(TestCase):
         with self.assertRaises(SuspiciousOperation) as cm:
             plugin.register_submission(submission, {})
         self.assertEqual(
-            "Content JSON field exceeded size of 1000000 with total size: 1000007.",
+            "Templated out content JSON exceeds the maximum size 10\xa0bytes (it is 547\xa0bytes).",
             str(cm.exception),
         )
 
@@ -2299,5 +2297,5 @@ class ObjectsAPIBackendTests(TestCase):
         )
 
         plugin = ObjectsAPIRegistration("objects_api")
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(RuntimeError):
             plugin.register_submission(submission, {})
