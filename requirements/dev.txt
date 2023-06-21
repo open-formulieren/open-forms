@@ -172,7 +172,7 @@ cssselect2==0.4.1
     #   weasyprint
 ddt-api-calls==0.3.2
     # via -r requirements/dev.in
-defusedxml==0.6.0
+defusedxml==0.7.1
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
@@ -281,7 +281,7 @@ django-decorator-include==3.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
-django-digid-eherkenning==0.6.0
+django-digid-eherkenning==0.8.0
     # via
     #   -c requirements/ci.txt
     #   -r requirements/ci.txt
