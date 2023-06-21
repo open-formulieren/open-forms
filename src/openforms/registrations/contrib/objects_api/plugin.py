@@ -253,4 +253,6 @@ class ObjectsAPIRegistration(BasePlugin):
         set_submission_reference(submission)
 
     def get_custom_templatetags_libraries(self) -> list[str]:
-        return ["openforms.registrations.contrib.objects_api.templatetags.objects_api"]
+        return [
+            "openforms.registrations.contrib.objects_api.templatetags.registrations.contrib.objects_api.json_summary"
+        ]

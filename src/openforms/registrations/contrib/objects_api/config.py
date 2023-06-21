@@ -69,7 +69,9 @@ class ObjectsAPIOptionsSerializer(JsonSchemaSerializerMixin, serializers.Seriali
     )
     content_json = serializers.CharField(
         label=_("JSON content field"),
-        help_text=_("Configurable JSON Content to send to the objects api."),
+        help_text=_(
+            "JSON template for the body of the request sent to the Objects API."
+        ),
         validators=[
             DjangoTemplateValidator(
                 backend="openforms.template.openforms_backend",

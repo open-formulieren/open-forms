@@ -288,7 +288,7 @@ class ObjectsAPIBackendTests(TestCase):
                     "csv": expected_csv_document_result["url"],
                     "bijlagen": [],
                 },
-                "startAt": "2023-06-20",
+                "startAt": date.today().isoformat(),
                 "geometry": {
                     "type": "Point",
                     "coordinates": [52.36673378967122, 4.893164274470299],
@@ -850,7 +850,7 @@ class ObjectsAPIBackendTests(TestCase):
                     },
                     "taal": "en",
                 },
-                "startAt": "2023-06-20",
+                "startAt": date.today().isoformat(),
                 "geometry": {
                     "type": "Point",
                     "coordinates": [52.36673378967122, 4.893164274470299],
@@ -2166,9 +2166,7 @@ class ObjectsAPIBackendTests(TestCase):
     @override_settings(OBJECTS_API_DATA_SIZE_LIMIT=1000000)
     def test_submission_with_objects_api_content_json_exceed_max_file_limit(self, m):
         # generates template of 1000007 bytes
-        self.config.content_json = {
-            "oversized_list": list(range(0, 138875))
-        }
+        self.config.content_json = {"oversized_list": list(range(0, 138875))}
         self.config.save()
         self.config.refresh_from_db()
 
