@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('forms', '0080_add_show_in_summary_default'),
+        ("forms", "0080_add_show_in_summary_default"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='form',
-            name='authentication_backend_options',
-            field=models.JSONField(blank=True, default=dict, null=True, verbose_name='per form authentication backend config'),
+            model_name="form",
+            name="authentication_backend_options",
+            field=models.JSONField(
+                blank=True,
+                default=dict,
+                null=True,
+                verbose_name="per form authentication backend config",
+            ),
         ),
     ]
