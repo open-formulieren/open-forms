@@ -64,7 +64,7 @@ class FormSerializer(PublicFieldsSerializerMixin, serializers.ModelSerializer):
         required=False,
         default=list,
     )
-    authentication_backend_options = serializers.DictField()
+    authentication_backend_options = serializers.DictField(required=False, default=dict)
     login_options = LoginOptionsReadOnlyField()
     cosign_login_info = CosignLoginInfoSerializer(source="*", read_only=True)
     auto_login_authentication_backend = serializers.CharField(

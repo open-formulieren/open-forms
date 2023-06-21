@@ -1028,6 +1028,7 @@ paths:
         - `internalName`
         - `registrationBackend`
         - `registrationBackendOptions`
+        - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `product`
@@ -1093,6 +1094,7 @@ paths:
         - `internalName`
         - `registrationBackend`
         - `registrationBackendOptions`
+        - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `product`
@@ -1602,6 +1604,7 @@ paths:
         - `internalName`
         - `registrationBackend`
         - `registrationBackendOptions`
+        - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `product`
@@ -1673,6 +1676,7 @@ paths:
         - `internalName`
         - `registrationBackend`
         - `registrationBackendOptions`
+        - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `product`
@@ -1748,6 +1752,7 @@ paths:
         - `internalName`
         - `registrationBackend`
         - `registrationBackendOptions`
+        - `authenticationBackendOptions`
         - `paymentBackend`
         - `paymentBackendOptions`
         - `product`
@@ -5738,7 +5743,14 @@ components:
             title: Authentication attribute
           title: Provides authentication attributes
           description: The authentication attribute provided by this plugin.
+        assuranceLevels:
+          type: array
+          items:
+            $ref: '#/components/schemas/TextChoice'
+          title: Levels of assurance
+          description: The levels of assurance this plugin defines.
       required:
+      - assuranceLevels
       - id
       - label
       - providesAuth
@@ -6148,7 +6160,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -6178,6 +6190,9 @@ components:
           items:
             $ref: '#/components/schemas/AuthenticationBackendsEnum'
           writeOnly: true
+        authenticationBackendOptions:
+          type: object
+          additionalProperties: {}
         loginOptions:
           type: array
           items:
@@ -6543,7 +6558,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -6710,7 +6725,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         name:
           type: string
@@ -7499,7 +7514,7 @@ components:
 
         Note that this schema is used for both non-admin users filling out forms and
         admin users designing forms. The fields that are only relevant for admin users are:
-        `internalName`, `registrationBackend`, `registrationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
+        `internalName`, `registrationBackend`, `registrationBackendOptions`, `authenticationBackendOptions`, `paymentBackend`, `paymentBackendOptions`, `product`, `category`, `isDeleted`, `submissionConfirmationTemplate`, `submissionsRemovalOptions`, `confirmationEmailTemplate`, `sendConfirmationEmail`, `displayMainWebsiteLink`, `includeConfirmationPageContentInPdf`, `translations`.
       properties:
         uuid:
           type: string
@@ -7529,6 +7544,9 @@ components:
           items:
             $ref: '#/components/schemas/AuthenticationBackendsEnum'
           writeOnly: true
+        authenticationBackendOptions:
+          type: object
+          additionalProperties: {}
         loginOptions:
           type: array
           items:
@@ -8352,6 +8370,16 @@ components:
       - name
       - size
       - url
+    TextChoice:
+      type: object
+      properties:
+        value:
+          type: string
+        label:
+          type: string
+      required:
+      - label
+      - value
     Time:
       type: object
       properties:

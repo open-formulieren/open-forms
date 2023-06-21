@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+from django.db.models import TextChoices
+
 from rest_framework import status
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
@@ -12,6 +14,11 @@ from ...constants import AuthAttribute
 from ...registry import Registry
 
 
+class SingleLoA(TextChoices):
+    low = ("low", "low")
+    mordac = ("∞", "Stare into the Sun")
+
+
 class NoAuthPlugin(BasePlugin):
     provides_auth = None
     verbose_name = "NoAuthPlugin"
@@ -20,6 +27,7 @@ class NoAuthPlugin(BasePlugin):
 class SingleAuthPlugin(BasePlugin):
     provides_auth = AuthAttribute.bsn
     verbose_name = "SingleAuthPlugin"
+    assurance_levels = SingleLoA
 
 
 class MultiAuthPlugin(BasePlugin):
@@ -110,16 +118,22 @@ class ResponseTests(APITestCase):
                 "id": "plugin1",
                 "label": "NoAuthPlugin",
                 "providesAuth": [],
+                "assuranceLevels": [],
             },
             {
                 "id": "plugin2",
                 "label": "SingleAuthPlugin",
                 "providesAuth": ["bsn"],
+                "assuranceLevels": [
+                    {"label": "low", "value": "low"},
+                    {"label": "Stare into the Sun", "value": "∞"},
+                ],
             },
             {
                 "id": "plugin3",
                 "label": "MultiAuthPlugin",
                 "providesAuth": ["bsn", "kvk"],
+                "assuranceLevels": [],
             },
         ]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -138,21 +152,28 @@ class ResponseTests(APITestCase):
                 "id": "plugin1",
                 "label": "NoAuthPlugin",
                 "providesAuth": [],
+                "assuranceLevels": [],
             },
             {
                 "id": "plugin2",
                 "label": "SingleAuthPlugin",
                 "providesAuth": ["bsn"],
+                "assuranceLevels": [
+                    {"label": "low", "value": "low"},
+                    {"label": "Stare into the Sun", "value": "∞"},
+                ],
             },
             {
                 "id": "plugin3",
                 "label": "MultiAuthPlugin",
                 "providesAuth": ["bsn", "kvk"],
+                "assuranceLevels": [],
             },
             {
                 "id": "plugin4",
                 "label": "DemoAuthPlugin",
                 "providesAuth": ["bsn", "kvk"],
+                "assuranceLevels": [],
             },
         ]
         self.assertEqual(response.status_code, status.HTTP_200_OK)

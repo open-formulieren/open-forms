@@ -9,7 +9,7 @@ from ..utils import get_cosign_login_info
 
 
 class TextChoiceSerializer(serializers.Serializer):
-    "Serialize not just the values (the way ChoiceField does), but the labels too"
+    # Serialize not just the values (the way ChoiceField does), but the labels too
     value = serializers.CharField()
     label = serializers.CharField()  # type: ignore  # djangorestframework-stubs#158
 
