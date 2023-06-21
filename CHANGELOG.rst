@@ -2,6 +2,22 @@
 Changelog
 =========
 
+2.1.4 (2023-06-21)
+==================
+
+Periodic bugfix release
+
+* [#1959] Fixed invalid link to resume form after pausing and resuming multiple times.
+* [#3025] Fixed resuming a form redirecting to an invalid URL.
+* [#3015] Fixed invalid URLs being generated to resume the form from WYSIWYG content.
+* [#2927] Added Celery worker monitoring tooling (for devops/infra).
+* [#3068] Added soft and hard task timeout settings for background workers.
+* [#3077] Use public (instead of private) form name for ``form_name`` variable in templates.
+* [#3012] Fixed select, radio and checboxes options not being translated in the UI.
+* [#3136] Fixed wrong Site ID being used for Matomo analytics.
+* [#3114] Fixed the "next" button not becoming active if you're not logged in as admin user.
+* [#3103] Fixed DigiD/eHerkenning-metadata missing the XML declaration.
+
 2.1.3 (2023-04-19)
 ==================
 
