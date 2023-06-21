@@ -6,7 +6,7 @@ from django.core import mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 
 import tablib
 from furl import furl
@@ -192,11 +192,8 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertIn("<table", message_html)
         self.assertNotIn("<table", message_text)
 
-        detail_line = _(
-            "Submission details for %(form_name)s (submitted on %(datetime)s)"
-        ) % dict(
-            form_name=self.form.name,
-            datetime="12:00:00 01-01-2021",
+        detail_line = (
+            f"Inzendingdetails van {self.form.name} (verzonden op 12:00:00 01-01-2021)"
         )
         self.assertIn(detail_line, message_html)
         self.assertIn(detail_line, message_text)
@@ -214,10 +211,7 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertIn(cosigner_line, message_html)
         self.assertIn(cosigner_line, message_text)
 
-        language_line = _("Submission language: %(submission_language)s") % dict(
-            submission_language="Nederlands"
-        )
-
+        language_line = "Inzendingstaal: Nederlands"
         self.assertIn(language_line, message_html)
         self.assertIn(language_line, message_text)
 
@@ -409,24 +403,15 @@ class EmailBackendTests(HTMLAssertMixin, TestCase):
         self.assertIn("<table", message_html)
         self.assertNotIn("<table", message_text)
 
-        detail_line = _(
-            "Submission payment received for %(form_name)s (submitted on %(datetime)s)"
-        ) % dict(
-            form_name=self.form.name,
-            datetime="12:00:00 01-01-2021",
-        )
+        detail_line = f"Betaling ontvangen voor {self.form.name} (ingezonden op 12:00:00 01-01-2021)"
         self.assertIn(detail_line, message_html)
         self.assertIn(detail_line, message_text)
 
-        reference_line = _("Our reference: %(public_reference)s") % dict(
-            public_reference=submission.public_registration_reference,
-        )
+        reference_line = f"Onze referentie: {submission.public_registration_reference}"
         self.assertIn(reference_line, message_html)
         self.assertIn(reference_line, message_text)
 
-        order_line = _("Payment order ID: %(payment_order_id)s") % dict(
-            payment_order_id=payment.public_order_id,
-        )
+        order_line = f"Betalings-order ID: {payment.public_order_id}"
         self.assertIn(order_line, message_html)
         self.assertIn(order_line, message_text)
 

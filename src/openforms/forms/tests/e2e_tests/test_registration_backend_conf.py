@@ -26,7 +26,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
 
         @sync_to_async
         def setUpTestData():
-            self.zgw_api_1 = ZGWApiGroupConfigFactory.create(
+            zgw_api_1 = ZGWApiGroupConfigFactory.create(
                 name="Group 1",
                 zrc_service__api_root="https://zaken-1.nl/api/v1/",
                 zrc_service__oas="https://zaken-1.nl/api/v1/schema/openapi.yaml",
@@ -35,7 +35,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 ztc_service__api_root="https://catalogus-1.nl/api/v1/",
                 ztc_service__oas="https://catalogus-1.nl/api/v1/schema/openapi.yaml",
             )
-            self.zgw_api_2 = ZGWApiGroupConfigFactory.create(
+            zgw_api_2 = ZGWApiGroupConfigFactory.create(
                 name="Group 2",
                 zrc_service__api_root="https://zaken-2.nl/api/v1/",
                 zrc_service__oas="https://zaken-2.nl/api/v1/schema/openapi.yaml",
@@ -44,8 +44,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                 ztc_service__api_root="https://catalogus-2.nl/api/v1/",
                 ztc_service__oas="https://catalogus-2.nl/api/v1/schema/openapi.yaml",
             )
-
-            return FormFactory.create(
+            form = FormFactory.create(
                 name="Configure registration test",
                 name_nl="Configure registration test",
                 generate_minimal_setup=True,
@@ -60,9 +59,18 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
                     ],
                 },
             )
+            return {
+                "zgw_api_1": zgw_api_1,
+                "zgw_api_2": zgw_api_2,
+                "form": form,
+            }
 
         await create_superuser()
-        form = await setUpTestData()
+        test_data = await setUpTestData()
+        zgw_api_1 = test_data["zgw_api_1"]
+        zgw_api_2 = test_data["zgw_api_2"]
+        form = test_data["form"]
+
         admin_url = str(
             furl(self.live_server_url)
             / reverse("admin:forms_form_change", args=(form.pk,))
@@ -113,7 +121,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
         self.assertEqual(len(requests_to_endpoint), 4)
         self.assertEqual(
             furl(requests_to_endpoint[0].url).args["zgw_api_group"],
-            str(self.zgw_api_1.pk),
+            str(zgw_api_1.pk),
         )
         self.assertEqual(
             furl(requests_to_endpoint[0].url).args["registration_backend"],
@@ -121,7 +129,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
         )
         self.assertEqual(
             furl(requests_to_endpoint[2].url).args["zgw_api_group"],
-            str(self.zgw_api_2.pk),
+            str(zgw_api_2.pk),
         )
         self.assertEqual(
             furl(requests_to_endpoint[2].url).args["registration_backend"],
@@ -158,7 +166,7 @@ class FormDesignerRegistrationBackendConfigTests(E2ETestCase):
 
         def collect_requests(request):
             url = furl(request.url)
-            match = resolve(url.path)
+            match = resolve(str(url.path))
 
             if match.view_name == "api:iotypen-list":
                 requests_to_endpoint.append(request)

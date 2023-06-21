@@ -4,7 +4,7 @@ from functools import partial, wraps
 from typing import Dict, List, Optional, Tuple
 
 from django.urls import reverse
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 import requests
 from rest_framework import serializers
@@ -87,6 +87,7 @@ class ZaakOptionsSerializer(JsonSchemaSerializerMixin, serializers.Serializer):
     def validate(self, attrs):
         if attrs.get("zgw_api_group") is None:
             config = ZgwConfig.get_solo()
+            assert isinstance(config, ZgwConfig)
             if config.default_zgw_api_group is None:
                 raise ValidationError(
                     {
@@ -180,6 +181,7 @@ class ZGWRegistration(BasePlugin):
         zgw = options.get("zgw_api_group")
         if zgw is None:
             config = ZgwConfig.get_solo()
+            assert isinstance(config, ZgwConfig)
             zgw = config.default_zgw_api_group
         return zgw
 
@@ -287,7 +289,7 @@ class ZGWRegistration(BasePlugin):
             registrator_rol_data = {
                 "betrokkeneType": "medewerker",
                 "roltype": roltype["url"],
-                "roltoelichting": _(
+                "roltoelichting": gettext(
                     "Employee who registered the case on behalf of the customer."
                 ),
                 "betrokkeneIdentificatie": {
@@ -403,7 +405,7 @@ class ZGWRegistration(BasePlugin):
     def get_config_actions(self) -> List[Tuple[str, str]]:
         return [
             (
-                _("Configuration"),
+                gettext("Configuration"),
                 reverse(
                     "admin:admin:zgw_apis_zgwapigroupconfig_changelist",
                 ),
