@@ -1,5 +1,6 @@
 from django.test import override_settings
 from django.urls import reverse
+from django.utils.translation import gettext as _
 
 from django_webtest import WebTest
 
@@ -239,10 +240,10 @@ class SearchSubmissionForCosignView(WebTest):
         self.assertEqual(200, submission_response.status_code)
 
         error_node = submission_response.html.find("div", class_="openforms-message")
-        self.assertEqual(
-            "Could not find a submission corresponding to this code that requires co-signing",
-            error_node.text.strip(),
+        expected_message = _(
+            "Could not find a submission corresponding to this code that requires co-signing"
         )
+        self.assertEqual(error_node.text.strip(), expected_message)
 
     @override_settings(LANGUAGE_CODE="en")
     def test_logout_button(self):
