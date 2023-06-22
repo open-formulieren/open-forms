@@ -339,8 +339,8 @@ Voorbeeld
 .. _Django defaultfilters reference: https://docs.djangoproject.com/en/3.2/ref/templates/builtins/#built-in-filter-reference
 
 
-Registratie
-===========
+Registratie e-mail
+==================
 
 De registratie-e-mail is een optionele e-mail die wordt verzonden wanneer een formulier is geconfigureerd om de
 'e-mailregistratie-backend' te gebruiken. De registratie-e-mail heeft toegang tot alle gegevens uit het formulier en
@@ -424,3 +424,89 @@ Voorbeeld
 
 
          Mede-ondertekend door: N. Doe (BSN: 123456789)
+
+
+Objecten API registratie
+========================
+
+De Objecten API registratie backend maakt een object aan in de geconfigureerde Objecten API met de gegevens van een
+inzending. De JSON die naar de Objecten API wordt gestuurd is:
+
+.. code:: json
+
+   {
+     "type": "https://objecttype-example.nl/api/v2/objecttype/123",
+     "record": {
+         "typeVersion": 1,
+         "data": {},
+         "startAt": "01-01-2023",
+     },
+   }
+
+
+De structuur van het veld ``data`` is configureerbaar met een template. De Objecten API registratie heeft toegang tot
+alle gegevens uit het formulier en de waarden ingevuld door de gebruiker.
+
+.. note ::
+   In andere sjablonen, als het formulier een component met eigenschapsnaam ``voorNaam`` bevat, dan kan
+   ``{{ voorNaam }}`` in het sjabloon worden gebruikt. Maar in het sjabloon van de Objecten API registratie moet dit
+   ``{{ variables.voorNaam }}`` zijn. Dit zal in de toekomst voor alle sjablonen gelden.
+
+
+**Speciale instructies**
+
+Dit zijn aanvullende variabelen en instructies die beschikbaar zijn voor het
+sjabloon. Als een variabele niet beschikbaar maar wel aanwezig is in het
+sjabloon, dan wordt deze niet getoond.
+
+=====================================  ===========================================================================
+Variabele                              Beschrijving
+=====================================  ===========================================================================
+``{{ productaanvraag_type }}``         Het productaanvraag type.
+``{{ submission.public_reference }}``  De publieke referentie van de inzending.
+``{{ submission.kenmerk }}``           De inzending UUID.
+``{{ submission.language_code }}``     De taal van het formulier die werd ingezonden, bijvoorbeeld 'nl'.
+``{{ submission.pdf_url }}``           De URL van het inzending rapport (in PDF formaat).
+``{{ submission.csv_url }}``           De URL van het inzending rapport (in CSV formaat).
+``{% json_summary %}``                 JSON met ``"eigenschapsnaam": "ingevulde waarde"`` van alle formulier velden.
+``{% attachments %}``                  Een lijst met de URL van documenten die werden geuploaded in de inzending.
+=====================================  ===========================================================================
+
+
+Voorbeeld
+---------
+
+.. tabs::
+
+   .. tab:: Sjabloon (zonder opmaak)
+
+      .. code:: django
+
+         {
+           "form_data": {% json_summary %},
+           "type": "terugbelnotitie",
+           "bsn": "{{ variables.auth_bsn }}",
+           "pdf_url": "{{ submission.pdf_url }}",
+           "attachments": {% attachments %},
+           "submission_id": "{{ submission.kenmerk }}",
+           "language_code": "{{ submission.language_code }}",
+           "public_reference": "{{ submission.public_reference }}",
+         }
+
+   .. tab:: Resultaat
+
+      .. code:: json
+
+         {
+           "form_data": {
+              "voorNaam": "Jane",
+              "achterNaam": "Doe"
+           },
+           "type": "terugbelnotitie",
+           "bsn": "123456782",
+           "pdf_url": "http://some-url.nl/to/pdf/report",
+           "attachments": ["http://some-url.nl/to/attachment1", "http://some-url.nl/to/attachment2"],
+           "kenmerk": "c305a56f-c56c-49bc-9d94-3e301d0b8bf8",
+           "language_code": "nl",
+           "public_reference": "OF-12345"
+         }

@@ -122,6 +122,7 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         cls,
         components_list: List[dict],
         submitted_data: dict = None,
+        form_definition_slug: str = "",
         **kwargs,
     ) -> Submission:
         """
@@ -176,9 +177,13 @@ class SubmissionFactory(factory.django.DjangoModelFactory):
         configuration = {"components": components}
 
         form_definition_index = cls._setup_next_sequence()
-        form_definition = FormDefinitionFactory.create(
-            name=f"definition-{form_definition_index}", configuration=configuration
-        )
+        form_definition_args = {
+            "name": f"definition-{form_definition_index}",
+            "configuration": configuration,
+        }
+        if form_definition_slug:
+            form_definition_args["slug"] = form_definition_slug
+        form_definition = FormDefinitionFactory.create(**form_definition_args)
         form_step = FormStepFactory.create(form=form, form_definition=form_definition)
 
         data = submitted_data or {}
