@@ -16,7 +16,14 @@ from ...base import BasePlugin, LoginLogo
 from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...exceptions import InvalidCoSignData
 from ...registry import register
-from .constants import DIGID_AUTH_SESSION_KEY
+from .constants import DIGID_AUTH_SESSION_AUTHN_CONTEXTS, DIGID_AUTH_SESSION_KEY
+
+_LOA_ORDER = [loa.value for loa in DigiDAssuranceLevels]
+
+
+def loa_order(loa: str) -> int:
+    # higher are defined later in the enum
+    return -1 if loa not in _LOA_ORDER else _LOA_ORDER.index(loa)
 
 
 @register("digid")
@@ -83,6 +90,7 @@ class DigidAuthentication(BasePlugin):
         # set by the view :class:`.views.DigiDAssertionConsumerServiceView` after
         # valid DigiD login
         bsn = request.session.get(DIGID_AUTH_SESSION_KEY)
+        authn_contexts = request.session.get(DIGID_AUTH_SESSION_AUTHN_CONTEXTS, [""])
 
         # set the session auth key only if we're not co-signing
         if bsn and CO_SIGN_PARAMETER not in request.GET:
@@ -90,9 +98,18 @@ class DigidAuthentication(BasePlugin):
                 "plugin": "digid",
                 "attribute": AuthAttribute.bsn,
                 "value": bsn,
+                "loa": max(authn_contexts, key=loa_order),
             }
 
         return HttpResponseRedirect(form_url)
+
+    def check_requirements(self, request, config):
+        # check LoA requirements
+        authenticated_loa = request.session[FORM_AUTH_SESSION_KEY]["loa"]
+        return loa_order(authenticated_loa) >= loa_order(
+            # TODO use digid_eherkenning.views.DigiDLoginView().get_level_of_assurance() for default?
+            config.get("loa", DigiDAssuranceLevels.middle)
+        )
 
     def get_logo(self, request) -> Optional[LoginLogo]:
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))

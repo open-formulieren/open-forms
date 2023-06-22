@@ -16,7 +16,10 @@ from privates.views import PrivateMediaView
 from rest_framework.reverse import reverse
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
-from openforms.authentication.utils import is_authenticated_with_plugin
+from openforms.authentication.utils import (
+    is_authenticated_with_plugin,
+    meets_plugin_requirements,
+)
 from openforms.forms.models import Form
 from openforms.tokens import BaseTokenGenerator
 
@@ -97,6 +100,10 @@ class ResumeFormMixin(TemplateResponseMixin):
         is_auth_plugin_correct = is_authenticated_with_plugin(
             self.request, submission.auth_info.plugin
         )
+        if not meets_plugin_requirements(
+            self.request, submission.form.authentication_backend_options
+        ):
+            return False
         is_auth_attribute_correct = (
             submission.auth_info.attribute
             == self.request.session[FORM_AUTH_SESSION_KEY]["attribute"]
@@ -255,7 +262,11 @@ class SearchSubmissionForCosignFormView(UserPassesTestMixin, FormView):
         self.form = get_object_or_404(Form, slug=self.kwargs["form_slug"])
         cosign_component = self.form.get_cosign_component()
         expected_auth_plugin = cosign_component["authPlugin"]
-        return is_authenticated_with_plugin(self.request, expected_auth_plugin)
+        return is_authenticated_with_plugin(
+            self.request, expected_auth_plugin
+        ) and meets_plugin_requirements(
+            self.request, self.form.authentication_backend_options
+        )
 
     def get_form_kwargs(self):
         super_kwargs = super().get_form_kwargs()

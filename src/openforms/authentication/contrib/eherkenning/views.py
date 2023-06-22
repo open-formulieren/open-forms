@@ -14,7 +14,11 @@ from furl import furl
 from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
 from ..digid.mixins import AssertionConsumerServiceMixin
-from .constants import EHERKENNING_AUTH_SESSION_KEY, EIDAS_AUTH_SESSION_KEY
+from .constants import (
+    EHERKENNING_AUTH_SESSION_AUTHN_CONTEXTS,
+    EHERKENNING_AUTH_SESSION_KEY,
+    EIDAS_AUTH_SESSION_KEY,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -121,5 +125,11 @@ class eHerkenningAssertionConsumerServiceView(
             request.session[EIDAS_AUTH_SESSION_KEY] = qualifiers[
                 "urn:etoegang:1.9:EntityConcernedID:Pseudo"
             ]
+
+        # store the authn contexts so the plugin can check persmission when
+        # accessing/creating an object
+        request.session[
+            EHERKENNING_AUTH_SESSION_AUTHN_CONTEXTS
+        ] = response.get_authn_contexts()
 
         return HttpResponseRedirect(self.get_success_url())

@@ -6,10 +6,11 @@ from rest_framework.request import Request
 from rest_framework.views import APIView
 
 from openforms.api.permissions import TimestampedTokenPermission
+from openforms.authentication.utils import meets_plugin_requirements
 
 from ..constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from ..form_logic import check_submission_logic
-from ..models import SubmissionStep
+from ..models import Submission, SubmissionStep
 from ..tokens import (
     submission_report_token_generator,
     submission_status_token_generator,
@@ -67,7 +68,14 @@ class ActiveSubmissionPermission(AnyActiveSubmissionPermission):
         submission_url_kwarg = getattr(view, "submission_url_kwarg", default_url_kwarg)
 
         submission_uuid = view.kwargs[submission_url_kwarg]
-        return owns_submission(request, submission_uuid)
+        submission = (
+            obj
+            if isinstance(obj, Submission)
+            else Submission.objects.get(uuid=submission_uuid)
+        )
+        return owns_submission(request, submission_uuid) and meets_plugin_requirements(
+            request, submission.form.authentication_backend_options
+        )
 
     def filter_queryset(self, request: Request, view: APIView, queryset):
         active_submissions = request.session.get(SUBMISSIONS_SESSION_KEY)

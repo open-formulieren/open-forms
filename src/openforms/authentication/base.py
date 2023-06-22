@@ -120,6 +120,10 @@ class BasePlugin(AbstractBasePlugin):
             Choice(value=loa.value, label=loa.label) for loa in self.assurance_levels
         ]
 
+    def check_requirements(self, request: HttpRequest, config: dict) -> bool:
+        "Check if the request meets requirements"
+        return True
+
     # cosmetics
 
     def get_label(self) -> str:

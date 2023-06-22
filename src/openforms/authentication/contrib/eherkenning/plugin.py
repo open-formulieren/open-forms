@@ -23,7 +23,18 @@ from ...constants import (
 )
 from ...exceptions import InvalidCoSignData
 from ...registry import register
-from .constants import EHERKENNING_AUTH_SESSION_KEY, EIDAS_AUTH_SESSION_KEY  # noqa
+from .constants import (
+    EHERKENNING_AUTH_SESSION_AUTHN_CONTEXTS,
+    EHERKENNING_AUTH_SESSION_KEY,
+    EIDAS_AUTH_SESSION_KEY,
+)
+
+_LOA_ORDER = [loa.value for loa in AssuranceLevels]
+
+
+def loa_order(loa: str) -> int:
+    # higher are defined later in the enum
+    return -1 if loa not in _LOA_ORDER else _LOA_ORDER.index(loa)
 
 
 class AuthenticationBasePlugin(BasePlugin):
@@ -107,9 +118,13 @@ class AuthenticationBasePlugin(BasePlugin):
                 "plugin": self.identifier,
                 "attribute": self.provides_auth,
                 "value": identifier,
+                "loa": self.get_session_loa(request.session),
             }
 
         return HttpResponseRedirect(form_url)
+
+    def get_session_loa(self, session):
+        return ""
 
     def logout(self, request: HttpRequest):
         if self.session_key in request.session:
@@ -122,6 +137,16 @@ class EHerkenningAuthentication(AuthenticationBasePlugin):
     provides_auth = AuthAttribute.kvk
     assurance_levels = AssuranceLevels
     session_key = EHERKENNING_AUTH_SESSION_KEY
+
+    def get_session_loa(self, session) -> str:
+        authn_contexts = session.get(EHERKENNING_AUTH_SESSION_AUTHN_CONTEXTS, [""])
+        return max(authn_contexts, key=loa_order)
+
+    def check_requirements(self, request, config):
+        # check LoA requirements
+        authenticated_loa = request.session[FORM_AUTH_SESSION_KEY]["loa"]
+        required = config.get("loa") or EherkenningConfiguration.get_solo().loa
+        return loa_order(authenticated_loa) >= loa_order(required)
 
     def get_logo(self, request) -> Optional[LoginLogo]:
         return LoginLogo(title=self.get_label(), **get_eherkenning_logo(request))
