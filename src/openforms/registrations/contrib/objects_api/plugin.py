@@ -1,6 +1,11 @@
+import json
+import sys
 from datetime import date
 from typing import Any, Dict, NoReturn
 
+from django.conf import settings
+from django.core.exceptions import SuspiciousOperation
+from django.template.defaultfilters import filesizeformat
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
@@ -11,12 +16,13 @@ from openforms.contrib.zgw.service import (
     create_csv_document,
     create_report_document,
 )
-from openforms.formio.rendering.structured import render_json
 from openforms.submissions.exports import create_submission_export
 from openforms.submissions.mapping import SKIP, FieldConf, apply_data_mapping
 from openforms.submissions.models import Submission, SubmissionReport
 from openforms.submissions.public_references import set_submission_reference
+from openforms.template import openforms_backend, render_from_string
 from openforms.translations.utils import to_iso639_2b
+from openforms.variables.utils import get_variables_for_context
 
 from ...base import BasePlugin
 from ...constants import REGISTRATION_ATTRIBUTE, RegistrationAttribute
@@ -76,7 +82,11 @@ class ObjectsAPIRegistration(BasePlugin):
         config = ObjectsAPIConfig.get_solo()
         config.apply_defaults_to(options)
 
+        objects_client = config.objects_service.build_client()
+
         options["auteur"] = options.get("auteur", "Aanvrager")
+
+        language_code_2b = to_iso639_2b(submission.language_code)
 
         submission_report = SubmissionReport.objects.get(submission=submission)
         submission_report_options = build_options(
@@ -94,8 +104,7 @@ class ObjectsAPIRegistration(BasePlugin):
             get_drc=get_drc,
         )
 
-        language_code_2b = to_iso639_2b(submission.language_code)
-
+        # TODO turn attachments into dictionary when giving users more options then just urls.
         attachments = []
         for attachment in submission.attachments:
             attachment_options = build_options(
@@ -126,17 +135,7 @@ class ObjectsAPIRegistration(BasePlugin):
             )
             attachments.append(attachment_document["url"])
 
-        objects_client = config.objects_service.build_client()
-
-        record_data = {
-            "data": render_json(submission),
-            "type": options["productaanvraag_type"],
-            "submission_id": str(submission.uuid),
-            "language_code": submission.language_code,
-            "attachments": attachments,
-            "pdf_url": document["url"],
-        }
-
+        csv_url = ""
         if (
             options.get("upload_submission_csv", False)
             and options["informatieobjecttype_submission_csv"]
@@ -161,10 +160,48 @@ class ObjectsAPIRegistration(BasePlugin):
                 get_drc=get_drc,
                 language=language_code_2b,
             )
-            record_data["csv_url"] = submission_csv_document["url"]
+            csv_url = submission_csv_document["url"]
 
-        if submission.is_authenticated:
-            record_data[submission.auth_info.attribute] = submission.auth_info.value
+        context = {
+            "_submission": submission,
+            "productaanvraag_type": options["productaanvraag_type"],
+            "variables": get_variables_for_context(submission),
+            # Github issue #661, nested for namespacing note: other templates and context expose all submission
+            # variables in the top level namespace, but that is due for refactor
+            "submission": {
+                "public_reference": submission.public_registration_reference,
+                "kenmerk": str(submission.uuid),
+                "language_code": submission.language_code,
+                "uploaded_attachment_urls": attachments,
+                "pdf_url": document["url"],
+                "csv_url": csv_url,
+            },
+        }
+
+        # FIXME: replace with better suited alternative dealing with JSON specifically
+        record_data = render_from_string(
+            options["content_json"],
+            context=context,
+            disable_autoescape=True,
+            backend=openforms_backend,
+        )
+
+        if (
+            data_size := sys.getsizeof(record_data)
+        ) > settings.MAX_UNTRUSTED_JSON_PARSE_SIZE:
+            formatted_size = filesizeformat(data_size)
+            max_size = filesizeformat(settings.MAX_UNTRUSTED_JSON_PARSE_SIZE)
+            raise SuspiciousOperation(
+                f"Templated out content JSON exceeds the maximum size {max_size} ("
+                f"it is {formatted_size})."
+            )
+
+        try:
+            record_data = json.loads(record_data)
+        except json.decoder.JSONDecodeError as err:
+            raise RuntimeError(
+                "Template evaluation did not result in valid JSON"
+            ) from err
 
         object_data = {
             "type": options["objecttype"],
@@ -200,3 +237,9 @@ class ObjectsAPIRegistration(BasePlugin):
 
     def pre_register_submission(self, submission: "Submission", options: dict) -> None:
         set_submission_reference(submission)
+
+    def get_custom_templatetags_libraries(self) -> list[str]:
+        prefix = "openforms.registrations.contrib.objects_api.templatetags.registrations.contrib"
+        return [
+            f"{prefix}.objects_api.json_tags",
+        ]

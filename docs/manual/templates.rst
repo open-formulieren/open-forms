@@ -339,8 +339,8 @@ Voorbeeld
 .. _Django defaultfilters reference: https://docs.djangoproject.com/en/3.2/ref/templates/builtins/#built-in-filter-reference
 
 
-Registratie
-===========
+Registratie e-mail
+==================
 
 De registratie-e-mail is een optionele e-mail die wordt verzonden wanneer een formulier is geconfigureerd om de
 'e-mailregistratie-backend' te gebruiken. De registratie-e-mail heeft toegang tot alle gegevens uit het formulier en
@@ -424,3 +424,88 @@ Voorbeeld
 
 
          Mede-ondertekend door: N. Doe (BSN: 123456789)
+
+
+Objecten API registratie
+========================
+
+De Objecten API-registratiebackend maakt een object aan in de geconfigureerde Objecten API met de gegevens van een
+inzending. Een voorbeeld van de JSON die naar de Objecten API wordt gestuurd:
+
+.. code:: json
+
+   {
+     "type": "https://objecttype-example.nl/api/v2/objecttype/123",
+     "record": {
+         "typeVersion": 1,
+         "data": {},
+         "startAt": "2023-01-01"
+     }
+   }
+
+
+De structuur van het veld ``data`` is per formulier instelbaar met een sjabloon. De Objecten API-registratie heeft toegang tot
+alle gegevens uit het formulier en de waarden ingevuld door de gebruiker.
+
+.. note :: U bent waarschijnlijk gewend om in andere sjablonen een variabele direct in het sjabloon te gebruiken, zoals
+   ``{{ voornaam }}``. Echter, in de sjablonen voor de Objecten API dient u deze als ``variables.<variabele>`` te refereren,
+   bijvoorbeeld ``{{ variables.voornaam }}``. Dit zal in de toekomst voor alle sjablonen gelden.
+
+
+**Speciale instructies**
+
+Dit zijn aanvullende variabelen en instructies die beschikbaar zijn voor het
+sjabloon. Als een variabele niet beschikbaar maar wel aanwezig is in het
+sjabloon, dan wordt deze niet getoond.
+
+=====================================  ===========================================================================
+Variabele                              Beschrijving
+=====================================  ===========================================================================
+``{{ productaanvraag_type }}``         Het productaanvraag type.
+``{{ submission.public_reference }}``  De publieke referentie van de inzending.
+``{{ submission.kenmerk }}``           Het interne ID van de inzending (UUID).
+``{{ submission.language_code }}``     De taal waarin de gebruiker het formulier invulde, bijvoorbeeld 'nl' of 'en'.
+``{{ submission.pdf_url }}``           De URL van het inzendingsrapport (in PDF formaat) in de documenten API.
+``{{ submission.csv_url }}``           De URL van het inzendingsrapport (in CSV formaat) in de documenten API. Dit document is mogelijk niet aangemaakt
+``{% json_summary %}``                 JSON met ``"<variabele-eigenschapsnaam>": "<waarde>"`` van alle formuliervelden.
+``{% uploaded_attachment_urls %}``     Een lijst met de URLs van documenten toegevoegd door de inzender. De URLs verwijzen naar het geregistreerde document in de Documenten API.
+=====================================  ===========================================================================
+
+
+Voorbeeld
+---------
+
+.. tabs::
+
+   .. tab:: Sjabloon (zonder opmaak)
+
+      .. code:: django
+
+         {
+           "form_data": {% json_summary %},
+           "type": "terugbelnotitie",
+           "bsn": "{{ variables.auth_bsn }}",
+           "pdf_url": "{{ submission.pdf_url }}",
+           "attachments": {% uploaded_attachment_urls %},
+           "submission_id": "{{ submission.kenmerk }}",
+           "language_code": "{{ submission.language_code }}",
+           "public_reference": "{{ submission.public_reference }}"
+         }
+
+   .. tab:: Resultaat
+
+      .. code:: json
+
+         {
+           "form_data": {
+              "voorNaam": "Jane",
+              "achterNaam": "Doe"
+           },
+           "type": "terugbelnotitie",
+           "bsn": "123456782",
+           "pdf_url": "http://some-url.nl/to/pdf/report",
+           "attachments": ["http://some-url.nl/to/attachment1", "http://some-url.nl/to/attachment2"],
+           "submission_id": "c305a56f-c56c-49bc-9d94-3e301d0b8bf8",
+           "language_code": "nl",
+           "public_reference": "OF-12345"
+         }
