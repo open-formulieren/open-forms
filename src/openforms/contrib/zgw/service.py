@@ -32,10 +32,10 @@ def create_zaak(
         "toelichting": "Aangemaakt door Open Formulieren",
         "betalingsindicatie": "nog_niet" if payment_required else "nvt",
     }
-    if "zaak_vertrouwelijkheidaanduiding" in options:
-        data["vertrouwelijkheidaanduiding"] = options[
-            "zaak_vertrouwelijkheidaanduiding"
-        ]
+    if vertrouwelijkheidaanduiding := options.get(
+        "zaak_vertrouwelijkheidaanduiding", ""
+    ):
+        data["vertrouwelijkheidaanduiding"] = vertrouwelijkheidaanduiding
 
     # add existing (internal) reference if it exists
     if existing_reference:
@@ -91,8 +91,10 @@ def create_document(
         "indicatieGebruiksrecht": False,
     }
     # map "docVertrouwelijkheidaanduiding" to value that conforms to Document API
-    if "doc_vertrouwelijkheidaanduiding" in options:
-        data["vertrouwelijkheidaanduiding"] = options["doc_vertrouwelijkheidaanduiding"]
+    if vertrouwelijkheidaanduiding := options.get(
+        "doc_vertrouwelijkheidaanduiding", ""
+    ):
+        data["vertrouwelijkheidaanduiding"] = vertrouwelijkheidaanduiding
 
     assert options["auteur"], "auteur must be a non-empty string"
 
