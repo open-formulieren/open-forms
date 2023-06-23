@@ -1160,10 +1160,7 @@ class ZGWBackendTests(TestCase):
         self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
 
         # check defaults
-        self.assertEqual(
-            create_zaak_body["vertrouwelijkheidaanduiding"],
-            "",
-        )
+        self.assertNotIn("vertrouwelijkheidaanduiding", create_zaak_body)
 
         # eio
         create_eio = m.request_history[3]
@@ -1177,10 +1174,7 @@ class ZGWBackendTests(TestCase):
         )
 
         # check defaults
-        self.assertEqual(
-            create_eio_body["vertrouwelijkheidaanduiding"],
-            "",
-        )
+        self.assertNotIn("vertrouwelijkheidaanduiding", create_eio_body)
         self.assertEqual(create_eio_body["auteur"], "Aanvrager")
 
         # attachment
