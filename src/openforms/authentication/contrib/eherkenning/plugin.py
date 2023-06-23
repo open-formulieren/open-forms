@@ -1,7 +1,5 @@
-from datetime import datetime
 from typing import Any, Dict, NoReturn, Optional
 
-from django.core.signing import Signer
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
@@ -63,18 +61,9 @@ class AuthenticationBasePlugin(BasePlugin):
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": self.identifier},
         )
-        loa = form.authentication_backend_options.get(self.identifier, {}).get("loa")
-        signed_object = Signer().sign_object(
-            {
-                "loa": loa,
-                "next": form_url,  # bind loa to requested form
-                "utc": int(datetime.utcnow().timestamp()),  # bind loa to requested time
-            }
-        )
         return_url = furl(auth_return_url).set(
             {
                 "next": form_url,
-                "authn": signed_object,
             }
         )
         if co_sign_param := request.GET.get(CO_SIGN_PARAMETER):

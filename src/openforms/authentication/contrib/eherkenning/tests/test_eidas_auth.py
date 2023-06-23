@@ -126,16 +126,15 @@ class AuthenticationStep2Tests(EIDASConfigMixin, TestCase):
 
         # We always get redirected to the /eherkenning/login/ url, but the attr_consuming_service_index differentiates
         # between the eHerkenning and the eIDAS flow
-        self.assertEqual(response.status_code, 302)
-
-        response_url = furl(response.url)
-        self.assertEqual(response_url.origin, "http://testserver")
-        self.assertEqual(response_url.path, "/eherkenning/login/")
-        self.assertEqual(response_url.args["attr_consuming_service_index"], "9999")
-
-        # strip off volatile part
-        next_url = furl(response_url.args["next"]).remove("authn")
-        self.assertEqual(next_url, return_url_with_param)
+        expected_redirect_url = furl("http://testserver/eherkenning/login/").set(
+            {
+                "next": return_url_with_param,
+                "attr_consuming_service_index": "9999",
+            }
+        )
+        self.assertRedirects(
+            response, str(expected_redirect_url), fetch_redirect_response=False
+        )
 
     @freeze_time("2020-04-09T08:31:46Z")
     @patch(
@@ -163,11 +162,10 @@ class AuthenticationStep2Tests(EIDASConfigMixin, TestCase):
             kwargs={"slug": form.slug, "plugin_id": "eidas"},
         )
 
-        relay_state = furl(response.context["form"].initial["RelayState"])
-        next_url_without_authn = str(furl(relay_state.args["next"]).remove("authn"))
-        self.assertEqual(next_url_without_authn, form_url)
-        relay_state_base = str(relay_state.remove(query=True))
-        self.assertEqual(relay_state_base, return_url)
+        self.assertEqual(
+            response.context["form"].initial["RelayState"],
+            str(furl(return_url).set({"next": form_url})),
+        )
 
         saml_request = b64decode(
             response.context["form"].initial["SAMLRequest"].encode("utf-8")

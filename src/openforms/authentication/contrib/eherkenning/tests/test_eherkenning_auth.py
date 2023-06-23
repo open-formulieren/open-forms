@@ -127,16 +127,15 @@ class AuthenticationStep2Tests(EHerkenningConfigMixin, TestCase):
         )
         return_url_with_param = furl(return_url).set({"next": form_url})
 
-        self.assertEqual(response.status_code, 302)
-
-        response_url = furl(response.url)
-        self.assertEqual(response_url.origin, "http://testserver")
-        self.assertEqual(response_url.path, "/eherkenning/login/")
-        self.assertEqual(response_url.args["attr_consuming_service_index"], "8888")
-
-        # strip off volatile part
-        next_url = furl(response_url.args["next"]).remove("authn")
-        self.assertEqual(next_url, return_url_with_param)
+        expected_redirect_url = furl("http://testserver/eherkenning/login/").set(
+            {
+                "next": return_url_with_param,
+                "attr_consuming_service_index": "8888",
+            }
+        )
+        self.assertRedirects(
+            response, str(expected_redirect_url), fetch_redirect_response=False
+        )
 
     @freeze_time("2020-04-09T08:31:46Z")
     @patch(
@@ -163,11 +162,12 @@ class AuthenticationStep2Tests(EHerkenningConfigMixin, TestCase):
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
         )
-        relay_state = furl(response.context["form"].initial["RelayState"])
-        next_url_without_authn = str(furl(relay_state.args["next"]).remove("authn"))
-        self.assertEqual(next_url_without_authn, form_url)
-        relay_state_base = str(relay_state.remove(query=True))
-        self.assertEqual(relay_state_base, return_url)
+        full_return_url = furl(return_url).add({"next": form_url})
+
+        self.assertEqual(
+            response.context["form"].initial["RelayState"],
+            str(full_return_url),
+        )
 
         saml_request = b64decode(
             response.context["form"].initial["SAMLRequest"].encode("utf-8")
@@ -216,11 +216,12 @@ class AuthenticationStep2Tests(EHerkenningConfigMixin, TestCase):
             "authentication:return",
             kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
         )
-        relay_state = furl(response.context["form"].initial["RelayState"])
-        next_url_without_authn = str(furl(relay_state.args["next"]).remove("authn"))
-        self.assertEqual(next_url_without_authn, form_url)
-        relay_state_base = str(relay_state.remove(query=True))
-        self.assertEqual(relay_state_base, return_url)
+        full_return_url = furl(return_url).add({"next": form_url})
+
+        self.assertEqual(
+            response.context["form"].initial["RelayState"],
+            str(full_return_url),
+        )
 
         saml_request = b64decode(
             response.context["form"].initial["SAMLRequest"].encode("utf-8")
@@ -250,38 +251,6 @@ class AuthenticationStep2Tests(EHerkenningConfigMixin, TestCase):
         )[0]
 
         self.assertEqual(auth_context_class_ref.text, AssuranceLevels.high.value)
-
-    @freeze_time("2020-04-09T08:31:46Z")
-    @patch(
-        "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
-        return_value="ONELOGIN_123456",
-    )
-    def test_authn_request_loa_signatures_expire(self, mock_id):
-        form = FormFactory.create(
-            authentication_backends=["eherkenning"],
-            authentication_backend_options={
-                "eherkenning": {"loa": AssuranceLevels.high}
-            },
-            generate_minimal_setup=True,
-            formstep__form_definition__login_required=True,
-        )
-        login_url = reverse(
-            "authentication:start",
-            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
-        )
-        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
-        form_url = f"https://testserver{form_path}"
-        login_url = furl(login_url).set({"next": form_url})
-
-        redirect_to_plugin_login_view = self.client.get(
-            f"{login_url}?next={form_url}", follow=False
-        )
-
-        # wait and try to reuse an old signed loa for the same form_url
-        with freeze_time("2020-04-09T09:00:00Z"):
-            response = self.client.get(redirect_to_plugin_login_view.url)
-
-        self.assert_(400 <= response.status_code <= 499)
 
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
@@ -478,16 +447,17 @@ class CoSignLoginAuthenticationTests(
             form__formstep__form_definition__login_required=True,
             form__slug="myform",
             form__authentication_backends=["eherkenning"],
-            form_url="http://localhost:3000",
         )
         self._add_submission_to_session(submission)
+        form_url = "http://localhost:3000"
         login_url = reverse(
             "authentication:start",
             kwargs={"slug": "myform", "plugin_id": "eherkenning"},
         )
+
         start_response = self.client.get(
             login_url,
-            {"next": submission.form_url, CO_SIGN_PARAMETER: submission.uuid},
+            {"next": form_url, CO_SIGN_PARAMETER: submission.uuid},
             follow=True,
         )
 
