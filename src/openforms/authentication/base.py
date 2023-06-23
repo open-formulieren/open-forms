@@ -9,6 +9,7 @@ from rest_framework.reverse import reverse
 
 from openforms.forms.models import Form
 from openforms.plugins.plugin import AbstractBasePlugin
+from openforms.typing import AnyRequest
 
 from .constants import AuthAttribute
 
@@ -37,7 +38,7 @@ class Choice(TypedDict):
 
 class BasePlugin(AbstractBasePlugin):
     provides_auth: list[AuthAttribute] | AuthAttribute | None = None
-    assurance_levels = TextChoices
+    assurance_levels: type[TextChoices] = TextChoices
     return_method = "GET"
     is_for_gemachtigde = False
 
@@ -120,7 +121,7 @@ class BasePlugin(AbstractBasePlugin):
             Choice(value=loa.value, label=loa.label) for loa in self.assurance_levels
         ]
 
-    def check_requirements(self, request: HttpRequest, config: dict) -> bool:
+    def check_requirements(self, request: AnyRequest, config: dict) -> bool:
         "Check if the request meets requirements"
         return True
 

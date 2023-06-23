@@ -79,7 +79,7 @@ class AuthenticationBasePlugin(BasePlugin):
 
     def handle_co_sign(
         self, request: HttpRequest, form: Form
-    ) -> Dict[str, Any] | NoReturn:
+    ) -> dict[str, Any] | NoReturn:
         if not (identifier := request.session.get(self.session_key)):
             raise InvalidCoSignData(
                 f"Missing or empty auth session data (key: {self.session_key})"

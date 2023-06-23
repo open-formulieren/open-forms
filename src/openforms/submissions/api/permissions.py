@@ -68,14 +68,17 @@ class ActiveSubmissionPermission(AnyActiveSubmissionPermission):
         submission_url_kwarg = getattr(view, "submission_url_kwarg", default_url_kwarg)
 
         submission_uuid = view.kwargs[submission_url_kwarg]
-        submission = (
-            obj
+        if not owns_submission(request, submission_uuid):
+            return False
+
+        auth_plugin_config = (
+            obj.form.authentication_backend_options
             if isinstance(obj, Submission)
-            else Submission.objects.get(uuid=submission_uuid)
+            else Submission.objects.filter(uuid=submission_uuid).values(
+                "form__authentication_backend_options"
+            )[0]
         )
-        return owns_submission(request, submission_uuid) and meets_plugin_requirements(
-            request, submission.form.authentication_backend_options
-        )
+        return meets_plugin_requirements(request, auth_plugin_config)
 
     def filter_queryset(self, request: Request, view: APIView, queryset):
         active_submissions = request.session.get(SUBMISSIONS_SESSION_KEY)

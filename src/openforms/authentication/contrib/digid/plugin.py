@@ -1,4 +1,4 @@
-from typing import Any, Dict, NoReturn, Optional
+from typing import Any, NoReturn, Optional
 
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
@@ -9,12 +9,18 @@ from rest_framework.reverse import reverse
 
 from openforms.contrib.digid_eherkenning.utils import get_digid_logo
 from openforms.forms.models import Form
+from openforms.typing import AnyRequest
 
 from ...base import BasePlugin, LoginLogo
 from ...constants import CO_SIGN_PARAMETER, FORM_AUTH_SESSION_KEY, AuthAttribute
 from ...exceptions import InvalidCoSignData
 from ...registry import register
-from .constants import DIGID_AUTH_SESSION_AUTHN_CONTEXTS, DIGID_AUTH_SESSION_KEY
+from .constants import (
+    DIGID_AUTH_SESSION_AUTHN_CONTEXTS,
+    DIGID_AUTH_SESSION_KEY,
+    DIGID_DEFAULT_LOA,
+    PLUGIN_ID,
+)
 
 _LOA_ORDER = [loa.value for loa in DigiDAssuranceLevels]
 
@@ -24,7 +30,7 @@ def loa_order(loa: str) -> int:
     return -1 if loa not in _LOA_ORDER else _LOA_ORDER.index(loa)
 
 
-@register("digid")
+@register(PLUGIN_ID)
 class DigidAuthentication(BasePlugin):
     verbose_name = _("DigiD")
     provides_auth = AuthAttribute.bsn
@@ -41,7 +47,7 @@ class DigidAuthentication(BasePlugin):
 
         auth_return_url = reverse(
             "authentication:return",
-            kwargs={"slug": form.slug, "plugin_id": "digid"},
+            kwargs={"slug": form.slug, "plugin_id": PLUGIN_ID},
         )
         # The return_url becomes the DigiD relay state - this is why we add the co-sign
         # param to that URL and not the `form_url`.
@@ -58,7 +64,7 @@ class DigidAuthentication(BasePlugin):
 
     def handle_co_sign(
         self, request: HttpRequest, form: Form
-    ) -> Dict[str, Any] | NoReturn:
+    ) -> dict[str, Any] | NoReturn:
         if not (bsn := request.session.get(DIGID_AUTH_SESSION_KEY)):
             raise InvalidCoSignData("Missing 'bsn' parameter/value")
         return {
@@ -83,7 +89,7 @@ class DigidAuthentication(BasePlugin):
         # set the session auth key only if we're not co-signing
         if bsn and CO_SIGN_PARAMETER not in request.GET:
             request.session[FORM_AUTH_SESSION_KEY] = {
-                "plugin": "digid",
+                "plugin": PLUGIN_ID,
                 "attribute": AuthAttribute.bsn,
                 "value": bsn,
                 "loa": max(authn_contexts, key=loa_order),
@@ -91,13 +97,11 @@ class DigidAuthentication(BasePlugin):
 
         return HttpResponseRedirect(form_url)
 
-    def check_requirements(self, request, config):
+    def check_requirements(self, request: AnyRequest, config: dict) -> bool:
         # check LoA requirements
         authenticated_loa = request.session[FORM_AUTH_SESSION_KEY]["loa"]
-        return loa_order(authenticated_loa) >= loa_order(
-            # TODO use digid_eherkenning.views.DigiDLoginView().get_level_of_assurance() for default?
-            config.get("loa", DigiDAssuranceLevels.middle)
-        )
+        required = config.get("loa") or DIGID_DEFAULT_LOA
+        return loa_order(authenticated_loa) >= loa_order(required)
 
     def get_logo(self, request) -> Optional[LoginLogo]:
         return LoginLogo(title=self.get_label(), **get_digid_logo(request))

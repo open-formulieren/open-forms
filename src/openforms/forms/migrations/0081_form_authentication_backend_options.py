@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("forms", "0080_add_show_in_summary_default"),
     ]
@@ -16,7 +15,6 @@ class Migration(migrations.Migration):
             field=models.JSONField(
                 blank=True,
                 default=dict,
-                null=True,
                 verbose_name="per form authentication backend config",
             ),
         ),

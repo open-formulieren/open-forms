@@ -88,7 +88,7 @@ class Form(models.Model):
         _("automatic login"), max_length=UNIQUE_ID_MAX_LENGTH, blank=True
     )
     authentication_backend_options = models.JSONField(
-        _("per form authentication backend config"), default=dict, blank=True, null=True
+        _("per form authentication backend config"), default=dict, blank=True
     )
     submission_confirmation_template = HTMLField(
         _("submission confirmation template"),

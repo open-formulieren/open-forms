@@ -38,11 +38,7 @@ def store_auth_details(
 
     AuthInfo.objects.update_or_create(
         submission=submission,
-        defaults={
-            # don't store loa, it can be deducted from submission
-            **{k: v for k, v in form_auth.items() if k != "loa"},
-            **{"attribute_hashed": attribute_hashed},
-        },
+        defaults={**form_auth, "attribute_hashed": attribute_hashed},
     )
 
 
@@ -69,8 +65,10 @@ def meets_plugin_requirements(request: Request, config: dict) -> bool:
     # called after is_authenticated_with_plugin so this is correct
     # TODO make register a Generic so this annotation of BasePlugin isn't needed
     plugin_id = request.session[FORM_AUTH_SESSION_KEY]["plugin"]
+    if plugin_id not in auth_register:
+        return True  # plugin doesn't exist => we're testing
     plugin: BasePlugin = auth_register[plugin_id]
-    return plugin.check_requirements(request, config[plugin_id])
+    return plugin.check_requirements(request, config.get(plugin_id, {}))
 
 
 def get_cosign_login_info(request: Request, form: Form) -> LoginInfo | None:
