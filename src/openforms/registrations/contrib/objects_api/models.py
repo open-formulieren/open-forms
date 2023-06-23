@@ -8,9 +8,11 @@ from zgw_consumers.constants import APITypes
 from openforms.template.validators import DjangoTemplateValidator
 from openforms.utils.validators import validate_rsin
 
-get_content_text = render_to_string(
-    "registrations/contrib/objects_api/content_json.txt"
-).strip()
+
+def get_content_text() -> str:
+    return render_to_string(
+        "registrations/contrib/objects_api/content_json.txt"
+    ).strip()
 
 
 class ObjectsAPIConfig(SingletonModel):
@@ -137,5 +139,5 @@ class ObjectsAPIConfig(SingletonModel):
             "informatieobjecttype_attachment", self.informatieobjecttype_attachment
         )
         options.setdefault("organisatie_rsin", self.organisatie_rsin)
-        if not options.get("content_json"):
+        if not options.get("content_json", "").strip():
             options["content_json"] = self.content_json

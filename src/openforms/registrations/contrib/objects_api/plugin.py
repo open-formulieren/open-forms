@@ -203,9 +203,6 @@ class ObjectsAPIRegistration(BasePlugin):
                 "Template evaluation did not result in valid JSON"
             ) from err
 
-        if submission.is_authenticated:
-            record_data[submission.auth_info.attribute] = submission.auth_info.value
-
         object_data = {
             "type": options["objecttype"],
             "record": {
@@ -243,5 +240,6 @@ class ObjectsAPIRegistration(BasePlugin):
 
     def get_custom_templatetags_libraries(self) -> list[str]:
         return [
-            "openforms.registrations.contrib.objects_api.templatetags.registrations.contrib.objects_api.json_summary"
+            "openforms.registrations.contrib.objects_api.templatetags.registrations.contrib.objects_api.json_summary",
+            "openforms.registrations.contrib.objects_api.templatetags.registrations.contrib.objects_api.attachments",
         ]
