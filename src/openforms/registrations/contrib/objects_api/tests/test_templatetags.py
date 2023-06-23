@@ -73,6 +73,4 @@ class JsonSummeryTests(TransactionTestCase):
             disable_autoescape=True,
         )
 
-        expected = "{}"
-
-        self.assertEqual(rendered, expected)
+        self.assertEqual(rendered, "{}")

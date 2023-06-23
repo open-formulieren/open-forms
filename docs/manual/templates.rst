@@ -429,8 +429,8 @@ Voorbeeld
 Objecten API registratie
 ========================
 
-De Objecten API registratie backend maakt een object aan in de geconfigureerde Objecten API met de gegevens van een
-inzending. De JSON die naar de Objecten API wordt gestuurd is:
+De Objecten API-registratiebackend maakt een object aan in de geconfigureerde Objecten API met de gegevens van een
+inzending. Een voorbeeld van de JSON die naar de Objecten API wordt gestuurd:
 
 .. code:: json
 
@@ -439,18 +439,17 @@ inzending. De JSON die naar de Objecten API wordt gestuurd is:
      "record": {
          "typeVersion": 1,
          "data": {},
-         "startAt": "01-01-2023",
-     },
+         "startAt": "2023-01-01"
+     }
    }
 
 
-De structuur van het veld ``data`` is configureerbaar met een template. De Objecten API registratie heeft toegang tot
+De structuur van het veld ``data`` is per formulier instelbaar met een sjabloon. De Objecten API-registratie heeft toegang tot
 alle gegevens uit het formulier en de waarden ingevuld door de gebruiker.
 
-.. note ::
-   In andere sjablonen, als het formulier een component met eigenschapsnaam ``voorNaam`` bevat, dan kan
-   ``{{ voorNaam }}`` in het sjabloon worden gebruikt. Maar in het sjabloon van de Objecten API registratie moet dit
-   ``{{ variables.voorNaam }}`` zijn. Dit zal in de toekomst voor alle sjablonen gelden.
+.. note :: U bent waarschijnlijk gewend om in andere sjablonen een variabele direct in het sjabloon te gebruiken, zoals
+   ``{{ voornaam }}``. Echter, in de sjablonen voor de Objecten API dient u deze als ``variables.<variabele>`` te refereren,
+   bijvoorbeeld ``{{ variables.voornaam }}``. Dit zal in de toekomst voor alle sjablonen gelden.
 
 
 **Speciale instructies**
@@ -464,12 +463,12 @@ Variabele                              Beschrijving
 =====================================  ===========================================================================
 ``{{ productaanvraag_type }}``         Het productaanvraag type.
 ``{{ submission.public_reference }}``  De publieke referentie van de inzending.
-``{{ submission.kenmerk }}``           De inzending UUID.
-``{{ submission.language_code }}``     De taal van het formulier die werd ingezonden, bijvoorbeeld 'nl'.
-``{{ submission.pdf_url }}``           De URL van het inzending rapport (in PDF formaat).
-``{{ submission.csv_url }}``           De URL van het inzending rapport (in CSV formaat).
-``{% json_summary %}``                 JSON met ``"eigenschapsnaam": "ingevulde waarde"`` van alle formulier velden.
-``{% attachments %}``                  Een lijst met de URL van documenten die werden geuploaded in de inzending.
+``{{ submission.kenmerk }}``           Het interne ID van de inzending (UUID).
+``{{ submission.language_code }}``     De taal waarin de gebruiker het formulier invulde, bijvoorbeeld 'nl' of 'en'.
+``{{ submission.pdf_url }}``           De URL van het inzendingsrapport (in PDF formaat) in de documenten API.
+``{{ submission.csv_url }}``           De URL van het inzendingsrapport (in CSV formaat) in de documenten API. Dit document is mogelijk niet aangemaakt
+``{% json_summary %}``                 JSON met ``"<variabele-eigenschapsnaam>": "<waarde>"`` van alle formuliervelden.
+``{% uploaded_attachment_urls %}``     Een lijst met de URLs van documenten toegevoegd door de inzender. De URLs verwijzen naar het geregistreerde document in de Documenten API.
 =====================================  ===========================================================================
 
 
@@ -487,10 +486,10 @@ Voorbeeld
            "type": "terugbelnotitie",
            "bsn": "{{ variables.auth_bsn }}",
            "pdf_url": "{{ submission.pdf_url }}",
-           "attachments": {% attachments %},
+           "attachments": {% uploaded_attachment_urls %},
            "submission_id": "{{ submission.kenmerk }}",
            "language_code": "{{ submission.language_code }}",
-           "public_reference": "{{ submission.public_reference }}",
+           "public_reference": "{{ submission.public_reference }}"
          }
 
    .. tab:: Resultaat
@@ -506,7 +505,7 @@ Voorbeeld
            "bsn": "123456782",
            "pdf_url": "http://some-url.nl/to/pdf/report",
            "attachments": ["http://some-url.nl/to/attachment1", "http://some-url.nl/to/attachment2"],
-           "kenmerk": "c305a56f-c56c-49bc-9d94-3e301d0b8bf8",
+           "submission_id": "c305a56f-c56c-49bc-9d94-3e301d0b8bf8",
            "language_code": "nl",
            "public_reference": "OF-12345"
          }

@@ -26,7 +26,7 @@ class ObjectsAPIBackendTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.config = ObjectsAPIConfigFactory.create(
+        ObjectsAPIConfigFactory.create(
             objects_service__api_root="https://objecten.nl/api/v1/",
             objects_service__oas="https://objecten.nl/api/v1/schema/openapi.yaml",
             drc_service__api_root="https://documenten.nl/api/v1/",
@@ -41,26 +41,22 @@ class ObjectsAPIBackendTests(TestCase):
             content_json=textwrap.dedent(
                 """
                 {
-                "bron": {
-                "naam": "Open Formulieren",
-                "kenmerk": "{{ submission.kenmerk }}"
-                },
-                "type": "{{ productaanvraag_type }}",
-                "aanvraaggegevens": {% json_summary %},
-                "taal": "{{ submission.language_code  }}",
-                "betrokkenen": [
-                {
-                "inpBsn" : "{{ variables.auth_bsn }}",
-                "rolOmschrijvingGeneriek" : "initiator"
-                }
-                ],
-                "pdf": "{{ submission.pdf_url }}",
-                "csv": "{{ submission.csv_url }}",
-                "bijlagen": [
-                {% for attachment in submission.attachments %}
-                "{{ attachment }}"{% if not forloop.last %},{% endif %}
-                {% endfor %}
-                ]
+                    "bron": {
+                        "naam": "Open Formulieren",
+                        "kenmerk": "{{ submission.kenmerk }}"
+                    },
+                    "type": "{{ productaanvraag_type }}",
+                    "aanvraaggegevens": {% json_summary %},
+                    "taal": "{{ submission.language_code  }}",
+                    "betrokkenen": [
+                        {
+                            "inpBsn" : "{{ variables.auth_bsn }}",
+                            "rolOmschrijvingGeneriek" : "initiator"
+                        }
+                    ],
+                    "pdf": "{{ submission.pdf_url }}",
+                    "csv": "{{ submission.csv_url }}",
+                    "bijlagen": {% uploaded_attachment_urls %}
                 }"""
             ),
         )

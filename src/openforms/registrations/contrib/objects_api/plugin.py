@@ -172,7 +172,7 @@ class ObjectsAPIRegistration(BasePlugin):
                 "public_reference": submission.public_registration_reference,
                 "kenmerk": str(submission.uuid),
                 "language_code": submission.language_code,
-                "attachments": attachments,
+                "uploaded_attachment_urls": attachments,
                 "pdf_url": document["url"],
                 "csv_url": csv_url,
             },
@@ -239,7 +239,7 @@ class ObjectsAPIRegistration(BasePlugin):
         set_submission_reference(submission)
 
     def get_custom_templatetags_libraries(self) -> list[str]:
+        prefix = "openforms.registrations.contrib.objects_api.templatetags.registrations.contrib"
         return [
-            "openforms.registrations.contrib.objects_api.templatetags.registrations.contrib.objects_api.json_summary",
-            "openforms.registrations.contrib.objects_api.templatetags.registrations.contrib.objects_api.attachments",
+            f"{prefix}.objects_api.json_tags",
         ]

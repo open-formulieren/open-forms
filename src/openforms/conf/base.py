@@ -590,6 +590,11 @@ if SUBPATH:
         STATIC_URL = f"{SUBPATH}{STATIC_URL}"
         MEDIA_URL = f"{SUBPATH}{MEDIA_URL}"
 
+# Objects API registration backend maximum JSON body size in bytes
+MAX_UNTRUSTED_JSON_PARSE_SIZE = config(
+    "MAX_UNTRUSTED_JSON_PARSE_SIZE", 1_000_000
+)  # 1mb in bytes
+
 
 ##############################
 #                            #
@@ -1185,10 +1190,6 @@ LOG_OUTGOING_REQUESTS_MAX_AGE = config(
     "LOG_OUTGOING_REQUESTS_MAX_AGE", default=7 * 24
 )  # number of hours
 
-# Objects API registration backend maximum JSON body size in bytes
-MAX_UNTRUSTED_JSON_PARSE_SIZE = config(
-    "MAX_UNTRUSTED_JSON_PARSE_SIZE", 1_000_000
-)  # 1mb in bytes
 
 #
 # Open Forms extensions

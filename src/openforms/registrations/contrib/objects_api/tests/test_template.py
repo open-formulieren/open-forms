@@ -31,7 +31,7 @@ class ObjectsAPIBackendTests(TestCase):
             ],
             with_report=True,
             submitted_data={"voorNaam": "Jane", "achterNaam": "Doe"},
-            form_definition_slug="test-step-tralala",
+            form_definition_kwargs={"slug": "test-step-tralala"},
             auth_info__value="123456789",
         )
         SubmissionFileAttachmentFactory.create(
@@ -121,7 +121,7 @@ class ObjectsAPIBackendTests(TestCase):
                     ],
                     "pdf": "{{ submission.pdf_url }}",
                     "csv": "{{ submission.csv_url }}",
-                    "bijlagen": {% attachments %}
+                    "bijlagen": {% uploaded_attachment_urls %}
                 }"""
             ),
         )
@@ -132,7 +132,7 @@ class ObjectsAPIBackendTests(TestCase):
             ],
             with_report=True,
             submitted_data={"voorNaam": "Jane", "achterNaam": "Doe"},
-            form_definition_slug="test-step-tralala",
+            form_definition_kwargs={"slug": "test-step-tralala"},
             auth_info__attribute="bsn",
             auth_info__value="123456789",
         )

@@ -9,6 +9,16 @@ register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
+def uploaded_attachment_urls(context):
+    """
+    Output a sequence of attachment URLs as a JSON-serialized list.
+    """
+    # attachments is a list of URLs
+    attachments = context.get("submission", {}).get("uploaded_attachment_urls", [])
+    return SafeString(json.dumps(attachments))
+
+
+@register.simple_tag(takes_context=True)
 def json_summary(context):
     submission = context.get("_submission")
     if not submission:

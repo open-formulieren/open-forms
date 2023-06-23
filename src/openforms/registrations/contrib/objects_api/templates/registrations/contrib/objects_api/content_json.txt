@@ -8,7 +8,7 @@
   "type": "terugbelnotitie",
   "bsn": "{{ tt_openvariable }} variables.auth_bsn {{ tt_closevariable }}",
   "pdf_url": "{{ tt_openvariable }} submission.pdf_url {{ tt_closevariable }}",
-  "attachments": {{ tt_openblock }} attachments {{ tt_closeblock }},
+  "attachments": {{ tt_openblock }} uploaded_attachment_urls {{ tt_closeblock }},
   "submission_id": "{{ tt_openvariable }} submission.kenmerk {{ tt_closevariable }}",
   "language_code": "{{ tt_openvariable }} submission.language_code {{ tt_closevariable }}"
 }
