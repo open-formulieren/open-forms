@@ -2,6 +2,7 @@ import json
 import zipfile
 from pathlib import Path
 from textwrap import dedent
+from unittest.mock import patch
 
 from django.core.management import call_command
 from django.test import TestCase, override_settings, tag
@@ -9,6 +10,8 @@ from django.utils import translation
 
 from freezegun import freeze_time
 
+from openforms.config.constants import UploadFileType
+from openforms.config.models import GlobalConfiguration
 from openforms.emails.models import ConfirmationEmailTemplate
 from openforms.emails.tests.factories import ConfirmationEmailTemplateFactory
 from openforms.payments.contrib.ogone.tests.factories import OgoneMerchantFactory
@@ -739,3 +742,29 @@ class ImportExportTests(TestCase):
         call_command("import", import_file=self.filepath)
 
         self.assertTrue(Form.objects.filter(slug="auth-plugins").exists())
+
+    @tag("sentry-334878")
+    @patch(
+        "openforms.formio.components.vanilla.GlobalConfiguration.get_solo",
+        return_value=GlobalConfiguration(
+            form_upload_default_file_types=[UploadFileType.all]
+        ),
+    )
+    def test_export_with_filetype_information(self, m_get_solo):
+        component = {
+            "type": "file",
+            "key": "fileTest",
+            "url": "",
+            "useConfigFiletypes": True,
+            "filePattern": "*",
+            "file": {},
+        }
+
+        form = FormFactory.create(
+            generate_minimal_setup=True,
+            formstep__form_definition__configuration={"components": [component]},
+        )
+
+        export_data = form_to_json(form.pk)
+
+        self.assertIsInstance(export_data, dict)
