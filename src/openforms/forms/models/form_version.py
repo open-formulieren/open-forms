@@ -1,8 +1,8 @@
 import uuid as _uuid
-from typing import Optional
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractBaseUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -13,7 +13,7 @@ User = get_user_model()
 
 class FormVersionManager(models.Manager):
     def create_for(
-        self, form: Form, description="", user: Optional[User] = None
+        self, form: Form, description="", user: AbstractBaseUser | None = None
     ) -> "FormVersion":
         """
         Create a new ``FormVersion`` record for a given form.
