@@ -1006,6 +1006,7 @@ class ZGWBackendTests(TestCase):
 
         self.assertEqual("abcd1234", reference)
 
+    @tag("sentry-334882")
     def test_submission_with_zgw_backend_override_fields(self, m):
         """Assert that override of default values for the ZGW backend works"""
         submission = SubmissionFactory.from_components(
@@ -1116,9 +1117,10 @@ class ZGWBackendTests(TestCase):
             document_create_attachment2_body["bronorganisatie"],
             "000000000",
         )
-        self.assertEqual(
-            document_create_attachment2_body["vertrouwelijkheidaanduiding"],
-            "",
+        # Sentry 334882 - "" is not a valid choice, validation error from Documenten API.
+        # This is because you either need to *not* specify the key, or provide a valid value.
+        self.assertNotIn(
+            "vertrouwelijkheidaanduiding", document_create_attachment2_body
         )
         # if no title is explicitly provided, the file name should be inserted
         self.assertEqual(document_create_attachment2_body["titel"], "attachment2.jpg")
@@ -1236,6 +1238,35 @@ class ZGWBackendTests(TestCase):
         document_create_attachment_body = document_create_attachment.json()
 
         self.assertEqual(document_create_attachment_body["auteur"], "Aanvrager")
+
+    @tag("sentry-334882")
+    def test_zgw_backend_unspecified_zaakvertrouwelijkheidaanduiding(self, m):
+        submission = SubmissionFactory.from_components(
+            [
+                {
+                    "key": "handelsnaam",
+                    "type": "textfield",
+                },
+            ],
+        )
+        zgw_form_options = dict(
+            zgw_api_group=self.zgw_group,
+            zaaktype="https://catalogi.nl/api/v1/zaaktypen/1",
+            informatieobjecttype="https://catalogi.nl/api/v1/informatieobjecttypen/1",
+            auteur="",
+            zaak_vertrouwelijkheidaanduiding="",
+        )
+
+        self.install_mocks(m)
+        plugin = ZGWRegistration("zgw")
+
+        plugin.pre_register_submission(submission, zgw_form_options)
+
+        create_zaak = m.last_request
+        self.assertEqual(create_zaak.url, "https://zaken.nl/api/v1/zaken")
+        self.assertEqual(create_zaak.method, "POST")
+        body = create_zaak.json()
+        self.assertNotIn("vertrouwelijkheidaanduiding", body)
 
     def test_zgw_backend_has_reference_after_pre_submission(self, m):
         mock_service_oas_get(m, "https://zaken.nl/api/v1/", "zaken")
