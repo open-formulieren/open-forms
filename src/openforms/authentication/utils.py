@@ -7,7 +7,7 @@ from rest_framework.reverse import reverse
 from openforms.forms.models import Form
 from openforms.submissions.models import Submission
 
-from .base import LoginInfo
+from .base import BasePlugin, LoginInfo
 from .constants import FORM_AUTH_SESSION_KEY, AuthAttribute
 from .models import AuthInfo, RegistratorInfo
 from .registry import register as auth_register
@@ -26,6 +26,7 @@ class BaseAuth(TypedDict):
 
 class FormAuth(BaseAuth):
     machtigen: Optional[dict]
+    loa: Optional[str]
 
 
 def store_auth_details(
@@ -37,7 +38,7 @@ def store_auth_details(
 
     AuthInfo.objects.update_or_create(
         submission=submission,
-        defaults={**form_auth, **{"attribute_hashed": attribute_hashed}},
+        defaults={**form_auth, "attribute_hashed": attribute_hashed},
     )
 
 
@@ -58,6 +59,14 @@ def is_authenticated_with_plugin(request: Request, expected_plugin: str) -> bool
         return request.session[FORM_AUTH_SESSION_KEY]["plugin"] == expected_plugin
     except KeyError:
         return False
+
+
+def meets_plugin_requirements(request: Request, config: dict) -> bool:
+    # called after is_authenticated_with_plugin so this is correct
+    # TODO make register a Generic so this annotation of BasePlugin isn't needed
+    plugin_id = request.session[FORM_AUTH_SESSION_KEY]["plugin"]
+    plugin: BasePlugin = auth_register[plugin_id]
+    return plugin.check_requirements(request, config.get(plugin_id, {}))
 
 
 def get_cosign_login_info(request: Request, form: Form) -> LoginInfo | None:

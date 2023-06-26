@@ -7,6 +7,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 import requests_mock
+from digid_eherkenning.choices import DigiDAssuranceLevels
 from digid_eherkenning.models import DigidConfiguration
 from freezegun import freeze_time
 from furl import furl
@@ -152,6 +153,63 @@ class AuthenticationStep2Tests(DigiDConfigMixin, TestCase):
             },
         )
 
+    @freeze_time("2020-04-09T08:31:46Z")
+    @patch(
+        "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
+        return_value="ONELOGIN_123456",
+    )
+    def test_authn_request_uses_minimal_loa_from_form(self, mock_id):
+        form = FormFactory.create(
+            authentication_backends=["digid"],
+            authentication_backend_options={
+                "digid": {"loa": DigiDAssuranceLevels.substantial}
+            },
+        )
+        form_definition = FormDefinitionFactory.create(login_required=True)
+        FormStepFactory.create(form_definition=form_definition, form=form)
+
+        login_url = reverse(
+            "authentication:start", kwargs={"slug": form.slug, "plugin_id": "digid"}
+        )
+        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
+        form_url = f"https://testserver{form_path}"
+
+        response = self.client.get(f"{login_url}?next={form_url}", follow=True)
+
+        next_parameter = furl(response.context["form"].initial["RelayState"]).args[
+            "next"
+        ]
+        self.assertEqual(form_url, next_parameter)
+
+        saml_request = b64decode(
+            response.context["form"].initial["SAMLRequest"].encode("utf-8")
+        )
+        tree = etree.fromstring(saml_request)
+
+        self.assertEqual(
+            tree.attrib,
+            {
+                "ID": "ONELOGIN_123456",
+                "Version": "2.0",
+                "IssueInstant": "2020-04-09T08:31:46Z",
+                "Destination": "https://test-digid.nl/saml/idp/request_authentication",
+                "ProtocolBinding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact",
+                "AssertionConsumerServiceURL": "https://test-sp.nl/digid/acs/",
+            },
+        )
+
+        auth_context_class_ref = tree.xpath(
+            "samlp:RequestedAuthnContext[@Comparison='minimum']/saml:AuthnContextClassRef",
+            namespaces={
+                "samlp": "urn:oasis:names:tc:SAML:2.0:protocol",
+                "saml": "urn:oasis:names:tc:SAML:2.0:assertion",
+            },
+        )[0]
+
+        self.assertEqual(
+            auth_context_class_ref.text, DigiDAssuranceLevels.substantial.value
+        )
+
 
 @temp_private_root()
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
@@ -217,7 +275,12 @@ class AuthenticationStep5Tests(DigiDConfigMixin, TestCase):
         self.assertTemplateUsed(response, "forms/form_detail.html")
         self.assertEqual(
             self.client.session[FORM_AUTH_SESSION_KEY],
-            {"plugin": "digid", "attribute": AuthAttribute.bsn, "value": "12345678"},
+            {
+                "plugin": "digid",
+                "attribute": AuthAttribute.bsn,
+                "value": "12345678",
+                "loa": "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
+            },
         )
 
     @patch(
@@ -288,7 +351,8 @@ class CoSignLoginAuthenticationTests(SubmissionsMixin, DigiDConfigMixin, TestCas
             form__authentication_backends=["digid"],
         )
         self._add_submission_to_session(submission)
-        form_url = "http://localhost:3000"
+        form_path = reverse("core:form-detail", kwargs={"slug": submission.form.slug})
+        form_url = furl("http://localhost:3000") / form_path
         login_url = reverse(
             "authentication:start", kwargs={"slug": "myform", "plugin_id": "digid"}
         )

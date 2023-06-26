@@ -1,7 +1,8 @@
 import logging
-from typing import Dict
+from typing import Any, Dict
 
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.urls import resolve
 from django.utils.translation import ugettext as _
 
@@ -9,12 +10,20 @@ from digid_eherkenning.backends import BaseSaml2Backend
 from digid_eherkenning.saml2.eherkenning import eHerkenningClient
 from digid_eherkenning.views import (
     eHerkenningAssertionConsumerServiceView as _eHerkenningAssertionConsumerServiceView,
+    eHerkenningLoginView as _eHerkenningLoginView,
 )
 from furl import furl
 from onelogin.saml2.errors import OneLogin_Saml2_ValidationError
 
+from openforms.forms.models import Form
+
 from ..digid.mixins import AssertionConsumerServiceMixin
-from .constants import EHERKENNING_AUTH_SESSION_KEY, EIDAS_AUTH_SESSION_KEY
+from .constants import (
+    EHERKENNING_AUTH_SESSION_AUTHN_CONTEXTS,
+    EHERKENNING_AUTH_SESSION_KEY,
+    EHERKENNING_PLUGIN_ID,
+    EIDAS_AUTH_SESSION_KEY,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +35,20 @@ class ExpectedIdNotPresentError(Exception):
 MESSAGE_PARAMETER = "_%(plugin_id)s-message"
 LOGIN_CANCELLED = "login-cancelled"
 GENERIC_LOGIN_ERROR = "error"
+
+
+class eHerkenningLoginView(_eHerkenningLoginView):
+    def get_level_of_assurance(self):
+        # get the form_slug from /auth/{slug}/...?next=...
+        return_path = furl(self.request.GET.get("next")).path
+        _, _, kwargs = resolve(return_path)
+
+        form = get_object_or_404(Form, slug=kwargs.get("slug"))
+
+        loa = form.authentication_backend_options.get(EHERKENNING_PLUGIN_ID, {}).get(
+            "loa"
+        )
+        return loa if loa else super().get_level_of_assurance()
 
 
 class eHerkenningAssertionConsumerServiceView(
@@ -57,7 +80,17 @@ class eHerkenningAssertionConsumerServiceView(
                 qualifier_name = subject["NameID"]["NameQualifier"]
                 qualifiers[qualifier_name] = subject["NameID"]["value"]
 
-        return qualifiers
+        def flatten(maybe_list: Any):
+            "Flatten singleton list"
+            match maybe_list:
+                case [singleton]:
+                    return singleton
+                case _:
+                    return maybe_list
+
+        return (
+            qualifiers if qualifiers else {a: flatten(v) for a, v in attributes.items()}
+        )
 
     def _get_plugin_id(self):
         redirect_url = self.get_redirect_url()
@@ -111,5 +144,11 @@ class eHerkenningAssertionConsumerServiceView(
             request.session[EIDAS_AUTH_SESSION_KEY] = qualifiers[
                 "urn:etoegang:1.9:EntityConcernedID:Pseudo"
             ]
+
+        # store the authn contexts so the plugin can check persmission when
+        # accessing/creating an object
+        request.session[
+            EHERKENNING_AUTH_SESSION_AUTHN_CONTEXTS
+        ] = response.get_authn_contexts()
 
         return HttpResponseRedirect(self.get_success_url())

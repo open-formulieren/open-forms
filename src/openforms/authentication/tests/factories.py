@@ -1,6 +1,7 @@
 import factory
 
 from ..constants import AuthAttribute
+from ..contrib.digid.constants import DIGID_DEFAULT_LOA
 from ..models import AuthInfo, RegistratorInfo
 
 
@@ -12,6 +13,7 @@ class AuthInfoFactory(factory.django.DjangoModelFactory):
     submission = factory.SubFactory(
         "openforms.submissions.tests.factories.SubmissionFactory"
     )
+    loa = DIGID_DEFAULT_LOA
 
     class Meta:
         model = AuthInfo

@@ -84,6 +84,14 @@ class AuthInfo(BaseAuthInfo):
         blank=True,
         null=True,
     )
+    loa = models.TextField(
+        verbose_name=_("Level of assurance"),
+        help_text=_(
+            "How certain is the identity provider that this identity belongs to this user."
+        ),
+        default="",  # not all plugins support this concept
+        blank=True,
+    )
 
     class Meta:
         verbose_name = _("Authentication details")

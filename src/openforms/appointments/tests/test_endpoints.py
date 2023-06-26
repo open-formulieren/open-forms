@@ -9,6 +9,7 @@ from freezegun import freeze_time
 from furl import furl
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.forms.tests.factories import FormFactory
 from openforms.logging.models import TimelineLogProxy
 from openforms.payments.constants import PaymentStatus
@@ -211,6 +212,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
             "plugin": "digid",
             "attribute": AuthAttribute.bsn,
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 
@@ -253,6 +255,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
             "plugin": "digid",
             "attribute": AuthAttribute.bsn,
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 
@@ -291,6 +294,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
             "plugin": "digid",
             "attribute": AuthAttribute.bsn,
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 
@@ -328,6 +332,7 @@ class VerifyCancelAppointmentLinkViewTests(TestCase):
             "plugin": "digid",
             "attribute": AuthAttribute.bsn,
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 
@@ -381,6 +386,7 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
             "plugin": "digid",
             "attribute": AuthAttribute.bsn,
             "value": "000000000",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 
@@ -641,6 +647,7 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
             "plugin": "digid",
             "attribute": AuthAttribute.bsn,
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 
@@ -694,6 +701,7 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
             "plugin": "digid",
             "attribute": AuthAttribute.bsn,
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 
@@ -733,6 +741,7 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
             "plugin": "digid",
             "attribute": AuthAttribute.bsn,
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 
@@ -771,6 +780,7 @@ class VerifyChangeAppointmentLinkViewTests(TestCase):
             "plugin": "digid",
             "attribute": AuthAttribute.bsn,
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 

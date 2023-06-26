@@ -1,10 +1,9 @@
 from django.urls import path
 
-from digid_eherkenning.views import DigiDLoginView
-
-from .views import DigiDAssertionConsumerServiceView
+from .views import DigiDAssertionConsumerServiceView, DigiDLoginView
 
 app_name = "digid"
+
 
 urlpatterns = [
     path("login/", DigiDLoginView.as_view(), name="login"),

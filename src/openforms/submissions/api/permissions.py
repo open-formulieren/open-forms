@@ -18,6 +18,9 @@ from .validation import is_step_unexpectedly_incomplete
 
 
 def owns_submission(request: Request, submission_uuid: Union[str, UUID]) -> bool:
+    # The assumption is that auth plugin requirements like LoA
+    # MUST be checked upon/before adding the submission uuid to the session
+    # therefore "owning a submission" means those requirements were met.
     active_submissions = request.session.get(SUBMISSIONS_SESSION_KEY, [])
     # Use str so this works with both UUIDs and UUIDs in string format
     return str(submission_uuid) in active_submissions

@@ -1,10 +1,9 @@
 from django.urls import path
 
-from digid_eherkenning.views import eHerkenningLoginView
-
-from .views import eHerkenningAssertionConsumerServiceView
+from .views import eHerkenningAssertionConsumerServiceView, eHerkenningLoginView
 
 app_name = "eherkenning"
+
 
 urlpatterns = [
     path("login/", eHerkenningLoginView.as_view(), name="login"),

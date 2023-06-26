@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 import requests_mock
+from digid_eherkenning.choices import AssuranceLevels
 from digid_eherkenning.models import EherkenningConfiguration
 from freezegun import freeze_time
 from furl import furl
@@ -187,6 +188,70 @@ class AuthenticationStep2Tests(EHerkenningConfigMixin, TestCase):
             },
         )
 
+    @freeze_time("2020-04-09T08:31:46Z")
+    @patch(
+        "onelogin.saml2.authn_request.OneLogin_Saml2_Utils.generate_unique_id",
+        return_value="ONELOGIN_123456",
+    )
+    def test_authn_request_uses_minimal_loa_from_form(self, mock_id):
+        form = FormFactory.create(
+            authentication_backends=["eherkenning"],
+            authentication_backend_options={
+                "eherkenning": {"loa": AssuranceLevels.high}
+            },
+            generate_minimal_setup=True,
+            formstep__form_definition__login_required=True,
+        )
+        login_url = reverse(
+            "authentication:start",
+            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+        )
+        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
+        form_url = f"https://testserver{form_path}"
+        login_url = furl(login_url).set({"next": form_url})
+
+        response = self.client.get(login_url.url, follow=True)
+
+        return_url = reverse(
+            "authentication:return",
+            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+        )
+        full_return_url = furl(return_url).add({"next": form_url})
+
+        self.assertEqual(
+            response.context["form"].initial["RelayState"],
+            str(full_return_url),
+        )
+
+        saml_request = b64decode(
+            response.context["form"].initial["SAMLRequest"].encode("utf-8")
+        )
+        tree = etree.fromstring(saml_request)
+
+        self.assertEqual(
+            tree.attrib,
+            {
+                "ID": "ONELOGIN_123456",
+                "Version": "2.0",
+                "ForceAuthn": "true",
+                "IssueInstant": "2020-04-09T08:31:46Z",
+                "Destination": "https://test-iwelcome.nl/broker/sso/1.13",
+                "ProtocolBinding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact",
+                "AssertionConsumerServiceURL": "https://test-sp.nl/eherkenning/acs/",
+                "AttributeConsumingServiceIndex": "8888",
+            },
+        )
+
+        auth_context_class_ref = tree.xpath(
+            "samlp:RequestedAuthnContext[@Comparison='minimum']/saml:AuthnContextClassRef",
+            namespaces={
+                "samlp": "urn:oasis:names:tc:SAML:2.0:protocol",
+                "saml": "urn:oasis:names:tc:SAML:2.0:assertion",
+            },
+        )[0]
+
+        self.assertEqual(auth_context_class_ref.text, AssuranceLevels.high.value)
+
 
 @override_settings(CORS_ALLOW_ALL_ORIGINS=True)
 @requests_mock.Mocker()
@@ -220,6 +285,69 @@ class AuthenticationStep5Tests(EHerkenningConfigMixin, TestCase):
                 "ArtifactResponse.xml",
                 {"encrypted_attribute": mark_safe(encrypted_attribute)},
             ),
+        )
+        form = FormFactory.create(
+            authentication_backends=["eherkenning"],
+            generate_minimal_setup=True,
+            formstep__form_definition__login_required=True,
+        )
+        form_path = reverse("core:form-detail", kwargs={"slug": form.slug})
+        return_url = reverse(
+            "authentication:return",
+            kwargs={"slug": form.slug, "plugin_id": "eherkenning"},
+        )
+        return_url_with_param = furl(f"https://testserver{return_url}").set(
+            {"next": f"https://testserver{form_path}"}
+        )
+
+        url = furl(reverse("eherkenning:acs")).set(
+            {
+                "SAMLart": _create_test_artifact(),
+                "RelayState": str(return_url_with_param),
+            }
+        )
+
+        with surpress_output(sys.stderr, os.devnull):
+            response = self.client.get(url, follow=True)
+
+        self.assertRedirects(
+            response, f"https://testserver{form_path}", status_code=302
+        )
+        self.assertIn(FORM_AUTH_SESSION_KEY, self.client.session)
+        session_data = self.client.session[FORM_AUTH_SESSION_KEY]
+        self.assertEqual(session_data["attribute"], AuthAttribute.kvk)
+        self.assertEqual(session_data["value"], "123456782")
+
+    @patch(
+        "onelogin.saml2.xml_utils.OneLogin_Saml2_XML.validate_xml", return_value=True
+    )
+    @patch(
+        "onelogin.saml2.utils.OneLogin_Saml2_Utils.generate_unique_id",
+        return_value="_1330416516",
+    )
+    @patch(
+        "onelogin.saml2.response.OneLogin_Saml2_Response.is_valid", return_value=True
+    )
+    @patch(
+        "digid_eherkenning.saml2.base.BaseSaml2Client.verify_saml2_response",
+        return_value=True,
+    )
+    def test_receive_unencrypted_samlart_from_eHerkenning(
+        self,
+        m,
+        mock_verification,
+        mock_validation,
+        mock_id,
+        mock_xml_validation,
+    ):
+        # Signicat testing environment doesn't encrypt the saml attributes
+        # The encryption feature of SAML attributes isn't important, since we
+        # only support Artefact Binding; we get the artefact from the Idp, *not*
+        # the requesting browser
+
+        m.post(
+            "https://test-iwelcome.nl/broker/ars/1.13",
+            content=_get_artifact_response("UnencryptedArtifactResponse.xml"),
         )
         form = FormFactory.create(
             authentication_backends=["eherkenning"],
