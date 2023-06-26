@@ -3,10 +3,11 @@ import logging
 import random
 import string
 import zipfile
-from typing import List
+from typing import Any, List
 from uuid import uuid4
 
 from django.conf import settings
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import override
@@ -59,6 +60,10 @@ def _get_mock_request():
     return request
 
 
+def to_json(obj: Any):
+    return json.dumps(obj, cls=DjangoJSONEncoder)
+
+
 def form_to_json(form_id: int) -> dict:
     form = Form.objects.get(pk=form_id)
 
@@ -101,12 +106,12 @@ def form_to_json(form_id: int) -> dict:
     ).data
 
     resources = {
-        "forms": json.dumps(forms),
-        "formSteps": json.dumps(form_steps),
-        "formDefinitions": json.dumps(form_definitions),
-        "formLogic": json.dumps(form_logic),
-        "formVariables": json.dumps(form_variables),
-        EXPORT_META_KEY: json.dumps(
+        "forms": to_json(forms),
+        "formSteps": to_json(form_steps),
+        "formDefinitions": to_json(form_definitions),
+        "formLogic": to_json(form_logic),
+        "formVariables": to_json(form_variables),
+        EXPORT_META_KEY: to_json(
             {
                 "of_release": settings.RELEASE,
                 "of_git_sha": settings.GIT_SHA,

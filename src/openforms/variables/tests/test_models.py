@@ -41,8 +41,11 @@ class ServiceFetchConfigurationTests(SimpleTestCase):
 
         null.clean()
         empty.clean()
-        with self.assertRaisesMessage(ValidationError, "expression"):
+        with self.assertRaises(ValidationError) as exc_wrapper:
             valid_jq.clean()
+
+        exception = exc_wrapper.exception
+        self.assertIn("data_mapping_type", exception.message_dict)
 
     def test_empty_expressions_should_not_break(self):
         # Empty JSONFields are coerced to None

@@ -202,7 +202,15 @@ const FormConfigurationFields = ({
       </FormRow>
 
       <FormRow>
-        <Field name="form.authenticationBackendOptions" label="Minimal levels of assurance">
+        <Field
+          name="form.authenticationBackendOptions"
+          label={
+            <FormattedMessage
+              description="Minimal levels of assurance label"
+              defaultMessage="Minimal levels of assurance"
+            />
+          }
+        >
           <ul>
             {availableAuthPlugins
               .filter(
