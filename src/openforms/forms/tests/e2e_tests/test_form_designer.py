@@ -909,3 +909,70 @@ class FormDesignerRegressionTests(E2ETestCase):
                     'css=[name="data[translations][translatedErrors.nl][2][__key]"]'
                 )
             ).to_have_value("max")
+
+    @tag("gh-3132")
+    async def test_replacing_step_with_overlapping_config(self):
+        @sync_to_async
+        def setUpTestData():
+            # set up a form
+            form = FormFactory.create(
+                name="Playwright test",
+                name_nl="Playwright test",
+            )
+            fd1 = FormDefinitionFactory.create(
+                name="Form definition 1",
+                slug="form-definition-1",
+                configuration={
+                    "components": [{"key": "textfield", "type": "textfield"}]
+                },
+            )
+            FormStepFactory.create(form=form, form_definition=fd1)
+
+            # Not yet related
+            FormDefinitionFactory.create(
+                name="Form definition 2",
+                slug="form-definition-2",
+                is_reusable=True,
+                configuration={
+                    "components": [{"key": "textfield", "type": "textfield"}]
+                },
+            )
+            return form
+
+        await create_superuser()
+        form = await setUpTestData()
+        admin_url = str(
+            furl(self.live_server_url)
+            / reverse("admin:forms_form_change", args=(form.pk,))
+        )
+
+        async with browser_page() as page:
+            await self._admin_login(page)
+            await page.goto(str(admin_url))
+            await page.get_by_role("tab", name="Steps and fields").click()
+            await page.get_by_role("button", name="Add step").click()
+
+            # Add form definition with overlapping key names
+            await page.get_by_role(
+                "button", name="Select existing form definition"
+            ).click()
+            await page.get_by_role(
+                "combobox", name="Select form definition"
+            ).select_option(label="Form definition 2")
+            await page.get_by_role("button", name="Confirm").click()
+
+            # Delete initial form definition
+            page.on("dialog", lambda dialog: dialog.accept())
+            sidebar = page.locator("css=.edit-panel__nav").get_by_role("list")
+            bin_icon = sidebar.get_by_role("listitem").nth(0).get_by_title("Delete")
+            await bin_icon.click()
+
+            await expect(page.get_by_text("Form definition 1")).not_to_be_visible()
+
+            # Save form
+            await page.locator('[name="_save"]', has_text="Save").click()
+
+            await page.get_by_role("tab", name="Steps and fields").click()
+
+            error_node = page.locator("css=.error")
+            await expect(error_node).not_to_be_visible()

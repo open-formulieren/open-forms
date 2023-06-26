@@ -106,13 +106,21 @@ const saveSteps = async (state, csrftoken) => {
     stepsToDelete,
   } = state;
 
+  // delete the steps marked for deletion
+  // TODO: error handling in case this fails - the situation before refactor
+  // was also a bit dire, the internal state was never cleaned up.
+  await Promise.all(stepsToDelete.map(async step => await apiDelete(step, csrftoken)));
+  let newState = produce(state, draft => {
+    draft.stepsToDelete = [];
+  });
+
   const results = await updateOrCreateFormSteps(csrftoken, formUrl, formSteps, formDefinition =>
     createdFormDefinitions.push(formDefinition)
   );
 
   let validationErrors = [];
   // store the URL references once persisted in the backend
-  let newState = produce(state, draft => {
+  newState = produce(newState, draft => {
     // add any newly created form definitions to the state
     for (const formDefinition of createdFormDefinitions) {
       draft.formDefinitions.push(formDefinition);
@@ -130,17 +138,6 @@ const saveSteps = async (state, csrftoken) => {
       draft.formSteps[index].formDefinition = formDefinition;
     }
   });
-
-  const hasErrors = !!validationErrors.length;
-  if (!hasErrors) {
-    // delete the steps marked for deletion
-    // TODO: error handling in case this fails - the situation before refactor
-    // was also a bit dire, the internal state was never cleaned up.
-    await Promise.all(stepsToDelete.map(async step => await apiDelete(step, csrftoken)));
-    newState = produce(newState, draft => {
-      draft.stepsToDelete = [];
-    });
-  }
 
   return [newState, validationErrors];
 };
