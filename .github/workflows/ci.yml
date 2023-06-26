@@ -109,7 +109,8 @@ jobs:
           --parallel-mode \
           src/manage.py test src \
             --parallel 2 \
-            --exclude-tag=e2e
+            --exclude-tag=e2e \
+            --verbosity 2
           coverage combine
 
         env:
