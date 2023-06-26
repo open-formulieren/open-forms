@@ -275,7 +275,12 @@ class AuthenticationStep5Tests(DigiDConfigMixin, TestCase):
         self.assertTemplateUsed(response, "forms/form_detail.html")
         self.assertEqual(
             self.client.session[FORM_AUTH_SESSION_KEY],
-            {"plugin": "digid", "attribute": AuthAttribute.bsn, "value": "12345678"},
+            {
+                "plugin": "digid",
+                "attribute": AuthAttribute.bsn,
+                "value": "12345678",
+                "loa": "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
+            },
         )
 
     @patch(

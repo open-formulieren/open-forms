@@ -8,6 +8,7 @@ from freezegun import freeze_time
 from furl import furl
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY, AuthAttribute
+from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.config.models import GlobalConfiguration
 
 from ..constants import SUBMISSIONS_SESSION_KEY
@@ -219,6 +220,7 @@ class SubmissionResumeViewTests(TestCase):
             "plugin": "digid",
             "attribute": "bsn",
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 
@@ -255,6 +257,7 @@ class SubmissionResumeViewTests(TestCase):
             "plugin": "digid",
             "attribute": "bsn",
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
         endpoint = reverse(
@@ -301,6 +304,7 @@ class SubmissionResumeViewTests(TestCase):
             "plugin": "digid",
             "attribute": "bsn",
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 
@@ -338,6 +342,7 @@ class SubmissionResumeViewTests(TestCase):
             "plugin": "digid",
             "attribute": "bsn",
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 
@@ -374,6 +379,7 @@ class SubmissionResumeViewTests(TestCase):
             "plugin": "digid",
             "attribute": "bsn",
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 

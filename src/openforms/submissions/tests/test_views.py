@@ -4,6 +4,7 @@ from django.urls import reverse
 from django_webtest import WebTest
 
 from openforms.authentication.constants import FORM_AUTH_SESSION_KEY
+from openforms.authentication.contrib.digid.constants import DIGID_DEFAULT_LOA
 from openforms.submissions.tests.factories import SubmissionFactory
 
 
@@ -37,6 +38,7 @@ class SearchSubmissionForCosignView(WebTest):
             "plugin": "digid",
             "attribute": "bsn",
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 
@@ -137,6 +139,7 @@ class SearchSubmissionForCosignView(WebTest):
             "plugin": "digid",
             "attribute": "bsn",
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 
@@ -172,6 +175,7 @@ class SearchSubmissionForCosignView(WebTest):
             "plugin": "digid",
             "attribute": "bsn",
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 
@@ -217,6 +221,7 @@ class SearchSubmissionForCosignView(WebTest):
             "plugin": "digid",
             "attribute": "bsn",
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 
@@ -263,6 +268,7 @@ class SearchSubmissionForCosignView(WebTest):
             "plugin": "digid",
             "attribute": "bsn",
             "value": "123456782",
+            "loa": DIGID_DEFAULT_LOA,
         }
         session.save()
 

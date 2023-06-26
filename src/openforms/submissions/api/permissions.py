@@ -19,6 +19,9 @@ from .validation import is_step_unexpectedly_incomplete
 
 
 def owns_submission(request: Request, submission_uuid: Union[str, UUID]) -> bool:
+    # The assumption is that auth plugin requirements like LoA
+    # MUST be checked upon/before adding the submission uuid to the session
+    # therefore "owning a submission" means those requirements were met.
     active_submissions = request.session.get(SUBMISSIONS_SESSION_KEY, [])
     # Use str so this works with both UUIDs and UUIDs in string format
     return str(submission_uuid) in active_submissions
@@ -68,17 +71,7 @@ class ActiveSubmissionPermission(AnyActiveSubmissionPermission):
         submission_url_kwarg = getattr(view, "submission_url_kwarg", default_url_kwarg)
 
         submission_uuid = view.kwargs[submission_url_kwarg]
-        if not owns_submission(request, submission_uuid):
-            return False
-
-        auth_plugin_config = (
-            obj.form.authentication_backend_options
-            if isinstance(obj, Submission)
-            else Submission.objects.filter(uuid=submission_uuid).values(
-                "form__authentication_backend_options"
-            )[0]
-        )
-        return meets_plugin_requirements(request, auth_plugin_config)
+        return owns_submission(request, submission_uuid)
 
     def filter_queryset(self, request: Request, view: APIView, queryset):
         active_submissions = request.session.get(SUBMISSIONS_SESSION_KEY)

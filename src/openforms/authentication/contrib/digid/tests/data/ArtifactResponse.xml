@@ -27,7 +27,7 @@
                 <samlp:Status>
                     <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
                 </samlp:Status>
-                <saml:Assertion Version="2.0" ID="_dc9f70e61c" IssueInstant="2012-12-20T18:50:27Z">
+                <saml:Assertion Version="2.0" ID="_ef7483a90103a74ed3a6b06d349f855f01bf5fe1" IssueInstant="2012-12-20T18:50:27Z">
                     <saml:Issuer>https://test-digid.nl</saml:Issuer>
                     <ds:Signature>
                         <ds:SignedInfo>
@@ -67,9 +67,7 @@
                     <saml:AuthnStatement SessionIndex="17" AuthnInstant="2012-12-20T18:50:27Z">
                         <saml:SubjectLocality Address="127.0.0.1"/>
                         <saml:AuthnContext Comparison="minimum">
-                            <saml:AuthnContextClassRef>
-                                urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport
-                            </saml:AuthnContextClassRef>
+                            <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef>
                         </saml:AuthnContext>
                     </saml:AuthnStatement>
                 </saml:Assertion>

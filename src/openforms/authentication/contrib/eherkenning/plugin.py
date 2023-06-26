@@ -1,4 +1,4 @@
-from typing import Any, Dict, NoReturn, Optional
+from typing import Any, NoReturn, Optional
 
 from django.http import HttpRequest, HttpResponseBadRequest, HttpResponseRedirect
 from django.templatetags.static import static
