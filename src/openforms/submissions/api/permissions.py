@@ -6,11 +6,10 @@ from rest_framework.request import Request
 from rest_framework.views import APIView
 
 from openforms.api.permissions import TimestampedTokenPermission
-from openforms.authentication.utils import meets_plugin_requirements
 
 from ..constants import SUBMISSIONS_SESSION_KEY, UPLOADS_SESSION_KEY
 from ..form_logic import check_submission_logic
-from ..models import Submission, SubmissionStep
+from ..models import SubmissionStep
 from ..tokens import (
     submission_report_token_generator,
     submission_status_token_generator,

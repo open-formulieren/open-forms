@@ -65,8 +65,6 @@ def meets_plugin_requirements(request: Request, config: dict) -> bool:
     # called after is_authenticated_with_plugin so this is correct
     # TODO make register a Generic so this annotation of BasePlugin isn't needed
     plugin_id = request.session[FORM_AUTH_SESSION_KEY]["plugin"]
-    # if plugin_id not in auth_register:
-    #     return True  # plugin doesn't exist => we're testing
     plugin: BasePlugin = auth_register[plugin_id]
     return plugin.check_requirements(request, config.get(plugin_id, {}))
 
