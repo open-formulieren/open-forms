@@ -1051,7 +1051,7 @@ class FormDesignerRegressionTests(E2ETestCase):
             await page.get_by_role(
                 "combobox", name="Select form definition"
             ).select_option(label="Form definition 2")
-            await page.locator('[name="_save"]', has_text="Confirm").click()
+            await page.get_by_role("button", name="Confirm").click()
 
             # Delete initial form definition
             page.on("dialog", lambda dialog: dialog.accept())
@@ -1059,9 +1059,7 @@ class FormDesignerRegressionTests(E2ETestCase):
             bin_icon = sidebar.get_by_role("listitem").nth(0).get_by_title("Delete")
             await bin_icon.click()
 
-            await expect(sidebar.get_by_role("listitem").nth(0)).to_have_text(
-                "Form definition 2"
-            )
+            await expect(page.get_by_text("Form definition 1")).not_to_be_visible()
 
             # Save form
             await page.locator('[name="_save"]', has_text="Save").click()
