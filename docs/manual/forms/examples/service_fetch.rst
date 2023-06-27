@@ -136,6 +136,31 @@ keuzelijst alleen zichtbaar is wanneer er een categorie gekozen is:
 
 |logic|
 
+.. warning::
+
+   Het bevragen van services kost tijd en kan de formulierlogica vertragen,
+   omdat er op antwoorden gewacht moet worden. Probeer door handig gebruik van
+   variabelen en triggers, deze bevragingen tot een minimum te beperken.
+
+   ``Bevragen registraties`` is nog experimenteel van aard. Bekende missende of
+   beperkte functionaliteiten zijn onder andere:
+
+   * `het "Probeer het uit" tabje <https://github.com/open-formulieren/open-forms/issues/2777>`_
+   * `export/import <https://github.com/open-formulieren/open-forms/issues/2683>`_
+   * `slimme caching <https://github.com/open-formulieren/open-forms/issues/2688>`_
+   * en `meer <https://github.com/open-formulieren/open-forms/labels/topic%3A%20hergebruik%20waarden>`_
+
+   Door de agile aard van de ontwikkeling staan deze issues staan op het moment
+   **niet** op een roadmap.
+   
+   Daarnaast kan de manier van invoegen van formulier data in de bevragingen
+   van syntax veranderen. Op dit moment kunt u met de bekende ``{{variable
+   sleutel}}`` syntaxis, waarden invoegen in
+
+   * Pad
+   * **waarden** van Query-parameters (niet de *sleutels*)
+   * **waarden** van Request-headers (niet de *sleutels*)
+   * Body
 
 .. |fetch_categories|
    image:: _assets/service_fetch_categories.png
