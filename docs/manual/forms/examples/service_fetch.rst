@@ -6,13 +6,19 @@ Formulier met waarden uit externe registraties
 
 .. note::
 
-   Dit voorbeeld maakt gebruik van de **experimentele** functionaliteit ``Bevragen
-   registraties``, welke onder **Configuratie** > **Algemene configuratie** >
+   Dit voorbeeld maakt gebruik van de **preview** functionaliteit "Bevragen
+   registraties", welke onder **Configuratie** > **Algemene configuratie** >
    **Feature flags, test- en ontwikkelinstellingen** in te schakelen is.
 
-In dit voorbeeld maken we een deel-formulier bestaande uit 1 stap, waarbij er een keuzelijst
-met product categorieën die opgehaald wordt uit de `dummyjson-service`_, welke
-keuze we verder gebruiken om de producten keuzelijst te vullen.
+In dit voorbeeld maken we een deel van een formulier bestaande uit één stap. De uitgangspunten zijn:
+
+* de `dummyjson-service`_ bied een lijst van productcategorieën aan
+* de service biedt ook een lijst van producten aan, per categorie
+* na selectie van een categorie halen we de beschikbare producten uit die
+  categorie op
+
+De keuzelijsten voor categorieën en producten worden dus dynamisch opgebouwd op
+basis van data uit een externe service.
 
 We gaan ervan uit dat u een :ref:`formulier met geavanceerde logica
 <example_advanced_logic>` kunt maken.
@@ -40,9 +46,7 @@ Formulier maken
 
     .. code-block:: json
 
-      {
-         "var": "catagorieen"
-      }
+      {"var": "catagorieen"}
 
 #. Sleep een **Keuzelijst** component op het witte vlak, vul de volgende
    gegevens in en druk daarna op **Opslaan**:
@@ -53,20 +57,22 @@ Formulier maken
 
     .. code-block:: json
 
-      {
-         "var": "producten"
-      }
+      {"var": "producten"}
 
-#. Klik op de **Variabelen** tab in het formulier menu en vervolgens op de **Gebruikersvariabelen** tab
+#. Klik op de **Variabelen** tab in het formuliermenu en vervolgens op de **Gebruikersvariabelen** tab
 
 #. Klik op **Variabele toevoegen**
 #. Voer bij **Naam** ``Categorieën`` in en kies bij **Datatype** ``Lijst (array)``
-#. Herhaal stap 11 en 12 met als **Naam** ``producten``
+#. Klik op **Variabele toevoegen**
+#. Voer bij **Naam** ``Producten`` in en kies bij **Datatype** ``Lijst (array)``
 
-#.  Klik op de **Logica** tab in het formulier menu
+#.  Klik op de **Logica** tab in het formuliermenu
 #.  Klik op **Regel toevoegen**, gevolgd door **Geavanceerd**.
-#.  Vul bij **Triggervoorwaarde** bij de JsonLogic 
-    ``{"!": [{"var": "categorieen"}]}`` in.
+#.  Vul bij **Triggervoorwaarde** deze JsonLogic in:
+
+    .. code-block:: json
+
+      {"!": [{"var": "categorieen"}]}
 
 #.  Klik op **Actie Toevoegen** en selecteer
 
@@ -76,7 +82,7 @@ Formulier maken
 
       * Vul bij **Naam** ``Haal categorieën op`` in
       * Selecteer bij **HTTP-method** ``GET``
-      * selecteer bij **Service** ``dummyJSON``
+      * Selecteer bij **Service** ``dummyJSON``
       * Vul bij **Pad** ``products/categories`` in
       * Selecteer bij **Soort mappingexpressie** ``jq``
       * Vul bij **Mappingexpressie** ``sort`` in
@@ -86,18 +92,21 @@ Formulier maken
     .. note::
 
         Omdat het antwoord van de dummyJSON service ongesorteerd is, gebruiken
-        we de `jq sort functie`_, zodat de opties in de keuzelijst op alfabet
-        komen.
+        we de `jq sort functie`_, zodat de opties in de keuzelijst op
+        alfabetische volgorde komen.
 
         |fetch_categories|
 
-        Deze actie betekent: Als ``categorieen`` leeg is, bevraag de dummyJSON
+        Deze actie betekent: als ``categorieen`` leeg is, bevraag dan de dummyJSON
         service voor ``products/categories``, sorteer het antwoord en sla deze
-        Lijst van strings op in ``categorieen``.
+        lijst van strings op in de variabele``categorieen``.
 
 #.  Klik op **Regel toevoegen**, gevolgd door **Geavanceerd**.
-#.  Vul bij **Triggervoorwaarde** bij de JsonLogic 
-    ``{"!!": [{"var": "categorie"}]}`` in.
+#.  Vul bij **Triggervoorwaarde** deze JsonLogic in:
+
+    .. code-block:: json
+
+      {"!!": [{"var": "categorie"}]}
 
 #.  Klik op **Actie Toevoegen** en selecteer
 
@@ -108,12 +117,16 @@ Formulier maken
       * Vul bij **Naam** ``Haal producten in categorie op`` in
       * Selecteer bij **HTTP-method** ``GET``
       * selecteer bij **Service** ``dummyJSON``
-      * Vul bij **Pad** ``products/category/{{categorie}}`` in
+      * Vul bij **Pad** ``products/category/{{ categorie }}`` in
       * Selecteer bij **Soort mappingexpressie** ``JsonLogic``
-      * Vul bij **Mappingexpressie** ``{"map": [
-        {"var": "products"},
-        {"merge": [ {"var": "id"}, {"var": "title"} ]}
-        ]}`` in
+      * Vul bij **Mappingexpressie** het volgende in:
+
+      .. code-block:: json
+
+        {"map": [
+          {"var": "products"},
+          {"merge": [ {"var": "id"}, {"var": "title"} ]}
+        ]}
 
     * Klik op **Opslaan**
 
@@ -121,11 +134,12 @@ Formulier maken
 
        |fetch_products|
 
-       Deze actie betekent: Als er een ``categorie`` is gekozen, bevraag de
-       dummyJSON service voor ``products/category/{{categorie}}`` met de
+       Deze actie betekent: als er een ``categorie`` is gekozen, bevraag dan de
+       dummyJSON service voor ``products/category/{{ categorie }}`` met de
        gekozen categorie in het pad, neem van elk product object in het
        ``products`` attribuut van het antwoord, de ``id`` en ``title`` en sla
-       de resulterende lijst van lijsten van 2 strings op in ``producten``.
+       de resulterende lijst van lijsten van 2 strings op in de
+       variabele``producten``.
 
 #.  Klik onderaan op **Opslaan** om het formulier volledig op te slaan.
 
@@ -142,8 +156,8 @@ keuzelijst alleen zichtbaar is wanneer er een categorie gekozen is:
    omdat er op antwoorden gewacht moet worden. Probeer door handig gebruik van
    variabelen en triggers, deze bevragingen tot een minimum te beperken.
 
-   ``Bevragen registraties`` is nog experimenteel van aard. Bekende missende of
-   beperkte functionaliteiten zijn onder andere:
+   "Bevragen registraties" is nog geschikt voor gebruik, maar nog onvolledig.
+   Bekende missende of beperkte functionaliteiten zijn onder andere:
 
    * `het "Probeer het uit" tabje <https://github.com/open-formulieren/open-forms/issues/2777>`_
    * `export/import <https://github.com/open-formulieren/open-forms/issues/2683>`_
@@ -153,9 +167,9 @@ keuzelijst alleen zichtbaar is wanneer er een categorie gekozen is:
    Door de agile aard van de ontwikkeling staan deze issues staan op het moment
    **niet** op een roadmap.
    
-   Daarnaast kan de manier van invoegen van formulier data in de bevragingen
-   van syntax veranderen. Op dit moment kunt u met de bekende ``{{variable
-   sleutel}}`` syntaxis, waarden invoegen in
+   Daarnaast kan de manier van invoegen van formulierdata in de bevragingen van
+   syntax veranderen. Op dit moment kunt u met de bekende ``{{ variabelesleutel
+   }}`` syntaxis, waarden invoegen in
 
    * Pad
    * **waarden** van Query-parameters (niet de *sleutels*)
@@ -168,7 +182,7 @@ keuzelijst alleen zichtbaar is wanneer er een categorie gekozen is:
 
 .. |fetch_products|
    image:: _assets/service_fetch_products_in_category.png
-   :alt: screenshot van de servicebevraging "Haal productin in categorie op"
+   :alt: screenshot van de servicebevraging "Haal producten in gekozen categorie op"
 
 .. |logic| 
    image:: _assets/service_fetch_logic.png
