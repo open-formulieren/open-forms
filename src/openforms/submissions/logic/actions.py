@@ -235,7 +235,7 @@ class ServiceFetchAction(ActionOperation):
         # https://github.com/open-formulieren/open-forms/issues/3052
         if self.fetch_config:  # the old way
             var = FormVariable(
-                name=self.variable,
+                key=self.variable,
                 service_fetch_configuration=ServiceFetchConfiguration.objects.get(
                     pk=self.fetch_config
                 ),
@@ -245,7 +245,7 @@ class ServiceFetchAction(ActionOperation):
         with log_errors({}, self.rule):  # TODO proper error handling
             result = perform_service_fetch(var, context)
             log(asdict(result))
-            return {var.name: result.value}
+            return {var.key: result.value}
 
     def get_action_log_data(
         self,

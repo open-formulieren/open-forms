@@ -19,7 +19,7 @@ const INITIAL_VALUES = {
   path: '',
   queryParams: [],
   headers: [],
-  body: '',
+  body: null,
   dataMappingType: '',
   mappingExpression: '',
   // These fields are mapped to mappingExpression on save
