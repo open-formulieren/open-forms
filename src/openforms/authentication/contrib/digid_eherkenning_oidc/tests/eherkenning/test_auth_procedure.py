@@ -70,7 +70,7 @@ class eHerkenningOIDCTests(TestCase):
         self.assertEqual(query_params["next"], form_url)
 
         with requests_mock.Mocker() as m:
-            m.head(
+            m.get(
                 "http://provider.com/auth/realms/master/protocol/openid-connect/auth",
                 status_code=200,
             )
@@ -122,7 +122,7 @@ class eHerkenningOIDCTests(TestCase):
         self.assertEqual(status.HTTP_302_FOUND, response.status_code)
 
         with requests_mock.Mocker() as m:
-            m.head(
+            m.get(
                 "http://provider.com/auth/realms/master/protocol/openid-connect/auth",
                 status_code=500,
             )
@@ -238,7 +238,7 @@ class eHerkenningOIDCTests(TestCase):
         self.assertEqual(query_params["next"], form_url)
 
         with requests_mock.Mocker() as m:
-            m.head(
+            m.get(
                 "http://provider.com/auth/realms/master/protocol/openid-connect/auth",
                 status_code=200,
             )
@@ -309,7 +309,7 @@ class eHerkenningOIDCTests(TestCase):
         self.assertEqual(query_params["next"], form_url)
 
         with requests_mock.Mocker() as m:
-            m.head(
+            m.get(
                 "http://provider.com/auth/realms/master/protocol/openid-connect/auth",
                 status_code=200,
             )
