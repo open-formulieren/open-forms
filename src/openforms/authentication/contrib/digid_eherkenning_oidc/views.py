@@ -40,7 +40,7 @@ class OIDCAuthenticationRequestView(_OIDCAuthenticationRequestView):
 
         try:
             # Verify that the identity provider endpoint can be reached
-            response = requests.head(self.OIDC_OP_AUTH_ENDPOINT)
+            response = requests.get(self.OIDC_OP_AUTH_ENDPOINT)
             if response.status_code > 400:
                 response.raise_for_status()
         except Exception as e:
