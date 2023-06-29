@@ -1,14 +1,28 @@
 """
-Type definitions to be used in type hints for Formio structures.
+Base types for more specific component types.
 
-Formio components are JSON blobs adhering to a formio-specific schema. We define
-(subsets) of these schema's to make it easier to reason about the code operating on
-(parts of) the schema.
+These are common ancestors for all specific component types.
 """
-# TODO: on python 3.11+ we can use typing.NotRequired to mark keys that may be absent
+
+# TODO: on python 3.11+ we can use typing.NotRequired to mark keys that may be absent.
+# For now at least, we use total=False.
+
 from typing import TypedDict
 
 from openforms.typing import JSONValue
+
+from .dates import DateConstraintConfiguration
+
+
+class Validate(TypedDict, total=False):
+    required: bool
+    maxLength: int
+
+
+class OpenFormsConfig(TypedDict, total=False):
+    widget: str
+    minDate: DateConstraintConfiguration | None
+    maxDate: DateConstraintConfiguration | None
 
 
 class OptionDict(TypedDict):
@@ -28,7 +42,7 @@ class PrefillConfiguration(TypedDict):
     attribute: str
 
 
-class Component(TypedDict):
+class Component(TypedDict, total=False):
     """
     A formio component definition.
 
@@ -40,6 +54,8 @@ class Component(TypedDict):
 
     * we don't run mypy (yet) and type hints are used as just hints/documentation
     * NotRequired is only available in typing_extensions and Python 3.11+
+    * The ``total=False`` matches Form.io's own typescript types where (almost) every
+      property can be absent.
     """
 
     type: str
@@ -48,8 +64,7 @@ class Component(TypedDict):
     multiple: bool
     hidden: bool
     defaultValue: JSONValue
+    validate: Validate
     prefill: PrefillConfiguration
-
-
-class CosignComponent(Component):
-    authPlugin: str
+    openForms: OpenFormsConfig
+    autocomplete: str

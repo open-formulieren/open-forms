@@ -1,6 +1,6 @@
 import operator
 from datetime import date, datetime, time
-from typing import Any, Literal, Optional, TypedDict, cast
+from typing import Any, Optional, TypedDict, cast
 
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
@@ -11,28 +11,10 @@ from glom import assign, glom
 from openforms.typing import DataMapping
 from openforms.utils.date import parse_date
 
-from ..typing import Component
+from ..typing import DateComponent, DatetimeComponent
+from ..typing.dates import DateConstraintConfiguration, DateConstraintDelta
 
 NOW_VARIABLE = "now"
-
-
-class DateConstraintDelta(TypedDict):
-    years: Optional[int]
-    months: Optional[int]
-    days: Optional[int]
-
-
-class DateConstraintConfiguration(TypedDict):
-    mode: Literal["", "fixedValue", "future", "past", "relativeToVariable"]
-    includeToday: Optional[bool]
-    variable: Optional[str]
-    delta: Optional[DateConstraintDelta]
-    operator: Optional[Literal["add", "subtract"]]
-
-
-class OpenFormsConfig(TypedDict):
-    minDate: Optional[DateConstraintConfiguration]
-    maxDate: Optional[DateConstraintConfiguration]
 
 
 class DatePickerConfig(TypedDict):
@@ -40,19 +22,7 @@ class DatePickerConfig(TypedDict):
     maxDate: Optional[str]
 
 
-class FormioDateComponent(Component):
-    openForms: Optional[OpenFormsConfig]
-    datePicker: Optional[DatePickerConfig]
-
-
-class FormioDatetimeComponent(Component):
-    openForms: Optional[OpenFormsConfig]
-    datePicker: Optional[DatePickerConfig]
-
-
-def mutate(
-    component: FormioDateComponent | FormioDatetimeComponent, data: DataMapping
-) -> None:
+def mutate(component: DateComponent | DatetimeComponent, data: DataMapping) -> None:
     for key in ("minDate", "maxDate"):
         config = cast(
             DateConstraintConfiguration,
@@ -76,9 +46,10 @@ def mutate(
 
 
 def normalize_config(
-    component: FormioDateComponent | FormioDatetimeComponent,
+    component: DateComponent | DatetimeComponent,
     config: DateConstraintConfiguration,
 ) -> DateConstraintConfiguration:
+    assert "type" in component
     mode = config["mode"]
     assert mode in ("future", "past", "relativeToVariable")
     if mode == "relativeToVariable":
@@ -137,7 +108,7 @@ def convert_to_python_type(component_type: str, value: Any) -> date | datetime:
 
 
 def calculate_delta(
-    component: FormioDateComponent | FormioDatetimeComponent,
+    component: DateComponent | DatetimeComponent,
     config: DateConstraintConfiguration,
     data: DataMapping,
 ) -> Optional[datetime]:
@@ -147,6 +118,7 @@ def calculate_delta(
     if not base_value:
         return
 
+    assert "type" in component
     base_value = convert_to_python_type(component["type"], base_value)
 
     delta = relativedelta(

@@ -11,9 +11,8 @@ from rest_framework.test import APIRequestFactory
 from openforms.submissions.tests.factories import SubmissionFactory
 from openforms.variables.service import get_static_variables
 
-from ...dynamic_config.date import FormioDateComponent
 from ...service import FormioConfigurationWrapper, get_dynamic_configuration
-from ...typing import Component
+from ...typing import DateComponent
 
 request_factory = APIRequestFactory()
 
@@ -21,8 +20,8 @@ request_factory = APIRequestFactory()
 class DynamicDateConfigurationTests(SimpleTestCase):
     @staticmethod
     def _get_dynamic_config(
-        component: Component, variables: Dict[str, Any]
-    ) -> FormioDateComponent:
+        component: DateComponent, variables: Dict[str, Any]
+    ) -> DateComponent:
         config_wrapper = FormioConfigurationWrapper({"components": [component]})
         request = request_factory.get("/irrelevant")
         submission = SubmissionFactory.build()

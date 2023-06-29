@@ -9,15 +9,11 @@ from openforms.submissions.models import Submission
 from openforms.typing import DataMapping
 from openforms.utils.date import format_date_value
 
-from ..dynamic_config.date import (
-    FormioDateComponent,
-    FormioDatetimeComponent,
-    mutate as mutate_min_max_validation,
-)
+from ..dynamic_config.date import mutate as mutate_min_max_validation
 from ..formatters.custom import DateFormatter, DateTimeFormatter, MapFormatter
 from ..formatters.formio import DefaultFormatter, TextFieldFormatter
 from ..registry import BasePlugin, register
-from ..typing import Component
+from ..typing import Component, DateComponent, DatetimeComponent
 from ..utils import conform_to_mask
 from .np_family_members.constants import FamilyMembersDataAPIChoices
 from .np_family_members.haal_centraal import get_np_children_haal_centraal
@@ -32,11 +28,11 @@ class Date(BasePlugin):
     formatter = DateFormatter
 
     @staticmethod
-    def normalizer(component: FormioDateComponent, value: str) -> str:
+    def normalizer(component: DateComponent, value: str) -> str:
         return format_date_value(value)
 
     def mutate_config_dynamically(
-        self, component: FormioDateComponent, submission: Submission, data: DataMapping
+        self, component: DateComponent, submission: Submission, data: DataMapping
     ) -> None:
         """
         Implement the behaviour for our custom date component options.
@@ -53,7 +49,7 @@ class Datetime(BasePlugin):
 
     def mutate_config_dynamically(
         self,
-        component: FormioDatetimeComponent,
+        component: DatetimeComponent,
         submission: Submission,
         data: DataMapping,
     ) -> None:
