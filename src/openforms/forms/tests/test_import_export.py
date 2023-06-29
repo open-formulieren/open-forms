@@ -768,3 +768,66 @@ class ImportExportTests(TestCase):
         export_data = form_to_json(form.pk)
 
         self.assertIsInstance(export_data, dict)
+
+    @tag("gh-3182")
+    def test_import_form_without_cosign_tag(self):
+        resources = {
+            "forms": [
+                {
+                    "active": True,
+                    "authentication_backends": [],
+                    "is_deleted": False,
+                    "login_required": False,
+                    "maintenance_mode": False,
+                    "name": "Test Form",
+                    "internal_name": "Test Form",
+                    "product": None,
+                    "show_progress_indicator": True,
+                    "slug": "test-form",
+                    "url": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "uuid": "324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "confirmation_email_template": {
+                        "content": "Some content {% appointment_information %}\n{% payment_information %}",
+                        "subject": "A subject",
+                    },
+                }
+            ],
+            "formSteps": [
+                {
+                    "form": "http://testserver/api/v2/forms/324cadce-a627-4e3f-b117-37ca232f16b2",
+                    "form_definition": "http://testserver/api/v2/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                    "index": 0,
+                    "slug": "test-step-1",
+                    "uuid": "3ca01601-cd20-4746-bce5-baab47636823",
+                },
+            ],
+            "formDefinitions": [
+                {
+                    "configuration": {
+                        "components": [
+                            {
+                                "key": "textField",
+                                "type": "textfield",
+                            },
+                        ]
+                    },
+                    "name": "Def 1",
+                    "slug": "test-definition-1",
+                    "url": "http://testserver/api/v2/form-definitions/f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                    "uuid": "f0dad93b-333b-49af-868b-a6bcb94fa1b8",
+                },
+            ],
+            "formLogic": [],
+        }
+
+        with zipfile.ZipFile(self.filepath, "w") as zip_file:
+            for name, data in resources.items():
+                zip_file.writestr(f"{name}.json", json.dumps(data))
+
+        call_command("import", import_file=self.filepath)
+        form = Form.objects.get(slug="test-form")
+
+        self.assertEqual(
+            form.confirmation_email_template.content,
+            "Some content {% cosign_information %}\n{% appointment_information %}\n{% payment_information %}",
+        )
