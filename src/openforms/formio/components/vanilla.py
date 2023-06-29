@@ -4,7 +4,7 @@ Implement backend functionality for core Formio (built-in) component types.
 Custom component types (defined by us or third parties) need to be organized in the
 adjacent custom.py module.
 """
-from typing import TYPE_CHECKING, Literal, TypedDict
+from typing import TYPE_CHECKING
 
 from rest_framework.request import Request
 from rest_framework.reverse import reverse
@@ -34,7 +34,7 @@ from ..formatters.formio import (
     TimeFormatter,
 )
 from ..registry import BasePlugin, register
-from ..typing import Component
+from ..typing import Component, ContentComponent, FileComponent, RadioComponent
 
 if TYPE_CHECKING:  # pragma: nocover
     from openforms.submissions.models import Submission
@@ -67,18 +67,6 @@ class Time(BasePlugin):
 @register("phoneNumber")
 class PhoneNumber(BasePlugin):
     formatter = PhoneNumberFormatter
-
-
-class FileConfig(TypedDict):
-    allowedTypesLabels: list[str]
-
-
-class FileComponent(Component):
-    storage: Literal["url"]
-    url: str
-    useConfigFiletypes: bool
-    filePattern: str
-    file: FileConfig
 
 
 @register("file")
@@ -161,7 +149,7 @@ class Radio(BasePlugin):
     formatter = RadioFormatter
 
     def mutate_config_dynamically(
-        self, component: Component, submission: "Submission", data: DataMapping
+        self, component: RadioComponent, submission: "Submission", data: DataMapping
     ) -> None:
         add_options_to_config(component, data, submission)
 
@@ -169,10 +157,6 @@ class Radio(BasePlugin):
 @register("signature")
 class Signature(BasePlugin):
     formatter = SignatureFormatter
-
-
-class ContentComponent(Component):
-    html: str
 
 
 @register("content")
