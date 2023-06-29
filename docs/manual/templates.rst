@@ -483,7 +483,7 @@ Voorbeeld
 
          {
            "form_data": {% json_summary %},
-           "type": "terugbelnotitie",
+           "type": "{{ productaanvraag_type }}",
            "bsn": "{{ variables.auth_bsn }}",
            "pdf_url": "{{ submission.pdf_url }}",
            "attachments": {% uploaded_attachment_urls %},
