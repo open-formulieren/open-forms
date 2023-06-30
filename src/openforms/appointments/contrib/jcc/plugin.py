@@ -1,6 +1,8 @@
 import logging
+from contextlib import contextmanager
 from datetime import date, datetime, timedelta
-from typing import List, Optional
+from functools import wraps
+from typing import Callable, List, Optional, ParamSpec, TypeVar
 
 from django.urls import reverse
 from django.utils.html import format_html
@@ -11,6 +13,7 @@ from zeep.client import Client
 from zeep.exceptions import Error as ZeepError
 from zgw_consumers.concurrent import parallel
 
+from openforms.formio.typing import Component
 from openforms.plugins.exceptions import InvalidPluginConfiguration
 
 from ...base import (
@@ -28,6 +31,8 @@ from ...exceptions import (
 from ...registry import register
 from ...utils import create_base64_qrcode
 from .client import get_client
+from .constants import FIELD_TO_FORMIO_COMPONENT, CustomerFields
+from .exceptions import GracefulJCCError, JCCError
 from .models import JccConfig
 
 logger = logging.getLogger(__name__)
@@ -35,6 +40,36 @@ logger = logging.getLogger(__name__)
 
 def squash_ids(lst):
     return ",".join([i.identifier for i in lst])
+
+
+@contextmanager
+def log_soap_errors(template: str, *args):
+    try:
+        yield
+    except (ZeepError, RequestException) as e:
+        logger.exception(template, *args, exc_info=e)
+        raise GracefulJCCError("SOAP call failed") from e
+    except Exception as exc:
+        raise JCCError from exc
+
+
+Param = ParamSpec("Param")
+T = TypeVar("T")
+FuncT = Callable[Param, T]
+
+
+def with_graceful_default(default: T):
+    def decorator(func: FuncT) -> FuncT:
+        @wraps(func)
+        def wrapper(*args, **kwargs) -> T:
+            try:
+                return func(*args, **kwargs)
+            except GracefulJCCError:
+                return default
+
+        return wrapper
+
+    return decorator
 
 
 @register("jcc")
@@ -194,18 +229,22 @@ class JccAppointment(BasePlugin):
                 locationID=location.identifier,
                 appDuration=0,
             )
-            return times
-        except (ZeepError, RequestException) as e:
-            logger.exception(
-                "Could not retrieve times for products '%s' at location '%s' on %s",
-                product_ids,
-                location,
-                day,
-                exc_info=e,
-            )
-            return []
-        except Exception as exc:
-            raise AppointmentException from exc
+
+    @with_graceful_default(default=[])
+    def get_required_customer_fields(
+        self,
+        products: list[AppointmentProduct],
+    ) -> list[Component]:
+        product_ids = squash_ids(products)
+
+        client = get_client()
+        with log_soap_errors(
+            "Could not retrieve required fields for products '%s'", product_ids
+        ):
+            field_names = client.service.GetRequiredClientFields(productID=product_ids)
+
+        last_name = FIELD_TO_FORMIO_COMPONENT[CustomerFields.last_name]
+        return [last_name] + [FIELD_TO_FORMIO_COMPONENT[field] for field in field_names]
 
     def create_appointment(
         self,
