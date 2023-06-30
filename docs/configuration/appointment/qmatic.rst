@@ -2,12 +2,12 @@
 Qmatic
 ======
 
-This plugin is made for the *Qmatic Orchestra Calendar Public Appointment API* and is currently untested.
+This plugin is made for the *Qmatic Orchestra Calendar Public Appointment API*.
 
-1. You will need to have a contract with `Qmatic`_ to use this plugin.
-2. In Open Forms navigate to: **Configuration** > **Overview**
-3. In the **Appointments plugin** group, click on **Configuration** for the **Qmatic configuration** line.
-4. Click the **Green Plus Button** and fill in the following details:
+#. You will need to have a contract with `Qmatic`_ to use this plugin.
+#. In Open Forms navigate to: **Configuration** > **Overview**
+#. In the **Appointment plugins** group, click on **Configuration** for the **Qmatic configuration** line.
+#. Find the **Calendar API field** and click the **Green Plus Button** and fill in the following details:
 
    * **Label**: Qmatic
    * **Type**: ORC (Overige)
@@ -17,6 +17,9 @@ This plugin is made for the *Qmatic Orchestra Calendar Public Appointment API* a
    * **Header value**: *The API-key provided by Qmatic*
    * **OAS**: *URL to the Open API-specification provided by Qmatic*
 
-5. Click **Save**
+#. Next, verify and check or uncheck the customer contact detail fields that are
+   relevant for your environment.
+
+#. Click **Save**
 
 .. _`Qmatic`: https://www.qmatic.com/solutions/online-appointment-booking/
