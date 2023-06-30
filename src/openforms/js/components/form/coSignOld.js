@@ -1,6 +1,6 @@
 import {Formio} from 'react-formio';
 
-import {DESCRIPTION, LABEL_REQUIRED} from 'components/form/edit/options';
+import {DESCRIPTION, HIDDEN, LABEL_REQUIRED} from 'components/form/edit/options';
 import {getFullyQualifiedUrl} from 'utils/urls';
 
 import {TRANSLATIONS} from './edit/tabs';
@@ -36,6 +36,7 @@ const EDIT_FORM_TABS = [
             valueProperty: 'id',
             template: `<span>{{ item.label }}, provides: {{ item.providesAuth }}</span>`,
           },
+          HIDDEN,
         ],
       },
       TRANSLATIONS,
